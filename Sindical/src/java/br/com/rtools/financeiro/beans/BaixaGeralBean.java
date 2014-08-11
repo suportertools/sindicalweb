@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.beans;
 
+import br.com.rtools.academia.beans.MatriculaAcademiaBean;
 import br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean;
 import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
@@ -156,23 +157,23 @@ public class BaixaGeralBean {
 
     public void refreshForm() {
     }
-    
-    
-    public void salvarRecibo(byte[] arquivo, Baixa baixa){
+
+    public void salvarRecibo(byte[] arquivo, Baixa baixa) {
         //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
-        if (baixa.getCaixa() == null)
+        if (baixa.getCaixa() == null) {
             return;
-        
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/"+"Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
-        Diretorio.criar("Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
-        
+        }
+
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/" + "Arquivos/recibo/" + baixa.getCaixa().getCaixa() + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+        Diretorio.criar("Arquivos/recibo/" + baixa.getCaixa().getCaixa() + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+
         String path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
         File file_arquivo = new File(path_arquivo);
-        
-        if (file_arquivo.exists()){
+
+        if (file_arquivo.exists()) {
             path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
         }
-        
+
         try {
             File fl = new File(path_arquivo);
             FileOutputStream out = new FileOutputStream(fl);
@@ -182,9 +183,9 @@ public class BaixaGeralBean {
         } catch (IOException e) {
             System.out.println(e);
         }
-        
+
     }
-    
+
     public String imprimirRecibo() {
         if (!listaMovimentos.isEmpty()) {
             try {
@@ -249,7 +250,7 @@ public class BaixaGeralBean {
                             formas[6],
                             formas[7],
                             formas[8],
-                            formas[9], 
+                            formas[9],
                             ""
                     )
                     );
@@ -264,7 +265,7 @@ public class BaixaGeralBean {
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
 
                 salvarRecibo(arquivo, listaMovimentos.get(0).getBaixa());
-                
+
                 HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                 res.setContentType("application/pdf");
                 res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
@@ -295,9 +296,12 @@ public class BaixaGeralBean {
                 GenericaSessao.put("linkClicado", true);
                 return "lancamentoFinanceiro";
                 //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).lancamentoFinanceiro();
-            } else if (url.equals("emissaoGuias")){
+            } else if (url.equals("emissaoGuias")) {
                 GenericaSessao.put("linkClicado", true);
                 return "emissaoGuias";
+            } else if (url.equals("academia")) {
+                GenericaSessao.put("linkClicado", true);
+                return "academia";
             } else {
                 return null;
             }
@@ -550,6 +554,8 @@ public class BaixaGeralBean {
             } else if (url.equals("lancamentoFinanceiro")) {
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcela().clear();
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcelaSelecionada().clear();
+            } else if (url.equals("academia")) {
+                ((MatriculaAcademiaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).getListaMovimentos().clear();
             }
             retorna = true;
             mensagem = "Baixa realizada com sucesso!";

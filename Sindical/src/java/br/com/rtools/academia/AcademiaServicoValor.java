@@ -2,14 +2,16 @@ package br.com.rtools.academia;
 
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.sistema.Periodo;
+import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ACA_SERVICO_VALOR")
 @NamedQueries({
     @NamedQuery(name = "AcademiaServicoValor.pesquisaID", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.id = :pid"),
-    @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC")
+    @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.validade IS NULL OR ASV.validade >= CURRENT_TIMESTAMP ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC")
 })
 public class AcademiaServicoValor implements Serializable {
 
@@ -26,6 +28,9 @@ public class AcademiaServicoValor implements Serializable {
     private String formula;
     @Column(name = "NR_PARCELAS")
     private int numeroParcelas;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_VALIDADE")
+    private Date validade;
 
     public AcademiaServicoValor() {
         this.id = -1;
@@ -33,14 +38,16 @@ public class AcademiaServicoValor implements Serializable {
         this.periodo = new Periodo();
         this.formula = "";
         this.numeroParcelas = 0;
+        this.validade = new Date();
     }
 
-    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, String formula, int numeroParcelas) {
+    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, String formula, int numeroParcelas, Date validade) {
         this.id = id;
         this.servicos = servicos;
         this.periodo = periodo;
         this.formula = formula;
         this.numeroParcelas = numeroParcelas;
+        this.validade = validade;
     }
 
     public int getId() {
@@ -81,6 +88,22 @@ public class AcademiaServicoValor implements Serializable {
 
     public void setNumeroParcelas(int numeroParcelas) {
         this.numeroParcelas = numeroParcelas;
+    }
+
+    public Date getValidade() {
+        return validade;
+    }
+
+    public void setValidade(Date validade) {
+        this.validade = validade;
+    }
+
+    public String getValidadeString() {
+        return DataHoje.converteData(validade);
+    }
+
+    public void setValidadeString(String validadeString) {
+        this.validade = DataHoje.converte(validadeString);
     }
 
 }
