@@ -7,6 +7,7 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -90,13 +91,15 @@ public class Movimento implements Serializable {
     @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private MatriculaSocios matriculaSocios;
-    
+
     /**
      * <p>
      * <strong>Inserir Matricula Sócio</strong>
-     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
-     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na
+     * variável ( Somente Associativo ) Para demais Rotinas ( ex. Arrecadação )
+     * adicionar " null " na variável
      * </p>
+     *
      * @return MatriculaSocio
      */
     public Movimento() {
@@ -135,9 +138,11 @@ public class Movimento implements Serializable {
     /**
      * <p>
      * <strong>Inserir Matricula Sócio</strong>
-     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
-     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na
+     * variável ( Somente Associativo ) Para demais Rotinas ( ex. Arrecadação )
+     * adicionar " null " na variável
      * </p>
+     *
      * @param id
      * @param lote
      * @param plano5
@@ -167,7 +172,7 @@ public class Movimento implements Serializable {
      * @param valorBaixa
      * @param tipoDocumento
      * @param repasseAutomatico
-     * @param matriculaSocios 
+     * @param matriculaSocios
      */
     public Movimento(int id,
             Lote lote,
@@ -478,40 +483,61 @@ public class Movimento implements Serializable {
     public void setFTipoDocumento(FTipoDocumento fTipoDocumento) {
         this.tipoDocumento = fTipoDocumento;
     }
-    
+
     /**
      * <p>
      * <strong>Inserir Matricula Sócio</strong>
-     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
-     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na
+     * variável ( Somente Associativo ) Para demais Rotinas ( ex. Arrecadação )
+     * adicionar " null " na variável
      * </p>
+     *
      * @return MatriculaSocio
      */
     public MatriculaSocios getMatriculaSocios() {
-        if (id == -1 && matriculaSocios != null){
-            if (beneficiario != null && beneficiario.getId() != -1){
+        if (id == -1 && matriculaSocios != null) {
+            if (beneficiario != null && beneficiario.getId() != -1) {
                 SociosDB dbs = new SociosDBToplink();
                 Socios soc = dbs.pesquisaSocioPorPessoaAtivo(beneficiario.getId());
-                if (soc.getId() != -1)
+                if (soc.getId() != -1) {
                     matriculaSocios = soc.getMatriculaSocios();
-                else
+                } else {
                     matriculaSocios = null;
+                }
             }
         }
         return matriculaSocios;
     }
 
     public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
-        if (id == -1 && matriculaSocios != null){
-            if (beneficiario != null && beneficiario.getId() != -1){
+        if (id == -1 && matriculaSocios != null) {
+            if (beneficiario != null && beneficiario.getId() != -1) {
                 SociosDB dbs = new SociosDBToplink();
                 Socios soc = dbs.pesquisaSocioPorPessoaAtivo(beneficiario.getId());
-                if (soc.getId() != -1)
+                if (soc.getId() != -1) {
                     matriculaSocios = soc.getMatriculaSocios();
-                else
+                } else {
                     matriculaSocios = null;
+                }
             }
         }
         this.matriculaSocios = matriculaSocios;
-    }    
+    }
+
+    public String getValorString() {
+        return Moeda.converteR$Float(valor);
+    }
+
+    public void setValor(String valorString) {
+        this.valor = Moeda.converteUS$(valorString);
+    }
+
+    public String getValorBaixaString() {
+        return Moeda.converteR$Float(valorBaixa);
+    }
+
+    public void setValorBaixaString(String valorBaixaString) {
+        this.valorBaixa = Moeda.converteUS$(valorBaixaString);
+    }
+
 }

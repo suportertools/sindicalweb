@@ -4,6 +4,7 @@ import br.com.rtools.academia.AcademiaSemana;
 import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
+import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.associativo.MatriculaAcademia;
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.ModeloCarteirinha;
@@ -44,9 +45,11 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -57,8 +60,6 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
@@ -195,23 +196,33 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public void clear() {
         GenericaSessao.remove("matriculaAcademiaBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
     }
 
-    public void salvarData(){
-        if (matriculaAcademia.getServicoPessoa().getId() != -1){
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
-            
-            if (!sv.alterarObjeto(matriculaAcademia.getServicoPessoa())){
-                // ERRO
-                sv.desfazerTransacao();
-            }else{
-                sv.comitarTransacao();
+    public void salvarData() {
+        if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
+            Dao dao = new Dao();
+            Pessoa pResponsavel = matriculaAcademia.getServicoPessoa().getCobranca();
+            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            PessoaComplemento pc = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(pResponsavel.getId());
+            if (pc == null || pc.getId() == -1) {
+                pc = new PessoaComplemento();
+                pc.setPessoa(pResponsavel);
+                pc.setNrDiaVencimento(idDiaVencimento);
+                dao.save(pc, true);
+            } else {
+                pc.setNrDiaVencimento(idDiaVencimento);
+                dao.update(pc, true);
             }
         }
-    }     
-    
+    }
+
     public void save() {
+        if (MacFilial.getAcessoFilial().getId() == -1) {
+            message = "Para salvar convites não cortesia configurar Filial em sua estação trabalho!";
+            return;
+        }
         if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
             message = "Pesquisar uma pessoa!";
             return;
@@ -228,7 +239,7 @@ public class MatriculaAcademiaBean implements Serializable {
             message = "Cadastrar período grade!";
             return;
         }
-        matriculaAcademia.getServicoPessoa().setNrDiaVencimento(idDiaVencimento);
+        matriculaAcademia.getServicoPessoa().setNrDiaVencimento(idDiaParcela);
         DaoInterface di = new Dao();
         matriculaAcademia.getServicoPessoa().setTipoDocumento((FTipoDocumento) di.find(new FTipoDocumento(), 1));
         matriculaAcademia.setAcademiaServicoValor((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaPeriodosGrade.get(idPeriodoGrade).getDescription())));
@@ -239,7 +250,7 @@ public class MatriculaAcademiaBean implements Serializable {
         }
         if (responsavel != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-        }
+        }        
         NovoLog novoLog = new NovoLog();
         if (matriculaAcademia.getId() == -1) {
             SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
@@ -247,7 +258,7 @@ public class MatriculaAcademiaBean implements Serializable {
             SocioCarteirinhaDB scdb = new SocioCarteirinhaDBToplink();
             ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinha(-1, 122);
             if (modeloCarteirinha == null) {
-                message = "Informar modelo da carneirinha!";
+                message = "Informar modelo da carteirinha!";
                 return;
             }
             SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
@@ -287,6 +298,18 @@ public class MatriculaAcademiaBean implements Serializable {
                 di.rollback();
                 message = "Erro ao adicionar registro!";
                 return;
+            }
+            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+            if (pessoaComplemento == null) {
+                pessoaComplemento = new PessoaComplemento();
+                pessoaComplemento.setNrDiaVencimento(idDiaVencimento);
+                pessoaComplemento.setPessoa((Pessoa) di.find(new Pessoa(), matriculaAcademia.getServicoPessoa().getCobranca().getId()));
+                if (!di.save(pessoaComplemento)) {
+                    di.rollback();
+                    message = "Falha ao inserir pessoa complemento!";
+                    return;
+                }
             }
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
             pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
@@ -339,6 +362,26 @@ public class MatriculaAcademiaBean implements Serializable {
         DaoInterface di = new Dao();
         if (matriculaAcademia.getId() != -1) {
             di.openTransaction();
+            listaMovimentos.clear();
+            for (int i = 0; i < getListaMovimentos().size(); i++) {
+                if (listaMovimentos.get(i).getBaixa() != null) {
+                    message = "Não é possível excluir um registro com movimentos já baixados!";
+                    di.rollback();
+                    return;
+                }
+                if (!di.delete(listaMovimentos.get(i))) {
+                    message = "Erro ao excluir movimento!";
+                    di.rollback();
+                    return;
+                }
+            }
+            if (!listaMovimentos.isEmpty()) {
+                if (!di.delete(listaMovimentos.get(0).getLote())) {
+                    message = "Erro ao excluir lote!";
+                    di.rollback();
+                    return;
+                }
+            }
             if (!di.delete(matriculaAcademia)) {
                 di.rollback();
                 message = "Erro ao excluir registro!";
@@ -394,6 +437,8 @@ public class MatriculaAcademiaBean implements Serializable {
         }
         pegarIdServico();
         atualizaValor();
+        valorLiquido = "0,0";
+        desconto = (Float.parseFloat(Moeda.substituiVirgula(valor)) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100);
         calculaValorLiquido();
         pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
         pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
@@ -403,46 +448,46 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public MatriculaAcademia getMatriculaAcademia() {
-//        getAluno();
-//        if (socio == false) {
-//            getJuridica();
-//        }
-//        if (cobranca == null) {
-//            DaoInterface di = new Dao();
-//            FunctionsDB functionsDB = new FunctionsDBTopLink();
-//            if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
-//                int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
-//                if (idResponsavel != -1) {
-//                    cobranca = (Pessoa) di.find(new Pessoa(), idResponsavel);
-//                } else {
-//                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-//                }
-//            } else {
-//                int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
-//                if (idResponsavelEmpresa != -1) {
-//                    JuridicaDB juridicaDB = new JuridicaDBToplink();
-//                    Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-//                    if (juridicaB != null) {
-//                        if (juridicaB.getId() != -1) {
-//                            cobranca = (Pessoa) di.find(new Pessoa(), idResponsavelEmpresa);
-//                        } else {
-//                            cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-//                        }
-//                    } else {
-//                        cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-//                    }
-//                } else {
-//                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-//                }
-//            }
-//            if (cobranca.getId() == -1) {
-//                cobranca = null;
-//            }
-//        }
-//        JuridicaDB juridicaDB = new JuridicaDBToplink();
-//        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
-//        verificaSeContribuinteInativo();
-//        getRegistro();
+        //getAluno();
+        if (socio == false) {
+            getJuridica();
+        }
+        if (cobranca == null) {
+            DaoInterface di = new Dao();
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
+                int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
+                if (idResponsavel != -1) {
+                    cobranca = (Pessoa) di.find(new Pessoa(), idResponsavel);
+                } else {
+                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+                }
+            } else {
+                int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
+                if (idResponsavelEmpresa != -1) {
+                    JuridicaDB juridicaDB = new JuridicaDBToplink();
+                    Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+                    if (juridicaB != null) {
+                        if (juridicaB.getId() != -1) {
+                            cobranca = (Pessoa) di.find(new Pessoa(), idResponsavelEmpresa);
+                        } else {
+                            cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+                        }
+                    } else {
+                        cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+                    }
+                } else {
+                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+                }
+            }
+            if (cobranca.getId() == -1) {
+                cobranca = null;
+            }
+        }
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+        verificaSeContribuinteInativo();
+        getRegistro();
         return matriculaAcademia;
     }
 
@@ -532,25 +577,23 @@ public class MatriculaAcademiaBean implements Serializable {
         if (listaPeriodosGrade.isEmpty()) {
             if (!listaModalidades.isEmpty()) {
                 AcademiaDB db = new AcademiaDBToplink();
-                
+
                 DaoInterface di = new Dao();
-                
+
                 List<AcademiaServicoValor> listaAcademiaServicoValor = di.list("AcademiaServicoValor");
-                
-                
-                
-                for (int w = 0; w < listaAcademiaServicoValor.size(); w++){
+
+                for (int w = 0; w < listaAcademiaServicoValor.size(); w++) {
                     String text = "";
-                    List<AcademiaSemana> listaAcademiaSemana = db.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());                
-                    for (int i = 0; i < listaAcademiaSemana.size(); i++){
-                        text += listaAcademiaSemana.get(i).getSemana().getDescricao().substring(0, 3)+": "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio()+" às "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim()+" ";
+                    List<AcademiaSemana> listaAcademiaSemana = db.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());
+                    for (int i = 0; i < listaAcademiaSemana.size(); i++) {
+                        text += listaAcademiaSemana.get(i).getSemana().getDescricao().substring(0, 3) + ": " + listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio() + " às " + listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim() + " ";
                         //listaPeriodosGrade.add(new SelectItem(i, text, Integer.toString(listaAcademiaSemana.get(i).getId())));
                     }
-                    
+
                     text = listaAcademiaServicoValor.get(w).getPeriodo().getDescricao() + " - " + text;
                     listaPeriodosGrade.add(new SelectItem(w, text, Integer.toString(listaAcademiaServicoValor.get(w).getId())));
                 }
-                
+
 //                AcademiaDB academiaDB = new AcademiaDBToplink();
 //                DaoInterface di = new Dao();
 //                List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
@@ -631,8 +674,9 @@ public class MatriculaAcademiaBean implements Serializable {
                     if (responsavel.getId() != -1) {
                         pessoaComplemento = new PessoaComplemento();
                         pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
-                        if (pessoaComplemento != null) {
+                        if (pessoaComplemento != null && pessoaComplemento.getId() != -1) {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+                            this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
                         }
                         matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
                     }
@@ -641,6 +685,8 @@ public class MatriculaAcademiaBean implements Serializable {
                     pegarIdServico();
                     atualizaValor();
                     calculaValorLiquido();
+                    GenericaSessao.remove("juridicaPesquisa");
+                    verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
                 } else if (tipoFisica.equals("responsavel")) {
                     Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
                     FunctionsDB functionsDB = new FunctionsDBTopLink();
@@ -653,6 +699,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
                     }
                     GenericaSessao.remove("juridicaPesquisa");
+                    verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
                 }
             }
             if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
@@ -663,7 +710,6 @@ public class MatriculaAcademiaBean implements Serializable {
                 }
             }
         }
-        verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
         return aluno;
     }
 
@@ -675,7 +721,7 @@ public class MatriculaAcademiaBean implements Serializable {
         if (aluno.getId() != -1) {
             FunctionsDB functionsDB = new FunctionsDBTopLink();
             int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
-            if (titularResponsavel > -1) {
+            if (titularResponsavel > -1 && titularResponsavel > 0) {
                 DaoInterface di = new Dao();
                 responsavel = (Pessoa) di.find(new Pessoa(), titularResponsavel);
             }
@@ -690,15 +736,21 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public int getIdDiaVencimento() {
-        if (idDiaVencimentoPessoa == 0) {
-            if (matriculaAcademia.getId() == -1) {
-                this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+        if (responsavel.getId() != -1) {
+            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            PessoaComplemento pc = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+            if (pc != null && pc.getId() != -1) {
+                this.idDiaVencimento = pc.getNrDiaVencimento();
             } else {
-                this.idDiaVencimento = matriculaAcademia.getServicoPessoa().getNrDiaVencimento();
+                this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
             }
         } else {
-            this.idDiaVencimento = idDiaVencimentoPessoa;
+            this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
         }
+//        if (idDiaVencimentoPessoa == 0) {
+//        } else {
+//            this.idDiaVencimento = idDiaVencimentoPessoa;
+//        }
         return idDiaVencimento;
     }
 
@@ -859,9 +911,14 @@ public class MatriculaAcademiaBean implements Serializable {
         valorParcela = "0";
         valorParcelaVencimento = "0";
         if (!valor.isEmpty()) {
-            if ((Float.parseFloat(valor) - Float.parseFloat(valor) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100) > 0) {
+            if (desconto > Float.parseFloat(valor)) {
+                desconto = 0;
+            }
+            if (Float.parseFloat(valor) - desconto > 0) {
                 valorLiquido = valor;
-                valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100);
+                valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - desconto);
+                float valorDesconto = desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor));
+                matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto);
             }
         }
         valor = Moeda.converteR$(valor);
@@ -911,6 +968,14 @@ public class MatriculaAcademiaBean implements Serializable {
         this.desconto = desconto;
     }
 
+    public String getDescontoString() {
+        return Moeda.converteR$Float(desconto);
+    }
+
+    public void setDescontoString(String descontoString) {
+        this.desconto = Moeda.converteUS$(descontoString);
+    }
+
     public void cobrarTaxa() {
         if (taxa == true) {
             this.valorTaxa = Moeda.converteR$Float(vTaxa);
@@ -945,6 +1010,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 }
             }
             juridica = new Juridica();
+            verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
         }
         return juridica;
     }
@@ -973,7 +1039,7 @@ public class MatriculaAcademiaBean implements Serializable {
         this.messageStatusEmpresa = messageStatusEmpresa;
     }
 
-    public void gerarMovimento() {
+    public String gerarMovimento() {
         if (matriculaAcademia.getId() != -1) {
             if (matriculaAcademia.getEvt() == null) {
                 int periodo = matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId();
@@ -984,16 +1050,16 @@ public class MatriculaAcademiaBean implements Serializable {
                 if (periodo == 3) {
                     if (!matriculaAcademia.isTaxa()) {
                         GenericaMensagem.warn("Validação", "Movimento gerado com sucesso");
-                        return;
+                        return null;
                     }
                 }
                 if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != pessoaAlunoMemoria.getId()) {
                     GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return;
+                    return null;
                 }
                 if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
                     GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return;
+                    return null;
                 }
                 String vencimento;
                 String referencia;
@@ -1078,7 +1144,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     if (!di.save(evt)) {
                         di.rollback();
                         GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                        return;
+                        return null;
                     }
                     lote.setFilial((Filial) di.find(new Filial(), 1));
                     lote.setEvt(evt);
@@ -1099,7 +1165,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         Pessoa pessoaResponsavel = matriculaAcademia.getServicoPessoa().getCobranca();
                         if (pessoaResponsavel.getId() == -1) {
                             di.rollback();
-                            return;
+                            return null;
                         }
                         int b = 0;
                         for (int i = 0; i < loop; i++) {
@@ -1182,7 +1248,7 @@ public class MatriculaAcademiaBean implements Serializable {
                             if (!di.save(movimento)) {
                                 di.rollback();
                                 GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                                return;
+                                return null;
                             }
                             if (matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId() == 3) {
                                 break;
@@ -1191,12 +1257,18 @@ public class MatriculaAcademiaBean implements Serializable {
                         if (!di.update(matriculaAcademia)) {
                             di.rollback();
                             GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                            return;
+                            return null;
+                        }
+                        if (!di.update(matriculaAcademia.getServicoPessoa())) {
+                            di.rollback();
+                            GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+                            return null;
                         }
                         di.commit();
                         GenericaMensagem.info("Sucesso", "Movimentos gerados com sucesso");
                         desabilitaCamposMovimento = true;
                         desabilitaDiaVencimento = true;
+                        return baixaGeral(false);
                     } else {
                         di.rollback();
                         GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
@@ -1210,6 +1282,59 @@ public class MatriculaAcademiaBean implements Serializable {
         } else {
             GenericaMensagem.warn("Sistema", "Pesquisar aluno!");
         }
+        return null;
+    }
+
+    public String baixaGeral(boolean mensal) {
+        Dao dao = new Dao();
+        List<Movimento> listaMovimentoAuxiliar = new ArrayList<Movimento>();
+        Movimento m = new Movimento();
+        float valorx = 0;
+        float descontox = 0;
+        if (mensal) {
+
+        } else {
+            if (matriculaAcademia.isTaxa()) {
+                for (int i = 0; i < getListaMovimentos().size(); i++) {
+                    HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
+                    m = (Movimento) dao.find(new Movimento(), listaMovimentos.get(i).getId());
+                    descontox = listaMovimentos.get(i).getDesconto();
+                    valorx = Moeda.converteUS$(listaMovimentos.get(i).getValorString());
+                    m.setMulta(listaMovimentos.get(i).getMulta());
+                    m.setJuros(listaMovimentos.get(i).getJuros());
+                    m.setDesconto(descontox);
+                    m.setValor(listaMovimentos.get(i).getValor());
+                    m.setValorBaixa(valorx);
+                    listaMovimentoAuxiliar.add(m);
+                    heg.setMovimento(m);
+                    heg.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
+                    if (i == 1) {
+                        break;
+                    }
+                }
+            } else {
+                for (int i = 0; i < getListaMovimentos().size(); i++) {
+                    HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
+                    m = (Movimento) dao.find(new Movimento(), listaMovimentos.get(i).getId());
+                    descontox = listaMovimentos.get(i).getDesconto();
+                    valorx = Moeda.converteUS$(listaMovimentos.get(i).getValorString());
+                    m.setMulta(listaMovimentos.get(i).getMulta());
+                    m.setJuros(listaMovimentos.get(i).getJuros());
+                    m.setDesconto(descontox);
+                    m.setValor(listaMovimentos.get(i).getValor());
+                    m.setValorBaixa(valorx);
+                    listaMovimentoAuxiliar.add(m);
+                    heg.setMovimento(m);
+                    heg.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
+                    break;
+                }
+            }
+            if (!listaMovimentoAuxiliar.isEmpty()) {
+                GenericaSessao.put("listaMovimento", listaMovimentoAuxiliar);
+                return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).baixaGeral();
+            }
+        }
+        return null;
     }
 
     public void desfazerMovimento() {
@@ -1709,11 +1834,16 @@ public class MatriculaAcademiaBean implements Serializable {
             int dia = DataHoje.DataToArrayInt(matriculaAcademia.getServicoPessoa().getEmissao())[0];
             for (int i = 1; i <= 31; i++) {
                 listaDiaParcela.add(new SelectItem(Integer.toString(i)));
-                if (dia == i)
+                if (dia == i) {
                     idDiaParcela = i;
+                }
             }
-            
+
         }
         return listaDiaParcela;
+    }
+
+    public String getLoad() {
+        return "";
     }
 }

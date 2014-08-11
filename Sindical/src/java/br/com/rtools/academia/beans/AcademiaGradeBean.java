@@ -156,7 +156,6 @@ public class AcademiaGradeBean implements Serializable {
     public void delete(AcademiaGrade ag) {
         if (ag.getId() != -1) {
             DaoInterface di = new Dao();
-            AcademiaDB academiaDB = new AcademiaDBToplink();
             di.openTransaction();
             NovoLog novoLog = new NovoLog();
             String s = "";

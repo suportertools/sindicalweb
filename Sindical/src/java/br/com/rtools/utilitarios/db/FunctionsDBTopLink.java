@@ -27,7 +27,7 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
                     idResponsavel = -1;
                 }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
         return idResponsavel;
