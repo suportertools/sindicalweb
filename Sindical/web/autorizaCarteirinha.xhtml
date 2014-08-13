@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -72,8 +72,8 @@
                             </h:panelGrid>
                             
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Autorizar esta Pessoa" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{autorizaCarteirinhaBean.autorizar()}" update="formAutorizaCarteirinha" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{autorizaCarteirinhaBean.autorizar()}" update="formAutorizaCarteirinha" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
                             
@@ -112,7 +112,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

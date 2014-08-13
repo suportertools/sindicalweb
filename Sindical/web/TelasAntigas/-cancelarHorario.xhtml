@@ -12,7 +12,7 @@
     <h:body>
         <f:subview id="header">
             
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
@@ -136,7 +136,7 @@
             </p:panel>
         </f:view>
         <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
+            <ui:include src="templates/templateFooter.xhtml"/>
         </f:subview>
     </h:body>
 </ui:composition>

@@ -27,7 +27,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -101,7 +101,7 @@
                                     <p:commandLink value="#{linha.argumento1.pessoa.documento} - #{linha.argumento1.pessoa.nome}" action="#{processamentoIndividualBean.editarJuridica(linha)}" 
                                                    title="Clique para ir ao cadastro desta empresa"/>
                                     <p:commandButton icon="ui-icon-mail-closed" action="#{processamentoIndividualBean.verificaEmail(linha.argumento1.pessoa)}" 
-                                                     title="#{linha.argumento1.pessoa.email1}" style="margin-left: 15px; width: 20px" oncomplete="i_dlg_email.show()" update=":formImpressaoIndividual:i_email_para"/>
+                                                     title="#{linha.argumento1.pessoa.email1}" style="margin-left: 15px; width: 20px" oncomplete="PF('i_dlg_email').show()" update=":formImpressaoIndividual:i_email_para"/>
                                 </p:column>
 
                                 <p:column style="text-align: center" headerText="Contribuição">
@@ -122,7 +122,7 @@
                                 
                                 <p:column style="text-align: right" headerText="Valor">
                                     <p:commandLink value="#{linha.argumento3}" action="#{processamentoIndividualBean.carregarFolha(linha)}" style="font-size: 10pt!important; font-weight: bold; color: #0066cc"
-                                                   oncomplete="i_dlg_valor.show()" update=":formImpressaoIndividual:i_panel_valor"/>
+                                                   oncomplete="PF('i_dlg_valor').show()" update=":formImpressaoIndividual:i_panel_valor"/>
                                 </p:column>
                                 
                                 <p:rowExpansion>
@@ -130,7 +130,7 @@
                                         <p:column>
                                             <p:outputLabel value="#{linha.argumento2.pessoa.nome}" title="#{linha.argumento2.pessoa.email1}"/>
                                             <p:commandButton icon="ui-icon-mail-closed" action="#{processamentoIndividualBean.verificaEmail(linha.argumento2.pessoa)}" 
-                                                             title="#{linha.argumento2.pessoa.email1}" style="margin-left: 15px; width: 20px" oncomplete="i_dlg_email.show()" update=":formImpressaoIndividual:i_email_para"/>
+                                                             title="#{linha.argumento2.pessoa.email1}" style="margin-left: 15px; width: 20px" oncomplete="PF('i_dlg_email').show()" update=":formImpressaoIndividual:i_email_para"/>
                                         </p:column>
                                         
                                         <p:column>
@@ -207,8 +207,8 @@
                                 </h:panelGrid>
                                     
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual" onclick="i_dlg_email.hide(), i_dlg_modal.show()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_email.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual" onclick="PF('i_dlg_email').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_email').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
@@ -231,14 +231,14 @@
                                     </h:panelGrid>
 
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid}" update="formImpressaoIndividual" onclick="i_dlg_valor.hide(), i_dlg_modal.show()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_valor.hide()" style="float: left" icon="ui-icon-close"/>       
+                                        <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid}" update="formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </p:dialog>
                         </h:form>
                         
-                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                         <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                             <h:outputLabel value=" ... Aguarde" />
                         </p:dialog>
@@ -251,7 +251,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

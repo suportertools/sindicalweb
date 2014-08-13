@@ -16,14 +16,14 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Pedido" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_pedido">
-                            <p:commandButton action="#{pedidoBean.openModalPedido()}" onclick="dlg_pedido.show();" value="Itens da Nota" />
+                            <p:commandButton action="#{pedidoBean.openModalPedido()}" onclick="PF('dlg_pedido').show();" value="Itens da Nota" />
                             <c:set scope="request" var="object" value="${pedidoBean.pedido}" />
                             <p:dialog widgetVar="dlg_pedido" width="1024" modal="true" visible="#{pedidoBean.modalPedido}" header="Itens da nota">
                                 <p:ajax event="close" listener="#{pedidoBean.closeModalPedido()}" update="@this"/>
@@ -104,7 +104,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

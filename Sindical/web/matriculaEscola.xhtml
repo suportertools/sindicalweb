@@ -1,4 +1,4 @@
-Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
@@ -11,7 +11,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
@@ -60,7 +60,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                     <h:column>
                                         <h:panelGrid columns="8">
                                             <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
-                                            <p:outputLabel  id="idAluno" value="#{matriculaEscolaBean.matriculaEscola.aluno.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" />
+                                            <p:commandLink id="idAluno" value="#{matriculaEscolaBean.matriculaEscola.aluno.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" update="i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(matriculaEscolaBean.matriculaEscola.aluno.id)}" title="Ver detalhes"/>
                                             <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" styleClass="margin-left-max"/>
                                             <p:outputLabel  value=" - MATRÍCULA #{matriculaEscolaBean.socios.matriculaSocios.nrMatricula}"  rendered="#{matriculaEscolaBean.socios.id != -1}" style="font-weight: bold"/>
                                             <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
@@ -75,7 +75,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                     <p:outputLabel value="Responsável: "  style="margin-left: 8px" for="idPesquisarAluno" />
                                     <h:column>
                                         <h:panelGrid columns="3">
-                                            <p:outputLabel  id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" />
+                                            <p:commandLink id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.matriculaEscola.responsavel.id)}" title="Ver detalhes"/>
                                             <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
                                             <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
@@ -86,7 +86,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
-                                        <p:outputLabel value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" />
+                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.id)}" title="Ver detalhes"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
                                     </h:column>
@@ -115,7 +115,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}">
                             <p:ajax event="tabChange" listener="#{matriculaEscolaBean.tipoMatriculaPor}" update=":form_matricula_escola:idTabela"/> 
                             <p:tab title="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" > 
-                                <p:commandButton value="Selecionar Turma" onclick="dgl_painel_seleciona_turma.show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search"/> 
+                                <p:commandButton value="Selecionar Turma" onclick="PF('dgl_painel_seleciona_turma').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search"/> 
                                 <h:panelGrid id="idTurmaDeta">
                                     <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
                                         <p:outputLabel value="Curso:" />
@@ -320,14 +320,14 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                         </p:panel>
                         <h:panelGrid columns="15" id="idPainelMenus" styleClass="margin-top-max">
                             <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
-                                <p:commandButton  value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}"  onclick="dgl_panel_salvar_movimento.show();" update=":form_matricula_escola:i_panel_salvar_movimento" />
+                                <p:commandButton  value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}"  onclick="PF('dgl_panel_salvar_movimento').show();" update=":form_matricula_escola:i_panel_salvar_movimento" />
                             </h:column>
                             <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
-                                <p:commandButton  value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dgl_panel_desfazer_movimento.show();" />
+                                <p:commandButton  value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_desfazer_movimento').show();" />
                             </h:column>
-                            <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dgl_panel_salvar.show();"  />
+                            <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
                             <p:commandButton  value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}" update="i_panel_matricula_escola"/>
-                            <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dgl_panel_excluir.show();"/>
+                            <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_excluir').show();"/>
                             <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
                             <h:panelGrid columns="5" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
                                 <p:commandButton title="Gerar Contrato" value="Gerar Contrato"  action="#{matriculaEscolaBean.gerarContrato}" rendered="#{matriculaEscolaBean.listaMovimentos.size() == 0}" disabled="#{controleAcessoBean.botaoSalvar}" update="growl" />
@@ -338,7 +338,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                 <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
                                     <p:printer target="i_panel_matricula_escola" />  
                                 </p:commandButton>                                
-                                <p:commandButton value="Autorizadas" id="id_click" update="i_panel_adicionar" action="#{matriculaEscolaBean.openDialog}" onclick="dgl_adicionar.show();" title="Pessoas autorizadas a buscar o aluno" />
+                                <p:commandButton value="Autorizadas" id="id_click" update="i_panel_adicionar" action="#{matriculaEscolaBean.openDialog}" onclick="PF('dgl_adicionar').show();" title="Pessoas autorizadas a buscar o aluno" />
                             </h:panelGrid>
                         </h:panelGrid>
                         <p:panel header="Financeiro"  rendered="#{matriculaEscolaBean.listaMovimentos.size() > 0}" id="tblMovimentos" >
@@ -444,7 +444,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             <center>
                                 <h:panelGrid columns="2">
                                     <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvar}" update="i_panel_matricula_escola, out_mensagem" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide();"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
                                 </h:panelGrid>
                             </center>
                         </p:dialog>
@@ -452,7 +452,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             <center>
                                 <h:panelGrid columns="2">
                                     <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvarPessoaAutorizada}" update="i_panel_adicionar, messages_autorizado" oncomplete="PF('dlg_salvar_autorizado').hide();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dlg_salvar_autorizado.hide();"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_salvar_autorizado').hide();"/>
                                 </h:panelGrid>
                             </center>
                         </p:dialog>
@@ -460,7 +460,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             <center>
                                 <h:panelGrid columns="2">
                                     <p:commandButton value="Sim" title="Excluir" action="#{matriculaEscolaBean.excluir}" update="i_panel_matricula_escola, out_mensagem" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide();"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
                                 </h:panelGrid>
                             </center>
                         </p:dialog>
@@ -478,7 +478,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             <center>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.gerarMovimento}" update="i_panel_matricula_escola, growl" rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}" oncomplete="PF('dgl_panel_salvar_movimento').hide();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar_movimento.hide();"  rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar_movimento').hide();"  rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}"/>
                                 </h:panelGrid>
                             </center>
                         </p:dialog>
@@ -486,7 +486,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                             <center>
                                 <h:panelGrid columns="2">
                                     <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.desfazerMovimento}" update="i_panel_matricula_escola, id_panel_mensagem, growl" rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}" oncomplete="PF('dgl_panel_desfazer_movimento').hide();"  />
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_desfazer_movimento.hide();"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_desfazer_movimento').hide();"/>
                                 </h:panelGrid>
                             </center>
                         </p:dialog>
@@ -495,7 +495,7 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                 <h:panelGrid id="out_mensagem">
                                     <p:outputLabel value="#{matriculaEscolaBean.mensagem}" />                            
                                 </h:panelGrid> 
-                                <p:commandButton value="Ok" title="Ok" onclick="dgl_panel_mensagem.hide();" update="i_panel_matricula_escola"/>
+                                <p:commandButton value="Ok" title="Ok" onclick="PF('dgl_panel_mensagem').hide();" update="i_panel_matricula_escola"/>
                             </center>
                         </p:dialog>
                         <p:dialog id="i_adicionar" widgetVar="dgl_adicionar" modal="true" header="Cadastro Pessoas Autorizadas" width="1024" height="600" resizable="true"  maximizable="true" minimizable="true" onShow="true" visible="#{matriculaEscolaBean.visibility}">
@@ -529,17 +529,33 @@ Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                                     </p:dataTable>
                                 </h:panelGrid>
                                 <h:panelGrid columns="3">
-                                    <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dlg_salvar_autorizado.show();"  />
+                                    <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar_autorizado').show()"  />
                                     <p:commandButton  value="Nova" title="Novo" action="#{matriculaEscolaBean.novaPessoaAutorizada}" update="i_panel_adicionar"/>
                                     <p:commandButton value="Sair" action="#{matriculaEscolaBean.close}" update="out_mensagem i_panel_adicionar"/>
                                 </h:panelGrid>
                             </h:panelGrid>
                         </p:dialog>       
                         <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
-                            <p:ajax event="close" update="out_mensagem" listener="#{pessoaCardBean.close}"/>  
+                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                             <p:panel id="i_pessoa_fisica_card">
-                                <ui:include src="pessoaFisicaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{fisicaBean.fisica.pessoa.id}" />
+                                <ui:include src="templates/templatePessoaFisicaCard.xhtml">
+                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.matriculaEscola.aluno.id}" />
+                                </ui:include>      
+                            </p:panel>
+                        </p:dialog>       
+                        <p:dialog widgetVar="dlg_pessoa_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                            <p:panel id="i_pessoa_card">
+                                <ui:include src="templates/templatePessoaCard.xhtml">
+                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.matriculaEscola.responsavel.id}" />
+                                </ui:include>      
+                            </p:panel>
+                        </p:dialog>       
+                        <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                            <p:panel id="i_pessoa_juridica_card">
+                                <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
+                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.empresa.pessoa.id}" />
                                 </ui:include>      
                             </p:panel>
                         </p:dialog>       

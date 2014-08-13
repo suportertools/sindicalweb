@@ -28,10 +28,10 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde ..." />
                     </p:dialog>
@@ -110,8 +110,8 @@
                             </h:panelGrid>
                             
                             <h:panelGrid id="i_panel_boleto" columns="3">
-                                <p:commandButton value="Gerar Boletos para Todos" onclick="i_dlg_todos.show()" rendered="#{gerarBoletoBean.listaPessoa.size() == 0}"/>
-                                <p:commandButton value="Gerar Boletos para SUA LISTA de Pessoas" onclick="i_dlg_lista.show()" rendered="#{gerarBoletoBean.listaPessoa.size() != 0}"/>
+                                <p:commandButton value="Gerar Boletos para Todos" onclick="PF('i_dlg_todos').show()" rendered="#{gerarBoletoBean.listaPessoa.size() == 0}"/>
+                                <p:commandButton value="Gerar Boletos para SUA LISTA de Pessoas" onclick="PF('i_dlg_lista').show()" rendered="#{gerarBoletoBean.listaPessoa.size() != 0}"/>
                             </h:panelGrid>
                             
                             <h:panelGrid style="margin-top: 20px; margin-bottom: 20px">
@@ -122,16 +122,16 @@
                             <p:dialog widgetVar="i_dlg_todos" header="Gerar Boletos para TODOS Sócios" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente gerar esses Boletos?" /><br />
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{gerarBoletoBean.gerarTodos()}" update="formGerarBoleto" onclick="i_dlg_todos.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_todos.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{gerarBoletoBean.gerarTodos()}" update="formGerarBoleto" onclick="PF('i_dlg_todos').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_todos').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
                             <p:dialog widgetVar="i_dlg_lista" header="Gerar Boletos para lista" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente gerar esses Boletos para SUA LISTA?" /><br />
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{gerarBoletoBean.gerarLista()}" update="formGerarBoleto" onclick="i_dlg_lista.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_lista.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{gerarBoletoBean.gerarLista()}" update="formGerarBoleto" onclick="PF('i_dlg_lista').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_lista').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
@@ -159,7 +159,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

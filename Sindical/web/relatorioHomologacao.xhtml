@@ -17,8 +17,8 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="formRelatorioHomologacao">
@@ -86,9 +86,9 @@
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
                                         <h:outputLabel value="De" styleClass="fontePadrao"/>
-                                        <h:inputText value="#{relatorioHomologacaoBean.datai}" size="8" class="data"/>
+                                        <h:inputText value="#{relatorioHomologacaoBean.datai}" size="8" styleClass="data"/>
                                         <h:outputLabel value="Até" styleClass="fontePadrao"/>
-                                        <h:inputText value="#{relatorioHomologacaoBean.dataf}" size="8" class="data"/>
+                                        <h:inputText value="#{relatorioHomologacaoBean.dataf}" size="8" styleClass="data"/>
                                     </h:panelGrid>
                                 </h:column>
                             </h:panelGrid>

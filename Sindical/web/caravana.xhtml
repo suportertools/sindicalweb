@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -179,22 +179,22 @@
                                     <h:outputLabel value="#{linha.argumento5}" />
                                 </p:column>
                             </p:dataTable>
-                            
+
                             <h:panelGrid columns="4">
-                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s.show()"/>
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show()"/>
                                 <p:commandButton ajax="false" value="Novo" action="#{caravanaBean.novo}"/>
-                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_e.show()"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()"/>
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCaravana}" />                        
                             </h:panelGrid>   
-                            
+
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar esta Caravana" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{caravanaBean.salvar()}" update="formCaravana" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{caravanaBean.salvar()}" update="formCaravana" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir esta Caravana" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"  type="submit" styleClass="ui-confirmdialog-yes" action="#{caravanaBean.excluir()}" update="formCaravana" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Excluir"  type="submit" styleClass="ui-confirmdialog-yes" action="#{caravanaBean.excluir()}" update="formCaravana" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                         </h:form>
                     </p:panel>
@@ -206,7 +206,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

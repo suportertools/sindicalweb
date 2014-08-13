@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -39,7 +39,7 @@
                                                 <p:ajax event="change" listener="#{grupoFinanceiroBean.alterarGrupo()}" update="formGrupoFinanceiro"/>
                                                 <f:selectItems value="#{grupoFinanceiroBean.listaGrupo}"/>
                                             </p:selectOneMenu>
-                                            <p:commandButton icon="ui-icon-close" onclick="i_dlg_grupo.show()" title="Excluir Grupo"/>
+                                            <p:commandButton icon="ui-icon-close" onclick="PF('i_dlg_grupo').show()" title="Excluir Grupo"/>
                                             <p:commandButton icon="ui-icon-pencil" value="Editar" action="#{grupoFinanceiroBean.editarGrupo()}" update="i_panel_plano5 i_panel_adicionar" title="Editar Grupo"/>
                                         </h:panelGrid>
                                     </p:column>
@@ -72,12 +72,12 @@
                                 <p:inputText id="i_input_subgrupo" value="#{grupoFinanceiroBean.subGrupoFinanceiro.descricao}" size="70"/>
                                 <p:watermark value="Descrição deste SUB GRUPO" for="i_input_subgrupo"/>
                                 
-                                <p:commandButton value="Salvar" onclick="i_dlg_subgrupo.show()"/>
+                                <p:commandButton value="Salvar" onclick="PF('i_dlg_subgrupo').show()"/>
                             </h:panelGrid>
                             
                             <p:dataTable var="linha" id="tbl" value="#{grupoFinanceiroBean.listaSubGrupoFinanceiro}" rowKey="#{linha.id}" emptyMessage="Nenhum registro encontrado!">
                                 <p:column style="text-align: center; width: 20px">
-                                    <p:commandButton action="#{grupoFinanceiroBean.modalExcluir(linha)}" oncomplete="i_dlg_ex.show()" title="Excluir Sub Grupo" icon="ui-icon-close" style="width: 20px; height: 20px"/>
+                                    <p:commandButton action="#{grupoFinanceiroBean.modalExcluir(linha)}" oncomplete="PF('i_dlg_ex').show()" title="Excluir Sub Grupo" icon="ui-icon-close" style="width: 20px; height: 20px"/>
                                 </p:column>
                                 
                                 <!-- 
@@ -97,24 +97,24 @@
                             <p:dialog widgetVar="i_dlg_grupo" header="Excluir Grupo" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente excluir este Grupo?" /><br />
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{grupoFinanceiroBean.excluirGrupo()}" update="i_panel_plano5 i_panel_adicionar i_msg" onclick="i_dlg_grupo.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_grupo.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{grupoFinanceiroBean.excluirGrupo()}" update="i_panel_plano5 i_panel_adicionar i_msg" onclick="PF('i_dlg_grupo').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_grupo').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
                             <p:dialog widgetVar="i_dlg_subgrupo" header="Salvar SubGrupo" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente SALVAR este Sub Grupo?" /><br />
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{grupoFinanceiroBean.salvarSubGrupo()}" update="formGrupoFinanceiro" onclick="i_dlg_subgrupo.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_subgrupo.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{grupoFinanceiroBean.salvarSubGrupo()}" update="formGrupoFinanceiro" onclick="PF('i_dlg_subgrupo').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_subgrupo').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
                             <p:dialog widgetVar="i_dlg_ex" header="Excluir Sub Grupo" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente EXCLUIR este Sub Grupo?" /><br /><br />
                                 <h:panelGrid style="clear: both" columns="2">
-                                    <p:commandButton value="Sim" onclick="i_dlg_ex.hide()" action="#{grupoFinanceiroBean.excluirSubGrupo()}" update="formGrupoFinanceiro"  title="Excluir este Sub Grupo" style="float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Não" onclick="i_dlg_ex.hide()" style="float: left" icon="ui-icon-close"/>  
+                                    <p:commandButton value="Sim" onclick="PF('i_dlg_ex').hide()" action="#{grupoFinanceiroBean.excluirSubGrupo()}" update="formGrupoFinanceiro"  title="Excluir este Sub Grupo" style="float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" onclick="PF('i_dlg_ex').hide()" style="float: left" icon="ui-icon-close"/>  
                                 </h:panelGrid>
                             </p:dialog>
                         </h:form>
@@ -127,7 +127,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

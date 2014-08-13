@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel  styleClass="wrapper" style="border: 0px;">
@@ -107,7 +107,7 @@
                                     </p:column>
                                </p:dataTable>
                                 
-                                <p:commandButton action="#{impressaoBoletosBean.filtrar}" value="Filtrar Vencimento" update=":formImpressaoBoletos:tbMovimento i_panel_mais" onstart="i_dlg_modal.show()" oncomplete="i_dlg_modal.hide()" style="clear: both; margin-top: 20px"/>
+                                <p:commandButton action="#{impressaoBoletosBean.filtrar}" value="Filtrar Vencimento" update=":formImpressaoBoletos:tbMovimento i_panel_mais" onstart="PF('i_dlg_modal').show()" oncomplete="PF('i_dlg_modal').hide()" style="clear: both; margin-top: 20px"/>
                                 
                                 <p:dataTable value="#{impressaoBoletosBean.listaData}" var="linha" rowKey="#{linha}" selection="#{impressaoBoletosBean.listaDataSelecionada}" style="clear: both; margin-top: 20px" emptyMessage="Nenhuma vencimento foi encontrado!">
                                     <p:column selectionMode="multiple" style="text-align: center; width: 20px"/>
@@ -226,7 +226,7 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:commandButton id="i_envio" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}" onstart="i_dlg_modal.show()" oncomplete="i_dlg_modal.hide(); i_dlg_confirma.show()"/>
+                                    <p:commandButton id="i_envio" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}" onstart="PF('i_dlg_modal').show()" oncomplete="PF('i_dlg_modal').hide(); i_dlg_confirma.show()"/>
                                 </h:column>
 
                                 <h:column>
@@ -246,7 +246,7 @@
                             
                             <p:dialog modal="true" widgetVar="i_dlg_confirma" header="Confirmação!" draggable="false" closable="false" style="text-align: center">  
                                 <h:outputLabel value="E-mails enviados com Sucesso!" /><br /><br />
-                                <p:commandButton value="OK" onclick="i_dlg_confirma.hide()" />
+                                <p:commandButton value="OK" onclick="PF('i_dlg_confirma').hide()" />
                             </p:dialog> 
                         </h:form>
                     </p:panel>
@@ -257,7 +257,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                   
 

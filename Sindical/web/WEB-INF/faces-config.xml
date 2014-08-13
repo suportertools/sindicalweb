@@ -882,14 +882,14 @@
         </navigation-case>
 
         <navigation-case>
-            <from-outcome>academia</from-outcome>
-            <to-view-id>/academia.jsf</to-view-id>
+            <from-outcome>matriculaAcademia</from-outcome>
+            <to-view-id>/matriculaAcademia.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
         <navigation-case>
-            <from-outcome>pesquisaAcademia</from-outcome>
-            <to-view-id>/pesquisaAcademia.jsf</to-view-id>
+            <from-outcome>pesquisaMatriculaAcademia</from-outcome>
+            <to-view-id>/pesquisaMatriculaAcademia.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 

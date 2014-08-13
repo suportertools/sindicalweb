@@ -34,7 +34,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -45,7 +45,7 @@
                             <p:dialog widgetVar="i_dlg_c" header="Salvo" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
-                                    <p:commandButton value="OK" onclick="i_dlg_c.hide()" style="float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="OK" onclick="PF('i_dlg_c').hide()" style="float: left" icon="ui-icon-check"/>  
                                 </h:panelGrid>
                             </p:dialog>
 
@@ -327,12 +327,12 @@
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja #{sociosBean.lblSocio} este Sócio" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.salvar()}" update="formSocios" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja EXCLUIR DEFINITIVAMENTE este Sócio" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.excluir()}" update="formSocios" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_i" header="Deseja INATIVAR este Sócio" resizable="false" width="400" modal="true">
@@ -346,7 +346,7 @@
                                 </h:panelGrid>
 
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.inativarSocio()}" update="formSocios" onclick="PF('i_dlg_i').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_i.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_i').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_re" header="Deseja REATIVAR este Sócio" resizable="false" width="400" modal="true">
@@ -356,7 +356,7 @@
                                 </h:panelGrid>
 
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.reativarSocio()}" update="formSocios" onclick="PF('i_dlg_re').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_re.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_re').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="800" visible="#{sociosBean.modelVisible}">
@@ -450,8 +450,8 @@
                                                 </h:panelGrid>
                                                 
                                                 <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" style="float: right" rendered="#{!sociosBean.fotoTempPerfil.equals('') or !sociosBean.fotoPerfilDependente.equals('')}" update="i_panel_dados"/>
-                                                <p:commandButton value="Upload Foto" type="button" onclick="dgl_upload.show();" id="id_btn_uploads" style="float: right"/>
-                                                <p:commandButton value="Capturar" onclick="dgl_captura.show();" />
+                                                <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
+                                                <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />
                                             </p:column>
                                         </h:panelGrid>
 
@@ -537,7 +537,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

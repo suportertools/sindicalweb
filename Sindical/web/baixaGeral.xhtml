@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -151,8 +151,10 @@
                                     <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
 
                                     <h:panelGrid columns="2" style="width: 100%; margin-top: 20px">
-                                        <p:commandButton ajax="false" value="OK" action="#{baixaGeralBean.retorno}" style="float: left" icon="ui-icon-close"/>       
-                                        <h:commandLink value="Imprimir Recibo" action="#{baixaGeralBean.imprimirRecibo}" style="float: right" target="_blank"/>  
+                                        <h:commandLink action="#{baixaGeralBean.imprimirRecibo}" style="float: left" target="_blank">
+                                            <p:button icon="ui-icon-print" value="Imprimir Recibo" />
+                                        </h:commandLink>  
+                                        <p:commandButton ajax="false" value="Sair" action="#{baixaGeralBean.retorno}" style="float: right" icon="ui-icon-close"/>
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </p:dialog>
@@ -263,7 +265,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

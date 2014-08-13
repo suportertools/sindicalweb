@@ -11,7 +11,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -356,13 +356,13 @@
                     <p:panelGrid columns="1" styleClass="sbb">
                         <p:column>
                             <p:commandButton action="#{registroEmpresarialBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max" value="Salvar" update="id_messages_growl id_messages"/>
-                            <p:commandButton onclick="dgl_painel_criar.show()" styleClass="margin-top-max" value="Criar Logins Empresas" type="button"/>
+                            <p:commandButton onclick="PF('dgl_painel_criar').show()" styleClass="margin-top-max" value="Criar Logins Empresas" type="button"/>
                         </p:column>
                     </p:panelGrid>
                     <p:dialog id="i_painel_salvar" header="Deseja salvar este Registro?" widgetVar="dgl_painel_salvar" modal="true" height="100" width="300">
                         <h:panelGrid columns="2" styleClass="margin-top">
                             <p:commandButton action="#{registroEmpresarialBean.salvar}" value="Salvar" oncomplete="PF('dgl_painel_salvar').hide(); PF('dgl_painel_mensagem').show()" update="i_painel_mensagem" global="true" disabled="#{!controleAcessoBean.botaoSalvar}"/>
-                            <p:commandButton value="Não" onclick="dgl_painel_salvar.hide()" title="Não" />
+                            <p:commandButton value="Não" onclick="PF('dgl_painel_salvar').hide()" title="Não" />
                         </h:panelGrid>
                     </p:dialog>
                     <p:dialog id="i_painel_criar" header="Deseja criar login para todos cadastrados?" widgetVar="dgl_painel_criar" modal="true" height="100" width="300">
@@ -375,7 +375,7 @@
                         <center>                            
                             <h:outputLabel value="#{registroEmpresarialBean.mensagem}" />
                             <br /><br />
-                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="dgl_painel_mensagem.hide()" style="float: left;" icon="ui-icon-close"/>
+                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_painel_mensagem').hide()" style="float: left;" icon="ui-icon-close"/>
                         </center>
                     </p:dialog>
                     <p:dialog widgetVar="dlg_test_mail" modal="true" resizable="false" header="Enviar email teste">

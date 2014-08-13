@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view>
+        <center>
+            <c:if test="#{!pessoaCardBean.getImagemPessoa('Imagens/Fotos').equals('')}">
+                <p:graphicImage value="#{pessoaCardBean.getImagemPessoa('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
+            </c:if>
+        </center>
+        <f:facet name="header">
+            <h:outputLabel value="#{pessoaCardBean.pessoa.nome}"  />
+        </f:facet>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Tipo documento:"  />
+            <h:outputLabel value="#{pessoaCardBean.pessoa.tipoDocumento.descricao}"/>
+            <h:outputLabel value="Documento:"  />
+            <h:outputLabel value="#{pessoaCardBean.pessoa.documento}"  />
+            <h:outputLabel value="Cadastro desde:"  />
+            <h:outputLabel value="#{pessoaCardBean.pessoa.criacao}"  />
+            <h:outputLabel value="Telefone 1:"  />
+            <h:outputLabel value="#{pessoaCardBean.pessoa.telefone1}"  />
+            <h:outputLabel value="Telefone 2:"  />
+            <h:outputLabel value="#{pessoaCardBean.pessoa.telefone2}"  />
+            <h:outputLabel value="Email:"  />
+            <h:commandLink value="#{pessoaCardBean.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.pessoa.id)}" />
+        </h:panelGrid>
+        <c:if test="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></c:if>
+        <p:panel header="Associado" style="background: #ccffcc;" styleClass="no-border margin-top-max" rendered="#{sociosCardBean.socios.id != -1}">
+            <ui:include src="templateSociosCard.xhtml" />
+        </p:panel>        
+        <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id != -1}">
+            <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.endereco.enderecoToString} - Nº. #{pessoaCardBean.pessoaEndereco.numero} - #{pessoaCardBean.pessoaEndereco.complemento}" />
+        </p:panel>         
+        <p:panel styleClass="margin-top-max" header="Local de trabalho" rendered="#{pessoaCardBean.pessoaEmpresa.id != -1}">
+            <h:panelGrid columns="1">
+                <h:outputLabel value="Admissão: #{pessoaCardBean.pessoaEmpresa.admissao}" />
+                <h:outputLabel value="Empresa: #{pessoaCardBean.pessoaEmpresa.juridica.pessoa.nome}" />
+                <h:outputLabel value="Profissão: #{pessoaCardBean.pessoaEmpresa.funcao.profissao}" />
+            </h:panelGrid>
+        </p:panel>         
+    </f:view>
+</ui:composition>

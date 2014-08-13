@@ -10,7 +10,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
@@ -22,7 +22,7 @@
                                 <h:panelGrid columns="4" style="float: left">
                                     <p:inputText id="idPesquisar" value="#{usuarioBean.descricaoPesquisa}" size="50" title="Pesquisar"/>
                                     <p:commandButton value="Pesquisar" update="i_panel_grid" style="margin-left: 10px;" actionListener="#{usuarioBean.listaUsuario.clear()}"/>
-                                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                                     <p:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}"  valueChangeListener="#{usuarioBean.listaUsuario.clear()}" itemLabel="Filtrar usuários">
                                         <p:ajax event="change" update="i_panel_grid" />
                                     </p:selectBooleanCheckbox>                                    
@@ -57,7 +57,7 @@
             </p:panel>
         </f:view>
         <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
+            <ui:include src="templates/templateFooter.xhtml"/>
         </f:subview>
     </h:body>
 </ui:composition>

@@ -11,7 +11,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
@@ -19,17 +19,27 @@
                     <h:outputText value="Pesquisa Matrícula Academia" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
-                        <h:panelGrid columns="5">
-
+                        <h:panelGrid columns="8">
                             <p:inputMask id="id_desc_pesquisa" value="#{matriculaAcademiaBean.descricaoPesquisa}" size="50" mask="#{matriculaAcademiaBean.mascaraPesquisa}"/>
                             <p:selectOneMenu value="#{matriculaAcademiaBean.porPesquisa}">
                                 <p:ajax event="change" update="i_panel_pesquisa" />
                                 <f:selectItem itemValue="nome"     itemLabel="Aluno"/>
                                 <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                            </p:selectOneMenu>                        
-                            <p:commandButton value="Pesquisar" action="#{matriculaAcademiaBean.acaoPesquisaInicial}" update=":form_pesquisa_matricula_academia:i_panel_grid" rendered="#{matriculaAcademiaBean.porPesquisa.equals('cpf')}"/>
-                            <p:commandButton value="Inicial" action="#{matriculaAcademiaBean.acaoPesquisaInicial}" update=":form_pesquisa_matricula_academia:i_panel_grid" rendered="#{!matriculaAcademiaBean.porPesquisa.equals('cpf')}"/>
+                            </p:selectOneMenu>
+                            <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAtiva}" itemLabel="Cadastros ativos">
+                                <p:ajax event="change" update=":form_pesquisa_matricula_academia:i_panel_grid" />
+                            </p:selectBooleanCheckbox>
+                            <p:commandButton value="Pesquisar" action="#{matriculaAcademiaBean.acaoPesquisaInicial}" update=":form_pesquisa_matricula_academia:i_panel_grid" rendered="#{matriculaAcademiaBean.porPesquisa.equals('cpf')}" styleClass="margin-left-max"/>
+                            <p:commandButton value="Inicial" action="#{matriculaAcademiaBean.acaoPesquisaInicial}" update=":form_pesquisa_matricula_academia:i_panel_grid" rendered="#{!matriculaAcademiaBean.porPesquisa.equals('cpf')}" styleClass="margin-left-max"/>
                             <p:commandButton value="Parcial" action="#{matriculaAcademiaBean.acaoPesquisaParcial}" update=":form_pesquisa_matricula_academia:i_panel_grid" rendered="#{!matriculaAcademiaBean.porPesquisa.equals('cpf')}"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <p:outputLabel value="Modalidade:" />
+                            <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidadePesquisa}">
+                                <p:ajax event="change" update="i_panel_pesquisa" />
+                                <f:selectItem itemValue=""     itemLabel="Selecionar"/>
+                                <f:selectItems value="#{matriculaAcademiaBean.listaModalidades}" />
+                            </p:selectOneMenu>                            
                         </h:panelGrid>
                         <p:focus for="i_panel_pesquisa" />
                     </p:panel>
@@ -54,11 +64,8 @@
                                 <p:column headerText="Responsável" >
                                     #{matriculaAcademia.servicoPessoa.cobranca.nome}
                                 </p:column>
-                                <p:column headerText="Serviço" >
+                                <p:column headerText="Serviço" styleClass="text-center">
                                     #{matriculaAcademia.academiaServicoValor.servicos.descricao}
-                                </p:column>
-                                <p:column headerText="Horários" width="100" styleClass="text-center">
-                                    <!-- <h:outputLabel value="# {academiaServicoValorBean.getListaGrades(academiaServicoValor)}" /> -->
                                 </p:column>
                             </p:dataTable>
                         </h:panelGrid>
@@ -67,7 +74,7 @@
             </p:panel>                     
         </f:view>
         <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
+            <ui:include src="templates/templateFooter.xhtml"/>
         </f:subview>
     </h:body>
 </ui:composition>

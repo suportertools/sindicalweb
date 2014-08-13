@@ -12,7 +12,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -23,7 +23,7 @@
                     <p:panel id="i_panel_acao" styleClass="fundoCinza" style="height: 50px">
                         <h:outputScript name="script_primefaces.js" library="js" />
                         <h:panelGrid columns="13" >
-                            <p:commandButton value="Adicionar" id="id_click" update="i_panel_adicionar" action="#{agendaTelefoneBean.openDialog}" onclick="dgl_adicionar.show();" />
+                            <p:commandButton value="Adicionar" id="id_click" update="i_panel_adicionar" action="#{agendaTelefoneBean.openDialog}" onclick="PF('dgl_adicionar').show();" />
                             <p:outputLabel value="Pesquisar: " />
                             <p:selectOneMenu value="#{agendaTelefoneBean.indice[3]}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa.equals('telefone')}">
                                 <p:ajax event="change" update="idDDD" />

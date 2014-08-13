@@ -47,9 +47,14 @@ public class MatriculaAcademia implements java.io.Serializable {
     @Column(name = "NR_PARCELAS")
     private int numeroParcelas;
     @Column(name = "IS_TAXA", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean taxa;    
+    private boolean taxa;
     @Column(name = "IS_TAXA_CARTAO", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean taxaCartao;    
+    private boolean taxaCartao;
+    @Column(name = "DS_MOTIVO_INATIVACAO", length = 250)
+    private String motivoInativacao;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_VALIDADE")
+    private Date dtValidade;
 
     public MatriculaAcademia() {
         this.id = -1;
@@ -61,9 +66,11 @@ public class MatriculaAcademia implements java.io.Serializable {
         this.numeroParcelas = 0;
         this.taxa = false;
         this.taxaCartao = false;
+        this.motivoInativacao = "";
+        this.setValidade("");
     }
 
-    public MatriculaAcademia(int id, String inativo, ServicoPessoa servicoPessoa, Usuario usuario, AcademiaServicoValor academiaServicoValor, Evt evt, int numeroParcelas, boolean taxa, boolean taxaCartao) {
+    public MatriculaAcademia(int id, String inativo, ServicoPessoa servicoPessoa, Usuario usuario, AcademiaServicoValor academiaServicoValor, Evt evt, int numeroParcelas, boolean taxa, boolean taxaCartao, String motivoInativacao, String validade) {
         this.id = id;
         this.setInativo(inativo);
         this.servicoPessoa = servicoPessoa;
@@ -73,6 +80,8 @@ public class MatriculaAcademia implements java.io.Serializable {
         this.numeroParcelas = numeroParcelas;
         this.taxa = taxa;
         this.taxaCartao = taxaCartao;
+        this.motivoInativacao = motivoInativacao;
+        this.dtValidade = DataHoje.converte(validade);
     }
 
     public int getId() {
@@ -164,5 +173,29 @@ public class MatriculaAcademia implements java.io.Serializable {
 
     public void setTaxaCartao(boolean taxaCartao) {
         this.taxaCartao = taxaCartao;
+    }
+
+    public String getMotivoInativacao() {
+        return motivoInativacao;
+    }
+
+    public void setMotivoInativacao(String motivoInativacao) {
+        this.motivoInativacao = motivoInativacao;
+    }
+
+    public Date getDtValidade() {
+        return dtValidade;
+    }
+
+    public void setDtValidade(Date dtValidade) {
+        this.dtValidade = dtValidade;
+    }
+
+    public String getValidade() {
+        return DataHoje.converteData(dtValidade);
+    }
+
+    public void setValidade(String validade) {
+        this.dtValidade = DataHoje.converte(validade);
     }
 }

@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -231,7 +231,7 @@
                                     
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Enviar Email" onclick="i_dlg_email.show()" rendered="#{(relatorioMovimentoBean.chkEmpresa and relatorioMovimentoBean.juridica.id != -1) or relatorioMovimentoBean.chkContabilidade}"/>
+                                        <p:commandButton value="Enviar Email" onclick="PF('i_dlg_email').show()" rendered="#{(relatorioMovimentoBean.chkEmpresa and relatorioMovimentoBean.juridica.id != -1) or relatorioMovimentoBean.chkContabilidade}"/>
                                     </p:column>
                                 </h:panelGrid>
                             </p:panel>
@@ -253,13 +253,13 @@
                                 </h:panelGrid>
                                 <br />    
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Enviar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioMovimentoBean.enviarEmail()}" update="formRelatorioMovimento" onclick="i_dlg_email.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_email.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Enviar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioMovimentoBean.enviarEmail()}" update="formRelatorioMovimento" onclick="PF('i_dlg_email').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_email').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                         </h:form>
                         
-                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                         <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                             <h:outputLabel value="Aguarde ..." />
                         </p:dialog>
@@ -272,7 +272,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

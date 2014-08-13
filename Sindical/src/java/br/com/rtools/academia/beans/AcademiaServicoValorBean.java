@@ -3,8 +3,7 @@ package br.com.rtools.academia.beans;
 import br.com.rtools.academia.AcademiaGrade;
 import br.com.rtools.academia.AcademiaSemana;
 import br.com.rtools.academia.AcademiaServicoValor;
-import br.com.rtools.academia.db.AcademiaDB;
-import br.com.rtools.academia.db.AcademiaDBToplink;
+import br.com.rtools.academia.dao.AcademiaDao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
@@ -82,7 +81,7 @@ public class AcademiaServicoValorBean implements Serializable {
     }
 
     public String getListaGrades(AcademiaServicoValor academiaServicoValor) {
-        AcademiaDB db = new AcademiaDBToplink();
+        AcademiaDao db = new AcademiaDao();
 
         List<AcademiaSemana> lista = db.listaAcademiaSemana(academiaServicoValor.getId());
 
@@ -175,7 +174,7 @@ public class AcademiaServicoValorBean implements Serializable {
         NovoLog novoLog = new NovoLog();
         di.openTransaction();
         academiaServicoValor.setFormula(academiaServicoValor.getFormula().toLowerCase());
-        AcademiaDB academiaDB = new AcademiaDBToplink();
+        AcademiaDao academiaDB = new AcademiaDao();
         if (academiaServicoValor.getId() == -1) {
 
 //            if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
@@ -268,7 +267,7 @@ public class AcademiaServicoValorBean implements Serializable {
                 break;
             }
         }
-        AcademiaDB db = new AcademiaDBToplink();
+        AcademiaDao db = new AcademiaDao();
         listaAcademiaSemana = db.listaAcademiaSemana(academiaServicoValor.getId());
         dom = false;
         seg = false;
@@ -307,10 +306,10 @@ public class AcademiaServicoValorBean implements Serializable {
         if (asv.getId() != -1) {
             DaoInterface di = new Dao();
             NovoLog novoLog = new NovoLog();
-            AcademiaDB db = new AcademiaDBToplink();
+            AcademiaDao academiaDao = new AcademiaDao();
             di.openTransaction();
 
-            listaAcademiaSemana = db.listaAcademiaSemana(asv.getId());
+            listaAcademiaSemana = academiaDao.listaAcademiaSemana(asv.getId());
 
             for (AcademiaSemana las : listaAcademiaSemana) {
                 AcademiaSemana as = (AcademiaSemana) di.find(las);
@@ -337,8 +336,8 @@ public class AcademiaServicoValorBean implements Serializable {
     public List<AcademiaServicoValor> getListAcademiaServicoValors() {
         if (!getListServicos().isEmpty()) {
             if (listAcademiaServicoValors.isEmpty()) {
-                AcademiaDB academiaDB = new AcademiaDBToplink();
-                listAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
+                AcademiaDao academiaDao = new AcademiaDao();
+                listAcademiaServicoValors = academiaDao.listaAcademiaServicoValor(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
             }
         }
         return listAcademiaServicoValors;

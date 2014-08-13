@@ -17,10 +17,10 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <ui:include src="templateAcessoFilial.xhtml" />
+                    <ui:include src="templates/templateAcessoFilial.xhtml" />
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Emissão de Guias" styleClass="fonteHeader" />
                         <div class="clear"></div>
@@ -53,7 +53,7 @@
                                     </p:selectOneMenu>
                                 </h:panelGrid>
                             </p:panel>
-                            
+
                             <p:panel header="Serviços" id="i_panel_servicos" styleClass="margin-top-max">
                                 <h:panelGrid>
                                     <p:selectOneMenu id="idServicos" value="#{emissaoGuiasBean.index[2]}" disabled="#{emissaoGuiasBean.lote.id != -1}" >
@@ -151,7 +151,7 @@
                                     <p:commandButton value="Jurídica / Empresa" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search"/>
                                 </h:panelGrid>
                             </p:dialog>                    
-                            
+
                             <p:dialog id="dlg_pedido" widgetVar="dlg_pedido" width="800" resizable="false" modal="true" visible="#{emissaoGuiasBean.modalPedido}" header="Produtos do serviço" draggable="false">
                                 <p:ajax event="close" listener="#{emissaoGuiasBean.closeModalPedido()}" update="@this i_valor"/>
                                 <h:panelGrid id="i_grid_pedido">
@@ -253,7 +253,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

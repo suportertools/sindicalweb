@@ -23,7 +23,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -117,6 +117,10 @@
                                         <h:outputLabel value="#{linha.caixa.caixa} - #{linha.caixa.descricao}" rendered="#{linha.caixa != null}"/>
                                         <h:outputLabel value="NENHUM CAIXA" rendered="#{linha.caixa == null}"/>
                                     </p:column>
+
+                                    <p:column headerText="Acessar" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="text-center">
+                                        <p:commandButton icon="ui-icon-transferthick-e-w" action="#{macFilialBean.selecionaFilial(linha)}" title="Acessar/Trocar filial"/>
+                                    </p:column>
                                 </p:dataTable>   
                             </h:panelGrid>
                         </h:form>
@@ -131,7 +135,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>

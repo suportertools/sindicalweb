@@ -24,13 +24,13 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Notificações" styleClass="fonteHeader" />
                         <h:form id="formNotificacao">
-                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                            <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                             
                             <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                                 <h:outputLabel value="Carregando ... Aguarde" />
@@ -50,8 +50,8 @@
                                     </p:column>
                                     
                                     <p:column>
-                                        <p:commandButton id="id_atualizar" style="width: 100px" onclick="i_dlg_a.show()" value="Atualizar" title="Atualizar Mensagem Editada" rendered="#{notificacaoBean.lote.id != -1}"/>
-                                        <p:commandButton id="id_gerar" style="float: right; clear: both" onclick="i_dlg_s.show()"  value="Gerar Notificação" title="Gerar Notificação para essas Opções" rendered="#{notificacaoBean.lote.id == -1}" />
+                                        <p:commandButton id="id_atualizar" style="width: 100px" onclick="PF('i_dlg_a').show()" value="Atualizar" title="Atualizar Mensagem Editada" rendered="#{notificacaoBean.lote.id != -1}"/>
+                                        <p:commandButton id="id_gerar" style="float: right; clear: both" onclick="PF('i_dlg_s').show()"  value="Gerar Notificação" title="Gerar Notificação para essas Opções" rendered="#{notificacaoBean.lote.id == -1}" />
                                     </p:column>
                                         
                                     <p:column>
@@ -63,11 +63,11 @@
                                     
                                     <p:column>
                                         <c:if test="#{notificacaoBean.idTipoEnvio == 3 or notificacaoBean.idTipoEnvio == 4}">
-                                            <p:commandButton value="Enviar" title="Enviar Notificação por Email" rendered="#{notificacaoBean.lote.id != -1}" onclick="i_dlg_e.show()"/>
+                                            <p:commandButton value="Enviar" title="Enviar Notificação por Email" rendered="#{notificacaoBean.lote.id != -1}" onclick="PF('i_dlg_e').show()"/>
                                         </c:if>
                                         
                                         <c:if test="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}">
-                                            <p:commandButton value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.lote.id != -1}" onclick="i_dlg_e.show()"/>
+                                            <p:commandButton value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.lote.id != -1}" onclick="PF('i_dlg_e').show()"/>
                                         </c:if>
                                         
                                         <c:if test="#{notificacaoBean.idTipoEnvio == 5 or notificacaoBean.idTipoEnvio == 6}">
@@ -76,18 +76,18 @@
                                     </p:column>
                                         
                                     <p:dialog widgetVar="i_dlg_s" header="Deseja Realmente Gerar esta Notificação?" resizable="false" width="400" modal="true">
-                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.gerarNotificacao()}" update="formNotificacao" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.gerarNotificacao()}" update="formNotificacao" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>
                                     </p:dialog>
                                     
                                     <p:dialog widgetVar="i_dlg_a" header="Deseja Realmente Atualizar esta Notificação?" resizable="false" width="400" modal="true">
-                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.salvar()}" update="formNotificacao" onclick="i_dlg_a.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_a.hide()" style="float: left" icon="ui-icon-close"/>       
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.salvar()}" update="formNotificacao" onclick="PF('i_dlg_a').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_a').hide()" style="float: left" icon="ui-icon-close"/>       
                                     </p:dialog>
                                     
                                     <p:dialog widgetVar="i_dlg_e" header="Deseja Realmente Enviar estas Notificações?" resizable="false" width="400" modal="true">
-                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.enviarNotificacao()}" update="formNotificacao" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.enviarNotificacao()}" update="formNotificacao" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                                     </p:dialog>
                                     
                                     <p:dialog widgetVar="i_dlg_popup" header="Lista de Arquivos" resizable="false" width="400" modal="true">
@@ -102,7 +102,7 @@
                                 
                                 <h:panelGrid id="i_panel_qnt" style="width: 100%" columns="2">
                                     <h:outputLabel value="#{notificacaoBean.listaNotificacao.size()} notificações" style="float: left; font-weight: bold"/>
-                                    <p:commandLink value="Listar arquivos do Lote" onclick="i_dlg_popup.show()" rendered="#{notificacaoBean.lote.id != -1}" style="float: right"/>
+                                    <p:commandLink value="Listar arquivos do Lote" onclick="PF('i_dlg_popup').show()" rendered="#{notificacaoBean.lote.id != -1}" style="float: right"/>
                                 </h:panelGrid>
                             </p:panel>
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
@@ -205,7 +205,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

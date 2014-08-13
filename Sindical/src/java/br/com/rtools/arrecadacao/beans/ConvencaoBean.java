@@ -401,9 +401,9 @@ public class ConvencaoBean implements Serializable {
     public void refreshForm() {
     }
 
-    public String editar() {
+    public String editar(Convencao c) {
 //        ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        convencao = (Convencao) listaConvencao.get(idIndex);
+        convencao = c;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("convencaoPesquisa", convencao);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 //        List<GrupoCidade> li = db.pesquisarGruposPorConvencao(convencao.getId());

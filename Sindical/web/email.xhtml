@@ -20,7 +20,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -36,7 +36,9 @@
                                             <h:column>
                                                 <p:commandButton value="Nova Mensagem" action="#{emailBean.newMessage}" rendered="#{!emailBean.filterNewMessage}" update=":form_email:" />
                                                 <p:commandButton icon="ui-icon-arrowreturnthick-1-w" title="Voltar" action="#{emailBean.clear}" rendered="#{emailBean.filterNewMessage}" update=":form_email:" styleClass="margin-left-max"/>
-                                                <p:commandButton icon="ui-icon-disk" title="Salvar em rascunho" rendered="#{emailBean.filterNewMessage}" action="#{emailBean.saveDraft()}" update=":form_email:" styleClass="margin-left-max"/>
+                                                <c:if test="#{emailBean.urlRetorno.equals('')}">
+                                                    <p:commandButton icon="ui-icon-disk" title="Salvar em rascunho" rendered="#{emailBean.filterNewMessage}" action="#{emailBean.saveDraft()}" update=":form_email:" styleClass="margin-left-max"/>
+                                                </c:if>
                                                 <p:commandButton value="Enviar" rendered="#{emailBean.filterNewMessage}" styleClass="margin-left-max" action="#{emailBean.send()}" update=":form_email:" />
                                                 <p:selectBooleanCheckbox value="#{emailBean.filter}" rendered="#{!emailBean.filterNewMessage}" styleClass="margin-left-max" itemLabel="Filtrar">
                                                     <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}" />
@@ -115,7 +117,7 @@
                                                     <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                     <f:selectItems value="#{emailBean.listEmailPrioridades}" />
                                                 </p:selectOneMenu>
-                                                <p:commandButton icon="ui-icon-plus" value="Adicionar destinatários" onclick="PF('dlg_address').show();" action="#{emailBean.openDialogModal}"/>
+                                                <p:commandButton icon="ui-icon-plus" value="Adicionar destinatários" onclick="PF('dlg_address').show();" action="#{emailBean.openDialogModal}" rendered="#{emailBean.urlRetorno.equals('')}"/>
                                                 <h:column>
                                                     <h:panelGrid id="i_add_list_mail">
                                                         <p:dataTable value="#{emailBean.addEmailPessoas}" var="emailPessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="300" paginator="true" styleClass="margin-top-max" rowIndexVar="index">
@@ -231,7 +233,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

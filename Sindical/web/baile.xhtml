@@ -62,7 +62,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -206,21 +206,21 @@
                             </p:panel>
 
                             <h:panelGrid columns="5">
-                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s.show()" title="Salvar"/>
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show()" title="Salvar"/>
                                 <p:commandButton ajax="false" value="Novo" action="#{baileBean.novo()}" />
-                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_e.show()" title="Excluir"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()" title="Excluir"/>
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaBaile()}"/>
-                                <p:commandButton value="Criar Mapa" onclick="i_dlg_mapa_x.show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
+                                <p:commandButton value="Criar Mapa" onclick="PF('i_dlg_mapa_x').show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
                             <!-- BRUNO - TELA PROVISÓRIA -->
@@ -280,7 +280,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>

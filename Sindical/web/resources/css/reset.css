@@ -58,7 +58,9 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .margin-top {margin-top: 5px!important;}
 .margin-top-med {margin-top: 10px!important;}
 .margin-top-max {margin-top: 15px!important;}
-.margin-right {margin-right: 5px;}
+.margin-right {margin-right: 5px!important;}
+.margin-right-med {margin-right: 10px!important;}
+.margin-right-max {margin-right: 14px!important;}
 .margin-left {margin-left: 5px;}
 .margin-left-med {margin-left: 10px;}
 .margin-left-max {margin-left: 15px!important;}

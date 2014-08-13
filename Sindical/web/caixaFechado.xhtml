@@ -13,9 +13,9 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} a
             .ui-button { padding: 3px!important; }              
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>
     </h:head>
     <h:body>
@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -37,31 +37,31 @@
                                     <f:selectItems value="#{caixaFechadoBean.listaCaixa}"/>
                                 </p:selectOneMenu>
                             </p:panel>
-                            
-                           <p:messages id="i_msg" showDetail="true" />  
-                           
+
+                            <p:messages id="i_msg" showDetail="true" />  
+
                             <p:dataTable var="linha" id="tbl" value="#{caixaFechadoBean.listaFechamento}" emptyMessage="Nenhum fechamento para este caixa!">
-                                
+
                                 <p:column headerText="Data / Hora" style="text-align: center">
                                     <h:outputText value="#{linha.argumento1} - #{linha.argumento2}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Valor Fechamento">
                                     <h:outputText value="R$ "/>
                                     <h:outputText value="#{linha.argumento3}" style="float: right"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Valor Informado">
                                     <h:outputText value="R$ "/>
                                     <h:outputText value="#{linha.argumento4}" style="float: right"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Status" style="text-align: center">
                                     <h:outputText value="OK" rendered="#{linha.argumento5 == 0}" style="font-weight: bold;"/>
                                     <h:outputText value="EM FALTA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
                                     <h:outputText value="EM SOBRA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="..." style="text-align: center">
                                     <h:panelGrid columns="2" styleClass="sbb">
                                         <h:graphicImage value="Imagens/iconPrint.png" />
@@ -70,23 +70,23 @@
                                 </p:column>
 
                                 <p:column headerText="Opções" style="text-align: center">
-                                    <p:commandLink value="Reabrir Caixa" action="#{caixaFechadoBean.reabrir(linha)}" onclick="i_dlg_reabrir.show()"/>
+                                    <p:commandLink value="Reabrir Caixa" action="#{caixaFechadoBean.reabrir(linha)}" onclick="PF('i_dlg_reabrir').show()"/>
                                     <h:outputLabel value=" | " style="font-weight: bold;"/>
-                                    <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="i_dlg_transferir.show()"/>
+                                    <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="PF('i_dlg_transferir').show()"/>
                                 </p:column>
-                                
+
                             </p:dataTable>
-                            
+
                             <p:growl id="i_msg_g" showDetail="true" />  
                             <p:dialog widgetVar="i_dlg_reabrir" header="Reabrir Caixa" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente reabrir este Caixa? " />
-                                                                    
+
                                 <h:panelGrid style="clear: both" columns="2">
-                                    <p:commandButton value="Sim" onclick="i_dlg_reabrir.hide()" action="#{caixaFechadoBean.reabrir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
-                                    <p:commandButton value="Não" onclick="i_dlg_reabrir.hide()" style="float: left" icon="ui-icon-close"/>  
+                                    <p:commandButton value="Sim" onclick="PF('i_dlg_reabrir').hide()" action="#{caixaFechadoBean.reabrir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" onclick="PF('i_dlg_reabrir').hide()" style="float: left" icon="ui-icon-close"/>  
                                 </h:panelGrid>
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_transferir" header="Transferir valor para Caixa Central" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente transferir valores para o Caixa Central? " />
                                 <h:panelGrid style="clear: both; margin-top: 20px" columns="2">
@@ -96,16 +96,16 @@
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputText>
                                     </p:column>
-                                
+
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Sim" onclick="i_dlg_transferir.hide()" action="#{caixaFechadoBean.transferir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Não" onclick="i_dlg_transferir.hide()" style="float: left" icon="ui-icon-close"/>  
+                                        <p:commandButton value="Sim" onclick="PF('i_dlg_transferir').hide()" action="#{caixaFechadoBean.transferir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Não" onclick="PF('i_dlg_transferir').hide()" style="float: left" icon="ui-icon-close"/>  
                                     </p:column>
                                 </h:panelGrid>
                             </p:dialog>
                         </h:form>
-                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                         <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                             <h:outputLabel value="Aguarde ..." />
                         </p:dialog> 
@@ -118,7 +118,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

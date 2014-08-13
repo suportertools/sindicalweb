@@ -23,7 +23,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -50,8 +50,8 @@
                             </p:panel>
                             <br />
                             <h:panelGrid columns="2">
-                                <p:commandLink value="Vender Mesa" style="font-size: 12pt!important" onclick="i_dlg_mapa_x.show()"/>
-                                <p:commandLink value="Vender Convite" style="font-size: 12pt!important; margin-left: 30px;" onclick="i_dlg_mapa.show()"/>
+                                <p:commandLink value="Vender Mesa" style="font-size: 12pt!important" onclick="PF('i_dlg_mapa_x').show()"/>
+                                <p:commandLink value="Vender Convite" style="font-size: 12pt!important; margin-left: 30px;" onclick="PF('i_dlg_mapa').show()"/>
                             </h:panelGrid>
 
                             <h:panelGrid style="width: 100%">
@@ -132,7 +132,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>
