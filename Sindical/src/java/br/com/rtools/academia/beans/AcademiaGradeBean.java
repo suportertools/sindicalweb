@@ -2,8 +2,7 @@ package br.com.rtools.academia.beans;
 
 import br.com.rtools.academia.AcademiaGrade;
 import br.com.rtools.academia.AcademiaSemana;
-import br.com.rtools.academia.db.AcademiaDB;
-import br.com.rtools.academia.db.AcademiaDBToplink;
+import br.com.rtools.academia.dao.AcademiaDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.Dao;
@@ -84,8 +83,8 @@ public class AcademiaGradeBean implements Serializable {
         NovoLog novoLog = new NovoLog();
         String s = "";
         if (academiaGrade.getId() == -1) {
-//            AcademiaDB academiaDB = new AcademiaDBToplink();
-//            if (((AcademiaGrade) academiaDB.existeAcademiaGrade(academiaGrade.getHoraInicio(), academiaGrade.getHoraFim())) != null) {
+//            AcademiaDao academiaDao = new AcademiaDao();
+//            if (((AcademiaGrade) academiaDao.existeAcademiaGrade(academiaGrade.getHoraInicio(), academiaGrade.getHoraFim())) != null) {
 //                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
 //                return null;
 //            }
@@ -94,7 +93,7 @@ public class AcademiaGradeBean implements Serializable {
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
                 novoLog.save("ID: " + academiaGrade.getId() + ". Horário das: " + academiaGrade.getHoraInicio() + " às " + academiaGrade.getHoraFim() + " (hrs). Dias da semana: " + s);
-                
+
                 listaAcademiaGrades.clear();
             } else {
                 di.rollback();
@@ -117,8 +116,8 @@ public class AcademiaGradeBean implements Serializable {
     }
 
     public boolean showSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
-        AcademiaDB academiaDB = new AcademiaDBToplink();
-        boolean isSemana = academiaDB.existeAcademiaSemana(academiaGrade.getId(), idSemana);
+        AcademiaDao academiaDao = new AcademiaDao();
+        boolean isSemana = academiaDao.existeAcademiaSemana(academiaGrade.getId(), idSemana);
         if (isSemana) {
             return true;
         }
@@ -126,8 +125,8 @@ public class AcademiaGradeBean implements Serializable {
     }
 
     public void updateSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
-        AcademiaDB academiaDB = new AcademiaDBToplink();
-        AcademiaSemana as = academiaDB.pesquisaAcademiaSemana(academiaGrade.getId(), idSemana);
+        AcademiaDao academiaDao = new AcademiaDao();
+        AcademiaSemana as = academiaDao.pesquisaAcademiaSemana(academiaGrade.getId(), idSemana);
         DaoInterface dao = new Dao();
         if (as != null) {
             dao.openTransaction();

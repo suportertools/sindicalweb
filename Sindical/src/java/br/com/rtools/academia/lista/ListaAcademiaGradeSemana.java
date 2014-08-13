@@ -1,8 +1,7 @@
 package br.com.rtools.academia.lista;
 
 import br.com.rtools.academia.AcademiaGrade;
-import br.com.rtools.academia.db.AcademiaDB;
-import br.com.rtools.academia.db.AcademiaDBToplink;
+import br.com.rtools.academia.dao.AcademiaDao;
 
 public class ListaAcademiaGradeSemana {
 
@@ -47,8 +46,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isDom() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.dom = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 1);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.dom = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 1);
         }
         return dom;
     }
@@ -59,8 +58,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isSeg() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.seg = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 2);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.seg = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 2);
         }
         return seg;
     }
@@ -71,8 +70,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isTer() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.ter = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 3);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.ter = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 3);
         }
         return ter;
     }
@@ -83,8 +82,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isQua() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.qua = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 4);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.qua = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 4);
         }
         return qua;
     }
@@ -95,8 +94,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isQui() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.qui = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 5);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.qui = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 5);
         }
         return qui;
     }
@@ -107,8 +106,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isSex() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.sex = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 6);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.sex = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 6);
         }
         return sex;
     }
@@ -119,8 +118,8 @@ public class ListaAcademiaGradeSemana {
 
     public boolean isSab() {
         if (academiaGrade.getId() != -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            this.sab = academiaDB.existeAcademiaSemana(academiaGrade.getId(), 7);
+            AcademiaDao academiaDao = new AcademiaDao();
+            this.sab = academiaDao.existeAcademiaSemana(academiaGrade.getId(), 7);
         }
         return sab;
     }

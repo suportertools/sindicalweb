@@ -126,7 +126,7 @@
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 119, 'CONTRIBUIÇÃO POR SOCIO', '"/Sindical/contribuicaoPorSocio.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 119);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 120, 'MATRÍCULA SÓCIO', '"/Sindical/socios.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 120);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 121, 'MATRÍCULA CONVÊNIO MÉDICO', '"/Sindical/convenioMedico.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 121);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 122, 'MATRÍCULA ACADEMIA', '"/Sindical/academia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 122);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 122, 'MATRÍCULA ACADEMIA', '"/Sindical/matriculaAcademia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 122);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 123, 'CONVÊNIO', '"/Sindical/convenio.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 123);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 124, 'SUB GRUPO CONVÊNIO', '"/Sindical/subGrupoConvenio.jsf"', 'SubGrupoConvenio', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 124);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 125, 'GRUPO CONVÊNIO', '"/Sindical/grupoConvenio.jsf"', 'GrupoConvenio', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 125);
@@ -263,6 +263,6 @@
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 257, 'NACIONALIDADE', '"/Sindical/nacionalidade.jsf"', 'Nacionalidade', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 257);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 258, 'RAIS', '"/Sindical/rais.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 258);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 259, 'PESQUISA RAIS', '"/Sindical/pesquisaRais.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 259);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 260, 'PESQUISA MATRÍCULA ACADEMIA', '"/Sindical/pesquisaAcademia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 260);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 260, 'PESQUISA MATRÍCULA ACADEMIA', '"/Sindical/pesquisaMatriculaAcademia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 260);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 

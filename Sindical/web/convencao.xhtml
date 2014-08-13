@@ -27,7 +27,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -68,25 +68,25 @@
                                     <h:outputText value="#{linha.argumento1.caminho}" style="font-size: 11pt!important"/>
                                     <p:commandButton icon="ui-icon-closethick" rendered="#{linha.argumento1.caminho != ''}" title="Excluir PDF" action="#{convencaoBean.excluirApenasPDF(linha.argumento1)}" style="margin-left: 10px"/>
                                     
-                                    <p:commandButton icon="ui-icon-arrowreturnthick-1-n" actionListener="#{convencaoBean.set(linha)}" onclick="i_dlg_upload.show()" style="float: right;" title="Escolher arquivo para enviar"/>
+                                    <p:commandButton icon="ui-icon-arrowreturnthick-1-n" actionListener="#{convencaoBean.set(linha)}" onclick="PF('i_dlg_upload').show()" style="float: right;" title="Escolher arquivo para enviar"/>
                                 </p:column>
                             </p:dataTable>
 
                             <h:panelGrid columns="4">
-                                <p:commandButton value="Salvar" onclick="i_dlg_s.show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                <p:commandButton value="Salvar" onclick="PF('i_dlg_s').show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 <p:commandButton ajax="false" value="Novo" action="#{convencaoBean.novo}" />
-                                <p:commandButton value="Excluir" onclick="i_dlg_e.show()" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <p:commandButton value="Excluir" onclick="PF('i_dlg_e').show()" disabled="#{controleAcessoBean.botaoExcluir}"/>
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaConvencao}"/>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar esta Convenção" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{convencaoBean.salvar()}" update="formConvencao" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{convencaoBean.salvar()}" update="formConvencao" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir esta Convenção" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"  type="submit" styleClass="ui-confirmdialog-yes" action="#{convencaoBean.excluir()}" update="formConvencao" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Excluir"  type="submit" styleClass="ui-confirmdialog-yes" action="#{convencaoBean.excluir()}" update="formConvencao" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                         </h:form>
 
@@ -105,7 +105,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

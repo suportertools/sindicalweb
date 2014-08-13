@@ -24,7 +24,7 @@
         <div id="mainx">
         <!-- INICIA DIV wrap e main -->  
          <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         
         <f:view>
@@ -120,7 +120,7 @@
                         <br /><br />
                         <p:commandLink ajax="false" value="Etiqueta Térmica" action="#{cartaoSocialBean.imprimirEtiquetaTermica()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         <br /><br />
-                        <p:commandLink value="Histórico de Impressões (Selecionados)" actionListener="#{cartaoSocialBean.historicoCarteirinha()}" oncomplete="i_dlg.show()" update="i_panel_dlgx"
+                        <p:commandLink value="Histórico de Impressões (Selecionados)" actionListener="#{cartaoSocialBean.historicoCarteirinha()}" oncomplete="PF('i_dlg').show()" update="i_panel_dlgx"
                                        rendered="#{(cartaoSocialBean.por != 'niEmpresa' or cartaoSocialBean.por != 'niCNPJ') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                     </p:panel>
                         
@@ -189,7 +189,7 @@
                             </c:if>
                         </h:panelGrid>
                         <br />
-                        <p:commandButton value="OK" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg.hide()" icon="ui-icon-close"/>       
+                        <p:commandButton value="OK" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg').hide()" icon="ui-icon-close"/>       
                     </p:dialog>
                 </h:form>
             </p:panel>
@@ -201,7 +201,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>

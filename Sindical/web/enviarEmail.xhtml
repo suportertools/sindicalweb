@@ -24,7 +24,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -37,7 +37,7 @@
                                     <p:commandButton value="Confirmar" action="#{juridicaBean.enviarEmailParaTodos}" style="float: right"/>
                                     
                                 </h:panelGrid>
-                                <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                                <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                             </p:panel>
                             
                             <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
@@ -53,7 +53,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

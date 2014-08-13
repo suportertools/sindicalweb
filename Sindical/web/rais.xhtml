@@ -25,7 +25,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -273,7 +273,7 @@
                             <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="600" header="Detalhes">
                                 <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                                 <p:panel id="i_pessoa_juridica_card">
-                                    <ui:include src="pessoaJuridicaCard.xhtml">
+                                    <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
                                         <ui:param name="idPessoa" value="#{raisBean.rais.empresa.pessoa.id}" />
                                     </ui:include>      
                                 </p:panel>
@@ -288,7 +288,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

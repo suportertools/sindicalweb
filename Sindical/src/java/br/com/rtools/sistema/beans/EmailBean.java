@@ -53,6 +53,7 @@ public class EmailBean implements Serializable {
     private List<EmailArquivo> emailArquivos;
     private List<File> files;
     private boolean openModal;
+    private String urlRetorno;
     private String html;
     private String assunto;
     private String emailString;
@@ -94,6 +95,7 @@ public class EmailBean implements Serializable {
         html = "";
         assunto = "";
         emailString = "";
+        urlRetorno = "";
         date = new Date[2];
         date[0] = null;
         date[1] = null;
@@ -123,8 +125,13 @@ public class EmailBean implements Serializable {
         GenericaSessao.remove("emailBean");
     }
 
-    public void clear() {
+    public String clear() {
+        if (!urlRetorno.isEmpty()) {
+            GenericaSessao.put("linkClicado", true);
+            return urlRetorno;
+        }
         GenericaSessao.remove("emailBean");
+        return null;
     }
 
     public void clear(int tcase) {
@@ -209,19 +216,19 @@ public class EmailBean implements Serializable {
         }
     }
 
-    public void send() {
+    public String send() {
         DaoInterface di = new Dao();
         if (email.getAssunto().isEmpty()) {
             GenericaMensagem.warn("Validação", "Informar assunto!");
-            return;
+            return null;
         }
         if (email.getMensagem().isEmpty()) {
             GenericaMensagem.warn("Validação", "Informar mensagem!");
-            return;
+            return null;
         }
         if (addEmailPessoas.isEmpty()) {
             GenericaMensagem.warn("Validação", "Informar destinatário(s)!");
-            return;
+            return null;
         }
         email.setRascunho(true);
         if (email.getUsuario().getId() == -1) {
@@ -246,7 +253,7 @@ public class EmailBean implements Serializable {
         } else {
             GenericaMensagem.warn("Falha", "Email(s) " + retorno[1]);
         }
-        clear();
+        return clear();
     }
 
     public void openDialogModal() {
@@ -605,5 +612,13 @@ public class EmailBean implements Serializable {
     public void showEmailRotina(int crotina) {
         GenericaSessao.remove("emailBean");
         GenericaSessao.put("emailCodigoRotina", crotina);
+    }
+
+    public String getUrlRetorno() {
+        return urlRetorno;
+    }
+
+    public void setUrlRetorno(String urlRetorno) {
+        this.urlRetorno = urlRetorno;
     }
 }

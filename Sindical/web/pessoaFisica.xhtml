@@ -25,7 +25,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->          
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper no-border">
@@ -244,8 +244,8 @@
                                                 </p:panel>
 
                                                 <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" style="float: right" rendered="#{!fisicaBean.fotoTempPerfil.equals('') or !fisicaBean.fotoPerfil.equals('')}" update=":form_pessoa_fisica"/>
-                                                <p:commandButton value="Upload Foto" type="button" onclick="dgl_upload.show();" id="id_btn_uploads" style="float: right"/>
-                                                <p:commandButton value="Capturar" onclick="dgl_captura.show();" />
+                                                <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
+                                                <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />
                                             </p:column>
                                         </h:panelGrid>
 
@@ -292,7 +292,7 @@
                                                     <p:dataGrid value="#{fisicaBean.listaSocioInativo}" var="linha" rowIndexVar="index" columns="1" emptyMessage="Clique para adicionar MAIS VENCIMENTO">
                                                         <p:commandLink ajax="false" value="#{linha.matriculaSocios.inativo} - #{linha.matriculaSocios.motivoInativacao.descricao}" action="#{fisicaBean.associarFisica(linha.servicoPessoa.pessoa)}" disabled="#{linha.matriculaSocios.id != fisicaBean.socios.matriculaSocios.id}"/>
                                                     </p:dataGrid>
-                                                    <p:commandButton value="OK"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_inativos.hide()" icon="ui-icon-close"/>       
+                                                    <p:commandButton value="OK"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_inativos').hide()" icon="ui-icon-close"/>       
                                                 </p:dialog>
 
                                                 <h:panelGrid rendered="#{fisicaBean.socios.id != -1}" columns="9" style="width: 60%">
@@ -342,7 +342,7 @@
                                                 <p:outputLabel value="Data Demissão" /><br />
                                                 <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
                                             </h:column>
-                                            
+
                                             <h:column>
                                                 <p:outputLabel value="Código" /><br />
                                                 <p:inputText size="10" value="#{fisicaBean.pessoaEmpresa.codigo}" />
@@ -351,7 +351,7 @@
 
                                         <h:panelGrid columns="2" style="margin-top: 15px">
                                             <h:column>
-                                                <p:commandButton icon="ui-icon-search" value="Função" onclick="dgl_painel_profissao.show();" />
+                                                <p:commandButton icon="ui-icon-search" value="Função" onclick="PF('dgl_painel_profissao').show();" />
                                             </h:column>
 
                                             <h:column>
@@ -443,18 +443,18 @@
                                                 <p:inputMask value="#{fisicaBean.fisica.aposentadoria}" mask="99/99/9999" size="10" />                                    
                                             </p:column>
                                         </h:panelGrid>
-                                        
+
                                         <h:panelGrid columns="3">
                                             <p:column>
                                                 <p:outputLabel value="Título de Eleitor"/><br />
                                                 <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloEleitor}" />
                                             </p:column>
-                                            
+
                                             <p:column>
                                                 <p:outputLabel value="Seção"/><br />
                                                 <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloSecao}" />
                                             </p:column>
-                                            
+
                                             <p:column>
                                                 <p:outputLabel value="Zona"/><br />
                                                 <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloZona}" />
@@ -464,39 +464,39 @@
 
                                     <p:tab id="i_historico" title="Histórico">
                                         <br />
-                                        
+
                                         <p:selectBooleanCheckbox value="#{fisicaBean.chkDependente}" itemLabel="Somente desta Pessoa" style="float: right">
                                             <p:ajax event="change" update="i_tbl_servico" listener="#{fisicaBean.listaServicoPessoa.clear()}"/>
                                         </p:selectBooleanCheckbox>
-                                            
+
                                         <br /><br />
-                                        
+
                                         <p:dataTable id="i_tbl_servico" value="#{fisicaBean.listaServicoPessoa}" var="linha" emptyMessage="Nenhum histórico para esta pessoa.">
                                             <p:column headerText="Emissão">
                                                 <p:outputLabel value="#{linha.emissao}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Beneficiário">
                                                 <p:outputLabel value="#{linha.pessoa.nome}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Desconto em Folha" style="text-align: center">
                                                 <p:outputLabel value="NÃO" rendered="#{!linha.descontoFolha}"/>
                                                 <p:outputLabel value="SIM" rendered="#{linha.descontoFolha}"/>
                                             </p:column>
-                                            
+
                                             <p:column headerText="Desconto" style="text-align: center">
                                                 <p:outputLabel value="#{linha.nrDesconto}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Ref. Vigoração" style="text-align: center">
                                                 <p:outputLabel value="#{linha.referenciaVigoracao}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Ref. Validade" style="text-align: center">
                                                 <p:outputLabel value="#{linha.referenciaValidade}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Serviço">
                                                 <p:outputLabel value="#{linha.servicos.descricao}" />
                                             </p:column>
@@ -605,9 +605,9 @@
                                 </p:dialog>
 
                                 <h:panelGrid columns="6">
-                                    <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dlg_painel_salvar.show();"/>
+                                    <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_painel_salvar').show();"/>
                                     <p:commandButton value="Novo" action="#{fisicaBean.novo}" update="form_pessoa_fisica"/>
-                                    <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dlg_painel_excluir.show();" rendered="#{fisicaBean.fisica.id != -1}" />
+                                    <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_painel_excluir').show();" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
                                     <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
                                 </h:panelGrid>              
@@ -673,13 +673,13 @@
                                 <p:dialog widgetVar="dlg_painel_mensagem" modal="true" header="Mensagem"  width="400" resizable="false">
                                     <p:outputLabel value="#{fisicaBean.mensagem}" id="i_painel_mensagem"/>
                                     <br /><br />
-                                    <p:commandButton value="Ok" title="Ok" onclick="dlg_painel_mensagem.hide();" />
+                                    <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_painel_mensagem').hide();" />
                                 </p:dialog>
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="600" header="Detalhes">
                                 <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                                 <p:panel id="i_pessoa_juridica_card">
-                                    <ui:include src="pessoaJuridicaCard.xhtml">
+                                    <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
                                         <ui:param name="idPessoa" value="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id}" />
                                     </ui:include>      
                                 </p:panel>
@@ -709,7 +709,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                   
     </h:body>

@@ -27,11 +27,10 @@
             <h:outputLabel value="Telefone 2:"  />
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.telefone2}"  />
             <h:outputLabel value="Email:"  />
-            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.email1}"  />
+            <h:commandLink value="#{pessoaCardBean.juridica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.juridica.pessoa.id)}" />
         </h:panelGrid>
-        <h:panelGrid columnClasses="verticalAlignTop,verticalAlignTop">
-            <f:facet name="header">Endereço</f:facet>
+        <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id == -1}">
             <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.endereco.enderecoToString} - Nº. #{pessoaCardBean.pessoaEndereco.numero} - #{pessoaCardBean.pessoaEndereco.complemento}" />
-        </h:panelGrid>
+        </p:panel> 
     </f:view>
 </ui:composition>

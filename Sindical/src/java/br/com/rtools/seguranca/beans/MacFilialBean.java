@@ -6,6 +6,8 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.MacFilialDB;
 import br.com.rtools.seguranca.db.MacFilialDBToplink;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
@@ -216,7 +218,7 @@ public class MacFilialBean implements Serializable {
 
             listaCaixa.add(new SelectItem(0, "NENHUM CAIXA", "-1"));
             for (int i = 0; i < result.size(); i++) {
-                listaCaixa.add(new SelectItem(i+1,
+                listaCaixa.add(new SelectItem(i + 1,
                         ((String.valueOf(result.get(i).getCaixa()).length() == 1) ? ("0" + String.valueOf(result.get(i).getCaixa())) : result.get(i).getCaixa()) + " - " + result.get(i).getDescricao(),
                         Integer.toString(result.get(i).getId())));
             }
@@ -226,5 +228,16 @@ public class MacFilialBean implements Serializable {
 
     public void setListaCaixa(List<SelectItem> listaCaixa) {
         this.listaCaixa = listaCaixa;
+    }
+
+    public String selecionaFilial(MacFilial mf) {
+        GenericaSessao.remove("acessoFilial");
+        GenericaSessao.remove("chamadaPaginaBean");
+        ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setMacFilial(mf);
+        ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setFilial("Filial: ( " + mf.getFilial().getFilial().getPessoa().getNome() + " / " + mf.getDepartamento().getDescricao() + " )");
+        GenericaSessao.put("acessoFilial", mf);
+        GenericaSessao.put("linkClicado", true);
+        return "menuPrincipal";
+
     }
 }

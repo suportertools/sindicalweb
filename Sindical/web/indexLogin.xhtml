@@ -72,7 +72,7 @@
                                     <p:watermark for="i_sis_login" value="Nome do Usuário" />
                                     <p:watermark for="i_sis_senha" value="Senha" />
 
-                                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                                 </p:panel>
                             </h:panelGrid>
 
@@ -91,7 +91,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>

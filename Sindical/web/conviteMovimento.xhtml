@@ -12,7 +12,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -22,7 +22,7 @@
                     <div class="clear"></div>
                     <p:panel id="i_panel_acao" styleClass="fundoCinza" style="height: 50px">
                         <h:panelGrid columns="8" style="float: left">
-                            <p:commandButton value="Adicionar" id="id_click" update="i_panel_adicionar" action="#{conviteMovimentoBean.openDialog}" onclick="dgl_adicionar.show();" />
+                            <p:commandButton value="Adicionar" id="id_click" update="i_panel_adicionar" action="#{conviteMovimentoBean.openDialog}" onclick="PF('dgl_adicionar').show();" />
                             <p:outputLabel value="Pesquisar: "/>
                             <p:inputMask id="i_mask" mask="#{conviteMovimentoBean.mascara}" value="#{conviteMovimentoBean.descricaoPesquisa}" disabled="#{conviteMovimentoBean.porPesquisa.equals('todos')}" size="70"/>
                             <h:outputLabel value="Por: "/>

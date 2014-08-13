@@ -15,7 +15,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -116,7 +116,7 @@
                     <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
                         <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();"  />
                         <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.destroy()}" update=":form_oposicao:"/>
-                        <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="dlg_delete.show();"/>
+                        <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="PF('dlg_delete').show();"/>
                         <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaOposicao}"/>                            
                     </h:panelGrid>
                     <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" header="Deseja salvar este registro?" width="400">

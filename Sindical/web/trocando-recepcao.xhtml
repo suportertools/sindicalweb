@@ -11,7 +11,7 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <!-- <h:form rendered="# {controleAcessoBean.validacao}"></h:form> -->
@@ -79,8 +79,8 @@
                         </p:panel>
                         <h:panelGrid columns="4" styleClass="margin-top-max">
                             <p:commandButton value="Atualizar" action="#{recepcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" update="i_painel_mensagem"  oncomplete="PF('dlg_mensagem').show();"/>
-                            <p:commandButton value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dlg_salvar.show();"/>
-                            <p:commandButton value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dlg_excluir.show();" />
+                            <p:commandButton value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar').show();"/>
+                            <p:commandButton value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_excluir').show();" />
                             <p:commandButton value="Voltar" action="#{recepcaoBean.voltar()}"/>
                         </h:panelGrid>
                     </p:panel> 
@@ -89,7 +89,7 @@
                         <center>
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Sim" title="Gerar uma Senha" action="#{recepcaoBean.gerarSenha()}" update="i_painel_mensagem" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Desfazer" onclick="dlg_salvar.hide();"/>
+                                <p:commandButton value="Não" title="Desfazer" onclick="PF('dlg_salvar').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
@@ -101,7 +101,7 @@
                             <h:inputTextarea value="#{recepcaoBean.cancelamento.motivo}" cols="50" rows="10" style="resize: none;"/>
                             <h:panelGrid columns="2" styleClass="margin-top">
                                 <p:commandButton value="Sim" title="Cancelar essa Homologação" action="#{recepcaoBean.cancelarHorario()}" update="i_painel_mensagem" oncomplete="PF('dlg_exluir').hide(); PF('dlg_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Desfazer" onclick="dlg_exluir.hide();"/>
+                                <p:commandButton value="Não" title="Desfazer" onclick="PF('dlg_exluir').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>                
@@ -109,7 +109,7 @@
                     <p:dialog id="i_painel_mensagem" widgetVar="dlg_mensagem" modal="true" width="400" height="200" header="Mensagem">
                         <f:facet name="controls">
                             <h:outputLink>
-                                <h:commandLink value="X" title="Permanecer" actionListener="#{senhaHomologacao.imprimir(recepcaoBean.agendamento)}" immediate="true" action="recepcao" onclick="dlg_mensagem.hide();"/>
+                                <h:commandLink value="X" title="Permanecer" actionListener="#{senhaHomologacao.imprimir(recepcaoBean.agendamento)}" immediate="true" action="recepcao" onclick="PF('dlg_mensagem').hide();"/>
                             </h:outputLink>
                         </f:facet>
                         <center>

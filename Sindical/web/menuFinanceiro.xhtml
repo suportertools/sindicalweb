@@ -30,7 +30,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <h:form id="formMenuFinanceiro">
@@ -75,7 +75,7 @@
                                 </p:submenu>
 
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">
-                                    <p:menuitem value="Transf. Entre Caixas"  onclick="i_dlg_t.show()"/>
+                                    <p:menuitem value="Transf. Entre Caixas"  onclick="PF('i_dlg_t').show()"/>
                                     <p:menuitem value="Fechamento de Caixa"   action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
                                     <p:menuitem value="Transf. p/ CX Central" action="#{chamadaPaginaBean.caixaFechado()}"/>
                                     <p:menuitem value="Deposito Bancário"     action="#{chamadaPaginaBean.depositoBancario()}"/>
@@ -95,7 +95,7 @@
                                 <h:panelGrid>
                                     <h:outputText style="font-weight: bold" value="Transferência entre Caixas" />
                                 </h:panelGrid>
-                                <p:commandLink onclick="i_dlg_t.show()" title="Abrir Transferência entre Caixas" style="clear: both">
+                                <p:commandLink onclick="PF('i_dlg_t').show()" title="Abrir Transferência entre Caixas" style="clear: both">
                                     <h:graphicImage value="/Imagens/transfer-ico.png" width="100" /><br />
                                 </p:commandLink>
                             </p:panel>
@@ -151,7 +151,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>          
     </h:body>

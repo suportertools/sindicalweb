@@ -299,9 +299,9 @@ public class BaixaGeralBean {
             } else if (url.equals("emissaoGuias")) {
                 GenericaSessao.put("linkClicado", true);
                 return "emissaoGuias";
-            } else if (url.equals("academia")) {
+            } else if (url.equals("matriculaAcademia")) {
                 GenericaSessao.put("linkClicado", true);
-                return "academia";
+                return "matriculaAcademia";
             } else {
                 return null;
             }
@@ -554,8 +554,11 @@ public class BaixaGeralBean {
             } else if (url.equals("lancamentoFinanceiro")) {
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcela().clear();
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcelaSelecionada().clear();
-            } else if (url.equals("academia")) {
+            } else if (url.equals("matriculaAcademia")) {
                 ((MatriculaAcademiaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).getListaMovimentos().clear();
+                ((MatriculaAcademiaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).setDesabilitaCamposMovimento(true);
+                ((MatriculaAcademiaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).setDesabilitaDiaVencimento(true);
+
             }
             retorna = true;
             mensagem = "Baixa realizada com sucesso!";

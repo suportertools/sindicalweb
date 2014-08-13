@@ -29,7 +29,7 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -117,7 +117,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="Titular">
-                                    <p:commandLink value="#{linha.argumento13}" action="#{movimentosSocialBean.complementoPessoa(linha)}" onclick="i_dlg_dados.show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento13}" action="#{movimentosSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
                                 
                                 <p:column headerText="Serviços">
@@ -173,8 +173,8 @@
                             </p:dataTable>      
                             
                             <p:dialog widgetVar="i_dlg_estorno" header="Deseja estornar este Movimento" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosSocialBean.estornarBaixa()}" update="formMovimentosReceber" onclick="i_dlg_estorno.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_estorno.hide()" style="float: left" icon="ui-icon-close"/>       
+                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosSocialBean.estornarBaixa()}" update="formMovimentosReceber" onclick="PF('i_dlg_estorno').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_estorno').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
                             <p:dialog widgetVar="i_dlg_dados" header="Ver Mais" resizable="false" modal="true">
@@ -271,7 +271,7 @@
                         </h:form>
                     </p:panel>
                     
-                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde ..." />
                     </p:dialog> 
@@ -283,7 +283,7 @@
 
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>                
     </h:body>

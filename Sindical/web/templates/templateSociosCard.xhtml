@@ -1,0 +1,22 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view>
+        <h:panelGrid columns="2">
+            <h:outputText value="Categoria: " />
+            <h:outputText value="#{matriculaAcademiaBean.socios.matriculaSocios.categoria.categoria}" />
+            <h:outputText value="Matrícula: " />
+            <h:outputText value="#{matriculaAcademiaBean.socios.matriculaSocios.nrMatricula}" />
+            <h:outputText value="Parentesco:"/>
+            <h:outputText value="#{matriculaAcademiaBean.socios.parentesco.parentesco}"/>
+            <h:outputText value="Válidade carteirinha: " />
+            <h:outputText value="#{matriculaAcademiaBean.socios.validadeCarteirinha}" />
+            <h:outputText value="Situação: " />
+            <h:column>
+                <h:outputText value="Ativo" rendered="#{matriculaAcademiaBean.socios.matriculaSocios.inativo.equals('')}" />
+                <h:outputText value="Inativo" rendered="#{!matriculaAcademiaBean.socios.matriculaSocios.inativo.equals('')}" />
+            </h:column>
+        </h:panelGrid>
+    </f:view>
+</ui:composition>

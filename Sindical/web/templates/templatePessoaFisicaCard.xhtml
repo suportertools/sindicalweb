@@ -7,7 +7,7 @@
     <f:view>
         <center>
             <c:if test="#{!pessoaCardBean.getImagemFisica('Imagens/Fotos').equals('')}">
-                <p:graphicImage value="#{pessoaCardBean.getImagemFisica('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray;" width="150"/>
+                <p:graphicImage value="#{pessoaCardBean.getImagemFisica('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
             </c:if>
         </center>
         <f:facet name="header">
@@ -31,7 +31,22 @@
             <h:outputLabel value="Telefone 2:"  />
             <h:outputLabel value="#{pessoaCardBean.fisica.pessoa.telefone2}"  />
             <h:outputLabel value="Email:"  />
-            <h:outputLabel value="#{pessoaCardBean.fisica.pessoa.email1}"  />
+            <h:commandLink value="#{pessoaCardBean.fisica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.fisica.pessoa.id)}" />
         </h:panelGrid>
+        <c:if test="#{!sociosCardBean.setIdPessoa(pessoaCardBean.fisica.pessoa.id)}"></c:if>
+        <c:if test="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></c:if>
+        <p:panel header="Associado" style="background: #ccffcc;" styleClass="no-border margin-top-max" rendered="#{sociosCardBean.socios.id != -1}">
+            <ui:include src="templateSociosCard.xhtml" />
+        </p:panel>
+        <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id != -1}">
+            <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.endereco.enderecoToString} - Nº. #{pessoaCardBean.pessoaEndereco.numero} - #{pessoaCardBean.pessoaEndereco.complemento}" />
+        </p:panel>         
+        <p:panel styleClass="margin-top-max" header="Local de trabalho" rendered="#{pessoaCardBean.pessoaEmpresa.id != -1}">
+            <h:panelGrid columns="1">
+                <h:outputLabel value="Admissão: #{pessoaCardBean.pessoaEmpresa.admissao}" />
+                <h:outputLabel value="Empresa: #{pessoaCardBean.pessoaEmpresa.juridica.pessoa.nome}" />
+                <h:outputLabel value="Profissão: #{pessoaCardBean.pessoaEmpresa.funcao.profissao}" />
+            </h:panelGrid>
+        </p:panel>         
     </f:view>
 </ui:composition>

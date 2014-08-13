@@ -9,7 +9,7 @@
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -56,9 +56,9 @@
                                     </p:column>
                                 </p:panelGrid>
                                 <p:panelGrid columns="3" styleClass="sbb" style="float: left; clear: both;">
-                                    <p:commandButton value="Cancelar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s.show();" title="Cancelar este horário?" />
-                                    <p:commandButton value="Cancelar data" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s2.show();" title="Cancelar todos horários desta data?" />
-                                    <p:commandButton value="Excluir cancelamentos desta data" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_s4.show();" title="Excluir cancelamentos desta data?" />
+                                    <p:commandButton value="Cancelar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show();" title="Cancelar este horário?" />
+                                    <p:commandButton value="Cancelar data" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s2').show();" title="Cancelar todos horários desta data?" />
+                                    <p:commandButton value="Excluir cancelamentos desta data" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_s4').show();" title="Excluir cancelamentos desta data?" />
                                 </p:panelGrid>
                             </p:tab>  
                             <p:tab title="Período" id="id_tab_periodo">  
@@ -73,31 +73,31 @@
                                     </p:calendar>
                                 </p:panelGrid>
                                 <p:panelGrid columns="2" styleClass="sbb" style="float: left; clear: both;">
-                                <p:commandButton value="Cancelar Período" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s3.show();" title="Cancelar este período?" />
-                                <p:commandButton value="Excluir cancelamentos deste período" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_s5.show();" title="Excluir cancelamentos deste período?" />
+                                <p:commandButton value="Cancelar Período" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s3').show();" title="Cancelar este período?" />
+                                <p:commandButton value="Excluir cancelamentos deste período" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_s5').show();" title="Excluir cancelamentos deste período?" />
                                 </p:panelGrid>
                             </p:tab>
                         </p:accordionPanel>
                     </p:panel>
                     <p:dialog widgetVar="i_dlg_s" header="Deseja cancelar este horário?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorario(false)}" onclick="i_dlg_s.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorario(false)}" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="i_dlg_s2" header="Deseja cancelar estes horários?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorario(true)}" onclick="i_dlg_s2.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s2.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorario(true)}" onclick="PF('i_dlg_s2').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s2').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="i_dlg_s3" header="Deseja todos horários deste período?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorarioPeriodo}" onclick="i_dlg_s3.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s3.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.cancelarHorarioPeriodo}" onclick="PF('i_dlg_s3').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s3').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="i_dlg_s4" header="Deseja excluir todos horários cancelados desta data?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="i_dlg_s4.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios" /> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s4.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="PF('i_dlg_s4').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios" /> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s4').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="i_dlg_s5" header="Deseja excluir todos horários cancelados desta data?" resizable="false" width="400" modal="true" style="font-size: 10pt;">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="i_dlg_s5.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s5.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="PF('i_dlg_s5').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s5').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:growl autoUpdate="true" id="i_msg" showDetail="true" />
                 </h:form>
@@ -128,7 +128,7 @@
             </p:panel>
         </f:view>
         <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
+            <ui:include src="templates/templateFooter.xhtml"/>
         </f:subview>
     </h:body>
 </ui:composition>

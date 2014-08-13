@@ -16,15 +16,14 @@
             <div id="mainx">
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
-                    <ui:include src="templatePrime.xhtml"/>
+                    <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
 
                 <f:view>
                     <h:form id="formMenuPrincipal">
                         <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
                             <p:menubar>
-                                <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
-                                    <p:menuitem value="Matricula Academia"          action="#{chamadaPaginaBean.pagina('academia', 'matriculaAcademiaBean')}"/>
+                                <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">                                      
                                     <p:menuitem value="Tabela Preço"                action="#{chamadaPaginaBean.pagina('academiaServicoValor')}" />
                                     <p:menuitem value="Pessoa Jurídica"             action="#{chamadaPaginaBean.pessoaJuridica}"/>
                                     <p:menuitem value="Pessoa Física"               action="#{chamadaPaginaBean.pessoaFisica}"/>
@@ -38,7 +37,7 @@
                                     </p:submenu>                            
                                 </p:submenu>
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">  
-
+                                    <p:menuitem value="Matricula Academia"          action="#{chamadaPaginaBean.pagina('matriculaAcademia')}"/>
                                 </p:submenu>
                                 <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
                                 </p:submenu>
@@ -53,7 +52,7 @@
         <!-- FINALIZA div wrap main -->
         <div id="footerx">
             <f:subview id="footer">
-                <ui:include src="templateFooter.xhtml"/>
+                <ui:include src="templates/templateFooter.xhtml"/>
             </f:subview>
         </div>
     </h:body>
