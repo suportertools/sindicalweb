@@ -32,7 +32,7 @@
                             <div class="clear"></div>
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                                 <h:panelGrid columns="5">
-                                    <p:selectOneMenu value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
+                                    <p:selectOneMenu id="i_pesquisa_por" value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
                                         <p:ajax event="change" update="@this, id_desc_pesquisa, tbl" listener="#{fisicaBean.listaPessoaFisica.clear()}" global="false"/>
                                         <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
                                         <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
@@ -52,9 +52,9 @@
                                         <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
                                         <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
                                     </p:selectOneMenu>                        
-                                    <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="tbl" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
-                                    <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
-                                    <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update="tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
+                                    <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
+                                    <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
+                                    <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
                                 </h:panelGrid>
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
@@ -90,7 +90,7 @@
                                             <h:outputText value="Dt Nascimento" style="font-weight: bold"/><br />
                                             <h:outputText value="#{fisica.nascimento}"/>
                                         </p:column>
-                                        
+                                
                                         <p:column>
                                             <h:outputText value="Local de trabalho" style="font-weight: bold"/><br />
                                             <h:outputText value="#{fisicaBean.pessoaEmpresaString(fisica)}"/>
@@ -103,7 +103,7 @@
                         </h:form>
                     </p:panel>
                              
-                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
                     </p:dialog>

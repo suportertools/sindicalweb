@@ -20,7 +20,7 @@ public interface FisicaDB {
 
     public List pesquisaTodos();
 
-    public List pesquisaPessoa(String desc, String por, String como);
+    public List<Fisica> pesquisaPessoa(String desc, String por, String como);
 
     public List pesquisaPessoaSocio(String desc, String por, String como);
 

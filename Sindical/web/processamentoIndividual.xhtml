@@ -88,40 +88,40 @@
                             </h:panelGrid>
                             
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
-                            <h:panelGrid id="i_panel_grid" style="width: 100%">
-                            <p:dataTable var="linha" id="tbEmpresas" value="#{processamentoIndividualBean.listaMovimentos}" rowIndexVar="index" emptyMessage="Nenhuma guia foi adicionada!" style="margin-top: 10px;" scrollable="true" scrollHeight="400">
-                                <p:column>  
+                            
+                            <p:dataTable var="linha" id="tbEmpresas" value="#{processamentoIndividualBean.listaMovimentos}" rowIndexVar="index" emptyMessage="Nenhuma guia foi adicionada!" style="margin-top: 10px;">
+                                <p:column width="15">  
                                     <p:rowToggler />  
                                 </p:column>  
                                 
-                                <p:column style="text-align: center;">
+                                <p:column style="text-align: center;" width="30">
                                     <p:commandButton icon="ui-icon-circle-close" action="#{processamentoIndividualBean.btnExcluirMov(index)}" update="tbEmpresas :formImpressaoIndividual:i_panel_b"/>
                                 </p:column>
 
-                                <p:column headerText="Razão Social">
+                                <p:column headerText="Razão Social" width="280">
                                     <p:commandLink value="#{linha.argumento1.pessoa.documento} - #{linha.argumento1.pessoa.nome}" action="#{processamentoIndividualBean.editarJuridica(linha)}" 
                                                    title="Clique para ir ao cadastro desta empresa"/>
                                     <p:commandButton icon="ui-icon-mail-closed" action="#{processamentoIndividualBean.verificaEmail(linha.argumento1.pessoa)}" 
                                                      title="#{linha.argumento1.pessoa.email1}" style="margin-left: 15px; width: 20px" oncomplete="PF('i_dlg_email').show()" update=":formImpressaoIndividual:i_email_para"/>
                                 </p:column>
 
-                                <p:column style="text-align: center" headerText="Contribuição">
+                                <p:column style="text-align: center" headerText="Contribuição" width="80">
                                     <p:outputLabel value="#{linha.argumento1.servicos.descricao}"/>
                                 </p:column>
 
-                                <p:column style="text-align: center" headerText="Tipo">
+                                <p:column style="text-align: center" headerText="Tipo" width="80">
                                     <p:outputLabel value="#{linha.argumento1.tipoServico.descricao}"/>
                                 </p:column>
 
-                                <p:column style="text-align: center" headerText="Vencimento">
+                                <p:column style="text-align: center" headerText="Vencimento" width="80">
                                     <p:outputLabel value="#{linha.argumento1.vencimento}"/>
                                 </p:column>
 
-                                <p:column style="text-align: center" headerText="Ref.">
+                                <p:column style="text-align: center" headerText="Ref." width="60">
                                     <p:outputLabel value="#{linha.argumento1.referencia}"/>
                                 </p:column>
                                 
-                                <p:column style="text-align: right" headerText="Valor">
+                                <p:column style="text-align: right" headerText="Valor" width="70">
                                     <p:commandLink value="#{linha.argumento3}" action="#{processamentoIndividualBean.carregarFolha(linha)}" style="font-size: 10pt!important; font-weight: bold; color: #0066cc"
                                                    oncomplete="PF('i_dlg_valor').show()" update=":formImpressaoIndividual:i_dlg_valor_folha"/>
                                 </p:column>
@@ -152,11 +152,11 @@
                                 </p:rowExpansion>
                                 
 
-                                <p:column style="text-align: right" headerText="Valor Calculado">
+                                <p:column style="text-align: right" headerText="Valor Calculado" width="70">
                                     <p:outputLabel value="#{linha.argumento7}"/>
                                 </p:column>
                                 
-                                <p:column style="text-align: center">
+                                <p:column style="text-align: center" width="25">
                                     <f:facet name="header">
                                         <h:selectBooleanCheckbox value="#{processamentoIndividualBean.marcarTodos}">
                                             <p:ajax event="change" listener="#{processamentoIndividualBean.marcarTodosLista}" update="tbEmpresas" />
@@ -167,7 +167,7 @@
                                     </h:selectBooleanCheckbox>
                                 </p:column>
                             </p:dataTable>
-                            </h:panelGrid>
+
                             <h:panelGrid id="i_panel_b" style="margin-top: 15px; width: 100%">
                                 <h:panelGrid rendered="#{processamentoIndividualBean.listaMovimentos.size() > 0}" columns="5">
                                     <p:column><br />
@@ -225,7 +225,7 @@
                                                 </p:inputText>
 
                                                 <p:commandButton value="Adicionar" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.atualizaValorGrid('valor')}" update=":formImpressaoIndividual" onclick="i_dlg_valor.hide(), i_dlg_modal.show()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                                <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_valor.hide()" style="float: left" icon="ui-icon-close"/>       
+                                                <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
                                             </h:panelGrid>
                                         </h:panelGrid>
                                     </p:tab>
@@ -248,7 +248,7 @@
                                             </h:panelGrid>
 
                                             <h:panelGrid columns="2">
-                                                <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                                <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid('descontoEmpregado')}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                                 <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
                                             </h:panelGrid>
                                         </h:panelGrid>

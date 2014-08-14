@@ -65,7 +65,7 @@
                                     </p:column>
                                     
                                     <p:column headerText="Nome">
-                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.nome}"/>
+                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.nome}" ajax="false"/>
                                     </p:column>
 
                                     <p:column headerText="Email">
@@ -105,7 +105,7 @@
                         </h:form>                        
                     </p:panel>
                     
-                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
                     </p:dialog>
