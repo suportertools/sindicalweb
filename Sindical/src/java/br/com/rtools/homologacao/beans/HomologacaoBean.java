@@ -1,6 +1,8 @@
 package br.com.rtools.homologacao.beans;
 
 import br.com.rtools.atendimento.AteStatus;
+import br.com.rtools.atendimento.db.AtendimentoDB;
+import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Cancelamento;
@@ -909,6 +911,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             if (DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje())) > DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData()))) {
                 listaAgendamento.setHabilitaAlteracao(false);
             }
+            
+            AtendimentoDB dbat = new AtendimentoDBTopLink();
+            if (dbat.pessoaOposicao(agendamentos.get(i).getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
+                listaAgendamento.setTblEstilo("tblAgendamentoOposicao");
+            }
+            
             if (agendamentos.get(i).getAgendador() == null) {
                 listaAgendamento.setUsuarioAgendador("** Web User **");
             } else {

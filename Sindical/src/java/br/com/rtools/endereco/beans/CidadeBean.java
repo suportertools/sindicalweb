@@ -172,7 +172,7 @@ public class CidadeBean implements Serializable {
         if (listCidade.isEmpty()) {
             CidadeDB db = new CidadeDBToplink();
             GrupoCidadesDB dbCids = new GrupoCidadesDBToplink();
-            if (cidade.getCidade().equals("")) {
+            if (cidade.getCidade().isEmpty()) {
                 List lgc = dbCids.pesquisaCidadesBase();
                 if (!lgc.isEmpty()) {
                     listCidade.addAll(lgc);

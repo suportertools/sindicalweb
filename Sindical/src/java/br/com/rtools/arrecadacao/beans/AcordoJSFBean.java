@@ -193,22 +193,32 @@ public class AcordoJSFBean {
                 p.add(pessoaEnvio);
 
                 String[] ret = new String[2];
+                String nome_envio = "";
+                if (listaImp.size() == 1)
+                    nome_envio = "Boleto " + listaImp.get(0).getServicos().getDescricao()+" N° "+listaImp.get(0).getDocumento();
+                else
+                    nome_envio = "Boleto";
+                
                 if (!reg.isEnviarEmailAnexo()) {
-                    ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                    ret = EnviarEmail.EnviarEmailPersonalizado(
+                            reg,
                             p,
                             " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
                             + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                             new ArrayList(),
-                            "Envio de Boleto");
+                            nome_envio
+                    );
                 } else {
                     List<File> fls = new ArrayList<File>();
                     fls.add(new File(imp.getPathPasta() + "/" + nome));
 
-                    ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                    ret = EnviarEmail.EnviarEmailPersonalizado(
+                            reg,
                             p,
                             " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
                             fls,
-                            "Envio de Boleto");
+                            nome_envio
+                    );
                 }
                 if (!ret[1].isEmpty()) {
                     mensagem = ret[1];

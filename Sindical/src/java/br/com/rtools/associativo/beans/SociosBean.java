@@ -1258,6 +1258,16 @@ public class SociosBean implements Serializable {
                         sv.desfazerTransacao();
                         return;
                     }
+                    
+                    Socios soc2 = db.pesquisaSocioPorPessoa(sp2.getPessoa().getId());
+                    
+                    soc2.getMatriculaSocios().setMotivoInativacao((SMotivoInativacao) sv.pesquisaCodigo(5, "SMotivoInativacao"));
+                    if (!sv.alterarObjeto(soc2)) {
+                        GenericaMensagem.error("Erro", "Erro ao alterar Matrícula do Dependente!");
+                        sv.desfazerTransacao();
+                        return;
+                    }
+                    
                     sp2 = new ServicoPessoa();
                     sv.comitarTransacao();
                 }
@@ -1627,11 +1637,12 @@ public class SociosBean implements Serializable {
             //int id_grupo_categoria = Integer.parseInt(listaGrupoCategoria.get(idGrupoCategoria).getDescription());
             int id_categoria = Integer.parseInt(listaCategoria.get(idCategoria).getDescription());
             
-            ServicoCategoria select = db.pesquisaPorParECat(1, id_categoria);
+            servicoCategoria = db.pesquisaPorParECat(1, id_categoria);
             
-            if (select != null) {
-                listaServicos.add(new SelectItem(i, select.getServicos().getDescricao(),
-                            Integer.toString(select.getServicos().getId()))
+            
+            if (servicoCategoria != null) {
+                listaServicos.add(new SelectItem(i, servicoCategoria.getServicos().getDescricao(),
+                            Integer.toString(servicoCategoria.getServicos().getId()))
                 );
             }else{
                 listaServicos.add(new SelectItem(0, "Nenhum Serviço Encontrado", "0"));

@@ -215,8 +215,8 @@ public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
     }
 
     @Override
-    public void atualizaValorGrid() {
-        listaMovimentos.get(index).setArgumento6(super.atualizaValor(true));
+    public void atualizaValorGrid(String tipo) {
+        listaMovimentos.get(index).setArgumento6(super.atualizaValor(true, tipo));
         listaMovimentos.clear(); // LIMPANDO AQUI PARA ATUALIZAR O VALOR CALCULADO
     }
 
@@ -391,7 +391,7 @@ public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
                 if (((Integer) ((Vector) lista.get(i)).get(13)) < 0) {
                     ((Vector) lista.get(i)).set(13, 0);
                 }
-
+                //Movimento mov = (Movimento)(new SalvarAcumuladoDBToplink()).pesquisaCodigo( (Integer) ((Vector) lista.get(i)).get(15), "Movimento");
                 listaMovimentos.add(new DataObject(
                         false,
                         ((Vector) lista.get(i)).get(0), // boleto

@@ -1197,17 +1197,14 @@ public class ExtratoTelaJSFBean implements Serializable {
             pessoas.add(jur.getPessoa());
 
             String mensagem = "";
-            //String[] ret = new String[2];
             List<File> fls = new ArrayList<File>();
+            String nome_envio = "";
+            if (mov.size() == 1)
+                nome_envio = "Boleto " + mov.get(0).getServicos().getDescricao()+" N° "+mov.get(0).getDocumento();
+            else
+                nome_envio = "Boleto";
+            
             if (!reg.isEnviarEmailAnexo()) {
-//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-//                        p,
-//                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-//                        + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
-//                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir boleto</a><br />",
-//                        new ArrayList(),
-//                        "Envio de Boleto");
-                
                 mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                          + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
                          + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir boleto</a><br />";
@@ -1215,13 +1212,6 @@ public class ExtratoTelaJSFBean implements Serializable {
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
                 mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                          + " <h5>Baixe seu boleto anexado neste email</5><br /><br />";
-
-//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-//                        p,
-//                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-//                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
-//                        fls,
-//                        "Envio de Boleto");
             }
             
             DaoInterface di = new Dao();
@@ -1235,7 +1225,7 @@ public class ExtratoTelaJSFBean implements Serializable {
                             (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                             (Rotina) di.find(new Rotina(), 96),
                             null,
-                            "Envio de Boleto",
+                            nome_envio,
                             mensagem,
                             false,
                             false
@@ -1262,7 +1252,6 @@ public class ExtratoTelaJSFBean implements Serializable {
                 msgConfirma = retorno[0];
                 GenericaMensagem.info("Sucesso", msgConfirma);
             }
-            //msgConfirma = "Envio Concluído!";
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
 

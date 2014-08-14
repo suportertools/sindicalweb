@@ -277,7 +277,7 @@
                         <div style="overflow:auto; height:600px;">
                             <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}" style="margin-top: 15px;">
                                 <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
-                                <rich:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" style="width: 95%; " onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+                                <rich:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" style="width: 95%" rowClasses="#{objeto.tblEstilo}">
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
                                             <h:outputText value="Horarios" rendered="false"/>

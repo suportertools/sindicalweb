@@ -857,7 +857,7 @@ public class NotificacaoJSFBean implements Serializable {
                             (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                             (Rotina) di.find(new Rotina(), 106),
                             null,
-                            "Envio de Boleto",
+                            "Notificação",
                             mensagem,
                             false,
                             false
@@ -889,7 +889,6 @@ public class NotificacaoJSFBean implements Serializable {
     }
 
     public String enviarEmail(Pessoa pessoa, List<ParametroNotificacao> lista, SalvarAcumuladoDB sv, String nomeJasper) {
-
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
         JasperReport jasper = null;
         String nomeArq = "notificacao_";
@@ -949,7 +948,7 @@ public class NotificacaoJSFBean implements Serializable {
                             (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                             (Rotina) di.find(new Rotina(), 106),
                             null,
-                            "Envio de Boleto",
+                            "Notificação",
                             mensagem,
                             false,
                             false

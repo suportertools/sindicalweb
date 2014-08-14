@@ -4,8 +4,10 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.principal.DB;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.Query;
 
 public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
@@ -447,4 +449,27 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     public void fecharTransacao() {
         getEntityManager().close();
     }
+    
+//    @Override
+//    public List<Object> selectTranslateNative(String table, String classe, String field, String and, String value_search){
+//        //value_search = value_search.replaceAll(" ","_");  
+//        value_search = Normalizer.normalize(value_search, Normalizer.Form.NFD);  
+//        value_search = value_search.toLowerCase().replaceAll("[^\\p{ASCII}]", "");  
+//        
+//        //value_search = value_search.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
+//        String text_qry = "SELECT id FROM "+table+" WHERE LOWER(TRANSLATE("+field+")) LIKE '"+value_search+"'";
+//        
+//        if (!and.isEmpty())
+//            text_qry = "SELECT id FROM "+table+" WHERE LOWER(TRANSLATE("+field+")) LIKE '"+value_search+"' " + and;
+//        
+//        Query qry = getEntityManager().createNativeQuery(text_qry);
+//        
+//        List<Vector> result_list = qry.getResultList();
+//        List<Object> return_list = new ArrayList<Object>();
+//
+//        for (Vector list : result_list){
+//            return_list.add((Object) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer)list.get(0), classe));
+//        }
+//        return return_list;
+//    }
 }

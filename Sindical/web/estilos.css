@@ -569,6 +569,9 @@ a.iLinkSimples:hover {color: #888; text-decoration:none; }
 .tblExtratoTela{background: #ff9587; }
 .tblExtratoTela:hover {font-weight: normal; font-weight: bold; cursor: pointer}
 
+.tblAgendamentoOposicao{background: #ff9587; }
+.tblAgendamentoOposicao:hover {font-weight: normal; font-weight: bold; cursor: pointer}
+
 .tblListaRecepcao{background: #ccffcc; }
 .tblListaRecepcao:after{background: #ccffcc; }
 

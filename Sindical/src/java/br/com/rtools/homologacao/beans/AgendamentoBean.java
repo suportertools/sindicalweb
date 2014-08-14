@@ -1360,6 +1360,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         homologacaoDB.verificaNaoAtendidosSegRegistroAgendamento();
     }
+    
+    public String getEstiloTabela(){
+        return "";
+    }
 
     /**
      * -- STATUS 1 - DISPONIVEL; 2 - AGENDADO; 3 - CANCELADO; 4 - HOMOLOGADO; 5
@@ -1404,15 +1408,23 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             strSalvar = "Agendar";
         } else {
             agendamentos = homologacaoDB.pesquisaAgendamento(idNrStatus, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
+            int i = 0;
             for (Agendamento agendamento1 : agendamentos) {
                 ListaAgendamento listaAgendamento = new ListaAgendamento();
                 Usuario u = new Usuario();
                 listaAgendamento.setAgendamento(agendamento1);
+                
                 if (agendamento1.getAgendador() == null) {
                     listaAgendamento.setUsuarioAgendador("** Web User **");
                 } else {
                     listaAgendamento.setUsuarioAgendador(agendamento1.getAgendador().getPessoa().getNome());
                 }
+
+                AtendimentoDB dbat = new AtendimentoDBTopLink();
+                if (dbat.pessoaOposicao(listaAgendamento.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
+                    listaAgendamento.setTblEstilo("tblAgendamentoOposicao");
+                }
+                
                 listaHorarios.add(listaAgendamento);
             }
             strSalvar = "Atualizar";

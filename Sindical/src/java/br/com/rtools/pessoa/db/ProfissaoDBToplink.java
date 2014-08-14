@@ -2,10 +2,9 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.principal.DB;
-import java.util.ArrayList;
+import br.com.rtools.utilitarios.SelectTranslate;
 import java.util.List;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
@@ -99,27 +98,8 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
     @Override
     public List pesquisaProfParametros(String por, String combo, String desc) {
-        String textQuery = "";
-        if (!desc.equals("") && !por.equals("")) {
-            if (por.equals("I")) {
-                desc = desc + "%";
-            } else if (por.equals("P")) {
-                desc = "%" + desc + "%";
-            }
-        } else {
-            desc = "";
-            return new ArrayList();
-        }
-        if (combo.equals("")) {
-            combo = "profissao";
-        }
-        try {
-            textQuery = "select prof from Profissao prof where upper(prof." + combo + ") like :profissao order by prof.profissao";
-            Query qry = getEntityManager().createQuery(textQuery);
-            qry.setParameter("profissao", desc.toLowerCase().toUpperCase());
-            return (qry.getResultList());
-        } catch (EJBQLException e) {
-            return new ArrayList();
-        }
+        SelectTranslate st = new SelectTranslate();
+        desc = (por.equals("I") ? desc+"%" : "%"+desc+"%");
+        return st.select(new Profissao()).where("profissao", desc).find();
     }
 }

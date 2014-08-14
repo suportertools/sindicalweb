@@ -8,6 +8,7 @@ import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.Boleto;
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.Cartao;
 import br.com.rtools.financeiro.ChequePag;
 import br.com.rtools.financeiro.ChequeRec;
@@ -462,13 +463,17 @@ public class BaixaGeralBean {
             return mensagem = "Lista esta vazia!";
         }
         MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
-
+        Caixa caixa = null;
         if (macFilial == null) {
             return mensagem = "Não existe filial na sessão!";
         }
 
-        if (macFilial.getCaixa() == null) {
-            return mensagem = "Não é possivel salvar baixa sem um caixa definido!";
+        if (tipo.equals("caixa")){
+            if (macFilial.getCaixa() == null) {
+                return mensagem = "Não é possivel salvar baixa sem um caixa definido!";
+            }
+            
+            caixa = macFilial.getCaixa();
         }
 
         Filial filial;
@@ -537,7 +542,7 @@ public class BaixaGeralBean {
             listaMovimentos.get(i).setTaxa(Moeda.converteUS$(taxa));
         }
 
-        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao, macFilial.getCaixa())) {
+        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao, caixa)) {
             mensagem = "Erro ao atualizar boleto!";
             return null;
         } else {

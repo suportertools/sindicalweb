@@ -1,5 +1,7 @@
 package br.com.rtools.utilitarios;
 
+import java.text.Normalizer;
+
 public class AnaliseString {
 
     public static boolean conteudoNumero(String conteudo) {
@@ -165,6 +167,14 @@ public class AnaliseString {
             }
         }
         return sb.toString();
+    }
+    
+    public static String normalizeLower(String value){
+                
+        value = Normalizer.normalize(value, Normalizer.Form.NFD);  
+        value = value.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
+        
+        return value;
     }
 
     public static String mascaraCep(final String cep) {

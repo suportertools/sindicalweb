@@ -10,6 +10,7 @@ public class ListaAgendamento {
     private boolean habilitaAlteracao;
     private int quantidade;
     private String usuarioAgendador;
+    private String tblEstilo;
 
     public ListaAgendamento() {
         this.agendamento = new Agendamento();
@@ -17,14 +18,16 @@ public class ListaAgendamento {
         this.habilitaAlteracao = false;
         this.quantidade = 0;
         this.usuarioAgendador = "";
+        this.tblEstilo = "";
     }
 
-    public ListaAgendamento(Agendamento agendamento, Senha senha, boolean habilitaAlteracao, int quantidade, String usuarioAgendador) {
+    public ListaAgendamento(Agendamento agendamento, Senha senha, boolean habilitaAlteracao, int quantidade, String usuarioAgendador, String tblEstilo) {
         this.agendamento = agendamento;
         this.senha = senha;
         this.habilitaAlteracao = habilitaAlteracao;
         this.quantidade = quantidade;
         this.usuarioAgendador = usuarioAgendador;
+        this.tblEstilo = tblEstilo;
     }
 
     public Agendamento getAgendamento() {
@@ -74,5 +77,13 @@ public class ListaAgendamento {
 
     public void setUsuarioAgendador(String usuarioAgendador) {
         this.usuarioAgendador = usuarioAgendador;
+    }
+
+    public String getTblEstilo() {
+        return tblEstilo;
+    }
+
+    public void setTblEstilo(String tblEstilo) {
+        this.tblEstilo = tblEstilo;
     }
 }

@@ -17,6 +17,7 @@ public class MovimentosReceberDBToplink extends DB implements MovimentosReceberD
                     + "            m.ds_referencia          AS Referencia,      "
                     + "            m.dt_vencimento          AS Vencimento,      "
                     + "            func_valor_folha(m.id)   AS Valor_Mov,       "
+                    //+ "            m.nr_valor               AS Valor_Mov,       "
                     + "            f.nr_valor               AS Valor_Folha,     "
                     + "            func_multa(m.id)         AS Multa,           "
                     + "            func_juros(m.id)         AS Juros,           "

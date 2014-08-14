@@ -166,10 +166,12 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         return listaTipoServico;
     }
     
+    @Override
     public void carregarFolha(DataObject data) {
         
     }
 
+    @Override
     public void carregarFolha() {
         if (!listMovimentos.isEmpty()) {
             MovimentoDB db = new MovimentoDBToplink();
@@ -178,8 +180,9 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         }
     }
 
-    public void atualizaValorGrid() {
-        listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(true));
+    @Override
+    public void atualizaValorGrid(String tipo) {
+        listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(true, tipo));
         listMovimentos.clear();
     }
 

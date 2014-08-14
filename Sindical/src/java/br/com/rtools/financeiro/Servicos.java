@@ -2,6 +2,7 @@ package br.com.rtools.financeiro;
 
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
+import br.com.rtools.sistema.Periodo;
 import javax.persistence.*;
 
 @Entity
@@ -47,6 +48,11 @@ public class Servicos implements java.io.Serializable {
     private SubGrupoFinanceiro subGrupoFinanceiro;
     @Column(name = "IS_VALOR_FIXO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean valorFixo;
+    @JoinColumn(name = "ID_PERIODO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne
+    private Periodo periodo;    
+    @Column(name = "NR_QTDE_PERIODO")
+    private int quantidadePeriodo;
 
     public Servicos() {
         this.id = -1;
@@ -66,6 +72,8 @@ public class Servicos implements java.io.Serializable {
         this.subGrupoFinanceiro = new SubGrupoFinanceiro();
         this.produto = false;
         this.valorFixo = false;
+        this.periodo = new Periodo();
+        this.quantidadePeriodo = 0;
     }
 
     public Servicos(int id,
@@ -84,7 +92,9 @@ public class Servicos implements java.io.Serializable {
             boolean agrupaBoleto,
             SubGrupoFinanceiro subGrupoFinanceiro,
             boolean produto,
-            boolean valorFixo) {
+            boolean valorFixo,
+            Periodo periodo,
+            int quantidadePeriodo) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -102,6 +112,8 @@ public class Servicos implements java.io.Serializable {
         this.subGrupoFinanceiro = subGrupoFinanceiro;
         this.produto = produto;
         this.valorFixo = valorFixo;
+        this.periodo = periodo;
+        this.quantidadePeriodo = quantidadePeriodo;
     }
 
     public int getId() {
@@ -243,5 +255,21 @@ public class Servicos implements java.io.Serializable {
 
     public void setValorFixo(boolean valorFixo) {
         this.valorFixo = valorFixo;
+    }
+
+    public Periodo getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(Periodo periodo) {
+        this.periodo = periodo;
+    }
+
+    public int getQuantidadePeriodo() {
+        return quantidadePeriodo;
+    }
+
+    public void setQuantidadePeriodo(int quantidadePeriodo) {
+        this.quantidadePeriodo = quantidadePeriodo;
     }
 }

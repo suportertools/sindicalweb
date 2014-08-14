@@ -8,7 +8,7 @@ import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaSemCadastro;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.util.ArrayList;
+import br.com.rtools.utilitarios.SelectTranslate;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -108,33 +108,41 @@ public class PessoaDBToplink extends DB implements PessoaDB {
 
     @Override
     public List pesquisarPessoa(String desc, String por, String como) {
-        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){
-            por = "documento";
-        }
-        List lista;
-        String textQuery = null;
-        if (como.equals("T")) {
-            textQuery = "";
-            //textQuery = "select objeto from Pessoa objeto";
-        } else if (como.equals("P")) {
-            desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select objeto from Pessoa objeto where UPPER(objeto." + por + ") like :desc"
-                    + " order by objeto.nome";
-        } else if (como.equals("I")) {
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select objeto from Pessoa objeto where UPPER(objeto." + por + ") like :desc"
-                    + " order by objeto.nome";
-        }
-        try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if ((desc != null) && (!(como.equals("T")))) {
-                qry.setParameter("desc", desc);
-            }
-            lista = qry.getResultList();
-        } catch (Exception e) {
-            lista = new ArrayList();
-        }
-        return lista;
+        String field = por;
+        if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) field = "documento";
+        
+        SelectTranslate st = new SelectTranslate();
+        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
+        return st.select(new Pessoa()).where(field, desc).find();        
+        
+        
+//        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){
+//            por = "documento";
+//        }
+//        List lista;
+//        String textQuery = null;
+//        if (como.equals("T")) {
+//            textQuery = "";
+//            //textQuery = "select objeto from Pessoa objeto";
+//        } else if (como.equals("P")) {
+//            desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+//            textQuery = "select objeto from Pessoa objeto where UPPER(objeto." + por + ") like :desc"
+//                    + " order by objeto.nome";
+//        } else if (como.equals("I")) {
+//            desc = desc.toLowerCase().toUpperCase() + "%";
+//            textQuery = "select objeto from Pessoa objeto where UPPER(objeto." + por + ") like :desc"
+//                    + " order by objeto.nome";
+//        }
+//        try {
+//            Query qry = getEntityManager().createQuery(textQuery);
+//            if ((desc != null) && (!(como.equals("T")))) {
+//                qry.setParameter("desc", desc);
+//            }
+//            lista = qry.getResultList();
+//        } catch (Exception e) {
+//            lista = new ArrayList();
+//        }
+//        return lista;
     }
 
     @Override

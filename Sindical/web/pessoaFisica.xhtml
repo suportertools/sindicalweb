@@ -47,7 +47,7 @@
                                                     <h:panelGrid columns="4">
                                                         <p:column>
                                                             <p:outputLabel value="Cadastrado"/><br />
-                                                            <p:calendar size="8" value="#{fisicaBean.fisica.pessoa.dtCriacao}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" readonlyInput="true">
+                                                            <p:calendar size="8" value="#{fisicaBean.fisica.pessoa.dtCriacao}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999">
                                                                 <p:ajax event="dateSelect" listener="#{fisicaBean.fisica.pessoa.selecionaDataCriacao}" />
                                                             </p:calendar>
                                                         </p:column>
@@ -68,8 +68,7 @@
 
                                                         <p:column>
                                                             <p:outputLabel value="Nascimento" /><br />
-                                                            <p:calendar size="8" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" onclick="$(this).mask('99/99/9999');
-                                                                    return null;" converterMessage="Data de nascimento inválida - Formato 01/01/1900">
+                                                            <p:calendar size="8" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" mask="99/99/9999" converterMessage="Data de nascimento inválida - Formato 01/01/1900">
                                                                 <p:ajax event="dateSelect" update="@this"  listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
                                                                 <p:ajax event="change" update="@this"  />
                                                             </p:calendar>
@@ -267,7 +266,7 @@
                                                         <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} ) DESDE #{fisicaBean.socios.matriculaSocios.emissao}" style="font-weight: bold; font-size: 12pt!important"/>
                                                     </p:column>
 
-                                                    <p:column rendered="#{fisicaBean.listaSocioInativo.size() != 0 and fisicaBean.socios.id != -1 and fisicaBean.socios.matriculaSocios.motivoInativacao != null}">
+                                                    <p:column rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.matriculaSocios.motivoInativacao != null and fisicaBean.listaSocioInativo.size() != 0}">
                                                         <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} INATIVO ) DESDE #{fisicaBean.socios.matriculaSocios.inativo}" style="font-weight: bold; font-size: 12pt!important; color: #ff9900"/>
                                                     </p:column>
 
@@ -512,7 +511,7 @@
 
                                 <!-- ENDEREÇO -->
                                 <p:accordionPanel id="i_acc_tab_endereco" activeIndex="#{fisicaBean.indexNovoEndereco}" widgetVar="wdg_acc_end">
-                                    <p:tab id="i_tab_endereco" title="Endereço #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
+                                    <p:tab id="i_tab_endereco" title="Endereço da Pessoa Física #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
                                         <h:panelGrid id="i_panel_add_endereco">
                                             <h:panelGrid columns="2" rendered="#{fisicaBean.enderecox.id == -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Endereço"  action="#{chamadaPaginaBean.pesquisaEndereco}" />

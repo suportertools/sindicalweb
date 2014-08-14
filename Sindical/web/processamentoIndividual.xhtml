@@ -88,12 +88,13 @@
                             </h:panelGrid>
                             
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
-                            <p:dataTable var="linha" id="tbEmpresas" value="#{processamentoIndividualBean.listaMovimentos}" rowIndexVar="index" emptyMessage="Nenhuma guia foi adicionada!" style="margin-top: 10px;" >
+                            <h:panelGrid id="i_panel_grid" style="width: 100%">
+                            <p:dataTable var="linha" id="tbEmpresas" value="#{processamentoIndividualBean.listaMovimentos}" rowIndexVar="index" emptyMessage="Nenhuma guia foi adicionada!" style="margin-top: 10px;" scrollable="true" scrollHeight="400">
                                 <p:column>  
                                     <p:rowToggler />  
                                 </p:column>  
                                 
-                                <p:column style="text-align: center; width: 50px" headerText="...">
+                                <p:column style="text-align: center;">
                                     <p:commandButton icon="ui-icon-circle-close" action="#{processamentoIndividualBean.btnExcluirMov(index)}" update="tbEmpresas :formImpressaoIndividual:i_panel_b"/>
                                 </p:column>
 
@@ -116,13 +117,13 @@
                                     <p:outputLabel value="#{linha.argumento1.vencimento}"/>
                                 </p:column>
 
-                                <p:column style="text-align: center" headerText="Referência">
+                                <p:column style="text-align: center" headerText="Ref.">
                                     <p:outputLabel value="#{linha.argumento1.referencia}"/>
                                 </p:column>
                                 
                                 <p:column style="text-align: right" headerText="Valor">
                                     <p:commandLink value="#{linha.argumento3}" action="#{processamentoIndividualBean.carregarFolha(linha)}" style="font-size: 10pt!important; font-weight: bold; color: #0066cc"
-                                                   oncomplete="PF('i_dlg_valor').show()" update=":formImpressaoIndividual:i_panel_valor"/>
+                                                   oncomplete="PF('i_dlg_valor').show()" update=":formImpressaoIndividual:i_dlg_valor_folha"/>
                                 </p:column>
                                 
                                 <p:rowExpansion>
@@ -166,7 +167,7 @@
                                     </h:selectBooleanCheckbox>
                                 </p:column>
                             </p:dataTable>
-                            
+                            </h:panelGrid>
                             <h:panelGrid id="i_panel_b" style="margin-top: 15px; width: 100%">
                                 <h:panelGrid rendered="#{processamentoIndividualBean.listaMovimentos.size() > 0}" columns="5">
                                     <p:column><br />
@@ -207,34 +208,52 @@
                                 </h:panelGrid>
                                     
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual" onclick="PF('i_dlg_email').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual:" onclick="PF('i_dlg_email').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                     <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_email').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
                             
-                            <p:dialog widgetVar="i_dlg_valor" header="Valor Folha" resizable="false" modal="true">
-                                <h:panelGrid id="i_panel_valor" style="width: 100%" columns="1">
-                                    <p:commandLink style="margin-left: 20px;" disabled="#{not processamentoIndividualBean.mostrarPainel}" id="i_cadastro_m" value="#{processamentoIndividualBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" />
-                                    
-                                    <h:panelGrid>
-                                        <h:outputText id="lbEdit"  value="#{processamentoIndividualBean.labelFolha}" />
-                                        <p:inputText disabled="#{processamentoIndividualBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{processamentoIndividualBean.valor}" >
-                                            <p:ajax event="change" update="idValorMes"/>
-                                        </p:inputText>
-                                    </h:panelGrid>
-                                    
-                                    <h:panelGrid>
-                                            <h:outputText id="lbEdit2"  value="#{processamentoIndividualBean.labelFolha2}" />
-                                            <p:inputText disabled="#{processamentoIndividualBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{processamentoIndividualBean.qtdFuncionario}" >
-                                                <p:ajax event="change" update="qfun"/>
-                                            </p:inputText>
-                                    </h:panelGrid>
+                            <p:dialog id="i_dlg_valor_folha" widgetVar="i_dlg_valor" header="Valor do Boleto" resizable="false" modal="true">
+                                <p:tabView id="i_tab_view">
+                                    <p:tab title="Valor Simples">
+                                        <h:panelGrid id="i_panel_valor" style="width: 100%" columns="1">
+                                            <h:outputText value="Digite um valor para o Boleto" style="font-weight: bold"/><br />
+                                            
+                                            <h:panelGrid columns="3">
+                                                <p:inputText size="10" value="#{processamentoIndividualBean.valorBoleto}" style="text-align: right">
+                                                    <p:ajax event="blur" update="@this" global="false"/>
+                                                </p:inputText>
 
-                                    <h:panelGrid columns="2">
-                                        <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid}" update="formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                        <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
-                                    </h:panelGrid>
-                                </h:panelGrid>
+                                                <p:commandButton value="Adicionar" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.atualizaValorGrid('valor')}" update=":formImpressaoIndividual" onclick="i_dlg_valor.hide(), i_dlg_modal.show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                                <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_valor.hide()" style="float: left" icon="ui-icon-close"/>       
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                    </p:tab>
+                                    
+                                    <p:tab title="Valor por Desconto Empregado">
+                                        <h:panelGrid id="i_panel_valor_folha" style="width: 100%" columns="1">
+                                            <p:commandLink style="margin-left: 20px;" disabled="#{not processamentoIndividualBean.mostrarPainel}" id="i_cadastro_m" value="#{processamentoIndividualBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" />
+                                            <h:panelGrid>
+                                                <h:outputText id="lbEdit"  value="#{processamentoIndividualBean.labelFolha}" />
+                                                <p:inputText disabled="#{processamentoIndividualBean.mostrarPainel}" size="10" id="idValorMes" value="#{processamentoIndividualBean.valor}" style="text-align: right">
+                                                    <p:ajax event="change" update="idValorMes"/>
+                                                </p:inputText>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid>
+                                                    <h:outputText id="lbEdit2"  value="#{processamentoIndividualBean.labelFolha2}" />
+                                                    <p:inputText disabled="#{processamentoIndividualBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{processamentoIndividualBean.qtdFuncionario}" >
+                                                        <p:ajax event="change" update="qfun"/>
+                                                    </p:inputText>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid columns="2">
+                                                <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                                <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                    </p:tab>
+                                </p:tabView>
                             </p:dialog>
                         </h:form>
                         
