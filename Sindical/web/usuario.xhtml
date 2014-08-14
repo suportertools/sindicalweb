@@ -24,6 +24,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <p:outputLabel value="Cadastro de Usuários" styleClass="fonteHeader" />
                         <div class="clear"></div>
@@ -231,7 +232,7 @@
                                 <f:facet name="footer">
                                     <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();"/>
                                 </f:facet>
-                            </p:dialog>
+                            </p:dialog>                            
                         </h:form>
                     </p:panel>
 

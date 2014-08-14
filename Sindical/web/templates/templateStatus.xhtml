@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" onerror="PF('i_dlg_err').show();" />
+    <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false" resizable="false">
+        <h:outputLabel value="Carregando ... Aguarde" />
+    </p:dialog>
+    <p:dialog modal="true" widgetVar="i_dlg_err" header="Erro ao executar operacao" draggable="false" closable="false" resizable="false">  
+        <ul>
+            <li>
+                <h:outputLabel value="Diagnostico rapido" style="font-weight: bold; color: red;"/>                
+                <br />
+                <br />
+            </li>
+            <li>
+                <h:outputLabel value="- Verifique sua conexao com a internet" />
+            </li>
+            <li>
+                <h:outputLabel value="- Saia e entre novamente no sistema" />
+            </li>
+        </ul>
+        <f:facet name="footer">
+            <h:outputLabel value="Entrar em contato com o administrador do sistema." />            
+        </f:facet>
+    </p:dialog>
+</ui:composition>
