@@ -971,10 +971,12 @@ public class MatriculaEscolaBean implements Serializable {
             //tipoMatricula = "Individual";
             desabilitaTurma = true;
             desabilitaIndividual = false;
-            for (int i = 0; i < listaProfessor.size(); i++) {
-                if (matriculaIndividual.getProfessor().getId() == Integer.parseInt(listaProfessor.get(i).getDescription())) {
-                    idProfessor = i;
-                    break;
+            if (matriculaIndividual.getProfessor() != null) {
+                for (int i = 0; i < listaProfessor.size(); i++) {
+                    if (matriculaIndividual.getProfessor().getId() == Integer.parseInt(listaProfessor.get(i).getDescription())) {
+                        idProfessor = i;
+                        break;
+                    }
                 }
             }
             for (int i = 0; i < listaIndividual.size(); i++) {
