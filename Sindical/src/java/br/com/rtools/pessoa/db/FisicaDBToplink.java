@@ -74,7 +74,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     }
 
     @Override
-    public List pesquisaPessoa(String desc, String por, String como) {
+    public List<Fisica> pesquisaPessoa(String desc, String por, String como) {
         if (desc.isEmpty()){
             return new ArrayList();
         }
@@ -130,20 +130,11 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         Query qry = getEntityManager().createNativeQuery(textQuery);
 
         List<Vector> result_list = qry.getResultList();
-        List<Object> return_list = new ArrayList<Object>();
+        List<Fisica> return_list = new ArrayList<Fisica>();
 
-        if (!result_list.isEmpty()){
-            if (result_list.size() > 1){
-                String listId = "";
-                for (int i = 0; i < result_list.size(); i++){
-                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
-                }
-                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id IN ( " + listId + " )").getResultList();
-            }else{
-                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id = " + (Integer) result_list.get(0).get(0)).getResultList();
-            }
-        }
-        
+        for (Vector result_list1 : result_list) {
+            return_list.add((Fisica) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) result_list1.get(0), "Fisica"));
+        }        
         return return_list;
     }
 
