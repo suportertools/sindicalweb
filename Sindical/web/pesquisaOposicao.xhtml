@@ -14,14 +14,8 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-
-            <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
-            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                <h:outputLabel value=" ... Aguarde" />
-            </p:dialog>
-            <h:form id="form_pesquisa_oposicao">        
-
-
+            <ui:include src="templates/templateStatus.xhtml"/>
+            <h:form id="form_pesquisa_oposicao">
                 <p:panel styleClass="wrapper no-border">
                     <h:outputText value="Pesquisa Oposição" styleClass="fonteHeader" />
                     <div class="clear"></div>
