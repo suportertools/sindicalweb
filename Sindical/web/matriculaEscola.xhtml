@@ -271,12 +271,12 @@
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText dir="RTL" id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" styleClass="real"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
-                                            <p:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
+                                        <p:inputText id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" style="text-align: right;">
+                                            <f:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="@this idTabela" />
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText dir="RTL" id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento" >
+                                        <p:inputText dir="RTL" id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento">
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
                                         </p:inputText>
                                     </p:column>
