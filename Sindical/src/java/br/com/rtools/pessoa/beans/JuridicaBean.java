@@ -56,7 +56,7 @@ public class JuridicaBean implements Serializable {
     private String enderecoDeletado = null;
     private String descPesquisa = "";
     private String porPesquisa = "nome";
-    private String comoPesquisa = "";
+    private String comoPesquisa = "I";
     private String descPesquisaCnae = "";
     private String porPesquisaCnae = "cnae";
     private String comoPesquisaCnae = "";

@@ -10,7 +10,7 @@ public class SMotivoInativacao implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 30, unique = true)
+    @Column(name = "DS_DESCRICAO", length = 150, unique = true)
     private String descricao;
 
     public SMotivoInativacao() {

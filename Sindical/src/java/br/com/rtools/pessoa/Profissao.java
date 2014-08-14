@@ -6,10 +6,10 @@ import javax.persistence.*;
 @Table(name = "PES_PROFISSAO")
 @NamedQuery(name = "Profissao.pesquisaID", query = "select prof from Profissao prof where prof.id=:pid")
 public class Profissao implements java.io.Serializable {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "DS_PROFISSAO", length = 200, nullable = false)
     private String profissao;
     @Column(name = "DS_CBO", length = 10, nullable = true)
@@ -21,17 +21,17 @@ public class Profissao implements java.io.Serializable {
         this.cbo = "";
     }
 
-    public Profissao(int id, String profissao, String cbo) {
+    public Profissao(Integer id, String profissao, String cbo) {
         this.id = id;
         this.profissao = profissao;
-        this.profissao = cbo;
+        this.cbo = cbo;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

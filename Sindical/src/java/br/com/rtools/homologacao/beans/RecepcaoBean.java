@@ -1,5 +1,7 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.atendimento.db.AtendimentoDB;
+import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.Demissao;
@@ -569,14 +571,23 @@ public class RecepcaoBean implements Serializable {
             Senha senha = db.pesquisaSenhaAgendamento(ag.get(i).getId());
             String senhaId = "";
             String senhaString = "";
-            if (senha != null) {
+            boolean isOposicao = false;
+            AtendimentoDB dbat = new AtendimentoDBTopLink();
+            if (dbat.pessoaOposicao(ag.get(i).getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
+                isOposicao = true;
+            }
+            
+            if (senha != null && !isOposicao) {
                 if (senha.getId() != -1) {
                     // senhaString = senha.getId() == -1 ? null : senha.getSenha();
                     senhaId = "tblListaRecepcao";
                     senhaString = ((Integer) senha.getSenha()).toString();
                 } else {
                 }
+            }else{
+                senhaId = "tblAgendamentoOposicao";
             }
+            
             dtObj = new DataObject(
                     ag.get(i).getHorarios(), // ARG 0 HORA
                     ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ

@@ -36,7 +36,7 @@
                                 <h:panelGrid columns="4">
                                     <p:inputMask value="#{juridicaBean.descPesquisa}" size="50" mask="#{juridicaBean.mascaraPesquisaJuridica}"/>
                                     <p:selectOneMenu value="#{juridicaBean.porPesquisa}">
-                                        <p:ajax event="change" update="i_panel_pesquisa" />
+                                        <p:ajax event="change" update="i_panel_pesquisa" global="false"/>
                                         <f:selectItem itemValue="nome"     itemLabel="Nome"/>
                                         <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
                                         <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
@@ -61,7 +61,7 @@
                                     </p:column>  
                                     
                                     <p:column headerText="ID" styleClass="text-center" width="50">
-                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.id}"/>
+                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.id}" ajax="false"/>
                                     </p:column>
                                     
                                     <p:column headerText="Nome">
@@ -73,7 +73,7 @@
                                     </p:column>
 
                                     <p:column headerText="Tipo / Documento">
-                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.tipoDocumento.descricao} - #{juridica.pessoa.documento}"/>
+                                        <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.tipoDocumento.descricao} - #{juridica.pessoa.documento}" ajax="false"/>
                                     </p:column>
 
                                     <p:column headerText="Escritório">
@@ -105,8 +105,10 @@
                         </h:form>                        
                     </p:panel>
                     
-                        
-                    
+                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                        <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
+                    </p:dialog>
                 </f:view>
                 <!-- FINALIZA div wrap main -->
             </div>

@@ -85,6 +85,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
     private Pessoa pessoaEnvio = new Pessoa();
 
     public ProcessamentoIndividualJSFBean() {
+    
     }
 
     public void removerEmpresa() {
@@ -267,7 +268,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                             null,
                             tipoServico,
                             null,
-                            Moeda.converteFloatR$Float(super.carregarValor(servicos.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
+                            movim != null ? movim.getValor() : Moeda.converteFloatR$Float(super.carregarValor(servicos.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
                             strReferencia,
                             vencimento,
                             1,
@@ -302,7 +303,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                                 null,
                                 tipoServico,
                                 null,
-                                Moeda.converteFloatR$Float(super.carregarValor(servicos.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
+                                movim != null ? movim.getValor() : Moeda.converteFloatR$Float(super.carregarValor(servicos.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
                                 strReferencia,
                                 vencimento,
                                 1,
@@ -422,12 +423,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
         Movimento movi = (Movimento) linha.getArgumento1();
         super.carregarFolha(movi);
         dataObject.setArgumento3(Moeda.converteR$Float(movi.getValor()));
-
     }
 
     @Override
-    public synchronized void atualizaValorGrid() {
-        dataObject.setArgumento3(super.atualizaValor(true));
+    public synchronized void atualizaValorGrid(String tipo) {
+        dataObject.setArgumento3(super.atualizaValor(true, tipo));
         refreshGrid();
     }
 
@@ -607,6 +607,12 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
 
                     pessoas.add(movs.get(0).getPessoa());
 
+                    String nome_envio = "";
+                    if (listMovimentos.size() == 1)
+                        nome_envio = "Boleto " + ((Movimento) listMovimentos.get(0).getArgumento1()).getServicos().getDescricao()+" N° "+((Movimento) listMovimentos.get(0).getArgumento1()).getDocumento();
+                    else
+                        nome_envio = "Boleto";
+                    
                     if (!reg.isEnviarEmailAnexo()) {
                         mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
                          + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
@@ -626,7 +632,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                                     (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                                     (Rotina) di.find(new Rotina(), 106),
                                     null,
-                                    "Envio de Boleto",
+                                    nome_envio,
                                     mensagem,
                                     false,
                                     false
@@ -696,15 +702,19 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                         List<Pessoa> pessoas = new ArrayList();
                         pessoas.add(jur.getPessoa());
 
+                        String nome_envio = "";
+                        if (movs.size() == 1)
+                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao()+" N° " + m.get(0).getDocumento();
+                        else
+                            nome_envio = "Boleto";
+                        
                         if (!reg.isEnviarEmailAnexo()) {
                             mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
                                      + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                         } else {
-
                             fls.add(new File(imp.getPathPasta() + "/" + nome));
                             mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
                         }
-                        
                         
                         DaoInterface di = new Dao();
                         Mail mail = new Mail();
@@ -717,7 +727,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                                         (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                                         (Rotina) di.find(new Rotina(), 106),
                                         null,
-                                        "Envio de Boleto",
+                                        nome_envio,
                                         mensagem,
                                         false,
                                         false
@@ -770,6 +780,12 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                         List<Pessoa> pessoas = new ArrayList();
                         pessoas.add(jur.getContabilidade().getPessoa());
 
+                        String nome_envio = "";
+                        if (m.size() == 1)
+                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao()+" N° " + m.get(0).getDocumento();
+                        else
+                            nome_envio = "Boleto";
+                        
                         if (!reg.isEnviarEmailAnexo()) {
                             mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
                                      + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
@@ -789,7 +805,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                                         (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                                         (Rotina) di.find(new Rotina(), 106),
                                         null,
-                                        "Envio de Boleto",
+                                        nome_envio,
                                         mensagem,
                                         false,
                                         false
@@ -861,14 +877,19 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
 
             List<File> fls = new ArrayList<File>();
             String mensagem = "";
+            
+            String nome_envio = "";
+            if (movs.size() == 1)
+                nome_envio = "Boleto " + movs.get(0).getServicos().getDescricao()+" N° " + movs.get(0).getDocumento();
+            else
+                nome_envio = "Boleto";
+
             if (!reg.isEnviarEmailAnexo()) {
                 mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
-                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
-                
+                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir o boleto</a><br />";
             } else {
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
                 mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
-
             }
             
             DaoInterface di = new Dao();
@@ -882,7 +903,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
                             (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                             (Rotina) di.find(new Rotina(), 106),
                             null,
-                            "Envio de Boleto",
+                            nome_envio,
                             mensagem,
                             false,
                             false

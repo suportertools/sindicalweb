@@ -1163,31 +1163,22 @@ public class ImpressaoBoletosBean implements Serializable {
             pessoas.add(jur.getPessoa());
 
             String mensagem = "";
-            //String[] ret = new String[2];
             List<File> fls = new ArrayList<File>();
+            
+            String nome_envio = "";
+            if (mov.size() == 1)
+                nome_envio = "Boleto " + mov.get(0).getServicos().getDescricao()+" N° "+mov.get(0).getDocumento();
+            else
+                nome_envio = "Boleto";
             
             if (!reg.isEnviarEmailAnexo()) {
                 mensagem = " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                          + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
                          + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />";
-//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-//                        p,
-//                        " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-//                        + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
-//                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
-//                        new ArrayList(),
-//                        "Envio de Boleto");
             } else {
-                
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
                 mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                          + " <h5>Baixe seu boleto anexado neste email</5><br /><br />";
-//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-//                        p,
-//                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-//                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
-//                        fls,
-//                        "Envio de Boleto");
             }
             
             DaoInterface di = new Dao();
@@ -1201,7 +1192,7 @@ public class ImpressaoBoletosBean implements Serializable {
                             (Usuario) GenericaSessao.getObject("sessaoUsuario"),
                             (Rotina) di.find(new Rotina(), 90),
                             null,
-                            "Envio de Boleto",
+                            nome_envio,
                             mensagem,
                             false,
                             false
@@ -1220,20 +1211,6 @@ public class ImpressaoBoletosBean implements Serializable {
             }
             
             String[] retorno = mail.send("personalizado");
-//
-//            if (!retorno[1].isEmpty()) {
-//                msgConfirma = retorno[1];
-//                GenericaMensagem.warn("Erro", msgConfirma);
-//            } else {
-//                msgConfirma = retorno[0];
-//                GenericaMensagem.info("Sucesso", msgConfirma);
-//            }
-//            
-            
-//            if (!ret[1].isEmpty())
-//                msgImpressao = ret[1];
-//            else
-//                msgImpressao = ret[0];
             msgImpressao = "Envio Concluído!";
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());

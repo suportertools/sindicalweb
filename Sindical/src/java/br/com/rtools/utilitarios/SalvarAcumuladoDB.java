@@ -109,4 +109,6 @@ public interface SalvarAcumuladoDB {
     public List objectQuery(String textQuery, boolean singleResult);
 
     public void fecharTransacao();
+    
+    //public List<Object> selectTranslateNative(String table, String classe, String field, String and, String value_search);
 }

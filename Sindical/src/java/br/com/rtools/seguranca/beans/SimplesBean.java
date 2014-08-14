@@ -8,7 +8,6 @@ import br.com.rtools.associativo.ConviteMotivoSuspencao;
 import br.com.rtools.associativo.GrupoConvenio;
 import br.com.rtools.associativo.GrupoEvento;
 import br.com.rtools.associativo.Midia;
-import br.com.rtools.pessoa.Nacionalidade;
 import br.com.rtools.atendimento.AteOperacao;
 import br.com.rtools.endereco.Bairro;
 import br.com.rtools.endereco.DescricaoEndereco;
@@ -20,6 +19,8 @@ import br.com.rtools.financeiro.Indice;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.pessoa.Nacionalidade;
+import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.TipoCentroComercial;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.TipoEndereco;
@@ -34,13 +35,21 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.SelectTranslate;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Query;
 
 @ManagedBean
 @SessionScoped
@@ -609,14 +618,65 @@ public class SimplesBean implements Serializable {
         // lista.clear();
     }
 
-    public synchronized List getLista() {
+    public synchronized List getLista() throws ClassNotFoundException {
         if (sessoes != null) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             if (!pesquisaLista.isEmpty()) {
-                lista = sv.pesquisaObjetoPorDescricao(sessoes[0], pesquisaLista, "p");
+                String table_name = "", string_class = pacoteDaClasse(sessoes[0]);
+
+                if (!string_class.isEmpty()) {
+                    Class cls = Class.forName(string_class);
+
+//                    for (Annotation ann : cls.getAnnotations()) {
+//                        if(!ann.annotationType().equals(javax.persistence.Table.class)) continue;
+//
+//                        javax.persistence.Table t = (javax.persistence.Table) ann;
+//                        table_name  = t.name();
+//                    }
+                    SelectTranslate st = new SelectTranslate();
+                    String value = "%" + pesquisaLista + "%";
+                    try {
+                        return lista = st.select(cls.newInstance()).where("descricao", value).find();
+                    } catch (InstantiationException ex) {
+                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IllegalAccessException ex) {
+                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
         return lista;
+    }
+
+    public String pacoteDaClasse(String classe) {
+        List<String> list_class = new ArrayList();
+
+        list_class.add("br.com.rtools.academia");
+        list_class.add("br.com.rtools.agenda");
+        list_class.add("br.com.rtools.arrecadacao");
+        list_class.add("br.com.rtools.associativo");
+        list_class.add("br.com.rtools.atendimento");
+        list_class.add("br.com.rtools.endereco");
+        list_class.add("br.com.rtools.escola");
+        list_class.add("br.com.rtools.estoque");
+        list_class.add("br.com.rtools.financeiro");
+        list_class.add("br.com.rtools.homologacao");
+        list_class.add("br.com.rtools.locadoraFilme");
+        list_class.add("br.com.rtools.pessoa");
+        list_class.add("br.com.rtools.relatorios");
+        list_class.add("br.com.rtools.seguranca");
+        list_class.add("br.com.rtools.sistema");
+        list_class.add("br.com.rtools.suporte");
+
+        for (String list_clas : list_class) {
+            try {
+                Class.forName(list_clas + "." + classe);
+                return list_clas + "." + classe;
+            } catch (ClassNotFoundException e) {
+                //my class isn't there!
+            }
+        }
+        return "";
     }
 
     public void setLista(List lista) {

@@ -59,7 +59,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String enderecoCompleto = "";
     private String descPesquisa = "";
     private String porPesquisa = "nome";
-    private String comoPesquisa = "";
+    private String comoPesquisa = "I";
     private String mensagem = "";
     private String masc = "";
     private String maxl = "";

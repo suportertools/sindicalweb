@@ -6,11 +6,10 @@ import java.util.Date;
 import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
-@Entity
 @Table(name = "PES_FISICA")
+@Entity
 @NamedQuery(name = "Fisica.pesquisaID", query = "select fis from Fisica fis where fis.id=:pid")
 public class Fisica implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

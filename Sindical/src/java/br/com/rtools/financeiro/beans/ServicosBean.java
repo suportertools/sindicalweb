@@ -14,12 +14,15 @@ import br.com.rtools.financeiro.lista.ListServicosCategoriaDesconto;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
+import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,7 @@ public class ServicosBean implements Serializable {
     private List<ListServicosCategoriaDesconto> listServicosCategoriaDesconto;
     private List<SelectItem> listSubGrupo;
     private List<SelectItem> listGrupo;
+    private List<SelectItem> listPeriodo;
     private String porPesquisa;
     private String comoPesquisa;
     private String descPesquisa;
@@ -56,6 +60,7 @@ public class ServicosBean implements Serializable {
     private String textoBtnServico;
     private int idGrupo;
     private int idSubGrupo;
+    private int idPeriodo;
     private float descontoCategoria;
 
     @PostConstruct
@@ -80,9 +85,11 @@ public class ServicosBean implements Serializable {
         categoriaDesconto = new CategoriaDesconto();
         textoBtnServico = "Adicionar";
         listGrupo = new ArrayList<SelectItem>();
-        idGrupo = 0;
         listSubGrupo = new ArrayList<SelectItem>();
+        listPeriodo = new ArrayList<SelectItem>();
+        idGrupo = 0;
         idSubGrupo = 0;
+        idPeriodo = 0;
         //    private String tabViewTitle = "0";
     }
 
@@ -158,6 +165,12 @@ public class ServicosBean implements Serializable {
                 servicos.setSubGrupoFinanceiro((SubGrupoFinanceiro) di.find(new SubGrupoFinanceiro(), Integer.valueOf(listSubGrupo.get(idSubGrupo).getDescription())));
             } else {
                 servicos.setSubGrupoFinanceiro(null);
+            }
+            
+            if (!listPeriodo.isEmpty() && Integer.valueOf(listPeriodo.get(idPeriodo).getDescription()) != 0){
+                servicos.setPeriodo((Periodo) di.find(new Periodo(), Integer.valueOf(listPeriodo.get(idPeriodo).getDescription())));
+            }else{
+                servicos.setPeriodo(null);
             }
 
             if (servicos.getId() == -1) {
@@ -303,6 +316,17 @@ public class ServicosBean implements Serializable {
             listGrupo.clear();
             idGrupo = 0;
             idSubGrupo = 0;
+        }
+        
+        if (servicos.getPeriodo() != null){
+            getListPeriodo();
+            for (int i = 0; i < listPeriodo.size(); i++) {
+                if (Integer.valueOf(listPeriodo.get(i).getDescription()) == servicos.getPeriodo().getId()) {
+                    idPeriodo = i;
+                }
+            }
+        }else{
+            idPeriodo = 0;
         }
         if (GenericaSessao.exists("urlRetorno")) {
             return "servicos";
@@ -709,8 +733,8 @@ public class ServicosBean implements Serializable {
             if (!result.isEmpty()) {
 //                if (servicos.getSubGrupoFinanceiro() == null)
 //                    listGrupo.add(new SelectItem(10000, "Nenhum Grupo Financeiro Adicionado", "0"));
-                for (int i = 1; i < result.size(); i++) {
-                    listGrupo.add(new SelectItem(i,
+                for (int i = 0; i < result.size(); i++) {
+                    listGrupo.add(new SelectItem(i+1,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
@@ -741,8 +765,8 @@ public class ServicosBean implements Serializable {
             if (!result.isEmpty()) {
 //                if (servicos.getSubGrupoFinanceiro() == null)
 //                    listSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
-                for (int i = 1; i < result.size(); i++) {
-                    listSubGrupo.add(new SelectItem(i,
+                for (int i = 0; i < result.size(); i++) {
+                    listSubGrupo.add(new SelectItem(i+1,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
@@ -812,5 +836,39 @@ public class ServicosBean implements Serializable {
 
     public void setActiveIndex(Integer activeIndex) {
         this.activeIndex = activeIndex;
+    }
+
+    public int getIdPeriodo() {
+        return idPeriodo;
+    }
+
+    public void setIdPeriodo(int idPeriodo) {
+        this.idPeriodo = idPeriodo;
+    }
+
+    public List<SelectItem> getListPeriodo() {
+        if (listPeriodo.isEmpty()) {
+            FinanceiroDB db = new FinanceiroDBToplink();
+
+            List<Periodo> result = (new SalvarAcumuladoDBToplink()).listaObjeto("Periodo");
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            
+            listPeriodo.add(new SelectItem(0, "Selecionar Periodo", "0"));
+            if (!result.isEmpty()) {
+                for (int i = 1; i < result.size(); i++) {
+                    listPeriodo.add(
+                        new SelectItem(i,
+                            result.get(i).getDescricao(),
+                            Integer.toString(result.get(i).getId())
+                        )
+                    );
+                }
+            }
+        }        
+        return listPeriodo;
+    }
+
+    public void setListPeriodo(List<SelectItem> listPeriodo) {
+        this.listPeriodo = listPeriodo;
     }
 }

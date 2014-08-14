@@ -117,7 +117,7 @@
 
                                         <rich:column>
                                             <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                            <a4j:commandLink value="#{linha.argumento6}" rendered="#{linha.argumento19}" action="#{webContribuintesBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="idValorMes,i_cadastro_m, qfun, lbEdit, lbEdit2">
+                                            <a4j:commandLink value="#{linha.argumento6}" rendered="#{linha.argumento19}" action="#{webContribuintesBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="i_panel_valor">
                                                 <a4j:param value="#{it.index}" assignTo="#{webContribuintesBean.idIndex}"/>
                                             </a4j:commandLink>
                                             <h:outputText value="#{linha.argumento6}" rendered="#{!linha.argumento19}"/>
@@ -167,34 +167,62 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:panelGrid>
-                                <h:outputLabel style="margin-left: 20px;" rendered="#{not webContribuintesBean.mostrarPainel}" for="tbl1" id="i_cadastro_m" value="#{webContribuintesBean.lblLink}" styleClass="fontePadraoNegrito"/>
-                            </h:panelGrid>
-                            
-                            <h:panelGrid>
-                                <h:outputLabel id="lbEdit"  value="#{webContribuintesBean.labelFolha}" styleClass="fonteRederencia"/>
-                                <h:inputText disabled="#{webContribuintesBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{webContribuintesBean.valor}" >
-                                    <a4j:ajax event="change" render="idValorMes"/>
-                                </h:inputText>
+                            <rich:tabPanel id="i_panel_valor" switchType="client">
+                                <rich:tab header="Valor do Boleto">
+                                    <h:outputLabel value="Digite um valor para o Boleto" style="font-weight: bold; float: left"/><br />
+                                    <br />
+                                    
+                                    <h:inputText size="10" id="idValorBoleto" value="#{webContribuintesBean.valorBoleto}" style="text-align: right; float: left">
+                                        <a4j:ajax event="blur" render="idValorBoleto"/>
+                                    </h:inputText>
 
-                                <h:outputLabel id="lbEdit2"  value="#{webContribuintesBean.labelFolha2}" styleClass="fonteRederencia"/>
+                                    <br />
 
-                                <h:inputText disabled="#{webContribuintesBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{webContribuintesBean.qtdFuncionario}" >
-                                    <a4j:ajax event="change" render="qfun"/>
-                                </h:inputText>
-                            </h:panelGrid>
+                                    <table border="0" align="center" cellspacing="5" >
+                                        <tr align="center">
+                                            <td>
+                                                <a4j:commandLink styleClass="idNovo iLink" render="tbl1" value="OK" action="#{webContribuintesBean.atualizaValorGrid('valor')}" oncomplete="fecharModal()"/>
+                                            </td>
+                                            <td>
+                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" render="tbl" value="Cancelar" />
+                                            </td>
+                                        </tr>
+                                    </table>  
+                                </rich:tab>
+                                
+                                <rich:tab header="Valor por Desconto Empregado">
+                                    <h:panelGrid>
+                                        <h:outputLabel style="margin-left: 20px;" rendered="#{not webContribuintesBean.mostrarPainel}" for="tbl1" id="i_cadastro_m" value="#{webContribuintesBean.lblLink}" styleClass="fontePadraoNegrito"/>
+                                    </h:panelGrid>
+
+                                    <h:panelGrid>
+                                        <h:outputLabel id="lbEdit"  value="#{webContribuintesBean.labelFolha}" styleClass="fonteRederencia"/>
+                                        <h:inputText disabled="#{webContribuintesBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{webContribuintesBean.valor}" >
+                                            <a4j:ajax event="change" render="idValorMes"/>
+                                        </h:inputText>
+
+                                        <h:outputLabel id="lbEdit2"  value="#{webContribuintesBean.labelFolha2}" styleClass="fonteRederencia"/>
+
+                                        <h:inputText disabled="#{webContribuintesBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{webContribuintesBean.qtdFuncionario}" >
+                                            <a4j:ajax event="change" render="qfun"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+
+                                    <br />
+                                    <table border="0" align="center" cellspacing="5" >
+                                        <tr align="center">
+                                            <td>
+                                                <a4j:commandLink styleClass="idNovo iLink" disabled="#{webContribuintesBean.mostrarPainel}" render="tbl1" value="OK" id="fechar" action="#{webContribuintesBean.atualizaValorGrid('descontoEmpregado')}" oncomplete="fecharModal()"/>
+                                            </td>
+                                            <td>
+                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl1" value="Cancelar" />
+                                            </td>
+                                        </tr>
+                                    </table>  
+                                </rich:tab>
+                            </rich:tabPanel>
                             
-                            <br />
-                            <table border="0" align="center" cellspacing="5" >
-                                <tr align="center">
-                                    <td>
-                                        <a4j:commandLink styleClass="idNovo iLink" disabled="#{webContribuintesBean.mostrarPainel}" render="tbl1" value="OK" id="fechar" action="#{webContribuintesBean.atualizaValorGrid}" oncomplete="fecharModal()"/>
-                                    </td>
-                                    <td>
-                                        <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl1" value="Cancelar" />
-                                    </td>
-                                </tr>
-                            </table>                            
+                                                      
                         </center>
                     </div>
                     <div id="mask"></div>

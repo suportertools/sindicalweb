@@ -258,7 +258,7 @@
                         <!-- <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="# {polling.habilita}" /> -->
                         <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" />
                         <h:panelGrid columns="1" id="tbl">
-                            <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!">
+                            <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!" rowStyleClass="#{linha.tblEstilo}">
                                 <f:facet name="footer">
                                     <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples"/>
                                 </f:facet>

@@ -53,6 +53,14 @@
                                                 <p:selectOneMenu id="i_subgrupo" value="#{servicosBean.idSubGrupo}" style="margin-right: 10px; width: 480px" rendered="#{servicosBean.servicos.plano5.id != -1}">
                                                     <f:selectItems value="#{servicosBean.listSubGrupo}"/>
                                                 </p:selectOneMenu>
+                                                
+                                                <p:outputLabel value="Periodo de fornecimento gratuito:"/>
+                                                <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
+                                                    <f:selectItems value="#{servicosBean.listPeriodo}"/>
+                                                </p:selectOneMenu>
+                                                
+                                                <p:outputLabel value="Quantidade por Periodo:"/>
+                                                <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="5"/>                                        
 
                                                 <p:outputLabel value="Dias validos da guia:" for="idDiaValido"/>
                                                 <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90" />

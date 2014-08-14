@@ -730,7 +730,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
     }
 
     @Override
-    public void atualizaValorGrid() {
+    public void atualizaValorGrid(String tipo) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

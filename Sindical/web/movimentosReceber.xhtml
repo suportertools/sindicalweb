@@ -84,7 +84,7 @@
                                     <f:facet name="header"><h:outputText value="Valor"/></f:facet>
                                     
                                     <a4j:commandLink id="valor_folha" style="text-decoration: underline; color: blue;" value="#{linha.argumento6}" rendered="#{linha.argumento3 != 'Acordo'}"
-                                                     action="#{movimentosReceberBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="idValorMes qfun lbEdit lbEdit2 Cadastrar">
+                                                     action="#{movimentosReceberBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="i_panel_valor">
                                         <a4j:param value="#{it.index}" assignTo="#{movimentosReceberBean.index}" />
                                     </a4j:commandLink>
                                     <h:outputText value="#{linha.argumento6}" rendered="#{linha.argumento3 == 'Acordo'}" />
@@ -197,34 +197,58 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:panelGrid>
-                                <a4j:commandLink disabled="#{not movimentosReceberBean.mostrarPainel}" render="tbl" id="Cadastrar" value="#{movimentosReceberBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" styleClass="fontePadrao"/>
-                            </h:panelGrid>
-                            
-                            <h:panelGrid>
-                                    <h:outputText id="lbEdit"  value="#{movimentosReceberBean.labelFolha}" styleClass="fonteRederencia"/>
-                                    <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{movimentosReceberBean.valor}" >
-                                        <a4j:ajax event="change" render="idValorMes"/>
+                            <rich:tabPanel id="i_panel_valor" switchType="client">
+                                <rich:tab header="Valor do Boleto">
+                                    <h:outputText value="Digite um valor para o Boleto" style="font-weight: bold; float: left"/><br />
+                                    <br />
+                                    <h:inputText size="10" id="idValorBoleto" value="#{movimentosReceberBean.valorBoleto}" style="text-align: right; float: left">
+                                        <a4j:ajax event="blur" render="idValorBoleto"/>
                                     </h:inputText>
 
-                                    <h:outputText id="lbEdit2"  value="#{movimentosReceberBean.labelFolha2}" styleClass="fonteRederencia"/>
-                                    
-                                    <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{movimentosReceberBean.qtdFuncionario}" >
-                                        <a4j:ajax event="change" render="qfun"/>
-                                    </h:inputText>
-                            </h:panelGrid>
-                            
-                            <br />
-                            <table border="0" align="center" cellspacing="5" >
-                                <tr align="center">
-                                    <td>
-                                        <a4j:commandLink styleClass="idNovo iLink" disabled="#{movimentosReceberBean.mostrarPainel}" render="tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
-                                    </td>
-                                    <td>
-                                        <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl" value="Cancelar" />
-                                    </td>
-                                </tr>
-                            </table>                            
+                                    <br />
+
+                                    <table border="0" align="center" cellspacing="5" >
+                                        <tr align="center">
+                                            <td>
+                                                <a4j:commandLink styleClass="idNovo iLink" render="tbl" value="OK" action="#{movimentosReceberBean.atualizaValorGrid('valor')}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                            </td>
+                                            <td>
+                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" render="tbl" value="Cancelar" />
+                                            </td>
+                                        </tr>
+                                    </table>  
+                                </rich:tab>
+                                <rich:tab header="Valor por Desconto Empregado">
+                                    <h:panelGrid>
+                                        <a4j:commandLink disabled="#{not movimentosReceberBean.mostrarPainel}" render="tbl" id="Cadastrar" value="#{movimentosReceberBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" styleClass="fontePadrao"/>
+                                    </h:panelGrid>
+
+                                    <h:panelGrid>
+                                        <h:outputText id="lbEdit"  value="#{movimentosReceberBean.labelFolha}" styleClass="fonteRederencia"/>
+                                        <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{movimentosReceberBean.valor}" >
+                                            <a4j:ajax event="change" render="idValorMes"/>
+                                        </h:inputText>
+
+                                        <h:outputText id="lbEdit2"  value="#{movimentosReceberBean.labelFolha2}" styleClass="fonteRederencia"/>
+
+                                        <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{movimentosReceberBean.qtdFuncionario}" >
+                                            <a4j:ajax event="change" render="qfun"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+
+                                    <br />
+                                    <table border="0" align="center" cellspacing="5" >
+                                        <tr align="center">
+                                            <td>
+                                                <a4j:commandLink styleClass="idNovo iLink" disabled="#{movimentosReceberBean.mostrarPainel}" render="tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid('descontoEmpregado')}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                            </td>
+                                            <td>
+                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl" value="Cancelar" />
+                                            </td>
+                                        </tr>
+                                    </table>    
+                                </rich:tab>
+                            </rich:tabPanel>
                         </center>
                     </div>
                     <div id="mask"></div>

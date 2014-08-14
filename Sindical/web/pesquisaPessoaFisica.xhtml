@@ -33,14 +33,16 @@
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                                 <h:panelGrid columns="5">
                                     <p:selectOneMenu value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
-                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl" listener="#{fisicaBean.listaPessoaFisica.clear()}"/>
+                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl" listener="#{fisicaBean.listaPessoaFisica.clear()}" global="false"/>
                                         <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
                                         <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
                                         <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
                                     </p:selectOneMenu>                             
-                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mascaraPesquisaFisica}" />
+                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mascaraPesquisaFisica}">
+                                        <p:ajax event="blur" update="@this" global="false" />
+                                    </p:inputMask>
                                     <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px">
-                                        <p:ajax event="change" update="i_panel_pesquisa" />
+                                        <p:ajax event="change" update="i_panel_pesquisa" global="false"/>
                                         <f:selectItem itemValue="nome"     itemLabel="Nome"/>
                                         <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
                                         <f:selectItem itemValue="rg"      itemLabel="RG"/>
@@ -57,8 +59,8 @@
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
                             
-                            <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado">
-                                <p:column style="width:2%">  
+                            <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                                <p:column style="width:5%">  
                                     <p:rowToggler />  
                                 </p:column>  
                                 
@@ -100,6 +102,11 @@
                             </p:dataTable>
                         </h:form>
                     </p:panel>
+                             
+                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                    <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                        <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
+                    </p:dialog>
                 </f:view>
                 <!-- FINALIZA div wrap main -->
             </div>

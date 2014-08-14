@@ -2,8 +2,11 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.SelectTranslate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,52 +75,30 @@ public class FisicaDBToplink extends DB implements FisicaDB {
 
     @Override
     public List pesquisaPessoa(String desc, String por, String como) {
-        List lista = new Vector<Object>();
-        String textQuery = null;
-        if (por.equals("nome")) {
-            por = "nome";
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis"
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
-            }
+        if (desc.isEmpty()){
+            return new ArrayList();
         }
-        if (por.equals("email1") || por.equals("email2")) {
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "  where UPPER(pes." + por + ") like :desc";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
-            }
-        }
-        if (por.equals("rg")) {
-            por = "rg";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis." + por + ") like :desc";
-        }
-        if (por.equals("cpf")) {
-            por = "documento";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis.pessoa." + por + ") like :desc";
-        }
-        if (por.equals("endereco")) {
-            desc = desc.toLowerCase().toUpperCase();
-            if (desc.isEmpty()) {
-                return new Vector<Object>();
-            }
-            String queryEndereco = ""
-                    + "       SELECT fis.id "
+        String textQuery = "";
+                
+        desc = AnaliseString.normalizeLower(desc);
+        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
+        
+        String field = "";
+                
+        if (por.equals("nome")) field = "p.ds_nome";  
+        if (por.equals("email1")) field = "p.ds_email1";
+        if (por.equals("email2")) field = "p.ds_email2";
+        if (por.equals("rg")) field = "f.ds_rg";
+        if (por.equals("cpf")) field = "p.ds_documento";
+        
+        textQuery = " SELECT f.id FROM pes_fisica f " +
+                    "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                    "  WHERE LOWER(TRANSLATE("+field+")) LIKE '" + desc + "'" +
+                    "  ORDER BY p.ds_nome";
+
+        if (por.equals("endereco")){
+            textQuery = 
+                      "       SELECT fis.id "
                     + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
                     + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
                     + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
@@ -126,106 +107,79 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                     + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                     + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                    + "  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%" + desc + "%')  "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%" + desc + "%')                                "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%" + desc + "%')                                                    "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                               "
-                    + "     OR UPPER(enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                                                           "
-                    + "     OR UPPER(cid.ds_cidade) LIKE UPPER('%" + desc + "%')                                                                                                                 "
-                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' ";
+                    + "  WHERE LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
+                    + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                "
+                    + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
+                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "'"
+                    + "  ORDER BY pes.ds_nome";
 
-            Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
-            List listEndereco = qryEndereco.getResultList();
-            String listaId = "";
-            if (!listEndereco.isEmpty()) {
-                for (int i = 0; i < listEndereco.size(); i++) {
-                    if (i == 0) {
-                        listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    } else {
-                        listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    }
+        }
+        
+        if (por.equals("codigo")){
+            textQuery =
+                    " SELECT f.id FROM pes_fisica f " +
+                    "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                    "  INNER JOIN pes_pessoa_empresa pe ON f.id = pe.id_fisica " +
+                    "  WHERE pe.ds_codigo LIKE '" + desc +"'" +
+                    "  ORDER BY p.ds_nome";
+        }
+        
+        Query qry = getEntityManager().createNativeQuery(textQuery);
+
+        List<Vector> result_list = qry.getResultList();
+        List<Object> return_list = new ArrayList<Object>();
+
+        if (!result_list.isEmpty()){
+            if (result_list.size() > 1){
+                String listId = "";
+                for (int i = 0; i < result_list.size(); i++){
+                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
                 }
-                textQuery = " SELECT FIS FROM Fisica AS FIS WHERE FIS.id IN(" + listaId + ")";
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id IN ( " + listId + " )").getResultList();
+            }else{
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id = " + (Integer) result_list.get(0).get(0)).getResultList();
             }
         }
-
-        if (por.equals("codigo")) {
-            textQuery
-                    = "SELECT pe.fisica FROM PessoaEmpresa pe "
-                    + " WHERE pe.codigo = :desc ";
-        }
-
-        try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco")) {
-                    qry.setParameter("desc", desc);
-                }
-            }
-            lista = qry.getResultList();
-        } catch (Exception e) {
-            lista = new Vector<Object>();
-        }
-        return lista;
+        
+        return return_list;
     }
 
     @Override
     public List pesquisaPessoaSocio(String desc, String por, String como) {
-        List lista = new Vector<Object>();
-        String textQuery = null;
-        if (por.equals("nome")) {
-            por = "nome";
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc  where soc.servicoPessoa.ativo = true )";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
-            }
+        if (desc.isEmpty()){
+            return new ArrayList();
         }
-
-        if (por.equals("email1") || por.equals("email2")) {
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
-            }
-        }
-
-        if (por.equals("rg")) {
-            por = "rg";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis." + por + ") like :desc "
-                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
-        }
-        if (por.equals("cpf")) {
-            por = "documento";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis.pessoa." + por + ") like :desc"
-                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
-        }
-
-        if (por.equals("endereco")) {
-            desc = desc.toLowerCase().toUpperCase();
-            if (desc.isEmpty()) {
-                return new Vector<Object>();
-            }
-            String queryEndereco = ""
-                    + "       SELECT fis.id "
+        String textQuery = "";
+                
+        desc = AnaliseString.normalizeLower(desc);
+        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
+        
+        String field = "";
+        
+        if (por.equals("nome")) field = "p.ds_nome";  
+        if (por.equals("email1")) field = "p.ds_email1";
+        if (por.equals("email2")) field = "p.ds_email2";
+        if (por.equals("rg")) field = "f.ds_rg";
+        if (por.equals("cpf")) field = "f.ds_cpf";
+        
+        textQuery = 
+                " SELECT f.id FROM pes_fisica f " +
+                "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                "  WHERE LOWER(TRANSLATE("+field+")) LIKE '" + desc + "'" +
+                "    AND p.id IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "          WHERE sp.is_ativo = TRUE " +
+                "    ) " +
+                "  ORDER BY p.ds_nome";
+        
+        if (por.equals("endereco")){
+            textQuery = 
+                      "       SELECT fis.id "
                     + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
                     + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
                     + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
@@ -234,120 +188,114 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                     + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                     + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                    + "  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%" + desc + "%')  "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%" + desc + "%')                                "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%" + desc + "%')                                                    "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                               "
-                    + "     OR UPPER(enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                                                           "
-                    + "     OR UPPER(cid.ds_cidade) LIKE UPPER('%" + desc + "%')                                                                                                                 "
-                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' ";
+                    + "  WHERE ("
+                    + "     LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
+                    + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                "
+                    + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
+                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "'"
+                    + "  ) " 
+                    + "  AND pes.id IN ( " 
+                    + "         SELECT p2.id FROM fin_servico_pessoa sp " 
+                    + "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " 
+                    + "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " 
+                    + "          WHERE sp.is_ativo = TRUE " 
+                    + "  ) " 
+                    + "  ORDER BY pes.ds_nome";
 
-            Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
-            List listEndereco = qryEndereco.getResultList();
-            String listaId = "";
-            if (!listEndereco.isEmpty()) {
-                for (int i = 0; i < listEndereco.size(); i++) {
-                    if (i == 0) {
-                        listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    } else {
-                        listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    }
-                }
-                textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN(" + listaId + ") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE soc.servicoPessoa.ativo = true )";
-            }
         }
-
+        
         if (por.equals("matricula")) {
-            //por = "documento";
-            //desc = desc.toLowerCase().toUpperCase();
-            if (!desc.isEmpty()) {
-                textQuery = "SELECT fis "
-                        + "  FROM Fisica fis "
-                        + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = " + Integer.valueOf(desc) + " )";
-            }
+            textQuery = 
+                " SELECT f.id FROM pes_fisica f " +
+                "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                "  WHERE p.id IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "          INNER JOIN matr_socios ms ON  ms.id = s.id_matricula_socios " +
+                "          WHERE sp.is_ativo = TRUE " +
+                "            AND ms.nr_matricula = " + desc.replace("%", "") +
+                "    ) " +
+                "  ORDER BY p.ds_nome";
         }
-
-        if (por.equals("codigo")) {
-            textQuery
-                    = "  SELECT pe.fisica FROM PessoaEmpresa pe "
-                    + " WHERE pe.codigo = :desc "
-                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true )";
+        
+        
+        if (por.equals("codigo")){
+            textQuery =
+                    " SELECT f.id FROM pes_fisica f " +
+                    "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                    "  INNER JOIN pes_pessoa_empresa pe ON f.id = pe.id_fisica " +
+                    "  WHERE pe.ds_codigo LIKE '" + desc +"'" +
+                    "    AND p.id IN ( " +
+                    "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                    "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                    "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                    "          WHERE sp.is_ativo = TRUE " +
+                    "    ) " +
+                    "  ORDER BY p.ds_nome";
         }
+                
+        Query qry = getEntityManager().createNativeQuery(textQuery);
 
-        try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco") && !por.equals("matricula")) {
-                    qry.setParameter("desc", desc);
+        List<Vector> result_list = qry.getResultList();
+        List<Object> return_list = new ArrayList<Object>();
+
+        if (!result_list.isEmpty()){
+            if (result_list.size() > 1){
+                String listId = "";
+                for (int i = 0; i < result_list.size(); i++){
+                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
                 }
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id IN ( " + listId + " )").getResultList();
+            }else{
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id = " + (Integer) result_list.get(0).get(0)).getResultList();
             }
-            lista = qry.getResultList();
-        } catch (Exception e) {
-            lista = new Vector<Object>();
         }
-        return lista;
+        
+        return return_list;
     }
 
     @Override
     public List pesquisaPessoaSocioInativo(String desc, String por, String como) {
-        List lista = new Vector<Object>();
-        String textQuery = null;
-        if (por.equals("nome")) {
-            por = "nome";
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-            }
+        if (desc.isEmpty()){
+            return new ArrayList();
         }
-        if (por.equals("email1") || por.equals("email2")) {
-            if (como.equals("P")) {
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-            } else if (como.equals("I")) {
-                por = "nome";
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = " select fis from Fisica fis "
-                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-            }
-        }
-        if (por.equals("rg")) {
-            por = "rg";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis." + por + ") like :desc "
-                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                    + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-        }
-        if (por.equals("cpf")) {
-            por = "documento";
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis "
-                    + "  where UPPER(fis.pessoa." + por + ") like :desc"
-                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                    + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
-        }
-        if (por.equals("endereco")) {
-            desc = desc.toLowerCase().toUpperCase();
-            if (desc.isEmpty()) {
-                return new Vector<Object>();
-            }
-            String queryEndereco = ""
-                    + "       SELECT fis.id "
+        String textQuery = "";
+                
+        desc = AnaliseString.normalizeLower(desc);
+        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
+        
+        String field = "";
+        
+        if (por.equals("nome")) field = "p.ds_nome";  
+        if (por.equals("email1")) field = "p.ds_email1";
+        if (por.equals("email2")) field = "p.ds_email2";
+        if (por.equals("rg")) field = "f.ds_rg";
+        if (por.equals("cpf")) field = "f.ds_cpf";        
+        
+        textQuery = 
+                " SELECT f.id FROM pes_fisica f " +
+                "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                "  WHERE LOWER(TRANSLATE("+field+")) LIKE '" + desc + "'" +
+                "    AND p.id IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "    ) " +
+                "    AND p.id NOT IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "          WHERE sp.is_ativo = TRUE " +
+                "    ) " +
+                "  ORDER BY p.ds_nome";        
+                
+        if (por.equals("endereco")){
+            textQuery = 
+                      "       SELECT fis.id "
                     + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
                     + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
                     + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
@@ -356,64 +304,87 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                     + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                     + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                    + "  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%" + desc + "%')  "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%" + desc + "%')                                "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%" + desc + "%')                                                    "
-                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                               "
-                    + "     OR UPPER(enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                                                           "
-                    + "     OR UPPER(cid.ds_cidade) LIKE UPPER('%" + desc + "%')                                                                                                                 "
-                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' ";
+                    + "  WHERE ("
+                    + "     LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
+                    + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
+                    + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                "
+                    + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
+                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "'"
+                    + "  ) " 
+                    + "  AND pes.id IN ( " 
+                    + "         SELECT p2.id FROM fin_servico_pessoa sp " 
+                    + "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " 
+                    + "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " 
+                    + "  ) " 
+                    + "  AND pes.id NOT IN ( " 
+                    + "         SELECT p2.id FROM fin_servico_pessoa sp " 
+                    + "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " 
+                    + "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " 
+                    + "          WHERE sp.is_ativo = TRUE " 
+                    + "  ) " 
+                    + "  ORDER BY pes.ds_nome";
 
-            Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
-            List listEndereco = qryEndereco.getResultList();
-            String listaId = "";
-            if (!listEndereco.isEmpty()) {
-                for (int i = 0; i < listEndereco.size(); i++) {
-                    if (i == 0) {
-                        listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    } else {
-                        listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-                    }
-                }
-                textQuery = " SELECT FIS                    "
-                        + "     FROM Fisica AS FIS,         "
-                        + "          Pessoa AS PES          "
-                        + "    WHERE FIS.id IN(" + listaId + ") "
-                        //+ "      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC WHERE SOC.matriculaSocios.motivoInativacao IS NOT NULL )  "
-                        + "      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC )  "
-                        + "      AND FIS.pessoa.id NOT IN( SELECT SOC2.servicoPessoa.pessoa.id FROM Socios SOC2 WHERE SOC2.servicoPessoa.ativo = true )             ";
-            }
-        }
-
+        }        
+        
         if (por.equals("matricula")) {
-            if (!desc.isEmpty()) {
-                textQuery = "SELECT fis "
-                        + "  FROM Fisica fis "
-                        + "  WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.matriculaSocios.nrMatricula = :desc) "
-                        + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = " + Integer.valueOf(desc) + " ) ";
-            }
+            textQuery = 
+                " SELECT f.id FROM pes_fisica f " +
+                "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                "  WHERE p.id IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "          INNER JOIN matr_socios ms ON  ms.id = s.id_matricula_socios " +
+                "            AND ms.nr_matricula = " + desc.replace("%", "") +
+                "  ) " +
+                "  AND p.id NOT IN ( " +
+                "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                "          WHERE sp.is_ativo = TRUE " +
+                "  ) " +
+                "  ORDER BY p.ds_nome";
         }
+        
+        
+        if (por.equals("codigo")){
+            textQuery =
+                    " SELECT f.id FROM pes_fisica f " +
+                    "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+                    "  INNER JOIN pes_pessoa_empresa pe ON f.id = pe.id_fisica " +
+                    "  WHERE pe.ds_codigo LIKE '" + desc +"'" +
+                    "    AND p.id IN ( " +
+                    "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                    "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                    "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                    "    ) " +
+                    "    AND p.id NOT IN ( " +
+                    "         SELECT p2.id FROM fin_servico_pessoa sp " +
+                    "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa " +
+                    "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa " +
+                    "          WHERE sp.is_ativo = TRUE " +
+                    "    ) " +                    
+                    "  ORDER BY p.ds_nome";
+        }        
+        Query qry = getEntityManager().createNativeQuery(textQuery);
 
-        if (por.equals("codigo")) {
-            textQuery
-                    = " SELECT pe.fisica FROM PessoaEmpresa pe "
-                    + " WHERE pe.codigo = :desc "
-                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc ) "
-                    + "   AND pe.fisica.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true ) ";
-        }
+        List<Vector> result_list = qry.getResultList();
+        List<Object> return_list = new ArrayList<Object>();
 
-        try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco") && !por.equals("matricula")) {
-                    qry.setParameter("desc", desc);
+        if (!result_list.isEmpty()){
+            if (result_list.size() > 1){
+                String listId = "";
+                for (int i = 0; i < result_list.size(); i++){
+                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
                 }
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id IN ( " + listId + " )").getResultList();
+            }else{
+                return getEntityManager().createQuery("SELECT f FROM Fisica f WHERE f.id = " + (Integer) result_list.get(0).get(0)).getResultList();
             }
-            lista = qry.getResultList();
-        } catch (Exception e) {
-            lista = new Vector<Object>();
         }
-        return lista;
+        return return_list;
     }
 
     @Override

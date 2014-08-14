@@ -701,10 +701,12 @@ public class WebContabilidadeJSFBean extends MovimentoValorJSFBean {
         this.priceRef = priceRef;
     }
 
+    @Override
     public void carregarFolha(DataObject data) {
         
     }
     
+    @Override
     public void carregarFolha() {
         if (!listMovimentos.isEmpty()) {
             MovimentoDB db = new MovimentoDBToplink();
@@ -713,11 +715,12 @@ public class WebContabilidadeJSFBean extends MovimentoValorJSFBean {
         }
     }
 
-    public void atualizaValorGrid() {
+    @Override
+    public void atualizaValorGrid(String tipo) {
         // antes ---
         //listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(true));
 
-        listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(false));
+        listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(true, tipo));
         listMovimentos.clear();
     }
 
