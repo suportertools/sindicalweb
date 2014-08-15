@@ -127,7 +127,7 @@ public class ConviteMovimentoBean implements Serializable {
     public void close() {
         novo();
         visibility = false;
-        RequestContext.getCurrentInstance().execute("dgl_adicionar.hide()");
+        RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').hide()");
         RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
     }
 
@@ -425,7 +425,7 @@ public class ConviteMovimentoBean implements Serializable {
                 );
                 dB.comitarTransacao();
                 msg = "Registro inativado com sucesso";
-                RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+                RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
                 RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
             } else {
                 dB.desfazerTransacao();
@@ -466,7 +466,7 @@ public class ConviteMovimentoBean implements Serializable {
                 break;
             }
         }
-        RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+        RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
         RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
     }
 
@@ -499,20 +499,20 @@ public class ConviteMovimentoBean implements Serializable {
             Pessoa p = (Pessoa) ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
             conviteMovimento.setPessoa(p);
             carregaSocio(p);
-            RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+            RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
             RequestContext.getCurrentInstance().update("i_panel_adicionar");
             visibility = true;
             carregaEndereco(p);
         }
         if (GenericaSessao.exists("sisPessoaPesquisa")) {
             conviteMovimento.setSisPessoa(((SisPessoa) GenericaSessao.getObject("sisPessoaPesquisa", true)));
-            RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+            RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
             RequestContext.getCurrentInstance().update("i_panel_adicionar");
             visibility = true;
         }
         if (GenericaSessao.exists("enderecoPesquisa")) {
             conviteMovimento.getSisPessoa().setEndereco((Endereco) GenericaSessao.getObject("enderecoPesquisa", true));
-            RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+            RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
             RequestContext.getCurrentInstance().update("i_panel_adicionar");
             visibility = true;
         }

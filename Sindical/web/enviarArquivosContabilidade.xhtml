@@ -17,6 +17,7 @@
     <h:body class="divMenu">
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
+            <ui:include src="templates/templateStatus.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="form_relatorio" enctype="multipart/form-data" acceptcharset="UTF-8">
@@ -101,12 +102,6 @@
                             <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contabilidade')}" update="id_messages_growl" />
                             <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novaContabilidade}" />                            
                         </h:panelGrid>
-
-                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="i_dlg_modal.hide();" />
-
-                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                            <h:outputLabel value="... Aguarde ..." />
-                        </p:dialog> 
 
                         <p:dialog modal="true" widgetVar="i_dlg_pesquisa" header="Pesquisar Específica" width="500">
                             <p:inputText id="i_pesquisa" value="#{enviarArquivosBean.descricao}" size="50"/>
