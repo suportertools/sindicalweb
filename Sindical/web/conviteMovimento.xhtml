@@ -78,7 +78,7 @@
                             <h:outputScript name="script_primefaces.js" library="js" />
                             <div style="float: left; width: 600px; margin-right: 15px;">
                                 <p:panel header="Sócio">
-                                    <h:panelGrid columns="2">
+                                    <h:panelGrid id="i_panel_convite" columns="2">
                                         <p:outputLabel value="Código:" />
                                         <p:outputLabel value="#{conviteMovimentoBean.socios.matriculaSocios.nrMatricula}" />
                                         <p:commandButton icon="ui-icon-search" title="Pesquisar sócio" action="#{chamadaPaginaBean.pesquisaSocios}" disabled="#{conviteMovimentoBean.desabilitaCampos}"/>
@@ -92,10 +92,15 @@
                                         </h:column>
                                         <p:outputLabel value="Usuário:" />
                                         <p:outputLabel value="#{conviteMovimentoBean.usuario.pessoa.nome}" />
-                                        <h:column></h:column>
+                                        
                                         <p:selectBooleanCheckbox value="#{conviteMovimentoBean.conviteMovimento.cortesia}" itemLabel="Cortesia" disabled="#{conviteMovimentoBean.desabilitaCampos}">
-                                            <p:ajax event="change" update="idDescricaoAutoriza idComboAutoriza, id_calcula_valor" />
+                                            <p:ajax event="change" update="idDescricaoAutoriza idComboAutoriza, id_calcula_valor i_panel_convite" />
                                         </p:selectBooleanCheckbox>
+                                        
+                                        <h:column>
+                                            <p:inputText value="#{conviteMovimentoBean.conviteMovimento.controleCortesia}" rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}" placeholder="Digite um Controle Convite" size="50"/>
+                                        </h:column>
+                                        
                                         <h:column>
                                             <h:panelGrid id="idDescricaoAutoriza">
                                                 <p:outputLabel value="Autorizada por: " rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}"/>

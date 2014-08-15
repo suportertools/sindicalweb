@@ -429,7 +429,10 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
             GenericaMensagem.warn("Validação", "Pessoa já Cadastrada!");
             PF.openDialog("dlg_message");
             rais = new Rais();
+            return;
         }
+        
+        PF.update(":form_rais");
     }
 
     public String edit(Rais r) {

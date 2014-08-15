@@ -55,7 +55,9 @@ public class ConviteMovimento implements Serializable {
     @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
     @ManyToOne
     private ConviteServico conviteServico;
-
+    @Column(name = "DS_CONTROLE_CORTESIA", length = 200)
+    private String controleCortesia;
+    
     public ConviteMovimento() {
         this.id = -1;
         this.observacao = "";
@@ -71,9 +73,10 @@ public class ConviteMovimento implements Serializable {
         this.dtValidade = DataHoje.dataHoje();
         this.dtEmissao = DataHoje.dataHoje();
         this.conviteServico = new ConviteServico();
+        this.controleCortesia = "";
     }
 
-    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, Pessoa autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico) {
+    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, Pessoa autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico, String controleCortesia) {
         this.id = id;
         this.observacao = observacao;
         this.sisPessoa = sisPessoa;
@@ -88,6 +91,7 @@ public class ConviteMovimento implements Serializable {
         this.dtValidade = DataHoje.converte(validade);
         this.dtEmissao = DataHoje.converte(emissao);
         this.conviteServico = conviteServico;
+        this.controleCortesia = controleCortesia;
     }
 
     public int getId() {
@@ -221,5 +225,13 @@ public class ConviteMovimento implements Serializable {
     @Override
     public String toString() {
         return "ConviteMovimento{" + "id=" + id + ", observacao=" + observacao + ", sisPessoa=" + sisPessoa + ", pessoa=" + pessoa + ", usuario=" + usuario + ", usuarioInativacao=" + usuarioInativacao + ", evt=" + evt + ", departamento=" + departamento + ", autorizaCortesia=" + autorizaCortesia + ", cortesia=" + cortesia + ", ativo=" + ativo + ", dtValidade=" + dtValidade + ", dtEmissao=" + dtEmissao + ", conviteServico=" + conviteServico + '}';
+    }
+
+    public String getControleCortesia() {
+        return controleCortesia;
+    }
+
+    public void setControleCortesia(String controleCortesia) {
+        this.controleCortesia = controleCortesia;
     }
 }

@@ -16,6 +16,7 @@
     <h:body class="divMenu">
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
+            <ui:include src="templates/templateStatus.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="form_relatorio" enctype="multipart/form-data" acceptcharset="UTF-8">
@@ -52,25 +53,33 @@
                     
                     <h:panelGrid id="id_panel_grid">
                         <p:panel header="Filtro">
-                            <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
-                                <p:outputLabel value="Convenção: " />
-                                <p:selectCheckboxMenu label="Selecionar convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
-                                    <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <p:ajax event="change" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <f:selectItems value="#{enviarArquivosBean.convencaos}" />
-                                </p:selectCheckboxMenu>
-                                <p:outputLabel value="Grupo cidade:"/>
-                                <p:selectCheckboxMenu label="Selecionar grupo cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
-                                    <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <p:ajax event="change" update="i_panel"  listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
-                                </p:selectCheckboxMenu>
-                                <p:outputLabel value="Cnae conveção" />
-                                <p:selectCheckboxMenu label="Selecionar cnae convenção" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
-                                    <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <p:ajax event="change" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                    <f:selectItems value="#{enviarArquivosBean.cnaes}" />
-                                </p:selectCheckboxMenu>
+                            <h:panelGrid id="i_panel_filtro" columns="3" cellpadding="5">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Convenção: " />
+                                    <p:selectCheckboxMenu label="Selecionar Convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
+                                        <p:ajax event="toggleSelect" update="i_c1 i_c2 i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
+                                        <p:ajax event="change" update="i_c1 i_c2 i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
+                                        <f:selectItems value="#{enviarArquivosBean.convencaos}" />
+                                    </p:selectCheckboxMenu>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid id="i_c1">
+                                    <p:outputLabel value="Grupo cidade:"/>
+                                    <p:selectCheckboxMenu label="Selecionar Grupo Cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
+                                        <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                        <p:ajax event="change" update="i_panel"  listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                        <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
+                                    </p:selectCheckboxMenu>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid id="i_c2">
+                                    <p:outputLabel value="Cnae Conveção" />
+                                    <p:selectCheckboxMenu label="Selecionar cnae convenção" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
+                                        <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                        <p:ajax event="change" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                        <f:selectItems value="#{enviarArquivosBean.cnaes}" />
+                                    </p:selectCheckboxMenu>
+                                </h:panelGrid>
                             </h:panelGrid>
                         </p:panel>
                         
@@ -121,12 +130,6 @@
                             <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contribuinte')}" update="id_messages_growl" />
                             <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novoContribuinte()}" />                            
                         </h:panelGrid>
-                        
-                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="i_dlg_modal.hide();" />
-
-                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                            <h:outputLabel value="... Aguarde ..." />
-                        </p:dialog> 
 
                         <p:dialog modal="true" widgetVar="i_dlg_pesquisa" header="Pesquisar Específica" width="500">
                             <p:inputText id="i_pesquisa" value="#{enviarArquivosBean.descricao}" size="50"/>

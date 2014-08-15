@@ -76,6 +76,10 @@ public class EnviarArquivosBean implements Serializable {
     private String descricao = "";
 
     /* EMPRESA */
+    public void limparEmpresa(){
+        listaContribuintes.clear();
+    }
+    
     public void todasEmpresa() {
         listaContribuintes.clear();
         adicionar = false;

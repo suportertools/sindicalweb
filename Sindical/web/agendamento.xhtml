@@ -249,8 +249,9 @@
                                 <a4j:commandLink styleClass="idSalvar iLink"    value="Voltar" action="#{agendamentoBean.cancelar}" render="id_form_agendamento, id_form_agendamento_novo" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                                <h:commandLink value="Imprimir Protocolo" id="i_imprime_protocolo_3" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao"/>
-                                <h:commandLink value="Imprirmir" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" styleClass="fontePadrao" />
+                                <h:commandLink id="i_imprime_protocolo_3" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao">
+                                    <p:button icon="ui-icon-print" value="Imprimir Protocolo" />
+                                </h:commandLink>
                             </h:panelGrid>
                         </rich:panel>
                     </rich:panel>

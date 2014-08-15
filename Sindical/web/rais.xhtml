@@ -42,21 +42,21 @@
                                             <h:column>
                                                 <h:panelGrid columns="8" columnClasses="margin-left margin-left">
                                                     <p:inputMask value="#{raisBean.rais.emissaoString}"  mask="99/99/9999" converter="#{isDateString}" size="8" styleClass="bg-yellow-ligth" readonly="true">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" />
                                                     </p:inputMask>
                                                     <p:outputLabel value="CPF:"  styleClass="margin-left-max"/>
                                                     <p:inputMask value="#{raisBean.rais.sisPessoa.documento}" mask="999.999.999-99" size="12" disabled="#{raisBean.rais.id != -1}">
-                                                        <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                                        <p:ajax event="change" update=":form_rais" listener="#{raisBean.searchSisPessoa()}"/>
                                                     </p:inputMask>
                                                     <p:outputLabel value="Nascimento:" styleClass="margin-left-max"/>
                                                     <p:inputMask value="#{raisBean.rais.sisPessoa.nascimento}" mask="99/99/9999" converter="#{isDateString}" size="8">
-                                                        <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                                        <p:ajax event="change" update=":form_rais" listener="#{raisBean.searchSisPessoa()}" />
                                                     </p:inputMask>
                                                 </h:panelGrid>
                                             </h:column>
                                             <p:outputLabel value="Nome:"/>
                                             <p:inputText size="100" value="#{raisBean.rais.sisPessoa.nome}" converter="#{toUpperCase}">
-                                                <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                                <p:ajax event="change" update=":form_rais" listener="#{raisBean.searchSisPessoa()}"/>
                                             </p:inputText>
                                         </h:panelGrid>                                    
                                         <br />

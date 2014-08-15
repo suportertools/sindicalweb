@@ -804,7 +804,7 @@ public class SociosBean implements Serializable {
         modelVisible = false;
         index_dependente = 0;
         novoDependente = new Fisica();
-        RequestContext.getCurrentInstance().execute("dlg_dependente.hide()");
+        RequestContext.getCurrentInstance().execute("PF('dlg_dependente').hide()");
     }
 
     public boolean validaSalvarDependente() {
@@ -827,7 +827,7 @@ public class SociosBean implements Serializable {
                 }
             }
         } else {
-            if (novoDependente.getPessoa().getDocumento().equals("") || novoDependente.getPessoa().getDocumento().equals("0")) {
+            if (novoDependente.getPessoa().getDocumento().isEmpty() || novoDependente.getPessoa().getDocumento().equals("0")) {
                 novoDependente.getPessoa().setDocumento("0");
             } else {
 
@@ -877,7 +877,7 @@ public class SociosBean implements Serializable {
     }
     
     public void pesquisaCPF(){
-        if (!novoDependente.getPessoa().getDocumento().isEmpty()){
+        if (!novoDependente.getPessoa().getDocumento().isEmpty() && !novoDependente.getPessoa().getDocumento().equals("___.___.___-__")){
             FisicaDB db = new FisicaDBToplink();
             List<Fisica> listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()){
