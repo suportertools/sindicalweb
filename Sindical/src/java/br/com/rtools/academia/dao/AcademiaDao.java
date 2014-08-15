@@ -98,7 +98,7 @@ public class AcademiaDao extends DB {
 
     public List<AcademiaServicoValor> listaAcademiaServicoValorPorServico(int idServico) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servicos ORDER BY ASV.academiaGrade.horaInicio ASC, ASV.academiaGrade.horaFim ASC, ASV.periodo.id ASC");
+            Query query = getEntityManager().createQuery(" SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servicos ORDER BY ASV.servicos.descricao ASC, ASV.periodo.dias ASC");
             query.setParameter("servicos", idServico);
             List list = query.getResultList();
             if (!list.isEmpty()) {

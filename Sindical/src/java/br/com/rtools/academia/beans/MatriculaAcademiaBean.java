@@ -615,15 +615,16 @@ public class MatriculaAcademiaBean implements Serializable {
     public List<SelectItem> getListaPeriodosGrade() {
         if (listaPeriodosGrade.isEmpty()) {
             if (!listaModalidades.isEmpty()) {
-                AcademiaDao db = new AcademiaDao();
+                // AcademiaDao db = new AcademiaDao();
 
                 DaoInterface di = new Dao();
-
-                List<AcademiaServicoValor> listaAcademiaServicoValor = di.list(new AcademiaServicoValor(), true);
+                AcademiaDao academiaDao = new AcademiaDao();
+                // List<AcademiaServicoValor> listaAcademiaServicoValor = di.list(new AcademiaServicoValor(), true);
+                List<AcademiaServicoValor> listaAcademiaServicoValor = academiaDao.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
 
                 for (int w = 0; w < listaAcademiaServicoValor.size(); w++) {
                     String text = "";
-                    List<AcademiaSemana> listaAcademiaSemana = db.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());
+                    List<AcademiaSemana> listaAcademiaSemana = academiaDao.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());
                     for (int i = 0; i < listaAcademiaSemana.size(); i++) {
                         text += listaAcademiaSemana.get(i).getSemana().getDescricao().substring(0, 3) + ": " + listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio() + " às " + listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim() + " ";
                         //listaPeriodosGrade.add(new SelectItem(i, text, Integer.toString(listaAcademiaSemana.get(i).getId())));
