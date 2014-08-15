@@ -3,7 +3,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" onerror="PF('i_dlg_err').show();" />
+    <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false" resizable="false">
         <h:outputLabel value="Carregando ... Aguarde" />
     </p:dialog>
