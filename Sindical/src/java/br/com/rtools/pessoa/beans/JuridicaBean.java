@@ -74,9 +74,9 @@ public class JuridicaBean implements Serializable {
     private String cnaeContribuinte = " sem cnae! ";
     private String enderecoCobranca = "";
     private String strSimpleEndereco = "";
-    private String renNovoEndereco = "false";
-    private String renEndereco = "false";
-    private String renAbreEnd = "true";
+    private boolean renNovoEndereco = false;
+    private boolean renEndereco = false;
+    private boolean renAbreEnd = true;
     private String renChkEndereco = "false";
     private String colorContri = "red";
     private String numDocumento = "";
@@ -697,9 +697,9 @@ public class JuridicaBean implements Serializable {
         renChkEndereco = "false";
         cnaeContribuinte = " sem cnae! ";
         colorContri = "red";
-        renEndereco = "false";
-        renNovoEndereco = "false";
-        renAbreEnd = "true";
+        renEndereco = false;
+        renNovoEndereco = false;
+        renAbreEnd = true;
         msgDocumento = "";
         listaEnd = new ArrayList();
         idTipoDocumento = 1;
@@ -832,8 +832,8 @@ public class JuridicaBean implements Serializable {
             } else {
                 renChkEndereco = "true";
             }
-            renNovoEndereco = "false";
-            renEndereco = "false";
+            renNovoEndereco = false;
+            renEndereco = false;
             alterarEnd = true;
             listaEnd = new ArrayList();
             enderecoCobranca = "NENHUM";
@@ -937,8 +937,8 @@ public class JuridicaBean implements Serializable {
             } else {
                 renChkEndereco = "true";
             }
-            renNovoEndereco = "false";
-            renEndereco = "false";
+            renNovoEndereco = false;
+            renEndereco = false;
             alterarEnd = true;
             listaEnd = new ArrayList();
             enderecoCobranca = "NENHUM";
@@ -977,8 +977,8 @@ public class JuridicaBean implements Serializable {
             } else {
                 renChkEndereco = "true";
             }
-            renNovoEndereco = "false";
-            renEndereco = "false";
+            renNovoEndereco = false;
+            renEndereco = false;
             alterarEnd = true;
             listaEnd = new ArrayList();
             enderecoCobranca = "NENHUM";
@@ -1075,8 +1075,8 @@ public class JuridicaBean implements Serializable {
                 }
                 alterarEnd = false;
             }
-            renEndereco = "true";
-            renNovoEndereco = "false";
+            renEndereco = true;
+            renNovoEndereco = false;
         }
         setEnderecoCompleto("");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
@@ -1123,18 +1123,17 @@ public class JuridicaBean implements Serializable {
         return listaEnd;
     }
 
-    public String abreEndereco() {
+    public void abreEndereco() {
         listaEnd = getListaEnderecos();
         if (listaEnd.isEmpty()) {
-            renEndereco = "false";
-            renNovoEndereco = "true";
+            renEndereco = false;
+            renNovoEndereco = true;
             pessoaEndereco = new PessoaEndereco();
             listaEnd = new ArrayList();
         } else {
-            renEndereco = "true";
-            renNovoEndereco = "false";
+            renEndereco = true;
+            renNovoEndereco = false;
         }
-        return "pessoaJuridica";
     }
 
     public void salvarEndereco() {
@@ -1151,7 +1150,6 @@ public class JuridicaBean implements Serializable {
                     } else {
                         salvarAcumuladoDB.desfazerTransacao();
                         msgConfirma = "Erro ao Salvar Endereço!";
-
                     }
                     pessoaEndereco = new PessoaEndereco();
                 }
@@ -1199,7 +1197,9 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco.setEndereco(endereco);
                     listaEnd.set(1, pessoaEndereco);
                 }
-            } else if (juridica != null) {
+            } if (!juridica.isCobrancaEscritorio() && (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)) { 
+                listaEnd.set(1, listaEnd.get(0));
+            }else if (juridica != null) {
                 if (juridica.getContabilidade() != null) {
                     if (comparaEndereco((PessoaEndereco) listaEnd.get(1), db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3))) {
                         PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
@@ -1275,8 +1275,8 @@ public class JuridicaBean implements Serializable {
         cid = pessoaEndereco.getEndereco().getCidade().getCidade();
         uf = pessoaEndereco.getEndereco().getCidade().getUf();
         setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
-        renEndereco = "false";
-        renNovoEndereco = "true";
+        renEndereco = false;
+        renNovoEndereco = true;
         alterarEnd = true;
         return "pessoaJuridica";
     }
@@ -1544,17 +1544,32 @@ public class JuridicaBean implements Serializable {
         return cnaeConvencao;
     }
 
-    public String btnExcluirContabilidadePertencente() {
-        if (juridica.getId() != -1) {
-            //chkEndContabilidade = false;
-            salvarEndereco();
-            juridica.setContabilidade(null);
-            juridica.setEmailEscritorio(false);
-        } else {
-            juridica.setContabilidade(null);
-            juridica.setEmailEscritorio(false);
+    public void btnExcluirContabilidadePertencente() {
+//        if (juridica.getId() != -1) {
+//            //chkEndContabilidade = false;
+//            juridica.setContabilidade(null);
+//            juridica.setEmailEscritorio(false);
+//            juridica.setCobrancaEscritorio(false);
+//            
+//            //salvarEndereco();
+//        } else {
+//            juridica.setContabilidade(null);
+//            juridica.setEmailEscritorio(false);
+//            juridica.setCobrancaEscritorio(false);
+//            listaEnd.set(1, listaEnd.get(0));
+//        }
+        
+        juridica.setContabilidade(null);
+        juridica.setEmailEscritorio(false);
+        juridica.setCobrancaEscritorio(false);
+
+        if (!listaEnd.isEmpty()){
+            PessoaEndereco pe = (PessoaEndereco)listaEnd.get(1);
+            pe.setComplemento( ((PessoaEndereco)listaEnd.get(0)).getComplemento() );
+            pe.setEndereco( ((PessoaEndereco)listaEnd.get(0)).getEndereco() );
+            pe.setNumero( ((PessoaEndereco)listaEnd.get(0)).getNumero() );
+            listaEnd.set(1, pe);
         }
-        return "pessoaJuridica";
     }
 
     public List<SelectItem> getListaMotivoInativacao() {
@@ -2009,27 +2024,27 @@ public class JuridicaBean implements Serializable {
         this.strSimpleEndereco = strSimpleEndereco;
     }
 
-    public String getRenNovoEndereco() {
+    public boolean getRenNovoEndereco() {
         return renNovoEndereco;
     }
 
-    public void setRenNovoEndereco(String renNovoEndereco) {
+    public void setRenNovoEndereco(boolean renNovoEndereco) {
         this.renNovoEndereco = renNovoEndereco;
     }
 
-    public String getRenEndereco() {
+    public boolean getRenEndereco() {
         return renEndereco;
     }
 
-    public void setRenEndereco(String renEndereco) {
+    public void setRenEndereco(boolean renEndereco) {
         this.renEndereco = renEndereco;
     }
 
-    public String getRenAbreEnd() {
+    public boolean getRenAbreEnd() {
         return renAbreEnd;
     }
 
-    public void setRenAbreEnd(String renAbreEnd) {
+    public void setRenAbreEnd(boolean renAbreEnd) {
         this.renAbreEnd = renAbreEnd;
     }
 

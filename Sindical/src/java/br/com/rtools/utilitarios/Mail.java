@@ -209,7 +209,7 @@ public class Mail extends MailTemplate implements Serializable {
                         if (email.getId() == -1) {
                             email.setData(new Date());
                             email.setHora(DataHoje.livre(new Date(), "HH:mm"));
-                            if (email.getUsuario().getId() == -1) {
+                            if (email.getUsuario() != null && email.getUsuario().getId() == -1) {
                                 email.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
                             }
                             if (email.getEmailPrioridade() == null) {

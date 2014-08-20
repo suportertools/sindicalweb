@@ -112,7 +112,7 @@ public class AcademiaDao extends DB {
 
     public List<AcademiaSemana> listaAcademiaSemana(int id_servico_valor) {
         try {
-            Query query = getEntityManager().createQuery("SELECT ASE FROM AcademiaSemana AS ASE WHERE ASE.academiaServicoValor.id = :servicoValor");
+            Query query = getEntityManager().createQuery("SELECT ASE FROM AcademiaSemana AS ASE WHERE ASE.academiaServicoValor.id = :servicoValor ORDER BY ASE.semana.id");
             query.setParameter("servicoValor", id_servico_valor);
             List list = query.getResultList();
             if (!list.isEmpty()) {

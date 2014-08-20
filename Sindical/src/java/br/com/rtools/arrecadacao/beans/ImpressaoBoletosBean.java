@@ -1085,7 +1085,7 @@ public class ImpressaoBoletosBean implements Serializable {
         return true;
     }
 
-    public String enviarEmail() {
+    public void enviarEmail() {
         Movimento movimento = new Movimento();
         Juridica juridica = new Juridica();
 
@@ -1147,7 +1147,6 @@ public class ImpressaoBoletosBean implements Serializable {
                 listaVencimentos.clear();
             }
         }
-        return null;
     }
 
     public void enviar(List<Movimento> mov, List<Float> listaValores, List<String> listaVencimentos, Juridica jur) {

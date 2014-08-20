@@ -81,10 +81,12 @@ public class DB {
                 || cliente.equals("GaragistaRP")
                 || cliente.equals("MetalBatatais")
                 || cliente.equals("ServidoresRP")
-                || cliente.equals("SeaacFranca")) {
+                || cliente.equals("SeaacFranca")
+                || cliente.equals("SincovagaSP")) {
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
-            configuracao.setHost("192.168.1.102");
+            //configuracao.setHost("192.168.1.102");
+            configuracao.setHost("rtools.dlinkddns.com");
             configuracao.setSenha("r#@tools");
         } else if (cliente.equals("Rtools")) {
             configuracao.setCaminhoSistema(cliente);
@@ -104,9 +106,11 @@ public class DB {
         } else {
             if (cliente.equals("Sindical")) {
                 //cliente = "c_limeira_base";
+                //cliente = "comercio_itapetininga";
                 cliente = "ComercioRP";
-                configuracao.setHost("192.168.1.102");
-                configuracao.setSenha("r#@tools");
+                //cliente = "SincovagaSP";
+                configuracao.setHost("localhost");
+                configuracao.setSenha("989899");
             }
 //            } else {
 //                if (cliente.equals("ServidoresRP")) {

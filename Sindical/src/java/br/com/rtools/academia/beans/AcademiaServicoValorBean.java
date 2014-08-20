@@ -89,7 +89,7 @@ public class AcademiaServicoValorBean implements Serializable {
             String text = "";
             if (lista.size() != 1) {
                 for (int i = 0; i < lista.size(); i++) {
-                    text += "[" + lista.get(i).getAcademiaGrade().getHoraInicio() + " às " + lista.get(i).getAcademiaGrade().getHoraFim() + " " + lista.get(i).getSemana().getDescricao() + "] ";
+                    text += " [" + lista.get(i).getAcademiaGrade().getHoraInicio() + " às " + lista.get(i).getAcademiaGrade().getHoraFim() + " " + lista.get(i).getSemana().getDescricao() + "]  ";
                 }
             } else {
                 text += lista.get(0).getAcademiaGrade().getHoraInicio() + " às " + lista.get(0).getAcademiaGrade().getHoraFim() + " " + lista.get(0).getSemana().getDescricao();
@@ -241,7 +241,12 @@ public class AcademiaServicoValorBean implements Serializable {
                     return;
                 }
             } else {
-
+                if (!di.update(listaAcademiaSemana.get(i))) {
+                    GenericaMensagem.warn("Erro", "Não foi possível alterar lista de grades!");
+                    di.rollback();
+                    academiaServicoValor = new AcademiaServicoValor();
+                    return;
+                }
             }
         }
         if (academiaServicoValor.getId() == -1) {
@@ -450,6 +455,8 @@ public class AcademiaServicoValorBean implements Serializable {
     }
 
     public Periodo getPeriodo() {
+        if (periodo == null)
+            periodo = new Periodo();
         return periodo;
     }
 

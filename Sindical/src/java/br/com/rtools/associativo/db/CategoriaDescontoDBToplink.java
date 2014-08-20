@@ -2,7 +2,9 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.CategoriaDesconto;
+import br.com.rtools.associativo.CategoriaDescontoDependente;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -108,6 +110,41 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             return (CategoriaDesconto) qry.getSingleResult();
         } catch (Exception e) {
             e.getMessage();
+            return null;
+        }
+    }
+    
+    @Override
+    public List<CategoriaDescontoDependente> listaDescontoDependentePorCategoria(int id_categoria_desconto) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    " SELECT cd " +
+                    "   FROM CategoriaDescontoDependente cd " +
+                    "  WHERE cd.categoriaDesconto.id = :id_categoria_desconto " +
+                    "  ORDER BY cd.parentesco.parentesco ASC"
+            );
+            
+            qry.setParameter("id_categoria_desconto", id_categoria_desconto);
+            return qry.getResultList();
+        } catch (Exception e) {
+            //e.getMessage();
+            return new ArrayList<CategoriaDescontoDependente>();
+        }
+    }
+    public CategoriaDescontoDependente pesquisaDescontoDependentePorCategoria(int id_parentesco, int id_categoria_desconto) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    " SELECT cd " +
+                    "   FROM CategoriaDescontoDependente cd " +
+                    "  WHERE cd.categoriaDesconto.id = :id_categoria_desconto " +
+                    "    AND cd.parentesco.id = :id_parentesco"
+            );
+            
+            qry.setParameter("id_categoria_desconto", id_categoria_desconto);
+            qry.setParameter("id_parentesco", id_parentesco);
+            return (CategoriaDescontoDependente) qry.getSingleResult();
+        } catch (Exception e) {
+            //e.getMessage();
             return null;
         }
     }
