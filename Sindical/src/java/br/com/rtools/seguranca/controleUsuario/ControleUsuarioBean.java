@@ -67,7 +67,7 @@ public class ControleUsuarioBean implements Serializable {
                                 resultSet.close();
                                 dbe.getStatment().close();
                                 msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
-                                GenericaMensagem.warn("Validação", msgErro);
+                                GenericaMensagem.warn(msgErro, "");
                                 return null;
                             }
                         }
@@ -77,14 +77,14 @@ public class ControleUsuarioBean implements Serializable {
                             if (result != 1) {
                                 dbe.getStatment().close();
                                 msgErro = "@ Erro ao atualizar contador!";
-                                GenericaMensagem.warn("Validação", msgErro);
+                                GenericaMensagem.warn(msgErro, "");
                                 return null;
                             }
                         }
                     } catch (SQLException exception) {
                         dbe.closeStatment();
                         msgErro = "@ Erro!";
-                        GenericaMensagem.warn("Validação", msgErro);
+                        GenericaMensagem.warn(msgErro, "");
                         return null;
                     }
                     dbe.getStatment().close();
@@ -117,7 +117,28 @@ public class ControleUsuarioBean implements Serializable {
         }
         usuario = db.ValidaUsuario(usuario.getLogin(), usuario.getSenha());
         if (usuario != null) {
-            Diretorio.criar("");
+            AtalhoDB dba = new AtalhoDBToplink();
+            if (dba.listaAcessosUsuario(usuario.getId()).isEmpty()){
+                Diretorio.criar("");
+                Diretorio.criar("Relatorios");
+                Diretorio.criar("Imagens/Fotos");
+                Diretorio.criar("Imagens/LogoPatronal");
+                Diretorio.criar("Imagens/Mapas");
+                Diretorio.criar("Arquivos/contrato");
+                Diretorio.criar("Arquivos/convencao");
+                Diretorio.criar("Arquivos/downloads/boletos");
+                Diretorio.criar("Arquivos/downloads/carteirinhas");
+                Diretorio.criar("Arquivos/downloads/etiquetas");
+                Diretorio.criar("Arquivos/downloads/fichas");
+                Diretorio.criar("Arquivos/downloads/protocolo");
+                Diretorio.criar("Arquivos/downloads/relatorios");
+                Diretorio.criar("Arquivos/downloads/remessa");
+                Diretorio.criar("Arquivos/downloads/repis");
+                Diretorio.criar("Arquivos/notificacao");
+                Diretorio.criar("Arquivos/retorno/pendentes");
+                Diretorio.criar("Arquivos/senhas");
+            }   
+                    
             pagina = "menuPrincipal";
             GenericaSessao.put("sessaoUsuario", usuario);
             GenericaSessao.put("usuarioLogin", usuario.getLogin());
@@ -232,6 +253,8 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public Usuario getUsuario() {
+        if (usuario == null)
+            usuario = new Usuario();
         return usuario;
     }
 
