@@ -526,16 +526,41 @@ public class MatriculaEscolaBean implements Serializable {
             String listaValores = "";
             String listaValoresComData = "";
             int z = 1;
+            int quantidadeDivisao = 0;
+            if (!listaMovimentos.isEmpty()) {
+                if (listaMovimentos.get(0).getTipoServico().getId() == 5) {
+                    if (listaMovimentos.size() > 1) {
+                        quantidadeDivisao = listaMovimentos.size() - 1;
+                    } else {
+                        quantidadeDivisao = listaMovimentos.size();
+                    }
+                } else {
+                    if (listaMovimentos.size() > 1) {
+                        quantidadeDivisao = listaMovimentos.size();
+                    }
+                }
+            }
+            float valorDesc = matriculaEscola.getDesconto() / quantidadeDivisao;
             for (Movimento listaMovimento : listaMovimentos) {
                 if (listaMovimento.getTipoServico().getId() == 5) {
                     valorTaxaString = Moeda.converteR$Float(listaMovimento.getValor());
                 } else {
                     if (z == 1) {
-                        listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                        listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                        if (valorDesc > 0) {
+                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+                        } else {
+                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                        }
                     } else {
-                        listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                        listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                        if (listaMovimento.getDesconto() > 0) {
+                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+                        } else {
+                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+                        }
                     }
                     matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$vencimentoParcela" + z, listaMovimento.getVencimento()));
                     z++;
