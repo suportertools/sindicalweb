@@ -14,9 +14,11 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <ui:include src="templates/templateStatus.xhtml"/>
             <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_matricula_escola">
+                    <h:outputScript name="script_primefaces.js" library="js" />
                     <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
                     <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                     <p:growl id="growl" showDetail="true"/> 
@@ -271,12 +273,12 @@
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" style="text-align: right;">
+                                        <p:inputText id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" style="text-align: right;"  onclick="selectInputText(this);" >
                                             <f:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="@this idTabela" />
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText dir="RTL" id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento">
+                                        <p:inputText id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento" onclick="selectInputText(this);" style="text-align: right;">
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
                                         </p:inputText>
                                     </p:column>

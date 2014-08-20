@@ -30,6 +30,12 @@ jQuery(function($) {
     });
     $(".data").blur(function() {
         $(this).mask("99/99/9999");
-    });    
+    });
 });
-    
+
+
+function selectInputText(setthis) {
+    setthis.focus();
+    setthis.select();
+    return false;
+}    
