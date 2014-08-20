@@ -188,7 +188,7 @@
 
                                                 <p:column>
                                                     <p:commandLink value="#{juridicaBean.juridica.contabilidade.pessoa.nome}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold; margin-right: 15px"/>
-                                                    <p:commandButton icon="ui-icon-close" rendered="#{juridicaBean.juridica.contabilidade != null}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" update="i_contabilidade"/>
+                                                    <p:commandButton icon="ui-icon-close" rendered="#{juridicaBean.juridica.contabilidade != null}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" update="i_contabilidade :formPessoaJuridica:i_endereco"/>
                                                 </p:column>
                                                     
                                                 <p:column>
@@ -323,11 +323,11 @@
                                 </p:column>
                                 
                                 <p:column>
-                                    <p:commandLink value="Alterar Endereço" action="#{juridicaBean.abreEndereco}" update="i_novo_endereco" rendered="#{juridicaBean.renAbreEnd}" style="float: right"/>
+                                    <p:commandLink value="Alterar Endereço" action="#{juridicaBean.abreEndereco}" update="i_endereco" rendered="#{juridicaBean.renAbreEnd}" style="float: right" global="false"/>
                                 </p:column>
                             </h:panelGrid>
 
-                            <p:panel id="i_novo_endereco" styleClass="fundoCinza">
+                            <h:panelGrid id="i_endereco" styleClass="fundoCinza">
                                 <h:panelGrid rendered="#{juridicaBean.renNovoEndereco}" style="width: 100%; text-align: left">
                                     <h:inputHidden value="#{juridicaBean.pessoaEndereco.id}"/>
                                     <h:panelGrid columns="2">
@@ -352,44 +352,44 @@
                                         </p:column>
                                         <p:column>
                                             <br />
-                                            <p:commandButton title="Adicionar" value="Adicionar" action="#{juridicaBean.adicionarEnderecos}" update="i_novo_endereco"/>
+                                            <p:commandButton title="Adicionar" value="Adicionar" action="#{juridicaBean.adicionarEnderecos}" update="i_endereco"/>
                                         </p:column>
                                     </h:panelGrid>
                                 </h:panelGrid>
-                            </p:panel>
 
-                            <h:panelGrid id="idPGEndereco" rendered="#{juridicaBean.renEndereco}" style="width:100%; text-align: right">
-                                <p:dataTable id="i_tbl_endereco" value="#{juridicaBean.listaEnderecos}" var="linha" rowIndexVar="index">
-                                    <p:column headerText="Tipo">
-                                        <p:commandLink action="#{juridicaBean.RetornarObjetoDaGrid(linha, index)}" value="#{linha.tipoEndereco.descricao}" update="">
-                                            
-                                        </p:commandLink>
-                                    </p:column>
+                                <h:panelGrid id="idPGEndereco" rendered="#{juridicaBean.renEndereco}" style="width:100%; text-align: right">
+                                    <p:dataTable id="i_tbl_endereco" value="#{juridicaBean.listaEnderecos}" var="linha" rowIndexVar="index">
+                                        <p:column headerText="Tipo">
+                                            <p:commandLink action="#{juridicaBean.RetornarObjetoDaGrid(linha, index)}" value="#{linha.tipoEndereco.descricao}" update="">
 
-                                    <p:column headerText="Logradouro">
-                                        <h:outputText value="#{linha.endereco.logradouro.descricao}"/>
-                                    </p:column>
+                                            </p:commandLink>
+                                        </p:column>
 
-                                    <p:column headerText="Descrição">
-                                        <h:outputText value="#{linha.endereco.descricaoEndereco.descricao}, #{linha.numero}"/>
-                                    </p:column>
+                                        <p:column headerText="Logradouro">
+                                            <h:outputText value="#{linha.endereco.logradouro.descricao}"/>
+                                        </p:column>
 
-                                    <p:column headerText="Complemento">
-                                        <h:outputText value="#{linha.complemento}"/>
-                                    </p:column>
+                                        <p:column headerText="Descrição">
+                                            <h:outputText value="#{linha.endereco.descricaoEndereco.descricao}, #{linha.numero}"/>
+                                        </p:column>
 
-                                    <p:column headerText="Bairro">
-                                        <h:outputText value="#{linha.endereco.bairro.descricao}"/>
-                                    </p:column>
+                                        <p:column headerText="Complemento">
+                                            <h:outputText value="#{linha.complemento}"/>
+                                        </p:column>
 
-                                    <p:column headerText="Cidade/UF">
-                                        <h:outputText value="#{linha.endereco.cidade.cidade} - #{linha.endereco.cidade.uf}"/>
-                                    </p:column>
+                                        <p:column headerText="Bairro">
+                                            <h:outputText value="#{linha.endereco.bairro.descricao}"/>
+                                        </p:column>
 
-                                    <p:column headerText="CEP">
-                                        <h:outputText value="#{linha.endereco.cep}"/>
-                                    </p:column>
-                                </p:dataTable>
+                                        <p:column headerText="Cidade/UF">
+                                            <h:outputText value="#{linha.endereco.cidade.cidade} - #{linha.endereco.cidade.uf}"/>
+                                        </p:column>
+
+                                        <p:column headerText="CEP">
+                                            <h:outputText value="#{linha.endereco.cep}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>
                             </h:panelGrid>
                                     
                             

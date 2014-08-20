@@ -55,14 +55,14 @@
                                                         <p:column>
                                                             <p:outputLabel value="CPF" /><br />
                                                             <p:inputMask size="13" value="#{fisicaBean.fisica.pessoa.documento}" mask="999.999.999-99">
-                                                                <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}" update=":form_pessoa_fisica"/>
+                                                                <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}" />
                                                             </p:inputMask>                                        
                                                         </p:column>
 
                                                         <p:column>
                                                             <p:outputLabel value="RG" /><br />
                                                             <p:inputText  size="8" maxlength="20" value="#{fisicaBean.fisica.rg}">
-                                                                <f:ajax event="blur" render="@this" />
+                                                                <p:ajax event="change" update="@this" />
                                                             </p:inputText>
                                                         </p:column>
 

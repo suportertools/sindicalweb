@@ -17,7 +17,11 @@ INSERT INTO pes_pessoa(
     VALUES (1, '', '', '', '', '', '', 
             '', '', '', '', 'ADMIN', current_date, 
             '', 1);
+SELECT setval('pes_pessoa_id_seq', max(id)) FROM pes_pessoa;
 
+INSERT INTO pes_porte (id, ds_descricao) SELECT 1, 'ME' WHERE NOT EXISTS ( SELECT id FROM pes_porte WHERE id = 1);
+INSERT INTO pes_porte (id, ds_descricao) SELECT 2, 'EPP' WHERE NOT EXISTS ( SELECT id FROM pes_porte WHERE id = 2);
+SELECT setval('pes_porte_id_seq', max(id)) FROM pes_porte;
 
 
 -- PES_JURIDICA
@@ -29,19 +33,21 @@ INSERT INTO pes_juridica(
     VALUES (1, null, null, '', false, 
             '', '', '', '', 
             null, null, 1, 1, false);
+SELECT setval('pes_juridica_id_seq', max(id)) FROM pes_juridica;
 
 -- SEG_USUARIO
 
 INSERT INTO seg_usuario(
             id, ds_login, ds_senha, id_pessoa, is_ativo, ds_email)
     VALUES (1, 'admin', 'admin', 1, true, '');
+SELECT setval('seg_usuario_id_seq', max(id)) FROM seg_usuario;
 
 -- PES_FILIAL
 
 INSERT INTO pes_filial(
             id, nr_centro_custo, id_filial, id_matriz)
     VALUES (1, 0, 1, 1);
-
+SELECT setval('pes_filial_id_seq', max(id)) FROM pes_filial;
 
 -- SEG_REGISTRO
 
@@ -63,7 +69,7 @@ INSERT INTO seg_registro (
             null, false, null, false, 
             false, '1900-01-01', null, 
             1 WHERE NOT EXISTS ( SELECT id FROM seg_registro WHERE id = 1);
-
+SELECT setval('seg_registro_id_seq', max(id)) FROM seg_registro;
 
 -- SEGURANÇA
 
@@ -133,3 +139,10 @@ INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 1,'NENHUMA' WHERE NOT 
 INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 2,'STARTTLS' WHERE NOT EXISTS ( SELECT id FROM sis_email_protocolo WHERE id = 2);
 INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 3,'SSL/TLS' WHERE NOT EXISTS ( SELECT id FROM sis_email_protocolo WHERE id = 3);
 SELECT setval('sis_email_protocolo_id_seq', max(id)) FROM sis_email_protocolo;
+
+
+INSERT INTO arr_motivo_inativacao (id, ds_descricao) SELECT 1, 'FECHOU'           WHERE NOT EXISTS ( SELECT id FROM arr_motivo_inativacao WHERE id = 1);
+INSERT INTO arr_motivo_inativacao (id, ds_descricao) SELECT 2, 'SEM EMPREGADO'    WHERE NOT EXISTS ( SELECT id FROM arr_motivo_inativacao WHERE id = 2);
+INSERT INTO arr_motivo_inativacao (id, ds_descricao) SELECT 3, 'NÃO ENCONTRADA'   WHERE NOT EXISTS ( SELECT id FROM arr_motivo_inativacao WHERE id = 3);
+SELECT setval('arr_motivo_inativacao_id_seq', max(id)) FROM arr_motivo_inativacao;
+
