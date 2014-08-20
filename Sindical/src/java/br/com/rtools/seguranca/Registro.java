@@ -79,7 +79,7 @@ public class Registro implements java.io.Serializable {
     @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO")
     @Temporal(TemporalType.DATE)
     private Date agendamentoRetroativo;
-    @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Servicos servicos;
     @Column(name = "CONVITE_DIAS_CONVIDADO")

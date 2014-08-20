@@ -461,7 +461,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public boolean pesquisarFeriado() {
         FeriadosDB db = new FeriadosDBToplink();
-        List listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
+        List listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
         if (!listFeriados.isEmpty()) {
             return true;
         }

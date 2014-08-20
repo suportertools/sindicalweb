@@ -47,7 +47,7 @@ public class ProfissaoBean extends PesquisarProfissaoBean implements Serializabl
 
     public void saveProfissao() {
 
-        if (prof.getProfissao().equals("")) {
+        if (prof.getProfissao().isEmpty()) {
             GenericaMensagem.warn("Validação", "Digite a profissão!");
             return;
         }
@@ -60,7 +60,7 @@ public class ProfissaoBean extends PesquisarProfissaoBean implements Serializabl
                 GenericaMensagem.warn("Validação", "Profissão já cadastrada!");
                 return;
             }
-            if (!prof.getCbo().equals("")) {
+            if (!prof.getCbo().isEmpty()) {
                 if (sv.descricaoExiste(prof.getCbo(), "cbo", "Profissao")) {
                     GenericaMensagem.warn("Validação", "CBO já existe!");
                     return;

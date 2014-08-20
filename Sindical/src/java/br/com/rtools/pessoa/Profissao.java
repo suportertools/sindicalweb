@@ -7,7 +7,7 @@ import javax.persistence.*;
 @NamedQuery(name = "Profissao.pesquisaID", query = "select prof from Profissao prof where prof.id=:pid")
 public class Profissao implements java.io.Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "ds_profissao", length = 200, nullable = false)
     private String profissao;

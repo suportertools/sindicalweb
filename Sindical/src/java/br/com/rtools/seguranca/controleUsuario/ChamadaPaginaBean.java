@@ -641,6 +641,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String filial() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("filialBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         return metodoGenerico(2, "filial");
     }
 
