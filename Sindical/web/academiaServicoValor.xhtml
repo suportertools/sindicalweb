@@ -58,7 +58,7 @@
                                     <p:column>
                                         <p:outputLabel value="Validade" styleClass="margin-left-max"/><br />
                                         <h:column>
-                                            <p:inputMask mask="99/99/9999" value="#{academiaServicoValorBean.academiaServicoValor.validadeString}" converter="#{isDateString}" styleClass="margin-left-max">
+                                            <p:inputMask mask="99/99/9999" value="#{academiaServicoValorBean.academiaServicoValor.validadeString}" converter="#{isDateString}" styleClass="margin-left-max" size="8">
                                                 <f:ajax event="blur" render="@this" />
                                             </p:inputMask>
                                         </h:column>
@@ -153,20 +153,20 @@
 
                         <h:form id="form_academia_servico_valor">
                             <p:panelGrid id="i_panel_grid_valores" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
-                                <p:dataTable value="#{academiaServicoValorBean.listAcademiaServicoValors}" var="academiaServicoValor" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) serviços(s) cadastrados" >
+                                <p:dataTable value="#{academiaServicoValorBean.listAcademiaServicoValors}" var="academiaServicoValor" emptyMessage="Não existe(m) serviços(s) cadastrados" >
                                     <f:facet name="header">Grade Serviços Valor</f:facet>
                                     <p:column headerText="Serviços" styleClass="text-center">
                                         <p:commandLink value="#{academiaServicoValor.servicos.descricao}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" action="#{academiaServicoValorBean.edit(academiaServicoValor)}"/>
                                     </p:column>
-                                    <p:column headerText="Período" styleClass="text-center">
+                                    <p:column headerText="Período" styleClass="text-center" width="100">
                                         <p:commandLink value="#{academiaServicoValor.periodo.descricao}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" action="#{academiaServicoValorBean.edit(academiaServicoValor)}"/>
                                     </p:column>
-                                    <p:column headerText="Grade (hrs)" width="190">
+                                    <p:column headerText="Grade de Horários" width="180">
                                         <h:outputLabel value="#{academiaServicoValorBean.getListaGrades(academiaServicoValor)}" />
                                     </p:column>
-                                    <p:column headerText="Validade" styleClass="text-center">#{academiaServicoValor.validadeString}</p:column>
-                                    <p:column headerText="Fórmula" styleClass="text-center">#{academiaServicoValor.formula}</p:column>
-                                    <p:column headerText="Parcelas" styleClass="text-center">#{academiaServicoValor.numeroParcelas}</p:column>
+                                    <p:column headerText="Validade" styleClass="text-center" width="100">#{academiaServicoValor.validadeString}</p:column>
+                                    <p:column headerText="Fórmula" styleClass="text-center" width="120">#{academiaServicoValor.formula}</p:column>
+                                    <p:column headerText="Parcelas" styleClass="text-center" width="55">#{academiaServicoValor.numeroParcelas}</p:column>
                                     <p:column styleClass="text-center" width="25">
                                         <p:commandButton icon="ui-icon-trash" action="#{academiaServicoValorBean.delete(academiaServicoValor)}" update=":form_academia_servico_valor:i_panel_grid_valores :form_academia_servico_valor_novo: :form_academia_servico_valor_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
                                     </p:column>                             

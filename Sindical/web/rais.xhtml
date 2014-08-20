@@ -20,6 +20,7 @@
         </script>
     </h:head>
     <h:body>
+        <ui:include src="templates/templateStatus.xhtml"/>
         <!-- INICIA DIV wrap e main -->
         <div id="wrapx">
             <div id="mainx">
@@ -33,7 +34,7 @@
                             <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${raisBean.rais}"/>
-                            <p:tabView dynamic="false" id="i_tab_view" activeIndex="#{raisBean.activeIndex}">
+                            <p:tabView dynamic="false" cache="false" id="i_tab_view" activeIndex="#{raisBean.activeIndex}">
                                 <p:ajax event="tabChange" listener="#{raisBean.listenerActiveIndex}" /> 
                                 <p:tab title="Cadastro">
                                     <p:panel styleClass="fundoCinza">
@@ -103,15 +104,15 @@
                                             <h:column>
                                                 <h:panelGrid columns="8" columnClasses="margin-left margin-left">
                                                     <p:inputMask value="#{raisBean.rais.admissaoString}" mask="99/99/9999" converter="#{isDateString}" size="8">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" global="false"/>
                                                     </p:inputMask>                                                    
                                                     <p:outputLabel value="Demissão: " styleClass="margin-left-max"/>
                                                     <p:inputMask value="#{raisBean.rais.demissaoString}" mask="99/99/9999" converter="#{isDateString}" size="8" >
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" global="false"/>
                                                     </p:inputMask>
                                                     <p:outputLabel value="Afastamento: " styleClass="margin-left-max"/>      
-                                                    <p:inputMask value="#{raisBean.rais.afastamentoString}" mask="99/99/9999" converter="#{isDateString}" size="8">
-                                                        <p:ajax event="blur" update="@this :form_rais:" />
+                                                    <p:inputMask value="#{raisBean.rais.afastamentoString}" mask="99/99/9999" size="8">
+                                                        <p:ajax event="change" update="@this :form_rais:" global="false"/>
                                                     </p:inputMask>
                                                 </h:panelGrid>
                                             </h:column>
@@ -127,7 +128,7 @@
                                             <h:column>
                                                 <h:panelGrid columns="6" columnClasses="margin-left margin-left">
                                                     <p:inputText value="#{raisBean.rais.salarioString}" converter="#{toCurrency}" size="8" styleClass="text-right input-text-min font-size-12 bold bg-yellow-ligth" title="Salário mínimo vigente - Mensal: R$#{raisBean.salarioMinimo.valorMensalString} - Diário: R$#{raisBean.salarioMinimo.valorDiarioString} - Hora: R$#{raisBean.salarioMinimo.valorHoraString}">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" global="false"/>
                                                     </p:inputText>
                                                     <p:outputLabel value="Tipo Remuneração: " styleClass="margin-left-max"/>  
                                                     <p:selectOneMenu value="#{raisBean.indexTipoRemuneracao}">
@@ -136,7 +137,7 @@
                                                     </p:selectOneMenu>
                                                     <p:outputLabel value="Carga Horária Semanal: " styleClass="margin-left-max"/>  
                                                     <p:inputText value="#{raisBean.rais.cargaHorariaString}" converter="#{thisNumber}" size="1" maxlength="2" styleClass="text-center">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" />
                                                     </p:inputText>
                                                 </h:panelGrid>
                                             </h:column>
@@ -156,7 +157,7 @@
                                     <p:panel styleClass="margin-top-max">
                                         <h:panelGrid columns="6">
                                             <p:commandButton icon="ui-icon-search" onclick="PF('dlg_profissao').show()" value="Profissão:" title="Selecionar profissão" />
-                                            <p:outputLabel value="#{raisBean.rais.profissao.cbo} #{raisBean.rais.profissao.profissao}"/>
+                                            <p:outputLabel value="#{raisBean.rais.profissao.cbo} #{raisBean.rais.profissao.profissao}" style="font-weight: bold"/>
                                             <p:outputLabel value="Função: " styleClass="margin-left-max"/>                                                   
                                             <p:inputText size="30" value="#{raisBean.rais.funcao}" />
                                         </h:panelGrid>
@@ -165,11 +166,11 @@
                                         <h:panelGrid columns="6">
                                             <p:outputLabel value="Carteira: " />
                                             <p:inputText size="8" value="#{raisBean.rais.carteira}" maxlength="9" style="margin-right: 10px">
-                                                <p:ajax event="blur" update="@this" />
+                                                <p:ajax event="change" update="@this" global="false"/>
                                             </p:inputText>
                                             <p:outputLabel value="Série: " />
                                             <p:inputText size="3" value="#{raisBean.rais.serie}" maxlength="15" style="margin-right: 10px">
-                                                <p:ajax event="blur" update="@this" />
+                                                <p:ajax event="change" update="@this" global="false"/>
                                             </p:inputText>
                                             <p:outputLabel value="Pis: "/>
                                             <p:inputMask size="13" mask="999.99999.99.9"   value="#{raisBean.rais.pis}" style="margin-right: 12px"/>

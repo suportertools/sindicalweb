@@ -50,12 +50,12 @@
                     
                     <h:panelGrid style="float: left; margin-top: 15px; width: 100%" columns="1" id="i_panel">
                         <p:dataTable value="#{filialBean.listaCidade}" var="filialCidade" id="tbl2">
-                            <p:column headerText="Cidade/UF">
+                            <p:column headerText="Cidade/UF" width="300">
                                 <h:outputText value="#{filialCidade.argumento0.cidade}"/>
                             </p:column>
 
                             <p:column headerText="Filial">
-                                <p:selectOneMenu id="cbSelectFilial" value="#{filialCidade.argumento1}">
+                                <p:selectOneMenu id="cbSelectFilial" value="#{filialCidade.argumento1}" style="width: 100%">
                                     <p:ajax event="change" listener="#{filialBean.saveCidadeFilial(filialCidade.argumento0, filialCidade.argumento1)}" update=":form_filial:"/>
                                     <f:selectItems value="#{filialBean.result}" />
                                 </p:selectOneMenu>

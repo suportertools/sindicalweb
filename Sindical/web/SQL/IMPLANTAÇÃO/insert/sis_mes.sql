@@ -10,7 +10,7 @@ INSERT INTO sis_mes (id, ds_descricao) SELECT 3, 'Março' WHERE NOT EXISTS ( SEL
 INSERT INTO sis_mes (id, ds_descricao) SELECT 4, 'Abril' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 4 );
 INSERT INTO sis_mes (id, ds_descricao) SELECT 5, 'Maio' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 5 );
 INSERT INTO sis_mes (id, ds_descricao) SELECT 6, 'Junho' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 6 );
-INSERT INTO sis_mes (id, ds_descricao) SELECT 7, 'Junho' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 7 );
+INSERT INTO sis_mes (id, ds_descricao) SELECT 7, 'Julho' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 7 );
 INSERT INTO sis_mes (id, ds_descricao) SELECT 8, 'Agosto' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 8 );
 INSERT INTO sis_mes (id, ds_descricao) SELECT 9, 'Setembro' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 9 );
 INSERT INTO sis_mes (id, ds_descricao) SELECT 10, 'Outubro' WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 10 );
