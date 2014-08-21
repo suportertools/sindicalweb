@@ -177,7 +177,7 @@
                         <h:panelGrid columns="4">
                             <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Atualizar" actionListener="#{homologacaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" update="i_painel_mensagem" />
                             <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Homologar" actionListener="#{homologacaoBean.homologar}" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{homologacaoBean.renderHomologar}" update="i_painel_mensagem"/>
-                            <p:commandButton value="Cancelar Homologação" rendered="#{homologacaoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dgl_painel_excluir.show()" type="button" />
+                            <p:commandButton value="Cancelar Homologação" rendered="#{homologacaoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_painel_excluir').show()" type="button" />
                             <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Excluir Senha" actionListener="#{homologacaoBean.excluirSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoExcluir}" update="i_painel_mensagem"/>
                         </h:panelGrid>
                     </p:panel>
