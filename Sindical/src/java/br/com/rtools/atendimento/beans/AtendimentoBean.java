@@ -29,7 +29,9 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -51,6 +53,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
@@ -66,23 +69,14 @@ public class AtendimentoBean {
     private Filial filial = new Filial();
     private int idIndexPessoa = -1;
     private int idIndexMovimento = -1;
-    private String msg = "";
-    private String msgOposicao = "";
-    private String msgConfirma = "";
-    private String msgCPF = "";
-    private String msgErro = "";
     private List<AteMovimento> listaAteMovimento = new ArrayList();
     private List<SisPessoa> listaAtePessoas = new ArrayList();
     private int idFilial = 0;
     private int idOperacao = 0;
     private List<SelectItem> listaAtendimentoOperacoes = new ArrayList<SelectItem>();
     private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
-    private boolean desabilitaCamposPessoa = false;
-    private boolean editaPessoa = false;
-    private boolean btnEditaPessoa = true;
     private String horaEmissaoString = "";
     private String cpf = "";
-    private String mensagem = "";
     private String strCPF = "";
     private String strRG = "";
     private String strTelefone = "";
@@ -142,10 +136,6 @@ public class AtendimentoBean {
     }
     
     public String novo() {
-        setMsgCPF("");
-        setEditaPessoa(false);
-        setBtnEditaPessoa(true);
-        setDesabilitaCamposPessoa(false);
         setHoraEmissaoString("");
         pessoa = new Pessoa();
         fisica = new Fisica();
@@ -156,66 +146,54 @@ public class AtendimentoBean {
         getListaFiliais().clear();
         idFilial = 0;
         idOperacao = 0;
-        msgOposicao = "";
         empresa = new Juridica();
         return "atendimento";
     }
 
-    public String voltar() {
-        setEditaPessoa(false);
-        setBtnEditaPessoa(true);
-        if (ateMovimento.getPessoa().getId() != -1) {
-            setDesabilitaCamposPessoa(true);
-        } else {
-            setDesabilitaCamposPessoa(false);
-        }
-        return "atendimento";
-    }
-
-    public String salvar() throws JRException {
-        msg = "";
+    public void salvar() throws JRException {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-        boolean isMostraDocumento = false;
+        
         if (ateMovimento.getFilial().getId() == -1) {
-            msg = "Informar a Filial!";
-            return null;
+            GenericaMensagem.error("Erro", "Informe qual a sua Filial!");
+            return;
         }
-        if (ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") || ateMovimento.getPessoa().getDocumento().length() < 14 || ateMovimento.getPessoa().getDocumento().equals("")) {
-            msg = "Informar o CPF!";
-        } else {
-            isMostraDocumento = true;
+        if (ateMovimento.getPessoa().getDocumento().isEmpty() || ateMovimento.getPessoa().getDocumento().equals("___.___.___-__")) {
+            GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
+            return;
         }
-        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && !ateMovimento.getPessoa().getDocumento().equals("")) {
-            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
-                setMsgCPF("CPF inválido!");
-                return null;
-            }
+        if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
+            GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
+            return;
         }
-        if (isMostraDocumento == false) {
-            if (ateMovimento.getPessoa().getRg().equals("")) {
-                msg = "Informar o RG!";
-                setMsgCPF("");
-            } else {
-                msg = "";
-            }
-        }
-        if (!msg.equals("")) {
-            return null;
-        }
-        if (ateMovimento.getPessoa().getNome().equals("")) {
-            msg = "Informar o nome da pessoa!";
-            return null;
+        
+//        if (isMostraDocumento == false) {
+//            if (ateMovimento.getPessoa().getRg().equals("")) {
+//                msg = "Informar o RG!";
+//                setMsgCPF("");
+//            } else {
+//                msg = "";
+//            }
+//        }
+//        if (!msg.equals("")) {
+//            return null;
+//        }
+        if (ateMovimento.getPessoa().getNome().isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Digite o NOME da pessoa!");
+            return;
         }
         
         
         if (empresa.getId() == -1){
-            msg = "Pesquise uma Empresa para Agendar.";
-            return null;
+            //msg = "Pesquise uma Empresa para Agendar.";
+            GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
+            return;
         }
+        
         SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
         if (ap == null) {
             ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getRg());
         }
+        
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         ateMovimento.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaObjeto(1, "TipoDocumento"));
         ateMovimento.getPessoa().setEndereco(null);
@@ -230,12 +208,13 @@ public class AtendimentoBean {
                         salvarAcumuladoDB.comitarTransacao();
                     } else {
                         salvarAcumuladoDB.desfazerTransacao();
-                        return null;
+                        return;
                     }
                 }
                 ateMovimento.setPessoa(ap);
             }
         }
+        
         ateMovimento.setHoraEmissao(getHoraEmissaoString());
         ateMovimento.setFilial(filial);
         ateMovimento.setOperacao((AteOperacao) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
@@ -245,8 +224,9 @@ public class AtendimentoBean {
         if (ateMovimento.getId() == -1) {
             ateMovimento.setHoraEmissao(getHoraEmissaoString());
             if (atendimentoDB.existeAtendimento(ateMovimento)) {
-                msg = "Atendimento já cadastrado!";
-                return null;
+                //msg = "Atendimento já cadastrado!";
+                GenericaMensagem.error("Atenção", "Atendimento já cadastrado!");
+                return;
             }
             if (ap == null) {
                 salvarAcumuladoDB.abrirTransacao();
@@ -255,17 +235,20 @@ public class AtendimentoBean {
                     ateMovimento.setPessoa(ateMovimento.getPessoa());
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msg = "Não foi possível incluir a pessoa";
-                    return null;
+                    //msg = "Não foi possível incluir a pessoa";
+                    GenericaMensagem.error("Erro", "Não foi possível salvar a Pessoa!");
+                    return;
                 }
             }
             
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.inserirObjeto(ateMovimento)) {
-                msg = "Falha ao inserir o movimento!";
+               // msg = "Falha ao inserir o movimento!";
+                GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
                 salvarAcumuladoDB.desfazerTransacao();
             } else {
-                msg = "Movimento inserido com sucesso.";
+                //msg = "Movimento inserido com sucesso.";
+                GenericaMensagem.info("Sucesso", "Atendimento foi Salvo!");
             }
             
             HomologacaoDB dbh = new HomologacaoDBToplink();
@@ -275,43 +258,44 @@ public class AtendimentoBean {
             if (salvarAcumuladoDB.inserirObjeto(senha)){
                 salvarAcumuladoDB.comitarTransacao();
                 getListaAteMovimento().clear();
+//                PF.update(":formAtendimentoPessoa:");
+//                PF.closeDialog("dlg_salvar");
                 imprimirSenha(ateMovimento);
-                novo();
+                //GenericaSessao.put("atendimentoBean", new AtendimentoBean());
+                //novo();
             }else{
-                msg = "Erro ao salvar Senha.";
+                GenericaMensagem.error("Erro", "Erro ao Salvar Senha!");
                 salvarAcumuladoDB.desfazerTransacao();
             }
-            
-            return "atendimento";
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(ateMovimento)) {
                 getListaAteMovimento().clear();
                 novo();
                 salvarAcumuladoDB.comitarTransacao();
-                msg = "Atendimento atualizado com sucesso!";
-                return null;
+                //msg = "Atendimento atualizado com sucesso!";
+                GenericaMensagem.info("Sucesso", "Atendimento atualizado!");
+                return;
             }
-            msg = "Falha na atualização do atendimento!";
-            return "atendimento";
+            //msg = "Falha na atualização do atendimento!";
+            GenericaMensagem.error("Erro", "Não foi possivel atualizar o Atendimento");
         }
     }
 
-    public String atualizarPessoa() {
-        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && !ateMovimento.getPessoa().getDocumento().equals("")) {
+    public void atualizarPessoa() {
+        if (!ateMovimento.getPessoa().getDocumento().isEmpty()) {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
-                msg = "CPF inválido!";
-                return null;
+                GenericaMensagem.warn("Atenção", "CPF inválido!");
+                return;
             }
-        } else {
-            if (ateMovimento.getPessoa().getRg().equals("")) {
-                msg = "Informar RG!";
-                return null;
-            }
-        }
-        setEditaPessoa(true);
-        setBtnEditaPessoa(true);
-        setDesabilitaCamposPessoa(false);
+        } 
+//        else {
+//            if (ateMovimento.getPessoa().getRg().isEmpty()) {
+//                msg = "Informar RG!";
+//                GenericaMensagem.warn("Atenção", "RG esta vazio!");
+//                return null;
+//            }
+//        }
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
         if (ap == null) {
@@ -323,12 +307,12 @@ public class AtendimentoBean {
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.inserirObjeto(ateMovimento.getPessoa())) {
                     salvarAcumuladoDB.comitarTransacao();
-                    msg = "Registro atualizado com sucesso.";
-                    return null;
+                    //msg = "Registro atualizado com sucesso.";
+                    GenericaMensagem.info("Sucesso", "Pessoa foi Atualizada!!");
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msg = "Falha na atualização do registro!";
-                    return null;
+                    //msg = "Falha na atualização do registro!";
+                    GenericaMensagem.error("Erro", "Falha na atualização da Pessoa!");
                 }
             }
         } else {
@@ -340,18 +324,16 @@ public class AtendimentoBean {
                     }
                     if (salvarAcumuladoDB.alterarObjeto(ateMovimento.getPessoa())) {
                         salvarAcumuladoDB.comitarTransacao();
-                        msg = "Registro atualizado com sucesso.";
-                        return null;
+                        //msg = "Registro atualizado com sucesso.";
+                        GenericaMensagem.info("Sucesso", "Pessoa foi Atualizada!!");
                     } else {
                         salvarAcumuladoDB.desfazerTransacao();
-                        msg = "Falha na atualização do registro!";
-                        return null;
+                        //msg = "Falha na atualização do registro!";
+                        GenericaMensagem.error("Erro", "Falha na atualização da Pessoa!");
                     }
                 }
             }
         }
-        return "atendimento";
-
     }
 
     public String editar(AteMovimento am) {
@@ -366,22 +348,14 @@ public class AtendimentoBean {
                 idFilial = i;
             }
         }
+        empresa = ateMovimento.getJuridica();
+                
         setHoraEmissaoString(ateMovimento.getHoraEmissao());
-        setBtnEditaPessoa(true);
-        setEditaPessoa(false);
-        setDesabilitaCamposPessoa(true);
         verificaPessoaOposicao();
         return null;
     }
 
-    public String editarPessoa() {
-        setEditaPessoa(true);
-        setBtnEditaPessoa(false);
-        setDesabilitaCamposPessoa(false);
-        return "atendimento";
-    }
-
-    public String excluir() {
+    public void excluir() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (ateMovimento.getId() > 0) {
             AteMovimento ateMov = (AteMovimento) salvarAcumuladoDB.pesquisaObjeto(ateMovimento.getId(), "AteMovimento");
@@ -394,105 +368,102 @@ public class AtendimentoBean {
             if (senha != null){
                 if (!salvarAcumuladoDB.deletarObjeto( salvarAcumuladoDB.pesquisaObjeto(senha.getId(), "Senha"))){
                     salvarAcumuladoDB.desfazerTransacao();
-                    msg = "Erro ao excluir Senha";
-                    return null;
+                    GenericaMensagem.error("Erro", "Falha excluir Senha!");
+                    return;
                 }
             }
             
             if (salvarAcumuladoDB.deletarObjeto(ateMov)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msg = "Movimento excluído com sucesso.";
+                GenericaMensagem.info("Sucesso", "Atendimento Excluido!");
                 novo();
-                return null;
+                return;
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao excluir movimento!";
+                GenericaMensagem.error("Erro", "Falha ao excluir Atendimento!");
             }
 
         }
         getListaAteMovimento().clear();
-        return "atendimento";
     }
 
-    public String verificaPessoaOposicao() {
-        setMsgOposicao("");
+    public void verificaPessoaOposicao() {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         if (atendimentoDB.pessoaOposicao(ateMovimento.getPessoa().getDocumento())) {
-            setMsgOposicao("Pessoa cadastrada em oposição");
+            RequestContext.getCurrentInstance().execute("PF('dlg_mensagem_oposicao').show();");
         }
-        return "atendimento";
     }
 
-    public String verificaCPF(String tipoVerificacao) {
-        if (ateMovimento.getId() != -1 || editaPessoa == true || ateMovimento.getPessoa().getId() != -1) {
-            return null;
+    public void verificaCPF(String tipoVerificacao) {
+        if (ateMovimento.getId() != -1 || ateMovimento.getPessoa().getId() != -1) {
+            return;
         }
         String valorPesquisa = "";
-        int count = ateMovimento.getPessoa().getDocumento().length();
+        
         if (tipoVerificacao.equals("cpf")) {
-            if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && count == 14 && !ateMovimento.getPessoa().getDocumento().equals("")) {
+            if (!ateMovimento.getPessoa().getDocumento().isEmpty()) {
                 if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
-                    setMsgCPF("CPF inválido!");
-                    return null;
+//                    setMsgCPF("CPF inválido!");
+                    GenericaMensagem.warn("Atenção", "CPF inválido!");
+                    return ;
                 } else {
-                    setMsgCPF("");
+  //                  setMsgCPF("");
                 }
             } else {
-                setMsgCPF("");
-                return null;
+                //setMsgCPF("");
+                return;
             }
             valorPesquisa = ateMovimento.getPessoa().getDocumento();
         } else if (tipoVerificacao.equals("rg")) {
-            if (ateMovimento.getPessoa().getRg().equals("")) {
-                return null;
+            if (ateMovimento.getPessoa().getRg().isEmpty()) {
+                return;
             }
             if (ateMovimento.getPessoa().getId() != -1) {
-                return null;
+                return;
             }
             valorPesquisa = ateMovimento.getPessoa().getRg();
         }
-        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && count == 14 || !ateMovimento.getPessoa().getRg().equals("")) {
-            PessoaDB db = new PessoaDBToplink();
-            pessoa = (Pessoa) db.pessoaDocumento(valorPesquisa);
-            if (pessoa != null) {
-                ateMovimento.getPessoa().setNome(pessoa.getNome());
+        
+        PessoaDB db = new PessoaDBToplink();
+        pessoa = (Pessoa) db.pessoaDocumento(valorPesquisa);
+        if (pessoa != null) {
+            ateMovimento.getPessoa().setNome(pessoa.getNome());
+            ateMovimento.getPessoa().setDocumento(pessoa.getDocumento());
+            ateMovimento.getPessoa().setTelefone(pessoa.getTelefone1());
+            if (!ateMovimento.getPessoa().getTelefone().equals("(__) ____-____")) {
                 ateMovimento.getPessoa().setDocumento(pessoa.getDocumento());
-                ateMovimento.getPessoa().setTelefone(pessoa.getTelefone1());
-                if (!ateMovimento.getPessoa().getTelefone().equals("(__) ____-____")) {
-                    ateMovimento.getPessoa().setDocumento(pessoa.getDocumento());
-                }
-                FisicaDB fisicaDB = new FisicaDBToplink();
-                fisica = (Fisica) fisicaDB.pesquisaFisicaPorPessoa(pessoa.getId());
-                ateMovimento.getPessoa().setRg(fisica.getRg());
-                ateMovimento.getPessoa().setTelefone(pessoa.getTelefone1());
-                if (fisica.getRg().equals("") || pessoa.getDocumento().equals("") || pessoa.getTelefone1().equals("")) {
-                    setEditaPessoa(false);
-                }
-                setMsgCPF("");
-                setDesabilitaCamposPessoa(true);
-                PessoaEmpresaDB pedb = new PessoaEmpresaDBToplink();
-                
-                PessoaEmpresa pe = pedb.pesquisaPessoaEmpresaPorFisica(fisica.getId());
-                
-                if (pe.getId() != -1){
-                    empresa = pe.getJuridica();
-                }
-            } else {
-                AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-                SisPessoa atePessoaB = (SisPessoa) atendimentoDB.pessoaDocumento(valorPesquisa);
-                setMsgCPF("");
-                if (ateMovimento == null || (atePessoaB == null || atePessoaB.getId() == -1)) {
+            }
+            FisicaDB fisicaDB = new FisicaDBToplink();
+            fisica = (Fisica) fisicaDB.pesquisaFisicaPorPessoa(pessoa.getId());
+            ateMovimento.getPessoa().setRg(fisica.getRg());
+            ateMovimento.getPessoa().setTelefone(pessoa.getTelefone1());
+//            if (fisica.getRg().equals("") || pessoa.getDocumento().equals("") || pessoa.getTelefone1().equals("")) {
+//                setEditaPessoa(false);
+//            }
+            //setMsgCPF("");
+//            setDesabilitaCamposPessoa(true);
+            PessoaEmpresaDB pedb = new PessoaEmpresaDBToplink();
+
+            PessoaEmpresa pe = pedb.pesquisaPessoaEmpresaPorFisica(fisica.getId());
+
+            if (pe.getId() != -1){
+                empresa = pe.getJuridica();
+            }
+        } else {
+            AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
+            SisPessoa atePessoaB = (SisPessoa) atendimentoDB.pessoaDocumento(valorPesquisa);
+            //setMsgCPF("");
+            if (ateMovimento == null || (atePessoaB == null || atePessoaB.getId() == -1)) {
 //                    AtePessoa atePes = new AtePessoa();
 //                    ateMovimento.setPessoa(atePes);
-                    setEditaPessoa(false);
-                } else {
-                    ateMovimento.setPessoa(atePessoaB);
-                    setEditaPessoa(false);
-                    setDesabilitaCamposPessoa(true);
-                }
+                //setEditaPessoa(false);
+            } else {
+                ateMovimento.setPessoa(atePessoaB);
+//                setEditaPessoa(false);
+//                setDesabilitaCamposPessoa(true);
             }
         }
-        return "atendimento";
+        
     }
 
     public List<SelectItem> getListaFiliais() {
@@ -543,12 +514,7 @@ public class AtendimentoBean {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(getMacFilial().getFilial().getId(), "Filial");
                 ateMovimento.setFilial(filial);
-                setMensagem("");
-            } else {
-                setMensagem("");
-            }
-        } else {
-            setMensagem("Não existe filial definida!");
+            } 
         }
         return ateMovimento;
     }
@@ -579,30 +545,6 @@ public class AtendimentoBean {
 
     public void setIdIndexMovimento(int idIndexMovimento) {
         this.idIndexMovimento = idIndexMovimento;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public String getMsgErro() {
-        return msgErro;
-    }
-
-    public void setMsgErro(String msgErro) {
-        this.msgErro = msgErro;
     }
 
     public List<AteMovimento> getListaAteMovimento() {
@@ -641,14 +583,6 @@ public class AtendimentoBean {
         this.idFilial = idFilial;
     }
 
-    public String getMsgOposicao() {
-        return msgOposicao;
-    }
-
-    public void setMsgOposicao(String msgOposicao) {
-        this.msgOposicao = msgOposicao;
-    }
-
     public int getIdOperacao() {
         return idOperacao;
     }
@@ -664,23 +598,7 @@ public class AtendimentoBean {
     public void setPorPesquisa(String porPesquisa) {
         this.porPesquisa = porPesquisa;
     }
-
-    public boolean isDesabilitaCamposPessoa() {
-        return desabilitaCamposPessoa;
-    }
-
-    public void setDesabilitaCamposPessoa(boolean desabilitaCamposPessoa) {
-        this.desabilitaCamposPessoa = desabilitaCamposPessoa;
-    }
-
-    public boolean isEditaPessoa() {
-        return editaPessoa;
-    }
-
-    public void setEditaPessoa(boolean editaPessoa) {
-        this.editaPessoa = editaPessoa;
-    }
-
+    
     public String getHoraEmissaoString() {
         if (!this.horaEmissaoString.equals("")) {
             return this.horaEmissaoString;
@@ -718,14 +636,6 @@ public class AtendimentoBean {
         this.filial = filial;
     }
 
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
     public String getStrCPF() {
         return strCPF;
     }
@@ -748,22 +658,6 @@ public class AtendimentoBean {
 
     public void setStrTelefone(String strTelefone) {
         this.strTelefone = strTelefone;
-    }
-
-    public boolean isBtnEditaPessoa() {
-        return btnEditaPessoa;
-    }
-
-    public void setBtnEditaPessoa(boolean btnEditaPessoa) {
-        this.btnEditaPessoa = btnEditaPessoa;
-    }
-
-    public String getMsgCPF() {
-        return msgCPF;
-    }
-
-    public void setMsgCPF(String msgCPF) {
-        this.msgCPF = msgCPF;
     }
 
     public Juridica getEmpresa() {
