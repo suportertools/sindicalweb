@@ -49,10 +49,10 @@ function listener(data) {
             break;
 
         case "complete": // After the ajax response is arrived.
-            location.href = "atendimento.jsf";
+            $('.testexxx').click();
             break;
 
-        case "success": // After update of HTML DOM based on ajax response..
+        case "success": // After update of HTML DOM based on ajax response..            
             break;
     }
 }
