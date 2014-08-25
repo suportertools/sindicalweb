@@ -38,4 +38,21 @@ function selectInputText(setthis) {
     setthis.focus();
     setthis.select();
     return false;
-}    
+}
+
+function listener(data) {
+    var status = data.status; // Can be "begin", "complete" or "success".
+
+    switch (status) {
+        case "begin": // Before the ajax request is sent.
+            // ...
+            break;
+
+        case "complete": // After the ajax response is arrived.
+            location.href = "atendimento.jsf";
+            break;
+
+        case "success": // After update of HTML DOM based on ajax response..
+            break;
+    }
+}
