@@ -118,7 +118,7 @@ public class ControleUsuarioBean implements Serializable {
         usuario = db.ValidaUsuario(usuario.getLogin(), usuario.getSenha());
         if (usuario != null) {
             AtalhoDB dba = new AtalhoDBToplink();
-            if (dba.listaAcessosUsuario(usuario.getId()).isEmpty()){
+            if (dba.listaAcessosUsuario(usuario.getId()).isEmpty()) {
                 Diretorio.criar("");
                 Diretorio.criar("Relatorios");
                 Diretorio.criar("Imagens/Fotos");
@@ -137,8 +137,8 @@ public class ControleUsuarioBean implements Serializable {
                 Diretorio.criar("Arquivos/notificacao");
                 Diretorio.criar("Arquivos/retorno/pendentes");
                 Diretorio.criar("Arquivos/senhas");
-            }   
-                    
+            }
+
             pagina = "menuPrincipal";
             GenericaSessao.put("sessaoUsuario", usuario);
             GenericaSessao.put("usuarioLogin", usuario.getLogin());
@@ -148,11 +148,11 @@ public class ControleUsuarioBean implements Serializable {
             login = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getNome() + " - "
                     + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getTipoDocumento().getDescricao() + ": "
                     + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getDocumento();
-            log.novo("Usuário logou", "Usuário:" + user + "/sen: " + senh);
+            //log.novo("Usuário logou", "Usuário:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "";
         } else {
-            log.live("Login de acesso tentativa de acesso usr:" + user + "/sen: " + senh);
+            //log.live("Login de acesso tentativa de acesso usr:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "@ Usuário e/ou Senha inválidas! Tente novamente.";
             GenericaMensagem.warn("Validação", msgErro);
@@ -253,8 +253,9 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public Usuario getUsuario() {
-        if (usuario == null)
+        if (usuario == null) {
             usuario = new Usuario();
+        }
         return usuario;
     }
 
