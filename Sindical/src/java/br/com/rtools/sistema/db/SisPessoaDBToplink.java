@@ -47,18 +47,29 @@ public class SisPessoaDBToplink extends DB implements SisPessoaDB {
     @Override
     public SisPessoa sisPessoaExiste(SisPessoa sp, boolean porDocumento) {
         Query qry;
+        List list;
         try {
             if (porDocumento) {
-                qry = getEntityManager().createQuery("SELECT SP FROM SisPessoa AS SP WHERE SP.documento = :documento");
-                qry.setParameter("documento", sp.getDocumento());
+                if (!sp.getDocumento().isEmpty()) {
+                    qry = getEntityManager().createQuery("SELECT SP FROM SisPessoa AS SP WHERE SP.documento = :documento");
+                    qry.setParameter("documento", sp.getDocumento());
+                    list = qry.getResultList();
+                    if (!list.isEmpty()) {
+                        return (SisPessoa) qry.getSingleResult();
+                    }
+                }
             } else {
-                qry = getEntityManager().createQuery("SELECT SP FROM SisPessoa AS SP WHERE SP.nome = :nome AND SP.dtNascimento = :nascimento");
-                qry.setParameter("nome", sp.getNome());
-                qry.setParameter("nascimento", sp.getDtNascimento(), TemporalType.DATE);
-            }
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                return (SisPessoa) qry.getSingleResult();
+                if (!sp.getNome().isEmpty() && !sp.getNascimento().isEmpty()) {
+                    String queryString = "SELECT SP FROM SisPessoa AS SP WHERE SP.nome = :nome AND SP.dtNascimento = :nascimento";
+                    //'"+sp.getNascimento()+"'"
+                    qry = getEntityManager().createQuery(queryString);
+                    qry.setParameter("nome", sp.getNome());
+                    qry.setParameter("nascimento", sp.getDtNascimento(), TemporalType.DATE);
+                    list = qry.getResultList();
+                    if (!list.isEmpty()) {
+                        return (SisPessoa) qry.getSingleResult();
+                    }
+                }
             }
         } catch (Exception e) {
             return null;
