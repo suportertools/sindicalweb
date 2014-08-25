@@ -223,15 +223,17 @@
                                 <h:panelGrid id="i_desconto_dependente" style="margin-top: 10px">
                                     <p:messages autoUpdate="true" showDetail="true"/>
                                     
-                                    <h:panelGrid columns="4">
+                                    <h:panelGrid columns="1" style="width: 100%">
                                         <h:column>
                                             <h:outputLabel value="Parentesco" /><br />
-                                            <p:selectOneMenu value="#{servicosBean.indexParentesco}" style="width: 200px">
+                                            <p:selectOneMenu value="#{servicosBean.indexParentesco}" style="width: 100%">
                                                 <p:ajax event="change" update="i_desconto_dependente" global="false"/>
                                                 <f:selectItems value="#{servicosBean.listaParentesco}"/>
                                             </p:selectOneMenu>
                                         </h:column>
-
+                                    </h:panelGrid>
+                                    
+                                    <h:panelGrid columns="4">
                                         <h:column>
                                             <h:outputLabel value="Valor R$" style="font-weight: bold"/><br />
                                             <p:inputText value="#{servicosBean.valorDependente}" size="8" style="text-align: right">
@@ -241,7 +243,7 @@
 
                                         <h:column>
                                             <h:outputLabel value="Desconto" /><br />
-                                            <p:inputText value="#{servicosBean.descontoDepentende.desconto}" size="8" style="text-align: right">
+                                            <p:inputText value="#{servicosBean.descontoDepentende.desconto}" size="6" style="text-align: right">
                                                 <p:ajax event="change" listener="#{servicosBean.updateDescontoCategoriaDependentePercentual()}" update="@this i_desconto_dependente" global="false"/>
                                             </p:inputText>
                                         </h:column>
@@ -249,10 +251,14 @@
                                             <br />
                                             <p:commandButton value="Adicionar" action="#{servicosBean.adicionarDescontoDependente()}" update="i_desconto_dependente"/>
                                         </h:column>
+                                        <h:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar Todos Parentescos" action="#{servicosBean.adicionarDescontoDependenteTodosParentesco()}" update="i_desconto_dependente"/>
+                                        </h:column>
                                     </h:panelGrid>
                                     
                                     <h:panelGrid>
-                                        <p:dataTable value="#{servicosBean.listaDescontoDependente}" var="linha" emptyMessage="Nenhum desconto dependente adicionado para essa categoria!">
+                                        <p:dataTable value="#{servicosBean.listaDescontoDependente}" var="linha" emptyMessage="Nenhum desconto dependente adicionado para essa categoria!" scrollable="true" scrollHeight="250">
                                             <p:column headerText="Parentesco">
                                                 <h:outputLabel value="#{linha.parentesco.parentesco}" />
                                             </p:column>
@@ -269,6 +275,9 @@
                                                 <p:commandButton icon="ui-icon-close" action="#{servicosBean.deletarDescontoDependente(linha)}" update=":form_servicos:i_desconto_dependente"/>
                                             </p:column>
                                         </p:dataTable>
+                                    </h:panelGrid>
+                                    <h:panelGrid style="width: 100%">
+                                        <p:commandLink value="Remover tudo da Lista" action="#{servicosBean.deletarDescontoDependenteTodos()}" update=":form_servicos:i_desconto_dependente" style="float: right; font-size: 8pt!important" rendered="#{servicosBean.listaDescontoDependente.size() > 0}"/>
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </p:dialog>                    

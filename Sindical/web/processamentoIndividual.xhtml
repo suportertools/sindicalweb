@@ -28,6 +28,7 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -208,7 +209,7 @@
                                 </h:panelGrid>
                                     
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual:" onclick="PF('i_dlg_email').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.salvarEmail()}" update="formImpressaoIndividual:" onclick="PF('i_dlg_email').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                     <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_email').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </h:panelGrid>
                             </p:dialog>
@@ -224,7 +225,7 @@
                                                     <p:ajax event="blur" update="@this" global="false"/>
                                                 </p:inputText>
 
-                                                <p:commandButton value="Adicionar" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.atualizaValorGrid('valor')}" update=":formImpressaoIndividual" onclick="i_dlg_valor.hide(), i_dlg_modal.show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                                <p:commandButton value="Adicionar" type="submit" styleClass="ui-confirmdialog-yes" action="#{processamentoIndividualBean.atualizaValorGrid('valor')}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                                 <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
                                             </h:panelGrid>
                                         </h:panelGrid>
@@ -248,7 +249,7 @@
                                             </h:panelGrid>
 
                                             <h:panelGrid columns="2">
-                                                <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid('descontoEmpregado')}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                                <p:commandButton value="Salvar" type="submit" styleClass="ui-confirmdialog-yes" disabled="#{processamentoIndividualBean.mostrarPainel}"  action="#{processamentoIndividualBean.atualizaValorGrid('descontoEmpregado')}" update=":formImpressaoIndividual" onclick="PF('i_dlg_valor').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                                 <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>       
                                             </h:panelGrid>
                                         </h:panelGrid>
@@ -256,11 +257,6 @@
                                 </p:tabView>
                             </p:dialog>
                         </h:form>
-                        
-                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
-                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                            <h:outputLabel value=" ... Aguarde" />
-                        </p:dialog>
                     </p:panel>
                 </f:view>
                 <!-- FINALIZA div wrap main -->
