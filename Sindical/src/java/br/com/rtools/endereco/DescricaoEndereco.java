@@ -1,20 +1,22 @@
 package br.com.rtools.endereco;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "END_DESCRICAO_ENDERECO")
+@Table(name = "end_descricao_endereco")
 @NamedQueries({
-    @NamedQuery(name = "DescricaoEndereco.pesquisaID",  query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE DECE.id = :pid"),
-    @NamedQuery(name = "DescricaoEndereco.findAll",     query = "SELECT DECE FROM DescricaoEndereco AS DECE ORDER BY DECE.descricao ASC "),
-    @NamedQuery(name = "DescricaoEndereco.findName",    query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE UPPER(DECE.descricao) LIKE :pdescricao ORDER BY DECE.descricao ASC ")
+    @NamedQuery(name = "DescricaoEndereco.pesquisaID", query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE DECE.id = :pid"),
+    @NamedQuery(name = "DescricaoEndereco.findAll", query = "SELECT DECE FROM DescricaoEndereco AS DECE ORDER BY DECE.descricao ASC "),
+    @NamedQuery(name = "DescricaoEndereco.findName", query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE UPPER(DECE.descricao) LIKE :pdescricao ORDER BY DECE.descricao ASC ")
 })
-public class DescricaoEndereco implements java.io.Serializable {
+public class DescricaoEndereco implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
 
     public DescricaoEndereco() {

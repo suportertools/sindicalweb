@@ -131,7 +131,7 @@ public class CidadeDBToplink extends DB implements CidadeDB {
                         inIds += "," + ((List) listNative.get(i)).get(0).toString();
                     }
                 }
-                String queryOO = "SELECT C FROM Cidade AS C WHERE C.id IN("+inIds+")";
+                String queryOO = "SELECT C FROM Cidade AS C WHERE C.id IN(" + inIds + ")";
                 Query query = getEntityManager().createQuery(queryOO);
                 List list = query.getResultList();
                 if (!list.isEmpty()) {
@@ -141,5 +141,19 @@ public class CidadeDBToplink extends DB implements CidadeDB {
         } catch (Exception e) {
         }
         return new ArrayList();
+    }
+
+    @Override
+    public Cidade pesquisaCidadePorEstadoCidade(String uf, String cidade) {
+        cidade = cidade.toLowerCase().toUpperCase();
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT C.* FROM end_cidade AS C WHERE UPPER(TRANSLATE(C.ds_cidade)) = '" + AnaliseString.removerAcentos(cidade) + "'  AND UPPER(C.ds_uf) = '" + uf.toUpperCase() + "'", Cidade.class);
+            List list = query.getResultList();
+            if (!list.isEmpty() || list.size() == 1) {
+                return (Cidade) query.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 }
