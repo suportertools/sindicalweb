@@ -4,25 +4,26 @@ import br.com.rtools.endereco.Endereco;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_PESSOA_ENDERECO")
+@Table(name = "pes_pessoa_endereco")
 @NamedQuery(name = "PessoaEndereco.pesquisaID", query = "select pese from PessoaEndereco pese where pese.id=:pid")
 public class PessoaEndereco implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_ENDERECO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_endereco", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Endereco endereco;
-    @JoinColumn(name = "ID_TIPO_ENDERECO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_tipo_endereco", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private TipoEndereco tipoEndereco;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @Column(name = "DS_NUMERO", length = 30, nullable = false)
+    @Column(name = "ds_numero", length = 30, nullable = false)
     private String numero;
-    @Column(name = "DS_COMPLEMENTO", length = 50, nullable = true)
+    @Column(name = "ds_complemento", length = 50, nullable = true)
     private String complemento;
 
     public PessoaEndereco() {
