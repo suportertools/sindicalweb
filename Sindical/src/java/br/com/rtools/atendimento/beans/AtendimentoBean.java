@@ -28,15 +28,15 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.FileDownloadBean;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.ValidaDocumentos;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -57,7 +57,7 @@ import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
-public class AtendimentoBean {
+public class AtendimentoBean implements Serializable {
 
     private AteOperacao ateOperacao = new AteOperacao();
     private AteMovimento ateMovimento = new AteMovimento();
@@ -82,7 +82,7 @@ public class AtendimentoBean {
     private String strTelefone = "";
     private Juridica empresa = new Juridica();
     private Usuario usuario = new Usuario();
-    
+        
     public AtendimentoBean(){
         usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
     }
@@ -97,6 +97,7 @@ public class AtendimentoBean {
     }
     
     public void imprimirSenha(AteMovimento atendimento) throws JRException{
+        GenericaSessao.remove("fileDownloadBean");
         AtendimentoDB db = new AtendimentoDBTopLink();
         
         Senha senha = db.pesquisaSenha(atendimento.getId());
@@ -130,9 +131,16 @@ public class AtendimentoBean {
         }
         SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
         salvaArquivos.salvaNaPasta(pathPasta);
-        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-        download.baixar();
-        download.remover();
+        
+        FileDownloadBean fd = new FileDownloadBean("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas", nomeDownload, "application/pdf");
+        fd.setDelete(true);
+        GenericaSessao.put("fileDownloadBean", fd);
+//        InputStream stream = ((ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext()).getResourceAsStream("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas"+"/"+nomeDownload);
+//;        file = new DefaultStreamedContent(stream, , nomeDownload);
+
+//        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+//        download.baixar();
+//        download.remover();
     }
     
     public String novo() {
@@ -150,7 +158,7 @@ public class AtendimentoBean {
         return "atendimento";
     }
 
-    public void salvar() throws JRException {
+    public void salvar(boolean imprimir) throws JRException {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         
         if (ateMovimento.getFilial().getId() == -1) {
@@ -220,6 +228,7 @@ public class AtendimentoBean {
         ateMovimento.setOperacao((AteOperacao) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
         ateMovimento.setStatus((AteStatus) salvarAcumuladoDB.pesquisaCodigo(1, "AteStatus"));
         ateMovimento.setJuridica(empresa);
+        ateMovimento.setAtendente(null);
         
         if (ateMovimento.getId() == -1) {
             ateMovimento.setHoraEmissao(getHoraEmissaoString());
@@ -244,8 +253,9 @@ public class AtendimentoBean {
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.inserirObjeto(ateMovimento)) {
                // msg = "Falha ao inserir o movimento!";
-                GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
+                GenericaMensagem.error("Erro", "Não foi possivel salvar Atendimento!");
                 salvarAcumuladoDB.desfazerTransacao();
+                return;
             } else {
                 //msg = "Movimento inserido com sucesso.";
                 GenericaMensagem.info("Sucesso", "Atendimento foi Salvo!");
@@ -260,7 +270,8 @@ public class AtendimentoBean {
                 getListaAteMovimento().clear();
 //                PF.update(":formAtendimentoPessoa:");
 //                PF.closeDialog("dlg_salvar");
-                imprimirSenha(ateMovimento);
+                if (imprimir)
+                    imprimirSenha(ateMovimento);
                 //GenericaSessao.put("atendimentoBean", new AtendimentoBean());
                 //novo();
             }else{
@@ -279,6 +290,7 @@ public class AtendimentoBean {
             }
             //msg = "Falha na atualização do atendimento!";
             GenericaMensagem.error("Erro", "Não foi possivel atualizar o Atendimento");
+            salvarAcumuladoDB.desfazerTransacao();
         }
     }
 
@@ -463,7 +475,6 @@ public class AtendimentoBean {
 //                setDesabilitaCamposPessoa(true);
             }
         }
-        
     }
 
     public List<SelectItem> getListaFiliais() {
