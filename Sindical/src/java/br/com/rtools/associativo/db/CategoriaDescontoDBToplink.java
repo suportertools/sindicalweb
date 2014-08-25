@@ -131,6 +131,7 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             return new ArrayList<CategoriaDescontoDependente>();
         }
     }
+    @Override
     public CategoriaDescontoDependente pesquisaDescontoDependentePorCategoria(int id_parentesco, int id_categoria_desconto) {
         try {
             Query qry = getEntityManager().createQuery(

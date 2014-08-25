@@ -17,6 +17,7 @@ import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.*;
 import java.io.IOException;
 import java.io.Serializable;
@@ -32,8 +33,6 @@ import org.primefaces.context.RequestContext;
 @ManagedBean
 @SessionScoped
 public class HomologacaoBean extends PesquisarProfissaoBean implements Serializable {
-
-    private String msgHomologacao = "";
     private String msgConfirma = "";
     private String strEndereco = "";
     private String tipoAviso = "true";
@@ -60,7 +59,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private Registro registro = new Registro();
     private Cancelamento cancelamento = new Cancelamento();
     private Senha senhaAtendimento = new Senha();
+    private List<Senha> listaAtendimentoSimples = new ArrayList<Senha>();
 
+    public HomologacaoBean(){
+        macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+    }
+    
     public String excluirSenha() {
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         Senha senha = homologacaoDB.pesquisaSenhaAgendamento(agendamento.getId());
@@ -77,7 +81,8 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         agendamento.setStatus((Status) sv.find("Status", 2));
         agendamento.setHomologador(null);
         if (!sv.alterarObjeto(agendamento)) {
-            msgHomologacao = "Erro ao atualizar Agendamento";
+            //msgHomologacao = "Erro ao atualizar Agendamento";
+            GenericaMensagem.error("Erro", "Não foi possível atualizar Agendamento!");
             return null;
         }
         msgConfirma = "Senha excluída com sucesso";
@@ -93,7 +98,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         return null;
     }
     
-
     public void atualizarSenhaSimples(String tipo){
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
@@ -112,26 +116,43 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
         
         senhaAtendimento = new Senha();
-        RequestContext.getCurrentInstance().execute("dlg_atendimento_simples.hide();");
+        RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').hide();");
     }    
+
+    public List<Senha> getListaAtendimentoSimples() {
+        if (listaAtendimentoSimples.isEmpty()){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId());
+                       
+            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+            List<Senha> listax = db.listaAtendimentoIniciadoSimplesUsuario(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+
+            if (!listax.isEmpty()){
+                senhaAtendimento = listax.get(0);
+                RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
+            }
+        }
+        return listaAtendimentoSimples;
+    }
 
     public String atendimento() {
         if (macFilial.getId() == -1) {
-            msgHomologacao = "Mac não encontrado!";
+            //msgHomologacao = "Mac não encontrado!";
+            GenericaMensagem.warn("Atenção", "MAC não foi encontrado!");
             return "homologacao";
         }
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
-        
-        
+
         Senha senha = homologacaoDB.pesquisaAtendimentoIniciadoSimples(macFilial.getFilial().getId());
 
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         if (senha == null){
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             senha = homologacaoDB.pesquisaAtendimentoIniciado(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId(), macFilial.getMesa(), macFilial.getFilial().getId());
             if (senha.getId() == -1) {
                 senha = homologacaoDB.pesquisaSenhaAtendimento(macFilial.getFilial().getId());
                 if (senha.getId() == -1) {
-                    msgHomologacao = "Senha não encontrada!";
+                    //msgHomologacao = "Senha não encontrada!";
+                    GenericaMensagem.warn("Atenção", "Senha não encontrada!");
                     return "homologacao";
                 }
             }
@@ -158,22 +179,54 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
             sv.abrirTransacao();
             if (!sv.alterarObjeto(agendamento)) {
-                msgHomologacao = "Erro ao atualizar Agendamento";
+                //msgHomologacao = "Erro ao atualizar Agendamento";
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Agendamento!");
                 return "homologacao";
             }
             senha.setMesa(macFilial.getMesa());
             senha.setHoraChamada(DataHoje.horaMinuto());
             if (!sv.alterarObjeto(senha)) {
-                msgHomologacao = "Erro ao atualizar Senha";
+                //msgHomologacao = "Erro ao atualizar Senha";
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Senha!");
                 return "homologacao";
             }
             sv.comitarTransacao();
         }else{
+            sv.abrirTransacao();
+            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+            
+            
+            senha.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
+            senha.getAteMovimento().setAtendente(su.getSessaoUsuario());
+            
+            sv.alterarObjeto(senha.getAteMovimento());
+            
+            sv.comitarTransacao();
+            
+            listaAtendimentoSimples.clear();
+            
             senhaAtendimento = senha;
-            RequestContext.getCurrentInstance().execute("dlg_atendimento_simples.show();");
+            RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
+            RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
             return null;
         }
         return "homologacao";
+    }
+    
+    public void fecharModalSenha(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
+        
+        senhaAtendimento.getAteMovimento().setStatus((AteStatus)sv.pesquisaCodigo(1, "AteStatus"));
+        senhaAtendimento.getAteMovimento().setAtendente(null);
+        
+        sv.alterarObjeto(senhaAtendimento.getAteMovimento());
+        
+        sv.comitarTransacao();
+        senhaAtendimento = new Senha();
+        listaAtendimentoSimples.clear();
+        
     }
 
     public List<SelectItem> getListaStatus() {
@@ -529,7 +582,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         renderHomologacao = true;
         renderConcluir = false;
         tipoAviso = "true";
-        msgHomologacao = "";
         fisica = new Fisica();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
@@ -574,7 +626,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         renderHomologacao = true;
         renderConcluir = false;
         tipoAviso = "true";
-        msgHomologacao = "";
         fisica = new Fisica();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
@@ -588,7 +639,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         renderHomologacao = true;
         renderConcluir = false;
         tipoAviso = "true";
-        msgHomologacao = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -651,19 +701,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setIdStatus(int idStatus) {
         this.idStatus = idStatus;
-    }
-
-    public String getMsgHomologacao() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") == null) {
-            msgHomologacao = "Não existe filial definida!";
-        } else {
-            macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
-        }
-        return msgHomologacao;
-    }
-
-    public void setMsgHomologacao(String msgHomologacao) {
-        this.msgHomologacao = msgHomologacao;
     }
 
     public boolean isRenderHomologacao() {
