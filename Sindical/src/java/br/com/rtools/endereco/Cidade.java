@@ -10,22 +10,22 @@ import javax.persistence.*;
  *
  * @author rtools
  */
-
 @Entity
-@Table(name = "END_CIDADE")
+@Table(name = "end_cidade")
 @NamedQueries({
-    @NamedQuery(name = "Cidade.pesquisaID",  query = "SELECT CID FROM Cidade AS CID WHERE CID.id = :pid"),
-    @NamedQuery(name = "Cidade.findAll",     query = "SELECT CID FROM Cidade AS CID  ORDER BY CID.cidade ASC, CID.uf ASC "),
-    @NamedQuery(name = "Cidade.findName",    query = "SELECT CID FROM Cidade AS CID WHERE UPPER(CID.cidade) LIKE :pdescricao ORDER BY CID.cidade ASC, CID.uf ASC ")
+    @NamedQuery(name = "Cidade.pesquisaID", query = "SELECT CID FROM Cidade AS CID WHERE CID.id = :pid"),
+    @NamedQuery(name = "Cidade.findAll", query = "SELECT CID FROM Cidade AS CID  ORDER BY CID.cidade ASC, CID.uf ASC "),
+    @NamedQuery(name = "Cidade.findName", query = "SELECT CID FROM Cidade AS CID WHERE UPPER(CID.cidade) LIKE :pdescricao ORDER BY CID.cidade ASC, CID.uf ASC ")
 })
 public class Cidade implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_CIDADE", length = 50, nullable = false)
+    @Column(name = "ds_cidade", length = 50, nullable = false)
     private String cidade;
-    @Column(name = "DS_UF", length = 2, nullable = false)
+    @Column(name = "ds_uf", length = 2, nullable = false)
     private String uf;
 
     public Cidade() {
