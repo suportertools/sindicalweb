@@ -38,8 +38,7 @@ public class RaisDao extends DB {
             filtroString = " WHERE UPPER(R.profissao.profissao) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("todos")) {
             DataHoje dh = new DataHoje();
-            String dataAntiga = dh.decrementarMeses(1, DataHoje.data());
-            filtroString = " WHERE R.emissao >= '" + dataAntiga + "' ";
+            filtroString = " WHERE R.emissao >= '" + DataHoje.data() + "' ";
         }
         String queryString = " SELECT R FROM Rais AS R " + (filtroString) + " ORDER BY R.emissao DESC ";
         try {
@@ -51,6 +50,7 @@ public class RaisDao extends DB {
                     qry.setParameter("descricaoPesquisa", "%" + descricaoPesquisa.toUpperCase() + "%");
                 }
             }
+            qry.setMaxResults(150);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
