@@ -12,7 +12,7 @@
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
-            .ui-selectonemenu {padding-right: 25px!important;}
+            .ui-selectonemenu { padding-right: 25px!important; }
         </style>
 
         <script type="text/javascript">
@@ -26,6 +26,7 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
@@ -54,18 +55,19 @@
                                 <h:column>
                                     <p:outputLabel value="Operações" /><br />
                                     <p:selectOneMenu value="#{atendimentoBean.idOperacao}">
+                                        <p:ajax event="change" update="@this" />
                                         <f:selectItems value="#{atendimentoBean.listaAtendimentoOperacoes}"/>
                                     </p:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
                             <p:messages autoUpdate="true" showDetail="true" closable="true" />
                             <p:panel styleClass="fundoCinza" style="margin-top: 10px;">
-                                <h:panelGrid columns="4">
+                                <h:panelGrid id="i_panel_dados" columns="4">
                                     <h:column>
                                         <p:outputLabel value="CPF" style="font-weight: bold"/><br />
                                         <p:inputMask value="#{atendimentoBean.ateMovimento.pessoa.documento}" mask="999.999.999-99" size="12" style="margin-right: 20px;" readonly="#{atendimentoBean.ateMovimento.pessoa.id != -1}">
-                                            <p:ajax event="change" listener="#{atendimentoBean.verificaCPF('cpf')}" update="formAtendimentoPessoa"/>
-                                            <p:ajax event="change" listener="#{atendimentoBean.verificaPessoaOposicao}" />
+                                            <p:ajax event="change" listener="#{atendimentoBean.verificaCPF('cpf')}" update="i_panel_dados" />
+                                            <p:ajax event="blur" listener="#{atendimentoBean.verificaPessoaOposicao}" />
                                         </p:inputMask>
                                     </h:column>
                                     <h:column>
@@ -76,11 +78,15 @@
                                     </h:column>
                                     <h:column>
                                         <p:outputLabel value="Nome" style="font-weight: bold"/><p:commandLink value="Alterar Pessoa" style="margin-left: 430px" onclick="PF('dlg_alterar_pessoa').show()" disabled="#{atendimentoBean.ateMovimento.pessoa.id == -1}"/><br />
-                                        <p:inputText value="#{atendimentoBean.ateMovimento.pessoa.nome}" style="margin-right: 20px; width: 550px" readonly="#{atendimentoBean.ateMovimento.pessoa.id != -1}"/>
+                                        <p:inputText value="#{atendimentoBean.ateMovimento.pessoa.nome}" style="margin-right: 20px; width: 550px" readonly="#{atendimentoBean.ateMovimento.pessoa.id != -1}">
+                                            <p:ajax event="change" update="formAtendimentoPessoa"/>
+                                        </p:inputText>
                                     </h:column>
                                     <h:column>
                                         <p:outputLabel value="Telefone" style="font-weight: bold"/><br />
-                                        <p:inputText value="#{atendimentoBean.ateMovimento.pessoa.telefone}" readonly="#{atendimentoBean.ateMovimento.pessoa.id != -1}" style="text-align: center"/>
+                                        <p:inputText value="#{atendimentoBean.ateMovimento.pessoa.telefone}" readonly="#{atendimentoBean.ateMovimento.pessoa.id != -1}" style="text-align: center">
+                                            <p:ajax event="change" update="i_panel_dados"/>
+                                        </p:inputText>
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
@@ -89,7 +95,7 @@
                                 <h:column>
                                     <p:outputLabel value="Empresa" /><br />
                                     <p:commandLink value="#{atendimentoBean.empresa.pessoa.nome}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id != -1}" style="font-weight: bold"/>
-                                    <p:commandButton value="Adicionar uma Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id == -1}"/>
+                                    <p:commandButton value="Adicionar uma Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id == -1}" ajax="false"/>
                                 </h:column>
                             </h:panelGrid>
 
@@ -102,7 +108,8 @@
 
                             <h:panelGrid columns="4" style="margin-top: 10px">
                                 <p:column>
-                                    <p:commandButton value="Salvar" title="Salvar Atendimento" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar Atendimento" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{atendimentoBean.ateMovimento.id == -1}"/>
+                                    <p:commandButton value="Alterar" title="Alterar Atendimento" onclick="PF('dlg_alterar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{atendimentoBean.ateMovimento.id != -1}"/>
                                 </p:column>
                                 <h:column>
                                     <p:commandButton value="Novo" title="Novo" action="#{atendimentoBean.novo}" ajax="false"/>
@@ -158,7 +165,7 @@
                                     </p:column>
                                     
                                     <p:column headerText="Senha" style="text-align: center">
-                                        <p:commandLink value="#{atendimentoBean.verSenha(linha)}" action="#{atendimentoBean.imprimirSenha(linha)}" />
+                                        <p:commandLink value="#{atendimentoBean.verSenha(linha)}" action="#{atendimentoBean.imprimirSenha(linha)}" ajax="false"/>
                                     </p:column>
                                     
                                     <p:rowExpansion>
@@ -187,13 +194,30 @@
                                 </p:dataTable>                            
                             </h:panelGrid>
                             
-                            <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Atendimento" width="400" resizable="false">
+                            <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Atendimento" width="500" resizable="false">
+                                <p:ajax event="close" update="formAtendimentoPessoa"/>  
                                 <h:outputLabel value="Deseja realmente SALVAR esse Atendimento?" />
                                 <br /><br />
-                                <h:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" style="clear: both; float: left">
-                                    <f:ajax event="click" render=":formAtendimentoPessoa" listener="#{atendimentoBean.salvar()}" />
-                                </h:commandButton>  
-                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>    
+                                <h:panelGrid columns="3">
+                                    <p:commandButton value="Salvar e Imprimir Senha" ajax="false"  action="#{atendimentoBean.salvar(true)}" styleClass="ui-confirmdialog-yes" style="clear: both; float: left" icon="ui-icon-check">
+                                        <p:fileDownload value="#{fileDownloadBean.file}" />
+                                    </p:commandButton>
+
+                                    <p:commandButton value="Apenas Salvar" action="#{atendimentoBean.salvar(false)}" update="formAtendimentoPessoa" styleClass="ui-confirmdialog-yes" style="clear: both; float: left" icon="ui-icon-check"/>
+
+                                    <p:commandButton value="Fechar" type="button" update=":formAtendimentoPessoa" styleClass="ui-confirmdialog-no" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>    
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_alterar" modal="true" header="Alterar Atendimento" width="500" resizable="false">
+                                <p:ajax event="close" update="formAtendimentoPessoa"/>  
+                                <h:outputLabel value="Deseja realmente ALTERAR esse Atendimento?" />
+                                <br /><br />
+                                <h:panelGrid columns="3">
+                                    <p:commandButton value="Alterar" action="#{atendimentoBean.salvar(false)}" update="formAtendimentoPessoa" styleClass="ui-confirmdialog-yes" style="clear: both; float: left" icon="ui-icon-check"/>
+
+                                    <p:commandButton value="Fechar" type="button" update=":formAtendimentoPessoa" styleClass="ui-confirmdialog-no" onclick="PF('dlg_alterar').hide()" style="float: left" icon="ui-icon-close"/>    
+                                </h:panelGrid>
                             </p:dialog>
                             
                             <p:dialog widgetVar="dlg_excluir" modal="true" header="Excluir Atendimento" width="400" resizable="false">
