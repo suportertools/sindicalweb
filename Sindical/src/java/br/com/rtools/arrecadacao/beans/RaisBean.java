@@ -124,7 +124,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         return "rais";
     }
 
-    public void save_void() {
+    public void save() {
         if (rais.getSisPessoa().getNome().equals("")) {
             GenericaMensagem.warn("Validação", "Informar nome!");
             return;
@@ -260,122 +260,121 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
-    public String save() {
-        if (rais.getSisPessoa().getNome().equals("")) {
-            GenericaMensagem.warn("Validação", "Informar nome!");
-            return "rais";
-        }
-        if (rais.getSisPessoa().getDocumento().equals("")) {
-            GenericaMensagem.warn("Validação", "Informar o documento!");
-            return "rais";
-        }
-        if (rais.getSisPessoa().getNascimento().equals("")) {
-            GenericaMensagem.warn("Validação", "Informar data de nascimento!");
-            return "rais";
-        }
-        if (rais.getEmpresa().getId() == -1) {
-            GenericaMensagem.warn("Validação", "Pesquisar empresa!");
-            return "rais";
-        }
-        if (rais.getAdmissaoString().equals("")) {
-            GenericaMensagem.warn("Validação", "Informar a data de admissão!");
-            return "rais";
-        }
-        if (!rais.getDemissaoString().equals("")) {
-            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
-            int demissao = DataHoje.converteDataParaInteger(rais.getDemissaoString());
-            if (demissao < admissao) {
-                GenericaMensagem.warn("Validação", "Demissão deve ser superior a data de admissão!");
-                return "rais";
-            }
-        }
-        if (!rais.getAfastamentoString().equals("")) {
-            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
-            int afastamento = DataHoje.converteDataParaInteger(rais.getAfastamentoString());
-            if (afastamento < admissao) {
-                GenericaMensagem.warn("Validação", "A data de afastamento deve ser superior a data de admissão!");
-                return "rais";
-            }
-            if (rais.getMotivoAfastamento().equals("")) {
-                GenericaMensagem.warn("Validação", "Informar o motivo do afastamento!");
-                return "rais";
-            }
-        }
-        if (rais.getProfissao().getId() == -1) {
-            GenericaMensagem.warn("Validação", "Informa profissão!");
-            return "rais";
-        }
-        DaoInterface di = new Dao();
-        if (Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()) != 0) {
-            rais.setNacionalidade((Nacionalidade) di.find(new Nacionalidade(), Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription())));
-        } else {
-            rais.setNacionalidade(null);
-        }
-
-        if (Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription()) != 0) {
-            rais.setEscolaridade((Escolaridade) di.find(new Escolaridade(), Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription())));
-        } else {
-            rais.setEscolaridade(null);
-        }
-
-        if (Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription()) != 0) {
-            rais.setRaca((Raca) di.find(new Raca(), Integer.parseInt(getListRaca().get(indexRaca).getDescription())));
-        } else {
-            rais.setRaca(null);
-        }
-
-        rais.setTipoDeficiencia((TipoDeficiencia) di.find(new TipoDeficiencia(), Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription())));
-        rais.setTipoRemuneracao((TipoRemuneracao) di.find(new TipoRemuneracao(), Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription())));
-        if (rais.isAlvara()) {
-            rais.setIndicadorAlvara((IndicadorAlvara) di.find(new IndicadorAlvara(), Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription())));
-        } else {
-            rais.setIndicadorAlvara(null);
-        }
-        di.openTransaction();
-        if (rais.getSisPessoa().getId() == -1) {
-            if (rais.getSisPessoa().getTipoDocumento().getId() == -1) {
-                rais.getSisPessoa().setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));
-            }
-            if (rais.getSisPessoa().getEndereco().getId() == -1) {
-                rais.getSisPessoa().setEndereco(null);
-            }
-            if (!di.save(rais.getSisPessoa())) {
-                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
-                di.rollback();
-                return "rais";
-            }
-        } else {
-            if (!di.update(rais.getSisPessoa())) {
-                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
-                di.rollback();
-                return "rais";
-            }
-        }
-        if (rais.getId() == -1) {
-            RaisDao raisDao = new RaisDao();
-            if (raisDao.existeCadastroAno(rais)) {
-                GenericaMensagem.warn("Validação", "Certificado Rais já cadastrado para o ano atual!");
-                return "rais";
-            }
-            if (di.save(rais)) {
-                di.commit();
-                GenericaMensagem.info("Sucesso", "Registro adicionado");
-            } else {
-                di.rollback();
-                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
-            }
-        } else {
-            if (di.update(rais)) {
-                di.commit();
-                GenericaMensagem.info("Sucesso", "Registro atualizado");
-            } else {
-                di.rollback();
-                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
-            }
-        }
-        return "rais";
-    }
-
+//    public String save() {
+//        if (rais.getSisPessoa().getNome().equals("")) {
+//            GenericaMensagem.warn("Validação", "Informar nome!");
+//            return "rais";
+//        }
+//        if (rais.getSisPessoa().getDocumento().equals("")) {
+//            GenericaMensagem.warn("Validação", "Informar o documento!");
+//            return "rais";
+//        }
+//        if (rais.getSisPessoa().getNascimento().equals("")) {
+//            GenericaMensagem.warn("Validação", "Informar data de nascimento!");
+//            return "rais";
+//        }
+//        if (rais.getEmpresa().getId() == -1) {
+//            GenericaMensagem.warn("Validação", "Pesquisar empresa!");
+//            return "rais";
+//        }
+//        if (rais.getAdmissaoString().equals("")) {
+//            GenericaMensagem.warn("Validação", "Informar a data de admissão!");
+//            return "rais";
+//        }
+//        if (!rais.getDemissaoString().equals("")) {
+//            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
+//            int demissao = DataHoje.converteDataParaInteger(rais.getDemissaoString());
+//            if (demissao < admissao) {
+//                GenericaMensagem.warn("Validação", "Demissão deve ser superior a data de admissão!");
+//                return "rais";
+//            }
+//        }
+//        if (!rais.getAfastamentoString().equals("")) {
+//            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
+//            int afastamento = DataHoje.converteDataParaInteger(rais.getAfastamentoString());
+//            if (afastamento < admissao) {
+//                GenericaMensagem.warn("Validação", "A data de afastamento deve ser superior a data de admissão!");
+//                return "rais";
+//            }
+//            if (rais.getMotivoAfastamento().equals("")) {
+//                GenericaMensagem.warn("Validação", "Informar o motivo do afastamento!");
+//                return "rais";
+//            }
+//        }
+//        if (rais.getProfissao().getId() == -1) {
+//            GenericaMensagem.warn("Validação", "Informa profissão!");
+//            return "rais";
+//        }
+//        DaoInterface di = new Dao();
+//        if (Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()) != 0) {
+//            rais.setNacionalidade((Nacionalidade) di.find(new Nacionalidade(), Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription())));
+//        } else {
+//            rais.setNacionalidade(null);
+//        }
+//
+//        if (Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription()) != 0) {
+//            rais.setEscolaridade((Escolaridade) di.find(new Escolaridade(), Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription())));
+//        } else {
+//            rais.setEscolaridade(null);
+//        }
+//
+//        if (Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription()) != 0) {
+//            rais.setRaca((Raca) di.find(new Raca(), Integer.parseInt(getListRaca().get(indexRaca).getDescription())));
+//        } else {
+//            rais.setRaca(null);
+//        }
+//
+//        rais.setTipoDeficiencia((TipoDeficiencia) di.find(new TipoDeficiencia(), Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription())));
+//        rais.setTipoRemuneracao((TipoRemuneracao) di.find(new TipoRemuneracao(), Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription())));
+//        if (rais.isAlvara()) {
+//            rais.setIndicadorAlvara((IndicadorAlvara) di.find(new IndicadorAlvara(), Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription())));
+//        } else {
+//            rais.setIndicadorAlvara(null);
+//        }
+//        di.openTransaction();
+//        if (rais.getSisPessoa().getId() == -1) {
+//            if (rais.getSisPessoa().getTipoDocumento().getId() == -1) {
+//                rais.getSisPessoa().setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));
+//            }
+//            if (rais.getSisPessoa().getEndereco().getId() == -1) {
+//                rais.getSisPessoa().setEndereco(null);
+//            }
+//            if (!di.save(rais.getSisPessoa())) {
+//                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
+//                di.rollback();
+//                return "rais";
+//            }
+//        } else {
+//            if (!di.update(rais.getSisPessoa())) {
+//                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+//                di.rollback();
+//                return "rais";
+//            }
+//        }
+//        if (rais.getId() == -1) {
+//            RaisDao raisDao = new RaisDao();
+//            if (raisDao.existeCadastroAno(rais)) {
+//                GenericaMensagem.warn("Validação", "Certificado Rais já cadastrado para o ano atual!");
+//                return "rais";
+//            }
+//            if (di.save(rais)) {
+//                di.commit();
+//                GenericaMensagem.info("Sucesso", "Registro adicionado");
+//            } else {
+//                di.rollback();
+//                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
+//            }
+//        } else {
+//            if (di.update(rais)) {
+//                di.commit();
+//                GenericaMensagem.info("Sucesso", "Registro atualizado");
+//            } else {
+//                di.rollback();
+//                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+//            }
+//        }
+//        return "rais";
+//    }
     public void delete() {
         if (rais.getId() != -1) {
             DaoInterface di = new Dao();
@@ -393,9 +392,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
-    public void searchSisPessoa() {
+    public String searchSisPessoa() {
         if (rais.getId() != -1) {
-            return;
+            return null;
         }
         if (!rais.getSisPessoa().getNome().isEmpty() && !rais.getSisPessoa().getNascimento().isEmpty() && rais.getSisPessoa().getDocumento().isEmpty()) {
         } else if (!rais.getSisPessoa().getDocumento().isEmpty()) {
@@ -403,10 +402,10 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
                 GenericaMensagem.warn("Validação", "Documento Inválido! Documento nº" + rais.getSisPessoa().getDocumento());
                 PF.openDialog("dlg_message");
                 rais.getSisPessoa().setDocumento("");
-                return;
+                return null;
             }
         } else {
-            return;
+            return null;
         }
         SisPessoaDB spdb = new SisPessoaDBToplink();
         SisPessoa sp = new SisPessoa();
@@ -429,10 +428,10 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
             GenericaMensagem.warn("Validação", "Pessoa já Cadastrada!");
             PF.openDialog("dlg_message");
             rais = new Rais();
-            return;
+            return null;
         }
-        
-        PF.update(":form_rais");
+        //PF.update("form_rais:");
+        return null;
     }
 
     public String edit(Rais r) {
