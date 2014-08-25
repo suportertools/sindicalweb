@@ -93,23 +93,23 @@
                             <h:panelGrid id="tbl" style="width:100%; border: 0px; clear: both" columns="1">
                                 <p:dataTable value="#{macFilialBean.listaMacs}" var="linha" emptyMessage="Nenhum Mac Filial encontrado">
 
-                                    <p:column headerText="Excluir" style="text-align: center">
-                                        <p:commandButton icon="ui-icon-trash" action="#{macFilialBean.delete(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formMacFilial2:i_msg_f2 :formMacFilial2:tbl" />
+                                    <p:column headerText="" style="text-align: center; width: 30px">
+                                        <p:commandButton icon="ui-icon-trash" title="Excluir LINHA" action="#{macFilialBean.delete(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formMacFilial2:i_msg_f2 :formMacFilial2:tbl" />
                                     </p:column>
 
                                     <p:column headerText="Filial">
                                         <h:outputLabel value="#{linha.filial.filial.pessoa.nome}"/>
                                     </p:column>
 
-                                    <p:column headerText="Departamento">
+                                    <p:column headerText="Departamento" style="width: 130px">
                                         <h:outputLabel value="#{linha.departamento.descricao}"/>
                                     </p:column>
 
-                                    <p:column headerText="Registro">
+                                    <p:column headerText="Registro" style="text-align: center; width: 130px">
                                         <h:outputLabel value="#{linha.mac}" />
                                     </p:column>
 
-                                    <p:column headerText="Nr Mesa">
+                                    <p:column headerText="Mesa" style="width: 40px; text-align: right">
                                         <h:outputLabel value="#{linha.mesa}" />
                                     </p:column>
 
@@ -118,7 +118,7 @@
                                         <h:outputLabel value="NENHUM CAIXA" rendered="#{linha.caixa == null}"/>
                                     </p:column>
 
-                                    <p:column headerText="Acessar" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="text-center">
+                                    <p:column headerText="..." rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="text-center" style="width: 30px">
                                         <p:commandButton icon="ui-icon-transferthick-e-w" action="#{macFilialBean.selecionaFilial(linha)}" title="Acessar/Trocar filial"/>
                                     </p:column>
                                 </p:dataTable>   
