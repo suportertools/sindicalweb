@@ -825,5 +825,53 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return null;
     }
+    
+    @Override
+    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial) {
+        List<Senha> result = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  SELECT S "
+                    + "  FROM Senha AS S "
+                    + " WHERE S.dtData = :data "
+                    + "   AND S.ateMovimento.status.id = 1 "
+                    + "   AND S.filial.id = :id_filial"
+                    + " ORDER BY S.dtData");
+            
+            qry.setParameter("data", DataHoje.dataHoje());
+            qry.setParameter("id_filial", id_filial);
+            if (!qry.getResultList().isEmpty()) {
+                result = qry.getResultList();
+            }
+        } catch (Exception e) {
+             //e.printStackTrace();
+        }
+        return result;
+    }
+    
+    @Override
+    public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario) {
+        List<Senha> result = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  SELECT S "
+                    + "  FROM Senha AS S "
+                    + " WHERE S.dtData = :data "
+                    + "   AND S.ateMovimento.status.id = 4 "
+                    + "   AND S.filial.id = :id_filial"
+                    + "   AND S.ateMovimento.atendente.id = :id_usuario"
+                    + " ORDER BY S.dtData");
+            
+            qry.setParameter("data", DataHoje.dataHoje());
+            qry.setParameter("id_filial", id_filial);
+            qry.setParameter("id_usuario", id_usuario);
+            if (!qry.getResultList().isEmpty()) {
+                result = qry.getResultList();
+            }
+        } catch (Exception e) {
+             //e.printStackTrace();
+        }
+        return result;
+    }
 
 }

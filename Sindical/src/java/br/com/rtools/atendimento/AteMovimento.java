@@ -3,6 +3,7 @@ package br.com.rtools.atendimento;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;
@@ -37,6 +38,9 @@ public class AteMovimento implements java.io.Serializable {
     @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
     @ManyToOne
     private Juridica juridica;
+    @JoinColumn(name = "ID_ATENDENTE", referencedColumnName = "ID")
+    @ManyToOne
+    private Usuario atendente;
     
     public AteMovimento() {
         this.id = -1;
@@ -49,9 +53,10 @@ public class AteMovimento implements java.io.Serializable {
         this.historico = "";
         this.status = new AteStatus();
         this.juridica = new Juridica();
+        this.atendente = new Usuario();
     }
 
-    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico, AteStatus status, Juridica juridica) {
+    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico, AteStatus status, Juridica juridica, Usuario atendente) {
         this.id = id;
         this.pessoa = pessoa;
         this.filial = filial;
@@ -61,6 +66,7 @@ public class AteMovimento implements java.io.Serializable {
         this.historico = historico;
         this.status = status;
         this.juridica = juridica;
+        this.atendente = atendente;
     }
 
     public int getId() {
@@ -141,5 +147,13 @@ public class AteMovimento implements java.io.Serializable {
 
     public void setJuridica(Juridica juridica) {
         this.juridica = juridica;
+    }
+
+    public Usuario getAtendente() {
+        return atendente;
+    }
+
+    public void setAtendente(Usuario atendente) {
+        this.atendente = atendente;
     }
 }

@@ -1197,9 +1197,7 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco.setEndereco(endereco);
                     listaEnd.set(1, pessoaEndereco);
                 }
-            } if (!juridica.isCobrancaEscritorio() && (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)) { 
-                listaEnd.set(1, listaEnd.get(0));
-            }else if (juridica != null) {
+            } else if (juridica != null) {
                 if (juridica.getContabilidade() != null) {
                     if (comparaEndereco((PessoaEndereco) listaEnd.get(1), db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3))) {
                         PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);

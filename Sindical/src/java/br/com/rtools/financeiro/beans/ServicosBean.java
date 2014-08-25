@@ -902,7 +902,7 @@ public class ServicosBean implements Serializable {
         if (listaParentesco.isEmpty()){
             ParentescoDB db = new ParentescoDBToplink();
             //List<Parentesco> select = db.pesquisaTodosSemTitularCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
-            List<Parentesco> select = db.pesquisaTodosSemTitularCategoria(id_categoria);
+            List<Parentesco> select = db.pesquisaTodosSemTitularCategoriaSemDesconto(id_categoria,  categoriaDesconto.getId());
             //List<Parentesco> select = db.pesquisaTodosSemTitular();
             listaParentesco.add(new SelectItem(0, "Selecione um parentesco",  "0"));
             if (!select.isEmpty()){
@@ -975,6 +975,43 @@ public class ServicosBean implements Serializable {
         descontoDepentende = new CategoriaDescontoDependente();
         valorDependente =  servicoValorDetalhe.getValorString();
         listaDescontoDependente.clear();
+        indexParentesco = 0;
+        listaParentesco.clear();
+        di.commit();
+    }
+    
+    public void adicionarDescontoDependenteTodosParentesco(){
+        Dao di = new Dao();
+        
+        if (listaParentesco.size() == 1 && Integer.valueOf(listaParentesco.get(0).getDescription()) == 0){
+            GenericaMensagem.error("Erro", "Não existe lista de Parentesco para ser adicionada!");
+            return;
+        }
+        
+        di.openTransaction();
+        for (SelectItem si: listaParentesco){
+            Parentesco par = (Parentesco)di.find(new Parentesco(), Integer.valueOf(si.getDescription()));
+            if (par != null){
+                CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
+
+                if (db.pesquisaDescontoDependentePorCategoria(par.getId(), categoriaDesconto.getId()) == null){
+                    descontoDepentende.setParentesco(par);
+                    descontoDepentende.setCategoriaDesconto(categoriaDesconto);
+
+                    if (!di.save(descontoDepentende)){
+                        GenericaMensagem.error("Erro", "Não foi possivel salvar Desconto!");
+                        di.rollback();
+                        return;
+                    }
+                }
+                descontoDepentende = new CategoriaDescontoDependente();
+            }
+        }
+        
+        valorDependente =  servicoValorDetalhe.getValorString();
+        listaDescontoDependente.clear();
+        indexParentesco = 0;
+        listaParentesco.clear();
         di.commit();
     }
     
@@ -990,6 +1027,25 @@ public class ServicosBean implements Serializable {
         }
         
         listaDescontoDependente.clear();
+        indexParentesco = 0;
+        listaParentesco.clear();
+        di.commit();
+    }
+    
+    public void deletarDescontoDependenteTodos(){
+        Dao di = new Dao();
+        di.openTransaction();
+        
+        for(CategoriaDescontoDependente cdd : listaDescontoDependente){
+            if (!di.delete(di.find(cdd, cdd.getId()))){
+                GenericaMensagem.error("Erro", "Não foi possivel deletar Desconto!");
+                di.rollback();
+                return;
+            }
+        }
+        listaDescontoDependente.clear();
+        indexParentesco = 0;
+        listaParentesco.clear();
         di.commit();
     }
 

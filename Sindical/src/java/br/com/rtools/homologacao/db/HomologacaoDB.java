@@ -67,4 +67,8 @@ public interface HomologacaoDB {
     public boolean existeHorarioDisponivel(Date date, Horarios horarios);
     
     public Cancelamento pesquisaCancelamentoPorAgendanto(int idAgendamento);
+    
+    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial);
+    
+    public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario);
 }
