@@ -3,20 +3,21 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_INDICE_MENSAL")
+@Table(name = "fin_indice_mensal")
 @NamedQuery(name = "IndiceMensal.pesquisaID", query = "select i from IndiceMensal i where i.id=:pid")
 public class IndiceMensal implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_ANO", length = 4, nullable = false)
+    @Column(name = "nr_ano", length = 4, nullable = false)
     private int ano;
-    @Column(name = "NR_MES", length = 2, nullable = false)
+    @Column(name = "nr_mes", length = 2, nullable = false)
     private int mes;
-    @Column(name = "NR_VALOR", nullable = false)
+    @Column(name = "nr_valor", nullable = false)
     private float valor;
-    @JoinColumn(name = "ID_INDICE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_indice", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Indice indice;
 

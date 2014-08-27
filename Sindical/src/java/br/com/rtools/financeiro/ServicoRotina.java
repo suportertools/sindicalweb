@@ -5,17 +5,18 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SERVICO_ROTINA")
+@Table(name = "fin_servico_rotina")
 @NamedQuery(name = "ServicoRotina.pesquisaID", query = "select s from ServicoRotina s where s.id=:pid")
 public class ServicoRotina implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Rotina rotina;
 

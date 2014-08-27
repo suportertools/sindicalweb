@@ -3,29 +3,30 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_PLANO5")
+@Table(name = "fin_plano5")
 @NamedQuery(name = "Plano5.pesquisaID", query = "select p from Plano5 p where p.id=:pid")
 public class Plano5 implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PLANO4", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_plano4", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Plano4 plano4;
-    @Column(name = "DS_NUMERO", length = 100, nullable = false)
+    @Column(name = "ds_numero", length = 100, nullable = false)
     private String numero;
-    @Column(name = "DS_CONTA", length = 200, nullable = false)
+    @Column(name = "ds_conta", length = 200, nullable = false)
     private String conta;
-    @JoinColumn(name = "ID_CONTA_BANCO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_conta_banco", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private ContaBanco contaBanco;
-    @JoinColumn(name = "ID_PLANO5_CONTRA_PARTIDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5_contra_partida", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Plano5 plano5ContraPartida;
-    @Column(name = "DS_ACESSO", length = 10)
+    @Column(name = "ds_acesso", length = 10)
     private String acesso;
-    @Column(name = "DS_CLASSIFICADOR", length = 20)
+    @Column(name = "ds_classificador", length = 20)
     private String classificador;
 
     public Plano5() {

@@ -16,27 +16,28 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_POLLING_EMAIL")
+@Table(name = "fin_polling_email")
 @NamedQuery(name = "PollingEmail.pesquisaID", query = "select pe from PollingEmail pe where pe.id = :pid")
 public class PollingEmail implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String hora;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
-    @JoinColumn(name = "ID_LINK", referencedColumnName = "ID")
+    @JoinColumn(name = "id_link", referencedColumnName = "id")
     @ManyToOne
     private Links links;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ENVIO")
+    @Column(name = "dt_envio")
     private Date dtEnvio;
-    @JoinColumn(name = "ID_COBRANCA_ENVIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cobranca_envio", referencedColumnName = "id")
     @ManyToOne
     private CobrancaEnvio cobrancaEnvio;
 

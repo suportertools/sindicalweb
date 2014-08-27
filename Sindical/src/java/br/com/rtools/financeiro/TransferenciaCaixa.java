@@ -15,30 +15,32 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_TRANSFERENCIA_CAIXA")
+@Table(name = "fin_transferencia_caixa")
 @NamedQuery(name = "TransferenciaCaixa.pesquisaID", query = "select tc from TransferenciaCaixa tc where tc.id = :pid")
-public class TransferenciaCaixa  implements java.io.Serializable {
+public class TransferenciaCaixa implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CAIXA_SAIDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_caixa_saida", referencedColumnName = "id")
     @ManyToOne
     private Caixa caixaSaida;
-    @Column(name = "NR_VALOR")
+    @Column(name = "nr_valor")
     private float valor;
-    @JoinColumn(name = "ID_CAIXA_ENTRADA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_caixa_entrada", referencedColumnName = "id")
     @ManyToOne
     private Caixa caixaEntrada;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_LANCAMENTO")
+    @Column(name = "dt_lancamento")
     private Date dtLancamento;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @ManyToOne
     private FStatus status;
-    @JoinColumn(name = "ID_FECHAMENTO_ENTRADA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_fechamento_entrada", referencedColumnName = "id")
     @ManyToOne
     private FechamentoCaixa fechamentoEntrada;
-    @JoinColumn(name = "ID_FECHAMENTO_SAIDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_fechamento_saida", referencedColumnName = "id")
     @ManyToOne
     private FechamentoCaixa fechamentoSaida;
 
@@ -52,7 +54,7 @@ public class TransferenciaCaixa  implements java.io.Serializable {
         this.fechamentoEntrada = new FechamentoCaixa();
         this.fechamentoSaida = new FechamentoCaixa();
     }
-    
+
     public TransferenciaCaixa(int id, Caixa caixaSaida, float valor, Caixa caixaEntrada, Date dtLancamento, FStatus status, FechamentoCaixa fechamentoEntrada, FechamentoCaixa fechamentoSaida) {
         this.id = id;
         this.caixaSaida = caixaSaida;
@@ -127,7 +129,5 @@ public class TransferenciaCaixa  implements java.io.Serializable {
     public void setFechamentoSaida(FechamentoCaixa fechamentoSaida) {
         this.fechamentoSaida = fechamentoSaida;
     }
-    
-    
-    
+
 }

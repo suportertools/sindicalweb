@@ -16,23 +16,24 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_MOVIMENTO_INATIVO")
+@Table(name = "fin_movimento_inativo")
 @NamedQuery(name = "MovimentoInativo.pesquisaID", query = "select mi from MovimentoInativo mi where mi.id=:pid")
 public class MovimentoInativo implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "DS_HISTORICO", length = 8000)
+    @Column(name = "ds_historico", length = 8000)
     private String historico;
 
     public int getId() {

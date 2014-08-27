@@ -6,52 +6,54 @@ import br.com.rtools.sistema.Periodo;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SERVICOS")
+@Table(name = "fin_servicos")
 @NamedQuery(name = "Servicos.pesquisaID", query = "SELECT S FROM Servicos AS S WHERE S.id = :pid")
 public class Servicos implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = true)
+    @Column(name = "ds_descricao", length = 100, nullable = true)
     private String descricao;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Filial filial;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Departamento departamento;
-    @Column(name = "NR_VALIDADE_GUIA_DIAS", nullable = true)
+    @Column(name = "nr_validade_guia_dias", nullable = true)
     private int validade;
-    @Column(name = "DS_CODIGO", length = 10, nullable = true)
+    @Column(name = "ds_codigo", length = 10, nullable = true)
     private String codigo;
-    @Column(name = "DS_SITUACAO", length = 1, nullable = true)
+    @Column(name = "ds_situacao", length = 1, nullable = true)
     private String situacao;
-    @Column(name = "IS_DEBITO_CLUBE", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_debito_clube", nullable = true, columnDefinition = "boolean default false")
     private boolean debito;
-    @Column(name = "IS_ALTERA_VALOR", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_altera_valor", nullable = true, columnDefinition = "boolean default false")
     private boolean alterarValor;
-    @Column(name = "IS_ADM", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_adm", nullable = true, columnDefinition = "boolean default false")
     private boolean adm;
-    @Column(name = "IS_TABELA", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_tarefa", nullable = true, columnDefinition = "boolean default false")
     private boolean tabela;
-    @Column(name = "IS_ELEICAO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_eleicao", nullable = true, columnDefinition = "boolean default false")
     private boolean eleicao;
-    @Column(name = "IS_AGRUPA_BOLETO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_agrupa_boleto", nullable = true, columnDefinition = "boolean default false")
     private boolean agrupaBoleto;
-    @Column(name = "IS_PRODUTO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_produto", nullable = true, columnDefinition = "boolean default false")
     private boolean produto;
-    @JoinColumn(name = "ID_SUBGRUPO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_subgrupo", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private SubGrupoFinanceiro subGrupoFinanceiro;
-    @Column(name = "IS_VALOR_FIXO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_valor_fixo", nullable = true, columnDefinition = "boolean default false")
     private boolean valorFixo;
-    @JoinColumn(name = "ID_PERIODO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_periodo", referencedColumnName = "id", nullable = true)
     @ManyToOne
-    private Periodo periodo;    
-    @Column(name = "NR_QTDE_PERIODO")
+    private Periodo periodo;
+    @Column(name = "nr_qtde_periodo")
     private int quantidadePeriodo;
 
     public Servicos() {

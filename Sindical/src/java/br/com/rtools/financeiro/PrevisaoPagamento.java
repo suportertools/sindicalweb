@@ -4,22 +4,23 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_PREVISAO_PAGAMENTO")
+@Table(name = "fin_previsao_pagamento")
 public class PrevisaoPagamento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id")
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_TIPO_PAGAMENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_tipo_pagamento", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private TipoPagamento tipoPagamento;
-    @JoinColumn(name = "ID_CONTA_BANCO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_conta_banco", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private ContaBanco contaBanco;
-    @Column(name = "DS_CHEQUE", length = 100, nullable = true)
+    @Column(name = "ds_cheque", length = 100, nullable = true)
     private String cheque;
 
     public PrevisaoPagamento() {

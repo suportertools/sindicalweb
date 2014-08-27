@@ -3,19 +3,20 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_HISTORICO")
+@Table(name = "fin_historico")
 @NamedQuery(name = "Historico.pesquisaID", query = "select h from Historico h where h.id=:pid")
 public class Historico implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Movimento movimento;
-    @Column(name = "DS_HISTORICO", length = 2000, nullable = false)
+    @Column(name = "ds_historico", length = 2000, nullable = false)
     private String historico;
-    @Column(name = "DS_COMPLEMENTO", length = 2000, nullable = true)
+    @Column(name = "ds_complemento", length = 2000, nullable = true)
     private String complemento;
 
     public Historico() {

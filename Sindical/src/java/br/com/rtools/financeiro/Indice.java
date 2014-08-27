@@ -3,18 +3,19 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_INDICE")
+@Table(name = "fin_indice")
 @NamedQueries({
     @NamedQuery(name = "Indice.pesquisaID", query = "SELECT I FROM Indice AS I WHERE I.id = :pid"),
-    @NamedQuery(name = "Indice.findAll",    query = "SELECT I FROM Indice AS I ORDER BY I.descricao ASC "),
-    @NamedQuery(name = "Indice.findName",   query = "SELECT I FROM Indice AS I WHERE I.descricao = :pdescricao ORDER BY I.descricao ASC ")
+    @NamedQuery(name = "Indice.findAll", query = "SELECT I FROM Indice AS I ORDER BY I.descricao ASC "),
+    @NamedQuery(name = "Indice.findName", query = "SELECT I FROM Indice AS I WHERE I.descricao = :pdescricao ORDER BY I.descricao ASC ")
 })
 public class Indice implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 20, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 20, nullable = false, unique = true)
     private String descricao;
 
     public Indice() {

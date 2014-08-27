@@ -16,25 +16,27 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_IMPRESSAO")
+@Table(name = "fin_impressao")
 @NamedQuery(name = "Impressao.pesquisaID", query = "select i from Impressao i where i.id = :pid")
 public class Impressao implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_IMPRESSAO", nullable = false)
+    @Column(name = "dt_impressao", nullable = false)
     private Date dtImpressao;
-    @Column(name = "DS_HORA", nullable = false)
+    @Column(name = "ds_hora", nullable = false)
     private String hora;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO")
+    @Column(name = "dt_vencimento")
     private Date dtVencimento;
 
     public Impressao(int id, Movimento movimento, Usuario usuario, Date dtImpressao, String hora, Date dtVencimento) {
@@ -45,7 +47,7 @@ public class Impressao implements java.io.Serializable {
         this.hora = hora;
         this.dtVencimento = dtVencimento;
     }
-    
+
     public Impressao() {
         this.id = -1;
         this.movimento = new Movimento();
@@ -54,7 +56,7 @@ public class Impressao implements java.io.Serializable {
         this.hora = DataHoje.hora();
         this.dtVencimento = null;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -102,11 +104,11 @@ public class Impressao implements java.io.Serializable {
     public void setDtVencimento(Date dtVencimento) {
         this.dtVencimento = dtVencimento;
     }
-    
+
     public String getImpressao() {
         return DataHoje.converteData(dtImpressao);
     }
-    
+
     public String getVencimento() {
         return DataHoje.converteData(dtVencimento);
     }

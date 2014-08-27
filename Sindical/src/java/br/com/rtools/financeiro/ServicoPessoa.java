@@ -7,43 +7,44 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SERVICO_PESSOA")
+@Table(name = "fin_servico_pessoa")
 @NamedQuery(name = "ServicoPessoa.pesquisaID", query = "select sp from ServicoPessoa sp where sp.id=:pid")
 public class ServicoPessoa implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
-    @Column(name = "DESCONTO_FOLHA", nullable = true)
+    @Column(name = "desconto_folha", nullable = true)
     private boolean descontoFolha;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Servicos servicos;
-    @Column(name = "NR_DESCONTO", nullable = true)
+    @Column(name = "nr_desconto", nullable = true)
     private float nrDesconto;
-    @Column(name = "DS_REF_VIGORACAO", length = 7, nullable = true)
+    @Column(name = "ds_ref_vigoracao", length = 7, nullable = true)
     private String referenciaVigoracao;
-    @Column(name = "DS_REF_VALIDADE", length = 7, nullable = true)
+    @Column(name = "ds_ref_validade", length = 7, nullable = true)
     private String referenciaValidade;
-    @Column(name = "NR_DIA_VENCIMENTO", length = 10, nullable = true)
+    @Column(name = "nr_dia_vencimento", length = 10, nullable = true)
     private int nrDiaVencimento;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private FTipoDocumento tipoDocumento;
-    @JoinColumn(name = "ID_COBRANCA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_cobranca", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa cobranca;
-    @Column(name = "IS_ATIVO", nullable = true, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", nullable = true, columnDefinition = "boolean default true")
     private boolean ativo;
-    @Column(name = "IS_BANCO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_banco", nullable = true, columnDefinition = "boolean default false")
     private boolean banco;
-    @Column(name = "NR_VALOR_FIXO", length = 10, nullable = true)
+    @Column(name = "nr_valor_fixo", length = 10, nullable = true)
     private float nrValorFixo;
 
     public ServicoPessoa() {
