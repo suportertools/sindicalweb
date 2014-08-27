@@ -4,23 +4,24 @@ import br.com.rtools.seguranca.Rotina;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_RELATORIOS")
+@Table(name = "sis_relatorios")
 @NamedQuery(name = "Relatorios.pesquisaID", query = "select rel from Relatorios rel where rel.id=:pid")
 public class Relatorios implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @Column(name = "DS_NOME", length = 100, nullable = false)
+    @Column(name = "ds_nome", length = 100, nullable = false)
     private String nome;
-    @Column(name = "DS_JASPER", length = 50, nullable = false)
+    @Column(name = "ds_jasper", length = 50, nullable = false)
     private String jasper;
-    @Column(name = "DS_QRY", length = 1000)
+    @Column(name = "ds_qry", length = 1000)
     private String qry;
-    @Column(name = "DS_QRY_ORDEM", length = 1000)
+    @Column(name = "ds_qry_ordem", length = 1000)
     private String qryOrdem;
 
     public Relatorios() {

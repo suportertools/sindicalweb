@@ -12,38 +12,39 @@ public class Juridica implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne //(fetch=FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
     private Pessoa pessoa;
-    @Column(name = "DS_FANTASIA", length = 200, nullable = false)
+    @Column(name = "ds_fantasia", length = 200, nullable = false)
     private String fantasia;
-    @JoinColumn(name = "ID_CNAE", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_cnae", referencedColumnName = "id", nullable = true)
     @OneToOne(fetch = FetchType.EAGER)
     private Cnae cnae;
-    @JoinColumn(name = "ID_CONTABILIDADE", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_contabilidade", referencedColumnName = "id", nullable = true)
     @OneToOne
     private Juridica contabilidade;
-    @Column(name = "DS_INSCRICAO_ESTADUAL", length = 30, nullable = true)
+    @Column(name = "ds_inscricao_estadual", length = 30, nullable = true)
     private String inscricaoEstadual;
-    @Column(name = "DS_INSCRICAO_MUNICIPAL", length = 30, nullable = true)
+    @Column(name = "ds_inscricao_municipal", length = 30, nullable = true)
     private String inscricaoMunicipal;
-    @Column(name = "DS_CONTATO", length = 50, nullable = true)
+    @Column(name = "ds_contato", length = 50, nullable = true)
     private String contato;
-    @Column(name = "DS_RESPONSAVEL", length = 50, nullable = true)
+    @Column(name = "ds_responsavel", length = 50, nullable = true)
     private String responsavel;
-    @JoinColumn(name = "ID_PORTE", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_porte", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Porte porte;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ABERTURA")
+    @Column(name = "dt_abertura")
     private Date dtAbertura;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FECHAMENTO")
+    @Column(name = "dt_fechamento")
     private Date dtFechamento;
-    @Column(name = "IS_EMAIL_ESCRITORIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_email_escritorio", columnDefinition = "boolean default false")
     private boolean emailEscritorio;
-    @Column(name = "IS_COBRANCA_ESCRITORIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_cobranca_escritorio", columnDefinition = "boolean default false")
     private boolean cobrancaEscritorio;
 
     public Juridica() {

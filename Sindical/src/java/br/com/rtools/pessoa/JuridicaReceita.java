@@ -6,38 +6,39 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_JURIDICA_RECEITA")
+@Table(name = "pes_juridica_receita")
 @NamedQuery(name = "JuridicaReceita.pesquisaID", query = "select jr from JuridicaReceita jr where jr.id = :pid")
 public class JuridicaReceita implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_PESQUISA")
+    @Column(name = "dt_pesquisa")
     private Date dtPesquisa;
-    @Column(name = "DS_DOCUMENTO", length = 30)
+    @Column(name = "ds_documento", length = 30)
     private String documento;
-    @Column(name = "DS_NOME", length = 300)
+    @Column(name = "ds_nome", length = 300)
     private String nome;
-    @Column(name = "DS_FANTASIA", length = 300)
+    @Column(name = "ds_fantasia", length = 300)
     private String fantasia;
-    @Column(name = "DS_CEP", length = 15)
+    @Column(name = "ds_cep", length = 15)
     private String cep;
-    @Column(name = "DS_COMPLEMENTO", length = 100)
+    @Column(name = "ds_complemento", length = 100)
     private String complemento;
-    @Column(name = "DS_DESCRICAO_END", length = 300)
+    @Column(name = "ds_descricao_end", length = 300)
     private String descricaoEndereco;
-    @Column(name = "DS_BAIRRO", length = 300)
+    @Column(name = "ds_bairro", length = 300)
     private String bairro;
-    @Column(name = "DS_NUMERO", length = 35)
+    @Column(name = "ds_numero", length = 35)
     private String numero;
-    @Column(name = "DS_CNAE", length = 400)
+    @Column(name = "ds_cnae", length = 400)
     private String cnae;
-    @Column(name = "DS_STATUS", length = 30)
+    @Column(name = "ds_status", length = 30)
     private String status;
 
     public JuridicaReceita() {

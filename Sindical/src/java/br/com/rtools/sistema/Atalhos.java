@@ -5,20 +5,21 @@ import br.com.rtools.seguranca.Rotina;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_ATALHOS")
+@Table(name = "sis_atalhos")
 @NamedQuery(name = "Atalhos.pesquisaID", query = "select at from Atalhos at where at.id = :pid")
 public class Atalhos implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @Column(name = "DS_SIGLA", nullable = false)
+    @Column(name = "ds_sigla", nullable = false)
     private String sigla;
 
     public Atalhos() {

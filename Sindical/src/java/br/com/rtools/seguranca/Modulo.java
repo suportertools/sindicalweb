@@ -3,18 +3,19 @@ package br.com.rtools.seguranca;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_MODULO")
+@Table(name = "seg_modulo")
 @NamedQueries({
-    @NamedQuery(name = "Modulo.pesquisaID",    query = "SELECT MODU FROM Modulo AS MODU WHERE MODU.id = :pid"),
-    @NamedQuery(name = "Modulo.findAll",       query = "SELECT MODU FROM Modulo AS MODU ORDER BY MODU.descricao ASC"),
-    @NamedQuery(name = "Modulo.findName",      query = "SELECT MODU FROM Modulo AS MODU WHERE UPPER(MODU.descricao) LIKE :pdescricao ORDER BY MODU.descricao ASC ")
+    @NamedQuery(name = "Modulo.pesquisaID", query = "SELECT MODU FROM Modulo AS MODU WHERE MODU.id = :pid"),
+    @NamedQuery(name = "Modulo.findAll", query = "SELECT MODU FROM Modulo AS MODU ORDER BY MODU.descricao ASC"),
+    @NamedQuery(name = "Modulo.findName", query = "SELECT MODU FROM Modulo AS MODU WHERE UPPER(MODU.descricao) LIKE :pdescricao ORDER BY MODU.descricao ASC ")
 })
 public class Modulo implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false)
+    @Column(name = "ds_descricao", length = 50, nullable = false)
     private String descricao;
 
     public Modulo() {

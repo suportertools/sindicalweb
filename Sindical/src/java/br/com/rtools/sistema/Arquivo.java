@@ -4,17 +4,18 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_ARQUIVO")
+@Table(name = "sis_arquivo")
 public class Arquivo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_NOME", length = 255)
+    @Column(name = "ds_nome", length = 255)
     private String nome;
-    @Column(name = "DS_CAMINHO", length = 255)
+    @Column(name = "ds_caminho", length = 255)
     private String caminho;
-    @Column(name = "DS_EXTENSAO", length = 10)
+    @Column(name = "ds_extensao", length = 10)
     private String extensao;
 
     public Arquivo() {

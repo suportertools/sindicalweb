@@ -3,7 +3,7 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_TIPO_CENTRO_COMERCIAL")
+@Table(name = "pes_tipo_centro_comercial")
 @NamedQueries({
     @NamedQuery(name = "TipoCentroComercial.pesquisaID",  query = "SELECT TCC FROM TipoCentroComercial AS TCC WHERE TCC.id = :pid"),
     @NamedQuery(name = "TipoCentroComercial.findAll",     query = "SELECT TCC FROM TipoCentroComercial AS TCC ORDER BY TCC.descricao ASC "),
@@ -13,8 +13,9 @@ public class TipoCentroComercial implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, unique = true)
+    @Column(name = "ds_descricao", length = 100, unique = true)
     private String descricao;
 
     public TipoCentroComercial(int id, String descricao) {

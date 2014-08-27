@@ -3,14 +3,15 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_PORTE")
+@Table(name = "pes_porte")
 @NamedQuery(name = "Porte.pesquisaID", query = "select prof from Porte prof where prof.id=:pid")
 public class Porte implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false)
+    @Column(name = "ds_descricao", length = 50, nullable = false)
     private String descricao;
 
     public Porte() {

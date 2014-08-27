@@ -6,8 +6,8 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_FILIAL_DEPARTAMENTO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_FILIAL", "ID_DEPARTAMENTO"})
+@Table(name = "seg_filial_departamento",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_filial", "id_departamento"})
 )
 @NamedQueries({
     @NamedQuery(name = "FilialDepartamento.findAll", query = "SELECT FDEP FROM FilialDepartamento AS FDEP ORDER BY FDEP.filial.filial.pessoa.nome ASC, FDEP.departamento.descricao ASC "),
@@ -19,11 +19,12 @@ public class FilialDepartamento implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Filial filial;
-    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Departamento departamento;
 

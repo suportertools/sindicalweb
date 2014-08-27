@@ -9,39 +9,40 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PRO_OS")
+@Table(name = "pro_os")
 public class OrdemServico implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PROTOCOLO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_protocolo", referencedColumnName = "id")
     @ManyToOne
     private Protocolo protocolo;
-    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id")
     @ManyToOne
     private Modulo modulo;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id")
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_responsavel", referencedColumnName = "id")
     @ManyToOne
     private Usuario responsavel;
-    @Column(name = "DS_HISTORICO", length = 2000)
+    @Column(name = "ds_historico", length = 2000)
     private String historico;
-    @Column(name = "DS_HISTORICO_INTERNO", length = 2000)
+    @Column(name = "ds_historico_interno", length = 2000)
     private String historicoInterno;
-    @JoinColumn(name = "ID_PRIORIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_prioridade", referencedColumnName = "id")
     @ManyToOne
     private Prioridade prioridade;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @ManyToOne
     private ProStatus proStatus;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_PREVISAO")
+    @Column(name = "dt_previsao")
     private Date dataPrevisao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CONCLUSAO")
+    @Column(name = "dt_conclusao")
     private Date dataConclusao;
 
     public OrdemServico() {

@@ -6,28 +6,29 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_LOG")
+@Table(name = "seg_log")
 public class Log implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "DS_HORA", length = 50, nullable = false)
+    @Column(name = "ds_hora", length = 50, nullable = false)
     private String hora;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Rotina rotina;
-    @Column(name = "DS_CONTEUDO_ORIGINAL", length = 1024, nullable = true)
+    @Column(name = "ds_conteudo_original", length = 1024, nullable = true)
     private String conteudoOriginal;
-    @Column(name = "DS_CONTEUDO_ALTERADO", length = 1024, nullable = true)
+    @Column(name = "ds_conteudo_alterado", length = 1024, nullable = true)
     private String conteudoAlterado;
-    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Evento evento;
 
@@ -41,7 +42,7 @@ public class Log implements Serializable {
         this.conteudoAlterado = "";
         this.evento = new Evento();
     }
-    
+
     public Log(Integer id, Date dtData, String hora, Usuario usuario, Rotina rotina, String conteudoOriginal, String conteudoAlterado, Evento evento) {
         this.id = id;
         this.dtData = dtData;

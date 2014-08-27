@@ -18,6 +18,7 @@ public class Catalogo implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne

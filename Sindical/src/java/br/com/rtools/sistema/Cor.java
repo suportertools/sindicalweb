@@ -11,7 +11,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SIS_COR")
+@Table(name = "sis_cor")
 @NamedQueries({
     @NamedQuery(name = "Cor.findAll", query = "SELECT C FROM Cor AS C ORDER BY C.descricao ASC "),
     @NamedQuery(name = "Cor.findName", query = "SELECT C FROM Cor AS C WHERE UPPER(C.descricao) LIKE :pdescricao ORDER BY C.descricao ASC ")
@@ -21,8 +21,9 @@ public class Cor implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
 
     public Cor() {

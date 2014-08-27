@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_USUARIO")
+@Table(name = "seg_usuario")
 @NamedQueries({
     @NamedQuery(name = "Usuario.pesquisaID", query = "SELECT U FROM Usuario U WHERE U.id = :pid "),
     @NamedQuery(name = "Usuario.findAll", query = "SELECT U FROM Usuario U ORDER BY U.pessoa.nome ASC, U.login ASC ")
@@ -14,17 +14,18 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "ID", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
-    @Column(name = "DS_LOGIN", length = 15, nullable = false, unique = true)
+    @Column(name = "ds_login", length = 15, nullable = false, unique = true)
     private String login;
-    @Column(name = "DS_SENHA", length = 6, nullable = false)
+    @Column(name = "ds_senha", length = 6, nullable = false)
     private String senha;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default false")
     private boolean ativo;
-    @Column(name = "DS_EMAIL", length = 255)
+    @Column(name = "ds_email", length = 255)
     private String email;
 
     public Usuario() {

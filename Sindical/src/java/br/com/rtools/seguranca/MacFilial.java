@@ -6,24 +6,25 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_MAC_FILIAL")
+@Table(name = "seg_mac_filial")
 @NamedQuery(name = "MacFilial.pesquisaID", query = "select mf from MacFilial mf where mf.id = :pid")
 public class MacFilial implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Departamento departamento;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Filial filial;
-    @Column(name = "DS_MAC", nullable = false)
+    @Column(name = "ds_mac", nullable = false)
     private String mac;
-    @Column(name = "NR_MESA")
+    @Column(name = "nr_mesa")
     private int mesa;
-    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_caixa", referencedColumnName = "id")
     @ManyToOne
     private Caixa caixa;
 

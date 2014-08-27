@@ -5,19 +5,20 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_DOCUMENTO_INVALIDO")
+@Table(name = "pes_documento_invalido")
 @NamedQuery(name = "DocumentoInvalido.pesquisaID", query = "select docInv from DocumentoInvalido docInv where docInv.id=:pid")
 public class DocumentoInvalido implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DOCUMENTO_INVALIDO", length = 100, nullable = true)
+    @Column(name = "ds_documento_invalido", length = 100, nullable = true)
     private String documentoInvalido;
-    @Column(name = "CHECADO", nullable = true)
+    @Column(name = "checado", nullable = true)
     private boolean checado;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_IMPORTACAO")
+    @Column(name = "dt_importacao")
     private Date dtImportacao;
 
     public DocumentoInvalido() {

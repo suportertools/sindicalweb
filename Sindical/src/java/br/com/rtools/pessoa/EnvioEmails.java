@@ -5,24 +5,25 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_ENVIO_EMAILS")
+@Table(name = "pes_envio_emails")
 @NamedQuery(name = "EnvioEmails.pesquisaID", query = "select ee from EnvioEmails ee where ee.id=:pid")
 public class EnvioEmails implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA_ENVIO")
+    @Column(name = "dt_data_envio")
     private Date dtEnvio;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    @Column(name = "DS_EMAIL", length = 50)
+    @Column(name = "ds_email", length = 50)
     private String email;
-    @Column(name = "DS_HISTORICO", length = 100)
+    @Column(name = "ds_historico", length = 100)
     private String historico;
-    @Column(name = "DS_OPERACAO", length = 20)
+    @Column(name = "ds_operacao", length = 20)
     private String operacao;
 
     public EnvioEmails() {

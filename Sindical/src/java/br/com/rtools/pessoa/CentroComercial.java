@@ -3,21 +3,22 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_CENTRO_COMERCIAL")
+@Table(name = "pes_centro_comercial")
 @NamedQueries({
-    @NamedQuery(name = "CentroComercial.pesquisaID",  query = "SELECT CC FROM CentroComercial AS CC WHERE CC.id = :pid"),
-    @NamedQuery(name = "CentroComercial.findAll",     query = "SELECT CC FROM CentroComercial AS CC ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC "),
-    @NamedQuery(name = "CentroComercial.findName",    query = "SELECT CC FROM CentroComercial AS CC WHERE UPPER(CC.tipoCentroComercial.descricao) LIKE :pdescricao ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC ")
+    @NamedQuery(name = "CentroComercial.pesquisaID", query = "SELECT CC FROM CentroComercial AS CC WHERE CC.id = :pid"),
+    @NamedQuery(name = "CentroComercial.findAll", query = "SELECT CC FROM CentroComercial AS CC ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC "),
+    @NamedQuery(name = "CentroComercial.findName", query = "SELECT CC FROM CentroComercial AS CC WHERE UPPER(CC.tipoCentroComercial.descricao) LIKE :pdescricao ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC ")
 })
 public class CentroComercial implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_TIPO_CENTRO_COMERCIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_centro_comercial", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private TipoCentroComercial tipoCentroComercial;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Juridica juridica;
 

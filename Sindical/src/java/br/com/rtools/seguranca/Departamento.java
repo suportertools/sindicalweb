@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_DEPARTAMENTO")
+@Table(name = "seg_departamento")
 @NamedQueries({
     @NamedQuery(name = "Departamento.pesquisaID", query = "SELECT DEP FROM Departamento DEP WHERE DEP.id = :pid"),
     @NamedQuery(name = "Departamento.findAll", query = "SELECT DEP FROM Departamento DEP ORDER BY DEP.descricao ASC "),
@@ -15,8 +15,9 @@ public class Departamento implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false)
+    @Column(name = "ds_descricao", length = 50, nullable = false)
     private String descricao;
 
     public Departamento() {

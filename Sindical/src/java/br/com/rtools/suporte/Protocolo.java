@@ -7,20 +7,21 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PRO_PROTOCOLO")
+@Table(name = "pro_protocolo")
 public class Protocolo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date data;
-    @Column(name = "DS_HORA")
+    @Column(name = "ds_hora")
     private String hora;
-    @Column(name = "DS_SOLICITANTE", length = 50)
+    @Column(name = "ds_solicitante", length = 50)
     private String solicitante;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa empresa;
 

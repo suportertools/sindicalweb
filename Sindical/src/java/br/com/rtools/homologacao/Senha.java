@@ -19,34 +19,35 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "HOM_SENHA")
+@Table(name = "hom_senha")
 @NamedQuery(name = "Senha.pesquisaID", query = "select s from Senha s where s.id = :pid")
 public class Senha implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_AGENDAMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_agendamento", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Agendamento agendamento;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String hora;
-    @Column(name = "DS_HORA_CHAMADA", length = 5)
+    @Column(name = "ds_hora_chamada", length = 5)
     private String horaChamada;
-    @Column(name = "NR_MESA")
+    @Column(name = "nr_mesa")
     private int mesa;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "NR_SENHA")
+    @Column(name = "nr_senha")
     private int senha;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
-    @JoinColumn(name = "ID_ATENDIMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_atendimento", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private AteMovimento ateMovimento;
 

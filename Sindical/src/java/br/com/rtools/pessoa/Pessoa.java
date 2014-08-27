@@ -17,7 +17,7 @@ public class Pessoa implements Serializable {
     private int id;
     @Column(name = "DS_NOME", length = 150, nullable = false)
     private String nome;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private TipoDocumento tipoDocumento;
     @Column(name = "DS_OBS", length = 500, nullable = true)
