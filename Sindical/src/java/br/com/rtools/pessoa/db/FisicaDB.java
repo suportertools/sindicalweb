@@ -30,6 +30,8 @@ public interface FisicaDB {
 
     public List pesquisaFisicaPorDoc(String doc);
     
+    public List pesquisaFisicaPorDocRG(String doc);
+    
     public List pesquisaFisicaPorDoc(String doc, boolean like);
 
     public List pesquisaFisicaPorDocSemLike(String doc);

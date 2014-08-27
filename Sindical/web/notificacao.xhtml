@@ -25,16 +25,13 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Notificações" styleClass="fonteHeader" />
                         <h:form id="formNotificacao">
                             <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
-                            
-                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                                <h:outputLabel value="Carregando ... Aguarde" />
-                            </p:dialog> 
                             
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid id="i_panel" columns="6">
@@ -129,7 +126,7 @@
                                 
                             <h:panelGrid style="float: left">
                                 <p:column>
-                                    <p:accordionPanel style="width:285px; " activeIndex="#{notificacaoBean.indexTab}" rendered="#{notificacaoBean.lote.id == -1}">   
+                                    <p:accordionPanel style="width: 285px; " activeIndex="#{notificacaoBean.indexTab}" rendered="#{notificacaoBean.lote.id == -1}">   
                                         <p:ajax event="tabChange" update=":formNotificacao" listener="#{notificacaoBean.acoes}"/>  
 
                                         <p:tab title="Gerar para Todas">  
@@ -169,17 +166,16 @@
                                                 <h:outputText value="Todas Empresas com Contabilidade" style="float: left; font-weight: bold; width: 100%"/>
                                             </h:panelGrid>
                                         </p:tab>  
-                                        
                                     </p:accordionPanel>  
-                                    
-                                    <h:panelGrid columns="2" rendered="#{notificacaoBean.lote.id == -1}">
-                                        <p:selectBooleanCheckbox id="chkCidades" value="#{notificacaoBean.chkCidadesBase}" itemLabel="Todas Cidades da Base" style="font-weight: bold">
-                                            <p:ajax event="change" listener="#{notificacaoBean.marcarCidadesBase}" update=":formNotificacao"/>
-                                        </p:selectBooleanCheckbox>
-                                    </h:panelGrid>
-                                    
-                                    <p:dataTable id="tblCidadesBase" value="#{notificacaoBean.listaCidadesBase}" var="linha" rendered="#{notificacaoBean.lote.id == -1}">
-                                        <p:column>
+                                </p:column>
+                                
+                                <h:panelGrid rendered="#{notificacaoBean.lote.id == -1}" style="clear: both; width: 285px;">
+                                    <p:selectBooleanCheckbox id="chkCidades" value="#{notificacaoBean.chkCidadesBase}" itemLabel="Todas Cidades da Base" style="font-weight: bold">
+                                        <p:ajax event="change" listener="#{notificacaoBean.marcarCidadesBase}" update=":formNotificacao"/>
+                                    </p:selectBooleanCheckbox>
+
+                                    <p:dataTable id="tblCidadesBase" value="#{notificacaoBean.listaCidadesBase}" var="linha" rendered="#{notificacaoBean.lote.id == -1}" scrollable="true" scrollHeight="440">
+                                        <p:column width="20" style="text-align: center">
                                             <p:selectBooleanCheckbox value="#{linha.argumento0}">
                                                 <p:ajax event="change" listener="#{notificacaoBean.addCidades}" update=":formNotificacao"/>
                                             </p:selectBooleanCheckbox>
@@ -189,12 +185,8 @@
                                             <h:outputText value="#{linha.argumento1.cidade} - #{linha.argumento1.uf}"/>
                                         </p:column>
                                     </p:dataTable>
-                                </p:column>
-                                    
+                                </h:panelGrid>
                             </h:panelGrid>
-                            
-                            
-                            
                         </h:form>
                     </p:panel>
                 </f:view>

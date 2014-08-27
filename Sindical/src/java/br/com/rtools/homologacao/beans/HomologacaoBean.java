@@ -153,7 +153,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 if (senha.getId() == -1) {
                     //msgHomologacao = "Senha não encontrada!";
                     GenericaMensagem.warn("Atenção", "Senha não encontrada!");
-                    return "homologacao";
+                    return null;
                 }
             }
             agendamento = senha.getAgendamento();
@@ -226,7 +226,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         sv.comitarTransacao();
         senhaAtendimento = new Senha();
         listaAtendimentoSimples.clear();
-        
+        RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').hide();");
     }
 
     public List<SelectItem> getListaStatus() {
