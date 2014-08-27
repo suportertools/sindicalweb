@@ -386,7 +386,7 @@
                         </h:panelGrid>
                         
                         <h:panelGrid columns="3">
-                            <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
+                            <p:commandButton value="Voltar" />
                             <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
                             <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
                         </h:panelGrid>
