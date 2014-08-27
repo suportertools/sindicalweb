@@ -21,7 +21,7 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "ESC_AUTORIZADOS")
+@Table(name = "esc_autorizados")
 @NamedQueries({
     @NamedQuery(name = "EscolaAutorizados.pesquisaID", query = "SELECT EA FROM EscolaAutorizados AS EA WHERE EA.id = :pid"),
     @NamedQuery(name = "EscolaAutorizados.findAll", query = "SELECT EA FROM EscolaAutorizados AS EA ORDER BY EA.matriculaEscola.id ASC, EA.pessoa.nome ASC ")
@@ -30,11 +30,12 @@ public class EscolaAutorizados implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MATRICULA_ESCOLA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_matricula_escola", referencedColumnName = "id")
     @ManyToOne
     private MatriculaEscola matriculaEscola;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
 

@@ -3,14 +3,15 @@ package br.com.rtools.escola;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ESC_STATUS")
+@Table(name = "esc_status")
 @NamedQuery(name = "EscStatus.pesquisaID", query = "SELECT ES FROM EscStatus AS ES WHERE ES.id = :pid")
 public class EscStatus implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", nullable = true)
+    @Column(name = "ds_descricao", nullable = true)
     private String descricao;
 
     public EscStatus() {

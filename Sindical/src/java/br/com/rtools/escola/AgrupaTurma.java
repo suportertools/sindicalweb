@@ -4,34 +4,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * <p><b>Agrupa Turma</b></p>
- * <p>Agrupa turmas para realizar o cálculo da quantidade de vagas disponíveis no momento de uma nova matrícula.</p>
+ * <p>
+ * <b>Agrupa Turma</b></p>
+ * <p>
+ * Agrupa turmas para realizar o cálculo da quantidade de vagas disponíveis no
+ * momento de uma nova matrícula.</p>
  * <br /><br />
  * <table border="1">
- *      <tHead>
- *          <tr>
- *              <td colspan="3">Exemplo prático</td>
- *          </tr>
- *      </tHead>
- *      <tbody>
- *          <tr><td>Id</td><td>Turma</td><td>TurmaIntegral</td></tr>
- *          <tr><td>01</td><td>01</td><td>01</td></tr>
- *          <tr><td>02</td><td>02</td><td>01</td></tr>
- *          <tr><td>03</td><td>05</td><td>01</td></tr>
- *      </tbody>
- *      <tFoot>
- *          <tr>
- *              <td colspan="3">No exemplo acima definiu-se que a turma principal desse agrupamento é a turma 01, dela será realizada a base de cálculo.</td>
- *          </tr>
- *      </tFoot>
+ * <tHead>
+ * <tr>
+ * <td colspan="3">Exemplo prático</td>
+ * </tr>
+ * </tHead>
+ * <tbody>
+ * <tr><td>Id</td><td>Turma</td><td>TurmaIntegral</td></tr>
+ * <tr><td>01</td><td>01</td><td>01</td></tr>
+ * <tr><td>02</td><td>02</td><td>01</td></tr>
+ * <tr><td>03</td><td>05</td><td>01</td></tr>
+ * </tbody>
+ * <tFoot>
+ * <tr>
+ * <td colspan="3">No exemplo acima definiu-se que a turma principal desse
+ * agrupamento é a turma 01, dela será realizada a base de cálculo.</td>
+ * </tr>
+ * </tFoot>
  * </table>
  * <br /><br />
- * <p style="color: red;"><b>IMPORTANTE:</b>Para agrupar é necessários que as turmas sejam da mesma sala.</p>
+ * <p style="color: red;"><b>IMPORTANTE:</b>Para agrupar é necessários que as
+ * turmas sejam da mesma sala.</p>
+ *
  * @author rtools
  */
 @Entity
-@Table(name = "ESC_AGRUPA_TURMA",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_TURMA, ID_TURMA_INTEGRAL"})
+@Table(name = "esc_agrupa_turma",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_turma, id_turma_integral"})
 )
 @NamedQueries({
     @NamedQuery(name = "AgrupaTurma.pesquisaID", query = "SELECT AT FROM AgrupaTurma AS AT WHERE AT.id = :pid"),
@@ -41,11 +47,12 @@ public class AgrupaTurma implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_TURMA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_turma", referencedColumnName = "id")
     @ManyToOne
     private Turma turma;
-    @JoinColumn(name = "ID_TURMA_INTEGRAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_turma_integral", referencedColumnName = "id")
     @ManyToOne
     private Turma turmaIntegral;
 

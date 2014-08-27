@@ -4,17 +4,18 @@ import br.com.rtools.pessoa.Filial;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ESC_MATR_TURMA")
+@Table(name = "esc_matr_turma")
 @NamedQuery(name = "MatriculaTurma.pesquisaID", query = "select m from MatriculaTurma m where m.id=:pid")
 public class MatriculaTurma implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MATR_ESCOLA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_matr_escola", referencedColumnName = "id")
     @ManyToOne
     private MatriculaEscola matriculaEscola;
-    @JoinColumn(name = "ID_TURMA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_turma", referencedColumnName = "id")
     @ManyToOne
     private Turma turma;
 

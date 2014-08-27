@@ -22,7 +22,7 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "ESC_COMPONENTE_CURRICULAR")
+@Table(name = "esc_componente_curricular")
 @NamedQueries({
     @NamedQuery(name = "ComponenteCurricular.pesquisaID", query = "SELECT CC FROM ComponenteCurricular AS CC WHERE CC.id = :pid"),
     @NamedQuery(name = "ComponenteCurricular.findAll", query = "SELECT CC FROM ComponenteCurricular AS CC ORDER BY CC.descricao ASC "),
@@ -32,8 +32,9 @@ public class ComponenteCurricular implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = true, unique = true)
+    @Column(name = "ds_descricao", length = 50, nullable = true, unique = true)
     private String descricao;
 
     public ComponenteCurricular() {

@@ -26,7 +26,7 @@ import org.primefaces.event.SelectEvent;
  * @author rtools
  */
 @Entity
-@Table(name = "ESC_TURMA")
+@Table(name = "esc_turma")
 @NamedQueries({
     @NamedQuery(name = "Turma.pesquisaID", query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
     @NamedQuery(name = "Turma.findAll", query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC "),
@@ -36,46 +36,47 @@ public class Turma implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CURSO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_curso", referencedColumnName = "id")
     @ManyToOne
     private Servicos cursos;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIO")
+    @Column(name = "dt_inicio")
     private Date dtInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_TERMINO")
+    @Column(name = "dt_termino")
     private Date dtTermino;
-    @Column(name = "TM_INICIO")
+    @Column(name = "tm_inicio")
     private String horaInicio;
-    @Column(name = "TM_TERMINO")
+    @Column(name = "tm_termino")
     private String horaTermino;
-    @Column(name = "IS_SEGUNDA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_segunda", columnDefinition = "boolean default false")
     private boolean segunda;
-    @Column(name = "IS_TERCA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_terca", columnDefinition = "boolean default false")
     private boolean terca;
-    @Column(name = "IS_QUARTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_quarta", columnDefinition = "boolean default false")
     private boolean quarta;
-    @Column(name = "IS_QUINTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_quinta", columnDefinition = "boolean default false")
     private boolean quinta;
-    @Column(name = "IS_SEXTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sexta", columnDefinition = "boolean default false")
     private boolean sexta;
-    @Column(name = "IS_SABADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sabado", columnDefinition = "boolean default false")
     private boolean sabado;
-    @Column(name = "IS_DOMINGO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_domingo", columnDefinition = "boolean default false")
     private boolean domingo;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
-    @Column(name = "NR_QUANTIDADE")
+    @Column(name = "nr_quantidade")
     private int quantidade;
-    @Column(name = "NR_SALA", length = 2)
+    @Column(name = "nr_sala", length = 2)
     private String sala;
-    @Column(name = "DS_DESCRICAO", length = 255)
+    @Column(name = "ds_descricao", length = 255)
     private String descricao;
-    @Column(name = "NR_IDADE_INI")
+    @Column(name = "nr_idade_ini")
     private int idadeInicial;
-    @Column(name = "NR_IDADE_FIM")
+    @Column(name = "nr_idade_fim")
     private int idadeFim;
 
     public Turma(int id, Servicos cursos, String dataInicio, String dataTermino, String horaInicio, String horaTermino,

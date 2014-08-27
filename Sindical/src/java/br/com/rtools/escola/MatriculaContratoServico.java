@@ -4,17 +4,18 @@ import br.com.rtools.financeiro.Servicos;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "MATR_CONTRATO_SERVICO")
+@Table(name = "matr_contrato_servico")
 @NamedQuery(name = "MatriculaContratoServico.pesquisaID", query = "select mcs from MatriculaContratoServico mcs where mcs.id=:pid")
 public class MatriculaContratoServico implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONTRATO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_contrato", referencedColumnName = "id")
     @ManyToOne
     private MatriculaContrato contrato;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servico", referencedColumnName = "id")
     @ManyToOne
     private Servicos servicos;
 

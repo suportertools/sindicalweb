@@ -6,28 +6,29 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "MATR_CONTRATO")
+@Table(name = "matr_contrato")
 @NamedQueries({
-    @NamedQuery(name = "MatriculaContrato.pesquisaID",      query = "SELECT MC FROM MatriculaContrato AS MC WHERE MC.id = :pid"),
-    @NamedQuery(name = "MatriculaContrato.findAll",         query = "SELECT MC FROM MatriculaContrato AS MC ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC "),
-    @NamedQuery(name = "MatriculaContrato.findName",        query = "SELECT MC FROM MatriculaContrato AS MC WHERE UPPER(MC.titulo) LIKE :pdescricao ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC ")
+    @NamedQuery(name = "MatriculaContrato.pesquisaID", query = "SELECT MC FROM MatriculaContrato AS MC WHERE MC.id = :pid"),
+    @NamedQuery(name = "MatriculaContrato.findAll", query = "SELECT MC FROM MatriculaContrato AS MC ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC "),
+    @NamedQuery(name = "MatriculaContrato.findName", query = "SELECT MC FROM MatriculaContrato AS MC WHERE UPPER(MC.titulo) LIKE :pdescricao ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC ")
 })
 public class MatriculaContrato implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_TITULO", length = 100)
+    @Column(name = "ds_titulo", length = 100)
     private String titulo;
-    @Column(name = "DS_DESCRICAO", length = 15000)
+    @Column(name = "ds_descricao", length = 15000)
     private String descricao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CADASTRO")
+    @Column(name = "dt_cadastro")
     private Date dataCadastro;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ATUALIZADO")
+    @Column(name = "dt_atualizado")
     private Date dataAtualizado;
-    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id")
     @ManyToOne
     private Modulo modulo;
 

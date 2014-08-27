@@ -8,45 +8,46 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "ESC_MATR_INDIVIDUAL")
+@Table(name = "esc_matr_individual")
 @NamedQuery(name = "MatriculaIndividual.pesquisaID", query = "select m from MatriculaIndividual m where m.id=:pid")
 public class MatriculaIndividual implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MATR_ESCOLA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_matr_escola", referencedColumnName = "id")
     @ManyToOne
     private MatriculaEscola matriculaEscola;
-    @JoinColumn(name = "ID_CURSO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_curso", referencedColumnName = "id")
     @ManyToOne
     private Servicos curso;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIO")
+    @Column(name = "dt_inicio")
     private Date dataInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_TERMINO")
+    @Column(name = "dt_termino")
     private Date dataTermino;
-    @Column(name = "TM_INICIO", length = 5)
+    @Column(name = "tm_inicio", length = 5)
     private String inicio;
-    @Column(name = "TM_TERMINO", length = 5)
+    @Column(name = "tm_termino", length = 5)
     private String termino;
-    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID")
+    @JoinColumn(name = "id_professor", referencedColumnName = "id")
     @ManyToOne
     private Professor professor;
-    @Column(name = "IS_SEG", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_seg", columnDefinition = "boolean default false")
     private boolean segunda;
-    @Column(name = "IS_TER", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_ter", columnDefinition = "boolean default false")
     private boolean terca;
-    @Column(name = "IS_QUA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_qua", columnDefinition = "boolean default false")
     private boolean quarta;
-    @Column(name = "IS_QUI", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_qui", columnDefinition = "boolean default false")
     private boolean quinta;
-    @Column(name = "IS_SEX", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sex", columnDefinition = "boolean default false")
     private boolean sexta;
-    @Column(name = "IS_SAB", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sab", columnDefinition = "boolean default false")
     private boolean sabado;
-    @Column(name = "IS_DOM", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_dom", columnDefinition = "boolean default false")
     private boolean domingo;
 
     public MatriculaIndividual() {

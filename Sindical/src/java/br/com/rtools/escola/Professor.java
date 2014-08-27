@@ -18,7 +18,7 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "ESC_PROFESSOR")
+@Table(name = "esc_professor")
 @NamedQueries({
     @NamedQuery(name = "Professor.pesquisaID", query = "SELECT P FROM Professor AS P WHERE P.id = :pid"),
     @NamedQuery(name = "Professor.findAll", query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC"),
@@ -28,11 +28,12 @@ public class Professor implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID", unique = true)
+    @JoinColumn(name = "id_professor", referencedColumnName = "id", unique = true)
     @ManyToOne
     private Pessoa professor;
-    @Column(name = "NR_COMISSAO")
+    @Column(name = "nr_comissao")
     private float nrComissao;
 
     public Professor() {
