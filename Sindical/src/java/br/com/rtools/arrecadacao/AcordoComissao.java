@@ -7,25 +7,26 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_ACORDO_COMISSAO")
+@Table(name = "arr_acordo_comissao")
 @NamedQuery(name = "AcordoComissao.pesquisaID", query = "select c from AcordoComissao c where c.id = :pid")
 public class AcordoComissao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONTA_COBRANCA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_conta_cobranca", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private ContaCobranca contaCobranca;
-    @Column(name = "NR_NUM_DOCUMENTO", length = 100, nullable = true)
+    @Column(name = "nr_num_documento", length = 100, nullable = true)
     private String numero;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIO")
+    @Column(name = "dt_inicio")
     private Date dtInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FECHAMENTO")
+    @Column(name = "dt_fechamento")
     private Date dtFechamento;
-    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_acordo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Acordo acordo;
 

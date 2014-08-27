@@ -8,33 +8,33 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ARR_MENSAGEM_CONVENCAO")
+@Table(name = "arr_mensagem_convencao")
 @NamedQuery(name = "MensagemConvencao.pesquisaID", query = "select c from MensagemConvencao c where c.id=:pid")
 public class MensagemConvencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Convencao convencao;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_tipo_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private TipoServico tipoServico;
-    @Column(name = "DS_MENSAGEM_CONTRIBUITE", length = 2000, nullable = false)
+    @Column(name = "ds_mensagem_contribuite", length = 2000, nullable = false)
     private String mensagemContribuinte;
-    @Column(name = "DS_MENSAGEM_COMPENSACAO", length = 2000, nullable = false)
+    @Column(name = "ds_mensagem_compensacao", length = 2000, nullable = false)
     private String mensagemCompensacao;
-    @Column(name = "DS_REFERENCIA", length = 7, nullable = true)
+    @Column(name = "ds_referencia", length = 7, nullable = true)
     private String referencia;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO")
+    @Column(name = "dt_vencimento")
     private Date dtVencimento;
 
     public MensagemConvencao() {

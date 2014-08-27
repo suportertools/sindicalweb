@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ACA_SEMANA")
+@Table(name = "aca_semana")
 @NamedQueries({
     @NamedQuery(name = "AcademiaSemana.pesquisaID", query = "SELECT ASE FROM AcademiaSemana AS ASE WHERE ASE.id = :pid"),
     @NamedQuery(name = "AcademiaSemana.findAll", query = "SELECT ASE FROM AcademiaSemana AS ASE ORDER BY ASE.semana.descricao ASC ")
@@ -14,14 +14,15 @@ public class AcademiaSemana implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private AcademiaGrade academiaGrade;
-    @JoinColumn(name = "ID_SEMANA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_semana", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Semana semana;
-    @JoinColumn(name = "ID_SERVICO_VALOR", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servico_valor", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private AcademiaServicoValor academiaServicoValor;
     

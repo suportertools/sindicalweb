@@ -4,18 +4,18 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONV_MOTIVO_SUSPENCAO")
+@Table(name = "conv_motivo_suspencao")
 @NamedQueries({
     @NamedQuery(name = "ConviteMotivoSuspencao.pesquisaID", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS WHERE CONMS.id = :pid"),
     @NamedQuery(name = "ConviteMotivoSuspencao.findAll", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS ORDER BY CONMS.descricao ASC"),
     @NamedQuery(name = "ConviteMotivoSuspencao.findName", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS WHERE UPPER(CONMS.descricao) LIKE :pdescricao ORDER BY CONMS.descricao ASC ")
 })
 public class ConviteMotivoSuspencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 255, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 255, nullable = false, unique = true)
     private String descricao;
 
     public ConviteMotivoSuspencao() {

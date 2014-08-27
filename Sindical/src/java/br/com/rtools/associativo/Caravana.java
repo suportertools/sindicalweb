@@ -15,42 +15,42 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "CAR_CARAVANA")
+@Table(name = "car_caravana")
 @NamedQuery(name = "Caravana.pesquisaID", query = "select c from Caravana c where c.id=:pid")
 public class Caravana implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_AEVENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_aevento", referencedColumnName = "id")
     @ManyToOne
     private AEvento aEvento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_SAIDA", nullable = false)
+    @Column(name = "dt_saida", nullable = false)
     private Date dtSaida;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_RETORNO", nullable = false)
+    @Column(name = "dt_retorno", nullable = false)
     private Date dtRetorno;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CHEGADA", nullable = false)
+    @Column(name = "dt_chegada", nullable = false)
     private Date dtChegada;
-    @Column(name = "TM_SAIDA", nullable = false)
+    @Column(name = "tm_saida", nullable = false)
     private String horaSaida;
-    @Column(name = "TM_RETORNO", nullable = false)
+    @Column(name = "tm_retorno", nullable = false)
     private String horaRetorno;
-    @Column(name = "TM_CHEGADA", nullable = false)
+    @Column(name = "tm_chegada", nullable = false)
     private String horaChegada;
-    @Column(name = "IS_CAFE", nullable = true)
+    @Column(name = "is_cafe", nullable = true)
     private boolean isCafe;
-    @Column(name = "IS_ALMOCO", nullable = true)
+    @Column(name = "is_almoco", nullable = true)
     private boolean isAlmoco;
-    @Column(name = "IS_JANTAR", nullable = true)
+    @Column(name = "is_jantar", nullable = true)
     private boolean isJantar;
-    @Column(name = "NR_POLTRONAS", nullable = true)
+    @Column(name = "nr_poltronas", nullable = true)
     private int quantidadePoltronas;
-    @Column(name = "NR_GUIA_RECOLHIMENTO", nullable = true)
+    @Column(name = "nr_guia_recolhimento", nullable = true)
     private int guiaRecolhimento;
-    @Column(name = "DS_OBSERVACAO")
+    @Column(name = "ds_observacao")
     private String observacao;
 
     public Caravana(int id, AEvento aEvento, String dataSaida, String dataRetorno, String dataChegada, String horaSaida, String horaRetorno,

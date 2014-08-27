@@ -4,26 +4,26 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AGE_TELEFONE")
+@Table(name = "age_telefone")
 @NamedQuery(name = "AgendaTelefone.pesquisaID", query = "SELECT at FROM AgendaTelefone at WHERE at.id=:pid")
 public class AgendaTelefone implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_AGENDA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_agenda", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Agenda agenda;
-    @JoinColumn(name = "ID_TIPO_TELEFONE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_tipo_telefone", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private TipoTelefone tipoTelefone;
-    @Column(name = "DS_DDI", length = 5)
+    @Column(name = "ds_ddi", length = 5)
     private String ddi;
-    @Column(name = "DS_DDD", length = 2)
+    @Column(name = "ds_ddd", length = 2)
     private String ddd;
-    @Column(name = "DS_TELEFONE", length = 20)
+    @Column(name = "ds_telefone", length = 20)
     private String telefone;
-    @Column(name = "DS_CONTATO", length = 50)
+    @Column(name = "ds_contato", length = 50)
     private String contato;
 
     public AgendaTelefone() {

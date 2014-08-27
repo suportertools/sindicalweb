@@ -7,30 +7,30 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_REPIS_MOVIMENTO")
+@Table(name = "arr_repis_movimento")
 @NamedQuery(name = "RepisMovimento.pesquisaID", query = "select m from RepisMovimento m where m.id = :pid")
 public class RepisMovimento implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dataEmissao;
-    @Column(name = "DS_SOLICITANTE", length = 100, nullable = true)
+    @Column(name = "ds_solicitante", length = 100, nullable = true)
     private String contato;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_RESPOSTA")
+    @Column(name = "dt_resposta")
     private Date dataResposta;
-    @Column(name = "NR_ANO", length = 4, nullable = false)
+    @Column(name = "nr_ano", length = 4, nullable = false)
     private int ano;
-    @JoinColumn(name = "ID_REPIS_STATUS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_repis_status", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private RepisStatus repisStatus;
-    @JoinColumn(name = "ID_PATRONAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_patronal", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Patronal patronal;
 

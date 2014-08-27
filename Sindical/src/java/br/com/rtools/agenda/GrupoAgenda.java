@@ -5,18 +5,18 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AGE_GRUPO_AGENDA")
+@Table(name = "age_grupo_agenda")
 @NamedQueries({
     @NamedQuery(name = "GrupoAgenda.pesquisaID", query = "SELECT GRA FROM GrupoAgenda GRA WHERE GRA.id = :pid"),
     @NamedQuery(name = "GrupoAgenda.findAll", query = "SELECT GRA FROM GrupoAgenda GRA ORDER BY GRA.descricao ASC "),
     @NamedQuery(name = "GrupoAgenda.findName", query = "SELECT GRA FROM GrupoAgenda GRA WHERE UPPER(GRA.descricao) LIKE :pdescricao ORDER BY GRA.descricao ASC ")
 })
 public class GrupoAgenda implements BaseEntity, Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
 
     public GrupoAgenda() {

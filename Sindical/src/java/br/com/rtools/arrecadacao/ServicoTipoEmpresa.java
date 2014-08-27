@@ -6,24 +6,24 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ARR_FAIXA_FATURAMENTO")
+@Table(name = "arr_faixa_faturamento")
 @NamedQuery(name = "ServicoTipoEmpresa.pesquisaID", query = "select c from ServicoTipoEmpresa c where c.id = :pid")
 public class ServicoTipoEmpresa implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_PORTE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_porte", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Porte porte;
-    @Column(name = "NR_VALOR", nullable = true)
+    @Column(name = "nr_valor", nullable = true)
     private float valor;
-    @Column(name = "DS_REF_INICIAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_inicial", length = 7, nullable = true)
     private String referenciaInicial;
-    @Column(name = "DS_REF_FINAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_final", length = 7, nullable = true)
     private String referenciaFinal;
 
     public ServicoTipoEmpresa() {

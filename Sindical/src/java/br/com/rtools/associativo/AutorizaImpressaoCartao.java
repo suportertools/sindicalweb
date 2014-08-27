@@ -20,28 +20,29 @@ import javax.persistence.TemporalType;
 
 
 @Entity
-@Table(name = "SOC_AUTORIZA_IMPRESSAO_CARTAO")
+@Table(name = "soc_autoriza_impressao_cartao")
 @NamedQuery(name = "AutorizaImpressaoCartao.pesquisaID", query = "select a from AutorizaImpressaoCartao a where a.id = :pid")
 public class AutorizaImpressaoCartao implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_HISTORICO_CARTEIRINHA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_historico_carteirinha", referencedColumnName = "id")
     @ManyToOne
     private HistoricoCarteirinha historicoCarteirinha;
-    @JoinColumn(name = "ID_MODELO_CARTEIRINHA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_modelo_carteirinha", referencedColumnName = "id")
     @ManyToOne
     private ModeloCarteirinha modeloCarteirinha;
-    @Column(name = "IS_FOTO")
+    @Column(name = "is_foto")
     private boolean foto;
 
     public AutorizaImpressaoCartao() {

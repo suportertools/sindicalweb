@@ -5,17 +5,17 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_CNAE_CONVENCAO")
+@Table(name = "arr_cnae_convencao")
 @NamedQuery(name = "CnaeConvencao.pesquisaID", query = "select cc from CnaeConvencao cc where cc.id = :pid")
 public class CnaeConvencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CNAE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cnae", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Cnae cnae;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Convencao convencao;
 

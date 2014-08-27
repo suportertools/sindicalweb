@@ -8,32 +8,32 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "AGE_CONTATO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_AGENDA", "DS_CONTATO"})
+@Table(name = "age_contato",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_agenda", "ds_contato"})
 )
 @NamedQueries({
     @NamedQuery(name = "AgendaContato.findByAgenda", query = "SELECT AC FROM AgendaContato AS AC WHERE AC.agenda.id = :p1 ORDER BY AC.departamento ASC, AC.contato ASC, AC.nascimento ASC")
 })
 public class AgendaContato implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "ID_AGENDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_agenda", referencedColumnName = "id")
     @ManyToOne
     private Agenda agenda;
-    @Column(name = "DS_CONTATO", length = 100)
+    @Column(name = "ds_contato", length = 100)
     private String contato;
-    @Column(name = "DS_EMAIL1", length = 255, nullable = true)
+    @Column(name = "ds_email1", length = 255, nullable = true)
     private String email1;
-    @Column(name = "DS_EMAIL2", length = 255, nullable = true)
+    @Column(name = "ds_email2", length = 255, nullable = true)
     private String email2;
-    @Column(name = "DS_DEPARTAMENTO", length = 100, nullable = true)
+    @Column(name = "ds_departamento", length = 100, nullable = true)
     private String departamento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_NASCIMENTO")
+    @Column(name = "dt_nascimento")
     private Date nascimento;
-    @Column(name = "IS_NOTIFICA_ANIVERSARIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_notifica_aniversario", columnDefinition = "boolean default false")
     private boolean notificaAniversario;
 
     public AgendaContato() {

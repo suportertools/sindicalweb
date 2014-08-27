@@ -12,20 +12,20 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_CATEGORIA_DESCONTO")
+@Table(name = "soc_categoria_desconto")
 @NamedQuery(name = "CategoriaDesconto.pesquisaID", query = "select c from CategoriaDesconto c where c.id=:pid")
 public class CategoriaDesconto implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_CATEGORIA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Categoria categoria;
-    @Column(name = "NR_DESCONTO", nullable = false)
+    @Column(name = "nr_desconto", nullable = false)
     private float desconto;
 
     public CategoriaDesconto() {

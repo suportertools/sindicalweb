@@ -7,35 +7,35 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AGE_AGENDA")
+@Table(name = "age_agenda")
 @NamedQuery(name = "Agenda.pesquisaID", query = "SELECT a FROM Agenda a WHERE a.id=:pid")
 public class Agenda implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_GRUPO_AGENDA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_agenda", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoAgenda grupoAgenda;
-    @Column(name = "DS_NOME", length = 100)
+    @Column(name = "ds_nome", length = 100)
     private String nome;
-    @Column(name = "DS_EMAIL1", length = 500)
+    @Column(name = "ds_email1", length = 500)
     private String email1;
-    @Column(name = "DS_EMAIL2", length = 500)
+    @Column(name = "ds_email2", length = 500)
     private String email2;
-    @Column(name = "DS_OBS", length = 8000)
+    @Column(name = "ds_obs", length = 8000)
     private String observacao;
-    @Column(name = "DS_COMPLEMENTO", length = 50)
+    @Column(name = "ds_complemento", length = 50)
     private String complemento;
-    @Column(name = "DS_NUMERO", length = 30)
+    @Column(name = "ds_numero", length = 30)
     private String numero;
-    @JoinColumn(name = "ID_TIPO_ENDERECO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_endereco", referencedColumnName = "id")
     @ManyToOne
     private TipoEndereco tipoEndereco;
-    @JoinColumn(name = "ID_ENDERECO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_endereco", referencedColumnName = "id")
     @ManyToOne
     private Endereco endereco;
 

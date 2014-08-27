@@ -9,14 +9,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EVE_BANDA")
+@Table(name = "eve_banda")
 @NamedQuery(name = "Banda.pesquisaID", query = "select s from Banda s where s.id=:pid")
 public class Banda implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", nullable = false, unique = true)
+    @Column(name = "ds_descricao", nullable = false, unique = true)
     private String descricao;
 
     public Banda() {

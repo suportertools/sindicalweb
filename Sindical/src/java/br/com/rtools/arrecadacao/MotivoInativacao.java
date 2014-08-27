@@ -4,14 +4,14 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_MOTIVO_INATIVACAO")
+@Table(name = "arr_motivo_inativacao")
 @NamedQuery(name = "MotivoInativacao.pesquisaID", query = "select m from MotivoInativacao m where m.id=:pid")
 public class MotivoInativacao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = true, unique = true)
+    @Column(name = "ds_descricao", length = 50, nullable = true, unique = true)
     private String descricao;
 
     public MotivoInativacao() {

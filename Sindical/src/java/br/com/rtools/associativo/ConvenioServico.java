@@ -12,20 +12,20 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_CONVENIO_SERVICO")
+@Table(name = "soc_convenio_servico")
 @NamedQuery(name = "ConvenioServico.pesquisaID", query = "select cs from ConvenioServico cs where cs.id=:pid")
 public class ConvenioServico implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONVENIO_SUB_GRUPO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convenio_sub_grupo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private SubGrupoConvenio subGrupoConvenio;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "IS_ENCAMINHAMENTO", nullable = true)
+    @Column(name = "is_encaminhamento", nullable = true)
     private boolean encaminhamento;
 
     public ConvenioServico() {

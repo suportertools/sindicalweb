@@ -12,39 +12,39 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_CATEGORIA")
+@Table(name = "soc_categoria")
 @NamedQuery(name = "Categoria.pesquisaID", query = "select c from Categoria c where c.id=:pid")
 public class Categoria implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_CATEGORIA", length = 100, nullable = true)
+    @Column(name = "ds_categoria", length = 100, nullable = true)
     private String categoria;
-    @JoinColumn(name = "ID_GRUPO_CATEGORIA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_grupo_categoria", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private GrupoCategoria grupoCategoria;
-    @Column(name = "NR_CARENCIA_BALCAO", length = 10, nullable = true)
+    @Column(name = "nr_carencia_balcao", length = 10, nullable = true)
     private int nrCarenciaBalcao;
-    @Column(name = "NR_CARENCIA_DESC_FOLHA", length = 10, nullable = true)
+    @Column(name = "nr_carencia_desc_folha", length = 10, nullable = true)
     private int nrCarenciaDescFolha;
-    @Column(name = "EMPRESA_OBRIGATORIA", nullable = true)
+    @Column(name = "empresa_obrigatoria", nullable = true)
     private boolean empresaObrigatoria;
-    @Column(name = "VOTANTE", nullable = true)
+    @Column(name = "votante", nullable = true)
     private boolean votante;
-    @Column(name = "USA_CLUBE_SEGUNDA", nullable = true)
+    @Column(name = "usa_clube_segunda", nullable = true)
     private boolean usaClubeSegunda;
-    @Column(name = "USA_CLUBE_TERCA", nullable = true)
+    @Column(name = "usa_clube_terca", nullable = true)
     private boolean usaClubeTerca;
-    @Column(name = "USA_CLUBE_QUARTA", nullable = true)
+    @Column(name = "usa_clube_quarta", nullable = true)
     private boolean usaClubeQuarta;
-    @Column(name = "USA_CLUBE_QUINTA", nullable = true)
+    @Column(name = "usa_clube_quinta", nullable = true)
     private boolean usaClubeQuinta;
-    @Column(name = "USA_CLUBE_SEXTA", nullable = true)
+    @Column(name = "usa_clube_sexta", nullable = true)
     private boolean usaClubeSexta;
-    @Column(name = "USA_CLUBE_SABADO", nullable = true)
+    @Column(name = "usa_clube_sabado", nullable = true)
     private boolean usaClubeSabado;
-    @Column(name = "USA_CLUBE_DOMINGO", nullable = true)
+    @Column(name = "usa_clube_domingo", nullable = true)
     private boolean usaClubeDomingo;
 
     public Categoria() {

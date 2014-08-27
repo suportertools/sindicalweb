@@ -19,26 +19,26 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_OPOSICAO")
+@Table(name = "arr_oposicao")
 @NamedQuery(name = "Oposicao.pesquisaID", query = "select o from Oposicao o where o.id=:pid")
 public class Oposicao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Juridica juridica;
-    @JoinColumn(name = "ID_OPOSICAO_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_oposicao_pessoa", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private OposicaoPessoa oposicaoPessoa;
-    @JoinColumn(name = "ID_CONVENCAO_PERIODO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_convecao_periodo", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private ConvencaoPeriodo convencaoPeriodo;
-    @Column(name = "DS_OBS", length = 500)
+    @Column(name = "ds_obs", length = 500)
     private String observacao;
 
     public Oposicao(int id, String emissao, OposicaoPessoa oposicaoPessoa, Juridica juridica, ConvencaoPeriodo convencaoPeriodo, String observacao) {
