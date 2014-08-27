@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_CLASSIFICACAO_ECONOMICA")
+@Table(name = "pes_classificacao_economica")
 @NamedQueries({
     @NamedQuery(name = "ClassificacaoEconomica.pesquisaID", query = "SELECT CE FROM ClassificacaoEconomica AS CE WHERE CE.id = :pid"),
     @NamedQuery(name = "ClassificacaoEconomica.findAll", query = "SELECT CE FROM ClassificacaoEconomica AS CE ORDER BY CE.descricao ASC, CE.salarioMinimoInicial DESC ")
@@ -15,15 +15,16 @@ public class ClassificacaoEconomica implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", nullable = false)
+    @Column(name = "ds_descricao", nullable = false)
     private String descricao;
-    @Column(name = "NR_SALARIO_MINIMO_INICIAL", columnDefinition = "INTEGER DEFAULT 0", nullable = true)
+    @Column(name = "nr_salario_minimo_inicial", columnDefinition = "integer default 0", nullable = true)
     private int salarioMinimoInicial;
-    @Column(name = "NR_SALARIO_MINIMO_FINAL", columnDefinition = "INTEGER DEFAULT 0", nullable = true)
+    @Column(name = "nr_salario_minimo_inicial", columnDefinition = "integer default 0", nullable = true)
     private int salarioMinimoFinal;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ATUALIZADO")
+    @Column(name = "dt_atualizado")
     private Date atualizado;
 
     public ClassificacaoEconomica() {

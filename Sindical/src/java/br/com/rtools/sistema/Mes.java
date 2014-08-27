@@ -4,13 +4,14 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_MES")
+@Table(name = "sis_mes")
 public class Mes implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 15, unique = true)
+    @Column(name = "ds_descricao", length = 15, unique = true)
     private String descricao;
 
     public Mes() {

@@ -3,55 +3,57 @@ package br.com.rtools.sistema;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "SIS_PESSOA")
+@Table(name = "sis_pessoa")
 @NamedQuery(name = "SisPessoa.pesquisaID", query = "SELECT SISP FROM SisPessoa SISP WHERE SISP.id = :pid")
-public class SisPessoa implements java.io.Serializable {
+public class SisPessoa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_NOME", length = 200, nullable = false)
+    @Column(name = "ds_nome", length = 200, nullable = false)
     private String nome;
-    @Column(name = "DS_DOCUMENTO", length = 20, nullable = false)
+    @Column(name = "ds_documento", length = 20, nullable = false)
     private String documento;
-    @Column(name = "DS_RG", length = 12, nullable = false)
+    @Column(name = "ds_rg", length = 12, nullable = false)
     private String rg;
-    @Column(name = "DS_TELEFONE", length = 20, nullable = true)
+    @Column(name = "ds_telefone", length = 20, nullable = true)
     private String telefone;
-    @Column(name = "DS_CELULAR", length = 20, nullable = true)
+    @Column(name = "ds_celular", length = 20, nullable = true)
     private String celular;
-    @Column(name = "DS_EMAIL1", length = 20, nullable = true)
+    @Column(name = "ds_email1", length = 20, nullable = true)
     private String email1;
-    @Column(name = "DS_EMAIL2", length = 20, nullable = true)
+    @Column(name = "ds_email2", length = 20, nullable = true)
     private String email2;
-    @Column(name = "DS_OBS", length = 300, nullable = true)
+    @Column(name = "ds_obs", length = 300, nullable = true)
     private String observacao;
-    @Column(name = "DS_COMPLEMENTO", length = 150, nullable = true)
+    @Column(name = "ds_complemento", length = 150, nullable = true)
     private String complemento;
-    @Column(name = "DS_NUMERO", length = 30, nullable = true)
+    @Column(name = "ds_numero", length = 30, nullable = true)
     private String numero;
-    @Column(name = "DS_SEXO", length = 1, nullable = true)
+    @Column(name = "ds_sexo", length = 1, nullable = true)
     private String sexo;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private TipoDocumento tipoDocumento;
-    @JoinColumn(name = "ID_ENDERECO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_endereco", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Endereco endereco;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CRIACAO")
+    @Column(name = "dt_criacao")
     private Date dtCriacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_NASCIMENTO")
+    @Column(name = "dt_nascimento")
     private Date dtNascimento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_IMPORTACAO")
+    @Column(name = "dt_importacao")
     private Date dtImportacao;
 
     public SisPessoa() {

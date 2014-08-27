@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "HOM_STATUS")
+@Table(name = "hom_status")
 @NamedQueries({
     @NamedQuery(name = "Status.pesquisaID", query = "SELECT S FROM Status AS S WHERE S.id = :pid"),
     @NamedQuery(name = "Status.findAll",    query = "SELECT S FROM Status AS S ORDER BY S.descricao ASC "),
@@ -14,8 +14,9 @@ public class Status implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 50, nullable = false, unique = true)
     private String descricao;
 
     public Status() {

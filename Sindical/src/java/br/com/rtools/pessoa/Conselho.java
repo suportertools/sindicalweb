@@ -3,16 +3,17 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_CONSELHO")
+@Table(name = "pes_conselho")
 @NamedQuery(name = "Conselho.pesquisaID", query = "select consel from Conselho consel where consel.id=:pid")
 public class Conselho implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_CONSELHO", length = 50, nullable = false)
+    @Column(name = "ds_conselho", length = 50, nullable = false)
     private String conselho;
-    @Column(name = "DS_TIPO_CONSELHO", length = 50, nullable = false)
+    @Column(name = "ds_tipo_conselho", length = 50, nullable = false)
     private String tipoConselho;
 
     public Conselho() {

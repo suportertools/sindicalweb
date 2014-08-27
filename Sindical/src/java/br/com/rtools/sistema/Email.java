@@ -8,33 +8,34 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_EMAIL")
+@Table(name = "sis_email")
 public class Email implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA", nullable = true)
+    @Column(name = "dt_data", nullable = true)
     private Date data;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String hora;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name = "ID_SIS_PRIORIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_sis_prioridade", referencedColumnName = "id")
     @ManyToOne
     private EmailPrioridade emailPrioridade;
-    @Column(name = "DS_ASSUNTO", length = 255, nullable = true)
+    @Column(name = "ds_assunto", length = 255, nullable = true)
     private String assunto;
-    @Column(name = "DS_MENSAGEM", length = 255, nullable = true)
+    @Column(name = "ds_mensagem", length = 255, nullable = true)
     private String mensagem;
-    @Column(name = "IS_CONFIRMA_RECEBIMENTO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_confirma_recebimento", columnDefinition = "boolean default false")
     private boolean confirmaRecebimento;
-    @Column(name = "IS_RASCUNHO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_rascunho", columnDefinition = "boolean default false")
     private boolean rascunho;
 
     public Email() {

@@ -3,18 +3,19 @@ package br.com.rtools.seguranca;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_EVENTO")
+@Table(name = "seg_evento")
 @NamedQueries({
-    @NamedQuery(name = "Evento.pesquisaID",    query = "SELECT EVE FROM Evento AS EVE WHERE EVE.id = :pid"),
-    @NamedQuery(name = "Evento.findAll",       query = "SELECT EVE FROM Evento AS EVE ORDER BY EVE.descricao ASC "),
-    @NamedQuery(name = "Evento.findName",      query = "SELECT EVE FROM Evento AS EVE WHERE UPPER(EVE.descricao) LIKE :pdescricao ORDER BY EVE.descricao ASC ")
+    @NamedQuery(name = "Evento.pesquisaID", query = "SELECT EVE FROM Evento AS EVE WHERE EVE.id = :pid"),
+    @NamedQuery(name = "Evento.findAll", query = "SELECT EVE FROM Evento AS EVE ORDER BY EVE.descricao ASC "),
+    @NamedQuery(name = "Evento.findName", query = "SELECT EVE FROM Evento AS EVE WHERE UPPER(EVE.descricao) LIKE :pdescricao ORDER BY EVE.descricao ASC ")
 })
 public class Evento implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false)
+    @Column(name = "ds_descricao", length = 50, nullable = false)
     private String descricao;
 
     public Evento() {

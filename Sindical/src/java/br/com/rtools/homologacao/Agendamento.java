@@ -23,50 +23,51 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
 
 @Entity
-@Table(name = "HOM_AGENDAMENTO")
+@Table(name = "hom_agendamento")
 @NamedQuery(name = "Agendamento.pesquisaID", query = "SELECT A FROM Agendamento AS A WHERE A.id = :pid")
 public class Agendamento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @JoinColumn(name = "ID_HORARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_horario", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Horarios horarios;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_status", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Status status;
-    @JoinColumn(name = "ID_PESSOA_EMPRESA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_pessoa_empresa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private PessoaEmpresa pessoaEmpresa;
-    @JoinColumn(name = "ID_AGENDADOR", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_agendador", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario agendador;
-    @JoinColumn(name = "ID_HOMOLOGADOR", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_homologador", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario homologador;
-    @JoinColumn(name = "ID_DEMISSAO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_demissao", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Demissao demissao;
-    @Column(name = "DS_CONTATO", length = 50, nullable = true)
+    @Column(name = "ds_contato", length = 50, nullable = true)
     private String contato;
-    @Column(name = "DS_TELEFONE", length = 20, nullable = true)
+    @Column(name = "ds_telefone", length = 20, nullable = true)
     private String telefone;
-    @Column(name = "DS_EMAIL", length = 50, nullable = true)
+    @Column(name = "ds_email", length = 50, nullable = true)
     private String email;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
-    @JoinColumn(name = "ID_RECEPCAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_recepcao", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Recepcao recepcao;
-    @Column(name = "DS_OBS", length = 2000)
+    @Column(name = "ds_obs", length = 2000)
     private String observacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
 
     public Agendamento() {

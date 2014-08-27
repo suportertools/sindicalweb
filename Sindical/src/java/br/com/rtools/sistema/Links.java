@@ -6,24 +6,25 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_LINKS")
+@Table(name = "sis_links")
 @NamedQuery(name = "Links.pesquisaID", query = "select l from Links l where l.id = :pid")
 public class Links implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Pessoa pessoa;
-    @Column(name = "DS_NOME_ARQUIVO")
+    @Column(name = "ds_nome_arquivo")
     private String nomeArquivo;
-    @Column(name = "DS_CAMINHO")
+    @Column(name = "ds_caminho")
     private String caminho;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @Column(name = "DS_DESCRICAO")
+    @Column(name = "ds_descricao")
     private String descricao;
 
     public Links() {

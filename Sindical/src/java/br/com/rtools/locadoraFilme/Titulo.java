@@ -21,6 +21,7 @@ public class Titulo implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_DATA")

@@ -19,23 +19,24 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "HOM_FERIADOS")
+@Table(name = "hom_feriados")
 @NamedQueries({
     @NamedQuery(name = "Feriados.pesquisaID", query = "SELECT F FROM Feriados AS F WHERE F.id = :pid"),
-    @NamedQuery(name = "Feriados.findAll",    query = "SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC "),
-    @NamedQuery(name = "Feriados.findName",   query = "SELECT F FROM Feriados AS F WHERE UPPER(F.nome) LIKE :pdescricao ORDER BY F.dtData DESC, F.nome ASC ")
+    @NamedQuery(name = "Feriados.findAll", query = "SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC "),
+    @NamedQuery(name = "Feriados.findName", query = "SELECT F FROM Feriados AS F WHERE UPPER(F.nome) LIKE :pdescricao ORDER BY F.dtData DESC, F.nome ASC ")
 })
 public class Feriados implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_NOME", length = 50, nullable = true)
+    @Column(name = "ds_nome", length = 50, nullable = true)
     private String nome;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cidade", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Cidade cidade;
 

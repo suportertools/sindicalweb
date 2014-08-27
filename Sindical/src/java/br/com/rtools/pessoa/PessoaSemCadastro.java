@@ -5,19 +5,20 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_PESSOA_SEM_CADASTRO")
+@Table(name = "pes_pessoa_sem_cadastro")
 @NamedQuery(name = "PessoaSemCadastro.pesquisaID", query = "select p from PessoaSemCadastro p where p.id=:pid")
 public class PessoaSemCadastro implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_NOME", length = 100)
+    @Column(name = "ds_nome", length = 100)
     private String nome;
-    @Column(name = "DS_DOCUMENTO", length = 50)
+    @Column(name = "ds_documento", length = 50)
     private String documento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
 
     public PessoaSemCadastro() {

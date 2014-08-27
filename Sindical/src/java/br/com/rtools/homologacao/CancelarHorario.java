@@ -18,25 +18,26 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "HOM_CANCELAR_HORARIO")
+@Table(name = "hom_cancelar_horario")
 @NamedQuery(name = "CancelarHorario.pesquisaID", query = "SELECT CH FROM CancelarHorario AS CH WHERE CH.id = :pid")
 public class CancelarHorario implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_HORARIOS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_horarios", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Horarios horarios;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "NR_QUANTIDADE")
+    @Column(name = "nr_quantidade")
     private int quantidade;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 

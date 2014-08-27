@@ -16,26 +16,27 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "HOM_HORARIOS")
+@Table(name = "hom_horarios")
 @NamedQueries({
-    @NamedQuery(name = "Horarios.pesquisaID",    query = "SELECT H FROM Horarios AS H WHERE H.id = :pid"),
-    @NamedQuery(name = "Horarios.findAll",       query = "SELECT H FROM Horarios AS H ORDER BY H.semana.id ASC, H.hora ASC ")
+    @NamedQuery(name = "Horarios.pesquisaID", query = "SELECT H FROM Horarios AS H WHERE H.id = :pid"),
+    @NamedQuery(name = "Horarios.findAll", query = "SELECT H FROM Horarios AS H ORDER BY H.semana.id ASC, H.hora ASC ")
 })
 public class Horarios implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_HORA", length = 5, nullable = false)
+    @Column(name = "ds_hora", length = 5, nullable = false)
     private String hora;
-    @Column(name = "NR_QUANTIDADE", nullable = false)
+    @Column(name = "nr_quantidade", nullable = false)
     private int quantidade;
-    @Column(name = "ATIVO", nullable = true)
+    @Column(name = "ativo", nullable = true)
     private boolean ativo;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
-    @JoinColumn(name = "ID_SEMANA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_semana", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Semana semana;
 

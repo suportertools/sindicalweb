@@ -5,13 +5,14 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PRO_STATUS")
+@Table(name = "pro_status")
 public class ProStatus implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 20)
+    @Column(name = "ds_descricao", length = 20)
     private String descricao;
 
     public ProStatus(int id, String descricao) {

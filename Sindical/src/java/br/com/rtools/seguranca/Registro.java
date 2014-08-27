@@ -9,108 +9,109 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_REGISTRO")
+@Table(name = "seg_registro")
 @NamedQuery(name = "Registro.pesquisaID", query = "select regi from Registro regi where regi.id=:pid")
 public class Registro implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Juridica filial;
-    @Column(name = "DS_TIPO_EMPRESA", length = 1, nullable = false)
+    @Column(name = "ds_tipo_empresa", length = 1, nullable = false)
     private String tipoEmpresa;
-    @Column(name = "DS_EMAIL", length = 50)
+    @Column(name = "ds_email", length = 50)
     private String email;
-    @Column(name = "DS_SENHA", length = 20)
+    @Column(name = "ds_senha", length = 20)
     private String senha;
-    @Column(name = "DS_SMTP", length = 50)
+    @Column(name = "ds_smtp", length = 50)
     private String smtp;
-    @Column(name = "BLOQUEAR_HOMOLOGACAO")
+    @Column(name = "bloquear_homologacao")
     private boolean bloquearHomologacao;
-    @Column(name = "CARTEIRINHA_DEPENDENTE")
+    @Column(name = "carteirinha_dependente")
     private boolean carteirinhaDependente;
-    @Column(name = "MESES_INADIMPLENTES_IMPRESSAO_BOLETOS")
+    @Column(name = "meses_inadimplentes_impressao_boletos")
     private int mesesInadimplentes;
-    @Column(name = "DS_TIPO_ENTIDADE", length = 1)
+    @Column(name = "ds_tipo_entidade", length = 1)
     private String tipoEntidade;
-    @Column(name = "BAIXA_VENCIMENTO")
+    @Column(name = "baixa_vencimento")
     private boolean baixaVencimento;
-    @Column(name = "IS_BLOQUEIA_ATRASADOS_WEB")
+    @Column(name = "is_bloqueia_atrasados_web")
     private boolean bloqueiaAtrasadosWeb;
-    @Column(name = "DS_MENSAGEM_BLOQUEIO_BOLETO_WEB", length = 8000)
+    @Column(name = "ds_mensagem_bloqueio_boleto_web", length = 8000)
     private String mensagemBloqueioBoletoWeb;
-    @Column(name = "DS_URL_PATH", length = 50)
+    @Column(name = "ds_url_path", length = 50)
     private String urlPath;
-    @Column(name = "DS_OBS_FICHA_SOCIAL", length = 8000)
+    @Column(name = "ds_obs_ficha_social", length = 8000)
     private String fichaSocial;
-    @Column(name = "MESES_INADIMPLENTES_AGENDA")
+    @Column(name = "meses_inadimplentes_agenda")
     private int mesesInadimplentesAgenda;
-    @Column(name = "DIAS_BLOQUEIA_ATRASADOS_WEB")
+    @Column(name = "dias_bloqueia_atrasados_web")
     private int diasBloqueiaAtrasadosWeb;
-    @Column(name = "IS_EMAIL_AUTENTICADO")
+    @Column(name = "is_email_autenticado")
     private boolean emailAutenticado;
-    @Column(name = "IS_SENHA_HOMOLOGACAO")
+    @Column(name = "is_senha_homologacao")
     private boolean senhaHomologacao;
-    @Column(name = "DS_DOCUMENTO_HOMOLOGACAO", length = 8000)
+    @Column(name = "ds_documento_homologacao", length = 8000)
     private String documentoHomologacao;
-    @Column(name = "DS_FORMA_PAGAMENTO_HOMOLOGACAO", length = 8000)
+    @Column(name = "ds_forma_pagamento_homologacao", length = 8000)
     private String formaPagamentoHomologacao;
-    @Column(name = "IS_AGENDAR_SEM_HORARIO_WEB")
+    @Column(name = "is_agendar_sem_horario_web")
     private boolean agendarSemHorarioWeb;
-    @Column(name = "IS_ENVIAR_EMAIL_ANEXO")
+    @Column(name = "is_enviar_email_anexo")
     private boolean enviarEmailAnexo;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ATUALIZA_HOMOLOGACAO")
+    @Column(name = "dt_atualiza_homologacao")
     private Date dataAtualizaHomologacao;
-    @Column(name = "IS_BOLETO_WEB")
+    @Column(name = "is_boleto_web")
     private boolean boletoWeb;
-    @Column(name = "IS_REPIS_WEB")
+    @Column(name = "is_repis_web")
     private boolean repisWeb;
-    @Column(name = "IS_AGENDAMENTO_WEB")
+    @Column(name = "is_agendamento_web")
     private boolean agendamentoWeb;
-    @Column(name = "NR_LIMITE_ENVIOS_NOTIFICACAO")
+    @Column(name = "nr_limite_envios_notificacao")
     private int limiteEnvios;
-    @Column(name = "NR_INTERVALO_ENVIOS_NOTIFICACAO")
+    @Column(name = "nr_intervalo_envios_notificacao")
     private int intervaloEnvios;
-    @Column(name = "FIN_DIA_VENCIMENTO_COBRANCA")
+    @Column(name = "fin_dia_vencimento_cobranca")
     private int finDiaVencimentoCobranca;
-    @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO")
+    @Column(name = "dt_limite_agendamento_retroativo")
     @Temporal(TemporalType.DATE)
     private Date agendamentoRetroativo;
-    @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico_cartao", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Servicos servicos;
-    @Column(name = "CONVITE_DIAS_CONVIDADO")
+    @Column(name = "convite_dias_convidado")
     private int conviteDiasConvidado;
-    @Column(name = "CONVITE_QTDE_CONVIDADO")
+    @Column(name = "convite_qtde_convidado")
     private int conviteQuantidadeConvidado;
-    @Column(name = "CONVITE_DIAS_SOCIO")
+    @Column(name = "convite_dias_socio")
     private int conviteDiasSocio;
-    @Column(name = "CONVITE_QTDE_SOCIO")
+    @Column(name = "convite_qtde_socio")
     private int conviteQuantidadeSocio;
-    @Column(name = "SIS_EMAIL_RESPOSTA", length = 50)
+    @Column(name = "sis_email_resposta", length = 50)
     private String sisEmailResposta;
-    @Column(name = "SIS_EMAIL_PORTA")
+    @Column(name = "sis_email_porta")
     private int sisEmailPorta;
-    @JoinColumn(name = "ID_EMAIL_PROTOCOLO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_email_protocolo", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private SisEmailProtocolo sisEmailProtocolo;
-    @Column(name = "IS_COBRANCA_CARTEIRINHA")
+    @Column(name = "is_cobranca_carteirinha")
     private boolean cobrancaCarteirinha;
-    @Column(name = "IS_VALIDADE_BARRAS")
+    @Column(name = "is_valida_barras")
     private boolean validadeBarras;
-    @Column(name = "IS_FOTO_CARTAO")
+    @Column(name = "is_foto_cartao")
     private boolean fotoCartao;
-    @Column(name = "HOM_NR_LIMITE_MESES", columnDefinition = "INTEGER DEFAULT 3")
+    @Column(name = "hom_nr_limite_meses", columnDefinition = "integer default 3")
     private int homolocaoLimiteMeses;
-    @Column(name = "SIS_IS_EMAIL_MARKETING", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "sis_is_email_marketing", columnDefinition = "boolean default false")
     private boolean sisEmailMarketing;
-    @Column(name = "HOM_DT_HABILITA_CORRECAO")
+    @Column(name = "hom_dt_habilita_correcao")
     @Temporal(TemporalType.DATE)
     private Date homolocaoHabilitaCorrecao;
-    @Column(name = "SIS_EMAIL_MARKETING_RESPOSTA", length = 50)
+    @Column(name = "sis_email_marketing_resposta", length = 50)
     private String sisEmailMarketingResposta;
 
     public Registro() {

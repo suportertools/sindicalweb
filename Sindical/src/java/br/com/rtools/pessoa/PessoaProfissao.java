@@ -3,17 +3,18 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_PESSOA_PROFISSAO")
+@Table(name = "pes_pessoa_complemento")
 @NamedQuery(name = "PessoaProfissao.pesquisaID", query = "select pprof from PessoaProfissao pprof where pprof.id=:pid")
 public class PessoaProfissao implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_FISICA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_fisica", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Fisica fisica;
-    @JoinColumn(name = "ID_PROFISSAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_profissao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Profissao profissao;
 

@@ -15,21 +15,22 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "PRO_INTERRUPCAO")
+@Table(name = "pro_interrupcao")
 public class Interrupcao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_OS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_os", referencedColumnName = "id")
     @ManyToOne
     private OrdemServico ordemServico;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date date;
-    @Column(name = "TM_HORARIO", length = 5)
+    @Column(name = "tm_hotario", length = 5)
     private String horario;
-    @Column(name = "DS_MOTIVO", length = 500)
+    @Column(name = "ds_motivo", length = 500)
     private String motivo;
 
     public Interrupcao(int id, OrdemServico ordemServico, Date date, String horario, String motivo) {

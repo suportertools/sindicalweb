@@ -3,23 +3,25 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_PESSOA_COMPLEMENTO")
+@Table(name = "pes_pessoa_complemento")
 @NamedQuery(name = "PessoaComplemento.pesquisaID", query = "select pec from PessoaComplemento pec where pec.id = :pid")
 public class PessoaComplemento implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
-    @Column(name = "NR_DIA_VENCIMENTO", nullable = true)
+    @Column(name = "nr_dia_vencimento", nullable = true)
     private int nrDiaVencimento;
-    @Column(name = "IS_COBRANCA_BANCARIA")
+    @Column(name = "is_cobranca_bancaria")
     private boolean cobrancaBancaria;
-    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_responsavel", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa responsavel;
-    
+
     public PessoaComplemento() {
         this.id = -1;
         this.pessoa = new Pessoa();

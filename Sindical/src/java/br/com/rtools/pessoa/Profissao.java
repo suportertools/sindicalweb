@@ -8,6 +8,7 @@ import javax.persistence.*;
 public class Profissao implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     @Column(name = "ds_profissao", length = 200, nullable = false)
     private String profissao;

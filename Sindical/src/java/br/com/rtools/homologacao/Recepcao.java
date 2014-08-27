@@ -9,22 +9,23 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "HOM_RECEPCAO")
+@Table(name = "hom_recepcao")
 @NamedQuery(name = "Recepcao.pesquisaID", query = "SELECT R FROM Recepcao AS R WHERE R.id = :pid")
 public class Recepcao implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_PREPOSTO", length = 200)
+    @Column(name = "ds_preposto", length = 200)
     private String preposto;
-    @Column(name = "DS_HORA_INICIAL_PREPOSTO", length = 5)
+    @Column(name = "ds_hora_inicial_preposto", length = 5)
     private String horaInicialPreposto;
-    @Column(name = "DS_HORA_FINAL_PREPOSTO", length = 5)
+    @Column(name = "ds_hora_final_preposto", length = 5)
     private String horaFinalPreposto;
-    @Column(name = "DS_HORA_INICIAL_FUNCIONARIO", length = 5)
+    @Column(name = "ds_hora_inicial_funcionario", length = 5)
     private String horaInicialFuncionario;
-    @Column(name = "DS_HORA_FINAL_FUNCIONARIO", length = 5)
+    @Column(name = "ds_hora_final_funcionario", length = 5)
     private String horaFinalFuncionario;
 
     public Recepcao() {

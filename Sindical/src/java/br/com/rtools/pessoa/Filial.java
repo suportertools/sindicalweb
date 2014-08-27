@@ -16,8 +16,8 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "PES_FILIAL",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_MATRIZ", "ID_FILIAL", "NR_CENTRO_CUSTO"})
+@Table(name = "pes_filial",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_matriz", "id_filial", "nr_centro_custo"})
 )
 @NamedQueries({
     @NamedQuery(name = "Filial.pesquisaID", query = "SELECT FIL FROM Filial AS FIL WHERE FIL.id = :pid"),
@@ -27,14 +27,15 @@ public class Filial implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MATRIZ", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_matriz", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private Juridica matriz;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Juridica filial;
-    @Column(name = "NR_CENTRO_CUSTO")
+    @Column(name = "nr_centro_custo")
     private int centroCusto;
 
     public Filial() {

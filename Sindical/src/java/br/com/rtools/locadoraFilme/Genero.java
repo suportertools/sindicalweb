@@ -15,6 +15,7 @@ public class Genero implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Column(name = "DS_DESCRICAO", length = 50, nullable = false, unique = true)
     private String descricao;

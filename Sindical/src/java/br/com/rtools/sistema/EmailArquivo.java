@@ -4,16 +4,17 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_EMAIL_ARQUIVO")
+@Table(name = "sis_email_arquivo")
 public class EmailArquivo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_EMAIL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_email", referencedColumnName = "id")
     @ManyToOne
     private Email email;
-    @JoinColumn(name = "ID_ARQUIVO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_arquivo", referencedColumnName = "id")
     @ManyToOne
     private Arquivo arquivo;
 

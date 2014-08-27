@@ -18,23 +18,24 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "HOM_CANCELAMENTO")
+@Table(name = "hom_cancelamento")
 @NamedQuery(name = "Cancelamento.pesquisaID", query = "SELECT C FROM Cancelamento AS C WHERE C.id = :pid")
 public class Cancelamento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_AGENDAMENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_agendamento", referencedColumnName = "ID", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Agendamento agendamento;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "ID", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "DS_MOTIVO", length = 200, nullable = false)
+    @Column(name = "ds_motivo", length = 200, nullable = false)
     private String motivo;
 
     public Cancelamento() {

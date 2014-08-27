@@ -6,61 +6,63 @@ import java.util.Date;
 import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
-@Table(name = "PES_FISICA")
+@Table(name = "pes_fisica")
 @Entity
 @NamedQuery(name = "Fisica.pesquisaID", query = "select fis from Fisica fis where fis.id=:pid")
 public class Fisica implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
     private Pessoa pessoa;
-    @Column(name = "DS_RG", length = 20, nullable = false)
+    @Column(name = "ds_rg", length = 20, nullable = false)
     private String rg;
-    @Column(name = "DS_CARTEIRA", length = 30, nullable = false)
+    @Column(name = "ds_carteira", length = 30, nullable = false)
     private String carteira;
-    @Column(name = "DS_SERIE", length = 15, nullable = false)
+    @Column(name = "ds_serie", length = 15, nullable = false)
     private String serie;
-    @Column(name = "DS_SEXO", length = 1, nullable = false)
+    @Column(name = "ds_sexo", length = 1, nullable = false)
     private String sexo;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_NASCIMENTO")
+    @Column(name = "dt_nascimento")
     private Date dtNascimento;
-    @Column(name = "DS_NACIONALIDADE", length = 50, nullable = false)
+    @Column(name = "ds_nacionalidade", length = 50, nullable = false)
     private String nacionalidade;
-    @Column(name = "DS_NATURALIDADE", length = 50, nullable = false)
+    @Column(name = "ds_naturalidade", length = 50, nullable = false)
     private String naturalidade;
-    @Column(name = "DS_ORGAO_EMISSAO_RG", length = 30, nullable = false)
+    @Column(name = "ds_orgao_emissao_rg", length = 30, nullable = false)
     private String orgaoEmissaoRG;
-    @Column(name = "DS_UF_EMISSAO_RG", length = 2, nullable = false)
+    @Column(name = "ds_uf_emissao_rg", length = 2, nullable = false)
     private String ufEmissaoRG;
-    @Column(name = "DS_ESTADO_CIVIL", length = 30, nullable = false)
+    @Column(name = "ds_estado_civil", length = 30, nullable = false)
     private String estadoCivil;
-    @Column(name = "DS_PAI", length = 100, nullable = false)
+    @Column(name = "ds_pai", length = 100, nullable = false)
     private String pai;
-    @Column(name = "DS_MAE", length = 100, nullable = false)
+    @Column(name = "ds_mae", length = 100, nullable = false)
     private String mae;
-    @Column(name = "DS_NIT", length = 30, nullable = false)
+    @Column(name = "ds_nit", length = 30, nullable = false)
     private String nit;
-    @Column(name = "DS_PIS", length = 30, nullable = false)
+    @Column(name = "ds_pis", length = 30, nullable = false)
     private String pis;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_APOSENTADORIA")
+    @Column(name = "dt_aposentadoria")
     private Date dtAposentadoria;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_RECADASTRO")
+    @Column(name = "dt_recadastro")
     private Date dtRecadastro;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FOTO")
+    @Column(name = "dt_foto")
     private Date dtFoto;
-    @Column(name = "DS_TITULO_ELEITOR", length = 20)
+    @Column(name = "ds_titulo_eleitor", length = 20)
     private String tituloEleitor;
-    @Column(name = "DS_TITULO_SECAO", length = 20)
+    @Column(name = "ds_titulo_secao", length = 20)
     private String tituloSecao;
-    @Column(name = "DS_TITULO_ZONA", length = 20)
+    @Column(name = "ds_titulo_zona", length = 20)
     private String tituloZona;
-    
+
     public Fisica() {
         this.id = -1;
         this.pessoa = new Pessoa();

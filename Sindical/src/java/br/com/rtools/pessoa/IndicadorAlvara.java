@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_INDICADOR_ALVARA")
+@Table(name = "pes_indicador_alvara")
 @NamedQueries({
     @NamedQuery(name = "IndicadorAlvara.pesquisaID", query = "SELECT IA FROM IndicadorAlvara AS IA WHERE IA.id = :pid"),
     @NamedQuery(name = "IndicadorAlvara.findAll", query = "SELECT IA FROM IndicadorAlvara AS IA ORDER BY IA.descricao ASC "),
@@ -15,8 +15,9 @@ public class IndicadorAlvara implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 150, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 150, nullable = false, unique = true)
     private String descricao;
 
     public IndicadorAlvara() {

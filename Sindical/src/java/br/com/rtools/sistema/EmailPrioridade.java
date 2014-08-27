@@ -5,13 +5,14 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SIS_EMAIL_PRIORIDADE")
+@Table(name = "sis_email_prioridade")
 public class EmailPrioridade implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 15, unique = true)
+    @Column(name = "ds_descricao", length = 15, unique = true)
     private String descricao;
 
     public EmailPrioridade() {

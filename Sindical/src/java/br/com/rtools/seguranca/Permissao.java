@@ -3,20 +3,21 @@ package br.com.rtools.seguranca;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SEG_PERMISSAO")
+@Table(name = "seg_permissao")
 @NamedQuery(name = "Permissao.pesquisaID", query = "select per from Permissao per where per.id=:pid")
 public class Permissao implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Modulo modulo;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Evento evento;
 

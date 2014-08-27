@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_SPC")
+@Table(name = "pes_spc")
 @NamedQueries({
     @NamedQuery(name = "Spc.pesquisaID", query = "SELECT S FROM Spc AS S WHERE S.id = :pid"),
     @NamedQuery(name = "Spc.findAll", query = "SELECT S FROM Spc AS S ORDER BY S.pessoa.nome ASC, S.dtEntrada ASC "),
@@ -16,19 +16,19 @@ public class Spc implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ENTRADA")
+    @Column(name = "dt_entrada")
     private Date dtEntrada;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_SAIDA")
+    @Column(name = "dt_saida")
     private Date dtSaida;
-    @Column(name = "DS_OBS", length = 200)
+    @Column(name = "ds_obs", length = 200)
     private String observacao;
-            
 
     public Spc() {
         this.id = -1;
