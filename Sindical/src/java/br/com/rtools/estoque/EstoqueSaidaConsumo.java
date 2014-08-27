@@ -8,33 +8,34 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EST_SAIDA_CONSUMO")
+@Table(name = "est_saida_consumo")
 public class EstoqueSaidaConsumo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PRODUTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_produto", referencedColumnName = "id")
     @OneToOne
     private Produto produto;
-    @JoinColumn(name = "ID_TIPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo", referencedColumnName = "id")
     @OneToOne
     private EstoqueTipo estoqueTipo;
-    @JoinColumn(name = "ID_FILIAL_SAIDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial_saida", referencedColumnName = "id")
     @OneToOne
     private Filial filialSaida;
-    @JoinColumn(name = "ID_FILIAL_ENTRADA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial_entrada", referencedColumnName = "id")
     @OneToOne
     private Filial filialEntrada;
-    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id")
     @OneToOne
     private Departamento departamento;
-    @Column(name = "NR_QTDE", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_qtde", columnDefinition = "integer default 0")
     private int quantidade;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_LANCAMENTO")
+    @Column(name = "dt_lancamento")
     private Date dtLancamento;
 
     public EstoqueSaidaConsumo() {

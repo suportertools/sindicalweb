@@ -11,7 +11,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EST_UNIDADE")
+@Table(name = "est_unidade")
 @NamedQueries({
     @NamedQuery(name = "ProdutoUnidade.findAll", query = "SELECT PU FROM ProdutoUnidade AS PU ORDER BY PU.descricao ASC "),
     @NamedQuery(name = "ProdutoUnidade.findName", query = "SELECT PU FROM ProdutoUnidade AS PU WHERE UPPER(PU.descricao) LIKE :pdescricao ORDER BY PU.descricao ASC ")
@@ -21,8 +21,9 @@ public class ProdutoUnidade implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id = -1;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
 
     public ProdutoUnidade() {

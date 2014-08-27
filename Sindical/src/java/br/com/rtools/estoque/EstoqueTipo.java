@@ -12,7 +12,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EST_TIPO")
+@Table(name = "est_tipo")
 @NamedQueries({
     @NamedQuery(name = "EstoqueTipo.findAll", query = "SELECT ET FROM EstoqueTipo AS ET ORDER BY ET.descricao ASC "),
     @NamedQuery(name = "EstoqueTipo.findName", query = "SELECT ET FROM EstoqueTipo AS ET WHERE UPPER(ET.descricao) LIKE :pdescricao ORDER BY ET.descricao ASC ")
@@ -22,8 +22,9 @@ public class EstoqueTipo implements BaseEntity, Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
 
     public EstoqueTipo() {
