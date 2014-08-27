@@ -6,26 +6,27 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EST_PEDIDO")
+@Table(name = "est_pedido")
 public class Pedido implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_QUANTIDADE", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_quantidade", columnDefinition = "integer default 0")
     private int quantidade;
-    @Column(name = "NR_VALOR_UNITARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_valor_unitario", columnDefinition = "double precision default 0")
     private float valorUnitario;
-    @Column(name = "NR_DESCONTO_UNITARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_desconto_unitario", columnDefinition = "double precision default 0")
     private float descontoUnitario;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_lote", referencedColumnName = "id")
     @OneToOne
     private Lote lote;
-    @JoinColumn(name = "ID_PRODUTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_produto", referencedColumnName = "id")
     @OneToOne
     private Produto produto;
-    @JoinColumn(name = "ID_TIPO", referencedColumnName = "ID", columnDefinition = "INTEGER DEFAULT 1")
+    @JoinColumn(name = "id_tipo", referencedColumnName = "id", columnDefinition = "integer default 1")
     @OneToOne
     private EstoqueTipo estoqueTipo;
 

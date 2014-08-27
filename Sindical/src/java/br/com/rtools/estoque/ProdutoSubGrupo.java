@@ -15,8 +15,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "EST_SUBGRUPO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_GRUPO", "DS_DESCRICAO"})
+@Table(name = "est_subgrupo",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_grupo", "ds_descricao"})
 )
 @NamedQueries({
     @NamedQuery(name = "ProdutoSubGrupo.findAll", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG ORDER BY PSG.produtoGrupo.descricao ASC, PSG.descricao ASC "),
@@ -28,11 +28,12 @@ public class ProdutoSubGrupo implements BaseEntity, Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo", referencedColumnName = "id", nullable = false)
     @OneToOne
     private ProdutoGrupo produtoGrupo;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false)
+    @Column(name = "ds_descricao", length = 100, nullable = false)
     private String descricao;
 
     public ProdutoSubGrupo() {

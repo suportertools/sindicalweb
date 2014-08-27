@@ -6,33 +6,34 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EST_ESTOQUE",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PRODUTO", "ID_FILIAL", "ID_TIPO"})
+@Table(name = "est_estoque",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_produto", "id_filial", "id_tipo"})
 )
 public class Estoque implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_ESTOQUE", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_estoque", columnDefinition = "integer default 0")
     private int estoque;
-    @Column(name = "NR_ESTOQUE_MINIMO", columnDefinition = "INTEGER DEFAULT 1")
+    @Column(name = "nr_estoque_minimo", columnDefinition = "integer default 1")
     private int estoqueMinimo;
-    @Column(name = "NR_ESTOQUE_MAXIMO", columnDefinition = "INTEGER DEFAULT 1")
+    @Column(name = "nr_estoque_maximo", columnDefinition = "integer default 1")
     private int estoqueMaximo;
-    @Column(name = "NR_CUSTO_MEDIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_custo_medio", columnDefinition = "double precision default 0")
     private float custoMedio;
-    @JoinColumn(name = "ID_PRODUTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_produto", referencedColumnName = "id")
     @OneToOne
     private Produto produto;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @OneToOne
     private Filial filial;
-    @JoinColumn(name = "ID_TIPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo", referencedColumnName = "id")
     @OneToOne
     private EstoqueTipo estoqueTipo;
-    @JoinColumn(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @JoinColumn(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
 
     public Estoque() {

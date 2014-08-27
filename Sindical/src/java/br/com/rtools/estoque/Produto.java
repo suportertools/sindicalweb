@@ -8,47 +8,48 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EST_PRODUTO")
+@Table(name = "est_produto")
 public class Produto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = false)
+    @Column(name = "ds_descricao", length = 100, nullable = false)
     private String descricao;
-    @Column(name = "DS_MODELO", length = 100)
+    @Column(name = "ds_modelo", length = 100)
     private String modelo;
-    @Column(name = "DS_MARCA", length = 100)
+    @Column(name = "ds_marca", length = 100)
     private String marca;
-    @Column(name = "DS_FABRICANTE", length = 100)
+    @Column(name = "ds_fabricante", length = 100)
     private String fabricante;
-    @Column(name = "DS_SABOR", length = 100)
+    @Column(name = "ds_sabor", length = 100)
     private String sabor;
-    @Column(name = "DS_MEDIDA", length = 25)
+    @Column(name = "ds_medida", length = 25)
     private String medida;
-    @Column(name = "DS_BARRAS", length = 25)
+    @Column(name = "ds_barras", length = 25)
     private String barras;
-    @Column(name = "DS_OBS", length = 5000)
+    @Column(name = "ds_obs", length = 5000)
     private String observacao;
-    @Column(name = "NR_QTDE_EMBALAGEM", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_qtde_embalagem", columnDefinition = "integer default 0")
     private int quantidadeEmbalagem;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CADASTRO")
+    @Column(name = "dt_cadastro")
     private Date dtCadastro;
-    @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo", referencedColumnName = "id", nullable = false)
     @OneToOne
     private ProdutoGrupo produtoGrupo;
-    @JoinColumn(name = "ID_SUBGRUPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_subgrupo", referencedColumnName = "id")
     @OneToOne
     private ProdutoSubGrupo produtoSubGrupo;
-    @JoinColumn(name = "ID_UNIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_unidade", referencedColumnName = "id", nullable = false)
     @OneToOne
     private ProdutoUnidade produtoUnidade;
-    @JoinColumn(name = "ID_COR", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cor", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Cor cor;
-    @Column(name = "NR_VALOR", columnDefinition = "DOUBLE PRECISION DEFAULT 0", nullable = true)
+    @Column(name = "nr_valor", columnDefinition = "double precision default 0", nullable = true)
     private float valor;
 
     public Produto() {
@@ -229,7 +230,7 @@ public class Produto implements Serializable {
     public void setValor(float valor) {
         this.valor = valor;
     }
-    
+
     public String getValorString() {
         return Moeda.converteR$Float(valor);
     }
