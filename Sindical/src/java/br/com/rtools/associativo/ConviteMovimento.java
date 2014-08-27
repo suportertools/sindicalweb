@@ -11,51 +11,52 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONV_MOVIMENTO")
+@Table(name = "conv_movimento")
 @NamedQuery(name = "ConviteMovimento.pesquisaID", query = "SELECT CONM FROM ConviteMovimento CONM WHERE CONM.id = :pid")
 public class ConviteMovimento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_OBS", length = 300)
+    @Column(name = "ds_obs", length = 300)
     private String observacao;
-    @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_sis_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private SisPessoa sisPessoa;
     // SÓCIO
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_USUARIO_INATIVACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario_inativacao", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuarioInativacao;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
+    @JoinColumn(name = "id_evt", referencedColumnName = "id")
     @ManyToOne
     private Evt evt;
-    @JoinColumn(name = "ID_DEPARTAMEMTNO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id")
     @ManyToOne
     private Departamento departamento;
-    @JoinColumn(name = "ID_AUTORIZA_CORTESIA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_autoriza_cortesia", referencedColumnName = "id")
     @ManyToOne
     private Pessoa autorizaCortesia;
-    @Column(name = "IS_CORTESIA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_cortesia", columnDefinition = "boolean default false")
     private boolean cortesia;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VALIDADE")
+    @Column(name = "dt_validade")
     private Date dtValidade;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id")
     @ManyToOne
     private ConviteServico conviteServico;
-    @Column(name = "DS_CONTROLE_CORTESIA", length = 200)
+    @Column(name = "ds_controle_cortesia", length = 200)
     private String controleCortesia;
     
     public ConviteMovimento() {

@@ -17,25 +17,25 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_PISO_SALARIAL_LOTE")
+@Table(name = "arr_piso_salarial_lote")
 @NamedQuery(name = "PisoSalarialLote.pesquisaID", query = "select psl from PisoSalarialLote psl where psl.id = :pid")
 public class PisoSalarialLote implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PATRONAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_patronal", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Patronal patronal;
-    @JoinColumn(name = "ID_PORTE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_porte", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Porte porte;
-    @Column(name = "NR_ANO", length = 4, nullable = false)
+    @Column(name = "nr_ano", length = 4, nullable = false)
     private int ano;
-    @Column(name = "DS_MENSAGEM", length = 3000, nullable = true)
+    @Column(name = "ds_mensagem", length = 3000, nullable = true)
     private String mensagem;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VALIDADE")
+    @Column(name = "dt_validade")
     private Date dtValidade;
 
     public PisoSalarialLote() {

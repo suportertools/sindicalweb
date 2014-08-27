@@ -5,29 +5,29 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_DESCONTO_EMPREGADO")
+@Table(name = "arr_desconto_empregado")
 @NamedQuery(name = "DescontoEmpregado.pesquisaID", query = "select c from DescontoEmpregado c where c.id = :pid")
 public class DescontoEmpregado implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "NR_PERCENTUAL", nullable = true)
+    @Column(name = "nr_percentual", nullable = true)
     private float percentual;
-    @Column(name = "DS_REF_INICIAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_inicial", length = 7, nullable = true)
     private String referenciaInicial;
-    @Column(name = "DS_REF_FINAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_final", length = 7, nullable = true)
     private String referenciaFinal;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Convencao convencao;
-    @Column(name = "NR_VALOR_POR_EMPREGADO", nullable = false)
+    @Column(name = "nr_valor_por_empregado", nullable = false)
     private float valorEmpregado;
 
     public DescontoEmpregado() {

@@ -9,26 +9,26 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "CONV_SUSPENCAO")
+@Table(name = "conv_suspencao")
 @NamedQuery(name = "ConviteSuspencao.pesquisaID", query = "SELECT CONS FROM ConviteSuspencao CONS WHERE CONS.id = :pid")
 public class ConviteSuspencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_sis_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private SisPessoa sisPessoa;
-    @JoinColumn(name = "ID_MOTIVO_SUSPENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_motivo_suspencao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private ConviteMotivoSuspencao conviteMotivoSuspencao;
-    @Column(name = "DS_OBS", length = 300, nullable = true)
+    @Column(name = "ds_obs", length = 300, nullable = true)
     private String observacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIO")
+    @Column(name = "dt_inicio")
     private Date dtInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FIM")
+    @Column(name = "dt_fim")
     private Date dtFim;
 
     public ConviteSuspencao() {

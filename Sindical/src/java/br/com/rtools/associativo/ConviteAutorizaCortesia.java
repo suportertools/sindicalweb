@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONV_AUTORIZA_CORTESIA")
+@Table(name = "conv_autoriza_cortesia")
 @NamedQueries({
     @NamedQuery(name = "ConviteAutorizaCortesia.pesquisaID", query = "SELECT CACOR FROM ConviteAutorizaCortesia CACOR WHERE CACOR.id = :pid"),
     @NamedQuery(name = "ConviteAutorizaCortesia.findAll", query = "SELECT CACOR FROM ConviteAutorizaCortesia AS CACOR ORDER BY CACOR.pessoa.nome ASC ")
@@ -14,8 +14,9 @@ public class ConviteAutorizaCortesia implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
 

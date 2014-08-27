@@ -4,20 +4,20 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ARR_CONVENCAO_CIDADE")
+@Table(name = "arr_convencao_cidade")
 @NamedQuery(name = "ConvencaoCidade.pesquisaID", query = "select c from ConvencaoCidade c where c.id=:pid")
 public class ConvencaoCidade implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Convencao convencao;
-    @Column(name = "DS_CAMINHO", length = 100)
+    @Column(name = "ds_caminho", length = 100)
     private String caminho;
 
     public ConvencaoCidade() {

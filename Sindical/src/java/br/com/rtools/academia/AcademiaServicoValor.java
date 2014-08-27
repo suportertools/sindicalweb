@@ -8,28 +8,28 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ACA_SERVICO_VALOR")
+@Table(name = "aca_servico_valor")
 @NamedQueries({
     @NamedQuery(name = "AcademiaServicoValor.pesquisaID", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.id = :pid"),
     @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.validade IS NULL OR ASV.validade >= CURRENT_TIMESTAMP ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC")
 })
 public class AcademiaServicoValor implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_PERIODO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_periodo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Periodo periodo;
-    @Column(name = "DS_FORMULA", length = 255)
+    @Column(name = "ds_formula", length = 255)
     private String formula;
-    @Column(name = "NR_PARCELAS")
+    @Column(name = "nr_parcelas")
     private int numeroParcelas;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VALIDADE")
+    @Column(name = "dt_validade")
     private Date validade;
 
     public AcademiaServicoValor() {

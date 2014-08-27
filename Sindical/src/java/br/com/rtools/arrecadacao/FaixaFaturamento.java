@@ -5,25 +5,25 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_FAIXA_FATURAMENTO")
+@Table(name = "arr_faixa_faturamento")
 @NamedQuery(name = "FaixaFaturamento.pesquisaID", query = "select c from FaixaFaturamento c where c.id = :pid")
 public class FaixaFaturamento implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "NR_MIN", nullable = true)
+    @Column(name = "nr_min", nullable = true)
     private double min;
-    @Column(name = "NR_MAX", nullable = true)
+    @Column(name = "nr_max", nullable = true)
     private double max;
-    @Column(name = "NR_CONTRIBUICAO", nullable = true)
+    @Column(name = "nr_contribuicao", nullable = true)
     private float contribuicao;
-    @Column(name = "DS_REF_INICIAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_inicial", length = 7, nullable = true)
     private String referenciaInicial;
-    @Column(name = "DS_REF_FINAL", length = 7, nullable = true)
+    @Column(name = "ds_ref_final", length = 7, nullable = true)
     private String referenciaFinal;
 
     public FaixaFaturamento() {

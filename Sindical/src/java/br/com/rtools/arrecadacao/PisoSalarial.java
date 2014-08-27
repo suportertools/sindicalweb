@@ -5,19 +5,19 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_PISO_SALARIAL")
+@Table(name = "arr_piso_salarial")
 @NamedQuery(name = "PisoSalarial.pesquisaID", query = "select ps from PisoSalarial ps where ps.id = :pid")
 public class PisoSalarial implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PISO_SALARIAL_LOTE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_piso_salarial_lote", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private PisoSalarialLote pisoLote;
-    @Column(name = "DS_DESCRICAO", length = 300, nullable = true)
+    @Column(name = "ds_descricao", length = 300, nullable = true)
     private String descricao;
-    @Column(name = "NR_VALOR", nullable = false)
+    @Column(name = "nr_valor", nullable = false)
     private float valor;
 
     public PisoSalarial() {

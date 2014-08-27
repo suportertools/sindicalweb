@@ -27,80 +27,80 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "ARR_RAIS")
+@Table(name = "arr_rais")
 public class Rais implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date emissao;
-    @JoinColumn(name = "ID_NACIONALIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_nacionalidade", referencedColumnName = "id")
     @ManyToOne
     private Nacionalidade nacionalidade;
-    @JoinColumn(name = "ID_RACA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_raca", referencedColumnName = "id")
     @ManyToOne
     private Raca raca;
-    @JoinColumn(name = "ID_EMPRESA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_empresa", referencedColumnName = "id")
     @ManyToOne
     private Juridica empresa;
-    @JoinColumn(name = "ID_ESCOLARIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_escolaridade", referencedColumnName = "id")
     @ManyToOne
     private Escolaridade escolaridade;
-    @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_sis_pessoa", referencedColumnName = "id")
     @ManyToOne
     private SisPessoa sisPessoa;
-    @JoinColumn(name = "ID_CLASSIFICACAO_ECONOMICA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_classificacao_economica", referencedColumnName = "id")
     @ManyToOne
     private ClassificacaoEconomica classificacaoEconomica;
-    @JoinColumn(name = "ID_PROFISSAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_profissao", referencedColumnName = "id")
     @ManyToOne
     private Profissao profissao;
-    @JoinColumn(name = "ID_TIPO_REMUNERACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_remuneracao", referencedColumnName = "id")
     @ManyToOne
     private TipoRemuneracao tipoRemuneracao;
-    @JoinColumn(name = "ID_RESPONSAVEL_CADASTRO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_responsavel_cadastro", referencedColumnName = "id")
     @ManyToOne
     private Pessoa responsavelCadastro;
-    @JoinColumn(name = "ID_TIPO_DEFICIENCIA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_deficiencia", referencedColumnName = "id")
     @ManyToOne
     private TipoDeficiencia tipoDeficiencia;
-    @JoinColumn(name = "ID_INDICADOR_ALVARA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_indicador_alvara", referencedColumnName = "id")
     @ManyToOne
     private IndicadorAlvara indicadorAlvara;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ADMISSAO")
+    @Column(name = "dt_admissao")
     private Date admissao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DEMISSAO")
+    @Column(name = "dt_demissao")
     private Date demissao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_AFASTAMENTO")
+    @Column(name = "dt_afastamento")
     private Date afastamento;
-    @Column(name = "DS_MOTIVO_AFASTAMENTO", length = 500)
+    @Column(name = "ds_motivo_afastamento", length = 500)
     private String motivoAfastamento;
-    @Column(name = "DS_OBSERVACAO", length = 500)
+    @Column(name = "ds_observacao", length = 500)
     private String observacao;
-    @Column(name = "NR_CARGA_HORARIA", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_carga_horaria", columnDefinition = "integer default 0")
     private int cargaHoraria;
-    @Column(name = "NR_SALARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_salario", columnDefinition = "double precision default 0")
     private float salario;
-    @Column(name = "DS_FUNCAO", length = 255)
+    @Column(name = "ds_funcao", length = 255)
     private String funcao;
-    @Column(name = "DS_CARTEIRA", length = 9)
+    @Column(name = "ds_carteira", length = 9)
     private String carteira;
-    @Column(name = "DS_SERIE", length = 15)
+    @Column(name = "ds_serie", length = 15)
     private String serie;
-    @Column(name = "NR_CTPS", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_ctps", columnDefinition = "integer default 0")
     private int ctps;
-    @Column(name = "NR_ANO_CHEGADA", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_ano_chegada", columnDefinition = "integer default 0")
     private int anoChegada;
-    @Column(name = "IS_ALVARA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_alvara", columnDefinition = "boolean default false")
     private boolean alvara;
-    @Column(name = "IS_EMPREGADO_FILIADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_empregado_filiado", columnDefinition = "boolean default false")
     private boolean empregadoFiliado;
-    @Column(name = "DS_PIS", length = 14)
+    @Column(name = "ds_pis", length = 14)
     private String pis;
 
     public Rais() {

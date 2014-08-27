@@ -2,6 +2,7 @@ package br.com.rtools.agenda;
 
 import br.com.rtools.seguranca.Usuario;
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,22 +15,22 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "AGE_GRUPO_USUARIO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_GRUPO_AGENDA", "ID_USUARIO"})
+@Table(name = "age_grupo_usuario",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_grupo_agenda", "id_usuario"})
 )
 @NamedQueries({
     @NamedQuery(name = "AgendaGrupoUsuario.findGrupoAgenda", query = "SELECT AGU FROM AgendaGrupoUsuario AS AGU WHERE AGU.grupoAgenda.id = :p1 ORDER BY AGU.grupoAgenda.descricao ASC, AGU.usuario.login ASC"),
     @NamedQuery(name = "AgendaGrupoUsuario.existGrupoUsuario", query = "SELECT AGU FROM AgendaGrupoUsuario AS AGU WHERE AGU.grupoAgenda.id = :p1 AND AGU.usuario.id = :p2")
 })
 public class AgendaGrupoUsuario implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRUPO_AGENDA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_agenda", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoAgenda grupoAgenda;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Usuario usuario;
 

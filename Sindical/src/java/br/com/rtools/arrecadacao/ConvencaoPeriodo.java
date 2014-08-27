@@ -13,22 +13,22 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_CONVENCAO_PERIODO")
+@Table(name = "arr_convencao_periodo")
 @NamedQuery(name = "ConvencaoPeriodo.pesquisaID", query = "select convp from ConvencaoPeriodo convp where convp.id=:pid")
 public class ConvencaoPeriodo implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Convencao convencao;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private GrupoCidade grupoCidade;
-    @Column(name = "DS_REFERENCIA_INICIAL", length = 7)
+    @Column(name = "ds_referencia_inicial", length = 7)
     private String referenciaInicial;
-    @Column(name = "DS_REFERENCIA_FINAL", length = 7)
+    @Column(name = "ds_referencia_final", length = 7)
     private String referenciaFinal;
 
     public ConvencaoPeriodo(int id, Convencao convencao, GrupoCidade grupoCidade, String referenciaInicial, String referenciaFinal) {

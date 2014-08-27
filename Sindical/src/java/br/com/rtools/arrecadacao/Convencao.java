@@ -4,18 +4,18 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_CONVENCAO")
+@Table(name = "arr_convencao")
 @NamedQueries({
     @NamedQuery(name = "Convencao.pesquisaID", query = "SELECT C FROM Convencao AS C WHERE C.id = :pid"),
     @NamedQuery(name = "Convencao.findAll", query = "SELECT C FROM Convencao AS C ORDER BY C.descricao ASC "),
     @NamedQuery(name = "Convencao.findName", query = "SELECT C FROM Convencao AS C WHERE UPPER(C.descricao) LIKE :pdescricao ORDER BY C.descricao ASC ")
 })
 public class Convencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = true, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = true, unique = true)
     private String descricao;
 
     public Convencao() {

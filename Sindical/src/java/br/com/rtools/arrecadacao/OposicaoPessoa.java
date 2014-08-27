@@ -14,23 +14,23 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_OPOSICAO_PESSOA")
+@Table(name = "arr_oposicao_pessoa")
 @NamedQuery(name = "OposicaoPessoa.pesquisaID", query = "select op from OposicaoPessoa op where op.id=:pid")
 public class OposicaoPessoa implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CADASTRO")
+    @Column(name = "dt_cadastro")
     private Date dataCadastro;
-    @Column(name = "DS_NOME", length = 200, nullable = false)
+    @Column(name = "ds_nome", length = 200, nullable = false)
     private String nome;
-    @Column(name = "DS_SEXO", length = 1)
+    @Column(name = "ds_sexo", length = 1)
     private String sexo;
-    @Column(name = "DS_CPF", length = 15)
+    @Column(name = "ds_cpf", length = 15)
     private String cpf;
-    @Column(name = "DS_RG", length = 12)
+    @Column(name = "ds_rg", length = 12)
     private String rg;
 
     public OposicaoPessoa() {

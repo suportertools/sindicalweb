@@ -14,29 +14,29 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EVE_VENDA")
+@Table(name = "eve_venda")
 @NamedQuery(name = "BVenda.pesquisaID", query = "select s from BVenda s where s.id=:pid")
 public class BVenda implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
     @OneToOne
     private AEvento evento;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evt", referencedColumnName = "id", nullable = true)
     @OneToOne
     private Evt evt;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_responsavel", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa responsavel;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Usuario usuario;
-    @Column(name = "DS_OBS", nullable = true)
+    @Column(name = "ds_obs", nullable = true)
     private String obs;
 
     public BVenda() {

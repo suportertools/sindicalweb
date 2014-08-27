@@ -1017,7 +1017,7 @@ public class JuridicaBean implements Serializable {
         List tiposE = db_tipoEndereco.listaTipoEnderecoParaJuridica();
         endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
         if (endereco != null) {
-            if (!alterarEnd) {
+            if (!alterarEnd || listaEnd.isEmpty()) {
                 num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
                 while (i < tiposE.size()) {
@@ -1033,7 +1033,7 @@ public class JuridicaBean implements Serializable {
             } else {
                 num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
-                if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 2) {
+                if (!listaEnd.isEmpty() && (pessoaEndereco.getTipoEndereco().getId() == 2)) {
 
                     if (pessoaEndereco.getId() != -1) {
                         // PessoaEndereco pessoaEndeAnt = new PessoaEndereco();

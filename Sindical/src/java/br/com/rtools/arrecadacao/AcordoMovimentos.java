@@ -5,20 +5,20 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_ACORDO_MOVIMENTOS")
+@Table(name = "arr_acordo_movimentos")
 @NamedQuery(name = "AcordoMovimentos.pesquisaID", query = "select c from AcordoMovimentos c where c.id = :pid")
 public class AcordoMovimentos implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_acordo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Acordo acordo;
-    @Column(name = "BO_ACORDADO", nullable = false)
+    @Column(name = "bo_acordado", nullable = false)
     private boolean acordado;
 
     public AcordoMovimentos() {

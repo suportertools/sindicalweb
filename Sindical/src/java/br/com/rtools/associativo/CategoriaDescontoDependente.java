@@ -16,14 +16,15 @@ import javax.persistence.Table;
 public class CategoriaDescontoDependente implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CATEGORIA_DESCONTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_categoria_desconto", referencedColumnName = "id")
     @ManyToOne
     private CategoriaDesconto categoriaDesconto;
-    @JoinColumn(name = "ID_PARENTESCO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_parentesco", referencedColumnName = "id")
     @ManyToOne
     private Parentesco parentesco;
-    @Column(name = "NR_DESCONTO")
+    @Column(name = "nr_desconto")
     private float desconto;
 
     public CategoriaDescontoDependente() {

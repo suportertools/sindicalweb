@@ -6,18 +6,18 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONV_EXPORTA")
+@Table(name = "conv_exporta")
 @NamedQuery(name = "ConviteExporta.pesquisaID", query = "SELECT CONEX FROM ConviteExporta CONEX WHERE CONEX.id = :pid")
 public class ConviteExporta implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONV_MOVIMENTO ", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_conv_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private ConviteMovimento conviteMovimento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EXPORTACAO")
+    @Column(name = "dt_exportacao")
     private Date dtExportacao;
 
     public ConviteExporta() {

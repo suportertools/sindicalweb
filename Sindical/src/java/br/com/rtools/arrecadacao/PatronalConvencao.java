@@ -4,24 +4,24 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_PATRONAL_CONVENCAO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_CONVENCAO", "ID_GRUPO_CIDADE"})
+@Table(name = "arr_patronal_convencao",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_convencao", "id_grupo_cidade"})
 )
 @NamedQueries({
     @NamedQuery(name = "PatronalConvencao.findPorPessoaPatronal", query = "SELECT APC FROM PatronalConvencao AS APC WHERE APC.patronal.pessoa.id = :p1 ORDER BY APC.convencao.descricao ASC, APC.grupoCidade.descricao ASC")
 })
 public class PatronalConvencao implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PATRONAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_patronal", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Patronal patronal;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convencao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Convencao convencao;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
 

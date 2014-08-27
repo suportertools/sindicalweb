@@ -7,28 +7,28 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_CONTRIBUINTES_INATIVOS")
+@Table(name = "arr_contribuintes_inativos")
 @NamedQuery(name = "ContribuintesInativos.pesquisaID", query = "select ci from ContribuintesInativos ci where ci.id=:pid")
 public class ContribuintesInativos implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Juridica juridica;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_ATIVACAO")
+    @Column(name = "dt_ativacao")
     private Date dtAtivacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INATIVACAO")
+    @Column(name = "dt_inativacao")
     private Date dtInativacao;
-    @JoinColumn(name = "ID_MOTIVO_INATIVACAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_motivo_inativacao", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private MotivoInativacao motivoInativacao;
-    @Column(name = "DS_SOLICITANTE")
+    @Column(name = "ds_solicitante")
     private String solicitante;
-    @Column(name = "DS_OBS")
+    @Column(name = "ds_obs")
     private String observacao;
 
     public ContribuintesInativos() {

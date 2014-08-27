@@ -6,26 +6,26 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_FATURAMENTO_FOLHA_EMPRESA")
+@Table(name = "arr_faturamento_folha_empresa")
 @NamedQuery(name = "FolhaEmpresa.pesquisaID", query = "select c from FolhaEmpresa c where c.id = :pid")
 public class FolhaEmpresa implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Juridica juridica;
-    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_tipo_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private TipoServico tipoServico;
-    @Column(name = "DS_REFERENCIA", length = 7, nullable = true)
+    @Column(name = "ds_referencia", length = 7, nullable = true)
     private String referencia;
-    @Column(name = "NR_VALOR", nullable = true)
+    @Column(name = "nr_valor", nullable = true)
     private float valorMes;
-    @Column(name = "NR_NUM_FUNCIONARIOS", nullable = true)
+    @Column(name = "nr_num_funcionarios", nullable = true)
     private int numFuncionarios;
-    @Column(name = "NR_ALTERACOES", nullable = false)
+    @Column(name = "nr_alteracoes", nullable = false)
     private int alteracoes;
 
     public FolhaEmpresa() {

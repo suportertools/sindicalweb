@@ -6,21 +6,21 @@ import java.io.Serializable;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_GRUPO_CIDADES")
+@Table(name = "arr_grupo_cidades")
 @NamedQueries({
     @NamedQuery(name = "GrupoCidades.pesquisaID", query = "SELECT GCS FROM GrupoCidades AS GCS WHERE GCS.id = :pid"),
     @NamedQuery(name = "GrupoCidades.findAll", query = "SELECT GCS FROM GrupoCidades AS GCS ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC "),
     @NamedQuery(name = "GrupoCidades.findName", query = "SELECT GCS FROM GrupoCidades AS GCS WHERE UPPER(GCS.grupoCidade.descricao) LIKE :pdescricao ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC ")
 })
 public class GrupoCidades implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cidade", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Cidade cidade;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
 

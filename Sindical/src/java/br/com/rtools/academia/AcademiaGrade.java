@@ -16,21 +16,21 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "ACA_GRADE",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"DS_HORA_INICIO", "DS_HORA_FIM"})
+@Table(name = "aca_grade",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ds_hora_inicio", "ds_hora_fim"})
 )
 @NamedQueries({
     @NamedQuery(name = "AcademiaGrade.pesquisaID", query = "SELECT AG FROM AcademiaGrade AS AG WHERE AG.id = :pid"),
     @NamedQuery(name = "AcademiaGrade.findAll", query = "SELECT AG FROM AcademiaGrade AS AG ORDER BY AG.horaInicio ASC, AG.horaFim ASC")
 })
 public class AcademiaGrade implements BaseEntity, Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_HORA_INICIO", length = 5)
+    @Column(name = "ds_hora_inicio", length = 5)
     private String horaInicio;
-    @Column(name = "DS_HORA_FIM", length = 5)
+    @Column(name = "ds_hora_fim", length = 5)
     private String horaFim;
 
     public AcademiaGrade() {

@@ -13,21 +13,21 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_CONVENIO")
+@Table(name = "soc_convenio")
 @NamedQueries({
     @NamedQuery(name = "Convenio.pesquisaID",  query = "SELECT CON FROM Convenio AS CON WHERE CON.id = :pid"),
     @NamedQuery(name = "Convenio.findAll",     query = "SELECT CON FROM Convenio AS CON ORDER BY CON.juridica.pessoa.nome ASC, CON.subGrupoConvenio.grupoConvenio.descricao ASC, CON.subGrupoConvenio.descricao ASC "),
     @NamedQuery(name = "Convenio.findName",    query = "SELECT CON FROM Convenio AS CON WHERE UPPER(CON.juridica.pessoa.nome) LIKE :pdescricao ORDER BY CON.juridica.pessoa.nome ASC, CON.subGrupoConvenio.grupoConvenio.descricao ASC, CON.subGrupoConvenio.descricao ASC  ")
 })
 public class Convenio implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Juridica juridica;
-    @JoinColumn(name = "ID_CONVENIO_SUB_GRUPO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convenio_sub_grupo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private SubGrupoConvenio subGrupoConvenio;
 

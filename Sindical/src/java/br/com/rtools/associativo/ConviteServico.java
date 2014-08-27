@@ -5,36 +5,35 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CONV_SERVICO")
+@Table(name = "conv_servico")
 @NamedQueries({
     @NamedQuery(name = "ConviteServico.pesquisaID", query = "SELECT CONS FROM ConviteServico AS CONS WHERE CONS.id = :pid"),
     @NamedQuery(name = "ConviteServico.findAll", query = "SELECT CONS FROM ConviteServico AS CONS ORDER BY CONS.servicos.descricao ASC ")
 })
 
 public class ConviteServico implements Serializable {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servico", referencedColumnName = "ID")
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "IS_SEGUNDA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_segunda", columnDefinition = "boolean default false")
     private boolean segunda;
-    @Column(name = "IS_TERCA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_terca", columnDefinition = "boolean default false")
     private boolean terca;
-    @Column(name = "IS_QUARTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_quarta", columnDefinition = "boolean default false")
     private boolean quarta;
-    @Column(name = "IS_QUINTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_quinta", columnDefinition = "boolean default false")
     private boolean quinta;
-    @Column(name = "IS_SEXTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sexta", columnDefinition = "boolean default false")
     private boolean sexta;
-    @Column(name = "IS_SABADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_sabado", columnDefinition = "boolean default false")
     private boolean sabado;
-    @Column(name = "IS_DOMINGO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_domingo", columnDefinition = "boolean default false")
     private boolean domingo;
-    @Column(name = "IS_FERIADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_feriado", columnDefinition = "boolean default false")
     private boolean feriado;
 
     public ConviteServico() {
