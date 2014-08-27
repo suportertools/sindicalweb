@@ -13,65 +13,66 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "MATR_ESCOLA")
+@Table(name = "matr_escola")
 @NamedQuery(name = "MatriculaEscola.pesquisaID", query = "SELECT MAE FROM MatriculaEscola MAE WHERE MAE.id = :pid")
 public class MatriculaEscola implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dataMatricula;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @ManyToOne
     private EscStatus escStatus;
-    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_responsavel", referencedColumnName = "id")
     @ManyToOne
     private Pessoa responsavel;
-    @JoinColumn(name = "ID_ALUNO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_aluno", referencedColumnName = "id")
     @ManyToOne
     private Pessoa aluno;
-    @JoinColumn(name = "ID_VENDEDOR", referencedColumnName = "ID")
+    @JoinColumn(name = "id_vendedor", referencedColumnName = "id")
     @ManyToOne
     private Vendedor vendedor;
-    @JoinColumn(name = "ID_MIDIA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_midia", referencedColumnName = "id")
     @ManyToOne
     private Midia midia;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
+    @JoinColumn(name = "id_evt", referencedColumnName = "id")
     @ManyToOne
     private Evt evt;
-    @Column(name = "NR_PARCELAS")
+    @Column(name = "nr_parcelas")
     private int numeroParcelas;
-    @Column(name = "NR_DESCONTO")
+    @Column(name = "nr_desconto")
     private float desconto;
-    @Column(name = "DS_OBS", length = 200)
+    @Column(name = "ds_obs", length = 200)
     private String obs;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_STATUS")
+    @Column(name = "dt_status")
     private Date status;
-    @JoinColumn(name = "ID_FINANCEIRO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_financeiro", referencedColumnName = "id")
     @ManyToOne
     private EFinanceiro esEFinanceiro;
-    @Column(name = "NR_VALOR_TOTAL")
+    @Column(name = "nr_valor_total")
     private float valorTotal;
-    @Column(name = "NR_DIA_VENCIMENTO")
+    @Column(name = "nr_dia_vencimento")
     private int diaVencimento;
-    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO")
+    @Column(name = "nr_desconto_ate_vencimento")
     private float descontoAteVencimento;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id")
     @ManyToOne
     private FTipoDocumento tipoDocumento;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
-    @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_desconto_folha", columnDefinition = "boolean default false")
     private boolean descontoFolha;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean habilitado;
-    @Column(name = "IS_DESCONTO_PROPORCIONAL", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_desconto_proporcional", columnDefinition = "boolean default false")
     private boolean descontoProporcional;
-    @Column(name = "NR_DESCONTO_PROPORCIONAL")
+    @Column(name = "nr_desconto_proporcional")
     private float valorDescontoProporcional;
 
     public MatriculaEscola() {
@@ -339,14 +340,14 @@ public class MatriculaEscola implements java.io.Serializable {
     public void setValorDescontoProporcional(float valorDescontoProporcional) {
         this.valorDescontoProporcional = valorDescontoProporcional;
     }
-    
+
     public void listenerData(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dataMatricula = DataHoje.converte(format.format(event.getObject()));
     }
 
     public void listenerStatus(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.status = DataHoje.converte(format.format(event.getObject()));
     }
-} 
+}

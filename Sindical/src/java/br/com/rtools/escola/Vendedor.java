@@ -4,18 +4,19 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ESC_VENDEDOR")
+@Table(name = "esc_vendedor")
 @NamedQueries({
-    @NamedQuery(name = "Vendedor.pesquisaID",    query = "SELECT V FROM Vendedor AS V WHERE V.id = :pid"),
-    @NamedQuery(name = "Vendedor.findAll",       query = "SELECT V FROM Vendedor AS V ORDER BY V.pessoa.nome ASC "),
-    @NamedQuery(name = "Vendedor.findName",      query = "SELECT V FROM Vendedor AS V WHERE UPPER(V.pessoa.nome) LIKE :pdescricao ORDER BY V.pessoa.nome ASC ")
+    @NamedQuery(name = "Vendedor.pesquisaID", query = "SELECT V FROM Vendedor AS V WHERE V.id = :pid"),
+    @NamedQuery(name = "Vendedor.findAll", query = "SELECT V FROM Vendedor AS V ORDER BY V.pessoa.nome ASC "),
+    @NamedQuery(name = "Vendedor.findName", query = "SELECT V FROM Vendedor AS V WHERE UPPER(V.pessoa.nome) LIKE :pdescricao ORDER BY V.pessoa.nome ASC ")
 })
 public class Vendedor implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
 

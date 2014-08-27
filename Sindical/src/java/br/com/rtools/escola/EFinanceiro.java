@@ -5,16 +5,17 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ESC_FINANCEIRO")
+@Table(name = "esc_financeiro")
 @NamedQuery(name = "EFinanceiro.pesquisaID", query = "SELECT EF FROM EFinanceiro AS EF WHERE EF.id=:pid")
 public class EFinanceiro implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_MULTA_CANCELAMENTO")
+    @Column(name = "nr_multa_cancelamento")
     private float nrMultaCancelamento;
-    @JoinColumn(name = "ID_MULTA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_multa", referencedColumnName = "id")
     @ManyToOne
     private Servicos multa;
 

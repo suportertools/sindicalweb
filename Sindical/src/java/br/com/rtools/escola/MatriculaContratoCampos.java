@@ -4,24 +4,25 @@ import br.com.rtools.seguranca.Modulo;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "MATR_CONTRATO_CAMPOS")
+@Table(name = "matr_contrato_campos")
 @NamedQueries({
-    @NamedQuery(name = "MatriculaContratoCampos.pesquisaID",    query = "SELECT MCC FROM MatriculaContratoCampos AS MCC WHERE MCC.id = :pid"),
-    @NamedQuery(name = "MatriculaContratoCampos.findAll",       query = "SELECT MCC FROM MatriculaContratoCampos AS MCC ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ASC")
+    @NamedQuery(name = "MatriculaContratoCampos.pesquisaID", query = "SELECT MCC FROM MatriculaContratoCampos AS MCC WHERE MCC.id = :pid"),
+    @NamedQuery(name = "MatriculaContratoCampos.findAll", query = "SELECT MCC FROM MatriculaContratoCampos AS MCC ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ASC")
 })
 public class MatriculaContratoCampos implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id")
     @ManyToOne
     private Modulo modulo;
-    @Column(name = "DS_CAMPO", length = 100)
+    @Column(name = "ds_campo", length = 100)
     private String campo;
-    @Column(name = "DS_VARIAVEL")
+    @Column(name = "ds_variavel")
     private String variavel;
-    @Column(name = "DS_OBSERVACAO", length = 1500)
+    @Column(name = "ds_observacao", length = 1500)
     private String observacao;
 
     public MatriculaContratoCampos() {

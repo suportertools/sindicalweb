@@ -5,29 +5,33 @@ import javax.persistence.*;
 /**
  * <p>
  * <b>TurmaProfessor</b></p>
- * <p> Cadastro de professores e componentes currículares para a turma. </p>
- * <p> O mesmo professor poderá ministrar diversas disciplinas, adiciones os componentes currículares e as turmas que este pprofessor ministrá. </p>
-  * @author rtools
+ * <p>
+ * Cadastro de professores e componentes currículares para a turma. </p>
+ * <p>
+ * O mesmo professor poderá ministrar diversas disciplinas, adiciones os
+ * componentes currículares e as turmas que este pprofessor ministrá. </p>
+ *
+ * @author rtools
  */
-
 @Entity
-@Table(name = "ESC_TURMA_PROFESSOR")
+@Table(name = "esc_turma_professor")
 @NamedQueries({
-    @NamedQuery(name = "TurmaProfessor.pesquisaID",    query = "SELECT TP FROM TurmaProfessor AS TP WHERE TP.id = :pid"),
-    @NamedQuery(name = "TurmaProfessor.findAll",       query = "SELECT TP FROM TurmaProfessor AS TP ORDER BY TP.turma.cursos.descricao ASC, TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC ")
+    @NamedQuery(name = "TurmaProfessor.pesquisaID", query = "SELECT TP FROM TurmaProfessor AS TP WHERE TP.id = :pid"),
+    @NamedQuery(name = "TurmaProfessor.findAll", query = "SELECT TP FROM TurmaProfessor AS TP ORDER BY TP.turma.cursos.descricao ASC, TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC ")
 })
 public class TurmaProfessor implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_TURMA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_turma", referencedColumnName = "id")
     @OneToOne
     private Turma turma;
-    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID")
+    @JoinColumn(name = "id_professor", referencedColumnName = "id")
     @OneToOne
     private Professor professor;
-    @JoinColumn(name = "ID_COMPONENTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_componente", referencedColumnName = "id")
     @OneToOne
     private ComponenteCurricular componenteCurricular;
 
