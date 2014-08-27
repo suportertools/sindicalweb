@@ -12,19 +12,20 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_SUBGRUPO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_GRUPO", "DS_DESCRICAO"})
+@Table(name = "fin_subgrupo",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_grupo", "ds_descricao"})
 )
 @NamedQuery(name = "SubGrupoFinanceiro.pesquisaID", query = "SELECT SGF FROM SubGrupoFinanceiro AS SGF WHERE SGF.id = :pid")
 public class SubGrupoFinanceiro implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_grupo", referencedColumnName = "id")
     @ManyToOne
     private GrupoFinanceiro grupoFinanceiro;
-    @Column(name = "DS_DESCRICAO", length = 100)
+    @Column(name = "ds_descricao", length = 100)
     private String descricao;
 
     public SubGrupoFinanceiro() {

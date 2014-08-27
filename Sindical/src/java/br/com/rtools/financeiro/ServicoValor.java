@@ -4,10 +4,10 @@ import br.com.rtools.utilitarios.Moeda;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SERVICO_VALOR",
+@Table(name = "fin_servico_valor",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_INI"}),
-            @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_FIM"})
+            @UniqueConstraint(columnNames = {"id_servico", "nr_idade_ini"}),
+            @UniqueConstraint(columnNames = {"id_servico", "nr_idade_fim"})
         }
 )
 @NamedQuery(name = "ServicoValor.pesquisaID", query = "select s from ServicoValor s where s.id=:pid")
@@ -15,19 +15,20 @@ public class ServicoValor implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "NR_IDADE_INI", length = 18, nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "nr_idade_ini", length = 18, nullable = false, columnDefinition = "integer default 0")
     private int idadeIni;
-    @Column(name = "NR_IDADE_FIM", length = 18, nullable = false, columnDefinition = "INTEGER DEFAULT 500")
+    @Column(name = "nr_idade_fim", length = 18, nullable = false, columnDefinition = "integer default 500")
     private int idadeFim;
-    @Column(name = "NR_VALOR", length = 18, nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_valor", length = 18, nullable = false, columnDefinition = "double precision default 0")
     private float valor;
-    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO", length = 18, nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_desconto_ate_vencimento", length = 18, nullable = false, columnDefinition = "double precision default 0")
     private float descontoAteVenc;
-    @Column(name = "NR_TAXA", length = 18, nullable = true, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_taxa", length = 18, nullable = true, columnDefinition = "double precision default 0")
     private float taxa;
 
     public ServicoValor() {

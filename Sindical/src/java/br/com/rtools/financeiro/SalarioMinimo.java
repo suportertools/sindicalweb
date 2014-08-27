@@ -7,8 +7,8 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SALARIO_MINIMO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"DT_VIGENCIA", "NR_VALOR_MENSAL"})
+@Table(name = "fin_salario_minimo",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"dt_vigencia", "nr_valor_mensal"})
 )
 @NamedQueries({
     @NamedQuery(name = "SalarioMinimo.pesquisaID", query = "SELECT SM FROM SalarioMinimo AS SM WHERE SM.id = :pid"),
@@ -18,20 +18,21 @@ public class SalarioMinimo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VIGENCIA")
+    @Column(name = "dt_vigencia")
     private Date vigencia;
-    @Column(name = "NR_VALOR_MENSAL", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_valor_mensal", columnDefinition = "double precision default 0")
     private float valorMensal;
-    @Column(name = "NR_VALOR_DIARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_valor_diario", columnDefinition = "double precision default 0")
     private float valorDiario;
-    @Column(name = "NR_VALOR_HORA", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
+    @Column(name = "nr_valor_hora", columnDefinition = "double precision default 0")
     private float valorHora;
-    @Column(name = "DS_NORMA")
+    @Column(name = "ds_norma")
     private String norma;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_PUBLICACAO")
+    @Column(name = "dt_publicacao")
     private Date publicacao;
 
     public SalarioMinimo() {

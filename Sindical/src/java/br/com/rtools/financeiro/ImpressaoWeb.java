@@ -6,23 +6,24 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_IMPRESSAO_WEB")
+@Table(name = "fin_impressao_web")
 @NamedQuery(name = "ImpressaoWeb.pesquisaID", query = "select i from ImpressaoWeb i where i.id=:pid")
 public class ImpressaoWeb implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA", nullable = false)
+    @Column(name = "dt_data", nullable = false)
     private Date data;
-    @Column(name = "DS_HORA", nullable = false)
+    @Column(name = "ds_hora", nullable = false)
     private String hora;
 
     public ImpressaoWeb() {

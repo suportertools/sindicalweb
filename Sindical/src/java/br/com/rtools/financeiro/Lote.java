@@ -11,64 +11,65 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_LOTE")
+@Table(name = "fin_lote")
 @NamedQuery(name = "Lote.pesquisaID", query = "select l from Lote l where l.id=:pid")
 public class Lote implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Rotina rotina;
-    @Column(name = "DS_PAG_REC", length = 1, nullable = true)
+    @Column(name = "ds_pag_rec", length = 1, nullable = true)
     private String pagRec;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_LANCAMENTO")
+    @Column(name = "dt_lancamento")
     private Date dtLancamento;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_PLANO_5", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_plano_5", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Plano5 plano5;
-    @Column(name = "IS_AVENCER_CONTABIL", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_avencer_contabil", columnDefinition = "boolean default false")
     private boolean avencerContabil;
-    @Column(name = "DS_DOCUMENTO", length = 100)
+    @Column(name = "ds_documento", length = 100)
     private String documento;
-    @Column(name = "NR_VALOR", length = 10, nullable = false)
+    @Column(name = "nr_valor", length = 10, nullable = false)
     private float valor;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Filial filial;
-    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_departamento", referencedColumnName = "id")
     @OneToOne
     private Departamento departamento;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
+    @JoinColumn(name = "id_evt", referencedColumnName = "id")
     @OneToOne
     private Evt evt;
-    @Column(name = "DS_HISTORICO", length = 2000)
+    @Column(name = "ds_historico", length = 2000)
     private String historico;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id")
     @OneToOne
     private FTipoDocumento ftipoDocumento;
-    @JoinColumn(name = "ID_CONDICAO_PAGAMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_condicao_pagamento", referencedColumnName = "id")
     @OneToOne
     private CondicaoPagamento condicaoPagamento;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @OneToOne
     private FStatus status;
-    @JoinColumn(name = "ID_PESSOA_SEM_CADASTRO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_pessoa_sem_cadastro", referencedColumnName = "id")
     @OneToOne
     private PessoaSemCadastro pessoaSemCadastro;
-    @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_desconto_folha", columnDefinition = "boolean default false")
     private boolean descontoFolha;
-    @Column(name = "NR_DESCONTO", length = 10)
+    @Column(name = "nr_desconto", length = 10)
     private float desconto;
-    
+
     public Lote() {
         this.id = -1;
         this.rotina = new Rotina();

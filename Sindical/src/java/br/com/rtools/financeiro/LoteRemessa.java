@@ -5,21 +5,22 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_LOTE_REMESSA")
+@Table(name = "fin_lote_remessa")
 @NamedQuery(name = "LoteRemessa.pesquisaID", query = "select l from LoteRemessa l where l.id=:pid")
 public class LoteRemessa implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_TIPO_MOVIMENTO", nullable = false)
+    @Column(name = "nr_tipo_movimento", nullable = false)
     private int tipoMovimento;
-    @Column(name = "DS_MOEDA", length = 2, nullable = false)
+    @Column(name = "ds_moeda", length = 2, nullable = false)
     private String moeda;
-    @Column(name = "NR_CONTRIBUICAO", nullable = false)
+    @Column(name = "nr_contribuicao", nullable = false)
     private int tipoContribuicao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_REMESSA", nullable = false)
+    @Column(name = "dt_remessa", nullable = false)
     private Date dtRemessa;
 
     public LoteRemessa(int id, int tipoMovimento, String moeda, int tipoContribuicao, Date dtRemessa) {

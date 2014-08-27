@@ -13,82 +13,83 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_MOVIMENTO")
+@Table(name = "fin_movimento")
 @NamedQuery(name = "Movimento.pesquisaID", query = "select m from Movimento m where m.id=:pid")
 public class Movimento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_lote", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Lote lote;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @ManyToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id")
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name = "ID_BAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_baixa", referencedColumnName = "id")
     @ManyToOne
     private Baixa baixa;
-    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_servico", referencedColumnName = "id")
     @ManyToOne
     private TipoServico tipoServico;
-    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_acordo", referencedColumnName = "id")
     @ManyToOne
     private Acordo acordo;
-    @Column(name = "NR_VALOR", length = 10, nullable = false)
+    @Column(name = "nr_valor", length = 10, nullable = false)
     private float valor;
-    @Column(name = "DS_REFERENCIA", length = 7)
+    @Column(name = "ds_referencia", length = 7)
     private String referencia;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO")
+    @Column(name = "dt_vencimento")
     private Date dtVencimento;
-    @Column(name = "NR_QUANTIDADE")
+    @Column(name = "nr_quantidade")
     private int quantidade;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
-    @Column(name = "DS_ES", length = 1)
+    @Column(name = "ds_es", length = 1)
     private String es;
-    @Column(name = "IS_OBRIGACAO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_obrigacao", columnDefinition = "boolean default false")
     private boolean obrigacao;
-    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID")
+    @JoinColumn(name = "id_titular", referencedColumnName = "id")
     @OneToOne
     private Pessoa titular;
-    @JoinColumn(name = "ID_BENEFICIARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_beneficiario", referencedColumnName = "id")
     @OneToOne
     private Pessoa beneficiario;
-    @Column(name = "DS_DOCUMENTO", length = 100)
+    @Column(name = "ds_documento", length = 100)
     private String documento;
-    @Column(name = "NR_CTR_BOLETO", length = 30)
+    @Column(name = "nr_ctr_boleto", length = 30)
     private String nrCtrBoleto;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO_ORIGINAL")
+    @Column(name = "dt_vencimento_original")
     private Date dtVencimentoOriginal;
-    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO", length = 10)
+    @Column(name = "nr_desconto_ate_vencimento", length = 10)
     private float descontoAteVencimento;
-    @Column(name = "NR_CORRECAO", length = 10)
+    @Column(name = "nr_correcao", length = 10)
     private float correcao;
-    @Column(name = "NR_JUROS", length = 10)
+    @Column(name = "nr_juros", length = 10)
     private float juros;
-    @Column(name = "NR_MULTA", length = 10)
+    @Column(name = "nr_multa", length = 10)
     private float multa;
-    @Column(name = "NR_DESCONTO", length = 10)
+    @Column(name = "nr_desconto", length = 10)
     private float desconto;
-    @Column(name = "NR_TAXA", length = 10)
+    @Column(name = "nr_taxa", length = 10)
     private float taxa;
-    @Column(name = "NR_VALOR_BAIXA", length = 10)
+    @Column(name = "nr_valor_baixa", length = 10)
     private float valorBaixa;
-    @Column(name = "NR_REPASSE_AUTOMATICO", length = 10)
+    @Column(name = "nr_repasse_automatico", length = 10)
     private float repasseAutomatico;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id")
     @ManyToOne
     private FTipoDocumento tipoDocumento;
-    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_matricula_socios", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private MatriculaSocios matriculaSocios;
 
