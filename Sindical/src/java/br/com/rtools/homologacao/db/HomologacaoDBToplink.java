@@ -16,7 +16,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class HomologacaoDBToplink extends DB implements HomologacaoDB {
-
     @Override
     public Agendamento pesquisaProtocolo(int id) {
         Agendamento result = null;
@@ -670,6 +669,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query qry = getEntityManager().createQuery("select s "
                     + " from Senha s "
                     + " where s.senha = (select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.filial.id = " + id_filial + ") "
+                    + " and s.agendamento.status.id = 1 "
+                    + " and s.ateMovimento is null "
                     + " and s.dtData = :data and s.filial.id = " + id_filial);
             qry.setParameter("data", DataHoje.dataHoje());
             if (!qry.getResultList().isEmpty()) {
@@ -690,6 +691,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "  FROM Senha AS S "
                     + " WHERE S.mesa = :nr_mesa "
                     + "   AND S.agendamento.homologador.id = :id_usuario "
+                    + "   AND S.ateMovimento IS NULL "
                     + "   AND S.dtData = :data"
                     + "   AND S.agendamento.status.id = 5 and S.filial.id = :id_filial");
             qry.setParameter("data", DataHoje.dataHoje());

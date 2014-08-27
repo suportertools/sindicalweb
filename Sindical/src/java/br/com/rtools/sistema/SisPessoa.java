@@ -71,7 +71,7 @@ public class SisPessoa implements java.io.Serializable {
         this.endereco = new Endereco();
         this.dtCriacao = DataHoje.dataHoje();
         this.dtNascimento = DataHoje.dataHoje();
-        this.dtImportacao = new Date();
+        this.dtImportacao = DataHoje.dataHoje();
     }
 
     public SisPessoa(int id, String nome, String documento, String rg, String telefone, String celular, String email1, String email2, String observacao, String complemento, String numero, String sexo, TipoDocumento tipoDocumento, Endereco endereco, String criacao, String nascimento) {
@@ -239,7 +239,7 @@ public class SisPessoa implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "SisPessoa{" + "id=" + id + ", nome=" + nome + ", documento=" + documento + ", rg=" + rg + ", telefone=" + telefone + ", celular=" + celular + ", email1=" + email1 + ", email2=" + email2 + ", observacao=" + observacao + ", complemento=" + complemento + ", numero=" + numero + ", sexo=" + sexo + ", tipoDocumento=" + tipoDocumento + ", endereco=" + endereco + ", dtCriacao=" + dtCriacao + ", dtNascimento=" + dtNascimento + '}';
+        return "SisPessoa{" + "id=" + id + ", nome=" + nome + ", documento=" + documento + ", rg=" + rg + ", telefone=" + telefone + ", celular=" + celular + ", email1=" + email1 + ", email2=" + email2 + ", observacao=" + observacao + ", complemento=" + complemento + ", numero=" + numero + ", sexo=" + sexo + ", tipoDocumento=" + tipoDocumento + ", endereco=" + endereco + ", dtCriacao=" + dtCriacao + ", dtNascimento=" + dtNascimento + ", dtImportacao=" + dtImportacao + '}';
     }
 
     public void selecionaDataNascimento(SelectEvent event) {

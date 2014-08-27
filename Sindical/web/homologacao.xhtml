@@ -248,15 +248,10 @@
                     <p:panel rendered="#{homologacaoBean.renderHomologacao}" styleClass="no-border">
                         <h:panelGrid style="margin: 0 auto;">
                             <p:panel styleClass="fundoCinza" style="width: 1000px">
-                                <h:panelGrid columns="4">
-                                    <h:column>
-                                        <br />
-                                        <p:commandButton icon="ui-icon-info" value="Existe(m) atendimento(s) não finalizado" rendered="#{homologacaoBean.listAtendimentoAberto().size() > 0}" style="color: red; margin-bottom: 15px!important;" onclick="PF('dlg_atendimentos').show()" update="id_atendimentos"/>
-                                    </h:column>
-                                        
+                                <h:panelGrid columns="3">
                                     <h:column>
                                         <h:outputLabel value="Data" /><br />
-                                        <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" readonlyInput="true" navigator="true" size="8">
+                                        <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" navigator="true" size="8" mask="99/99/9999">
                                             <p:ajax event="dateSelect" update="@this, tbl" />
                                         </p:calendar>
                                     </h:column>
@@ -271,19 +266,25 @@
 
                                     <h:column>
                                         <br />
-                                        <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at" style="margin-left: 600px"/>
+                                        <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at i_msg" style="margin-left: 600px"/>
                                     </h:column>
                                 </h:panelGrid>
+                                <p:commandButton icon="ui-icon-info" value="Existe(m) atendimento(s) não finalizado" rendered="#{homologacaoBean.listAtendimentoAberto().size() > 0}" style="color: red; margin-bottom: 15px!important;" onclick="PF('dlg_atendimentos').show()" update="id_atendimentos"/>
                             </p:panel>
                         </h:panelGrid>
                         
+                        <h:panelGrid style="margin: 0 auto; width: 1015px">
+                            <p:messages id="i_msg" closable="true" showDetail="true" />
+                        </h:panelGrid>
                         <br />
                         <!-- <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="# {polling.habilita}" /> -->
                         <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" global="false"/>
-                        
                         <h:panelGrid columns="1" id="tbl" style="margin: 0 auto; width: 1015px">
                             <p:outputLabel value="HOMOLOGAÇÕES" style="font-size: 11pt!important"/>
-                            <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="250" scrollable="true" emptyMessage="Nenhuma homologação agendada!" rowStyleClass="#{linha.tblEstilo}">
+                            <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="200" scrollable="true" emptyMessage="Nenhuma homologação agendada!" rowStyleClass="#{linha.tblEstilo}">
+                                <p:column style="width:5%">  
+                                    <p:rowToggler />  
+                                </p:column>                                  
                                 <p:column styleClass="text-center" width="30">
                                     <f:facet name="header">
                                         <p:outputLabel value="Horarios" rendered="false"/>
@@ -295,7 +296,7 @@
                                 <p:column headerText="CNPJ" styleClass="text-center" width="120">
                                     <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
                                 </p:column>
-                                <p:column headerText="Empresa" styleClass="text-center">
+                                <p:column headerText="Empresa">
                                     <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
                                 </p:column>
                                 <p:column headerText="Funcionário" width="150">
@@ -307,13 +308,16 @@
                                 
                                 <p:rowExpansion>
                                     <h:panelGrid columns="3" styleClass="sbb">
-                                        <p:column headerText="Contato">
+                                        <p:column>
+                                            <p:outputLabel value="Contato" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.agendamento.contato}"/>
                                         </p:column>
-                                        <p:column headerText="Telefone" styleClass="text-center" width="100">
+                                        <p:column>
+                                            <p:outputLabel value="Telefone" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.agendamento.telefone}"/>
                                         </p:column>
-                                        <p:column headerText="Usuario">
+                                        <p:column>
+                                            <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.usuarioAgendador}"/>
                                         </p:column>                                    
                                     </h:panelGrid>
@@ -326,7 +330,7 @@
                                     <p:outputLabel value="#{linha.senha.senha}" rendered="#{linha.senha.senha != 0}"/>
                                 </p:column>  
                                 
-                                <p:column styleClass="text-center" width="25">
+                                <p:column styleClass="text-center" width="40">
                                     <f:facet name="header">
                                         <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
                                     </f:facet>
@@ -357,9 +361,14 @@
                         </h:panelGrid>
                     </p:panel>
 
-                    <p:dialog widgetVar="dlg_atendimento_simples" header="Atendimento" modal="true" width="700" resizable="false" visible="#{homologacaoBean.senhaAtendimento.id != -1}">
-                        <p:ajax event="close" listener="#{homologacaoBean.fecharModalSenha()}" update="tbl_at"/>  
+                    <p:dialog id="i_dlg_atendimento_simples" widgetVar="dlg_atendimento_simples" header="Atendimento" modal="true" width="700" resizable="false" visible="#{homologacaoBean.senhaAtendimento.id != -1}">
+                        <p:ajax event="close" listener="#{homologacaoBean.fecharModalSenha()}" update="form_cancelar_data_table"/>  
                         <h:panelGrid id="panel_atendimento_simples">
+                            <h:panelGrid columns="1">
+                                <h:outputLabel value="ID" style="font-weight: bold"/>
+                                <h:outputLabel value="#{homologacaoBean.senhaAtendimento.id}" />
+                            </h:panelGrid>
+                            
                             <h:panelGrid columns="1">
                                 <h:outputLabel value="Nome" style="font-weight: bold"/>
                                 <h:outputLabel value="#{homologacaoBean.senhaAtendimento.ateMovimento.pessoa.nome}" />
@@ -377,13 +386,13 @@
                         </h:panelGrid>
                         
                         <h:panelGrid columns="3">
-                            <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()"/>
+                            <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
                             <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
                             <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
                         </h:panelGrid>
                     </p:dialog> 
                     
-                    <p:dialog widgetVar="dlg_atendimentos" header="Atendimento(s) pendente(s)" modal="true" width="1024" resizable="false" closable="true">
+                    <p:dialog widgetVar="dlg_atendimentos" header="Homologações pendente(s)" modal="true" width="1024" resizable="false" closable="true">
                         <h:panelGrid id="id_atendimentos">
                             <p:dataTable value="#{homologacaoBean.listAtendimentoAberto()}" var="agendamento" emptyMessage="Nenhum registro encontrado!" id="i_table">
                                 <p:column styleClass="text-center" width="60">
@@ -411,8 +420,8 @@
                                     <h:outputText  value="#{agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
                                 </p:column>
                                 <p:column width="150">
-                                    <f:facet name="Funcionário">
-                                        <h:outputLabel value="Empresa" />
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Funcionário" />
                                     </f:facet>
                                     <h:outputText  value="#{agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
                                 </p:column>
@@ -422,7 +431,7 @@
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Sair" onclick="PF('dlg_atendimentos').hide()" />
                                 <h:commandLink>
-                                    <p:commandButton icon="ui-icon-print" title="Imprimir atendimentos pendentes" />
+                                    <p:commandButton icon="ui-icon-print" title="Imprimir atendimentos pendentes" global="false"/>
                                     <p:dataExporter type="pdf" target="i_table" fileName="atendimento_pendente" />
                                 </h:commandLink>
                             </h:panelGrid>

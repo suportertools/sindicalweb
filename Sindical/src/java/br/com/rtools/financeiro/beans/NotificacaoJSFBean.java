@@ -813,6 +813,7 @@ public class NotificacaoJSFBean implements Serializable {
                     }
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 atual++;
             }

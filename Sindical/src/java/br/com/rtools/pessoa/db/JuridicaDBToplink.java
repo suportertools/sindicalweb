@@ -97,7 +97,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         }
         String textQuery = "";
                 
-        desc = AnaliseString.normalizeLower(desc);
+        desc = AnaliseString.normalizeLower(desc).replace("'", "");
         desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
         
         String field = "";
@@ -110,7 +110,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         
         textQuery = " SELECT j.id FROM pes_juridica j " +
             "  INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
-            "  WHERE LOWER(TRANSLATE("+field+")) LIKE '" + desc + "'" +
+            "  WHERE LOWER(TRANSLATE("+field+")) LIKE ('" + desc + "')" +
             "  ORDER BY p.ds_nome";
         
         if (por.equals("endereco")) {
