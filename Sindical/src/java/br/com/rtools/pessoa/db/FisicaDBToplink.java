@@ -403,10 +403,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             documento = "%" + doc + "%";
         }
         try {
-            Query qry = getEntityManager().createQuery(
-                    "   SELECT FIS                          "
-                    + "   FROM Fisica AS FIS               "
-                    + "    AND FIS.pessoa.documento LIKE :documento");
+            Query qry = getEntityManager().createQuery("SELECT FIS FROM Fisica AS FIS WHERE FIS.pessoa.documento LIKE :documento");
             qry.setParameter("documento", documento);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -420,10 +417,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     public List pesquisaFisicaPorDocRG(String doc) {
         String documento = doc;
         try {
-            Query qry = getEntityManager().createQuery(
-                    "   SELECT FIS                          "
-                    + "   FROM Fisica AS FIS               "
-                    + "    AND FIS.rg LIKE :documento");
+            Query qry = getEntityManager().createQuery("SELECT FIS FROM Fisica AS FIS WHERE FIS.rg LIKE :documento");
             qry.setParameter("documento", documento);
             List list = qry.getResultList();
             if (!list.isEmpty()) {

@@ -3,7 +3,7 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "pes_pessoa_complemento")
+@Table(name = "pes_pessoa_profissao")
 @NamedQuery(name = "PessoaProfissao.pesquisaID", query = "select pprof from PessoaProfissao pprof where pprof.id=:pid")
 public class PessoaProfissao implements java.io.Serializable {
 
