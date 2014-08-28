@@ -337,7 +337,7 @@ public class CaixaFechadoBean implements Serializable{
         );
         
         if (!sv.inserirObjeto(tc)){
-            GenericaMensagem.warn("Erro", "Não foi possivel salvar esta Transferência!");
+            GenericaMensagem.warn("Erro", "Não foi possivel salvar esta Transferência, verifique se existe CAIXA 01 cadastrado!");
             sv.desfazerTransacao();
             return;
         }
