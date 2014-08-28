@@ -17,25 +17,27 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_FECHAMENTO_CAIXA")
+@Table(name = "fin_fechamento_caixa")
 @NamedQuery(name = "FechamentoCaixa.pesquisaID", query = "select fc from FechamentoCaixa fc where fc.id = :pid")
 public class FechamentoCaixa implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "DS_HORA")
+    @Column(name = "ds_hora")
     private String hora;
-    @Column(name = "NR_VALOR_INFORMADO")
+    @Column(name = "nr_valor_informado")
     private float valorInformado;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
-    @Column(name = "NR_VALOR_FECHAMENTO")
+    @Column(name = "nr_valor_fechamento")
     private float valorFechamento;
-    @Column(name = "NR_SALDO_ATUAL")
+    @Column(name = "nr_saldo_atual")
     private float saldoAtual;
 
     public FechamentoCaixa() {
@@ -47,7 +49,7 @@ public class FechamentoCaixa implements java.io.Serializable {
         this.valorFechamento = 0;
         this.saldoAtual = 0;
     }
-    
+
     public FechamentoCaixa(int id, Date dtData, String hora, float valorInformado, Caixa caixa, Usuario usuario, Filial filial, float valorFechamento, float saldoAtual) {
         this.id = id;
         this.dtData = dtData;
@@ -97,7 +99,7 @@ public class FechamentoCaixa implements java.io.Serializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
+
     public String getData() {
         if (dtData != null) {
             return DataHoje.converteData(dtData);

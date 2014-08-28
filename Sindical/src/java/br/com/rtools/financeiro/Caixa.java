@@ -27,8 +27,8 @@ import javax.persistence.UniqueConstraint;
  * @author rtools
  */
 @Entity
-@Table(name = "FIN_CAIXA",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_FILIAL", "NR_CAIXA", "DS_DESCRICAO"})
+@Table(name = "fin_caixa",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_filial", "nr_caixa", "ds_descricao"})
 )
 @NamedQueries({
     @NamedQuery(name = "Caixa.pesquisaID", query = "SELECT C FROM Caixa AS C WHERE C.id = :pid"),
@@ -38,12 +38,13 @@ public class Caixa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_CAIXA")
+    @Column(name = "nr_caixa")
     private int caixa;
-    @Column(name = "DS_DESCRICAO", length = 100)
+    @Column(name = "ds_descricao", length = 100)
     private String descricao;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
 

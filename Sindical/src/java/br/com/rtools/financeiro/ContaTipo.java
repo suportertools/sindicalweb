@@ -8,22 +8,23 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name = "FIN_CONTA_TIPO")
+@Table(name = "fin_conta_tipo")
 @NamedQuery(name = "ContaTipo.pesquisaID", query = "select ct from ContaTipo ct where ct.id = :pid")
 public class ContaTipo implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50)
+    @Column(name = "ds_descricao", length = 50)
     private String descricao;
 
     public ContaTipo() {
         this.id = -1;
         this.descricao = "";
     }
-    
+
     public ContaTipo(int id, String descricao) {
         this.id = id;
         this.descricao = descricao;
@@ -45,6 +46,4 @@ public class ContaTipo implements java.io.Serializable {
         this.descricao = descricao;
     }
 
-    
-    
 }

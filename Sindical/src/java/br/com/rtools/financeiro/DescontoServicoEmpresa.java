@@ -6,20 +6,21 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_DESCONTO_SERVICO_EMPRESA")
+@Table(name = "fin_desconto_servico_empresa")
 @NamedQuery(name = "DescontoServicoEmpresa.pesquisaID", query = "SELECT DSEM FROM DescontoServicoEmpresa AS DSEM WHERE DSEM.id=:pid")
 public class DescontoServicoEmpresa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id")
     @ManyToOne
     private Juridica juridica;
-    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servico", referencedColumnName = "id")
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "NR_DESCONTO")
+    @Column(name = "nr_desconto")
     private float desconto;
 
     public DescontoServicoEmpresa() {

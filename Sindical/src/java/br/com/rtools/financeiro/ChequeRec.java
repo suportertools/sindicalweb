@@ -5,33 +5,35 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CHEQUE_REC")
+@Table(name = "fin_cheque_rec")
 @NamedQuery(name = "ChequeRec.pesquisaID", query = "select cr from ChequeRec cr where cr.id=:pid")
 public class ChequeRec implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_EMITENTE", length = 100)
+    @Column(name = "ds_emitente", length = 100)
     private String emitente;
-    @Column(name = "DS_BANCO", length = 10)
+    @Column(name = "ds_banco", length = 10)
     private String banco;
-    @Column(name = "DS_AGENCIA", length = 50)
+    @Column(name = "ds_agencia", length = 50)
     private String agencia;
-    @Column(name = "DS_CONTA", length = 50)
+    @Column(name = "ds_conta", length = 50)
     private String conta;
-    @Column(name = "DS_CHEQUE", length = 50)
+    @Column(name = "ds_cheque", length = 50)
     private String cheque;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO")
+    @Column(name = "dt_vencimento")
     private Date dtVencimento;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @OneToOne
     private FStatus status;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_LIQUIDACAO")
+    @Column(name = "dt_liquidacao")
     private Date dtLiquidacao;
 
     public ChequeRec() {

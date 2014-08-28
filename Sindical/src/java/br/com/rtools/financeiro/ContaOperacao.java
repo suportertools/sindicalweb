@@ -13,8 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_CONTA_OPERACAO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PLANO5", "ID_OPERACAO", "DS_ES"})
+@Table(name = "fin_conta_operacao",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_plano5", "id_operacao", "ds_es"})
 )
 @NamedQuery(name = "ContaOperacao.pesquisaID", query = "SELECT CO FROM ContaOperacao AS CO WHERE CO.id = :pid")
 public class ContaOperacao implements Serializable {
@@ -22,18 +22,18 @@ public class ContaOperacao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @ManyToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_CENTRO_CUSTO_CONTABIL_SUB", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_centro_custo_contabil_sub", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private CentroCustoContabilSub centroCustoContabilSub;
-    @JoinColumn(name = "ID_OPERACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_operacao", referencedColumnName = "id")
     @ManyToOne
     private Operacao operacao;
-    @Column(name = "DS_ES")
+    @Column(name = "ds_es")
     private String es;
-    @Column(name = "IS_CONTA_FIXA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_conta_fixa", columnDefinition = "boolean default false")
     private boolean contaFixa;
 
     public ContaOperacao() {

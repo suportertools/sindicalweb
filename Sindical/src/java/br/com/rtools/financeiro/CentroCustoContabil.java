@@ -12,8 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_CENTRO_CUSTO_CONTABIL",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"DS_DESCRICAO", "NR_CODIGO"})
+@Table(name = "fin_centro_custo_contabil",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ds_descricao", "nr_codigo"})
 )
 @NamedQueries({
     @NamedQuery(name = "CentroCustoContabil.pesquisaID", query = "SELECT CC FROM CentroCustoContabil AS CC WHERE CC.id = :pid"),
@@ -24,10 +24,11 @@ public class CentroCustoContabil implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_CODIGO")
+    @Column(name = "nr_codigo")
     private int codigo;
-    @Column(name = "DS_DESCRICAO")
+    @Column(name = "ds_descricao")
     private String descricao;
 
     public CentroCustoContabil() {

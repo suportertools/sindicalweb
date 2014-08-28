@@ -5,23 +5,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_GRUPO",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PLANO5", "DS_DESCRICAO"})
+@Table(name = "fin_grupo",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_plano5", "ds_descricao"})
 )
 @NamedQuery(name = "GrupoFinanceiro.pesquisaID", query = "SELECT GF FROM GrupoFinanceiro AS GF WHERE GF.id = :pid")
 public class GrupoFinanceiro implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100)
+    @Column(name = "ds_descricao", length = 100)
     private String descricao;
 
     public GrupoFinanceiro() {

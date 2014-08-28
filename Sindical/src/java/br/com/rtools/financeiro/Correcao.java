@@ -3,34 +3,35 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CORRECAO")
+@Table(name = "fin_correcao")
 @NamedQuery(name = "Correcao.pesquisaID", query = "select i from Correcao i where i.id=:pid")
 public class Correcao implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_MULTA_PRIMEIRO_MES", nullable = false)
+    @Column(name = "nr_multa_primeiro_mes", nullable = false)
     private float multaPriMes;
-    @Column(name = "NR_MULTA_APARTIR_2MES", nullable = false)
+    @Column(name = "nr_multa_apartir_2mes", nullable = false)
     private float multaApartir2Mes;
-    @Column(name = "NR_JUROS_PRI_MES", nullable = false)
+    @Column(name = "nr_juros_pri_mes", nullable = false)
     private float jurosPriMes;
-    @Column(name = "NR_JUROS_APARTIR_2MES", nullable = false)
+    @Column(name = "nr_juros_apartir_2mes", nullable = false)
     private float jurosApartir2Mes;
-    @Column(name = "NR_MULTA_POR_FUNCIONARIO", nullable = false)
+    @Column(name = "nr_multa_por_funcionario", nullable = false)
     private float multaPorFuncionario;
-    @Column(name = "NR_JUROS_DIARIOS", nullable = false)
+    @Column(name = "nr_juros_diarios", nullable = false)
     private float jurosDiarios;
-    @JoinColumn(name = "ID_INDICE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_indice", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Indice indice;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Servicos servicos;
-    @Column(name = "DS_REF_INICIAL", nullable = false)
+    @Column(name = "ds_ref_inicial", nullable = false)
     private String referenciaInicial;
-    @Column(name = "DS_REF_FINAL", nullable = false)
+    @Column(name = "ds_ref_final", nullable = false)
     private String referenciaFinal;
 
     public Correcao() {

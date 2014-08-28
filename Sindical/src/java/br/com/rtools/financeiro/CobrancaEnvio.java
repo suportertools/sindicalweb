@@ -16,25 +16,26 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_COBRANCA_ENVIO")
+@Table(name = "fin_cobranca_envio")
 @NamedQuery(name = "CobrancaEnvio.pesquisaID", query = "select c from CobrancaEnvio c where c.id = :pid")
 public class CobrancaEnvio implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_lote", referencedColumnName = "id")
     @ManyToOne
     private CobrancaLote lote;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String hora;
-    @JoinColumn(name = "ID_COBRANCA_TIPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cobranca_tipo", referencedColumnName = "id")
     @ManyToOne
     private CobrancaTipo tipoCobranca;
 

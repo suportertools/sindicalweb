@@ -3,18 +3,19 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_BANCO")
+@Table(name = "fin_banco")
 @NamedQuery(name = "Banco.pesquisaID", query = "select o from Banco o where o.id=:pid")
 public class Banco implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "NR_NUM_BANCO", length = 20, nullable = false)
+    @Column(name = "nr_num_banco", length = 20, nullable = false)
     private String numero;
-    @Column(name = "DS_BANCO", length = 100, nullable = false)
+    @Column(name = "ds_banco", length = 100, nullable = false)
     private String banco;
-    @Column(name = "DS_LOGO", length = 100, nullable = true)
+    @Column(name = "ds_logo", length = 100, nullable = true)
     private String logo;
 
     public Banco() {

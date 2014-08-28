@@ -5,29 +5,30 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CHEQUE_PAG")
+@Table(name = "fin_chque_pag")
 @NamedQuery(name = "ChequePag.pesquisaID", query = "select cp from ChequePag cp where cp.id=:pid")
 public class ChequePag implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_CHEQUE", length = 50)
+    @Column(name = "ds_cheque", length = 50)
     private String cheque;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VENCIMENTO")
+    @Column(name = "dt_vencimento")
     private Date dtVencimento;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @OneToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @OneToOne
     private FStatus status;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CANCELAMENTO")
+    @Column(name = "dt_cancelamento")
     private Date dtCancelamento;
 
     public ChequePag() {
@@ -113,7 +114,7 @@ public class ChequePag implements java.io.Serializable {
     public void setStatus(FStatus status) {
         this.status = status;
     }
-    
+
     public String getCancelamento() {
         return DataHoje.converteData(dtCancelamento);
     }

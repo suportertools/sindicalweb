@@ -3,21 +3,22 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CHEQUES")
+@Table(name = "fin_cheques")
 @NamedQuery(name = "Cheques.pesquisaID", query = "select c from Cheques c where c.id=:pid")
 public class Cheques implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @Column(name = "NR_CHEQUE", length = 100, nullable = false)
+    @Column(name = "nr_cheque", length = 100, nullable = false)
     private String numero;
-    @Column(name = "DT_IMPRESSAO", length = 10, nullable = true)
+    @Column(name = "dt_impressao", length = 10, nullable = true)
     private String dataImpressao;
-    @Column(name = "DT_CANCELAMENTO", length = 10, nullable = true)
+    @Column(name = "dt_cancelamento", length = 10, nullable = true)
     private String dataCancelamento;
 
     public Cheques() {

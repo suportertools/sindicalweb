@@ -6,28 +6,29 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_BLOQUEIA_SERVICO_PESSOA")
+@Table(name = "fin_bloqueia_servico_pessoa")
 @NamedQuery(name = "BloqueiaServicoPessoa.pesquisaID", query = "select b from BloqueiaServicoPessoa b where b.id=:pid")
 public class BloqueiaServicoPessoa implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_servicos", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Servicos servicos;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIO")
+    @Column(name = "dt_inicio")
     private Date dtInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FIM")
+    @Column(name = "dt_fim")
     private Date dtFim;
-    @Column(name = "IS_IMPRESSAO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_impressao", columnDefinition = "boolean default true")
     private boolean impressao;
-    @Column(name = "IS_GERACAO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_geracao", columnDefinition = "boolean default true")
     private boolean geracao;
 
     public BloqueiaServicoPessoa() {
