@@ -100,7 +100,7 @@ public class Registro implements java.io.Serializable {
     private SisEmailProtocolo sisEmailProtocolo;
     @Column(name = "is_cobranca_carteirinha")
     private boolean cobrancaCarteirinha;
-    @Column(name = "is_valida_barras")
+    @Column(name = "is_validade_barras")
     private boolean validadeBarras;
     @Column(name = "is_foto_cartao")
     private boolean fotoCartao;
