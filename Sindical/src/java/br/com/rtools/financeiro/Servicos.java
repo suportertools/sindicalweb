@@ -37,7 +37,7 @@ public class Servicos implements java.io.Serializable {
     private boolean alterarValor;
     @Column(name = "is_adm", nullable = true, columnDefinition = "boolean default false")
     private boolean adm;
-    @Column(name = "is_tarefa", nullable = true, columnDefinition = "boolean default false")
+    @Column(name = "is_tabela", nullable = true, columnDefinition = "boolean default false")
     private boolean tabela;
     @Column(name = "is_eleicao", nullable = true, columnDefinition = "boolean default false")
     private boolean eleicao;
