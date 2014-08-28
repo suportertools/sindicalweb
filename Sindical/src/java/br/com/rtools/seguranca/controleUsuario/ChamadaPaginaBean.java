@@ -9,11 +9,10 @@ import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -165,30 +164,21 @@ public class ChamadaPaginaBean implements Serializable {
         AtalhoDB dba = new AtalhoDBToplink();
         Rotina rotina = db.pesquisaAcesso(url);
         Usuario usuario = new Usuario();
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
-            usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        Dao dao = new Dao();
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         }
-        if (rotina.getId() != -1) {
-            sv.abrirTransacao();
+        if (rotina != null) {
             ContadorAcessos cont = dba.pesquisaContadorAcessos(usuario.getId(), rotina.getId());
             if (cont == null) {
                 cont = new ContadorAcessos();
                 cont.setRotina(rotina);
                 cont.setUsuario(usuario);
                 cont.setAcessos(cont.getAcessos() + 1);
-                if (sv.inserirObjeto(cont)) {
-                    sv.comitarTransacao();
-                } else {
-                    sv.desfazerTransacao();
-                }
+                dao.save(cont, true);
             } else {
                 cont.setAcessos(cont.getAcessos() + 1);
-                if (sv.alterarObjeto(cont)) {
-                    sv.comitarTransacao();
-                } else {
-                    sv.desfazerTransacao();
-                }
+                dao.update(cont, true);
             }
 
         }
@@ -985,23 +975,23 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("reciboGeradoBean");
         return metodoGenerico(2, "reciboGerado");
     }
-    
+
     public synchronized String autorizaCarteirinha() {
         GenericaSessao.remove("autorizaCarteirinhaBean");
         GenericaSessao.remove("fisicaPesquisa");
         return metodoGenerico(2, "autorizaCarteirinha");
     }
-    
+
     public synchronized String modeloCarteirinha() {
         GenericaSessao.remove("modeloCarteirinhaBean");
         return metodoGenerico(2, "modeloCarteirinha");
     }
-    
+
     public synchronized String cobrancaMensal() {
         GenericaSessao.remove("cobrancaMensalBean");
         return metodoGenerico(2, "cobrancaMensal");
     }
-    
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
