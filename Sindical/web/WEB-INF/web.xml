@@ -133,11 +133,8 @@
         <location>/index.xhtml</location>
     </error-page>   
     <!-- ERRORS AND EXCEPTIONS -->
-    <!-- LISTENERS -->
-    <listener>  
-        <listener-class>  
-            br.com.rtools.utilitarios.SessionCounter  
-        </listener-class>  
-    </listener> 
-    <!-- LISTENERS -->
+    <env-entry>
+        <env-entry-name>com.sun.faces.ClientStateSavingPassword</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
 </web-app>
