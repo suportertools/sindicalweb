@@ -70,6 +70,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     private String descricaoPesquisa;
     private String comoPesquisa;
     private boolean removeFiltro;
+    private String dataEmissao;
 
     @PostConstruct
     public void init() {
@@ -239,7 +240,8 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (rais.getId() == -1) {
             RaisDao raisDao = new RaisDao();
             if (raisDao.existeCadastroAno(rais)) {
-                GenericaMensagem.warn("Validação", "Certificado Rais já cadastrado para o ano atual!");
+                di.rollback();
+                GenericaMensagem.warn("Validação", "Certificado Rais já cadastrado para o ano atual, empresa e data de admissão!");
                 return;
             }
             if (di.save(rais)) {
@@ -423,13 +425,13 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (sp.getId() != -1) {
             rais.setSisPessoa(sp);
         }
-        RaisDao raisDao = new RaisDao();
-        if (raisDao.existeCadastroAno(rais)) {
-            GenericaMensagem.warn("Validação", "Pessoa já Cadastrada!");
-            PF.openDialog("dlg_message");
-            rais = new Rais();
-            return null;
-        }
+//        RaisDao raisDao = new RaisDao();
+//        if (raisDao.existeCadastroAno(rais)) {
+//            GenericaMensagem.warn("Validação", "Pessoa já Cadastrada!");
+//            PF.openDialog("dlg_message");
+//            rais = new Rais();
+//            return null;
+//        }
         //PF.update("form_rais:");
         return null;
     }
@@ -792,7 +794,8 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String getAno() {
-        return String.valueOf(Integer.valueOf(DataHoje.livre(new Date(), "Y")) - 1);
+        //return String.valueOf(Integer.valueOf(DataHoje.livre(rais.getEmissao(), "Y")) - 1);
+        return String.valueOf(Integer.valueOf(DataHoje.livre(rais.getEmissao(), "Y")));
     }
 
     public void acaoPesquisaInicial() {
@@ -854,5 +857,13 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setActiveIndex(Integer activeIndex) {
         this.activeIndex = activeIndex;
+    }
+
+    public String getDataEmissao() {
+        return dataEmissao;
+    }
+
+    public void setDataEmissao(String dataEmissao) {
+        this.dataEmissao = dataEmissao;
     }
 }

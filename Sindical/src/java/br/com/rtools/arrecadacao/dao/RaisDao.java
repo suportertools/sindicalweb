@@ -11,7 +11,9 @@ public class RaisDao extends DB {
 
     public boolean existeCadastroAno(Rais r) {
         try {
-            Query q = getEntityManager().createNativeQuery("SELECT id FROM arr_rais WHERE DATE_PART('YEAR', dt_emissao) = DATE_PART('YEAR', CURRENT_TIMESTAMP) AND id_sis_pessoa = " + r.getSisPessoa().getId());
+            String ano = DataHoje.livre(r.getEmissao(), "Y");
+            String queryString = "SELECT id FROM arr_rais WHERE DATE_PART('YEAR', dt_emissao) = '"+ano+"' AND id_sis_pessoa = " + r.getSisPessoa().getId() + " AND id_empresa = " + r.getEmpresa().getId() + " AND dt_admissao = '" + r.getAdmissaoString() + "'";
+            Query q = getEntityManager().createNativeQuery(queryString);
             if (!q.getResultList().isEmpty()) {
                 return true;
             }
