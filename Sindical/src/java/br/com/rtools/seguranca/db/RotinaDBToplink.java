@@ -117,15 +117,16 @@ public class RotinaDBToplink extends DB implements RotinaDB {
 
     @Override
     public Rotina pesquisaAcesso(String pagina) {
-        Rotina rotina = new Rotina();
         try {
-            Query qry = getEntityManager().createQuery("select rot from Rotina rot where rot.pagina = '" + pagina + "'");
-            if (!qry.getResultList().isEmpty()) {
-                rotina = (Rotina) qry.getSingleResult();
+            Query query = getEntityManager().createQuery("SELECT R FROM Rotina AS R WHERE R.pagina = :pagina");
+            query.setParameter("pagina", pagina);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (Rotina) query.getSingleResult();
             }
         } catch (Exception e) {
         }
-        return rotina;
+        return null;
     }
 
     @Override
