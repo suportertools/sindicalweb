@@ -17,26 +17,26 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "SOC_SOCIOS")
+@Table(name = "soc_socios")
 @NamedQuery(name = "Socios.pesquisaID", query = "select s from Socios s where s.id=:pid")
 public class Socios implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_matricula_socios", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private MatriculaSocios matriculaSocios;
-    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @JoinColumn(name = "ID_PARENTESCO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_parentesco", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Parentesco parentesco;
-    @Column(name = "NR_VIA_CARTEIRINHA", length = 10, nullable = true)
+    @Column(name = "nr_via_carteirinha", length = 10, nullable = true)
     private int nrViaCarteirinha;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VALIDADE_CARTEIRINHA")
+    @Column(name = "dt_validade_carteirinha")
     private Date dtValidadeCarteirinha;
 
     public Socios() {

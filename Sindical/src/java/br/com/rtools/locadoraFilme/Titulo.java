@@ -15,35 +15,34 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "LOC_TITULO")
+@Table(name = "loc_titulo")
 @NamedQuery(name = "Titulo.pesquisaID", query = "Select t from Titulo t where t.id = :pid")
 public class Titulo implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date data;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = true)
+    @Column(name = "ds_descricao", length = 50, nullable = true)
     private String descricao;
-    @Column(name = "DS_AUTOR", length = 100, nullable = true)
+    @Column(name = "ds_autor", length = 100, nullable = true)
     private String autor;
-    @JoinColumn(name = "ID_GENERO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_genero", referencedColumnName = "id")
     @ManyToOne
     private Genero genero;
-    @Column(name = "DS_BARRAS", length = 100, nullable = true)
+    @Column(name = "ds_barras", length = 100, nullable = true)
     private String barras;
-    @Column(name = "NR_DURACAO_MINUTOS", length = 5, nullable = true)
+    @Column(name = "nr_duracao_minutos", length = 5, nullable = true)
     private String duracao;
-    @Column(name = "ANO_LANCAMENTO")
+    @Column(name = "ano_lancamento")
     private int anoLancamento;
-    @Column(name = "DS_LEGENDA", length = 10, nullable = true)
+    @Column(name = "ds_legenda", length = 10, nullable = true)
     private String legenda;
-    @Column(name = "DS_FORMATO", length = 20, nullable = true)
+    @Column(name = "ds_formato", length = 20, nullable = true)
     private String formato;
-    @Column(name = "IS_IMPRIME_ETIQUETA")
+    @Column(name = "is_imprime_etiqueta")
     private boolean imprimeEtiqueta;
 
     public Titulo(int id, Date data, String descricao, String autor, Genero genero, String barras, String duracao, int anoLancamento, String legenda, String formato, boolean imprimeEtiqueta) {

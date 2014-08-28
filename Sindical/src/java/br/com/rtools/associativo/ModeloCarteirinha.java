@@ -10,15 +10,16 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "SOC_MODELO_CARTEIRINHA")
+@Table(name = "soc_modelo_carteirinha")
 @NamedQuery(name = "ModeloCarteirinha.pesquisaID", query = "select mc from ModeloCarteirinha mc where mc.id = :pid")
 public class ModeloCarteirinha  implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 150)
+    @Column(name = "ds_descricao", length = 150)
     private String descricao;
-    @Column(name = "DS_JASPER", length = 150)
+    @Column(name = "ds_jasper", length = 150)
     private String jasper;
 
     public ModeloCarteirinha() {

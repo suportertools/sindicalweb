@@ -1,6 +1,7 @@
 package br.com.rtools.associativo;
 
 import br.com.rtools.seguranca.Rotina;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,19 +13,20 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "SOC_MODELO_CARTEIRINHA_CATEGORIA")
+@Table(name = "soc_modelo_carteirinha_categoria")
 @NamedQuery(name = "ModeloCarteirinhaCategoria.pesquisaID", query = "select mc from ModeloCarteirinhaCategoria mc where mc.id = :pid")
 public class ModeloCarteirinhaCategoria  implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_rotina", referencedColumnName = "id")
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name = "ID_CATEGORIA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id")
     @ManyToOne
     private Categoria categoria;
-    @JoinColumn(name = "ID_MODELO_CARTEIRINHA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_modelo_carteirinha", referencedColumnName = "id")
     @ManyToOne
     private ModeloCarteirinha modeloCarteirinha;
 

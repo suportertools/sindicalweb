@@ -5,26 +5,26 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EVE_EVENTO_BAILE")
+@Table(name = "eve_evento_baile")
 @NamedQuery(name = "EventoBaile.pesquisaID", query = "select s from EventoBaile s where s.id=:pid")
 public class EventoBaile implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
     @OneToOne
     private AEvento evento;
-    @Column(name = "NR_MESAS", nullable = true)
+    @Column(name = "nr_mesas", nullable = true)
     private int quantidadeMesas;
-    @Column(name = "NR_CONVITES", nullable = true)
+    @Column(name = "nr_convites", nullable = true)
     private int quantidadeConvites;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA", nullable = false)
+    @Column(name = "dt_data", nullable = false)
     private Date data;
-    @Column(name = "TM_INICIO", nullable = false)
+    @Column(name = "tm_inicio", nullable = false)
     private String horaInicio;
-    @Column(name = "TM_FIM", nullable = true)
+    @Column(name = "tm_fim", nullable = true)
     private String horaFim;
 
     public EventoBaile() {

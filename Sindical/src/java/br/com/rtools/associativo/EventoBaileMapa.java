@@ -13,18 +13,19 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "EVE_EVENTO_BAILE_MAPA")
+@Table(name = "eve_evento_baile_mapa")
 @NamedQuery(name = "EventoBaileMapa.pesquisaID", query = "select ebm from EventoBaileMapa ebm where ebm.id = :pid")
 public class EventoBaileMapa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_EVENTO_BAILE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_evento_baile", referencedColumnName = "id")
     @ManyToOne
     private EventoBaile eventoBaile;
-    @Column(name = "NR_MESA")
+    @Column(name = "nr_mesa")
     private int mesa;
-    @Column(name = "DS_POSICAO")
+    @Column(name = "ds_oposicao")
     private String posicao;
 
     public EventoBaileMapa() {

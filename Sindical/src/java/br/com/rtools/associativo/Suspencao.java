@@ -9,7 +9,7 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "SOC_SUSPENCAO")
+@Table(name = "soc_suspencao")
 @NamedQueries({
     @NamedQuery(name = "Suspencao.pesquisaID", query = "SELECT S FROM Suspencao AS S WHERE S.id = :pid"),
     @NamedQuery(name = "Suspencao.findAll", query = "SELECT S FROM Suspencao AS S ORDER BY S.dtFinal DESC, S.pessoa.nome ASC ")
@@ -19,16 +19,16 @@ public class Suspencao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INICIAL")
+    @Column(name = "dt_inicial")
     private Date dtInicial;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FINAL")
+    @Column(name = "dt_final")
     private Date dtFinal;
-    @Column(name = "DS_MOTIVO", length = 300, nullable = true)
+    @Column(name = "ds_motivo", length = 300, nullable = true)
     private String motivo;
 
     public Suspencao() {

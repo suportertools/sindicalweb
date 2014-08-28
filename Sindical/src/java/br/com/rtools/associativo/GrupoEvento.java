@@ -3,19 +3,18 @@ package br.com.rtools.associativo;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EVE_GRUPO_EVENTO")
+@Table(name = "eve_grupo_evento")
 @NamedQueries({
     @NamedQuery(name = "GrupoEvento.pesquisaID", query = "SELECT GE FROM GrupoEvento AS GE WHERE GE.id = :pid"),
     @NamedQuery(name = "GrupoEvento.findAll", query = "SELECT GE FROM GrupoEvento AS GE ORDER BY GE.descricao ASC "),
     @NamedQuery(name = "GrupoEvento.findName", query = "SELECT GE FROM GrupoEvento AS GE WHERE UPPER(GE.descricao) LIKE :pdescricao ORDER BY GE.descricao ASC ")
 })
 public class GrupoEvento implements java.io.Serializable {
-
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = true, unique = true)
+    @Column(name = "ds_descricao", length = 100, nullable = true, unique = true)
     private String descricao;
 
     public GrupoEvento() {

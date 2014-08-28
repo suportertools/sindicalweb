@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PES_JURIDICA")
+@Table(name = "pes_juridica")
 @NamedQuery(name = "Juridica.pesquisaID", query = "select jur from Juridica jur where jur.id=:pid")
 public class Juridica implements Serializable {
 

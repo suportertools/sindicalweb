@@ -3,18 +3,18 @@ package br.com.rtools.atendimento;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ATE_OPERACAO")
+@Table(name = "ate_operacao")
 @NamedQueries({
     @NamedQuery(name = "AteOperacao.pesquisaID",  query = "SELECT AOP FROM AteOperacao AS AOP WHERE AOP.id = :pid"),
     @NamedQuery(name = "AteOperacao.findAll",     query = "SELECT AOP FROM AteOperacao AS AOP ORDER BY AOP.descricao ASC "),
     @NamedQuery(name = "AteOperacao.findName",    query = "SELECT AOP FROM AteOperacao AS AOP WHERE UPPER(AOP.descricao) LIKE :pdescricao ORDER BY AOP.descricao ASC ")
 })
 public class AteOperacao implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 50, nullable = false, unique = true)
     private String descricao;
 
     public AteOperacao() {

@@ -3,16 +3,16 @@ package br.com.rtools.associativo;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "EVE_DESC_EVENTO")
+@Table(name = "eve_desc_evento")
 @NamedQuery(name = "DescricaoEvento.findAll", query = "SELECT DE FROM DescricaoEvento AS DE ORDER BY DE.grupoEvento.descricao ASC, DE.descricao ASC ")
 public class DescricaoEvento implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = true)
+    @Column(name = "ds_descricao", length = 100, nullable = true)
     private String descricao;
-    @JoinColumn(name = "ID_GRUPO_EVENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_evento", referencedColumnName = "id", nullable = false)
     @OneToOne
     private GrupoEvento grupoEvento;
 

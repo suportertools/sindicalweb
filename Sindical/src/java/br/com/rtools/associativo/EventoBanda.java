@@ -1,5 +1,6 @@
 package br.com.rtools.associativo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,17 +12,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EVE_EVENTO_BANDA")
+@Table(name = "eve_evento_banda")
 @NamedQuery(name = "EventoBanda.pesquisaID", query = "select s from EventoBanda s where s.id=:pid")
 public class EventoBanda implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_BANDA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_banda", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Banda banda;
-    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
     @OneToOne
     private AEvento evento;
 

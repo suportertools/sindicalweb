@@ -18,38 +18,38 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name = "MATR_SOCIOS")
+@Table(name = "matr_socios")
 @NamedQuery(name = "MatriculaSocios.pesquisaID", query = "select ms from MatriculaSocios ms where ms.id=:pid")
 public class MatriculaSocios implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INATIVO")
+    @Column(name = "dt_inativo")
     private Date dtInativo;
-    @JoinColumn(name = "ID_CATEGORIA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Categoria categoria;
-    @Column(name = "NR_MATRICULA", length = 10, nullable = true)
+    @Column(name = "nr_matricula", length = 10, nullable = true)
     private int nrMatricula;
-    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_cidade", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Cidade cidade;
-    @Column(name = "DS_OBSERVACAO", length = 100, nullable = true)
+    @Column(name = "ds_observacao", length = 100, nullable = true)
     private String observacao;
-    @Column(name = "DS_OBSERVACAO_AVISO", length = 100, nullable = true)
+    @Column(name = "ds_observacao_aviso", length = 100, nullable = true)
     private String observacaoAviso;
-    @Column(name = "BLOQUEIA_OBS_AVISO", nullable = true)
+    @Column(name = "bloqueia_obs_aviso", nullable = true)
     private boolean bloqueiaObsAviso;
-    @JoinColumn(name = "ID_MOTIVO_INATIVACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_motivo_inativacao", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private SMotivoInativacao motivoInativacao;
-    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID")
+    @JoinColumn(name = "id_titular", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa titular;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
 
     public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade,

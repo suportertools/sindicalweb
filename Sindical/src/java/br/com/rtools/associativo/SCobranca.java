@@ -10,17 +10,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_COBRANCA")
+@Table(name = "soc_cobranca")
 @NamedQuery(name = "SCobranca.pesquisaID", query = "select sc from SCobranca sc where sc.id = :pid")
 public class SCobranca implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50)
+    @Column(name = "ds_descricao", length = 50)
     private String descricao;
-    @Column(name = "DS_INFORMATIVO", length = 2000)
+    @Column(name = "ds_informativo", length = 2000)
     private String informativo;
-    @Column(name = "DS_LOCAL_PAGAMENTO", length = 2000)
+    @Column(name = "ds_local_pagamento", length = 2000)
     private String localPagamento;
 
     public SCobranca() {

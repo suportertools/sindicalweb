@@ -17,22 +17,23 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "SOC_HISTORICO_EMISSAO_GUIAS")
+@Table(name = "soc_historico_emissao_guias")
 @NamedQuery(name = "HistoricoEmissaoGuias.pesquisaID", query = "select heg from HistoricoEmissaoGuias heg where heg.id = :pid")
 public class HistoricoEmissaoGuias implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id")
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
-    @Column(name = "IS_BAIXADO")
+    @Column(name = "is_baixado")
     private boolean baixado;
 
     public HistoricoEmissaoGuias() {
