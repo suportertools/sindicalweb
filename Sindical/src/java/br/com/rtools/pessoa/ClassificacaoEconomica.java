@@ -21,7 +21,7 @@ public class ClassificacaoEconomica implements Serializable {
     private String descricao;
     @Column(name = "nr_salario_minimo_inicial", columnDefinition = "integer default 0", nullable = true)
     private int salarioMinimoInicial;
-    @Column(name = "nr_salario_minimo_inicial", columnDefinition = "integer default 0", nullable = true)
+    @Column(name = "nr_salario_minimo_final", columnDefinition = "integer default 0", nullable = true)
     private int salarioMinimoFinal;
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_atualizado")
