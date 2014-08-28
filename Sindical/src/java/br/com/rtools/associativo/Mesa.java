@@ -11,19 +11,20 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EVE_MESA")
+@Table(name = "eve_mesa")
 @NamedQuery(name = "Mesa.pesquisaID", query = "select s from Mesa s where s.id=:pid")
 public class Mesa implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_VENDA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_venda", referencedColumnName = "id")
     @ManyToOne
     private BVenda bVenda;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @JoinColumn(name = "id_status", referencedColumnName = "id")
     @ManyToOne
     private AStatus status;
-    @JoinColumn(name = "ID_EVENTO_BAILE_MAPA")
+    @JoinColumn(name = "id_evento_baile_mapa")
     @ManyToOne
     private EventoBaileMapa eventoBaileMapa;
 

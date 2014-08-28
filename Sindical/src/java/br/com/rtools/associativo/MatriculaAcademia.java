@@ -22,38 +22,38 @@ import java.util.Date;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "MATR_ACADEMIA")
+@Table(name = "matr_academia")
 @NamedQuery(name = "MatriculaAcademia.pesquisaID", query = "select ma from MatriculaAcademia ma where ma.id=:pid")
 public class MatriculaAcademia implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INATIVO")
+    @Column(name = "dt_inativo")
     private Date dtInativo;
-    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
-    @JoinColumn(name = "ID_SERVICO_VALOR", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico_valor", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private AcademiaServicoValor academiaServicoValor;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_evt", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Evt evt;
-    @Column(name = "NR_PARCELAS")
+    @Column(name = "nr_parcelas")
     private int numeroParcelas;
-    @Column(name = "IS_TAXA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_taxa", columnDefinition = "boolean default false")
     private boolean taxa;
-    @Column(name = "IS_TAXA_CARTAO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_taxa_cartao", columnDefinition = "boolean default false")
     private boolean taxaCartao;
-    @Column(name = "DS_MOTIVO_INATIVACAO", length = 250)
+    @Column(name = "ds_motivo_inativacao", length = 250)
     private String motivoInativacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_VALIDADE")
+    @Column(name = "dt_validade")
     private Date dtValidade;
 
     public MatriculaAcademia() {

@@ -9,36 +9,36 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ATE_MOVIMENTO")
+@Table(name = "ate_movimento")
 @NamedQuery(name = "AteMovimento.pesquisaID", query = "select amov from AteMovimento amov where amov.id=:pid")
 public class AteMovimento implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_sis_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private SisPessoa pessoa;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Filial filial;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dataEmissao;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String horaEmissao;
-    @JoinColumn(name = "ID_OPERACAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_operacao", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private AteOperacao operacao;
-    @Column(name = "DS_HISTORICO", length = 500)
+    @Column(name = "ds_historico", length = 500)
     private String historico;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_status", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private AteStatus status;
-    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_juridica", referencedColumnName = "id")
     @ManyToOne
     private Juridica juridica;
-    @JoinColumn(name = "ID_ATENDENTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_atendente", referencedColumnName = "id")
     @ManyToOne
     private Usuario atendente;
     

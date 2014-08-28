@@ -14,14 +14,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "SOC_LOTE_BOLETO")
+@Table(name = "soc_lote_boleto")
 @NamedQuery(name = "LoteBoleto.pesquisaID", query = "select lb from LoteBoleto lb where lb.id = :pid")
 public class LoteBoleto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_PROCESSAMENTO")
+    @Column(name = "dt_processamento")
     private Date dtProcessamento;
 
     public LoteBoleto() {

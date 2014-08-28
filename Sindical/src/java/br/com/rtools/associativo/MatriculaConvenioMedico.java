@@ -19,20 +19,20 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name = "MATR_CONVENIO_MEDICO")
+@Table(name = "matr_convenio_medico")
 @NamedQuery(name = "MatriculaConvenioMedico.pesquisaID", query = "select mc from MatriculaConvenioMedico mc where mc.id=:pid")
 public class MatriculaConvenioMedico implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_INATIVO")
+    @Column(name = "dt_inativo")
     private Date dtInativo;
-    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_servico_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @Column(name = "DS_CODIGO", length = 50, nullable = true)
+    @Column(name = "ds_codigo", length = 50, nullable = true)
     private String codigo;
 
     public MatriculaConvenioMedico() {

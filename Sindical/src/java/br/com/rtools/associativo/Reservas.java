@@ -4,24 +4,24 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "CAR_RESERVAS")
+@Table(name = "car_reservas")
 @NamedQuery(name = "Reservas.pesquisaID", query = "select r from Reservas r where r.id=:pid")
 public class Reservas implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CVENDA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cvenda", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private CVenda cVenda;
-    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    @Column(name = "NR_POLTRONA", nullable = true)
+    @Column(name = "nr_poltrona", nullable = true)
     private int poltrona;
-    @Column(name = "NR_DESCONTO", nullable = true)
+    @Column(name = "nr_desconto", nullable = true)
     private float desconto;
-    @JoinColumn(name = "ID_EVENTO_SERVICO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_evento_servico", referencedColumnName = "id")
     @OneToOne
     private EventoServico eventoServico;
 

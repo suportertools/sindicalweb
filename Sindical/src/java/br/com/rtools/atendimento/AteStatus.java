@@ -3,13 +3,14 @@ package br.com.rtools.atendimento;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ATE_STATUS")
+@Table(name = "ate_status")
 @NamedQuery(name = "AteStatus.pesquisaID", query = "select ats from AteStatus ats where ats.id = :pid")
 public class AteStatus implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, nullable = false, unique = true)
+    @Column(name = "ds_descricao", length = 50, nullable = false, unique = true)
     private String descricao;
 
     public AteStatus() {

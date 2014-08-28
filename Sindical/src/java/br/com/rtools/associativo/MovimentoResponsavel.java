@@ -5,20 +5,20 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SOC_MOVIMENTO_RESPONSAVEL")
+@Table(name = "soc_movimento_responsavel")
 @NamedQuery(name = "MovimentoResponsavel.pesquisaID", query = "select m from MovimentoResponsavel m where m.id=:pid")
 public class MovimentoResponsavel implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_titular", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa titular;
-    @JoinColumn(name = "ID_BENEFICIARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_beneficiario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa beneficiario;
 

@@ -12,20 +12,20 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_CONVENIO_SUB_GRUPO")
+@Table(name = "soc_convenio_sub_grupo")
 @NamedQueries({
     @NamedQuery(name = "SubGrupoConvenio.pesquisaID",   query = "SELECT SGC FROM SubGrupoConvenio AS SGC WHERE SGC.id = :pid"),
     @NamedQuery(name = "SubGrupoConvenio.findAll",      query = "SELECT SGC FROM SubGrupoConvenio AS SGC ORDER BY SGC.grupoConvenio.descricao ASC, SGC.descricao ASC "),
     @NamedQuery(name = "SubGrupoConvenio.findName",     query = "SELECT SGC FROM SubGrupoConvenio AS SGC WHERE upper(SGC.descricao) LIKE :pdescricao ORDER BY SGC.grupoConvenio.descricao ASC, SGC.descricao ASC ")
 })
 public class SubGrupoConvenio implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100, nullable = true)
+    @Column(name = "ds_descricao", length = 100, nullable = true)
     private String descricao;
-    @JoinColumn(name = "ID_GRUPO_CONVENIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_convenio", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoConvenio grupoConvenio;
 

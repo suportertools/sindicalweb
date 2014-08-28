@@ -12,7 +12,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "LOC_TITULO_FILIAL")
+@Table(name = "loc_titulo_filial")
 @NamedQuery(name = "Catalogo.pesquisaID", query = "Select c from Catalogo c where c.id = :pid")
 public class Catalogo implements java.io.Serializable {
 
@@ -20,13 +20,13 @@ public class Catalogo implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
-    @JoinColumn(name = "ID_TITULO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_titulo", referencedColumnName = "id")
     @ManyToOne
     private Titulo titulo;
-    @Column(name = "NR_QTDE")
+    @Column(name = "nr_qtde")
     private int quantidade;
 
     public Catalogo(int id, Filial filial, Titulo titulo, int quantidade) {

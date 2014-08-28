@@ -10,22 +10,22 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SOC_GRUPO_CATEGORIA")
+@Table(name = "soc_grupo_categoria")
 //    name = "GrupoCategoria.pesquisaID", query = "select gc from GrupoCategoria gc where gc.id = :pid"
 @NamedQueries({ 
     @NamedQuery(name = "GrupoCategoria.pesquisaID", query = "SELECT GC FROM GrupoCategoria AS GC WHERE GC.id = :pid "),
     @NamedQuery(name = "GrupoCategoria.findAll", query = "SELECT GC FROM GrupoCategoria AS GC ORDER BY GC.grupoCategoria ASC ")
 })
 public class GrupoCategoria implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_GRUPO_CATEGORIA", length = 50, nullable = true)
+    @Column(name = "ds_grupo_categoria", length = 50, nullable = true)
     private String grupoCategoria;
-    @Column(name = "NR_PROXIMA_MATRICULA", length = 10, nullable = true)
+    @Column(name = "nr_proxima_matricula", length = 10, nullable = true)
     private int nrProximaMatricula;
-    @Column(name = "NR_VALIDADE_MESES_CARTAO", length = 10, nullable = true)
+    @Column(name = "nr_validade_meses_cartao", length = 10, nullable = true)
     private int nrValidadeMesCartao;
 
     public GrupoCategoria() {
