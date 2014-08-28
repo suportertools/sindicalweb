@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.seguranca.Usuario;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,28 +12,30 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FIN_FILTRO_LANCAMENTO")
+@Table(name = "fin_filtro_lancamento")
 @NamedQuery(name = "FiltroLancamento.pesquisaID", query = "select fl from FiltroLancamento fl where fl.id = :pid")
 public class FiltroLancamento implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_lote", referencedColumnName = "id")
     @ManyToOne
     private Lote lote;
-    @JoinColumn(name = "ID_OPERACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_operacao", referencedColumnName = "id")
     @ManyToOne
     private Operacao operacao;
-    @JoinColumn(name = "ID_CENTRO_CUSTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_centro_custo", referencedColumnName = "id")
     @ManyToOne
     private CentroCusto centroCusto;
-    @JoinColumn(name = "ID_TIPO_CENTRO_CUSTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_centro_custo", referencedColumnName = "id")
     @ManyToOne
     private CentroCustoContabilSub tipoCentroCusto;
-    @JoinColumn(name = "ID_CONTA_OPERACAO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_conta_operacao", referencedColumnName = "id")
     @ManyToOne
     private ContaOperacao contaOperacao;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
 
@@ -55,7 +58,7 @@ public class FiltroLancamento implements java.io.Serializable {
         this.contaOperacao = contaOperacao;
         this.usuario = usuario;
     }
-    
+
     public int getId() {
         return id;
     }

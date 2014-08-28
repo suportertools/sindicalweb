@@ -3,31 +3,34 @@ package br.com.rtools.financeiro;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CONTA_SALDO")
+@Table(name = "fin_conta_saldo")
 @NamedQuery(name = "ContaSaldo.pesquisaID", query = "select cs from ContaSaldo cs where cs.id=:pid")
-public class ContaSaldo implements java.io.Serializable {
+public class ContaSaldo implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_DATA")
+    @Column(name = "dt_data")
     private Date dtData;
-    @Column(name = "NR_SALDO", length = 10)
+    @Column(name = "nr_saldo", length = 10)
     private float saldo;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @OneToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @OneToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Filial filial;
-    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_caixa", referencedColumnName = "id")
     @OneToOne
     private Caixa caixa;
 

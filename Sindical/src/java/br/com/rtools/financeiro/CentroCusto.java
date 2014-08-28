@@ -4,18 +4,20 @@ import br.com.rtools.pessoa.Filial;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CENTRO_CUSTO")
+@Table(name = "fin_centro_custo")
 @NamedQuery(name = "CentroCusto.pesquisaID", query = "select cc from CentroCusto cc where cc.id = :pid")
 public class CentroCusto implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO")
+    @Column(name = "ds_descricao")
     private String descricao;
-    @JoinColumn(name = "ID_CENTRO_CUSTO_CONTABIL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_centro_custo_contabil", referencedColumnName = "id")
     @ManyToOne
     private CentroCustoContabil centroCustoContabil;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
 
@@ -25,7 +27,7 @@ public class CentroCusto implements java.io.Serializable {
         this.centroCustoContabil = new CentroCustoContabil();
         this.filial = new Filial();
     }
-    
+
     public CentroCusto(int id, String descricao, CentroCustoContabil centroCustoContabil, Filial filial) {
         this.id = id;
         this.descricao = descricao;
@@ -64,6 +66,5 @@ public class CentroCusto implements java.io.Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-    
-    
+
 }

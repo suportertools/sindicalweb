@@ -5,26 +5,27 @@ import br.com.rtools.pessoa.Filial;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CONTA_BANCO")
+@Table(name = "fin_conta_banco")
 @NamedQuery(name = "ContaBanco.pesquisaID", query = "select o from ContaBanco o where o.id=:pid")
 public class ContaBanco implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_BANCO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_banco", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Banco banco;
-    @Column(name = "DS_AGENCIA", length = 100, nullable = false)
+    @Column(name = "ds_agencia", length = 100, nullable = false)
     private String agencia;
-    @Column(name = "DS_CONTA", length = 100, nullable = false)
+    @Column(name = "ds_conta", length = 100, nullable = false)
     private String conta;
-    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cidade", referencedColumnName = "id", nullable = false)
     @OneToOne
     private Cidade cidade;
-    @Column(name = "NR_ULTIMO_CHEQUE", length = 38, nullable = false)
+    @Column(name = "nr_ultimo_cheque", length = 38, nullable = false)
     private int uCheque;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_filial", referencedColumnName = "id", nullable = true)
     @OneToOne
     private Filial filial;
 

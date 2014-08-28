@@ -5,23 +5,24 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_GUIA")
+@Table(name = "fin_guia")
 @NamedQuery(name = "Guia.pesquisaID", query = "select g from Guia g where g.id=:pid")
 public class Guia implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_lote", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Lote lote;
-    @JoinColumn(name = "ID_CONVENIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_convenio", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_CONVENIO_SUB_GRUPO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_convenio_sub_grupo", referencedColumnName = "id")
     @ManyToOne
     private SubGrupoConvenio subGrupoConvenio;
-    @Column(name = "IS_ENCAMINHAMENTO", nullable = true)
+    @Column(name = "is_encaminhamento", nullable = true)
     private boolean encaminhamento;
 
     public Guia(int id, Lote lote, Pessoa pessoa, SubGrupoConvenio subGrupoConvenio, boolean encaminhamento) {

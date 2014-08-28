@@ -16,22 +16,23 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "FIN_COBRANCA_LOTE")
+@Table(name = "fin_cobranca_lote")
 @NamedQuery(name = "CobrancaLote.pesquisaID", query = "select c from CobrancaLote c where c.id = :pid")
 public class CobrancaLote implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_EMISSAO")
+    @Column(name = "dt_emissao")
     private Date dtEmissao;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
     @ManyToOne
     private Usuario usuario;
-    @Column(name = "DS_MENSAGEM", length = 8000)
+    @Column(name = "ds_mensagem", length = 8000)
     private String mensagem;
-    @Column(name = "DS_HORA", length = 5)
+    @Column(name = "ds_hora", length = 5)
     private String hora;
 
     public CobrancaLote() {

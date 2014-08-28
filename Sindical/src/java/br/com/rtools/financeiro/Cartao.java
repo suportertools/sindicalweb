@@ -13,7 +13,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FIN_CARTAO")
+@Table(name = "fin_cartao")
 @NamedQueries({
     @NamedQuery(name = "Cartao.pesquisaID", query = "SELECT C FROM Cartao AS C WHERE C.id = :pid"),
     @NamedQuery(name = "Cartao.findAll", query = "SELECT C FROM Cartao AS C ORDER BY C.plano5.conta ASC, C.descricao ASC, C.dias ASC")
@@ -22,16 +22,17 @@ public class Cartao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO")
+    @Column(name = "ds_descricao")
     private String descricao;
-    @Column(name = "NR_DIAS")
+    @Column(name = "nr_dias")
     private int dias;
-    @Column(name = "NR_TAXA")
+    @Column(name = "nr_taxa")
     private float taxa;
-    @Column(name = "DS_DEBITO_CREDITO")
+    @Column(name = "ds_debito_credito")
     private String debitoCredito;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @ManyToOne
     private Plano5 plano5;
 

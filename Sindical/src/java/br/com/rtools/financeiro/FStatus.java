@@ -3,16 +3,17 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_STATUS")
+@Table(name = "fin_status")
 @NamedQuery(name = "FStatus.pesquisaID", query = "select s from FStatus s where s.id=:pid")
 public class FStatus implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 50, unique = true, nullable = false)
+    @Column(name = "ds_descricao", length = 50, unique = true, nullable = false)
     private String descricao;
-    @Column(name = "DS_HISTORICO", length = 500)
+    @Column(name = "ds_historico", length = 500)
     private String historico;
 
     public FStatus() {

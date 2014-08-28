@@ -3,56 +3,57 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_CONTA_COBRANCA")
+@Table(name = "fin_conta_cobranca")
 @NamedQuery(name = "ContaCobranca.pesquisaID", query = "select c from ContaCobranca c where c.id=:pid")
 public class ContaCobranca implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONTA_BANCO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_conta_banco", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private ContaBanco contaBanco;
-    @Column(name = "DS_COD_CEDENTE", length = 100, nullable = false)
+    @Column(name = "ds_cod_cedente", length = 100, nullable = false)
     private String codCedente;
-    @Column(name = "DS_LOCAL_PAGAMENTO", length = 100, nullable = false)
+    @Column(name = "ds_local_pagamento", length = 100, nullable = false)
     private String localPagamento;
-    @Column(name = "NR_REPASSE", length = 100, nullable = false)
+    @Column(name = "nr_repasse", length = 100, nullable = false)
     private float repasse;
-    @Column(name = "DS_BOLETO_INICIAL", length = 100, nullable = false)
+    @Column(name = "ds_boleto_inicial", length = 100, nullable = false)
     private String boletoInicial;
-    @Column(name = "DS_CATEGORIA_SINDICAL", length = 1)
+    @Column(name = "ds_categoria_sindical", length = 1)
     private String categoriaSindical;
-    @Column(name = "DS_ARRECADACAO_SINDICAL", length = 1)
+    @Column(name = "ds_arrecadacao_sindical", length = 1)
     private String arrecadacaoSindical;
-    @Column(name = "DS_FEBRA_SINDICAL", length = 4)
+    @Column(name = "ds_febra_sindical", length = 4)
     private String febranSindical;
-    @Column(name = "DS_SEGMENTO_SINDICAL", length = 1)
+    @Column(name = "ds_segmento_sindical", length = 1)
     private String segmentoSindical;
-    @Column(name = "DS_SICAS_SINDICAL", length = 5)
+    @Column(name = "ds_sicas_sindical", length = 5)
     private String sicasSindical;
-    @Column(name = "DS_CODIGO_SINDICAL", length = 50)
+    @Column(name = "ds_codigo_sindical", length = 50)
     private String codigoSindical;
-    @Column(name = "NR_MOEDA", length = 50, nullable = false)
+    @Column(name = "nr_moeda", length = 50, nullable = false)
     private String moeda;
-    @Column(name = "DS_ESPECIE_MOEDA", length = 50, nullable = false)
+    @Column(name = "ds_especie_moeda", length = 50, nullable = false)
     private String especieMoeda;
-    @Column(name = "DS_ESPECIE_DOC", length = 50, nullable = false)
+    @Column(name = "ds_especie_doc", length = 50, nullable = false)
     private String especieDoc;
-    @Column(name = "DS_CARTEIRA", length = 50, nullable = false)
+    @Column(name = "ds_carteira", length = 50, nullable = false)
     private String carteira;
-    @Column(name = "DS_ACEITE", length = 5, nullable = false)
+    @Column(name = "ds_aceite", length = 5, nullable = false)
     private String aceite;
-    @Column(name = "DS_CEDENTE", length = 200, nullable = false)
+    @Column(name = "ds_cedente", length = 200, nullable = false)
     private String cedente;
     @OneToOne
-    @JoinColumn(name = "ID_LAYOUT", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_layout", referencedColumnName = "id", nullable = false)
     private Layout layout;
-    @Column(name = "DS_CAMINHO_RETORNO", length = 300)
+    @Column(name = "ds_caminho_retorno", length = 300)
     private String caminhoRetorno;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
-    @Column(name = "DS_APELIDO", length = 50)
+    @Column(name = "ds_apelido", length = 50)
     private String apelido;
 
     public ContaCobranca() {

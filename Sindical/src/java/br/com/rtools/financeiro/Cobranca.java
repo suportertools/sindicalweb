@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,17 +11,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FIN_COBRANCA")
+@Table(name = "fin_cobranca")
 @NamedQuery(name = "Cobranca.pesquisaID", query = "select c from Cobranca c where c.id = :pid")
 public class Cobranca implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "id_lote", referencedColumnName = "id")
     @ManyToOne
     private CobrancaLote lote;
-    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_movimento", referencedColumnName = "id")
     @ManyToOne
     private Movimento movimento;
 

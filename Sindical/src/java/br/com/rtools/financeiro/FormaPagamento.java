@@ -5,49 +5,50 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_FORMA_PAGAMENTO")
+@Table(name = "fin_forma_pagamento")
 @NamedQuery(name = "FormaPagamento.pesquisaID", query = "select fp from FormaPagamento fp where fp.id=:pid")
 public class FormaPagamento implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_BAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_baixa", referencedColumnName = "id")
     @OneToOne
     private Baixa baixa;
-    @JoinColumn(name = "ID_CHEQUE_REC", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cheque_rec", referencedColumnName = "id")
     @OneToOne
     private ChequeRec chequeRec;
-    @JoinColumn(name = "ID_CHEQUE_PAG", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cheque_pag", referencedColumnName = "id")
     @OneToOne
     private ChequePag chequePag;
-    @Column(name = "NR_VALORP", length = 10)
+    @Column(name = "nr_valorp", length = 10)
     private float valorP;
-    @Column(name = "NR_VALOR", length = 10)
+    @Column(name = "nr_valor", length = 10)
     private float valor;
-    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @OneToOne
     private Filial filial;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
+    @JoinColumn(name = "id_plano5", referencedColumnName = "id")
     @ManyToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_CARTAO_PAG", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cartao_pag", referencedColumnName = "id")
     @OneToOne
     private CartaoPag cartaoPag;
-    @JoinColumn(name = "ID_CARTAO_REC", referencedColumnName = "ID")
+    @JoinColumn(name = "id_cartao_rec", referencedColumnName = "id")
     @OneToOne
     private CartaoRec cartaoRec;
-    @JoinColumn(name = "ID_TIPO_PAGAMENTO", referencedColumnName = "ID")
+    @JoinColumn(name = "id_tipo_pagamento", referencedColumnName = "id")
     @OneToOne
     private TipoPagamento tipoPagamento;
-    @Column(name = "NR_VALOR_LIQUIDO", length = 10)
+    @Column(name = "nr_valor_liquido", length = 10)
     private float valorLiquido;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CREDITO", nullable = false)
+    @Column(name = "dt_credito", nullable = false)
     private Date dtCredito;
-    @Column(name = "NR_TAXA", length = 10)
+    @Column(name = "nr_taxa", length = 10)
     private float taxa;
-    
+
     public FormaPagamento() {
         this.id = -1;
         this.baixa = new Baixa();

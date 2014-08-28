@@ -6,30 +6,31 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_BAIXA")
+@Table(name = "fin_baixa")
 @NamedQuery(name = "Baixa.pesquisaID", query = "select l from Baixa l where l.id=:pid")
 public class Baixa implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = true)
     @OneToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_BAIXA")
+    @Column(name = "dt_baixa")
     private Date dtBaixa;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_IMPORTACAO")
+    @Column(name = "dt_importacao")
     private Date dtImportacao;
-    @Column(name = "NR_SEQUENCIA_BAIXA")
+    @Column(name = "nr_sequencia_baixa")
     private int sequenciaBaixa;
-    @Column(name = "DS_DOCUMENTO_BAIXA")
+    @Column(name = "ds_documento_baixa")
     private String documentoBaixa;
-    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_caixa", referencedColumnName = "id")
     @ManyToOne
     private Caixa caixa;
-    @JoinColumn(name = "ID_FECHAMENTO_CAIXA", referencedColumnName = "ID")
+    @JoinColumn(name = "id_fechamento_caixa", referencedColumnName = "id")
     @ManyToOne
     private FechamentoCaixa fechamentoCaixa;
 
@@ -50,7 +51,7 @@ public class Baixa implements java.io.Serializable {
             String importacao,
             int sequenciaBaixa,
             String documentoBaixa,
-            Caixa caixa, 
+            Caixa caixa,
             FechamentoCaixa fechamentoCaixa) {
         this.id = id;
         this.usuario = usuario;

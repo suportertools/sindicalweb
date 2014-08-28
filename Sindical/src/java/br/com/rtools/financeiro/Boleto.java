@@ -3,23 +3,24 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_BOLETO")
+@Table(name = "fin_boleto")
 @NamedQuery(name = "Boleto.pesquisaID", query = "select b from Boleto b where b.id=:pid")
 public class Boleto implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @JoinColumn(name = "ID_CONTA_COBRANCA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_conta_cobranca", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private ContaCobranca contaCobranca;
-    @Column(name = "NR_BOLETO")
+    @Column(name = "nr_boleto")
     private long nrBoleto;
-    @Column(name = "DS_BOLETO", length = 50)
+    @Column(name = "ds_boleto", length = 50)
     private String boletoComposto;
-    @Column(name = "NR_CTR_BOLETO", length = 20)
+    @Column(name = "nr_ctr_boleto", length = 20)
     private String nrCtrBoleto;
-    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
 
     public Boleto() {
