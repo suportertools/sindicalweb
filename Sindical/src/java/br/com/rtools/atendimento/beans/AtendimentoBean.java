@@ -180,29 +180,29 @@ public class AtendimentoBean implements Serializable {
                     return;
                 }
             }
-            
             AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
             SisPessoa spes = (SisPessoa) atendimentoDB.pessoaDocumento(sisPessoaAtualiza.getDocumento());
-            
+
             if (spes != null && !spes.getNome().equals(sisPessoaAtualiza.getNome())){
                 GenericaMensagem.warn("Atenção", "Esse documento já existe para outra Pessoa!");
                 return;
             }
-            
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
-            sv.abrirTransacao();
-            
-            if (!sv.alterarObjeto(sisPessoaAtualiza)){
-                sv.desfazerTransacao();
-                GenericaMensagem.error("Erro", "Não foi possivel atualizar cadastro!");
-                return;
-            }
-            
-            sisPessoa = sisPessoaAtualiza;
-            sisPessoaAtualiza = new SisPessoa();
-            sv.comitarTransacao();
         }
+            
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+        sv.abrirTransacao();
+
+        if (!sv.alterarObjeto(sisPessoaAtualiza)){
+            sv.desfazerTransacao();
+            GenericaMensagem.error("Erro", "Não foi possivel atualizar cadastro!");
+            return;
+        }
+
+        sisPessoa = sisPessoaAtualiza;
+        sisPessoaAtualiza = new SisPessoa();
+        sv.comitarTransacao();
+        
         
     }
     
@@ -224,17 +224,33 @@ public class AtendimentoBean implements Serializable {
         Collection lista = new ArrayList<ParametroSenha>();
         
         if (senha.getId() != -1) {
-            lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    senha.getFilial().getFilial().getPessoa().getNome(),
-                    senha.getFilial().getFilial().getPessoa().getDocumento(),
-                    senha.getAteMovimento().getJuridica().getPessoa().getNome(),
-                    senha.getAteMovimento().getJuridica().getPessoa().getDocumento(),
-                    "", // PREPOSTO
-                    senha.getAteMovimento().getPessoa().getNome(),
-                    senha.getUsuario().getPessoa().getNome(),
-                    senha.getData(),
-                    senha.getHora(),
-                    String.valueOf(senha.getSenha())));
+            
+            if (senha.getAteMovimento().getJuridica() != null){
+                lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        senha.getFilial().getFilial().getPessoa().getNome(),
+                        senha.getFilial().getFilial().getPessoa().getDocumento(),
+                        senha.getAteMovimento().getJuridica().getPessoa().getNome(),
+                        senha.getAteMovimento().getJuridica().getPessoa().getDocumento(),
+                        "", // PREPOSTO
+                        senha.getAteMovimento().getPessoa().getNome(),
+                        senha.getUsuario().getPessoa().getNome(),
+                        senha.getData(),
+                        senha.getHora(),
+                        String.valueOf(senha.getSenha())));
+            }else{
+                lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        senha.getFilial().getFilial().getPessoa().getNome(),
+                        senha.getFilial().getFilial().getPessoa().getDocumento(),
+                        "", // NOME EMPRESA
+                        "", // DOCUMENTO EMPRESA
+                        "", // PREPOSTO
+                        senha.getAteMovimento().getPessoa().getNome(),
+                        senha.getUsuario().getPessoa().getNome(),
+                        senha.getData(),
+                        senha.getHora(),
+                        String.valueOf(senha.getSenha())));
+                
+            }
         }
         
         JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
@@ -284,13 +300,11 @@ public class AtendimentoBean implements Serializable {
             return;
         }
         
-        if (sisPessoa.getDocumento().isEmpty()) {
-            GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
-            return;
-        }
-        if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(sisPessoa.getDocumento()))) {
-            GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
-            return;
+        if (!sisPessoa.getDocumento().isEmpty()) {
+            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(sisPessoa.getDocumento()))) {
+                GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
+                return;
+            }
         }
         
         if (sisPessoa.getNome().isEmpty()) {
@@ -299,11 +313,11 @@ public class AtendimentoBean implements Serializable {
         }
         
         
-        if (empresa.getId() == -1){
-            //msg = "Pesquise uma Empresa para Agendar.";
-            GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
-            return;
-        }
+//        if (empresa.getId() == -1){
+//            //msg = "Pesquise uma Empresa para Agendar.";
+//            GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
+//            return;
+//        }
         
 //        SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
 //        if (ap == null) {
@@ -333,7 +347,7 @@ public class AtendimentoBean implements Serializable {
         ateMovimento.setFilial(filial);
         ateMovimento.setOperacao((AteOperacao) sv.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
         ateMovimento.setStatus((AteStatus) sv.pesquisaCodigo(1, "AteStatus"));
-        ateMovimento.setJuridica(empresa);
+        ateMovimento.setJuridica(empresa.getId() == -1 ? null : empresa);
         ateMovimento.setAtendente(null);
         ateMovimento.setPessoa(sisPessoa);
         

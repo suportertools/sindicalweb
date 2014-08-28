@@ -152,7 +152,7 @@
                                 </h:column>
                                 
                                 <h:column>
-                                    <p:commandButton value="Excluir " title="Excluir Atendimento" onclick="PF('dlg_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                    <p:commandButton value="Excluir " title="Excluir Atendimento" onclick="PF('dlg_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" rendered="#{atendimentoBean.ateMovimento.id != -1}"/>
                                 </h:column>
                                     
                                 <h:column>

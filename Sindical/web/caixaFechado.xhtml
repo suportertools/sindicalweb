@@ -62,14 +62,14 @@
                                     <h:outputText value="EM SOBRA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
                                 </p:column>
 
-                                <p:column headerText="..." style="text-align: center">
+                                <p:column headerText="..." style="text-align: center" width="140">
                                     <h:panelGrid columns="2" styleClass="sbb">
                                         <h:graphicImage value="Imagens/iconPrint.png" />
                                         <h:commandLink value="Imprimir Relatório" title="Imprimir relatório de Movimentação" action="#{caixaFechadoBean.imprimir(linha)}" style="font-weight: bold" target="_BLANK"/>
                                     </h:panelGrid>
                                 </p:column>
 
-                                <p:column headerText="Opções" style="text-align: center">
+                                <p:column headerText="Opções" style="text-align: center" width="200">
                                     <p:commandLink value="Reabrir Caixa" action="#{caixaFechadoBean.reabrir(linha)}" onclick="PF('i_dlg_reabrir').show()"/>
                                     <h:outputLabel value=" | " style="font-weight: bold;"/>
                                     <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="PF('i_dlg_transferir').show()"/>

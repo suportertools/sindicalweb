@@ -11,5 +11,8 @@ INSERT INTO ate_operacao (id, ds_descricao) SELECT 2, 'Juridico' WHERE NOT EXIST
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 3, 'Colônia de Férias' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 3);
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 4, 'Filiações' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 4);
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 5, 'Outros' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 5);
+INSERT INTO ate_operacao (id, ds_descricao) SELECT 6, 'Notificação' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 6);
+INSERT INTO ate_operacao (id, ds_descricao) SELECT 7, 'Informações Juridicas' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 7);
+INSERT INTO ate_operacao (id, ds_descricao) SELECT 8, 'DSR' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 8);
 SELECT setval('ate_operacao_id_seq', max(id)) FROM ate_operacao;
 
