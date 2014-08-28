@@ -126,7 +126,7 @@
                         
                     <h:panelGrid id="i_panel_grid" style="float: left; clear: both; width: 100%">
                         <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!">  
-                            <p:column selectionMode="multiple" style="width:2%" />  
+                            <p:column selectionMode="multiple" width="25" style="text-align: center"/>  
                             
                             <p:column headerText="Matrícula" style="text-align: center">  
                                 <h:outputText value="#{linha[10]}" />  
