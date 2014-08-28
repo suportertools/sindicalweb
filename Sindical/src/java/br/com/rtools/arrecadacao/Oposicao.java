@@ -35,7 +35,7 @@ public class Oposicao implements Serializable {
     @JoinColumn(name = "id_oposicao_pessoa", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private OposicaoPessoa oposicaoPessoa;
-    @JoinColumn(name = "id_convecao_periodo", referencedColumnName = "id")
+    @JoinColumn(name = "id_convencao_periodo", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private ConvencaoPeriodo convencaoPeriodo;
     @Column(name = "ds_obs", length = 500)
