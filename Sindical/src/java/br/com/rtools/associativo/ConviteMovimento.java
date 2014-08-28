@@ -37,7 +37,7 @@ public class ConviteMovimento implements Serializable {
     @JoinColumn(name = "id_evt", referencedColumnName = "id")
     @ManyToOne
     private Evt evt;
-    @JoinColumn(name = "id_departamento", referencedColumnName = "id")
+    @JoinColumn(name = "id_departamemtno", referencedColumnName = "id")
     @ManyToOne
     private Departamento departamento;
     @JoinColumn(name = "id_autoriza_cortesia", referencedColumnName = "id")
