@@ -8,6 +8,7 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -18,7 +19,7 @@ import org.primefaces.event.RowEditEvent;
 
 @ManagedBean
 @SessionScoped
-public class ClassificacaoEconomicaBean {
+public class ClassificacaoEconomicaBean implements Serializable {
 
     private ClassificacaoEconomica classificacaoEconomica;
     private SalarioMinimo salarioMinimo;
