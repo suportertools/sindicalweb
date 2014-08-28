@@ -668,8 +668,10 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         try {
             Query qry = getEntityManager().createQuery("select s "
                     + " from Senha s "
-                    + " where s.senha = (select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.filial.id = " + id_filial + ") "
-                    + " and s.agendamento.status.id = 1 "
+                    + " where s.senha = ("
+                    + "         select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.ateMovimento is null and s2.filial.id = " + id_filial 
+                    + "                 ) "
+                    + " and s.agendamento.status.id = 2 "
                     + " and s.ateMovimento is null "
                     + " and s.dtData = :data and s.filial.id = " + id_filial);
             qry.setParameter("data", DataHoje.dataHoje());
@@ -677,7 +679,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 result = (Senha) qry.getSingleResult();
             }
         } catch (Exception e) {
-            // e.printStackTrace();
+             e.printStackTrace();
         }
         return result;
     }
