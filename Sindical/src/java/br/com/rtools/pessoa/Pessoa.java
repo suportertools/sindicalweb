@@ -8,42 +8,43 @@ import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
 @Entity
-@Table(name = "PES_PESSOA")
+@Table(name = "pes_pessoa")
 @NamedQuery(name = "Pessoa.pesquisaID", query = "select pes from Pessoa pes where pes.id=:pid")
 public class Pessoa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    @Column(name = "DS_NOME", length = 150, nullable = false)
+    @Column(name = "ds_nome", length = 150, nullable = false)
     private String nome;
-    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private TipoDocumento tipoDocumento;
-    @Column(name = "DS_OBS", length = 500, nullable = true)
+    @Column(name = "ds_obs", length = 500, nullable = true)
     private String obs;
-    @Column(name = "DS_SITE", length = 50, nullable = true)
+    @Column(name = "ds_site", length = 50, nullable = true)
     private String site;
-    @Column(name = "DS_TELEFONE1", length = 20, nullable = true)
+    @Column(name = "ds_telefone1", length = 20, nullable = true)
     private String telefone1;
-    @Column(name = "DS_TELEFONE2", length = 20)
+    @Column(name = "ds_telefone2", length = 20)
     private String telefone2;
-    @Column(name = "DS_TELEFONE3", length = 20)
+    @Column(name = "ds_telefone3", length = 20)
     private String telefone3;
-    @Column(name = "DS_EMAIL1", length = 50, nullable = true)
+    @Column(name = "ds_email1", length = 50, nullable = true)
     private String email1;
-    @Column(name = "DS_EMAIL2", length = 50)
+    @Column(name = "ds_email2", length = 50)
     private String email2;
-    @Column(name = "DS_EMAIL3", length = 50)
+    @Column(name = "ds_email3", length = 50)
     private String email3;
-    @Column(name = "DS_DOCUMENTO", length = 30, nullable = false)
+    @Column(name = "ds_documento", length = 30, nullable = false)
     private String documento;
-    @Column(name = "DS_LOGIN", length = 50, nullable = true)
+    @Column(name = "ds_login", length = 50, nullable = true)
     private String login;
-    @Column(name = "DS_SENHA", length = 50, nullable = true)
+    @Column(name = "ds_senha", length = 50, nullable = true)
     private String senha;
     @Temporal(TemporalType.DATE)
-    @Column(name = "DT_CRIACAO")
+    @Column(name = "dt_criacao")
     private Date dtCriacao;
 
     public Pessoa() {
