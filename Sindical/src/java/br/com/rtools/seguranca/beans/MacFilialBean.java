@@ -231,6 +231,10 @@ public class MacFilialBean implements Serializable {
     }
 
     public String selecionaFilial(MacFilial mf) {
+        return selecionaFilial(mf, false);
+    }
+
+    public String selecionaFilial(MacFilial mf, boolean sair) {
         GenericaSessao.remove("acessoFilial");
         GenericaSessao.remove("chamadaPaginaBean");
         ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setMacFilial(mf);
