@@ -26,10 +26,10 @@ public class Cancelamento implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JoinColumn(name = "id_agendamento", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_agendamento", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Agendamento agendamento;
-    @JoinColumn(name = "id_usuario", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
     @Temporal(TemporalType.DATE)

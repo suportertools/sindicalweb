@@ -16,7 +16,7 @@ public class ConviteServico implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JoinColumn(name = "id_servico", referencedColumnName = "ID")
+    @JoinColumn(name = "id_servico", referencedColumnName = "id")
     @ManyToOne
     private Servicos servicos;
     @Column(name = "is_segunda", columnDefinition = "boolean default false")
