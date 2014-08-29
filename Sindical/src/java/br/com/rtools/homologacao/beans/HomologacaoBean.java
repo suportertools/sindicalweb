@@ -601,29 +601,29 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             msgConfirma = "Motivo de cancelamento inválido";
             return null;
         }
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         Status s = agendamento.getStatus();
-        sv.abrirTransacao();
-        if (!sv.alterarObjeto(agendamento)) {
+        dao.openTransaction();
+        if (!dao.update(agendamento)) {
             msgConfirma = "Erro ao cancelar homologagação!";
-            sv.desfazerTransacao();
+            dao.rollback();
             return null;
         }
         pessoaEmpresa.setDtDemissao(null);
-        if (!sv.alterarObjeto(pessoaEmpresa)) {
+        if (!dao.update(pessoaEmpresa)) {
             msgConfirma = "Erro ao atualizar Pessoa Empresa";
             return null;
         }
         cancelamento.setAgendamento(agendamento);
         cancelamento.setDtData(DataHoje.dataHoje());
         cancelamento.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
-        if (!sv.inserirObjeto(cancelamento)) {
+        if (!dao.save(cancelamento)) {
             msgConfirma = "Erro ao salvar cancelamento";
             return null;
         }
-        agendamento.setStatus((Status) sv.find("Status", 3));
-        if (!sv.alterarObjeto(agendamento)) {
-            sv.desfazerTransacao();
+        agendamento.setStatus((Status) dao.find(new Status(), 3));
+        if (!dao.update(agendamento)) {
+            dao.rollback();
             agendamento.setStatus(s);
             msgConfirma = "Erro ao cancelar homologação!";
             return null;
@@ -638,7 +638,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
-        sv.comitarTransacao();
+        dao.commit();
         return null;
     }
 

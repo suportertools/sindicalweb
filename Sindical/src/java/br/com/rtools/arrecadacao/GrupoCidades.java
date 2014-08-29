@@ -3,7 +3,6 @@ package br.com.rtools.arrecadacao;
 import br.com.rtools.endereco.Cidade;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "arr_grupo_cidades")
@@ -17,10 +16,10 @@ public class GrupoCidades implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JoinColumn(name = "id_cidade", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Cidade cidade;
-    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_grupo_cidade", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
 
