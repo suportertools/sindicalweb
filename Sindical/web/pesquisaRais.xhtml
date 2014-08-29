@@ -24,17 +24,17 @@
                             <p:outputLabel value="Pesquisar: "/>
                             <c:if test="#{!raisBean.removeFiltro}">
                                 <p:inputMask mask="#{raisBean.mascara}" value="#{raisBean.descricaoPesquisa}" disabled="#{raisBean.porPesquisa == 'todos'}">
-                                    <p:ajax event="change" update="@this" />
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputMask>
                             </c:if>
                             <c:if test="#{raisBean.removeFiltro}">
                                 <p:inputMask mask="#{oposicaoBean.mascara}" value="#{raisBean.descricaoPesquisa}" >
-                                    <p:ajax event="change" update="@this" />
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputMask>
                             </c:if>
                             <h:outputLabel value="Por: "/>
                             <p:selectOneMenu id="idTipoClasse" value="#{raisBean.porPesquisa}">
-                                <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{raisBean.listRais.clear()}"/>
+                                <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{raisBean.listRais.clear()}" global="false"/>
                                 <f:selectItem itemValue="todos"         itemLabel="Todos" />
                                 <f:selectItem itemValue="nome"          itemLabel="Nome" />
                                 <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
