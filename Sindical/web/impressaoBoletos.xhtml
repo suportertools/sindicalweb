@@ -34,16 +34,16 @@
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="3">
                                     <h:column>
-                                        <h:outputText value="Quantidade de Empresas" style="font-weight: bold"/>
+                                        <h:outputText value="Quantidade de Empresas" style="font-weight: bold;"/>
                                         <h:panelGrid columns="2">
-                                            <p:selectOneRadio id="idEscritorio" value="#{impressaoBoletosBean.regraEscritorios}">
+                                            <p:selectOneRadio id="idEscritorio" value="#{impressaoBoletosBean.regraEscritorios}"  style="width: 200px">
                                                 <p:ajax event="change" update="cbQuantidade" />
                                                 <f:selectItem itemValue="all" itemLabel="Tudo"/>
                                                 <f:selectItem itemValue="ate" itemLabel="Até "/>
                                                 <f:selectItem itemValue="apartir" itemLabel="A partir"/>
                                             </p:selectOneRadio>
 
-                                            <p:selectOneMenu disabled="#{impressaoBoletosBean.desabilitaComboQuantidadeEmpresas}" id="cbQuantidade" value="#{impressaoBoletosBean.quantidadeEmpresas}" style="margin-left: 20px; padding-right: 5px">
+                                            <p:selectOneMenu disabled="#{impressaoBoletosBean.desabilitaComboQuantidadeEmpresas}" id="cbQuantidade" value="#{impressaoBoletosBean.quantidadeEmpresas}" style="margin-left: 20px; padding-right: 5px;">
                                                 <p:ajax event="change" update="cbQuantidade" />
                                                 <f:selectItem itemValue="1" itemLabel="1"/>
                                                 <f:selectItem itemValue="2" itemLabel="2"/>
@@ -66,16 +66,16 @@
                                     </h:column>
 
                                     <h:column>
-                                        <h:outputText value="Contribuições" style="font-weight: bold; margin-left: 20px"/>
+                                        <h:outputText value="Contribuições" style="font-weight: bold; margin-left: 15px"/>
                                         <h:panelGrid columns="2">
 
-                                            <p:selectOneRadio id="idSelTodasAsContas" value="#{impressaoBoletosBean.todasContas}" style="margin-left: 20px">
+                                            <p:selectOneRadio id="idSelTodasAsContas" value="#{impressaoBoletosBean.todasContas}" style="margin-left: 15px">
                                                 <p:ajax event="change" listener="#{impressaoBoletosBean.alterarTodasDatas}" update="cbContribuicao i_panel tbMovimento i_panel_mais"/>
                                                 <f:selectItem itemValue="true" itemLabel="Todos"/>
                                                 <f:selectItem itemValue="false" itemLabel="Específico"/>
                                             </p:selectOneRadio>
 
-                                            <p:selectOneMenu id="cbContribuicao" value="#{impressaoBoletosBean.idCombo}" style="margin-left: 20px;  width: 360px" disabled="#{impressaoBoletosBean.desabilitarContas}" >
+                                            <p:selectOneMenu id="cbContribuicao" value="#{impressaoBoletosBean.idCombo}" style="margin-left: 15px;  width: 340px" disabled="#{impressaoBoletosBean.desabilitarContas}" >
                                                 <p:ajax event="change" listener="#{impressaoBoletosBean.alterarTodasDatas()}" update="i_panel tbMovimento"/>
                                                 <f:selectItems value="#{impressaoBoletosBean.listaServicoCobranca}" />
                                             </p:selectOneMenu>
@@ -92,7 +92,7 @@
                                     <p:ajax event="rowUnselectCheckbox" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
                                     <p:ajax event="toggleSelect" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
                                     
-                                    <p:column selectionMode="multiple" />
+                                    <p:column selectionMode="multiple" style="width: 20px"/>
 
                                     <p:column  headerText="Convenção">
                                         <h:outputText style="font-size:8pt" value="#{linha.descricao}"/>
@@ -100,7 +100,7 @@
                                 </p:dataTable>
                                 
                                 <p:dataTable value="#{impressaoBoletosBean.listaGrupoCidade}" selection="#{impressaoBoletosBean.listaGrupoSelecionada}" rowKey="#{linha.id}" var="linha" style="clear: both; margin-top: 20px"  emptyMessage="Selecione uma Convenção">
-                                    <p:column selectionMode="multiple" />  
+                                    <p:column selectionMode="multiple" style="width: 20px"/>  
                                     
                                     <p:column  headerText="Grupo Cidade">
                                        <h:outputText style="font-size:8pt" value="#{linha.descricao}"/>
@@ -226,7 +226,7 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:commandButton id="i_envio" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}" onstart="PF('i_dlg_modal').show()" oncomplete="PF('i_dlg_modal').hide(); i_dlg_confirma.show()"/>
+                                    <p:commandButton id="i_envio" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}" onstart="PF('i_dlg_modal').show()" oncomplete="PF('i_dlg_modal').hide(); PF('i_dlg_confirma').show()"/>
                                 </h:column>
 
                                 <h:column>

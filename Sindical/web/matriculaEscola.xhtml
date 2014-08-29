@@ -114,6 +114,7 @@
                                 </c:if>
                             </h:column>
                         </h:panelGrid>
+                        <p:messages autoUpdate="true" closable="true" showDetail="true"/>
                         <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}">
                             <p:ajax event="tabChange" listener="#{matriculaEscolaBean.tipoMatriculaPor}" update=":form_matricula_escola:idTabela"/> 
                             <p:tab title="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" > 
