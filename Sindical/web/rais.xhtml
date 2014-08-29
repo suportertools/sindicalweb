@@ -31,7 +31,10 @@
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:form id="form_rais">
-                            <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
+                            <h:outputScript name="script_primefaces.js" library="js" /> 
+                            <h:panelGrid columns="2">
+                                <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
+                            </h:panelGrid>
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${raisBean.rais}"/>
                             <p:tabView cache="false" id="i_tab_view" activeIndex="#{raisBean.activeIndex}">
@@ -42,8 +45,8 @@
                                             <p:outputLabel value="Emissão:" />
                                             <h:column>
                                                 <h:panelGrid columns="8" columnClasses="margin-left margin-left">
-                                                    <p:inputMask value="#{raisBean.rais.emissaoString}"  mask="99/99/9999" converter="#{isDateString}" size="8" styleClass="bg-yellow-ligth" readonly="true">
-                                                        <p:ajax event="change" update="@this :form_rais:" />
+                                                    <p:inputMask value="#{raisBean.rais.emissaoString}"  mask="99/99/9999" converter="#{isDateString}" size="8" styleClass="bg-yellow-ligth">
+                                                        <p:ajax event="change" update="@this :form_rais:" global="false"/>
                                                     </p:inputMask>
                                                     <p:outputLabel value="CPF:"  styleClass="margin-left-max"/>
                                                     <p:inputMask value="#{raisBean.rais.sisPessoa.documento}" mask="999.999.999-99" size="12" disabled="#{raisBean.rais.id != -1}">
@@ -127,7 +130,7 @@
                                             <p:outputLabel value="Salário (R$): " />      
                                             <h:column>
                                                 <h:panelGrid columns="6" columnClasses="margin-left margin-left">
-                                                    <p:inputText value="#{raisBean.rais.salarioString}" converter="#{toCurrency}" size="8" styleClass="text-right input-text-min font-size-12 bold bg-yellow-ligth" title="Salário mínimo vigente - Mensal: R$#{raisBean.salarioMinimo.valorMensalString} - Diário: R$#{raisBean.salarioMinimo.valorDiarioString} - Hora: R$#{raisBean.salarioMinimo.valorHoraString}">
+                                                    <p:inputText value="#{raisBean.rais.salarioString}" converter="#{toCurrency}" size="8" styleClass="text-right input-text-min font-size-12 bold bg-yellow-ligth" title="Salário mínimo vigente - Mensal: R$#{raisBean.salarioMinimo.valorMensalString} - Diário: R$#{raisBean.salarioMinimo.valorDiarioString} - Hora: R$#{raisBean.salarioMinimo.valorHoraString}" onclick="selectInputText(this)">
                                                         <p:ajax event="change" update="@this" global="false"/>
                                                     </p:inputText>
                                                     <p:outputLabel value="Tipo Remuneração: " styleClass="margin-left-max"/>  
