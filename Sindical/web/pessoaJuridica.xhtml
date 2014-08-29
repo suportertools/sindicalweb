@@ -133,14 +133,14 @@
                                                 <p:column>
                                                     <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update=":formPessoaJuridica" />
+                                                        <p:ajax event="blur" update="@this i_razao" />
                                                     </p:inputText>
                                                 </p:column>
                                                 
                                                 <p:column>
                                                     <h:outputLabel value="Nome Fantasia" /><br />
                                                     <p:inputText id="i_razao" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="@this" global="false"/>
+                                                        <p:ajax event="blur" update="@this" />
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>

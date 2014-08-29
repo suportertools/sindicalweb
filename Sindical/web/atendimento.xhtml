@@ -102,7 +102,7 @@
                                     <h:column>
                                         <p:outputLabel value="Nome" style="font-weight: bold"/>
                                         <p:commandLink value="Alterar Pessoa" action="#{atendimentoBean.editarSisPessoa()}" style="margin-left: 390px" update="i_dlg_alterar_pessoa" onclick="PF('dlg_alterar_pessoa').show()" disabled="#{atendimentoBean.sisPessoa.id == -1}"/><br />
-                                        <p:inputText value="#{atendimentoBean.sisPessoa.nome}" style="margin-right: 20px; width: 510px">
+                                        <p:inputText value="#{atendimentoBean.sisPessoa.nome}" style="margin-right: 20px; width: 510px" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this"/>
                                         </p:inputText>
                                     </h:column>

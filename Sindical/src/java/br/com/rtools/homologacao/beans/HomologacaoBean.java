@@ -199,6 +199,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             senha.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
             senha.getAteMovimento().setAtendente(su.getSessaoUsuario());
             
+            senha.setHoraChamada(DataHoje.horaMinuto());
+            senha.setMesa(macFilial.getMesa());
+            
+            sv.alterarObjeto(senha);
             sv.alterarObjeto(senha.getAteMovimento());
             
             sv.comitarTransacao();
@@ -221,6 +225,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         senhaAtendimento.getAteMovimento().setStatus((AteStatus)sv.pesquisaCodigo(1, "AteStatus"));
         senhaAtendimento.getAteMovimento().setAtendente(null);
         
+        senhaAtendimento.setHoraChamada("");
+        senhaAtendimento.setMesa(0);
+        
+        sv.alterarObjeto(senhaAtendimento);
         sv.alterarObjeto(senhaAtendimento.getAteMovimento());
         
         sv.comitarTransacao();

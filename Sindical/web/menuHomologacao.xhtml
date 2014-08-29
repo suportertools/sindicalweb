@@ -46,29 +46,37 @@
                     </p:menubar> 
                 </p:panel>
                 <p:panel style="margin: 0 auto!important; width: 1000px;" header="Atendimento - Acesso fácil">
-                    <p:panelGrid columns="3" styleClass="margin-top-max sbb" style="margin: 0 auto!important;" >
-                        <p:commandLink action="#{chamadaPaginaBean.agendamento}" title="Agendamento">
+                    <p:panelGrid columns="4" styleClass="margin-top-max sbb" style="margin: 0 auto!important;" >
+                        <p:commandLink action="#{chamadaPaginaBean.atendimento()}" title="Atendimento Simples">
+                            <p:graphicImage value="/Imagens/icone-atendimento.png" height="150" />
+                        </p:commandLink>
+                        <p:commandLink action="#{chamadaPaginaBean.agendamento}" title="Agendamento de Homologação">
                             <p:graphicImage value="/Imagens/icone-calendario.jpg" height="150" />
                         </p:commandLink>
                         <p:commandLink action="#{chamadaPaginaBean.recepcao}" title="Recepção">
                             <p:graphicImage value="/Imagens/icone-recepcao.jpg" height="150" />
                         </p:commandLink>
-                        <p:commandLink action="#{chamadaPaginaBean.homologacao}" title="Homologação">
+                        <p:commandLink action="#{chamadaPaginaBean.homologacao}" title="Efetuar uma Homologação">
                             <p:graphicImage value="/Imagens/icone-homologacao.jpg" height="150" />
                         </p:commandLink>
                         <h:column>
                             <center>
-                                <p:outputLabel value="Agendamento" />
+                                <p:outputLabel value="ATENDIMENTO" />
                             </center>
                         </h:column>
                         <h:column>
                             <center>
-                                <p:outputLabel value="Recepção"  />
+                                <p:outputLabel value="AGENDAMENTO" />
                             </center>
                         </h:column>
                         <h:column>
                             <center>
-                                <p:outputLabel value="Homologação" />
+                                <p:outputLabel value="RECEPÇÃO"  />
+                            </center>
+                        </h:column>
+                        <h:column>
+                            <center>
+                                <p:outputLabel value="HOMOLOGAÇÃO" />
                             </center>
                         </h:column>
                     </p:panelGrid>
