@@ -170,20 +170,20 @@ public class AtendimentoBean implements Serializable {
                 return;
             }
             
-            FisicaDB fisicaDB = new FisicaDBToplink();
-            List<Fisica> listf = fisicaDB.pesquisaFisicaPorDoc(sisPessoaAtualiza.getDocumento());
-            
-            // DOCUMENTO JÁ EXISTE PARA OUTRA PESSOA FISICA
-            if (!listf.isEmpty()){
-                if (!listf.get(0).getPessoa().getNome().equals(sisPessoaAtualiza.getNome()) ){
-                    GenericaMensagem.warn("Atenção", "Esse documento já existe para outra Pessoa!");
-                    return;
-                }
-            }
+//            FisicaDB fisicaDB = new FisicaDBToplink();
+//            List<Fisica> listf = fisicaDB.pesquisaFisicaPorDoc(sisPessoaAtualiza.getDocumento());
+//            
+//            // DOCUMENTO JÁ EXISTE PARA OUTRA PESSOA FISICA
+//            if (!listf.isEmpty()){
+//                if (!listf.get(0).getPessoa().getNome().equals(sisPessoaAtualiza.getNome()) ){
+//                    GenericaMensagem.warn("Atenção", "Esse documento já existe para outra Pessoa!");
+//                    return;
+//                }
+//            }
             AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
             SisPessoa spes = (SisPessoa) atendimentoDB.pessoaDocumento(sisPessoaAtualiza.getDocumento());
 
-            if (spes != null && !spes.getNome().equals(sisPessoaAtualiza.getNome())){
+            if (spes != null && spes.getId() != sisPessoaAtualiza.getId()){
                 GenericaMensagem.warn("Atenção", "Esse documento já existe para outra Pessoa!");
                 return;
             }

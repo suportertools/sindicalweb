@@ -163,17 +163,18 @@
                                 </h:panelGrid>
                                 <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
                                     <c:if test="#{emissaoGuiasBean.listHistoricoEmissaoGuias != null}">
-                                        <p:dataTable value="#{emissaoGuiasBean.listHistoricoEmissaoGuias}" var="historicoEmissaoGuias" id="tbl" emptyMessage="Nenhuma guia encontrada!">
+                                        <p:dataTable value="#{emissaoGuiasBean.listHistoricoEmissaoGuias}" var="historicoEmissaoGuias" id="tbl" emptyMessage="Nenhuma guia encontrada!" style="width: 550px">
                                             <p:column headerText="Nome Pessoa">
                                                 <h:outputText value="#{historicoEmissaoGuias.movimento.pessoa.nome}"/>
                                             </p:column>                                            
-                                            <p:column headerText="Valor">
-                                                <h:outputText value="#{historicoEmissaoGuias.movimento.valorBaixa}"/>
+                                            <p:column headerText="Valor" style="text-align: center" width="100">
+                                                <h:outputText value="R$ " style="float: left"/>
+                                                <h:outputText value="#{historicoEmissaoGuias.movimento.valorBaixaString}" style="float: right"/>
                                             </p:column>                                            
-                                            <p:column headerText="">
+                                            <p:column headerText="" style="text-align: center" width="40">
                                                 <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
                                             </p:column>                                            
-                                            <p:column headerText="">
+                                            <p:column headerText="" style="text-align: center" width="40">
                                                 <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
                                             </p:column>
                                         </p:dataTable>
