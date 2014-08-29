@@ -1555,8 +1555,18 @@ public class MatriculaEscolaBean implements Serializable {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                         }
                         matriculaEscola.setResponsavel(responsavel);
+                    }else{
+                        FunctionsDB functionsDB = new FunctionsDBTopLink();
+                        int idade = functionsDB.idade("dt_nascimento", "current_date", aluno.getPessoa().getId());
+                        if (idade < 18) {
+                            GenericaMensagem.warn("Validação", "Responsável deve ser MAIOR DE IDADE!");
+                        }
+                        if (!matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", aluno.getPessoa().getId())) {
+                            GenericaMensagem.warn("Validação", "Responsável deve conter um ENDEREÇO!");
+                        }
                     }
                     matriculaEscola.setAluno(aluno.getPessoa());
+                    
                     matriculaEscola.setResponsavel(responsavel);
                     atualizaPessoaComplemento(0);
                     pegarIdServico();
