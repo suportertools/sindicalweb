@@ -989,6 +989,8 @@ public class ServicosBean implements Serializable {
         }
         
         di.openTransaction();
+        float descontox = descontoDepentende.getDesconto();
+        //float valorx = descontoDepentende.getDesconto();
         for (SelectItem si: listaParentesco){
             Parentesco par = (Parentesco)di.find(new Parentesco(), Integer.valueOf(si.getDescription()));
             if (par != null){
@@ -1005,6 +1007,7 @@ public class ServicosBean implements Serializable {
                     }
                 }
                 descontoDepentende = new CategoriaDescontoDependente();
+                descontoDepentende.setDesconto(descontox);
             }
         }
         
