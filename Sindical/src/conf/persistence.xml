@@ -126,6 +126,12 @@
         <properties>
         </properties>
     </persistence-unit>
+    <persistence-unit name="SincovagaSP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="c_limeira_base">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -138,7 +144,7 @@
         <properties>
         </properties>
     </persistence-unit>
-    <persistence-unit name="sinpaae">
+    <persistence-unit name="comercio_itapetininga">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
