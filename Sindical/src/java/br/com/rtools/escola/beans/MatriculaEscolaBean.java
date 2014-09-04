@@ -477,8 +477,7 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinalExtenso", (DataHoje.dataExtenso(turmax.getDataTermino()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataExtenso", (DataHoje.dataExtenso(DataHoje.data()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicial", (turmax.getDataInicio())));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", (turmax.getDataTermino())));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", (Moeda.converteR$Float(matriculaEscola.getValorTotal() / matriculaEscola.getNumeroParcelas()))));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", (turmax.getDataTermino())));            
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$descontoExtenso", Moeda.converteR$Float(matriculaEscola.getDesconto() + matriculaEscola.getValorDescontoProporcional())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$desconto", Moeda.converteR$Float(matriculaEscola.getDesconto() + matriculaEscola.getValorDescontoProporcional())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", (Integer.toString(matriculaEscola.getNumeroParcelas()))));
@@ -496,11 +495,18 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", Moeda.converteR$Float(valorTotalComDesconto)));
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float(Float.parseFloat(valorTotal))));
+                if (valorTotalComDesconto > 0) {
+                    matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
+                }
             } else {
                 valorTotalComDesconto = matriculaEscola.getValorTotal() - matriculaEscola.getDesconto();
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", (Moeda.converteR$Float((valorTotalComDesconto)))));
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", (Moeda.converteR$Float((matriculaEscola.getValorTotal())))));
+                if (valorTotalComDesconto > 0) {
+                    matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
+                }
             }
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", (Moeda.converteR$Float(matriculaEscola.getValorTotal() / matriculaEscola.getNumeroParcelas()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$matricula", (Integer.toString(matriculaEscola.getId()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", (DataHoje.livre(DataHoje.dataHoje(), "yyyy"))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", (enderecoAlunoString)));
@@ -1555,7 +1561,7 @@ public class MatriculaEscolaBean implements Serializable {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                         }
                         matriculaEscola.setResponsavel(responsavel);
-                    }else{
+                    } else {
                         FunctionsDB functionsDB = new FunctionsDBTopLink();
                         int idade = functionsDB.idade("dt_nascimento", "current_date", aluno.getPessoa().getId());
                         if (idade < 18) {
@@ -1566,7 +1572,7 @@ public class MatriculaEscolaBean implements Serializable {
                         }
                     }
                     matriculaEscola.setAluno(aluno.getPessoa());
-                    
+
                     matriculaEscola.setResponsavel(responsavel);
                     atualizaPessoaComplemento(0);
                     pegarIdServico();

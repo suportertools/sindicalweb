@@ -4,9 +4,11 @@ import br.com.rtools.agenda.Agenda;
 import br.com.rtools.agenda.AgendaFavorito;
 import br.com.rtools.agenda.AgendaTelefone;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
+import org.apache.catalina.tribes.util.Arrays;
 
 public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
 
@@ -150,15 +152,15 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
             String queryFiltroGrupoAgendaB = "";
             String query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaT + " ORDER BY AGET.agenda.id DESC ";
             if (idGrupoAgenda > 0) {
-                query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " ORDER BY AGET.agenda.id DESC ";
+                query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " GROUP BY AGET.agenda ORDER BY AGET.agenda.id DESC ";
                 queryFiltroGrupoAgendaA = " AND AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " ";
             }
             if (!isFavoritos) {
                 if (porPesquisa.equals("pessoa")) {
                     if (comoPesquisa.equals("Inicial")) {
-                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " UPPER(AGET.agenda.pessoa.nome) LIKE '" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaA + " ORDER BY AGET.agenda.nome ASC ";
+                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " UPPER(AGET.agenda.pessoa.nome) LIKE '" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaA + " GROUP BY AGET.agenda ORDER BY AGET.agenda.nome ASC ";
                     } else {
-                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " UPPER(AGET.agenda.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaA + " ORDER BY AGET.agenda.nome ASC ";
+                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " UPPER(AGET.agenda.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaA + " GROUP BY AGET.agenda ORDER BY AGET.agenda.nome ASC ";
                     }
                 } else if (porPesquisa.equals("nome")) {
                     if (comoPesquisa.equals("Inicial")) {
@@ -200,7 +202,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                                 listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
                             }
                         }
-                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " AGET.agenda.id IN(" + listaId + ")";
+                        query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE " + idGAsAgendaTAnd + " AGET.agenda.id IN(" + listaId + ") GROUP BY AGET.agenda";
                     }
                 }
                 Query qry = getEntityManager().createQuery(query);
@@ -212,7 +214,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                     String subQuery = "";
                     String subQueryFiltroGrupoAgendaA = "";
                     if (idGrupoAgenda > 0) {
-                        subQuery = " SELECT AGET FROM Agenda AS AGE WHERE AGE.grupoAgenda.id = " + idGrupoAgenda + " ORDER BY AGE.id DESC ";
+                        subQuery = " SELECT AGET FROM Agenda AS AGE WHERE AGE.grupoAgenda.id = " + idGrupoAgenda + " GROUP BY AGET.agenda ORDER BY AGE.id DESC ";
                         subQueryFiltroGrupoAgendaA = " AND AGE.grupoAgenda.id = " + idGrupoAgenda + " ";
                     }
                     if (porPesquisa.equals("pessoa")) {
@@ -260,7 +262,218 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
     }
 
     @Override
-    public Agenda agendaExiste(Agenda agenda) {
+    public List pesquisaAgendaTelefonex(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda, boolean isFavoritos, int idUsuario) {
+        if (!descricaoPesquisa.isEmpty() && !porPesquisa.equals("telefone")) {
+            descricaoPesquisa = AnaliseString.removerAcentos(descricaoPesquisa);
+            descricaoPesquisa = descricaoPesquisa.toUpperCase();
+        }
+        String inArray = "";
+        List list = new ArrayList();
+        String inGrupoPermitido = "";
+        String queryString;
+        String subQueryString;
+        List inList;
+        List<AgendaTelefone> agendaTelefones = new ArrayList<AgendaTelefone>();
+        AgendaTelefone agendaTelefone = new AgendaTelefone();
+        Query query;
+
+        // Verifica se o usuário logado tem permissão para ver o grupo
+        if (idUsuario != 0) {
+            queryString = ""
+                    + " SELECT id FROM age_grupo_agenda                             "
+                    + "  WHERE id IN (SELECT id_grupo_agenda                        "
+                    + "                 FROM age_grupo_usuario                      "
+                    + "                WHERE id_usuario = " + idUsuario + ")            "
+                    + "  UNION SELECT id                                            "
+                    + "          FROM age_grupo_agenda                              "
+                    + "         WHERE id NOT IN (SELECT id_grupo_agenda             "
+                    + "                            FROM age_grupo_usuario           "
+                    + "                           WHERE id_usuario != " + idUsuario + ")";
+            Query queryNativeGA = getEntityManager().createNativeQuery(queryString);
+            List listNativeGA = queryNativeGA.getResultList();
+            for (int i = 0; i < listNativeGA.size(); i++) {
+                if (i == 0) {
+                    inGrupoPermitido = "" + ((List) (listNativeGA.get(i))).get(0).toString();
+                } else {
+                    inGrupoPermitido += ", " + ((List) (listNativeGA.get(i))).get(0).toString();
+                }
+            }
+        }
+
+        // Traz os contatos favoritos do usuário da sessão
+        if (isFavoritos) {
+            try {
+                queryString = " SELECT AF.agenda FROM AgendaFavorito AS AF WHERE AF.agenda.grupoAgenda.id IN (" + inGrupoPermitido + ") AND AF.usuario.id = :usuario ORDER BY AF.agenda.nome ";
+                query = getEntityManager().createQuery(queryString);
+                query.setParameter("usuario", idUsuario);
+                list = query.getResultList();
+                if (!list.isEmpty()) {
+                    for (Object o : list) {
+                        agendaTelefone.setAgenda((Agenda) o);
+                        agendaTelefones.add(agendaTelefone);
+                        agendaTelefone = new AgendaTelefone();
+                    }
+                    return agendaTelefones;
+                }
+            } catch (Exception e) {
+
+            }
+            return new ArrayList();
+        }
+        // Adiciona os grupos que o usuário pode visualizar na consulta
+        if (!inGrupoPermitido.isEmpty()) {
+            inGrupoPermitido = " AGE.id_grupo_agenda IN (" + inGrupoPermitido + ") AND ";
+        }
+        String queryGrupoAgenda = "";
+        if (idGrupoAgenda > 0) {
+            queryGrupoAgenda = " AND AGE.id_grupo_agenda = " + idGrupoAgenda + " ";
+            // Se a descriçção for vázia não entrará mas consultas, pulara diretamente para os grupos da agenda
+            if (descricaoPesquisa.isEmpty()) {
+                porPesquisa = "";
+            }
+        }
+        int indice = 2;
+        String limiQuery = " LIMIT 250";
+        if (descricaoPesquisa.length() == 1) {
+            limiQuery = " LIMIT 50";
+        } else if (descricaoPesquisa.length() == 2) {
+            limiQuery = " LIMIT 80";
+        } else if (descricaoPesquisa.length() == 3) {
+            limiQuery = " LIMIT 100";
+        }
+        queryString = "  SELECT DISTINCT ON(AGET.id_agenda) AGET.id_agenda, AGE.ds_nome, AGET.id            "
+                + "        FROM age_telefone AS AGET                            "
+                + "  INNER JOIN age_agenda AS AGE ON AGE.id = AGET.id_agenda    "
+                + "   LEFT JOIN pes_pessoa AS P ON P.id = AGE.id_pessoa         "
+                + "       WHERE " + inGrupoPermitido;
+        if (porPesquisa.equals("pessoa")) {
+            if (comoPesquisa.equals("Inicial")) {
+                queryString += " UPPER(TRANSLATE(P.ds_nome)) LIKE '" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            } else {
+                queryString += " UPPER(TRANSLATE(P.ds_nome)) LIKE '%" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            }
+        } else if (porPesquisa.equals("nome")) {
+            if (comoPesquisa.equals("Inicial")) {
+                queryString += " UPPER(TRANSLATE(AGE.ds_nome)) LIKE '" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            } else {
+                queryString += " UPPER(TRANSLATE(AGE.ds_nome)) LIKE '%" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            }
+        } else if (porPesquisa.equals("contato")) {
+            if (comoPesquisa.equals("Inicial")) {
+                queryString += " UPPER(TRANSLATE(AGET.ds_contato)) LIKE '" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            } else {
+                queryString += " UPPER(TRANSLATE(AGET.ds_contato)) LIKE '%" + descricaoPesquisa + "%' " + queryGrupoAgenda;
+            }
+        } else if (porPesquisa.equals("telefone")) {
+            String dddString = "";
+            if (!ddd.equals("")) {
+                dddString = " AGET.ds_ddd = '" + ddd + "' AND ";
+            }
+            queryString += dddString + " AGET.ds_telefone = '" + descricaoPesquisa + "'";
+        } else if (porPesquisa.equals("endereco")) {
+            indice = 2;
+            queryString = ""
+                    + "     SELECT DISTINCT ON(AGET.id_agenda) AGET.id_agenda, AGE.ds_nome, AGET.id                                                                                                                                 "
+                    + "       FROM age_agenda AS AGE                                                                                                                                                                                "
+                    + "  LEFT JOIN age_telefone AS AGET ON AGET.id_agenda = AGE.id                                                                                                                                                  "
+                    + " INNER JOIN endereco_vw ende ON ende.id = age.id_endereco                                                                                                                                                    "
+                    + "WHERE UPPER(TRANSLATE(ende.logradouro) || ' ' || TRANSLATE(ende.endereco) || ', ' || TRANSLATE(bairro) || ', ' || TRANSLATE(cidade) || ', ' || TRANSLATE(uf))    LIKE UPPER('%" + descricaoPesquisa + "%')   "
+                    + "   OR UPPER(TRANSLATE(ende.logradouro) || ' ' || TRANSLATE(ende.endereco) || ', ' || TRANSLATE(cidade) || ', ' || TRANSLATE(uf))                      LIKE UPPER('%" + descricaoPesquisa + "%')              "
+                    + "   OR UPPER(TRANSLATE(ende.logradouro) || ' ' || TRANSLATE(ende.endereco) || ', ' || TRANSLATE(cidade))                                   LIKE UPPER('%" + descricaoPesquisa + "%')                          "
+                    + "   OR UPPER(TRANSLATE(ende.logradouro) || ' ' || TRANSLATE(ende.endereco))                                                      LIKE UPPER('%" + descricaoPesquisa + "%')                                    "
+                    + "   OR UPPER(TRANSLATE(ende.endereco))                                                                                LIKE UPPER('%" + descricaoPesquisa + "%')                                               "
+                    + "   OR UPPER(TRANSLATE(ende.cidade))                                                                                  LIKE UPPER('%" + descricaoPesquisa + "%')                                               "
+                    + "   OR UPPER(ende.cep)                                                                                     = '" + descricaoPesquisa + "'";
+        } else {
+            queryString += " AGE.id_grupo_agenda = " + idGrupoAgenda + " GROUP BY AGET.id_agenda ORDER BY AGET.id_agenda DESC ";
+        }
+        queryString += " GROUP BY AGET.id_agenda, AGE.ds_nome, AGET.id ";
+        queryString += limiQuery;
+        try {
+            query = getEntityManager().createNativeQuery(queryString);
+            inList = query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+
+        for (int i = 0; i < inList.size(); i++) {
+            if (i == 0) {
+                try {
+                    inArray = ((Integer) ((List) inList.get(i)).get(indice)).toString();
+                } catch (Exception e) {
+                }
+            } else {
+                try {
+                    inArray += ", " + ((Integer) ((List) inList.get(i)).get(indice)).toString();
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        try {
+            queryString = ""
+                    + "           SELECT AGT.*                                      "
+                    + "             FROM age_telefone AS AGT                        "
+                    + "        LEFT JOIN age_agenda AS AG ON AG.id = AGT.id_agenda  ";
+            if (indice == 0) {
+                queryString += " WHERE AGT.id_agenda IN (" + inArray + ") ";
+            } else if (indice == 2) {
+                queryString += " WHERE AGT.id IN (" + inArray + ") ";
+            }
+            queryString += " ORDER BY AGT.id_agenda DESC ";
+            Query q = getEntityManager().createNativeQuery(queryString, AgendaTelefone.class);
+            List l = q.getResultList();
+            if (!l.isEmpty()) {
+                return l;
+            }
+        } catch (Exception e) {
+
+        }
+
+        // Se nenhum resultado for encotrado (quando não houver vínculo entre agenda e agenda telefone) tenta uma ultima vez realizando uma pesquisa somente na tabela da agenda
+        if (list.isEmpty() && !porPesquisa.equals("endereco")) {
+            subQueryString = "SELECT AGE.* "
+                    + "                FROM age_agenda AS AGE "
+                    + "           LEFT JOIN pes_pessoa AS P ON P.id = AGE.id_pessoa ";
+            String subQueryStringGrupoAgenda = "";
+            if (idGrupoAgenda > 0) {
+                // subQueryString += " AND AGE.id_grupo_agenda = " + idGrupoAgenda + " ORDER BY AGE.id DESC ";
+                subQueryStringGrupoAgenda = " AND AGE.id_grupo_agenda = " + idGrupoAgenda + " ";
+            }
+            if (porPesquisa.equals("pessoa")) {
+                if (comoPesquisa.equals("Inicial")) {
+                    subQueryString += " WHERE " + inGrupoPermitido + " UPPER(TRANSLATE(P.ds_nome)) LIKE '" + descricaoPesquisa + "%' " + subQueryStringGrupoAgenda + " ORDER BY AGE.ds_nome ASC ";
+                } else {
+                    subQueryString += " WHERE " + inGrupoPermitido + " UPPER(TRANSLATE(P.ds_nome)) LIKE '%" + descricaoPesquisa + "%' " + subQueryStringGrupoAgenda + " ORDER BY AGE.ds_nome ASC ";
+                }
+            } else if (porPesquisa.equals("nome")) {
+                if (comoPesquisa.equals("Inicial")) {
+                    subQueryString += " WHERE  " + inGrupoPermitido + " UPPER(TRANSLATE(AGE.ds_nome)) LIKE '" + descricaoPesquisa + "%' " + subQueryStringGrupoAgenda + " ORDER BY AGE.ds_nome ASC ";
+                } else {
+                    subQueryString += " WHERE  " + inGrupoPermitido + " UPPER(TRANSLATE(AGE.ds_nome)) LIKE '%" + descricaoPesquisa + "%' " + subQueryStringGrupoAgenda + " ORDER BY AGE.ds_nome ASC ";
+                }
+            }
+            try {
+                query = getEntityManager().createNativeQuery(subQueryString, Agenda.class);
+                List<Agenda> subList = query.getResultList();
+                if (!subList.isEmpty()) {
+                    for (Agenda agenda : subList) {
+                        list.add(new AgendaTelefone(-1, agenda, null, "", "", "", ""));
+                    }
+                    return list;
+                }
+            } catch (Exception e) {
+
+            }
+            return new ArrayList();
+        }
+
+        return new ArrayList();
+    }
+
+    @Override
+    public Agenda agendaExiste(Agenda agenda
+    ) {
         String queryString = "";
         try {
             if (agenda.getPessoa() != null && agenda.getEndereco() != null && !agenda.getNome().equals("")) {
@@ -285,7 +498,8 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
     }
 
     @Override
-    public AgendaTelefone agendaTelefoneExiste(AgendaTelefone agendaTelefone) {
+    public AgendaTelefone agendaTelefoneExiste(AgendaTelefone agendaTelefone
+    ) {
         try {
             Query query = getEntityManager().createQuery(" SELECT AGET FROM AgendaTelefone AS AGET WHERE AGET.telefone = :strTelefone AND AGET.agenda.id = :idAgenda");
             query.setParameter("strTelefone", agendaTelefone.getTelefone());
@@ -315,7 +529,8 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
     }
 
     @Override
-    public AgendaFavorito favorito(int idAgenda, int idUsuario) {
+    public AgendaFavorito favorito(int idAgenda, int idUsuario
+    ) {
         try {
             Query query = getEntityManager().createQuery("SELECT AF FROM AgendaFavorito AS AF WHERE AF.agenda.id = :p1 AND AF.usuario.id = :p2");
             query.setParameter("p1", idAgenda);
@@ -331,7 +546,8 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
     }
 
     @Override
-    public List listaFavoritoPorAgenda(int idAgenda) {
+    public List listaFavoritoPorAgenda(int idAgenda
+    ) {
         try {
             Query query = getEntityManager().createQuery("SELECT AF FROM AgendaFavorito AS AF WHERE AF.agenda.id = :p1 ");
             query.setParameter("p1", idAgenda);
@@ -360,7 +576,8 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
     }
 
     @Override
-    public List listaGrupoAgendaPorUsuario(int idUsuario) {
+    public List listaGrupoAgendaPorUsuario(int idUsuario
+    ) {
         try {
             String queryString = ""
                     + " SELECT id FROM age_grupo_agenda                             "
@@ -409,7 +626,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                         inIds += ", " + ((List) list.get(i)).get(0).toString();
                     }
                 }
-                Query query1 = getEntityManager().createQuery("SELECT AC FROM AgendaContato AS AC WHERE AC.id IN ("+inIds+") ORDER BY AC.nascimento ASC, AC.contato ASC");
+                Query query1 = getEntityManager().createQuery("SELECT AC FROM AgendaContato AS AC WHERE AC.id IN (" + inIds + ") ORDER BY AC.nascimento ASC, AC.contato ASC");
                 return query1.getResultList();
             }
         } catch (Exception e) {

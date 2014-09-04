@@ -13,6 +13,8 @@ public interface AgendaTelefoneDB {
     public List pesquisaAgenda(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda);
 
     public List pesquisaAgendaTelefone(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda, boolean isFavoritos, int idUsuario);
+    
+    public List pesquisaAgendaTelefonex(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda, boolean isFavoritos, int idUsuario);
 
     public List listaAgendaTelefone(int idAgenda);
 

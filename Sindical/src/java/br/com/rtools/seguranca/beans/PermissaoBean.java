@@ -5,7 +5,6 @@ import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
-import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
@@ -27,12 +26,15 @@ public class PermissaoBean implements Serializable {
     private Evento evento;
     private List<Permissao> listaPermissoes;
     private PermissaoDepartamento permissaoDepartamento;
+    //private List<ListaPermissaoDepartamento> listPermissaoDepartamento;
     private String msgConfirma;
     private String indicaTab;
     private String descricaoPesquisa;
     private String tabDisabled;
-    private List listaPermissoesDisponiveis;
-    private List listaPermissoesAdicionadas;
+//    private List listaPermissoesDisponiveis;
+//    private List listaPermissoesAdicionadas;
+    private List<ListaPermissaoDepartamento> listaPermissoesDisponiveis;
+    private List<ListaPermissaoDepartamento> listaPermissoesAdicionadas;
     private List<SelectItem> listaRotinas;
     private List<SelectItem> listaModulos;
     private List<SelectItem> listaEventos;
@@ -57,13 +59,14 @@ public class PermissaoBean implements Serializable {
         indicaTab = "permissao";
         descricaoPesquisa = "";
         tabDisabled = "true";
-        listaPermissoesDisponiveis = new ArrayList();
-        listaPermissoesAdicionadas = new ArrayList();
+        listaPermissoesDisponiveis = new ArrayList<ListaPermissaoDepartamento>();
+        listaPermissoesAdicionadas = new ArrayList<ListaPermissaoDepartamento>();
         listaRotinas = new ArrayList();
         listaModulos = new ArrayList();
         listaEventos = new ArrayList();
         listaDepartamentos = new ArrayList();
         listaNiveis = new ArrayList();
+        // listPermissaoDepartamento = new ArrayList<ListaPermissaoDepartamento>();
         idModulo = 0;
         idRotina = 0;
         idEvento = 0;
@@ -157,8 +160,8 @@ public class PermissaoBean implements Serializable {
             DaoInterface sv = new Dao();
             sv.openTransaction();
             for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
-                if ((Boolean) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento0() == true) {
-                    Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
+                if (listaPermissoesDisponiveis.get(i).isSelected()) {
+                    Permissao perm = listaPermissoesDisponiveis.get(i).getPermissao();
                     Departamento depto = (Departamento) sv.find(new Departamento(), Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()));
                     Nivel niv = (Nivel) sv.find(new Nivel(), Integer.parseInt(getListaNiveis().get(idNivel).getDescription()));
                     permissaoDepartamento.setPermissao(perm);
@@ -225,7 +228,7 @@ public class PermissaoBean implements Serializable {
             DaoInterface di = new Dao();
             di.openTransaction();
             for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
-                Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
+                Permissao perm = listaPermissoesDisponiveis.get(i).getPermissao();
                 Departamento depto = (Departamento) di.find(new Departamento(), Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription()));
                 Nivel niv = (Nivel) di.find(new Nivel(), Integer.parseInt(listaNiveis.get(idNivel).getDescription()));
                 permissaoDepartamento.setPermissao(perm);
@@ -257,8 +260,8 @@ public class PermissaoBean implements Serializable {
             DaoInterface di = new Dao();
             di.openTransaction();
             for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
-                if ((Boolean) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento0() == true) {
-                    permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
+                if (listaPermissoesAdicionadas.get(i).isSelected()) {
+                    permissaoDepartamento = (PermissaoDepartamento) listaPermissoesAdicionadas.get(i).getPermissaoDepartamento();
                     if (!di.delete(permissaoDepartamento)) {
                         erro = true;
                         temRegistros = false;
@@ -314,7 +317,7 @@ public class PermissaoBean implements Serializable {
             DaoInterface di = new Dao();
             di.openTransaction();
             for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
-                permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
+                permissaoDepartamento = listaPermissoesAdicionadas.get(i).getPermissaoDepartamento();
                 if (!di.delete(permissaoDepartamento)) {
                     erro = true;
                     break;
@@ -343,44 +346,6 @@ public class PermissaoBean implements Serializable {
         descricaoPesquisa = "";
         listaPermissoesDisponiveis.clear();
         listaPermissoesAdicionadas.clear();
-    }
-
-    public List getPermissaoDisponivel() {
-        if (listaPermissoesDisponiveis.isEmpty()) {
-            listaPermissoesDisponiveis.clear();
-            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
-            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
-            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
-            List<Permissao> list = permissaoDepartamentoDB.listaPermissaoDepartamentoDisponivel(idDepto, idNiv, descricaoPesquisa);
-            DataObject dtObject;
-            for (int i = 0; i < list.size(); i++) {
-                dtObject = new DataObject(
-                        false,
-                        (Permissao) list.get(i));
-                listaPermissoesDisponiveis.add(dtObject);
-            }
-        }
-        return listaPermissoesDisponiveis;
-    }
-
-    public List getPermissaoAdicionada() {
-        if (listaPermissoesAdicionadas.isEmpty()) {
-            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
-            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
-            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
-            List<PermissaoDepartamento> list = permissaoDepartamentoDB.listaPermissaoDepartamentoAdicionada(idDepto, idNiv, descricaoPesquisa);
-            DataObject dtObject;
-            for (int i = 0; i < list.size(); i++) {
-                dtObject = new DataObject(false,
-                        ((PermissaoDepartamento) list.get(i)).getPermissao(),
-                        ((PermissaoDepartamento) list.get(i)),
-                        null,
-                        null,
-                        null);
-                listaPermissoesAdicionadas.add(dtObject);
-            }
-        }
-        return listaPermissoesAdicionadas;
     }
 
     public List getListaPermissaoDpto() {
@@ -579,5 +544,40 @@ public class PermissaoBean implements Serializable {
 
     public void setListaPermissoes(List<Permissao> listaPermissoes) {
         this.listaPermissoes = listaPermissoes;
+    }
+
+    public List<ListaPermissaoDepartamento> getListaPermissoesDisponiveis() {
+        if (listaPermissoesDisponiveis.isEmpty()) {
+            //listaPermissoesDisponiveis.clear();
+            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
+            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
+            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
+            List<Permissao> list = permissaoDepartamentoDB.listaPermissaoDepartamentoDisponivel(idDepto, idNiv, descricaoPesquisa);
+            for (Permissao list1 : list) {
+                listaPermissoesDisponiveis.add(new ListaPermissaoDepartamento(null, list1, false));
+            }
+        }
+        return listaPermissoesDisponiveis;
+    }
+
+    public void setListaPermissoesDisponiveis(List<ListaPermissaoDepartamento> listaPermissoesDisponiveis) {
+        this.listaPermissoesDisponiveis = listaPermissoesDisponiveis;
+    }
+
+    public List<ListaPermissaoDepartamento> getListaPermissoesAdicionadas() {
+        if (listaPermissoesAdicionadas.isEmpty()) {
+            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
+            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
+            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
+            List<PermissaoDepartamento> list = permissaoDepartamentoDB.listaPermissaoDepartamentoAdicionada(idDepto, idNiv, descricaoPesquisa);
+            for (PermissaoDepartamento list1 : list) {
+                listaPermissoesAdicionadas.add(new ListaPermissaoDepartamento(list1, list1.getPermissao(), false));
+            }
+        }
+        return listaPermissoesAdicionadas;
+    }
+
+    public void setListaPermissoesAdicionadas(List<ListaPermissaoDepartamento> listaPermissoesAdicionadas) {
+        this.listaPermissoesAdicionadas = listaPermissoesAdicionadas;
     }
 }
