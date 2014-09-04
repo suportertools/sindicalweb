@@ -34,7 +34,7 @@
                                 <p:ajax event="change" update="id_painel_permissao tbl"/>
                                 <f:selectItems value="#{permissaoBean.listaModulos}"/>
                             </p:selectOneMenu>
-                            <p:selectOneMenu value="#{permissaoBean.idRotina}">
+                            <p:selectOneMenu value="#{permissaoBean.idRotina}" filter="true" filterMatchMode="startsWith">
                                 <f:selectItems value="#{permissaoBean.listaRotinas}"/>
                             </p:selectOneMenu>
                             <p:commandButton icon="ui-icon-plus" value="Adicionar" action="#{permissaoBean.addPermissao}" disabled="#{controleAcessoBean.botaoSalvar}" update="id_painel_permissao, tbl" />
