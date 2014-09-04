@@ -60,4 +60,5 @@ INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 5
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 54, 'Sala',                          '$sala',                        8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 54);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 55, 'Data matrícula',                '$dataMatricula',               8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 55);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 56, 'Valor total com desconto',      '$valorTotalComDesconto',       8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 56);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 57, 'Valor parcela com desconto',    '$valorParcelaComDesconto',     8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 57);
 SELECT setval('matr_contrato_campos_id_seq', max(id)) FROM matr_contrato_campos;
