@@ -127,20 +127,18 @@
                                                         <f:verbatim> Ir para o site da Receita </f:verbatim>
                                                     </h:outputLink>
                                                 </p:column>
-                                            </h:panelGrid>
-                                            
+                                            </h:panelGrid>                                            
                                             <h:panelGrid columns="2" style="width: 100%">
                                                 <p:column>
                                                     <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="@this i_razao" />
+                                                        <p:ajax event="change" update="@this i_razao" global="false"/>
                                                     </p:inputText>
-                                                </p:column>
-                                                
+                                                </p:column>                                                
                                                 <p:column>
                                                     <h:outputLabel value="Nome Fantasia" /><br />
                                                     <p:inputText id="i_razao" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" global="false" immediate="true"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>

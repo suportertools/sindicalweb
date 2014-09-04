@@ -216,7 +216,7 @@
 
                                                     <p:column>
                                                         <p:outputLabel value="Profissão"/><br />
-                                                        <p:selectOneMenu value="#{fisicaBean.idProfissao}" style="width: 345px;">
+                                                        <p:selectOneMenu value="#{fisicaBean.idProfissao}" style="width: 345px;" filter="true" filterMatchMode="startsWith">
                                                             <p:ajax event="change" update="@this"/>
                                                             <f:selectItems value="#{fisicaBean.listaProfissoes}"/>
                                                         </p:selectOneMenu>
@@ -632,7 +632,7 @@
 
                                             <p:column>
                                                 <p:outputLabel value="Por" /><br />
-                                                <p:selectOneMenu id="idPor" value="#{fisicaBean.combo}" style="padding-right: 20px">
+                                                <p:selectOneMenu id="idPor" value="#{fisicaBean.combo}" style="padding-right: 20px" filter="true" filterMatchMode="startsWith">
                                                     <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
                                                     <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                                 </p:selectOneMenu>

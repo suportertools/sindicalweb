@@ -38,11 +38,11 @@
                                         <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
                                         <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
                                     </p:selectOneMenu>                             
-                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mascaraPesquisaFisica}">
-                                        <p:ajax event="blur" update="@this" global="false" />
+                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}">
+                                        <p:ajax event="change" update="@this" global="false" />
                                     </p:inputMask>
                                     <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px">
-                                        <p:ajax event="change" update="i_panel_pesquisa" global="false"/>
+                                        <p:ajax event="change" update="@this i_panel_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
                                         <f:selectItem itemValue="nome"     itemLabel="Nome"/>
                                         <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
                                         <f:selectItem itemValue="rg"      itemLabel="RG"/>

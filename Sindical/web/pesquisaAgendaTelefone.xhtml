@@ -17,13 +17,16 @@
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_pesquisa_agenda_telefone">
                     <c:set scope="request" var="object" value="${agendaTelefoneBean.agendaTelefone}"/>
-                    <p:dialog id="i_modal_detalhes" widgetVar="dgl_modal_detalhes"  modal="true" width="600" maximizable="true" header="Detalhes Contato">
+                    <p:dialog id="i_modal_detalhes" widgetVar="dgl_modal_detalhes"  modal="true" width="600" maximizable="true" header="Detalhes Contato" closeOnEscape="true">
                         <h:panelGrid id="i_detalhes_contato">
                             <p:panel>
                                 <f:facet name="header">
-                                    <p:selectBooleanButton value="#{agendaTelefoneBean.numeroFavorito}" onIcon="ui-icon-star" offIcon="ui-icon-star" offLabel="Não" onLabel="Sim" >
-                                        <p:ajax event="change" update="@this, i_datatable_resultados" listener="#{agendaTelefoneBean.addOrRemoveFavorito}" />
-                                    </p:selectBooleanButton>
+                                    <span title="Adicionar aos meus favoritos">
+                                        <p:selectBooleanButton value="#{agendaTelefoneBean.numeroFavorito}" onIcon="ui-icon-star" offIcon="ui-icon-star" offLabel="Não" onLabel="Sim">
+                                            <p:ajax event="change" update="@this, i_datatable_resultados" listener="#{agendaTelefoneBean.addOrRemoveFavorito}" />
+                                        </p:selectBooleanButton>
+                                    </span>
+
                                     <p:outputLabel value="#{agendaTelefoneBean.agendaTelefone.agenda.nome}" escape="true" styleClass="margin-left-max"/>
                                 </f:facet>
                                 <p:panelGrid columns="2">
@@ -72,6 +75,16 @@
                                 </p:dataTable>
                             </p:panel>
                         </h:panelGrid>
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <h:column>
+                                    <span class="ui-button-icon-left ui-icon ui-c ui-icon-star"></span>
+                                </h:column>
+                                <h:column>
+                                    Define o contato como favorito
+                                </h:column>
+                            </h:panelGrid>
+                        </f:facet>
                     </p:dialog>
                     <h:outputText value="Agenda Telefônica" styleClass="fonteHeader" />
                     <div class="clear"></div>
@@ -127,13 +140,13 @@
                             <p:column styleClass="text-center" headerText="Cidade / UF">
                                 <p:commandLink action="#{agendaTelefoneBean.view(agendaTelefone)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}" styleClass="underline-hover" style="text-transform: uppercase; " title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Tipo Telefone" rendered="#{!agendaTelefoneBean.favoritos}">
+                            <p:column styleClass="text-center" headerText="Tipo Telefone" rendered="false">
                                 <p:commandLink action="#{agendaTelefoneBean.view(agendaTelefone)}" value="#{agendaTelefone.tipoTelefone.descricao}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Telefone" rendered="#{!agendaTelefoneBean.favoritos}">
+                            <p:column styleClass="text-center" headerText="Telefone" rendered="false">
                                 <p:commandLink action="#{agendaTelefoneBean.view(agendaTelefone)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Contato" rendered="#{!agendaTelefoneBean.favoritos}">
+                            <p:column styleClass="text-center" headerText="Contato" rendered="true">
                                 <p:commandLink action="#{agendaTelefoneBean.view(agendaTelefone)}" value="#{agendaTelefone.contato}" styleClass="underline-hover" style="text-transform: uppercase;" />
                             </p:column>
                             <p:column styleClass="text-center" width="20">
@@ -142,6 +155,13 @@
                                 </p:column>
                             </p:column>
                         </p:dataTable>
+                        <f:facet name="footer" >
+                            <h:panelGrid columns="3">
+                                <h:column><p:outputLabel styleClass="font-color-red" value="Adicione contatos como seus favoritos. Selecione o contato e marque com a estrela" /></h:column>
+                                <h:column><span class="ui-icon ui-c ui-icon-star"></span></h:column>
+                                <h:column>.</h:column>
+                            </h:panelGrid>
+                        </f:facet>
                     </p:panel>
                 </h:form>
             </p:panel>

@@ -55,18 +55,18 @@
                                 <h:panelGrid columns="3" styleClass="margin-top-max" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop">
                                     <h:column>
                                         <p:panel header="Permissões Disponíveis" style="width: 420px;">
-                                            <p:dataTable var="linha" id="tbl" value="#{permissaoBean.permissaoDisponivel}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!">
+                                            <p:dataTable var="lista" id="tbl" value="#{permissaoBean.listaPermissoesDisponiveis}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30">
                                                 <p:column width="25" styleClass="text-center">
-                                                    <p:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                                    <p:selectBooleanCheckbox value="#{lista.selected}" />
                                                 </p:column>
                                                 <p:column headerText="Módulo">
-                                                    <p:commandLink value="#{linha.argumento1.modulo.descricao}" />
+                                                    <p:commandLink value="#{lista.permissao.modulo.descricao}" />
                                                 </p:column>
                                                 <p:column headerText="Rotina">
-                                                    <p:commandLink value="#{linha.argumento1.rotina.rotina}" />
+                                                    <p:commandLink value="#{lista.permissao.rotina.rotina}" />
                                                 </p:column>
                                                 <p:column headerText="Permissão">
-                                                    <p:outputLabel value="#{linha.argumento1.evento.descricao}" />
+                                                    <p:outputLabel value="#{lista.permissao.evento.descricao}" />
                                                 </p:column>
                                             </p:dataTable>
                                         </p:panel>   
@@ -81,18 +81,18 @@
                                     </h:column>
                                     <h:column>
                                         <p:panel header="Permissões do Departamento e Nível" style="width: 420px;">
-                                            <p:dataTable value="#{permissaoBean.permissaoAdicionada}" var="linha" id="tbl2" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!">
+                                            <p:dataTable value="#{permissaoBean.listaPermissoesAdicionadas}" var="lista" id="tbl2" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30">
                                                 <p:column width="25" styleClass="text-center">
-                                                    <p:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                                    <p:selectBooleanCheckbox value="#{lista.selected}" />
                                                 </p:column>
                                                 <p:column headerText="Módulo">
-                                                    <p:outputLabel value="#{linha.argumento1.modulo.descricao}"/>
+                                                    <p:outputLabel value="#{lista.permissaoDepartamento.permissao.modulo.descricao}"/>
                                                 </p:column>
                                                 <p:column headerText="Rotina">
-                                                    <p:outputLabel value="#{linha.argumento1.rotina.rotina}"/>
+                                                    <p:outputLabel value="#{lista.permissaoDepartamento.permissao.rotina.rotina}"/>
                                                 </p:column>
                                                 <p:column headerText="Permissão">
-                                                    <p:outputLabel value="#{linha.argumento1.evento.descricao}"/>
+                                                    <p:outputLabel value="#{lista.permissaoDepartamento.permissao.evento.descricao}"/>
                                                 </p:column>
                                             </p:dataTable>
                                         </p:panel>                            
