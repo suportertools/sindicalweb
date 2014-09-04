@@ -16,14 +16,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 import javax.faces.model.SelectItem;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class PesquisaLogBean implements Serializable {
 
     private List<SelectItem>[] listSelectItem;

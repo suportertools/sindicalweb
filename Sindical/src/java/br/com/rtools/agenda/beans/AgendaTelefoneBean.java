@@ -626,7 +626,7 @@ public class AgendaTelefoneBean implements Serializable {
             if (getTipoAgenda().equals("pesquisaAgendaTelefone")) {
                 idUsuario = getUsuario().getId();
             }
-            List<AgendaTelefone> listAgendaTelefonesx = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda, favoritos, idUsuario);
+            List<AgendaTelefone> listAgendaTelefonesx = agendaDB.pesquisaAgendaTelefonex(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda, favoritos, idUsuario);
             for (AgendaTelefone listAgendaTelefone : listAgendaTelefonesx) {
                 AgendaTelefone at = listAgendaTelefone;
                 if (at.getAgenda().getPessoa() == null) {

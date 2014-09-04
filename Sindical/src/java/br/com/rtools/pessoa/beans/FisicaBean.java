@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import javax.faces.application.FacesMessage;
@@ -97,6 +96,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean disabledNaturalidade = false;
     private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
     private List<Socios> listaSocioInativo = new ArrayList<Socios>();
+    private String mask = "";
 
     private Endereco enderecox = new Endereco();
     private List<PessoaEndereco> listaPessoaEndereco = new ArrayList<PessoaEndereco>();
@@ -1434,8 +1434,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
-    public String getMascaraPesquisaFisica() {
-        return Mask.getMascaraPesquisa(porPesquisa, true);
+    public void mascaraPesquisaFisica() {
+        descPesquisa = "";
+        mask = Mask.getMascaraPesquisa(porPesquisa, true);
     }
 
     public List<Fisica> getListaPessoaFisica() {
@@ -1764,5 +1765,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setStrEndereco(String strEndereco) {
         this.strEndereco = strEndereco;
+    }
+
+    public String getMask() {
+        return mask;
+    }
+
+    public void setMask(String mask) {
+        this.mask = mask;
     }
 }

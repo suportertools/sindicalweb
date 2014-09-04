@@ -12,7 +12,8 @@ public class DBExternal {
 
     public Connection getConnection() {
         try {
-            String url = "jdbc:postgresql://200.158.101.9:5432/Rtools";
+            //String url = "jdbc:postgresql://200.158.101.9:5432/Rtools";
+            String url = "jdbc:postgresql://192.168.1.102:5432/Rtools";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
             props.setProperty("password", "r#@tools");
