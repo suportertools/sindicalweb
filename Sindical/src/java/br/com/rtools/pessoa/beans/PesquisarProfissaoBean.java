@@ -29,14 +29,13 @@ public class PesquisarProfissaoBean implements Serializable {
     }  
 
     public List<Profissao> getListaProfissao() {
-        if (!descricaoProfissao.equals("")) {
-            profissao.setProfissao(descricaoProfissao);
-        }
         if (listaProfissao.isEmpty() && !por.isEmpty()) {
             ProfissaoDB db = new ProfissaoDBToplink();
-            listaProfissao = (List<Profissao>) db.pesquisaProfParametros(por, combo, profissao.getProfissao());
+            if (!descricaoProfissao.isEmpty()) 
+                listaProfissao = (List<Profissao>) db.pesquisaProfParametros(por, combo, descricaoProfissao);
+            else
+                listaProfissao = (List<Profissao>) db.pesquisaProfParametros(por, combo, profissao.getProfissao());
         }
-        descricaoProfissao = "";
         return listaProfissao;
     }
 

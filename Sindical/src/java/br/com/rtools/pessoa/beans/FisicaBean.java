@@ -467,6 +467,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         }
 
+        indexNovoEndereco = "";
+        strEndereco = "";
         listaPessoaEndereco.clear();
         getListaPessoaEndereco();
         listaServicoPessoa.clear();

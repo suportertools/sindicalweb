@@ -1341,27 +1341,29 @@ public class MatriculaEscolaBean implements Serializable {
                         Pessoa pessoaResponsavelTitular = matriculaEscola.getResponsavel();
                         Pessoa pessoaResponsavel;
                         FunctionsDB functionsDB = new FunctionsDBTopLink();
-                        if (matriculaEscola.isDescontoFolha()) {
-                            int idResponsavel = functionsDB.responsavel(pessoaAluno.getId(), matriculaEscola.isDescontoFolha());
-                            if (idResponsavel != -1) {
-                                pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavel);
-                            } else {
-                                pessoaResponsavel = matriculaEscola.getResponsavel();
-                            }
-                        } else {
-                            int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
-                            if (idResponsavelEmpresa != -1) {
-                                JuridicaDB juridicaDB = new JuridicaDBToplink();
-                                Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-                                if (juridicaB != null && juridicaB.getId() != -1) {
-                                    pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavelEmpresa);
-                                } else {
-                                    pessoaResponsavel = pessoaResponsavelTitular;
-                                }
-                            } else {
-                                pessoaResponsavel = pessoaResponsavelTitular;
-                            }
-                        }
+                        pessoaResponsavel = matriculaEscola.getResponsavel();
+                        // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA) 03/09/2014 rogério pediu, que falou com a Élida do CAP
+//                        if (matriculaEscola.isDescontoFolha()) {
+//                            int idResponsavel = functionsDB.responsavel(pessoaAluno.getId(), matriculaEscola.isDescontoFolha());
+//                            if (idResponsavel != -1) {
+//                                pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavel);
+//                            } else {
+//                                pessoaResponsavel = matriculaEscola.getResponsavel();
+//                            }
+//                        } else {
+//                            int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), false);
+//                            if (idResponsavelEmpresa != -1) {
+//                                JuridicaDB juridicaDB = new JuridicaDBToplink();
+//                                Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+//                                if (juridicaB != null && juridicaB.getId() != -1) {
+//                                    pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavelEmpresa);
+//                                } else {
+//                                    pessoaResponsavel = pessoaResponsavelTitular;
+//                                }
+//                            } else {
+//                                pessoaResponsavel = pessoaResponsavelTitular;
+//                            }
+//                        }
 
                         if (pessoaResponsavel.getId() == -1) {
                             salvarAcumuladoDB.desfazerTransacao();
@@ -1417,7 +1419,7 @@ public class MatriculaEscolaBean implements Serializable {
                                         -1,
                                         lote,
                                         plano5,
-                                        pessoaResponsavel, // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA)
+                                        pessoaResponsavel, 
                                         servicos,
                                         null,
                                         tipoServico,

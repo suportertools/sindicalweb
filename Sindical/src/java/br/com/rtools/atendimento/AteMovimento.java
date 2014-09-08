@@ -41,6 +41,9 @@ public class AteMovimento implements java.io.Serializable {
     @JoinColumn(name = "id_atendente", referencedColumnName = "id")
     @ManyToOne
     private Usuario atendente;
+    @JoinColumn(name = "id_reserva", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario reserva;
     
     public AteMovimento() {
         this.id = -1;
@@ -54,9 +57,10 @@ public class AteMovimento implements java.io.Serializable {
         this.status = new AteStatus();
         this.juridica = new Juridica();
         this.atendente = new Usuario();
+        this.reserva = null;
     }
 
-    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico, AteStatus status, Juridica juridica, Usuario atendente) {
+    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico, AteStatus status, Juridica juridica, Usuario atendente, Usuario reserva) {
         this.id = id;
         this.pessoa = pessoa;
         this.filial = filial;
@@ -67,6 +71,7 @@ public class AteMovimento implements java.io.Serializable {
         this.status = status;
         this.juridica = juridica;
         this.atendente = atendente;
+        this.reserva = reserva;
     }
 
     public int getId() {
@@ -155,5 +160,13 @@ public class AteMovimento implements java.io.Serializable {
 
     public void setAtendente(Usuario atendente) {
         this.atendente = atendente;
+    }
+
+    public Usuario getReserva() {
+        return reserva;
+    }
+
+    public void setReserva(Usuario reserva) {
+        this.reserva = reserva;
     }
 }

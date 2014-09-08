@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.atendimento.AteMovimento;
 import br.com.rtools.atendimento.AteStatus;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
@@ -65,6 +66,38 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
     }
     
+    public void reservarAtendimento(AteMovimento amov){
+        Dao dao = new Dao();
+        SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+        
+        dao.openTransaction();
+        if (amov.getReserva() == null){
+            amov.setReserva(su.getSessaoUsuario());
+            if (!dao.update(amov)){
+                GenericaMensagem.error("Erro", "Não foi possível salvar reserva!");
+                dao.rollback();
+                return;
+            }
+            GenericaMensagem.info("OK", "Atendimento Reservado!");
+        }else{
+            if (su.getSessaoUsuario().getId() == amov.getReserva().getId()){
+                amov.setReserva(null);
+                if (!dao.update(amov)){
+                    GenericaMensagem.error("Erro", "Não foi possível salvar reserva!");
+                    dao.rollback();
+                    return;
+                }    
+                GenericaMensagem.info("OK", "Reserva desfeita!");
+            }else{
+                GenericaMensagem.warn("Atenção", "Atendimento não pode ser desfeito!");
+                dao.rollback();
+                return;
+            }
+        }
+        dao.commit();
+        PF.openDialog("dlg_reserva_atendimento");
+    }
+    
     public String excluirSenha() {
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         Senha senha = homologacaoDB.pesquisaSenhaAgendamento(agendamento.getId());
@@ -117,19 +150,46 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         
         senhaAtendimento = new Senha();
         RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').hide();");
-    }    
+    }  
+    
+    public void excluirSenhaAtendimento(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
+        Senha senha = (Senha)sv.pesquisaCodigo(senhaAtendimento.getId(), "Senha");
+        AteMovimento at = (AteMovimento) sv.pesquisaCodigo(senhaAtendimento.getAteMovimento().getId(), "AteMovimento");
+        
+        // DELETA A SENHA
+        if (!sv.deletarObjeto(senha)){
+            sv.desfazerTransacao();
+            return;
+        }
+        
+        // DELETA TAMBEM O ATENDIMENTO
+        if (!sv.deletarObjeto(at)){
+            sv.desfazerTransacao();
+            return;
+        }
+        
+        sv.comitarTransacao();
+        senhaAtendimento = new Senha();
+    }
 
     public List<Senha> getListaAtendimentoSimples() {
+        listaAtendimentoSimples.clear();
         if (listaAtendimentoSimples.isEmpty()){
-            HomologacaoDB db = new HomologacaoDBToplink();
-            listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId());
-                       
-            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
-            List<Senha> listax = db.listaAtendimentoIniciadoSimplesUsuario(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+            if (macFilial != null){
+                HomologacaoDB db = new HomologacaoDBToplink();
+                SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
 
-            if (!listax.isEmpty()){
-                senhaAtendimento = listax.get(0);
-                RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
+                listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+
+                List<Senha> listax = db.listaAtendimentoIniciadoSimplesUsuario(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+
+                if (!listax.isEmpty()){
+                    senhaAtendimento = listax.get(0);
+                    RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
+                }
             }
         }
         return listaAtendimentoSimples;
@@ -142,78 +202,127 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             return "homologacao";
         }
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
-
-        Senha senha = homologacaoDB.pesquisaAtendimentoIniciadoSimples(macFilial.getFilial().getId());
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (senha == null){
-            senha = homologacaoDB.pesquisaAtendimentoIniciado(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId(), macFilial.getMesa(), macFilial.getFilial().getId());
-            if (senha.getId() == -1) {
-                senha = homologacaoDB.pesquisaSenhaAtendimento(macFilial.getFilial().getId());
-                if (senha.getId() == -1) {
-                    //msgHomologacao = "Senha não encontrada!";
-                    GenericaMensagem.warn("Atenção", "Senha não encontrada!");
-                    return null;
-                }
-            }
-            agendamento = senha.getAgendamento();
-            fisica = senha.getAgendamento().getPessoaEmpresa().getFisica();
-            juridica = senha.getAgendamento().getPessoaEmpresa().getJuridica();
-            pessoaEmpresa = senha.getAgendamento().getPessoaEmpresa();
-            profissao = senha.getAgendamento().getPessoaEmpresa().getFuncao();
-            renderHomologar = true;
-            renderConcluir = true;
-            renderHomologar = true;
-            renderCancelarHorario = true;
-            renderHomologacao = false;
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+        SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
         
-            for (int i = 0; i < getListaDemissao().size(); i++) {
-                if (Integer.parseInt(listaDemissao.get(i).getDescription()) == agendamento.getDemissao().getId()) {
-                    idMotivoDemissao = (Integer) listaDemissao.get(i).getValue();
-                    break;
-                }
-            }
-            tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
-            agendamento.setStatus((Status) sv.find("Status", 5));
-            agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-            sv.abrirTransacao();
-            if (!sv.alterarObjeto(agendamento)) {
-                //msgHomologacao = "Erro ao atualizar Agendamento";
-                GenericaMensagem.error("Erro", "Não foi possível atualizar Agendamento!");
-                return "homologacao";
-            }
-            senha.setMesa(macFilial.getMesa());
-            senha.setHoraChamada(DataHoje.horaMinuto());
-            if (!sv.alterarObjeto(senha)) {
-                //msgHomologacao = "Erro ao atualizar Senha";
-                GenericaMensagem.error("Erro", "Não foi possível atualizar Senha!");
-                return "homologacao";
-            }
-            sv.comitarTransacao();
-        }else{
-            sv.abrirTransacao();
-            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+        Senha senhaAtendimentoReserva = homologacaoDB.pesquisaAtendimentoReserva(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        // SENHA DE ATENDIMENTO RESERVADA
+        if (senhaAtendimentoReserva != null){
+             sv.abrirTransacao();
             
+            senhaAtendimentoReserva.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
+            senhaAtendimentoReserva.getAteMovimento().setAtendente(su.getSessaoUsuario());
             
-            senha.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
-            senha.getAteMovimento().setAtendente(su.getSessaoUsuario());
+            senhaAtendimentoReserva.setHoraChamada(DataHoje.horaMinuto());
+            senhaAtendimentoReserva.setMesa(macFilial.getMesa());
             
-            senha.setHoraChamada(DataHoje.horaMinuto());
-            senha.setMesa(macFilial.getMesa());
-            
-            sv.alterarObjeto(senha);
-            sv.alterarObjeto(senha.getAteMovimento());
+            sv.alterarObjeto(senhaAtendimentoReserva);
+            sv.alterarObjeto(senhaAtendimentoReserva.getAteMovimento());
             
             sv.comitarTransacao();
             
             listaAtendimentoSimples.clear();
             
-            senhaAtendimento = senha;
+            senhaAtendimento = senhaAtendimentoReserva;
             RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
             RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
             return null;
         }
+        
+        Senha senhaAtendimentox = homologacaoDB.pesquisaAtendimentoIniciadoSimples(macFilial.getFilial().getId());
+        Senha senhaHomologacao = homologacaoDB.pesquisaSenhaAtendimento(macFilial.getFilial().getId());
+        
+        // SENHA DE ATENDIMENTO
+        if (senhaAtendimentox != null && senhaHomologacao.getId() == -1){
+            sv.abrirTransacao();
+
+            senhaAtendimentox.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
+            senhaAtendimentox.getAteMovimento().setAtendente(su.getSessaoUsuario());
+
+            senhaAtendimentox.setHoraChamada(DataHoje.horaMinuto());
+            senhaAtendimentox.setMesa(macFilial.getMesa());
+
+            sv.alterarObjeto(senhaAtendimentox);
+            sv.alterarObjeto(senhaAtendimentox.getAteMovimento());
+
+            sv.comitarTransacao();
+
+            listaAtendimentoSimples.clear();
+
+            senhaAtendimento = senhaAtendimentox;
+            RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
+            RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
+            return null;
+        }else if (senhaAtendimentox != null && (senhaAtendimentox.getSenha() < senhaHomologacao.getSenha())){
+            sv.abrirTransacao();
+
+            senhaAtendimentox.getAteMovimento().setStatus((AteStatus) sv.pesquisaCodigo(4, "AteStatus"));
+            senhaAtendimentox.getAteMovimento().setAtendente(su.getSessaoUsuario());
+
+            senhaAtendimentox.setHoraChamada(DataHoje.horaMinuto());
+            senhaAtendimentox.setMesa(macFilial.getMesa());
+
+            sv.alterarObjeto(senhaAtendimentox);
+            sv.alterarObjeto(senhaAtendimentox.getAteMovimento());
+
+            sv.comitarTransacao();
+
+            listaAtendimentoSimples.clear();
+
+            senhaAtendimento = senhaAtendimentox;
+            RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
+            RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
+            return null;
+        }
+        
+        // SENHA PADRÃO DE HOMOLOGAÇÃO
+        Senha senhaHomologacaoI = homologacaoDB.pesquisaAtendimentoIniciado(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId(), macFilial.getMesa(), macFilial.getFilial().getId());
+        if (senhaHomologacaoI.getId() != -1) {
+            senhaHomologacao = senhaHomologacaoI;
+        }
+
+        if (senhaHomologacao.getId() == -1) {
+            GenericaMensagem.warn("Atenção", "Senha não encontrada!");
+            return null;
+        }
+
+        agendamento = senhaHomologacao.getAgendamento();
+        fisica = senhaHomologacao.getAgendamento().getPessoaEmpresa().getFisica();
+        juridica = senhaHomologacao.getAgendamento().getPessoaEmpresa().getJuridica();
+        pessoaEmpresa = senhaHomologacao.getAgendamento().getPessoaEmpresa();
+        profissao = senhaHomologacao.getAgendamento().getPessoaEmpresa().getFuncao();
+        renderHomologar = true;
+        renderConcluir = true;
+        renderHomologar = true;
+        renderCancelarHorario = true;
+        renderHomologacao = false;
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+
+        for (int i = 0; i < getListaDemissao().size(); i++) {
+            if (Integer.parseInt(listaDemissao.get(i).getDescription()) == agendamento.getDemissao().getId()) {
+                idMotivoDemissao = (Integer) listaDemissao.get(i).getValue();
+                break;
+            }
+        }
+        tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+        agendamento.setStatus((Status) sv.find("Status", 5));
+        agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
+        sv.abrirTransacao();
+        if (!sv.alterarObjeto(agendamento)) {
+            //msgHomologacao = "Erro ao atualizar Agendamento";
+            GenericaMensagem.error("Erro", "Não foi possível atualizar Agendamento!");
+            return "homologacao";
+        }
+        senhaHomologacao.setMesa(macFilial.getMesa());
+        senhaHomologacao.setHoraChamada(DataHoje.horaMinuto());
+        if (!sv.alterarObjeto(senhaHomologacao)) {
+            //msgHomologacao = "Erro ao atualizar Senha";
+            GenericaMensagem.error("Erro", "Não foi possível atualizar Senha!");
+            return "homologacao";
+        }
+        sv.comitarTransacao();
+        
         return "homologacao";
     }
     

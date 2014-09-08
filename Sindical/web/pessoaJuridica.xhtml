@@ -128,17 +128,17 @@
                                                     </h:outputLink>
                                                 </p:column>
                                             </h:panelGrid>                                            
-                                            <h:panelGrid columns="2" style="width: 100%">
+                                            <h:panelGrid id="i_panel_razao" columns="2" style="width: 100%">
                                                 <p:column>
                                                     <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="change" update="@this i_razao" global="false"/>
+                                                        <p:ajax event="change" update="i_panel_razao" global="false"/>
                                                     </p:inputText>
                                                 </p:column>                                                
                                                 <p:column>
                                                     <h:outputLabel value="Nome Fantasia" /><br />
-                                                    <p:inputText id="i_razao" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="change" update="@this" global="false" immediate="true"/>
+                                                    <p:inputText value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
+                                                        <p:ajax event="change" update="i_panel_razao" global="false"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>
@@ -169,22 +169,18 @@
                                                 <p:column>
                                                     <h:outputLabel value="E-Mail" />
                                                     <p:commandLink value="enviar Login e Senha para este email" action="#{juridicaBean.enviarEmail}" rendered="#{juridicaBean.renEnviarEmail}" style="float: right"/><br />
-                                                    <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" converter="#{toLowerCase}" title="E-mail 1" style="width: 505px">
+                                                    <p:inputText maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" converter="#{toLowerCase}" title="E-mail 1" style="width: 475px">
                                                         <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>
                                                     
-                                            <h:panelGrid columns="5" id="i_contabilidade" style="width: 100%">
+                                            <h:panelGrid columns="2" id="i_contabilidade" style="width: 100%">
                                                 <p:column>
                                                     <p:commandButton value="Pesquisar Contabilidade" title="Pesquisar Contabilidade para essa empresa" onclick="PF('i_dlg_contabil').show()" rendered="#{(juridicaBean.juridica.contabilidade == null)}"/>
-                                                </p:column>
-                                                
-                                                <p:column>
-                                                    <h:outputText value="SERVIÇO CONTÁBIL: " rendered="#{(juridicaBean.juridica.contabilidade != null)}"/>
-                                                </p:column>
 
-                                                <p:column>
+                                                    <h:outputText value="SERVIÇO CONTÁBIL: " rendered="#{(juridicaBean.juridica.contabilidade != null)}"/>
+                                                
                                                     <p:commandLink value="#{juridicaBean.juridica.contabilidade.pessoa.nome}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold; margin-right: 15px"/>
                                                     <p:commandButton icon="ui-icon-close" rendered="#{juridicaBean.juridica.contabilidade != null}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" update="i_contabilidade :formPessoaJuridica:i_endereco"/>
                                                 </p:column>
@@ -196,8 +192,9 @@
                                                 </p:column>
                                             </h:panelGrid>
                                             
-                                            <h:panelGrid id="i_p" columns="6">
+                                            <h:panelGrid id="i_p" columns="2" style="width: 100%">
                                                 <p:selectBooleanCheckbox id="i_chk_email" value="#{juridicaBean.juridica.emailEscritorio}" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.juridica.cobrancaEscritorio)}" itemLabel="Email cobrança Escritório"/>
+                                                <p:commandLink value="Bloquear de Contribuição" action="#{juridicaBean.bloqueioContribuicao}" rendered="#{juridicaBean.juridica.id != -1}" style="float: right"/>
                                             </h:panelGrid>
                                         </h:panelGrid>
                                     </p:tab>
@@ -321,7 +318,8 @@
                                 </p:column>
                                 
                                 <p:column>
-                                    <p:commandLink value="Alterar Endereço" action="#{juridicaBean.abreEndereco}" update="i_endereco" rendered="#{juridicaBean.renAbreEnd}" style="float: right" global="false"/>
+                                    <p:commandLink value="Alterar Endereço" action="#{juridicaBean.abreEndereco}" update="i_endereco" rendered="#{juridicaBean.juridica.id != -1}" style="float: right" global="false" />
+                                    <p:commandLink value="Incluir Endereço" action="#{juridicaBean.abreEndereco}" update="i_endereco" rendered="#{juridicaBean.juridica.id == -1}" style="float: right" global="false"/>
                                 </p:column>
                             </h:panelGrid>
 
@@ -418,7 +416,7 @@
                             
                             <p:dialog widgetVar="i_dlg_inativar" header="Inativar Empresa" resizable="false" height="275" width="520" modal="true">
                                 <h:panelGrid columns="2">
-                                    <h:outputText value="Empresa: " styleClass="fontePadrao"/>
+                                    <h:outputText value="Empresa: " />
                                     <h:outputText value="#{juridicaBean.juridica.pessoa.nome}" style="font-weight: bold"/>
                                 </h:panelGrid>
 

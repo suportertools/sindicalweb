@@ -209,10 +209,14 @@ public class AtendimentoBean implements Serializable {
     public String verSenha(AteMovimento atendimento){
         AtendimentoDB db = new AtendimentoDBTopLink();
         Senha senha = db.pesquisaSenha(atendimento.getId());
-        if (senha.getSenha() < 10)
-            return "0"+ String.valueOf(senha.getSenha());
-        else
-            return String.valueOf(senha.getSenha());
+        if (senha != null){
+            if (senha.getSenha() < 10)
+                return "0"+ String.valueOf(senha.getSenha());
+            else
+                return String.valueOf(senha.getSenha());
+        }
+        
+        return "Sem Senha";
     }
     
     public String imprimirSenha(AteMovimento atendimento) throws JRException{

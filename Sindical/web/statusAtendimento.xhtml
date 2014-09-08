@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Status de Atendimento</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Status de Atendimento" styleClass="fonteHeader" />
+                        <h:form id="formStatusAtendimento">
+                            <c:set scope="request" var="object" value="${statusAtendimentoBean.status}"/>
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <h:outputLabel value="Descrição" /><br />
+                                        <p:inputText value="#{statusAtendimentoBean.status.descricao}" />
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{statusAtendimentoBean.status.reserva}" itemLabel="Reserva" />
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Salvar" action="#{statusAtendimentoBean.save()}" update=":formStatusAtendimento"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                            <p:dataTable id="tbl" value="#{statusAtendimentoBean.listAteStatus}" var="line" emptyMessage="Nenhum Status Encontrado!">
+                                <p:column headerText="Descrição">
+                                    <p:commandLink value="#{line.descricao}" action="#{statusAtendimentoBean.edit(line)}" update=":formStatusAtendimento"/>
+                                </p:column>
+
+                                <p:column headerText="Reserva" style="text-align: center">
+                                    <h:outputText value="- SIM -" rendered="#{line.reserva}"/>
+                                    <h:outputText value="- NÃO -" rendered="#{!line.reserva}"/>
+                                </p:column>
+                                
+                                <p:column width="25" style="text-align: center; ">
+                                    <p:commandButton icon="ui-icon-trash" action="#{statusAtendimentoBean.delete(line)}" update=":formStatusAtendimento" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

@@ -719,7 +719,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + " WHERE S.dtData = :data "
                     + "   AND S.ateMovimento.status.id = 1 "
                     + "   AND S.filial.id = :id_filial"
-                    + " ORDER BY S.dtData");
+                    + "   AND S.ateMovimento.reserva IS NULL"
+                    + " ORDER BY S.senha");
             
             qry.setParameter("data", DataHoje.dataHoje());
             qry.setParameter("id_filial", id_filial);
@@ -831,19 +832,31 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
     
     @Override
-    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial) {
+    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial, int id_usuario) {
         List<Senha> result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery(
-                    "  SELECT S "
-                    + "  FROM Senha AS S "
-                    + " WHERE S.dtData = :data "
-                    + "   AND S.ateMovimento.status.id = 1 "
-                    + "   AND S.filial.id = :id_filial"
-                    + " ORDER BY S.dtData");
+//            Query qry = getEntityManager().createQuery(
+//                    "  SELECT S "
+//                    + "  FROM Senha AS S "
+//                    + " WHERE S.dtData = :data "
+//                    + "   AND S.ateMovimento.status.id = 1 "
+//                    + "   AND S.filial.id = :id_filial"
+//                    + "   AND (S.ateMovimento.reserva IS NULL OR S.ateMovimento.reserva.id = :id_reserva)"
+//                    + " ORDER BY S.dtData");
+//            
+//            qry.setParameter("data", DataHoje.dataHoje());
+//            qry.setParameter("id_filial", id_filial);
+//            qry.setParameter("id_reserva", id_usuario);
             
-            qry.setParameter("data", DataHoje.dataHoje());
-            qry.setParameter("id_filial", id_filial);
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT s.* FROM ate_movimento a "
+                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                  + " WHERE a.dt_emissao = '" +DataHoje.dataHoje()+"'"
+                  + "   AND a.id_status = 1"
+                  + "   AND s.id_filial = " + id_filial
+                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +")"
+                  + " ORDER BY s.nr_senha, s.dt_data",
+            Senha.class);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
@@ -857,21 +870,56 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario) {
         List<Senha> result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery(
-                    "  SELECT S "
-                    + "  FROM Senha AS S "
-                    + " WHERE S.dtData = :data "
-                    + "   AND S.ateMovimento.status.id = 4 "
-                    + "   AND S.filial.id = :id_filial"
-                    + "   AND S.ateMovimento.atendente.id = :id_usuario"
-                    + " ORDER BY S.dtData");
+//            Query qry = getEntityManager().createQuery(
+//                    "  SELECT S "
+//                    + "  FROM Senha AS S "
+//                    + " WHERE S.dtData = :data "
+//                    + "   AND S.ateMovimento.status.id = 4 "
+//                    + "   AND S.filial.id = :id_filial"
+//                    + "   AND S.ateMovimento.atendente.id = :id_usuario"
+//                    + "   AND (S.ateMovimento.reserva IS NULL OR S.ateMovimento.reserva.id = :id_reserva)"
+//                    + " ORDER BY S.dtData");
+//            
+//            qry.setParameter("data", DataHoje.dataHoje());
+//            qry.setParameter("id_filial", id_filial);
+//            qry.setParameter("id_usuario", id_usuario);
+//            qry.setParameter("id_reserva", id_usuario);
             
-            qry.setParameter("data", DataHoje.dataHoje());
-            qry.setParameter("id_filial", id_filial);
-            qry.setParameter("id_usuario", id_usuario);
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT s.* FROM ate_movimento a "
+                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                  + " WHERE a.dt_emissao = '" +DataHoje.dataHoje()+"'"
+                  + "   AND a.id_status = 4"
+                  + "   AND s.id_filial = " + id_filial
+                  + "   AND a.id_atendente = " + id_usuario
+                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +")"
+                  + " ORDER BY s.nr_senha, s.dt_data",
+            Senha.class);            
+            
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
+        } catch (Exception e) {
+             //e.printStackTrace();
+        }
+        return result;
+    }
+    
+    @Override
+    public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario) {
+        Senha result = null;
+        Query qry = getEntityManager().createNativeQuery(
+                "SELECT s.* FROM ate_movimento a " +
+                " INNER JOIN hom_senha s on s.id_atendimento = a.id " +
+                " WHERE a.dt_emissao = '"+DataHoje.dataHoje()+"'" +
+                "   AND a.id_status = 1" +
+                "   AND s.id_filial = " + id_filial +
+                "   AND a.id_reserva = " + id_usuario +
+                " ORDER BY s.nr_senha",
+        Senha.class);            
+        qry.setMaxResults(1);
+        try{
+            result = (Senha) qry.getSingleResult();
         } catch (Exception e) {
              //e.printStackTrace();
         }
