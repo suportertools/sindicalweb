@@ -306,6 +306,12 @@
                                     </rich:column>
                                     <rich:column>
                                         <f:facet name="header">
+                                            <h:outputText value="Escritório"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
                                             <h:outputText value="Funcionário"/>
                                         </f:facet>
                                         <h:outputText value="#{objeto.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>

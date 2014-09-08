@@ -32,7 +32,7 @@ public class BloqueioServicosJSFBean {
         DataHoje dh = new DataHoje();
 
         refInicial = DataHoje.dataReferencia(DataHoje.data());
-        refFinal = DataHoje.dataReferencia(dh.incrementarAnos(1, DataHoje.data()));
+        refFinal = refInicial.substring(0, 2) + "/2050";// DataHoje.dataReferencia(dh.incrementarAnos(1, DataHoje.data()));
     }
 
     public String salvar() {

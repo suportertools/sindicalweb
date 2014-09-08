@@ -24,6 +24,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -45,6 +46,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
@@ -96,6 +98,7 @@ public class RecepcaoBean implements Serializable {
     private int id_protocolo;
     private String numeroProtocolo;
     private List<ListaAgendamento> listaRecepcaos;
+    private List<Senha> listaAtendimentoSimples = new ArrayList<Senha>();
 
     @PostConstruct
     public void init() {
@@ -1209,5 +1212,19 @@ public class RecepcaoBean implements Serializable {
             motivo = "Data: " + c.getData() + " - Motivo: " + c.getMotivo() + " - Cancelado por: " + c.getUsuario().getPessoa().getNome();            
         }
         return motivo;
+    }
+
+    public List<Senha> getListaAtendimentoSimples() {
+        if (listaAtendimentoSimples.isEmpty()){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+            
+            listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+        }
+        return listaAtendimentoSimples;
+    }
+
+    public void setListaAtendimentoSimples(List<Senha> listaAtendimentoSimples) {
+        this.listaAtendimentoSimples = listaAtendimentoSimples;
     }
 }

@@ -7,6 +7,7 @@ import br.com.rtools.arrecadacao.db.ConvencaoCidadeDB;
 import br.com.rtools.arrecadacao.db.ConvencaoCidadeDBToplink;
 import br.com.rtools.arrecadacao.db.ConvencaoDB;
 import br.com.rtools.arrecadacao.db.ConvencaoDBToplink;
+import br.com.rtools.financeiro.Impressao;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoContaCobranca;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -34,6 +35,7 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.Dao;
@@ -41,7 +43,6 @@ import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
-import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Linha;
@@ -572,13 +573,32 @@ public class ImpressaoBoletosBean implements Serializable {
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
         Movimento mov = new Movimento();
+        
+        SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
         for (int i = 0; i < listaMovGridSelecionada.size(); i++) {
             mov = db.pesquisaCodigo(
                     (Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
             lista.add(mov);
             listaValores.add(mov.getValor());
             listaVencimentos.add(mov.getVencimento());
+            
+            Impressao impressao = new Impressao();
+            
+            impressao.setUsuario(su.getSessaoUsuario());
+            impressao.setDtVencimento(mov.getDtVencimento());
+            impressao.setMovimento(mov);
+
+            if (!sv.inserirObjeto(impressao)){
+                sv.desfazerTransacao();
+                GenericaMensagem.error("Erro", "Não foi possível SALVAR impressão!");
+                return null;
+            }            
         }
+        sv.comitarTransacao();
+        
         ImprimirBoleto imp = new ImprimirBoleto();
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, imprimeVerso);
         //imp.visualizar(null);

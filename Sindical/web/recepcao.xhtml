@@ -196,9 +196,10 @@
                             </div>
                             <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
                             <div class="clear"></div>
-                            <div style="overflow:auto; height: 550px;">
-                                <h:panelGrid columns="1">
-                                    <rich:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 95%; "  id="tbl" iterationStatusVar="it" rowClasses="#{linha.argumento8}">
+                            <div style="overflow:auto; height: 310px;">
+                                <h:panelGrid columns="1" style="width: 1024px;">
+                                <h:outputLabel value="HOMOLOGAÇÕES" style="float: left"/>
+                                    <rich:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 100%;"  id="tbl" iterationStatusVar="it" rowClasses="#{linha.argumento8}">
                                         <rich:column style="text-align: center;">
                                             <f:facet name="header">
                                                 <h:outputLabel value="#"/>
@@ -320,6 +321,44 @@
                                             <h:commandLink action="#{protocoloAgendamento.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento9.id}"  title="Imprimir Protocolo"/>
                                         </rich:column>                                    
 
+                                    </rich:dataTable>
+                                </h:panelGrid>
+                            </div>
+                            
+                            <div style="overflow:auto; height: 300px; width: 100%;">
+                                <h:panelGrid columns="1" style="width: 1024px;">
+                                    <h:outputLabel value="ATENDIMENTOS" style="float: left" />
+                                    <rich:dataTable value="#{recepcaoBean.listaAtendimentoSimples}" var="linha"  style="width: 100%; " id="tbl_at">
+                                        <rich:column style="text-align: center">
+                                            <f:facet name="header">
+                                                <h:outputLabel value="ID"/>
+                                            </f:facet>
+                                            <h:outputLabel value="#{linha.id}"/>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Nome"/>
+                                            </f:facet>
+                                            <h:outputLabel value="#{linha.ateMovimento.pessoa.nome}"/>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="CPF"/>
+                                            </f:facet>
+                                            <h:outputLabel value="#{linha.ateMovimento.pessoa.documento}"/>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Operação"/>
+                                            </f:facet>
+                                            <h:outputLabel value="#{linha.ateMovimento.operacao.descricao}"/>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Empresa"/>
+                                            </f:facet>
+                                            <h:outputLabel value="#{linha.ateMovimento.juridica.pessoa.nome}"/>
+                                        </rich:column>
                                     </rich:dataTable>
                                 </h:panelGrid>
                             </div>

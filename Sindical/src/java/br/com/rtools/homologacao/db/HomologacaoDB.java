@@ -68,7 +68,9 @@ public interface HomologacaoDB {
     
     public Cancelamento pesquisaCancelamentoPorAgendanto(int idAgendamento);
     
-    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial);
+    public List<Senha> listaAtendimentoIniciadoSimples(int id_filial, int id_usuario);
     
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario);
+    
+    public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario);
 }

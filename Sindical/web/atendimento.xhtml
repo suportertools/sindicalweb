@@ -109,14 +109,14 @@
                                     <h:column>
                                         <c:if test="#{atendimentoBean.tipoTelefone.equals('telefone')}">
                                             <p:outputLabel value="Telefone" style="font-weight: bold"/><br />
-                                            <p:inputMask value="#{atendimentoBean.sisPessoa.telefone}" readonly="#{atendimentoBean.sisPessoa.id != -1}" style="text-align: center" mask="(99) 9999-9999">
+                                            <p:inputMask value="#{atendimentoBean.sisPessoa.telefone}" readonly="#{atendimentoBean.sisPessoa.id != -1}" style="text-align: center" mask="(99) 9999-9999" size="13">
                                                 <p:ajax event="change" update="@this"/>
                                             </p:inputMask>
                                             <p:commandButton icon="ui-icon-help" title="Usar mascara de Celular SP" action="#{atendimentoBean.alterarTipoMascara()}" update="i_panel_dados" disabled="#{atendimentoBean.sisPessoa.id != -1}"/>
                                         </c:if>
                                         <c:if test="#{atendimentoBean.tipoTelefone.equals('celular')}">
                                             <p:outputLabel value="Telefone (Celular)" style="font-weight: bold"/><br />
-                                            <p:inputMask value="#{atendimentoBean.sisPessoa.telefone}" readonly="#{atendimentoBean.sisPessoa.id != -1}" style="text-align: center" mask="(99) 99999-9999">
+                                            <p:inputMask value="#{atendimentoBean.sisPessoa.telefone}" readonly="#{atendimentoBean.sisPessoa.id != -1}" style="text-align: center" mask="(99) 99999-9999" size="13">
                                                 <p:ajax event="change" update="@this"/>
                                             </p:inputMask>
                                             <p:commandButton icon="ui-icon-help" title="Usar mascara de Telefone Comum" action="#{atendimentoBean.alterarTipoMascara()}" update="i_panel_dados" disabled="#{atendimentoBean.sisPessoa.id != -1}"/>

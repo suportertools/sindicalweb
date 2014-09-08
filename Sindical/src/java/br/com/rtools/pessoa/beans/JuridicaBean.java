@@ -76,7 +76,6 @@ public class JuridicaBean implements Serializable {
     private String strSimpleEndereco = "";
     private boolean renNovoEndereco = false;
     private boolean renEndereco = false;
-    private boolean renAbreEnd = true;
     private String renChkEndereco = "false";
     private String colorContri = "red";
     private String numDocumento = "";
@@ -671,7 +670,6 @@ public class JuridicaBean implements Serializable {
 //        colorContri = "red";
 //        renEndereco = "false";
 //        renNovoEndereco = "false";
-//        renAbreEnd = "true";
 //        msgDocumento = "";
 //        listaEnd = new ArrayList();
 //        idTipoDocumento = 1;
@@ -699,7 +697,6 @@ public class JuridicaBean implements Serializable {
         colorContri = "red";
         renEndereco = false;
         renNovoEndereco = false;
-        renAbreEnd = true;
         msgDocumento = "";
         listaEnd = new ArrayList();
         idTipoDocumento = 1;
@@ -1758,6 +1755,11 @@ public class JuridicaBean implements Serializable {
         }
     }
 
+    public String bloqueioContribuicao() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).bloqueioServicos();
+    }
+
     public String extratoTela() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
@@ -2036,14 +2038,6 @@ public class JuridicaBean implements Serializable {
 
     public void setRenEndereco(boolean renEndereco) {
         this.renEndereco = renEndereco;
-    }
-
-    public boolean getRenAbreEnd() {
-        return renAbreEnd;
-    }
-
-    public void setRenAbreEnd(boolean renAbreEnd) {
-        this.renAbreEnd = renAbreEnd;
     }
 
 //    public boolean getChkEndContabilidade() {

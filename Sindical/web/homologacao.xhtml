@@ -278,7 +278,8 @@
                         </h:panelGrid>
                         <br />
                         <!-- <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="# {polling.habilita}" /> -->
-                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" global="false"/>
+                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl, tbl_at" global="false" />
+                            
                         <h:panelGrid columns="1" id="tbl" style="margin: 0 auto; width: 1015px">
                             <p:outputLabel value="HOMOLOGAÇÕES" style="font-size: 11pt!important"/>
                             <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="200" scrollable="true" emptyMessage="Nenhuma homologação agendada!" rowStyleClass="#{linha.tblEstilo}">
@@ -299,11 +300,11 @@
                                 <p:column headerText="Empresa">
                                     <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
                                 </p:column>
+                                <p:column headerText="Escritório">
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}"/>
+                                </p:column>
                                 <p:column headerText="Funcionário" width="150">
                                     <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
-                                </p:column>
-                                <p:column headerText="Homologador">
-                                    <p:outputLabel value="#{linha.agendamento.homologador.pessoa.nome}"/>
                                 </p:column>
                                 
                                 <p:rowExpansion>
@@ -316,6 +317,10 @@
                                             <p:outputLabel value="Telefone" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.agendamento.telefone}"/>
                                         </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="Homologador" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.agendamento.homologador.pessoa.nome}"/>
+                                        </p:column>                                    
                                         <p:column>
                                             <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.usuarioAgendador}"/>
@@ -363,10 +368,22 @@
                                     </f:facet>
                                     <p:outputLabel value="#{linha.senha}" />
                                 </p:column>
+                                
+                                <p:column headerText="" style="text-align: center" width="80">
+                                    <p:commandLink value="Reservado" action="#{homologacaoBean.reservarAtendimento(linha.ateMovimento)}" style="color: red" rendered="#{linha.ateMovimento.reserva != null}" update=":form_cancelar_data_table:tbl_at"/>
+                                    <p:commandLink value="Reservar" action="#{homologacaoBean.reservarAtendimento(linha.ateMovimento)}" rendered="#{linha.ateMovimento.reserva == null}" update=":form_cancelar_data_table:tbl_at"/>
+                                </p:column>                                
                             </p:dataTable>                                
                         </h:panelGrid>
                     </p:panel>
 
+                    <p:dialog widgetVar="dlg_reserva_atendimento" header="Reserva Concluída" modal="true" width="200" resizable="false">
+                        <h:panelGrid style="width: 100%; text-align: center">
+                            <h:outputLabel value="Atualização Concluída!" style="font-size: 11pt!important"/>
+                            <p:commandButton value="OK" onclick="PF('dlg_reserva_atendimento').hide()"/>
+                        </h:panelGrid>
+                    </p:dialog>
+                        
                     <p:dialog id="i_dlg_atendimento_simples" widgetVar="dlg_atendimento_simples" header="Atendimento" modal="true" width="700" resizable="false" visible="#{homologacaoBean.senhaAtendimento.id != -1}">
                         <p:ajax event="close" listener="#{homologacaoBean.fecharModalSenha()}" update="form_cancelar_data_table"/>  
                         <h:panelGrid id="panel_atendimento_simples">
@@ -391,12 +408,20 @@
                             </h:panelGrid>
                         </h:panelGrid>
                         
-                        <h:panelGrid columns="3">
+                        <h:panelGrid columns="4">
                             <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
                             <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
                             <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
+                            <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()"/>
                         </h:panelGrid>
                     </p:dialog> 
+                    
+                    <p:dialog widgetVar="dlg_excluir_senha_atendimento" modal="true" header="Excluir senha de Atendimento" width="400" resizable="false">
+                        <h:outputLabel value="Deseja realmente EXCLUIR essa Senha de Atendimento?" />
+                        <br /><br />
+                        <p:commandButton value="Sim" type="submit" action="#{homologacaoBean.excluirSenhaAtendimento()}" update="form_cancelar_data_table" oncomplete="PF('dlg_excluir_senha_atendimento').hide(); PF('dlg_atendimento_simples').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                        <p:commandButton value="Não" type="button" onclick="PF('dlg_excluir_senha_atendimento').hide()" style="float: left" icon="ui-icon-close"/>    
+                    </p:dialog>
                     
                     <p:dialog widgetVar="dlg_atendimentos" header="Homologações pendente(s)" modal="true" width="1024" resizable="false" closable="true">
                         <h:panelGrid id="id_atendimentos">
