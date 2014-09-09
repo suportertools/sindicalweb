@@ -1713,6 +1713,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             lista.add("delete from Historico h where h.movimento.id in ( " + ids + " )");
             lista.add("delete from MensagemCobranca mc where mc.movimento.id in ( " + ids + " ) and mc.movimento.acordo.id = " + idAcordo + " and mc.movimento.ativo = true");
             lista.add("delete from Boleto b where b.nrCtrBoleto in (" + ids_boleto + ")");
+            lista.add("delete from ImpressaoWeb i where i.movimento.id in (" + ids + ")");
             lista.add("delete from Movimento m where m.acordo.id = " + idAcordo + " and m.ativo = true");
             lista.add("update Movimento m set m.ativo = true, m.acordo = null, m.multa = 0, m.juros = 0, m.correcao = 0 where m.acordo.id = " + idAcordo + "");
             lista.add("delete from Acordo a where a.id = " + idAcordo);
