@@ -14,6 +14,7 @@
         <f:subview id="header">
             <ui:include src="templates/template.xhtml"/>
             <ui:include src="templates/templateLinks.xhtml"/>
+            <ui:include src="templates/templateAcessoFilial.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="form_recepcao">
@@ -196,8 +197,8 @@
                             </div>
                             <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
                             <div class="clear"></div>
-                            <div style="overflow:auto; height: 310px;">
-                                <h:panelGrid columns="1" style="width: 1024px;">
+                            <div style="overflow:auto; height: 500px;">
+                                <h:panelGrid columns="1">
                                 <h:outputLabel value="HOMOLOGAÇÕES" style="float: left"/>
                                     <rich:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 100%;"  id="tbl" iterationStatusVar="it" rowClasses="#{linha.argumento8}">
                                         <rich:column style="text-align: center;">
@@ -223,67 +224,67 @@
                                             </a4j:commandLink>
                                         </rich:column>
 
-                                        <rich:column rendered="#{!recepcaoBean.ocultaColunaEmpresa}" width="100">
+                                        <rich:column rendered="#{!recepcaoBean.ocultaColunaEmpresa}" style="width: 120px; text-align: center">
                                             <f:facet name="header">
                                                 <h:outputLabel value="CNPJ"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento1}"/>
+                                            <h:outputLabel value="#{linha.argumento1}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column rendered="#{!recepcaoBean.ocultaColunaEmpresa}" >
                                             <f:facet name="header">
                                                 <h:outputLabel value="Empresa" />
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento2}"/>
+                                            <h:outputLabel value="#{linha.argumento2}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column>
                                             <f:facet name="header">
                                                 <h:outputLabel value="Escritório"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento14}"/>
+                                            <h:outputLabel value="#{linha.argumento14}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column>
                                             <f:facet name="header">
                                                 <h:outputLabel value="Contato"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento4}"/>
+                                            <h:outputLabel value="#{linha.argumento4}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column rendered="#{recepcaoBean.ocultaColunaPessoaFisica}" width="200">
                                             <f:facet name="header">
                                                 <h:outputLabel value="Chegada"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento9.recepcao.horaInicialFuncionario}"/>
+                                            <h:outputLabel value="#{linha.argumento9.recepcao.horaInicialFuncionario}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column rendered="#{!recepcaoBean.ocultaColunaPessoaFisica}" width="200">
                                             <f:facet name="header">
                                                 <h:outputLabel value="Funcionário / Chegada"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento7.fisica.pessoa.nome} - #{linha.argumento9.recepcao.horaInicialFuncionario}"/>
+                                            <h:outputLabel value="#{linha.argumento7.fisica.pessoa.nome} - #{linha.argumento9.recepcao.horaInicialFuncionario}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column width="200">
                                             <f:facet name="header" >
                                                 <h:outputLabel value="Preposto / Chegada"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento9.recepcao.preposto} - #{linha.argumento9.recepcao.horaInicialPreposto}"/>
+                                            <h:outputLabel value="#{linha.argumento9.recepcao.preposto} - #{linha.argumento9.recepcao.horaInicialPreposto}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column width="80">
                                             <f:facet name="header">
                                                 <h:outputLabel value="Telefone"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento5}"/>
+                                            <h:outputLabel value="#{linha.argumento5}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column>
                                             <f:facet name="header">
                                                 <h:outputLabel value="Usuario"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento6}"/>
+                                            <h:outputLabel value="#{linha.argumento6}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column rendered="#{!recepcaoBean.ocultaSenha}">
@@ -292,10 +293,10 @@
                                             </f:facet>
                                             <center>
                                                 <c:if test="#{!linha.argumento10.equals('')}">
-                                                    <h:commandLink action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha"/>
+                                                    <h:commandLink action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha" style="font-size: 8pt!important"/>
                                                 </c:if>
                                                 <c:if test="#{linha.argumento10.equals('')}">
-                                                    <h:outputLabel value="#{linha.argumento10}"/>
+                                                    <h:outputLabel value="#{linha.argumento10}" style="font-size: 8pt!important"/>
                                                 </c:if>
                                             </center>
                                         </rich:column>
@@ -304,14 +305,14 @@
                                             <f:facet name="header">
                                                 <h:outputLabel value="Homologador" />
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento3}"/>
+                                            <h:outputLabel value="#{linha.argumento3}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column rendered="#{!recepcaoBean.ocultaStatus}">
                                             <f:facet name="header">
                                                 <h:outputLabel value="Status"/>
                                             </f:facet>
-                                            <h:outputLabel value="#{linha.argumento13}"/>
+                                            <h:outputLabel value="#{linha.argumento13}" style="font-size: 8pt!important"/>
                                         </rich:column>
 
                                         <rich:column styleClass="coluna">
@@ -326,8 +327,8 @@
                             </div>
                             
                             <div style="overflow:auto; height: 300px; width: 100%;">
-                                <h:panelGrid columns="1" style="width: 1024px;">
-                                    <h:outputLabel value="ATENDIMENTOS" style="float: left" />
+                                <h:panelGrid columns="1" style="width: 1024px;" rendered="false">
+                                    <h:outputLabel value="ATENDIMENTOS" style="float: left"/>
                                     <rich:dataTable value="#{recepcaoBean.listaAtendimentoSimples}" var="linha"  style="width: 100%; " id="tbl_at">
                                         <rich:column style="text-align: center">
                                             <f:facet name="header">
