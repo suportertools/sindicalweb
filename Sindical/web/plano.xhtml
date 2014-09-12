@@ -1,274 +1,243 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Plano de Contas</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/> 
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formPlanoConta">
-
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="PLANO DE CONTAS" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae">
-                        <div class="divFundo">
-                            <div style="width: 480px;">
-                                <center>
-                                    <a4j:commandLink id="idAdicionarPlano" styleClass="idNovo iLink" value="Adicionar novo Plano 1"
-                                                     title="Adicionar este plano" oncomplete="modalOpcao('divPlano');" render="paneldivPlano"
-                                                     style="width: 480px; margin: 5px; margin-bottom: 15px; font-size: 10pt;"
-                                                     rendered="#{planoBean.radioPlanoVisivel}" action="#{planoBean.adicionarPlano1}"/>
-                                </center>
-                            </div>
-                            <h:panelGrid columns="5" style="width: 500px;">
-                                <a4j:commandButton value="Plano 1" render="tbl, idAdicionarPlano" action="#{planoBean.acaoPlano('pl1')}" styleClass="idNovo iLink" style="width: 100px; #{planoBean.cor1}"/>
-                                <a4j:commandButton value="Plano 2" render="tbl, idAdicionarPlano" action="#{planoBean.acaoPlano('pl2')}" styleClass="idNovo iLink" style="width: 100px; #{planoBean.cor2}"/>
-                                <a4j:commandButton value="Plano 3" render="tbl, idAdicionarPlano" action="#{planoBean.acaoPlano('pl3')}" styleClass="idNovo iLink" style="width: 100px; #{planoBean.cor3}"/>
-                                <a4j:commandButton value="Plano 4" render="tbl, idAdicionarPlano" action="#{planoBean.acaoPlano('pl4')}" styleClass="idNovo iLink" style="width: 100px; #{planoBean.cor4}"/>
-                                <a4j:commandButton value="Plano 5" render="tbl, idAdicionarPlano" action="#{planoBean.acaoPlano('pl5')}" styleClass="idNovo iLink" style="width: 100px; #{planoBean.cor5}"/>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <h:form id="form_plano">
+                        <c:set scope="request" var="object" value="${planoBean.plano}"/>
+                        <p:panel styleClass="wrapper" style="border: 0px;">
+                            <p:outputLabel value="Plano de Contas" styleClass="fonteHeader" />
+                            <div class="clear"></div>
+                            <p:messages autoUpdate="true" showDetail="true" showSummary="true" />
+                            <p:commandButton id="idAdicionarPlano" value="Adicionar Novo Plano 1" title="Adicionar este plano" oncomplete="PF('dlg_plano1').show();" update=":form_plano:" rendered="#{planoBean.selectedPlano == 1}" action="#{planoBean.addPlano1}" styleClass="margin-top-max"/>
+                            <p:panel styleClass="margin-top-max fundoCinza">
+                                <p:selectOneButton value="#{planoBean.selectedPlano}">
+                                    <p:ajax event="change" update="@this, :form_plano:" />
+                                    <f:selectItem itemLabel="Plano 1" itemValue="1" />
+                                    <f:selectItem itemLabel="Plano 2" itemValue="2" />
+                                    <f:selectItem itemLabel="Plano 3" itemValue="3" />
+                                    <f:selectItem itemLabel="Plano 4" itemValue="4" />
+                                    <f:selectItem itemLabel="Plano 5" itemValue="5" />
+                                </p:selectOneButton>                                
+                            </p:panel>
+                        </p:panel>
+                        <h:panelGrid id="tbl" styleClass="margin-top-max">
+                            <p:dataTable value="#{planoBean.listaPlanoContas}" var="listaPlanoContas" rows="15" paginator="true" rowIndexVar="index" styleClass="margin-left-max margin-right-max">
+                                <p:ajax event="page" global="false"/>
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column colspan="2" headerText="Plano 5" sortBy="#{listaPlanoContas.plano5.conta}"  rendered="#{planoBean.visible[4]}"/>
+                                        <p:column colspan="2" headerText="Plano 4" sortBy="#{listaPlanoContas.plano5.plano4.conta}" rendered="#{planoBean.visible[3]}"/>
+                                        <p:column colspan="2" headerText="Plano 3" sortBy="#{listaPlanoContas.plano5.plano4.plano3.conta}" rendered="#{planoBean.visible[2]}"/>
+                                        <p:column colspan="2" headerText="Plano 2" sortBy="#{listaPlanoContas.plano5.plano4.plano3.plano2.conta}" rendered="#{planoBean.visible[1]}"/>
+                                        <p:column colspan="2" headerText="Plano 1" sortBy="#{listaPlanoContas.plano5.plano4.plano3.plano2.plano.conta}" rendered="#{planoBean.visible[0]}"/>
+                                        <p:column colspan="1"  rendered="#{!planoBean.visible[4]}"/>
+                                    </p:row>
+                                    <p:row>
+                                        <!-- PLANO 5 -->
+                                        <p:column headerText="Nº" rendered="#{planoBean.visible[4]}"/>
+                                        <p:column headerText="Conta" rendered="#{planoBean.visible[4]}"/>
+                                        <!-- PLANO 4 -->
+                                        <p:column headerText="Nº" rendered="#{planoBean.visible[3]}"/>
+                                        <p:column headerText="Conta" rendered="#{planoBean.visible[3]}"/>
+                                        <!-- PLANO 3 -->
+                                        <p:column headerText="Nº" rendered="#{planoBean.visible[2]}"/>
+                                        <p:column headerText="Conta" rendered="#{planoBean.visible[2]}"/>
+                                        <!-- PLANO 2 -->
+                                        <p:column headerText="Nº" rendered="#{planoBean.visible[1]}"/>
+                                        <p:column headerText="Conta" rendered="#{planoBean.visible[1]}"/>
+                                        <!-- PLANO 1 -->
+                                        <p:column headerText="Nº" rendered="#{planoBean.visible[0]}"/>
+                                        <p:column headerText="Conta" rendered="#{planoBean.visible[0]}"/>
+                                        <!-- ADD NEW PLANO -->
+                                        <p:column rendered="#{!planoBean.visible[4]}"/>
+                                    </p:row>
+                                </p:columnGroup>
+                                <!-- PLANO 5 -->
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[4]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.numero}" action="#{planoBean.edit(listaPlanoContas.plano5)}" update=":form_plano:"/>
+                                </p:column>                                        
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[4]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.conta}" action="#{planoBean.edit(listaPlanoContas.plano5)}" update=":form_plano:"/>
+                                </p:column>
+                                <!-- PLANO 4 -->
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[3]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.numero}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:"/>
+                                </p:column>
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[3]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:"/>
+                                </p:column>
+                                <!-- PLANO 3 -->
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[2]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.plano3.numero}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3)}" update=":form_plano:"/>
+                                </p:column>
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[2]}">
+                                    <p:commandLink value=" #{listaPlanoContas.plano5.plano4.plano3.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3)}" update=":form_plano:"/>
+                                </p:column>
+                                <!-- PLANO 2 -->
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[1]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.plano3.plano2.numero}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3.plano2)}" update=":form_plano:"/>
+                                </p:column>
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[1]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.plano3.plano2.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3.plano2)}" update=":form_plano:"/>
+                                </p:column>
+                                <!-- PLANO 1 -->
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[0]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.plano3.plano2.plano.numero}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3.plano2.plano)}" update=":form_plano:"/>
+                                </p:column>
+                                <p:column styleClass="text-center" rendered="#{planoBean.visible[0]}">
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.plano3.plano2.plano.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4.plano3.plano2.plano)}" update=":form_plano:" />
+                                </p:column>                                
+                                <p:column styleClass="text-center" rendered="#{!planoBean.visible[4]}">
+                                    <p:commandButton icon="ui-icon-plus" title="Adicionar Novo #{planoBean.textNewPlano}" >
+                                        <p:ajax listener="#{planoBean.addNew(index)}" update=":form_plano:" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:panel styleClass="wrapper" style="border: 0px;">
+                            <h:panelGrid styleClass="margin-top-max">
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPlano}" title="Pesquisar planos" />
+                            </h:panelGrid>                            
+                        </p:panel>
+                        <p:dialog widgetVar="dlg_plano1" modal="true" closable="true" width="600" header="Plano 1">
+                            <h:panelGrid columns="2" id="i_panel_plano1">
+                                <p:outputLabel value="Número: "  />
+                                <p:inputText size="50" value="#{planoBean.plano.numero}" title="Número"/>
+                                <p:outputLabel value="Conta: "  />
+                                <p:inputText size="50" value="#{planoBean.plano.conta}" maxlength="50" title="Conta" />
+                                <p:outputLabel value="Acesso: "  />
+                                <p:inputText size="50" value="#{planoBean.plano.acesso}" maxlength="200" title="Acesso" />                                
+                                <p:outputLabel value="Classificador: "  />
+                                <p:inputText size="50" value="#{planoBean.plano.classificador}" title="Classificador:"/>
                             </h:panelGrid>
-                            <div style="float: left">
-                                <h:panelGroup style="overflow: auto; height:200px; width:530px; margin-top: 20px;" layout="block">
-                                    <rich:dataTable value="#{planoBean.listaPlano}" var="linha" style="width:100%" id="tbl" iterationStatusVar="it">
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value="#"/>
-                                            </f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Descrição"/>
-                                            </f:facet>
-                                            <a4j:commandLink value="#{linha.argumento1}" action="#{planoBean.editar}" styleClass="iLink" oncomplete="modalOpcao('#{linha.argumento2}');" render="panel#{linha.argumento2} ">
-                                                <a4j:param value="#{it.index}" assignTo="#{planoBean.idIndex}"/>
-                                            </a4j:commandLink>
-                                        </rich:column>
-
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value="#{linha.argumento3}"/>
-                                            </f:facet>
-                                            <a4j:commandLink  value="Adicionar" oncomplete="modalOpcao('#{planoBean.divNovoPlano}');" render="in1,ic1,in2,ic2,in3,ic3,in4,ic4,in5,ic5" action="#{planoBean.adicionarNovo}">
-                                                <a4j:param value="#{it.index}" assignTo="#{planoBean.idIndex}" />
-                                            </a4j:commandLink>
-                                        </rich:column>
-
-                                    </rich:dataTable>
-                                </h:panelGroup>
-                            </div>
-
-                        </div>
-                    <div style="clear: both;"></div>
-                    <div style="float: left; margin-top: 15px;">
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPlano}" title="Pesquisar planos"/>
-                    </div>
-                </div>
-            </center>
-
-                <div id="boxes">
-                    <div id="divPlano" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="PLANO" styleClass="fontePadrao" style="font-weight: bold"/>
-                            </h:panelGrid>
-                            <div style="margin-top: 15px">
-                                <h:panelGrid columns="2" id="paneldivPlano">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="in1" size="20" value="#{planoBean.plano.numero}" title="Número"/>
-                                    <h:outputLabel value="Conta: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="ic1" size="20" value="#{planoBean.plano.conta}" maxlength="50" title="Conta" onblur="upperCase(this);"/>
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(1)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(1)}"/>
                                 </h:panelGrid>
-                            </div>
-                            <br />
-                        </center>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Salvar" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 15px;"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" render="paneldivPlano" title="Excluir"/>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divPlano2" class="window classDivPlanos">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="PLANO 2" styleClass="fontePadrao" style="font-weight: bold"/>
-                            </h:panelGrid>
-                            <div style="margin-top: 15px">
-                                <h:panelGrid columns="2" id="paneldivPlano2">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="in2" size="20" value="#{planoBean.plano2.numero}" styleClass="uppercase" maxlength="10" title="Número"/>
-                                    <h:outputLabel value="Conta: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="ic2" size="20" value="#{planoBean.plano2.conta}" styleClass="uppercase" maxlength="50" title="Conta" onblur="upperCase(this);"/>
+                            </f:facet>                              
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_plano2" modal="true" closable="true" width="600" header="Plano 2">
+                            <h:panelGrid columns="2" id="i_panel_plano2">
+                                <p:outputLabel value="Número: "  />
+                                <p:inputText size="50" value="#{planoBean.plano2.numero}" maxlength="10" title="Número"/>
+                                <p:outputLabel value="Conta: "  />
+                                <p:inputText size="50" value="#{planoBean.plano2.conta}" maxlength="50" title="Conta" />
+                                <p:outputLabel value="Acesso: "  />
+                                <p:inputText size="50" value="#{planoBean.plano2.acesso}" maxlength="200" title="Acesso" />
+                                <p:outputLabel value="Classificador: "  />
+                                <p:inputText size="50" value="#{planoBean.plano2.classificador}" maxlength="50" title="Classificador" />
+                            </h:panelGrid>                                
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(2)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(2)}"/>
                                 </h:panelGrid>
-                            </div>
-                            <br />
-                        </center>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Salvar" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 15px;"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" render="paneldivPlano2" title="Excluir"/>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divPlano3" class="window classDivPlanos">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="PLANO 3" styleClass="fontePadrao" style="font-weight: bold"/>
-                            </h:panelGrid>
-                            <div style="margin-top: 15px">
-                                <h:panelGrid columns="2" id="paneldivPlano3">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" style="float: right;" for="idNumero3"/>
-                                    <h:inputText id="in3" size="50" value="#{planoBean.plano3.numero}" styleClass="uppercase" maxlength="100" title="Número"/>
-                                    <h:outputLabel value="Conta: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="ic3" size="50" value="#{planoBean.plano3.conta}" styleClass="uppercase" maxlength="200" title="Conta" onblur="upperCase(this);"/>
+                            </f:facet>
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_plano3" modal="true" closable="true" width="600" header="Plano 3">
+                            <h:panelGrid columns="2" id="i_panel_plano3">
+                                <p:outputLabel value="Número: " />
+                                <p:inputText size="50" value="#{planoBean.plano3.numero}" maxlength="100" title="Número"/>
+                                <p:outputLabel value="Conta: "  />
+                                <p:inputText size="50" value="#{planoBean.plano3.conta}" maxlength="200" title="Conta" />
+                                <p:outputLabel value="Acesso: "  />
+                                <p:inputText size="50" value="#{planoBean.plano3.acesso}" maxlength="200" title="Acesso" />
+                                <p:outputLabel value="Classificador: " />
+                                <p:inputText size="50" value="#{planoBean.plano3.classificador}" maxlength="100" title="Classificador"/>
+                            </h:panelGrid>                                
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(3)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(3)}"/>
                                 </h:panelGrid>
-                            </div>
-                            <br />
-                        </center>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Salvar" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 15px;"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" render="paneldivPlano3" title="Excluir"/>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divPlano4" class="window classDivPlanos">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="PLANO 4" styleClass="fontePadrao" style="font-weight: bold"/>
-                            </h:panelGrid>
-                            <div style="margin-top: 15px">
-                                <h:panelGrid columns="2"  id="paneldivPlano4">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="in4" size="20" value="#{planoBean.plano4.numero}" styleClass="uppercase" maxlength="100" title="Número"/>
-                                    <h:outputLabel value="Conta: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="ic4" size="20" value="#{planoBean.plano4.conta}" styleClass="uppercase" maxlength="200" title="Conta" onblur="upperCase(this);"/>
+                            </f:facet>                                
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_plano4" modal="true" closable="true" width="600" header="Plano 4">
+                            <h:panelGrid columns="2"  id="i_panel_plano4">
+                                <p:outputLabel value="Número: "  />
+                                <p:inputText  size="50" value="#{planoBean.plano4.numero}" maxlength="100" title="Número"/>
+                                <p:outputLabel value="Conta: "  />
+                                <p:inputText size="50" value="#{planoBean.plano4.conta}" maxlength="200" title="Conta" />
+                                <p:outputLabel value="Acesso: "  />
+                                <p:inputText size="50" value="#{planoBean.plano4.acesso}" maxlength="200" title="Acesso" />
+                                <p:outputLabel value="Classificador: "  />
+                                <p:inputText size="50" value="#{planoBean.plano4.classificador}" maxlength="200" title="Classificador" />
+                            </h:panelGrid>                                
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(4)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton oncomplete="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(4)}"/>
                                 </h:panelGrid>
-                            </div>
-                            <br />
-                        </center>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Salvar" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 15px;"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" render="paneldivPlano4" title="Excluir"/>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divPlano5" class="window classDivPlanos" style="height: 250px;">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="PLANO 5" styleClass="fontePadrao" style="font-weight: bold"/>
-                            </h:panelGrid>
-                            <div style="margin-top: 15px">
-                                <h:panelGrid columns="2"  id="paneldivPlano5">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="in5" size="20" value="#{planoBean.plano5.numero}" styleClass="uppercase" maxlength="100" title="Número" />
-                                    <h:outputLabel value="Conta: " styleClass="fontePadrao" style="float: right;"/>
-                                    <h:inputText id="ic5" size="20" value="#{planoBean.plano5.conta}" styleClass="uppercase" maxlength="200" title="Conta" onblur="upperCase(this);"/>
-                                    <h:outputLabel value="Conta Banco: " styleClass="fontePadrao" for="idContaBanco" style="float: right;"/>
-                                    <h:selectOneMenu value="#{planoBean.idPlanoConta}">
-                                        <f:selectItems value="#{planoBean.listaContaBanco}" />
-                                    </h:selectOneMenu>
+                            </f:facet>                                
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_plano5" modal="true" closable="true" width="600" header="Plano 5">
+                            <h:panelGrid columns="2" id="i_panel_plano5">
+                                <p:outputLabel value="Número: " />
+                                <p:inputText size="50" value="#{planoBean.plano5.numero}" maxlength="100" title="Número" />
+                                <p:outputLabel value="Conta: "  />
+                                <p:inputText size="80" value="#{planoBean.plano5.conta}" maxlength="200" title="Conta" />
+                                <p:outputLabel value="Conta Banco: "/>
+                                <p:selectOneMenu value="#{planoBean.idPlanoConta}" filter="true">
+                                    <f:selectItems value="#{planoBean.listaContaBanco}" />
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Acesso: "  />
+                                <p:inputText size="50" value="#{planoBean.plano5.acesso}" maxlength="200" title="Acesso" />
+                                <p:outputLabel value="Classificador: "  />
+                                <p:inputText size="50" value="#{planoBean.plano5.classificador}" maxlength="200" title="Conta" />
+                            </h:panelGrid>                                
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(5)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(5)}"/>
                                 </h:panelGrid>
-                            </div>
-                        </center>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Salvar" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" style="margin-left: 15px; margin-top: 15px;"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" render="paneldivPlano5" title="Excluir"/>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-
-                <div id="boxes">
-                    <div id="divSalvar" class="window classDivPlanos">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja salvar este Plano?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </f:facet>                                
+                        </p:dialog>
+                        <p:dialog id="i_panel_delete" widgetVar="dlg_delete" modal="true" width="400" closable="true" header="Deseja excluir este registro?">
+                            <f:facet name="footer">
+                                <p:panelGrid columns="2" styleClass="sbb">
+                                    <p:commandButton value="Sim" title="Excluir" action="#{planoBean.delete}" update=":form_plano:" oncomplete="PF('dlg_message').show(); PF('dlg_delete').hide();"  />
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide()"/>
+                                </p:panelGrid>
+                            </f:facet>
+                        </p:dialog>
+                        <p:dialog id="i_panel_message" modal="true" width="500" widgetVar="dlg_message" header="Mensagem">
+                            <h:panelGrid id="outConfirma">
+                                <p:messages showDetail="true" showSummary="true" autoUpdate="true"/>
                             </h:panelGrid>
+                            <f:facet name="footer">
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />                                    
+                            </f:facet>
+                        </p:dialog>                           
 
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{planoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma, tbl"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" render="tbl"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
+                    </h:form>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                <div id="boxes">
-                    <div id="divExcluir" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir este Plano?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{planoBean.excluir}" oncomplete="modalMensagem()" render="outConfirma" />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" render="tbl"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{planoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="plano" value="OK" title="OK" render="tbl"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
