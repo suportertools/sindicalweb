@@ -71,6 +71,7 @@ public class PlanoBean {
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("planoBean");
+        GenericaSessao.remove("planoPesquisa");
     }
 
     public void clear() {
@@ -210,23 +211,23 @@ public class PlanoBean {
 
     public void edit(Object o) {
         String className = o.getClass().getSimpleName();
-        if (className.equals("Plano")) {
+        if (className.equals("Plano") && selectedPlano == 1) {
             plano = (Plano) o;
             PF.openDialog("dlg_plano1");
             PF.update("form_plano:i_panel_plano1");
-        } else if (className.equals("Plano2")) {
+        } else if (className.equals("Plano2") && selectedPlano == 2) {
             plano2 = (Plano2) o;
             PF.openDialog("dlg_plano2");
             PF.update("form_plano:i_panel_plano2");
-        } else if (className.equals("Plano3")) {
+        } else if (className.equals("Plano3") && selectedPlano == 3) {
             plano3 = (Plano3) o;
             PF.openDialog("dlg_plano3");
             PF.update("form_plano:i_panel_plano3");
-        } else if (className.equals("Plano4")) {
+        } else if (className.equals("Plano4") && selectedPlano == 4) {
             plano4 = (Plano4) o;
             PF.openDialog("dlg_plano4");
             PF.update("form_plano:i_panel_plano4");
-        } else if (className.equals("Plano5")) {
+        } else if (className.equals("Plano5") && selectedPlano == 5) {
             plano5 = (Plano5) o;
             PF.openDialog("dlg_plano5");
             PF.update("form_plano:i_panel_plano5");
@@ -505,12 +506,12 @@ public class PlanoBean {
     }
 
     public void acaoPesquisaInicial() {
-        listaPlanoContas.clear();
+        listaPlanoContasPorPesquisa.clear();
         comoPesquisa = "I";
     }
 
     public void acaoPesquisaParcial() {
-        listaPlanoContas.clear();
+        listaPlanoContasPorPesquisa.clear();
         comoPesquisa = "P";
     }
 
@@ -620,7 +621,7 @@ public class PlanoBean {
     }
 
     public List<Plano5> getListaPlanoPorPesquisa() {
-        if(listaPlanoContasPorPesquisa.isEmpty()) {
+        if (listaPlanoContasPorPesquisa.isEmpty()) {
             PlanoDB db = new PlanoDBToplink();
             String tipoPlano = "Plano5";
             if (selectedPlano == 1) {
