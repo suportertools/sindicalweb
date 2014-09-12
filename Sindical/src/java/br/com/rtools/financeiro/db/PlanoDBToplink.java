@@ -2,8 +2,10 @@ package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.*;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 import javax.persistence.Query;
 
@@ -280,35 +282,32 @@ public class PlanoDBToplink extends DB implements PlanoDB {
 
         }
 
-
         return result;
     }
 
     @Override
     public List pesquisaPorPlano(String desc, String por, String como, String plano) {
-        List lista = new ArrayList();
+        desc = AnaliseString.removerAcentos(desc);
+        desc = desc.toUpperCase();
         String textQuery = null;
         if (como.equals("T")) {
             textQuery = "";
         } else if (como.equals("P")) {
             desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select obj from " + plano + " obj where UPPER(obj." + por + ") like :desc"
-                    + " order by obj." + por;
+            textQuery = "SELECT O.* FROM " + plano + " O WHERE UPPER(TRANSLATE(O." + por + ")) LIKE '" + desc + "' ORDER BY O." + por;
         } else if (como.equals("I")) {
             desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select obj from " + plano + " obj where UPPER(obj." + por + ") like :desc"
-                    + " order by obj." + por;
+            textQuery = "SELECT O.* FROM " + plano + " O WHERE UPPER(TRANSLATE(O." + por + ")) LIKE '" + desc + "' ORDER BY O." + por;
         }
         try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if ((desc != null) && (!(como.equals("T")))) {
-                qry.setParameter("desc", desc);
+            Query query = getEntityManager().createNativeQuery(textQuery, Plano5.class);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
-            lista = qry.getResultList();
         } catch (Exception e) {
-            lista = lista = new ArrayList();
         }
-        return lista;
+        return new ArrayList();
     }
 
     @Override
