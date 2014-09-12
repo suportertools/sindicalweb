@@ -124,6 +124,10 @@ public class EnderecoBean implements Serializable {
             mensagem = "O campo Logradouro está inválido!";
             return;
         }
+        if (endereco.getCep().isEmpty() || endereco.getCep().equals("_____-___")) {
+            mensagem = "Informar o cep!";
+            return;
+        }
         String cep = "";
         if (!endereco.getCep().equals("")) {
             cep = endereco.getCep().substring(0, 5);
