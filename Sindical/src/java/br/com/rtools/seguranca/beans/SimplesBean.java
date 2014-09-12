@@ -20,7 +20,6 @@ import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Nacionalidade;
-import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.TipoCentroComercial;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.TipoEndereco;
@@ -29,16 +28,15 @@ import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.suporte.ProStatus;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import br.com.rtools.utilitarios.SelectTranslate;
+import br.com.rtools.utilitarios.Tables;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,9 +45,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.persistence.Table;
-import javax.persistence.Column;
 import javax.persistence.Query;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
@@ -68,6 +65,7 @@ public class SimplesBean implements Serializable {
     private String[] sessoes;
     private int id;
     private int idRotina;
+    private boolean linkRetorno;
 
     public SimplesBean() {
         rotina = new Rotina();
@@ -82,6 +80,7 @@ public class SimplesBean implements Serializable {
         lista = new ArrayList();
         objeto = null;
         id = -1;
+        linkRetorno = false;
     }
 
     public List<SelectItem> getListaRotinaCombo() {
@@ -123,7 +122,7 @@ public class SimplesBean implements Serializable {
                     GenericaMensagem.info("Sucesso", mensagem);
                     descricao = "";
                     objeto = null;
-                    lista.clear();
+                    limpaLista();
                     id = -1;
                 } else {
                     mensagem = "Erro ao salvar " + nomeRotina + " ";
@@ -136,7 +135,7 @@ public class SimplesBean implements Serializable {
                     log.update(o.toString(), "ID: " + id + " - DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
                     GenericaMensagem.info("Sucesso", mensagem);
-                    lista.clear();
+                    limpaLista();
                     // descricao = "";
                     // objeto = null;
                     // id = -1;
@@ -150,14 +149,20 @@ public class SimplesBean implements Serializable {
         }
     }
 
-    public String editar(Object o) {
+    public String selecionar(Object o) {
         objeto = o;
         editaObjeto(objeto);
         GenericaSessao.put("linkClicado", true);
-        if (GenericaSessao.exists("urlRetorno") && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
+        if (GenericaSessao.exists("urlRetorno") && !((String) GenericaSessao.getObject("urlRetorno")).substring(0, 4).equals("menu")) {
             GenericaSessao.put("simplesPesquisa", objeto);
             return (String) GenericaSessao.getString("urlRetorno");
         }
+        return null;
+    }
+
+    public String editar(Object o) {
+        objeto = o;
+        editaObjeto(objeto);
         return null;
     }
 
@@ -174,7 +179,7 @@ public class SimplesBean implements Serializable {
             log.delete("ID: " + id + " - DESCRICAO: " + descricao);
             mensagem = "Registro excluído com sucesso!";
             GenericaMensagem.info("Sucesso", mensagem);
-            lista.clear();
+            limpaLista();
             objeto = null;
             id = -1;
             descricao = "";
@@ -269,82 +274,67 @@ public class SimplesBean implements Serializable {
     }
 
     public void converteObjeto(String tipo) {
-//        for (int i = 0; i < getListImports().size(); i++) {
-//           try {
-//                String o = getListImports().get(i).toString()+"."+sessoes[0];
-//                Class cls = Class.forName(o);
-//                Class partypes[] = new Class[2];
-//                Method m[] = cls.getDeclaredMethods();
-//                partypes[0] = (Class) m[0].getGenericReturnType();
-//                partypes[1] = (Class) m[2].getGenericReturnType();
-//                Constructor ct = cls.getConstructor(partypes);
-//                Object arglist[] = new Object[2];
-//                arglist[0] = -1;
-//                arglist[1] = descricao;
-//                objeto = ct.newInstance(arglist);
-//                if (objeto != null) {
-//                    break;
-//                }
-//            } catch (Exception e) {
-//                 return null;
-//            }
-//        }
+        objeto = convertToObject(tipo);
+    }
 
+    public Object convertToObject(String tipo) {
+        Object o = null;
         if (tipo.equals("Bairro")) {
-            objeto = (Bairro) new Bairro(id, descricao);
+            o = (Bairro) new Bairro(id, descricao);
         } else if (tipo.equals("Logradouro")) {
-            objeto = (Logradouro) new Logradouro(id, descricao);
+            o = (Logradouro) new Logradouro(id, descricao);
         } else if (tipo.equals("GrupoCidade")) {
-            objeto = (GrupoCidade) new GrupoCidade(id, descricao);
+            o = (GrupoCidade) new GrupoCidade(id, descricao);
         } else if (tipo.equals("DescricaoEndereco")) {
-            objeto = (DescricaoEndereco) new DescricaoEndereco(id, descricao);
+            o = (DescricaoEndereco) new DescricaoEndereco(id, descricao);
         } else if (tipo.equals("TipoEndereco")) {
-            objeto = (TipoEndereco) new TipoEndereco(id, descricao);
+            o = (TipoEndereco) new TipoEndereco(id, descricao);
         } else if (tipo.equals("TipoDocumento")) {
-            objeto = (TipoDocumento) new TipoDocumento(id, descricao);
+            o = (TipoDocumento) new TipoDocumento(id, descricao);
         } else if (tipo.equals("GrupoAgenda")) {
-            objeto = (GrupoAgenda) new GrupoAgenda(id, descricao);
+            o = (GrupoAgenda) new GrupoAgenda(id, descricao);
         } else if (tipo.equals("Evento")) {
-            objeto = (Evento) new Evento(id, descricao);
+            o = (Evento) new Evento(id, descricao);
         } else if (tipo.equals("Modulo")) {
-            objeto = (Modulo) new Modulo(id, descricao);
+            o = (Modulo) new Modulo(id, descricao);
         } else if (tipo.equals("Departamento")) {
-            objeto = (Departamento) new Departamento(id, descricao);
+            o = (Departamento) new Departamento(id, descricao);
         } else if (tipo.equals("Genero")) {
-            objeto = (Genero) new Genero(id, descricao);
+            o = (Genero) new Genero(id, descricao);
         } else if (tipo.equals("Indice")) {
-            objeto = (Indice) new Indice(id, descricao);
+            o = (Indice) new Indice(id, descricao);
         } else if (tipo.equals("TipoCentroComercial")) {
-            objeto = (TipoCentroComercial) new TipoCentroComercial(id, descricao);
+            o = (TipoCentroComercial) new TipoCentroComercial(id, descricao);
         } else if (tipo.equals("GrupoConvenio")) {
-            objeto = (GrupoConvenio) new GrupoConvenio(id, descricao);
+            o = (GrupoConvenio) new GrupoConvenio(id, descricao);
         } else if (tipo.equals("ComponenteCurricular")) {
-            objeto = (ComponenteCurricular) new ComponenteCurricular(id, descricao);
+            o = (ComponenteCurricular) new ComponenteCurricular(id, descricao);
         } else if (tipo.equals("GrupoEvento")) {
-            objeto = (GrupoEvento) new GrupoEvento(id, descricao);
+            o = (GrupoEvento) new GrupoEvento(id, descricao);
         } else if (tipo.equals("Banda")) {
-            objeto = (Banda) new Banda(id, descricao);
+            o = (Banda) new Banda(id, descricao);
         } else if (tipo.equals("Midia")) {
-            objeto = (Midia) new Midia(id, descricao);
+            o = (Midia) new Midia(id, descricao);
         } else if (tipo.equals("Nivel")) {
-            objeto = (Nivel) new Nivel(id, descricao);
+            o = (Nivel) new Nivel(id, descricao);
         } else if (tipo.equals("MotivoInativacao")) {
-            objeto = (MotivoInativacao) new MotivoInativacao(id, descricao);
+            o = (MotivoInativacao) new MotivoInativacao(id, descricao);
         } else if (tipo.equals("TipoServico")) {
-            objeto = (TipoServico) new TipoServico(id, descricao);
+            o = (TipoServico) new TipoServico(id, descricao);
         } else if (tipo.equals("AteOperacao")) {
-            objeto = (AteOperacao) new AteOperacao(id, descricao);
+            o = (AteOperacao) new AteOperacao(id, descricao);
         } else if (tipo.equals("ConviteMotivoSuspencao")) {
-            objeto = (ConviteMotivoSuspencao) new ConviteMotivoSuspencao(id, descricao);
+            o = (ConviteMotivoSuspencao) new ConviteMotivoSuspencao(id, descricao);
         } else if (tipo.equals("ProdutoUnidade")) {
-            objeto = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
+            o = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
-            objeto = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
+            o = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
         } else if (tipo.equals("Nacionalidade")) {
-            objeto = (Nacionalidade) new Nacionalidade(id, descricao);
+            o = (Nacionalidade) new Nacionalidade(id, descricao);
         } else if (tipo.equals("Cor")) {
-            objeto = (Cor) new Cor(id, descricao);
+            o = (Cor) new Cor(id, descricao);
         }
+        return o;
     }
 
     public void atualizaObjeto(String tipo) {
@@ -615,39 +605,67 @@ public class SimplesBean implements Serializable {
     }
 
     public void limpaLista() {
-        // lista.clear();
-    }
-
-    public synchronized List getLista() throws ClassNotFoundException {
+        lista.clear();
         if (sessoes != null) {
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             if (!pesquisaLista.isEmpty()) {
-                String table_name = "", string_class = pacoteDaClasse(sessoes[0]);
-
-                if (!string_class.isEmpty()) {
-                    Class cls = Class.forName(string_class);
-
-//                    for (Annotation ann : cls.getAnnotations()) {
-//                        if(!ann.annotationType().equals(javax.persistence.Table.class)) continue;
-//
-//                        javax.persistence.Table t = (javax.persistence.Table) ann;
-//                        table_name  = t.name();
-//                    }
-                    SelectTranslate st = new SelectTranslate();
-                    String value = "%" + pesquisaLista + "%";
+                if (lista.isEmpty()) {
+                    String desc = AnaliseString.removerAcentos(pesquisaLista.trim().toUpperCase());
+                    Object o = (Object) convertToObject(sessoes[0]);
+                    String tableName = Tables.name(o);
+                    if (o == null) {
+                        lista = new ArrayList();
+                    }
+                    Dao dao = new Dao();
+                    int maxResults = 500;
+                    if (desc.length() == 1) {
+                        maxResults = 100;
+                    } else if (desc.length() == 2) {
+                        maxResults = 150;
+                    } else if (desc.length() == 3) {
+                        maxResults = 200;
+                    }
+                    String queryString = " SELECT t.* FROM " + tableName + "  as t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%' limit " + maxResults;
                     try {
-                        return lista = st.select(cls.newInstance()).where("descricao", value).find();
-                    } catch (InstantiationException ex) {
-                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IllegalAccessException ex) {
-                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
+                        Query query = dao.getEntityManager().createNativeQuery(queryString, o.getClass());
+                        lista = query.getResultList();
+                    } catch (Exception e) {
+                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, e);
+                        lista = new ArrayList();
                     }
                 }
             }
         }
-        return lista;
     }
 
+//    public synchronized List getLista() throws ClassNotFoundException {
+//        if (sessoes != null) {
+//            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+//            if (!pesquisaLista.isEmpty()) {
+//                String table_name = "", string_class = pacoteDaClasse(sessoes[0]);
+//
+//                if (!string_class.isEmpty()) {
+//                    Class cls = Class.forName(string_class);
+//
+////                    for (Annotation ann : cls.getAnnotations()) {
+////                        if(!ann.annotationType().equals(javax.persistence.Table.class)) continue;
+////
+////                        javax.persistence.Table t = (javax.persistence.Table) ann;
+////                        table_name  = t.name();
+////                    }
+//                    SelectTranslate st = new SelectTranslate();
+//                    String value = "%" + pesquisaLista + "%";
+//                    try {
+//                        return lista = st.select(cls.newInstance()).where("descricao", value).find();
+//                    } catch (InstantiationException ex) {
+//                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
+//                    } catch (IllegalAccessException ex) {
+//                        Logger.getLogger(SimplesBean.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//            }
+//        }
+//        return lista;
+//    }
     public String pacoteDaClasse(String classe) {
         List<String> list_class = new ArrayList();
 
@@ -679,10 +697,6 @@ public class SimplesBean implements Serializable {
         return "";
     }
 
-    public void setLista(List lista) {
-        this.lista = lista;
-    }
-
     public String getPesquisaLista() {
         return pesquisaLista;
     }
@@ -690,6 +704,24 @@ public class SimplesBean implements Serializable {
     public void setPesquisaLista(String pesquisaLista) {
         this.pesquisaLista = pesquisaLista;
     }
+
+    public List getLista() {
+        return lista;
+    }
+
+    public void setLista(List lista) {
+        this.lista = lista;
+    }
+
+    public boolean isLinkRetorno() {
+        linkRetorno = GenericaSessao.exists("urlRetorno") && !((String) GenericaSessao.getString("urlRetorno")).substring(0, 4).equals("menu");
+        return linkRetorno;
+    }
+
+    public void setLinkRetorno(boolean linkRetorno) {
+        this.linkRetorno = linkRetorno;
+    }
+
 }
 //                Class cls = Class.forName(sessoes[0]);
 //
