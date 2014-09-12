@@ -47,7 +47,7 @@
                                                     <h:panelGrid columns="4">
                                                         <p:column>
                                                             <p:outputLabel value="Cadastrado"/><br />
-                                                            <p:calendar size="8" value="#{fisicaBean.fisica.pessoa.dtCriacao}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999">
+                                                            <p:calendar size="8" value="#{fisicaBean.fisica.pessoa.dtCriacao}" pattern="dd/MM/yyyy" yearRange="c-1:c+1" mask="99/99/9999">
                                                                 <p:ajax event="dateSelect" listener="#{fisicaBean.fisica.pessoa.selecionaDataCriacao}" />
                                                             </p:calendar>
                                                         </p:column>

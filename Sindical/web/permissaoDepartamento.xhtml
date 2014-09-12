@@ -55,17 +55,18 @@
                                 <h:panelGrid columns="3" styleClass="margin-top-max" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop">
                                     <h:column>
                                         <p:panel header="Permissões Disponíveis" style="width: 420px;">
-                                            <p:dataTable var="lista" id="tbl" value="#{permissaoBean.listaPermissoesDisponiveis}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30">
+                                            <p:dataTable var="lista" id="tbl" value="#{permissaoBean.listaPermissoesDisponiveis}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30" caseSensitiveSort="true" widgetVar="ipermissaodisponivel">
+                                                <p:ajax event="page" global="false"/>
                                                 <p:column width="25" styleClass="text-center">
                                                     <p:selectBooleanCheckbox value="#{lista.selected}" />
-                                                </p:column>
-                                                <p:column headerText="Módulo">
+                                                </p:column>                                              
+                                                <p:column headerText="Módulo" sortBy="#{lista.permissao.modulo.descricao}" width="100">
                                                     <p:commandLink value="#{lista.permissao.modulo.descricao}" />
                                                 </p:column>
-                                                <p:column headerText="Rotina">
+                                                <p:column headerText="Rotina" sortBy="#{lista.permissao.rotina.rotina}" width="100">
                                                     <p:commandLink value="#{lista.permissao.rotina.rotina}" />
                                                 </p:column>
-                                                <p:column headerText="Permissão">
+                                                <p:column headerText="Permissão" sortBy="#{lista.permissao.evento.descricao}">
                                                     <p:outputLabel value="#{lista.permissao.evento.descricao}" />
                                                 </p:column>
                                             </p:dataTable>
@@ -82,16 +83,17 @@
                                     <h:column>
                                         <p:panel header="Permissões do Departamento e Nível" style="width: 420px;">
                                             <p:dataTable value="#{permissaoBean.listaPermissoesAdicionadas}" var="lista" id="tbl2" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30">
+                                                <p:ajax event="page" global="false"/>
                                                 <p:column width="25" styleClass="text-center">
                                                     <p:selectBooleanCheckbox value="#{lista.selected}" />
                                                 </p:column>
-                                                <p:column headerText="Módulo">
+                                                <p:column headerText="Módulo" sortBy="#{lista.permissaoDepartamento.permissao.modulo.descricao}">
                                                     <p:outputLabel value="#{lista.permissaoDepartamento.permissao.modulo.descricao}"/>
                                                 </p:column>
-                                                <p:column headerText="Rotina">
+                                                <p:column headerText="Rotina" sortBy="#{lista.permissaoDepartamento.permissao.rotina.rotina}">
                                                     <p:outputLabel value="#{lista.permissaoDepartamento.permissao.rotina.rotina}"/>
                                                 </p:column>
-                                                <p:column headerText="Permissão">
+                                                <p:column headerText="Permissão" sortBy="#{lista.permissaoDepartamento.permissao.evento.descricao}">
                                                     <p:outputLabel value="#{lista.permissaoDepartamento.permissao.evento.descricao}"/>
                                                 </p:column>
                                             </p:dataTable>
