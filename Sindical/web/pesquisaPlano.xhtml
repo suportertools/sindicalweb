@@ -33,6 +33,7 @@
                                     <p:inputText id="palavraChave" value="#{planoBean.descPesquisa}" size="50"/>
                                     <p:outputLabel value="Por: " styleClass="margin-left-max"/>
                                     <p:selectOneMenu value="#{planoBean.porPesquisa}">
+                                        <p:ajax update="palavraChave" event="change" />
                                         <f:selectItem itemValue="ds_numero"  itemLabel="Número" />
                                         <f:selectItem itemValue="ds_conta" itemLabel="Conta"/>
                                         <f:selectItem itemValue="ds_acesso" itemLabel="Acesso"/>
