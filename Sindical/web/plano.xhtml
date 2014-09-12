@@ -25,8 +25,16 @@
                             <p:outputLabel value="Plano de Contas" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <p:messages autoUpdate="true" showDetail="true" showSummary="true" />
-                            <p:commandButton id="idAdicionarPlano" value="Adicionar Novo Plano 1" title="Adicionar este plano" oncomplete="PF('dlg_plano1').show();" update=":form_plano:" rendered="#{planoBean.selectedPlano == 1}" action="#{planoBean.addPlano1}" styleClass="margin-top-max"/>
-                            <p:panel styleClass="margin-top-max fundoCinza">
+                        </p:panel>
+                        <p:panel id="tbl" styleClass="margin-left-max margin-right-max margin-top-max">
+                            <f:facet name="header">
+                                <p:outputLabel value="Lista de Plano de Contas #{planoBean.selectedPlano}" />
+                            </f:facet>
+                            <f:facet name="footer">
+                                <p:commandButton id="idAdicionarPlano" value="Adicionar Novo Plano 1" title="Adicionar este plano" oncomplete="PF('dlg_plano1').show();" update=":form_plano:" rendered="#{planoBean.selectedPlano == 1}" action="#{planoBean.addPlano1}" />
+                            </f:facet>
+                            <h:panelGrid columns="10">
+
                                 <p:selectOneButton value="#{planoBean.selectedPlano}">
                                     <p:ajax event="change" update="@this, :form_plano:" />
                                     <f:selectItem itemLabel="Plano 1" itemValue="1" />
@@ -34,20 +42,18 @@
                                     <f:selectItem itemLabel="Plano 3" itemValue="3" />
                                     <f:selectItem itemLabel="Plano 4" itemValue="4" />
                                     <f:selectItem itemLabel="Plano 5" itemValue="5" />
-                                </p:selectOneButton>                                
-                            </p:panel>
-                        </p:panel>
-                        <h:panelGrid id="tbl" styleClass="margin-top-max">
-                            <p:dataTable value="#{planoBean.listaPlanoContas}" var="listaPlanoContas" rows="15" paginator="true" rowIndexVar="index" styleClass="margin-left-max margin-right-max">
+                                </p:selectOneButton>
+                            </h:panelGrid>
+                            <p:dataTable value="#{planoBean.listaPlanoContas}" var="listaPlanoContas" rows="15" paginator="true" rowIndexVar="index">
                                 <p:ajax event="page" global="false"/>
                                 <p:columnGroup type="header">
                                     <p:row>
-                                        <p:column colspan="2" headerText="Plano 5" sortBy="#{listaPlanoContas.plano5.conta}"  rendered="#{planoBean.visible[4]}"/>
+                                        <p:column colspan="2" headerText="Plano 5" sortBy="#{listaPlanoContas.plano5.conta}" rendered="#{planoBean.visible[4]}"/>
                                         <p:column colspan="2" headerText="Plano 4" sortBy="#{listaPlanoContas.plano5.plano4.conta}" rendered="#{planoBean.visible[3]}"/>
                                         <p:column colspan="2" headerText="Plano 3" sortBy="#{listaPlanoContas.plano5.plano4.plano3.conta}" rendered="#{planoBean.visible[2]}"/>
                                         <p:column colspan="2" headerText="Plano 2" sortBy="#{listaPlanoContas.plano5.plano4.plano3.plano2.conta}" rendered="#{planoBean.visible[1]}"/>
                                         <p:column colspan="2" headerText="Plano 1" sortBy="#{listaPlanoContas.plano5.plano4.plano3.plano2.plano.conta}" rendered="#{planoBean.visible[0]}"/>
-                                        <p:column colspan="1"  rendered="#{!planoBean.visible[4]}"/>
+                                        <p:column colspan="1" rendered="#{!planoBean.visible[4]}"/>
                                     </p:row>
                                     <p:row>
                                         <!-- PLANO 5 -->
@@ -66,22 +72,22 @@
                                         <p:column headerText="Nº" rendered="#{planoBean.visible[0]}"/>
                                         <p:column headerText="Conta" rendered="#{planoBean.visible[0]}"/>
                                         <!-- ADD NEW PLANO -->
-                                        <p:column rendered="#{!planoBean.visible[4]}"/>
+                                        <p:column rendered="#{!planoBean.visible[4]}" headerText="Novo #{planoBean.textNewPlano}"/>
                                     </p:row>
                                 </p:columnGroup>
-                                <!-- PLANO 5 -->
+                                <!-- PLANO 5 -->                                      
                                 <p:column styleClass="text-center" rendered="#{planoBean.visible[4]}">
                                     <p:commandLink value="#{listaPlanoContas.plano5.numero}" action="#{planoBean.edit(listaPlanoContas.plano5)}" update=":form_plano:"/>
                                 </p:column>                                        
                                 <p:column styleClass="text-center" rendered="#{planoBean.visible[4]}">
-                                    <p:commandLink value="#{listaPlanoContas.plano5.conta}" action="#{planoBean.edit(listaPlanoContas.plano5)}" update=":form_plano:"/>
+                                    <p:commandLink value="#{listaPlanoContas.plano5.conta}" action="#{planoBean.edit(listaPlanoContas.plano5)}" update=":form_plano:" />
                                 </p:column>
                                 <!-- PLANO 4 -->
                                 <p:column styleClass="text-center" rendered="#{planoBean.visible[3]}">
                                     <p:commandLink value="#{listaPlanoContas.plano5.plano4.numero}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:"/>
                                 </p:column>
                                 <p:column styleClass="text-center" rendered="#{planoBean.visible[3]}">
-                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:"/>
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:" rendered="#{planoBean.visible[4]}"/>
                                 </p:column>
                                 <!-- PLANO 3 -->
                                 <p:column styleClass="text-center" rendered="#{planoBean.visible[2]}">
@@ -110,7 +116,7 @@
                                     </p:commandButton>
                                 </p:column>
                             </p:dataTable>
-                        </h:panelGrid>
+                        </p:panel>
                         <p:panel styleClass="wrapper" style="border: 0px;">
                             <h:panelGrid styleClass="margin-top-max">
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPlano}" title="Pesquisar planos" />
@@ -129,7 +135,7 @@
                             </h:panelGrid>
                             <f:facet name="footer">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(1)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(1)}" oncomplete="PF('dlg_message').show()" update=":form_plano: outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(1)}"/>
                                 </h:panelGrid>
                             </f:facet>                              
@@ -147,7 +153,7 @@
                             </h:panelGrid>                                
                             <f:facet name="footer">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(2)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(2)}" oncomplete="PF('dlg_message').show()" update=":form_plano: outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(2)}"/>
                                 </h:panelGrid>
                             </f:facet>
@@ -165,7 +171,7 @@
                             </h:panelGrid>                                
                             <f:facet name="footer">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(3)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(3)}" oncomplete="PF('dlg_message').show()" update=":form_plano: outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(3)}"/>
                                 </h:panelGrid>
                             </f:facet>                                
@@ -179,11 +185,11 @@
                                 <p:outputLabel value="Acesso: "  />
                                 <p:inputText size="50" value="#{planoBean.plano4.acesso}" maxlength="200" title="Acesso" />
                                 <p:outputLabel value="Classificador: "  />
-                                <p:inputText size="50" value="#{planoBean.plano4.classificador}" maxlength="200" title="Classificador" />
+                                <p:inputText size="50" value="#{planoBean.plano4.classificador}" maxlength="100" title="Classificador" />
                             </h:panelGrid>                                
                             <f:facet name="footer">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(4)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(4)}" oncomplete="PF('dlg_message').show()" update=":form_plano: outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton oncomplete="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(4)}"/>
                                 </h:panelGrid>
                             </f:facet>                                
@@ -193,7 +199,7 @@
                                 <p:outputLabel value="Número: " />
                                 <p:inputText size="50" value="#{planoBean.plano5.numero}" maxlength="100" title="Número" />
                                 <p:outputLabel value="Conta: "  />
-                                <p:inputText size="80" value="#{planoBean.plano5.conta}" maxlength="200" title="Conta" />
+                                <p:inputText size="50" value="#{planoBean.plano5.conta}" maxlength="200" title="Conta" />
                                 <p:outputLabel value="Conta Banco: "/>
                                 <p:selectOneMenu value="#{planoBean.idPlanoConta}" filter="true">
                                     <f:selectItems value="#{planoBean.listaContaBanco}" />
@@ -205,7 +211,7 @@
                             </h:panelGrid>                                
                             <f:facet name="footer">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(5)}" oncomplete="PF('dlg_message').show()" update="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Salvar" title="Salvar" action="#{planoBean.save(5)}" oncomplete="PF('dlg_message').show()" update=":form_plano: outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" action="#{planoBean.selectedDeletePlano(5)}"/>
                                 </h:panelGrid>
                             </f:facet>                                
