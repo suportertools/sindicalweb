@@ -47,59 +47,62 @@
                             <h:outputText value="Cidades" styleClass="fonteHeader" />
 
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="clear: both">
-                                <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />  
-                                <p:inputText id="i_cidade" size="50" value="#{cidadeBean.cidade.cidade}" />
-                                <p:watermark for="i_cidade" value="Digite o nome da Cidade" />
-
-                                <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="position: absolute; margin-left: 15px; margin-top: 2px; padding-right: 5px" rendered="false">
-                                    <f:selectItem itemValue="AC" itemLabel="AC"/>
-                                    <f:selectItem itemValue="AL" itemLabel="AL"/>
-                                    <f:selectItem itemValue="AP" itemLabel="AP"/>
-                                    <f:selectItem itemValue="AM" itemLabel="AM"/>
-                                    <f:selectItem itemValue="BA" itemLabel="BA"/>
-                                    <f:selectItem itemValue="CE" itemLabel="CE"/>
-                                    <f:selectItem itemValue="DF" itemLabel="DF"/>
-                                    <f:selectItem itemValue="ES" itemLabel="ES"/>
-                                    <f:selectItem itemValue="GO" itemLabel="GO"/>
-                                    <f:selectItem itemValue="MA" itemLabel="MA"/>
-                                    <f:selectItem itemValue="MT" itemLabel="MT"/>
-                                    <f:selectItem itemValue="MS" itemLabel="MS"/>
-                                    <f:selectItem itemValue="MG" itemLabel="MG"/>
-                                    <f:selectItem itemValue="PA" itemLabel="PA"/>
-                                    <f:selectItem itemValue="PB" itemLabel="PB"/>
-                                    <f:selectItem itemValue="PR" itemLabel="PR"/>
-                                    <f:selectItem itemValue="PE" itemLabel="PE"/>
-                                    <f:selectItem itemValue="PI" itemLabel="PI"/>
-                                    <f:selectItem itemValue="RJ" itemLabel="RJ"/>
-                                    <f:selectItem itemValue="RN" itemLabel="RN"/>
-                                    <f:selectItem itemValue="RS" itemLabel="RS"/>
-                                    <f:selectItem itemValue="RO" itemLabel="RO"/>
-                                    <f:selectItem itemValue="RR" itemLabel="RR"/>
-                                    <f:selectItem itemValue="SC" itemLabel="SC"/>
-                                    <f:selectItem itemValue="SP" itemLabel="SP"/>
-                                    <f:selectItem itemValue="SE" itemLabel="SE"/>
-                                    <f:selectItem itemValue="TO" itemLabel="TO"/>
-                                </p:selectOneMenu>   
-
-                                <p:commandButton action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" style="margin-left: 80px" update=":formCidadePesquisar:i_panel_grid"/>
-                                <p:commandButton action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" update=":formCidadePesquisar:i_panel_grid" />
-
-                                <p:commandButton value="Adicionar nova Cidade" action="#{cidadeBean.clear()}" update=":formCidadeSalvar:i_panel_novo" disabled="#{controleAcessoBean.botaoSalvar}" style="float: right" onclick="PF('dlg_save').show()" rendered="false"/>
-
+                                <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />
+                                <h:panelGrid columns="8">
+                                    <p:inputText id="i_cidade" size="50" value="#{cidadeBean.cidade.cidade}" />
+                                    <p:watermark for="i_cidade" value="Digite o nome da Cidade" />
+                                    <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="position: absolute; margin-left: 15px; margin-top: 2px; padding-right: 5px" rendered="false">
+                                        <f:selectItem itemValue="AC" itemLabel="AC"/>
+                                        <f:selectItem itemValue="AL" itemLabel="AL"/>
+                                        <f:selectItem itemValue="AP" itemLabel="AP"/>
+                                        <f:selectItem itemValue="AM" itemLabel="AM"/>
+                                        <f:selectItem itemValue="BA" itemLabel="BA"/>
+                                        <f:selectItem itemValue="CE" itemLabel="CE"/>
+                                        <f:selectItem itemValue="DF" itemLabel="DF"/>
+                                        <f:selectItem itemValue="ES" itemLabel="ES"/>
+                                        <f:selectItem itemValue="GO" itemLabel="GO"/>
+                                        <f:selectItem itemValue="MA" itemLabel="MA"/>
+                                        <f:selectItem itemValue="MT" itemLabel="MT"/>
+                                        <f:selectItem itemValue="MS" itemLabel="MS"/>
+                                        <f:selectItem itemValue="MG" itemLabel="MG"/>
+                                        <f:selectItem itemValue="PA" itemLabel="PA"/>
+                                        <f:selectItem itemValue="PB" itemLabel="PB"/>
+                                        <f:selectItem itemValue="PR" itemLabel="PR"/>
+                                        <f:selectItem itemValue="PE" itemLabel="PE"/>
+                                        <f:selectItem itemValue="PI" itemLabel="PI"/>
+                                        <f:selectItem itemValue="RJ" itemLabel="RJ"/>
+                                        <f:selectItem itemValue="RN" itemLabel="RN"/>
+                                        <f:selectItem itemValue="RS" itemLabel="RS"/>
+                                        <f:selectItem itemValue="RO" itemLabel="RO"/>
+                                        <f:selectItem itemValue="RR" itemLabel="RR"/>
+                                        <f:selectItem itemValue="SC" itemLabel="SC"/>
+                                        <f:selectItem itemValue="SP" itemLabel="SP"/>
+                                        <f:selectItem itemValue="SE" itemLabel="SE"/>
+                                        <f:selectItem itemValue="TO" itemLabel="TO"/>
+                                    </p:selectOneMenu>
+                                    <h:column>
+                                        <h:panelGrid columns="3"> 
+                                            <p:commandButton action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" update=":formCidadePesquisar:i_panel_grid"/>
+                                            <p:commandButton action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" update=":formCidadePesquisar:i_panel_grid" />
+                                            <p:commandButton value="Adicionar nova Cidade" action="#{cidadeBean.clear()}" update=":formCidadeSalvar:i_panel_novo" disabled="#{controleAcessoBean.botaoSalvar}" style="float: right; margin-left: 330px " onclick="PF('dlg_save').show()" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" />
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </h:panelGrid>
                             </p:panel>
                         </h:form>
 
                         <h:form id="formCidadePesquisar">
                             <h:panelGrid id="i_panel_grid" style="width: 100%">
-                                <p:dataTable value="#{cidadeBean.listCidade}" var="cidade" id="tbl" emptyMessage="Nenhuma cidade encontrada">
+                                <p:dataTable value="#{cidadeBean.listCidade}" var="cidade" id="tbl" emptyMessage="Nenhuma cidade encontrada" rows="20" paginator="true">
+                                    <p:ajax event="page" global="false"/>
 
-                                    <p:column headerText="ID" style="text-align: center">
-                                        <p:commandLink value="#{cidade.id}" action="#{cidadeBean.edit(cidade)}"/>
-                                    </p:column>          
+                                    <p:column headerText="Editar" styleClass="text-center" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" width="50">
+                                        <p:commandButton icon="ui-icon-search"  action="#{cidadeBean.editPagina(cidade)}" update=":formCidadeSalvar:i_panel_novo" onclick="PF('dlg_save').show()" title="Clique para editar esta Cidade" />
+                                    </p:column>
 
-                                    <p:column headerText="Editar" width="50" styleClass="text-center" rendered="false">
-                                        <p:commandButton icon="ui-icon-search"  action="#{cidadeBean.editPagina(cidade)}" update=":formCidadeSalvar:i_panel_novo" onclick="PF('dlg_save').show()" title="Clique para editar esta Cidade" rendered="false" />
-                                    </p:column>                  
+                                    <p:column headerText="ID" style="text-align: center" width="40">
+                                        <p:commandLink value="#{cidade.id}" action="#{cidadeBean.edit(cidade)}" update=":formCidadeSalvar:i_panel_novo" />
+                                    </p:column>
 
                                     <p:column headerText="Cidade (clique para selecionar)">
                                         <p:commandLink value="#{cidade.cidade}" action="#{cidadeBean.edit(cidade)}"/>
@@ -116,7 +119,7 @@
                         </h:form>
 
                         <h:form id="formCidadeSalvar">
-                            <p:dialog widgetVar="dlg_save" showEffect="fade" header="Nova Cidade" width="500" resizable="false" modal="true">
+                            <p:dialog widgetVar="dlg_save" showEffect="fade" header="Manutenção" width="500" resizable="false" modal="true">
                                 <h:panelGrid id="i_panel_novo" columns="2" style="float: left">
                                     <p:outputLabel value="Nome" />
                                     <p:outputLabel value="UF" />
