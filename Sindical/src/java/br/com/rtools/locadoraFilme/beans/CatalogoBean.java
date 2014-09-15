@@ -2,19 +2,23 @@ package br.com.rtools.locadoraFilme.beans;
 
 import br.com.rtools.locadoraFilme.Catalogo;
 import br.com.rtools.locadoraFilme.Titulo;
-import br.com.rtools.locadoraFilme.db.CatalogoDB;
-import br.com.rtools.locadoraFilme.db.CatalogoDBToplink;
-import br.com.rtools.locadoraFilme.db.TituloDB;
-import br.com.rtools.locadoraFilme.db.TituloDBToplink;
+import br.com.rtools.locadoraFilme.dao.CatalogoDao;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 
 @ManagedBean
 @SessionScoped
@@ -23,184 +27,164 @@ public class CatalogoBean {
     private Catalogo catalogo;
     private String comoPesquisa;
     private String descPesquisa;
-    private String msgConfirma;
-//    private List<GCatalogo> listaCatalogo;
+    private List<Catalogo> listCatalogo;
     private int idCatalogo;
-    private List<SelectItem> listaTituloCombo;
-    private List<Titulo> listaTitulo;
+    private List<SelectItem> listTitulo;
     private int idTitulo;
-    private List<SelectItem> listaFilialCombo;
-    private List<Filial> listaFilial;
+    private List<SelectItem> listFilial;
     private int idFilial;
-    private int idIndex;
     private int quantidade;
     private Date data;
 
-    public CatalogoBean() {
+    @PostConstruct
+    public void init() {
         catalogo = new Catalogo();
-        idFilial = 0;
-        idTitulo = 0;
-//        listaCatalogo = new ArrayList<GCatalogo>();
-        listaFilialCombo = new ArrayList<SelectItem>();
-        listaFilial = new ArrayList<Filial>();
-        listaTituloCombo = new ArrayList<SelectItem>();
-        listaTitulo = new ArrayList<Titulo>();
+        listCatalogo = new ArrayList<Catalogo>();
         comoPesquisa = "";
         descPesquisa = "";
-        msgConfirma = "";
-        idIndex = -1;
-    }
-
-    public String novo() {
-        catalogo = new Catalogo();
-        idFilial = 0;
+        idCatalogo = 0;
+        listTitulo = new ArrayList<SelectItem>();
         idTitulo = 0;
-        listaFilialCombo = new ArrayList<SelectItem>();
-        listaFilial = new ArrayList<Filial>();
-        listaTituloCombo = new ArrayList<SelectItem>();
-        listaTitulo = new ArrayList<Titulo>();
-//        listaCatalogo = new ArrayList<GCatalogo>();
-        comoPesquisa = "";
-        descPesquisa = "";
-        msgConfirma = "";
-        return "catalogoFilme";
+        listFilial = new ArrayList<SelectItem>();
+        idFilial = 0;
+        quantidade = 0;
+        data = new Date();
     }
 
-    public synchronized String salvar() {
-        CatalogoDB catalogoDB = new CatalogoDBToplink();
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void clear() {
+        GenericaSessao.remove("catalogoBean");
+        GenericaSessao.remove("catalogoPesquisa");
+    }
+
+    public synchronized void save() {
+        CatalogoDao catalogoDao = new CatalogoDao();
         if (catalogo.getQuantidade() <= 0) {
-            msgConfirma = "Quantidade deve ser maior que 01.";
-            return null;
+            GenericaMensagem.warn("Validação", "Quantidade deve ser maior que 0!");
+            return;
         }
-        catalogo.setFilial(listaFilial.get(idFilial));
-        catalogo.setTitulo(listaTitulo.get(idTitulo));
-
-        if (!catalogoDB.verificaFilial(catalogo.getFilial(), catalogo.getTitulo())) {
-            msgConfirma = "Já existe este catálogo para esta filial.";
-            return null;
+        if (listFilial.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar filiais!");
+            return;
         }
+        if (listTitulo.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar títulos!");
+            return;
+        }
+        Dao dao = new Dao();
+        catalogo.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(listFilial.get(idFilial).getDescription())));
+        catalogo.setTitulo((Titulo) dao.find(new Titulo(), Integer.parseInt(listTitulo.get(idTitulo).getDescription())));
+        NovoLog novoLog = new NovoLog();
         if (catalogo.getId() == -1) {
-            if (!catalogoDB.insert(catalogo)) {
-                msgConfirma = "Erro! Cadastro não foi efetuado.";
+            if (!catalogoDao.verificaFilial(catalogo.getFilial(), catalogo.getTitulo())) {
+                GenericaMensagem.warn("Validação", "Já existe esse catálogo para essa filial!");
+                return;
+            }
+            if (dao.save(catalogo, true)) {
+                GenericaMensagem.info("Sucesso", "Registro inserido");
+                novoLog.save(""
+                        + "ID: " + catalogo.getId()
+                        + " - Filial: (" + catalogo.getFilial().getId() + ") - " + catalogo.getFilial().getFilial().getPessoa().getNome()
+                        + " - Título: (" + catalogo.getTitulo().getId() + ") - " + catalogo.getTitulo().getDescricao()
+                        + " - Quantidade: " + catalogo.getQuantidade()
+                );
+                listCatalogo.clear();
+                catalogo = new Catalogo();
             } else {
-                msgConfirma = "Cadastro efetuado com sucesso!";
+                GenericaMensagem.warn("Erro", "Ao inserir registro!");
             }
         } else {
-            if (catalogoDB.update(catalogo)) {
-                msgConfirma = "Cadastro atualizado com sucesso!";
+            Catalogo c = (Catalogo) dao.find(catalogo);
+            String beforeUpdate = ""
+                    + "ID: " + c.getId()
+                    + " - Filial: (" + c.getFilial().getId() + ") - " + c.getFilial().getFilial().getPessoa().getNome()
+                    + " - Título: (" + c.getTitulo().getId() + ") - " + c.getTitulo().getDescricao()
+                    + " - Quantidade: " + c.getQuantidade();
+            if (dao.update(catalogo, true)) {
+                GenericaMensagem.info("Sucesso", "Registro atualizado");
+                novoLog.update(beforeUpdate,
+                        "ID: " + catalogo.getId()
+                        + " - Filial: (" + catalogo.getFilial().getId() + ") - " + catalogo.getFilial().getFilial().getPessoa().getNome()
+                        + " - Título: (" + catalogo.getTitulo().getId() + ") - " + catalogo.getTitulo().getDescricao()
+                        + " - Quantidade: " + catalogo.getQuantidade()
+                );
+                catalogo = new Catalogo();
+                listCatalogo.clear();
             } else {
-                msgConfirma = "Erro ao Atualizar registro!";
+                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
-        catalogo = new Catalogo();
-        return null;
     }
 
-    public synchronized String excluir() {
-        CatalogoDB catalogoDB = new CatalogoDBToplink();
+    public synchronized void delete() {
         if (catalogo.getId() != -1) {
-            catalogo = catalogoDB.pesquisaCodigo(getCatalogo().getId());
-            if (catalogoDB.delete(catalogo)) {
-                msgConfirma = "Cadastro excluído com sucesso!";
+            Dao dao = new Dao();
+            NovoLog novoLog = new NovoLog();
+            if (dao.delete(catalogo, true)) {
+                GenericaMensagem.info("Sucesso", "Registro removido");
+                novoLog.delete(""
+                        + "ID: " + catalogo.getId()
+                        + " - Filial: (" + catalogo.getFilial().getId() + ") - " + catalogo.getFilial().getFilial().getPessoa().getNome()
+                        + " - Título: (" + catalogo.getTitulo().getId() + ") - " + catalogo.getTitulo().getDescricao()
+                        + " - Quantidade: " + catalogo.getQuantidade()
+                );
+                clear();
             } else {
-                msgConfirma = "Erro! Cadastro não foi excluído";
+                GenericaMensagem.warn("Erro", "Ao remover registro!");
             }
         } else {
-            msgConfirma = "Não há registro para excluir";
+            GenericaMensagem.warn("Validação", "Nenhum registro selecionado!");
         }
-        catalogo = new Catalogo();
-        return null;
     }
 
-//
-//    public synchronized void editar(){
-//        GCatalogo gCatalogo = (GCatalogo) listaCatalogo.get(idTitulo);
-//        catalogo = gCatalogo.getCatalogo();
-//        for (int i = 0; i < listaFilial.size(); i++){
-//            if(catalogo.getFilial().getId() == listaFilial.get(i).getFilial().getId()){
-//                idFilial = i;
-//            }
-//        }
-//        for (int j = 0; j < listaTitulo.size(); j++){
-//            if(catalogo.getTitulo().getId() == listaTitulo.get(j).getId()){
-//                idTitulo = j;
-//            }
-//        }
-//    }
-//    private void verificaQuantidadeMatriz(){
-//        Catalogo catalogo = new Catalogo();
-//        for (int i = 0; i < listaFilial.size(); i++){
-//            if(catalogo.getFilial().getId() == listaFilial.get(i).getId()){
-//                if(catalogo.getQuantidade() < listaCatalogo.get(i).getCatalogo().getQuantidade()){
-//
-//                }
-//            }
-//        }
-//    }
     public void acaoPesquisaInicial() {
+        listCatalogo.clear();
         setComoPesquisa("I");
     }
 
     public void acaoPesquisaParcial() {
+        listCatalogo.clear();
         setComoPesquisa("P");
-    }
-
-    public void refreshForm() {
     }
 
     public Catalogo getCatalogo() {
         return catalogo;
     }
 
-    public List<SelectItem> getListaFilialCombo() {
-        int i = 0;
-        //FilialDB db = new FilialDBToplink();
-        if (listaFilial.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            setListaFilial((List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true));
-            //setListaFilial((List<Filial>) db.pesquisaTodos());
-            while (i < getListaFilial().size()) {
-                listaFilialCombo.add(new SelectItem(
-                        new Integer(i),
-                        getListaFilial().get(i).getFilial().getPessoa().getNome()));
-                i++;
+    public List<SelectItem> getListFilial() {
+        if (listFilial.isEmpty()) {
+            Dao dao = new Dao();
+            List<Filial> list = dao.list(new Filial(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listFilial.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
             }
         }
-        return listaFilialCombo;
+        return listFilial;
     }
 
-    public synchronized void pesquisaCatalogo() {
-//        listaCatalogo.clear();
+    public void setListFilial(List<SelectItem> listFilial) {
+        this.listFilial = listFilial;
     }
 
-    public List<SelectItem> getListaTituloCombo() {
-        int i = 0;
-        TituloDB db = new TituloDBToplink();
-        if (listaTituloCombo.isEmpty()) {
-            setListaTitulo((List<Titulo>) db.pesquisaTodos());
-            while (i < getListaTitulo().size()) {
-                listaTituloCombo.add(new SelectItem(
-                        new Integer(i),
-                        getListaTitulo().get(i).getDescricao()));
-                i++;
+    public List<SelectItem> getListTitulo() {
+        if (listTitulo.isEmpty()) {
+            Dao dao = new Dao();
+            List<Titulo> list = dao.list(new Titulo());
+            for (int i = 0; i < list.size(); i++) {
+                listTitulo.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
-        return listaTituloCombo;
+        return listTitulo;
     }
 
-//    public List<GCatalogo> getListaCatalogo() {
-//        if(listaCatalogo.isEmpty()){
-//            CatalogoDB pesquisaCatalogoDB = new CatalogoDBToplink();
-//            List<Catalogo> lista = pesquisaCatalogoDB.pesquisaCatalogo(getListaFilial().get(idFilial));
-//            if(lista == null){
-//                lista = new ArrayList();
-//            }
-//            for (int i = 0; i < lista.size(); i++){
-//                listaCatalogo.add(new GCatalogo (lista.get(i), lista.get(i).getQuantidade()));                
-//            }
-//        }
-//        return listaCatalogo;
-//    }
+    public void setistTitulo(List<SelectItem> listTitulo) {
+        this.listTitulo = listTitulo;
+    }
+
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
     }
@@ -221,44 +205,12 @@ public class CatalogoBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public void setListaTituloCombo(List<SelectItem> listaTituloCombo) {
-        this.listaTituloCombo = listaTituloCombo;
-    }
-
-    public List<Titulo> getListaTitulo() {
-        return listaTitulo;
-    }
-
-    public void setListaTitulo(List<Titulo> listaTitulo) {
-        this.listaTitulo = listaTitulo;
-    }
-
     public int getIdTitulo() {
         return idTitulo;
     }
 
     public void setIdTitulo(int idTitulo) {
         this.idTitulo = idTitulo;
-    }
-
-    public void setListaFilialCombo(List<SelectItem> listaFilialCombo) {
-        this.listaFilialCombo = listaFilialCombo;
-    }
-
-    public List<Filial> getListaFilial() {
-        return listaFilial;
-    }
-
-    public void setListaFilial(List<Filial> listaFilial) {
-        this.listaFilial = listaFilial;
     }
 
     public int getIdFilial() {
@@ -276,10 +228,6 @@ public class CatalogoBean {
     public void setIdCatalogo(int idCatalogo) {
         this.idCatalogo = idCatalogo;
     }
-//
-//    public void setListaCatalogo(List<GCatalogo> listaCatalogo) {
-//        this.listaCatalogo = listaCatalogo;
-//    }
 
     public int getQuantidade() {
         return quantidade;
@@ -290,11 +238,54 @@ public class CatalogoBean {
 
     }
 
-    public int getIdIndex() {
-        return idIndex;
+    public List<Catalogo> getListCatalogo() {
+        if (listCatalogo.isEmpty()) {
+            CatalogoDao catalogoDao = new CatalogoDao();
+            listCatalogo = catalogoDao.pesquisaCatalogoPorFilial(Integer.parseInt(getListFilial().get(idFilial).getDescription()));
+
+        }
+        return listCatalogo;
     }
 
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
+    public void setListCatalogo(List<Catalogo> listCatalogo) {
+        this.listCatalogo = listCatalogo;
+    }
+
+    public void edit(Catalogo c) {
+        catalogo = c;
+        for (int i = 0; i < listFilial.size(); i++) {
+            if (catalogo.getFilial().getId() == Integer.parseInt(getListFilial().get(i).getDescription())) {
+                idFilial = i;
+                break;
+            }
+        }
+        for (int i = 0; i < listTitulo.size(); i++) {
+            if (catalogo.getTitulo().getId() == Integer.parseInt(getListTitulo().get(i).getDescription())) {
+                idTitulo = i;
+                break;
+            }
+        }
+    }
+
+    public String showImagem(Catalogo c) {
+        if (c.getTitulo().getFoto() == null) {
+            return "";
+        }
+        String caminho = "/Cliente/" + getCliente() + "/Imagens/locadora/titulo";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminho);
+        for (String imagensTipo1 : new String[]{"png", "jpg", "jpeg", "gif"}) {
+            File f = new File(arquivo + "/" + c.getTitulo().getId() + "." + imagensTipo1);
+            if (f.exists()) {
+                return caminho + "/" + c.getTitulo().getId() + "." + imagensTipo1;
+            }
+        }
+        return "";
+    }
+
+    public String getCliente() {
+        if (GenericaSessao.exists("sessaoCliente")) {
+            return GenericaSessao.getString("sessaoCliente");
+        }
+        return "";
     }
 }

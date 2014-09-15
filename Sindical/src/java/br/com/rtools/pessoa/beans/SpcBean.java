@@ -7,6 +7,7 @@ import br.com.rtools.pessoa.db.SpcDB;
 import br.com.rtools.pessoa.db.SpcDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class SpcBean {
         mensagem = "";
         botaoSalvar = "Adicionar";
         descricaoPesquisa = "";
-        porPesquisa = "";
+        porPesquisa = "nome";
         comoPesquisa = "";
         filtro = false;
         filtroPorPessoa = true;
@@ -54,45 +55,45 @@ public class SpcBean {
 
     public void save() {
         if (spc.getPessoa().getId() == -1) {
-            mensagem = "Pesquisar pessoa!";
+            GenericaMensagem.warn("Validação", "Pesquisar pessoa!");
             return;
         }
         if (spc.getDataEntrada().equals("")) {
-            mensagem = "Informar data de entrada!";
+            GenericaMensagem.warn("Validação", "Informar data de entrada!");
             return;
         }
         mensagem = "";
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
         if (spc.getId() == -1) {
             SpcDB spcdb = new SpcDBToplink();
             if (spcdb.existeCadastroSPC(spc)) {
-                mensagem = "Pessoa já existe para data específicada";
+                GenericaMensagem.warn("Validação", "Pessoa já existe para data específicada");
                 return;
             }
-            di.openTransaction();
-            if (di.save(spc)) {
-                novoLog.save("ID: " + spc.getId() + " - Entrada: " + spc.getDataEntrada() + " - Saída: " + spc.getDataSaida()+ " - Obs: " + spc.getObservacao() + " - Pessoa (" + spc.getPessoa().getId() + ") " + spc.getPessoa().getNome());
-                di.commit();
+            dao.openTransaction();
+            if (dao.save(spc)) {
+                novoLog.save("ID: " + spc.getId() + " - Entrada: " + spc.getDataEntrada() + " - Saída: " + spc.getDataSaida() + " - Obs: " + spc.getObservacao() + " - Pessoa (" + spc.getPessoa().getId() + ") " + spc.getPessoa().getNome());
+                dao.commit();
                 listaSPC.clear();
-                mensagem = "Registro inserido com sucesso";
+                GenericaMensagem.info("Sucesso", "Registro inserido");
             } else {
-                di.rollback();
-                mensagem = "Erro ao inserir este registro!";
+                dao.rollback();
+                GenericaMensagem.warn("Erro", "Ao inserir registro!");
             }
         } else {
-            Spc s = (Spc) di.find(spc);
+            Spc s = (Spc) dao.find(spc);
             String beforeUpdate = "ID: " + s.getId() + " - Entrada: " + s.getDataEntrada() + " - Saída: " + s.getDataSaida() + " - Obs: " + s.getObservacao() + " - Pessoa (" + s.getPessoa().getId() + ") " + s.getPessoa().getNome();
             botaoSalvar = "Atualizar";
-            di.openTransaction();
-            if (di.update(spc)) {
-                di.commit();
+            dao.openTransaction();
+            if (dao.update(spc)) {
+                dao.commit();
                 novoLog.update(beforeUpdate, "ID: " + spc.getId() + " - Entrada: " + spc.getDataEntrada() + " - Saída: " + spc.getDataEntrada() + " - Obs: " + spc.getObservacao() + " - Pessoa (" + spc.getPessoa().getId() + ") " + spc.getPessoa().getNome());
                 listaSPC.clear();
-                mensagem = "Registro atualizado com sucesso";
+                GenericaMensagem.info("Sucesso", "Registro atualizado");
             } else {
-                di.rollback();
-                mensagem = "Pessoa já existe para data específicada";
+                dao.rollback();
+                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
     }

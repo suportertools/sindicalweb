@@ -1,17 +1,22 @@
 package br.com.rtools.locadoraFilme;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "loc_genero")
-@NamedQuery(name = "Genero.pesquisaID", query = "Select g from Genero g where g.id = :pid")
-public class Genero implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Genero.findAll", query = "SELECT G FROM Genero AS G ORDER BY G.descricao ASC")
+})
+public class Genero implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

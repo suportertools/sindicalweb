@@ -1,6 +1,7 @@
 package br.com.rtools.locadoraFilme;
 
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,15 +10,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "loc_titulo")
-@NamedQuery(name = "Titulo.pesquisaID", query = "Select t from Titulo t where t.id = :pid")
-public class Titulo implements java.io.Serializable {
+public class Titulo implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -44,20 +44,9 @@ public class Titulo implements java.io.Serializable {
     private String formato;
     @Column(name = "is_imprime_etiqueta")
     private boolean imprimeEtiqueta;
-
-    public Titulo(int id, Date data, String descricao, String autor, Genero genero, String barras, String duracao, int anoLancamento, String legenda, String formato, boolean imprimeEtiqueta) {
-        this.id = id;
-        this.data = data;
-        this.descricao = descricao;
-        this.autor = autor;
-        this.genero = genero;
-        this.barras = barras;
-        this.duracao = duracao;
-        this.anoLancamento = anoLancamento;
-        this.legenda = legenda;
-        this.formato = formato;
-        this.imprimeEtiqueta = imprimeEtiqueta;
-    }
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_foto")
+    private Date foto;
 
     public Titulo() {
         id = -1;
@@ -71,6 +60,22 @@ public class Titulo implements java.io.Serializable {
         legenda = "";
         formato = "";
         imprimeEtiqueta = false;
+        this.foto = null;
+    }
+
+    public Titulo(int id, Date data, String descricao, String autor, Genero genero, String barras, String duracao, int anoLancamento, String legenda, String formato, boolean imprimeEtiqueta, Date foto) {
+        this.id = id;
+        this.data = data;
+        this.descricao = descricao;
+        this.autor = autor;
+        this.genero = genero;
+        this.barras = barras;
+        this.duracao = duracao;
+        this.anoLancamento = anoLancamento;
+        this.legenda = legenda;
+        this.formato = formato;
+        this.imprimeEtiqueta = imprimeEtiqueta;
+        this.foto = foto;
     }
 
     public int getId() {
@@ -183,5 +188,13 @@ public class Titulo implements java.io.Serializable {
         } else {
             return Integer.toString(anoLancamento);
         }
+    }
+
+    public Date getFoto() {
+        return foto;
+    }
+
+    public void setFoto(Date foto) {
+        this.foto = foto;
     }
 }
