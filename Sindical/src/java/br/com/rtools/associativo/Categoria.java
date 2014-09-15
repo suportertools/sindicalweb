@@ -1,6 +1,6 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.pessoa.Juridica;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,8 +13,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "soc_categoria")
-@NamedQuery(name = "Categoria.pesquisaID", query = "select c from Categoria c where c.id=:pid")
-public class Categoria implements java.io.Serializable {
+@NamedQuery(name = "Categoria.pesquisaID", query = "SELECT C FROM Categoria AS C WHERE C.id=:pid")
+public class Categoria implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -194,4 +195,21 @@ public class Categoria implements java.io.Serializable {
     public void setVotante(boolean votante) {
         this.votante = votante;
     }
+
+    public String getNrCarenciaBalcaoString() {
+        return "" + nrCarenciaBalcao;
+    }
+
+    public void setNrCarenciaBalcaoString(String nrCarenciaBalcaoString) {
+        this.nrCarenciaBalcao = Integer.parseInt(nrCarenciaBalcaoString);
+    }
+
+    public String getNrCarenciaDescFolhaString() {
+        return "" + nrCarenciaDescFolha;
+    }
+
+    public void setNrCarenciaDescFolha(String nrCarenciaDescFolhaString) {
+        this.nrCarenciaDescFolha = Integer.parseInt(nrCarenciaDescFolhaString);
+    }
+
 }
