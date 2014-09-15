@@ -23,12 +23,12 @@
                         <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
                             <p:menubar>
                                 <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">
-                                    <p:menuitem value="Catálogo Filme"       action="#{chamadaPaginaBean.catalogoFilme}" />
+                                    <p:menuitem value="Catálogo Filme"       action="#{chamadaPaginaBean.pagina('catalogoFilme', 'catalogoBean')}" />
                                     <p:menuitem value="Gênero"               action="#{chamadaPaginaBean.paginaSimples('Genero','Cadastro de Gênero')}" />
-                                    <p:menuitem value="Título"               action="#{chamadaPaginaBean.titulo}" />
+                                    <p:menuitem value="Título"               action="#{chamadaPaginaBean.pagina('titulo')}" />
                                     <p:menuitem value="Vendedor"             action="#{chamadaPaginaBean.pagina('vendedor')}" />
                                     <p:menuitem value="Mídias"               action="#{chamadaPaginaBean.paginaSimples('Midia','Cadastro de Mídia')}" />
-                                    <p:menuitem value="Desc Serviço Empresa" action="#{chamadaPaginaBean.descontoServicoEmpresa}" />
+                                    <p:menuitem value="Desc Serviço Empresa" action="#{chamadaPaginaBean.pagina('descontoServicoEmpresa')}" />
                                 </p:submenu>
 
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">
