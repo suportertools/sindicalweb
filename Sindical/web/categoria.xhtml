@@ -30,7 +30,7 @@
                         <h:outputText value="Categoria" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_categoria">
-                            <c:set scope="request" var="object" value="${convencaoBean.convencao}"/>
+                            <c:set scope="request" var="object" value="${categoriaBean.categoria}"/>
                             <p:panel>
                                 <h:panelGrid columns="2" cellpadding="5">
                                     <h:outputText value="Grupo Categoria: " />
@@ -43,13 +43,9 @@
                                     </p:inputText>
                                     <h:outputText value="Carência Balcão: "/>
                                     <h:column>
-                                        <p:inputText size="5" value="#{categoriaBean.categoria.nrCarenciaBalcaoString}" maxlength="10" title="Carência Balcão" converter="#{thisNumber}">
-                                            <p:ajax update="@this" event="blur" />
-                                        </p:inputText>
+                                        <p:inputText size="5" value="#{categoriaBean.categoria.nrCarenciaBalcao}" maxlength="10" title="Carência Balcão" />
                                         <p:outputLabel value="Carência Desconto em Folha: " styleClass="margin-left-max"/>
-                                        <p:inputText size="5" value="#{categoriaBean.categoria.nrCarenciaDescFolhaString}" maxlength="10" title="Carência Desconto em Folha" converter="#{thisNumber}">
-                                            <f:ajax render="@this" event="blur" />
-                                        </p:inputText>
+                                        <p:inputText size="5" value="#{categoriaBean.categoria.nrCarenciaDescFolha}" maxlength="10" title="Carência Desconto em Folha" />
                                     </h:column>
                                     <h:column />
                                     <h:column>
@@ -70,16 +66,18 @@
                                             </p:commandLink>
                                         </h:panelGrid>
                                     </f:facet>
-                                    <h:panelGrid columns="10" id="i_semanas">
-                                        <h:outputLabel />                                        
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSegunda}" onLabel="Segunda-Feira" offLabel="Segunda-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeTerca}" onLabel="Terça-Feira" offLabel="Terça-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeQuarta}" onLabel="Quarta-Feira" offLabel="Quarta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeQuinta}" onLabel="Quinta-Feira" offLabel="Quinta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close"  />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSexta}" onLabel="Sexta-Feira" offLabel="Sexta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSabado}" onLabel="Sábado" offLabel="Sábado" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                        <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeDomingo}" onLabel="Domingo" offLabel="Domingo" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-                                    </h:panelGrid>
+                                    <center>
+                                        <h:panelGrid columns="10" id="i_semanas">
+                                            <h:outputLabel />                                        
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSegunda}" onLabel="Segunda-Feira" offLabel="Segunda-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeTerca}" onLabel="Terça-Feira" offLabel="Terça-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeQuarta}" onLabel="Quarta-Feira" offLabel="Quarta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeQuinta}" onLabel="Quinta-Feira" offLabel="Quinta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close"  />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSexta}" onLabel="Sexta-Feira" offLabel="Sexta-Feira" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeSabado}" onLabel="Sábado" offLabel="Sábado" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                            <p:selectBooleanButton value="#{categoriaBean.categoria.usaClubeDomingo}" onLabel="Domingo" offLabel="Domingo" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+                                        </h:panelGrid>
+                                    </center>
                                 </p:panel>                                        
                                 <p:panel header="Parentesco / Serviços" styleClass="margin-top-max">
                                     <p:dataTable value="#{categoriaBean.listParentescos}" var="linha" id="tbl" scrollable="true" scrollHeight="220">
@@ -99,7 +97,7 @@
                                 <p:commandButton onclick="PF('dlg_save').show();" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar"/>
                                 <p:commandButton value="Novo" action="#{categoriaBean.clear}" update=":form_categoria:"/>
                                 <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCategoria}" title="Pesquisar"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaCategoria')}" title="Pesquisar"/>
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{categoriaBean.save()}" oncomplete="PF('dlg_save').hide();PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message  :form_categoria:"/> 
