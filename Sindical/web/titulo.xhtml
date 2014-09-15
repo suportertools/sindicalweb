@@ -1,170 +1,148 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Título</title>
+        <title>Sindical - Título</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+                background: #ECF3FE;
+            }            
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formTitulo">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Título" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_titulo">
+                            <c:set scope="request" var="object" value="${tituloBean.titulo}"/>
+                            <p:panel>
+                                <h:panelGrid columns="2" columnClasses="verticalAlignTop, verticalAlignTop">
+                                    <h:column>
+                                        <h:panelGrid columns="2" style="width:750px">
+                                            <p:outputLabel value="Data Cadastro:" />
+                                            <p:inputMask value="#{tituloBean.titulo.dataString}" maxlength="10" size="6" readonly="readonly" mask="99/99/9999" converter="#{isDateString}">
+                                                <p:ajax update="@this" event="change" />
+                                            </p:inputMask>
+                                            <p:outputLabel value="Titulo:" />
+                                            <p:inputText value="#{tituloBean.titulo.descricao}"  maxlength="100" size="80" converter="#{toUpperCase}">
+                                                <p:ajax update="@this" event="change" />
+                                            </p:inputText>
+                                            <p:outputLabel value="Autor:"/>
+                                            <p:inputText value="#{tituloBean.titulo.autor}"  maxlength="50" size="80"/>
+                                            <p:outputLabel value="Gênero:" />
+                                            <p:selectOneMenu value="#{tituloBean.idGenero}" >
+                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                <f:selectItems value="#{tituloBean.listGeneroCombo}" />
+                                            </p:selectOneMenu>
+                                            <p:outputLabel value="Código de Barras:" />
+                                            <p:inputText value="#{tituloBean.titulo.barras}" maxlength="15" size="16" />
+                                            <p:outputLabel value="Duração:" />
+                                            <p:inputMask id="idDuracao" size="2" value="#{tituloBean.titulo.duracao}" mask="99:99" />
+                                            <p:outputLabel value="Ano de Lançamento:" />
+                                            <p:inputMask id="idAnoDeLancamento" value="#{tituloBean.titulo.anoLancamentoString}" mask="9999" size="2"/>
+                                            <p:outputLabel value="Legenda:"  />
+                                            <h:column>
+                                                <h:panelGrid columns="4">
+                                                    <p:selectOneMenu value="#{tituloBean.titulo.legenda}" >
+                                                        <f:selectItem itemLabel="DUBLADO" itemValue="DUBLADO"/>
+                                                        <f:selectItem itemLabel="LEGENDADO" itemValue="LEGENDADO"/>
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Formato:" styleClass="margin-left-max" />
+                                                    <p:selectOneMenu value="#{tituloBean.titulo.formato}" >
+                                                        <f:selectItem itemLabel="DVD" itemValue="DVD"/>
+                                                        <f:selectItem itemLabel="BLU-RAY" itemValue="BLU-RAY"/>
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column />
+                                            <p:selectBooleanCheckbox id="idImprimeEtiqueta" value="#{tituloBean.titulo.imprimeEtiqueta}" itemLabel="Imprimir Etiqueta" styleClass="margin-top-max"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <h:column>
+                                        <p:panel style="width: 200px; margin-left: 15px" header="Imagem" id="i_panel_imagens">
+                                            <h:panelGrid>
+                                                <c:if test="#{!tituloBean.fotoTempPerfil.equals('')}" >
+                                                    <p:graphicImage value="#{tituloBean.fotoTempPerfil}" id="i_perfil_temp" width="140"/>
+                                                    <div class="clear"></div>
+                                                </c:if>
 
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cadastro de Título" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae" align="left">
-                        <div class="divFundo">
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                                <h:column>
-                                    <h:outputLabel value="Data Cadastro:"  styleClass="fontePadrao" for="idDataCadastro"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idDataCadastro" value="#{tituloBean.titulo.dataString}" styleClass="fontePadrao" class="data"  maxlength="10" size="8" readonly="readonly" required="#{tituloBean.required}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Titulo:"  styleClass="fontePadrao" for="idTitulo"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idTitulo" value="#{tituloBean.titulo.descricao}" styleClass="fontePadrao" maxlength="100" size="100" required="#{tituloBean.required}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Autor:" styleClass="fontePadrao" for="idAutor"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idAutor" value="#{tituloBean.titulo.autor}" styleClass="fontePadrao" maxlength="50" size="100"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Gênero:" styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:selectOneMenu value="#{tituloBean.idGenero}" >
-                                        <f:selectItems value="#{tituloBean.listaGeneroCombo}" />
-                                    </h:selectOneMenu>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Código de Barras:"  styleClass="fontePadrao" for="idCodigoDeBarras"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idCodigoDeBarras" value="#{tituloBean.titulo.barras}" styleClass="fontePadrao locadoraBarras" maxlength="15" size="16" />
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Duração:"  styleClass="fontePadrao" for="idDuracao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idDuracao" size="10" maxlength="5" value="#{tituloBean.titulo.duracao}" style="width:47px" class="hora" required="#{tituloBean.required}" ></h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Ano de Lançamento:"  styleClass="fontePadrao" for="idAnoDeLancamento"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idAnoDeLancamento" value="#{tituloBean.titulo.anoLancamentoString}" styleClass="fontePadrao dataAno" maxlength="4" size="4" required="#{tituloBean.required}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Legenda:" styleClass="fontePadrao" />
-                                </h:column>
-                                <h:column>
-                                    <h:selectOneMenu value="#{tituloBean.titulo.legenda}" >
-                                            <f:selectItem itemLabel="DUBLADO" itemValue="DUBLADO"/>
-                                            <f:selectItem itemLabel="LEGENDADO" itemValue="LEGENDADO"/>
-                                    </h:selectOneMenu>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Formato:" styleClass="fontePadrao" /></h:column>
-                                <h:column>
-                                    <h:selectOneMenu value="#{tituloBean.titulo.formato}" >
-                                            <f:selectItem itemLabel="DVD" itemValue="DVD"/>
-                                            <f:selectItem itemLabel="BLU-RAY" itemValue="BLU-RAY"/>
-                                    </h:selectOneMenu>
-                                </h:column>
-                                <h:column>
-                                </h:column>
-                                <h:column>
-                                    <rich:panel styleClass="tooltip" style="width: 200px;" >
-                                        <h:selectBooleanCheckbox id="idImprimeEtiqueta" value="#{tituloBean.titulo.imprimeEtiqueta}"></h:selectBooleanCheckbox>
-                                        <rich:tooltip mode="ajax" layout="block">
-                                            <span>
-                                                Imprimir Etiquetas
-                                            </span>
-                                        </rich:tooltip>
-                                        <h:outputLabel value="Imprimir Etiqueta" styleClass="fontePadrao" for="idImprimeEtiqueta"/>
-                                    </rich:panel>
-
-                                </h:column>
+                                                <c:if test="#{!tituloBean.fotoPerfil.equals('')}" >
+                                                    <p:graphicImage value="#{tituloBean.fotoPerfil}" id="i_perfil" width="140"/>
+                                                    <div class="clear"></div>
+                                                </c:if>
+                                            </h:panelGrid>
+                                            <f:facet name="footer">
+                                                <h:panelGrid columns="2">
+                                                    <p:commandButton value="Upload Foto" type="button" onclick="PF('dlg_upload').show();" id="id_btn_uploads" />
+                                                    <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{tituloBean.deleteImage}" rendered="#{!tituloBean.fotoTempPerfil.equals('') or !tituloBean.fotoPerfil.equals('')}" update=":form_titulo"/>
+                                                </h:panelGrid>
+                                            </f:facet>
+                                        </p:panel>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                                <p:commandButton onclick="PF('dlg_save').show();" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar"/>
+                                <p:commandButton value="Novo" action="#{tituloBean.clear}" update=":form_titulo:"/>
+                                <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaTitulo')}" title="Pesquisar"/>
                             </h:panelGrid>
-                        </div>
-                        <div style="clear: both;"></div>
-                        <div style="float: left; margin-top: 15px;">
-                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{tituloBean.novo}"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTitulo}" title="Pesquisar titulos"/>
-                        </div>
-                    </div>
-                    <div id="boxes">
-                        <div id="divSalvar" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja salvar este Titulo?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                                </h:panelGrid>
+                            <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{tituloBean.save()}" oncomplete="PF('dlg_save').hide();PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message  :form_titulo:"/> 
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left;" icon="ui-icon-close"/>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_delete" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{tituloBean.delete()}" oncomplete="PF('dlg_delete').hide();
+                                                 PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message :form_titulo:"/> 
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" style="float: left;" icon="ui-icon-close"/>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
+                                <p:messages autoUpdate="true" showDetail="true" showSummary="true" id="i_message" /> 
+                                <f:facet name="footer">
+                                    <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dlg_message').hide();"/>
+                                </f:facet>
+                            </p:dialog>                            
+                        </h:form>
+                        <h:form id="form_titulo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
+                            <p:dialog id="id_dgl_anexos" widgetVar="dlg_upload" modal="true"  header="Anexar Foto" >
+                                <p:fileUpload label="Procurar"
+                                              cancelLabel="Cancelar"
+                                              uploadLabel="Anexar"
+                                              mode="advanced"                                          
+                                              multiple="false"
+                                              sizeLimit="204800"
+                                              update=":form_titulo"
+                                              fileUploadListener="#{tituloBean.upload}"
+                                              oncomplete="PF('dlg_upload').hide()" />
+                            </p:dialog>
+                        </h:form>                         
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{tituloBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-
-                    <div id="boxes">
-                        <div id="divExcluir" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja excluir este Titulo?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                                </h:panelGrid>
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{tituloBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" action="titulo"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-
-                    <div id="boxes">
-                        <div id="divMensagem" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:outputText id="outConfirma" value="#{tituloBean.msgConfirma}" styleClass="fontePadrao"/>
-                                <br /><br />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="formTitulo" action="#{tituloBean.limpar}"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-                </center>
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
