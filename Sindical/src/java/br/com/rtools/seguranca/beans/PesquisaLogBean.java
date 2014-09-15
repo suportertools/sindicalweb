@@ -16,14 +16,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class PesquisaLogBean implements Serializable {
 
     private List<SelectItem>[] listSelectItem;
@@ -304,7 +304,7 @@ public class PesquisaLogBean implements Serializable {
                 }
             }
             if (filtro[3]) {
-                if(!inIdEventos().isEmpty()) {
+                if (!inIdEventos().isEmpty()) {
                     idInEventos = inIdEventos();
                 }
             }
