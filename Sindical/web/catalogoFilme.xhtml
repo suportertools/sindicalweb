@@ -1,130 +1,106 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Cadastro de Catálogo Filme</title>
+        <title>Sindical - Cadastro de Catálogo Filme</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+                background: #ECF3FE;
+            }            
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formCatalagoFilme">
-            
-                 <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Catálogo Filme" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                      
-                    <div class="divMae divFundo" style="width: 350px;" align="left">
-                        <h:panelGrid columns="9" styleClass="alinhaFormulario ">
-                            <h:column>
-                                <h:outputLabel value="Filial:" styleClass="fontePadrao" for="cbFilial" title="Filial"/>
-                                <h:selectOneMenu id="cbFilial" value="#{catalogoBean.idFilial}">
-                                    <f:selectItems value="#{catalogoBean.listaFilialCombo}" />
-                                </h:selectOneMenu>
-                            </h:column>
-                        </h:panelGrid>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Cadastro de Catálogo Filme" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_catalogo">
+                            <c:set scope="request" var="object" value="${catalogoBean.catalogo}"/>
+                            <p:panel>
+                                <h:panelGrid columns="9">
+                                    <p:outputLabel value="Filial:" />
+                                    <p:selectOneMenu  value="#{catalogoBean.idFilial}">
+                                        <p:ajax event="change" update="tbl" listener="#{catalogoBean.listCatalogo.clear()}" />
+                                        <f:selectItems value="#{catalogoBean.listFilial}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Titulo:" styleClass="margin-left-max"/>
+                                    <p:selectOneMenu value="#{catalogoBean.idTitulo}" filter="true">
+                                        <f:selectItems value="#{catalogoBean.listTitulo}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Quantidade"  styleClass="margin-left-max"/>
+                                    <p:inputText value="#{catalogoBean.catalogo.quantidade}" size="2" maxlength="2"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                                <h:column>
+                                    <p:commandButton onclick="PF('dlg_save').show();" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Adicionar" rendered="#{catalogoBean.catalogo.id != -1}"/>
+                                    <p:commandButton onclick="PF('dlg_save').show();" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Atualizar" rendered="#{catalogoBean.catalogo.id == -1}"/>
+                                </h:column>
+                                <p:commandButton value="Novo" action="#{catalogoBean.clear}" update=":form_catalogo:"/>
+                                <p:commandButton onclick="PF('dlg_delete').show();" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaTitulo')}" title="Pesquisar"/>
+                            </h:panelGrid>
+                            <p:dataTable value="#{catalogoBean.listCatalogo}" var="catalogo" id="tbl" rows="15" paginator="true" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado para esta filial!">
+                                <p:column width="30">
+                                    <p:commandButton icon="ui-icon-link" action="#{catalogoBean.edit(catalogo)}" update=":form_catalogo:"/>
+                                </p:column>
+                                <p:column width="80" headerText="Imagem">
+                                    <h:column rendered="#{catalogo.titulo.foto != null}">
+                                        <p:graphicImage value="#{tituloBean.showImagem(catalogo.titulo.id)}" width="80" alt="Não possui imagem"/>
+                                    </h:column>
+                                </p:column>                                
+                                <p:column headerText="Titulo">
+                                    <h:outputText value="#{catalogo.titulo.descricao}"/>
+                                </p:column>
+                                <p:column headerText="Gênero" width="100" styleClass="text-center">
+                                    <h:outputText value="#{catalogo.titulo.genero.descricao}"/>
+                                </p:column>
+                                <p:column headerText="Qtde" width="30" styleClass="text-center">
+                                    <h:outputText value="#{catalogo.quantidade}" />
+                                </p:column>
+                            </p:dataTable>                            
+                            <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{catalogoBean.save()}" oncomplete="PF('dlg_save').hide();PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message  :form_catalogo:"/> 
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left;" icon="ui-icon-close"/>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_delete" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{catalogoBean.delete()}" oncomplete="PF('dlg_delete').hide();
+                                                 PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message :form_catalogo:"/> 
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" style="float: left;" icon="ui-icon-close"/>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
+                                <p:messages autoUpdate="true" showDetail="true" showSummary="true" id="i_message" /> 
+                                <f:facet name="footer">
+                                    <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dlg_message').hide();"/>
+                                </f:facet>
+                            </p:dialog>
+                        </h:form>                         
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                        <h:panelGrid columns="9">
-                            <h:column>
-                                <h:outputLabel value="Titulo:" styleClass="fontePadrao" title="Titulo" for="idTitulo"/>
-                                <h:selectOneMenu id="idTitulo" value="#{catalogoBean.idTitulo}" >
-                                    <f:selectItems value="#{catalogoBean.listaTituloCombo}" />
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <h:column>
-                                <h:outputLabel value="Quantidade:" styleClass="fontePadrao" for="idQuantidade"/>
-                                <h:inputText id="idQuantidade" value="#{catalogoBean.catalogo.quantidade}" size="2" maxlength="2" />
-                            </h:column>
-
-                            <h:column>
-                                <a4j:commandButton image="/Imagens/novo.png" oncomplete="modalMensagem()" title="Adicionar" render="outConfirma,tbl" action="#{catalogoBean.salvar}"/>
-                            </h:column>
-
-                            <h:column>
-                                <a4j:commandButton image="/Imagens/excluir.png" oncomplete="modalMensagem()" title="Excluir" render="outConfirma,tbl" action="#{catalogoBean.excluir}"/>
-                            </h:column>
-                        </h:panelGrid>
-                        <br />
-                                               
-                        <rich:panel style="height:250px; width: 300px; ">        
-                            <div style="overflow:auto; ">
-                                <rich:dataTable onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#FFFFFF'"
-                                                value="#{catalogoBean.listaCatalogo}" iterationStatusVar="it" var="linha" style="width:100%" id="tbl" rows="10">
-                                    
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column> 
-                                    
-                                    <rich:column styleClass="colunaPesquisa">
-                                        <f:facet name="header">
-                                            <h:outputText value="ID"/>
-                                        </f:facet>
-                                        <h:commandLink action="#{catalogoBean.editar}" value="#{linha.catalogo.id}">
-                                            <a4j:param value="#{it.index}" assignTo="#{catalogoBean.idIndex}"/>
-                                        </h:commandLink>
-                                    </rich:column>
-
-                                    <rich:column styleClass="centralizar">
-                                        <f:facet name="header">
-                                            <h:outputText value="Titulo" />
-                                        </f:facet>
-                                        <h:outputText value="#{linha.catalogo.titulo.descricao}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="centralizar">
-                                        <f:facet name="header">
-                                            <h:outputText value="Gênero" />
-                                        </f:facet>
-                                        <h:outputText value="#{linha.catalogo.titulo.genero.descricao}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="centralizar">
-                                        <f:facet name="header">
-                                            <h:outputText value="Qtde" />
-                                        </f:facet>
-                                        <h:outputText value="#{linha.catalogo.quantidade}" />
-                                    </rich:column>
-
-                                    <rich:column styleClass="centralizar">
-                                        <f:facet name="header">
-                                            <h:outputText value="Qtde Disponível" />
-                                        </f:facet>
-                                        <h:outputText value="#{linha.disponivel}" />
-                                    </rich:column>
-
-                                </rich:dataTable>
-                            </div>
-                       </rich:panel>
-                    </div>
-                </center>
-               <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{catalogoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="#{catalogoBean.novo()}" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                  
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
