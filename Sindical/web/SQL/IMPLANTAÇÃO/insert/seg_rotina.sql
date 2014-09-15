@@ -271,5 +271,6 @@
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 265, 'WEB IMPRESSÃO DE BOLETOS', '"/Sindical/webContribuinte.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 265);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 266, 'STATUS ATENDIMENTO', '"/Sindical/statusAtendimento.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 266);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT , 'PESQUISA CATEGORIA', '"/Sindical/pesquisaCategoria.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = );
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT , 'CADASTRO DE TÍTULOS', '"/Sindical/titulo.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = );
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
