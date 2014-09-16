@@ -6,6 +6,8 @@ import br.com.rtools.impressao.ParametroAcordoAnalitico;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
 import java.math.BigDecimal;
@@ -13,7 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -24,16 +29,24 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class FechamentoComissaoAcordoJSFBean {
+@ManagedBean
+@SessionScoped
+public class FechamentoComissaoAcordoBean {
 
     private List<SelectItem> listaData;
     private int idDataFechamento;
-    private String mensagem;
+    //private String mensagem;
 
-    public FechamentoComissaoAcordoJSFBean() {
+    @PostConstruct
+    public void init() {
         listaData = new ArrayList<SelectItem>();
         idDataFechamento = 0;
-        mensagem = "";
+        // mensagem = "";
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("fechamentoComissaoAcordoBean");
     }
 
     public List<SelectItem> getListaData() {
@@ -43,9 +56,7 @@ public class FechamentoComissaoAcordoJSFBean {
             List<Date> select = db.pesquisaTodosFechamento();
             if (select != null) {
                 while (i < select.size()) {
-                    listaData.add(new SelectItem(
-                            new Integer(i),
-                            DataHoje.converteData(select.get(i))));
+                    listaData.add(new SelectItem(i, DataHoje.converteData(select.get(i))));
                     i++;
                 }
             }
@@ -57,9 +68,9 @@ public class FechamentoComissaoAcordoJSFBean {
         AcordoComissaoDB acordoComissaoDB = new AcordoComissaoDBToplink();
         if (acordoComissaoDB.inserirAcordoComissao()) {
             listaData.clear();
-            setMensagem("Concluído com sucesso!");
+            GenericaMensagem.info("Sucesso", "Concluído com sucesso");
         } else {
-            setMensagem("Erro ao gerar comissão!");
+            GenericaMensagem.warn("Erro", "Ao gerar comissão!");
 
         }
     }
@@ -71,35 +82,35 @@ public class FechamentoComissaoAcordoJSFBean {
 
             JasperReport jasper = null;
             Collection lista = new ArrayList<ParametroAcordoAnalitico>();
-            BigDecimal repasse = new BigDecimal(0),
-                    liquido = new BigDecimal(0),
-                    comissao = new BigDecimal(0),
-                    valor = new BigDecimal(0),
-                    taxa = new BigDecimal(0);
+            BigDecimal repasse;
+            BigDecimal liquido;
+            BigDecimal comissao;
+            BigDecimal valor;
+            BigDecimal taxa;
 
             for (int i = 0; i < result.size(); i++) {
-                valor = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(9).toString()));
-                taxa = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(10).toString()));
-                repasse = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(11).toString()));
+                valor = new BigDecimal(Double.valueOf(((List) result.get(i)).get(9).toString()));
+                taxa = new BigDecimal(Double.valueOf(((List) result.get(i)).get(10).toString()));
+                repasse = new BigDecimal(Double.valueOf(((List) result.get(i)).get(11).toString()));
 
                 repasse = (valor.subtract(taxa).multiply(repasse)).divide(new BigDecimal(100));
                 liquido = valor.subtract(taxa).subtract(repasse);
                 comissao = valor.subtract(taxa).subtract(repasse).multiply(new BigDecimal(0.015));
 
-                lista.add(new ParametroAcordoAnalitico(((Vector) result.get(i)).get(0).toString(),
-                        ((Vector) result.get(i)).get(1).toString(),
-                        (Integer) ((Vector) result.get(i)).get(2),
-                        ((Vector) result.get(i)).get(3).toString(),
-                        ((Vector) result.get(i)).get(4).toString(),
-                        (Date) ((Vector) result.get(i)).get(5),
-                        (Date) ((Vector) result.get(i)).get(6),
-                        (Date) ((Vector) result.get(i)).get(7),
+                lista.add(new ParametroAcordoAnalitico(((List) result.get(i)).get(0).toString(),
+                        ((List) result.get(i)).get(1).toString(),
+                        (Integer) ((List) result.get(i)).get(2),
+                        ((List) result.get(i)).get(3).toString(),
+                        ((List) result.get(i)).get(4).toString(),
+                        (Date) ((List) result.get(i)).get(5),
+                        (Date) ((List) result.get(i)).get(6),
+                        (Date) ((List) result.get(i)).get(7),
                         valor,
                         taxa,
                         repasse,
                         liquido,
                         DataHoje.converte(listaData.get(idDataFechamento).getLabel()),
-                        (Date) ((Vector) result.get(i)).get(8),
+                        (Date) ((List) result.get(i)).get(8),
                         comissao));
             }
             String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
@@ -137,6 +148,7 @@ public class FechamentoComissaoAcordoJSFBean {
                         "application/pdf",
                         FacesContext.getCurrentInstance());
                 download.baixar();
+                download.remover();
             } catch (Exception e) {
             }
         }
@@ -146,17 +158,14 @@ public class FechamentoComissaoAcordoJSFBean {
         if (!listaData.isEmpty()) {
             AcordoComissaoDB acordoComissaoDB = new AcordoComissaoDBToplink();
             if (acordoComissaoDB.estornarAcordoComissao(listaData.get(idDataFechamento).getLabel())) {
-                mensagem = "Fechamento estornado com sucesso";
+                GenericaMensagem.info("Sucesso", "Fechamento de acordo estornado");
             } else {
-                mensagem = "Erro ao estornar Fechamento";
+                GenericaMensagem.warn("Erro", "Ao estornar fechamento!");
             }
             listaData.clear();
         } else {
-            mensagem = "Data de Fechamento vazia";
+            GenericaMensagem.warn("Validação", "Data de Fechamento vazia!");
         }
-    }
-
-    public void refreshForm() {
     }
 
     public void setListaData(List<SelectItem> listaData) {
@@ -171,11 +180,11 @@ public class FechamentoComissaoAcordoJSFBean {
         this.idDataFechamento = idDataFechamento;
     }
 
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
+//    public String getMensagem() {
+//        return mensagem;
+//    }
+//
+//    public void setMensagem(String mensagem) {
+//        this.mensagem = mensagem;
+//    }
 }
