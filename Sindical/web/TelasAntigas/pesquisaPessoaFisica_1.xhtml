@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Pesquisa Física</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body styleClass="divMenu" onload="#{rich:element('formPesquisaPessoaFisica:palavraChave')}.focus();">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaPessoaFisica">                
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Físicas" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br />
+                    <h:panelGrid columns="8">
+                        <h:selectOneMenu value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px;">
+                            <a4j:ajax event="change" render="this"/>
+                            <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
+                            <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
+                            <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
+                        </h:selectOneMenu>                        
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
+                        <h:inputText onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaPessoaFisica:btnInicial')}.onclick();
+            }" 
+                                     id="palavraChave" value="#{fisicaBean.descPesquisa}" class="#{fisicaBean.porPesquisa}"/>
+                        <h:outputLabel value="Por: "/>
+                        <h:selectOneMenu value="#{fisicaBean.porPesquisa}" onchange="submit();">
+                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                            <f:selectItem itemValue="rg" itemLabel="RG"/>
+                            <f:selectItem itemValue="cpf" itemLabel="CPF"/>
+                            <f:selectItem itemValue="email1"    itemLabel="E-mail 1"/>
+                            <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
+                            <f:selectItem itemValue="endereco" itemLabel="Endereço"/>                            
+                            <!-- <rich:jQuery selector="#palavraChave" query="attr('value', '')" timing="immediate"/> -->
+                        </h:selectOneMenu>
+
+                        <h:commandLink id="btnInicial" action="#{fisicaBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" />
+                        <h:commandLink id="btnParcial" action="#{fisicaBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" />
+                        <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+                    </h:panelGrid>
+
+                    <div style="overflow:auto; height:380px;">
+                        <br />                        
+                        <rich:dataTable value="#{fisicaBean.listaPessoa}" var="linha" style="width: 95%" id="tbl" styleClass="stable">
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.id}" />
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Nome"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.nome}" styleClass="underline-hover"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="RG"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.rg}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="CPF"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.documento}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Nascimento"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.nascimento}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Telefone"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.telefone1}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="E-mail"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.email1}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Local Trabalho"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento1.juridica.pessoa.nome}"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </center>
+            </h:form>
+            <rich:jQuery selector=".stable tr:odd" query="addClass('odd-row')" />
+            <rich:jQuery selector=".stable tr:even" query="addClass('even-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />             
+        </f:view>
+        <p style="text-align: center">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>        
+    </h:body>
+</ui:composition>

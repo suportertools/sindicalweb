@@ -13,6 +13,8 @@ import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEmpresa;
+import br.com.rtools.pessoa.db.JuridicaDB;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -95,8 +97,24 @@ public class OposicaoBean implements Serializable {
             message = "Informar o Pessoa Jurídica!";
             return;
         }
-        if (oposicao.getOposicaoPessoa().getNome().equals("")) {
+        if (oposicao.getOposicaoPessoa().getNome().isEmpty()) {
             message = "Informar o nome da Pessoa!";
+            return;
+        }
+        JuridicaDB db = new JuridicaDBToplink();
+        List<List> lista_inativa = db.listaJuridicaContribuinte(oposicao.getJuridica().getId());
+        
+        if (lista_inativa.isEmpty()) {
+            message = "Empresa não é contribuinte!";
+            return;
+        }
+        
+        if (lista_inativa.get(0).get(11) != null) {
+            message = "Empresa Inativa!";
+            return;
+        } 
+        if (oposicao.getConvencaoPeriodo().getId() == -1) {
+            message = "Empresa fora do período de Convenção!";
             return;
         }
         if (oposicao.getConvencaoPeriodo().getId() == -1) {

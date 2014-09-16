@@ -1,0 +1,461 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Cadastro Sócios</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_socios">
+                <c:set scope="request" var="object" value="${sociosBean.socios}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro Sócios" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 800px;">
+                        <h:panelGrid columns="5">
+                            <h:outputLabel value="Sócio: " styleClass="fontePadrao"/>
+                            <h:outputText value="#{sociosBean.servicoPessoa.pessoa.tipoDocumento.descricao} - #{sociosBean.servicoPessoa.pessoa.documento}" styleClass="fontePadraoNegrito"/>
+                            <h:commandLink action="#{sociosBean.editarTitular()}" value="#{sociosBean.servicoPessoa.pessoa.nome}" styleClass="fontePadrao" style="margin-left: 20px; font-size: 15pt;"/>
+                        </h:panelGrid>
+                        <br />
+                        <h:panelGrid columns="8">                            
+                            <h:outputLabel value="Desconto: " styleClass="fontePadrao"/>
+                            <h:inputText id="idNrDesconto" value="#{sociosBean.servicoPessoa.nrDesconto}" size="5">
+                                <a4j:ajax event="change" render="this"/>
+                            </h:inputText>
+                            <h:outputLabel value=" % " styleClass="fontePadraoNegrito"/>
+                            <h:selectBooleanCheckbox id="idChkDesFolha" value="#{sociosBean.servicoPessoa.descontoFolha}" style="margin-left: 40px;"/>
+                            <h:outputLabel value=" Descontar em Folha" styleClass="fontePadrao" style="cursor: pointer" for="idChkDesFolha"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="4">
+                            <h:outputLabel value="Serviços: " styleClass="fontePadrao" rendered="#{sociosBean.renderServicos}"/>
+                            <h:selectOneMenu id="idServico" value="#{sociosBean.idServico}" rendered="#{sociosBean.renderServicos}">
+                                <f:selectItems value="#{sociosBean.listaServicos}"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="8">
+                            <h:outputLabel value="Ref. Vigoração: " styleClass="fontePadrao"/>
+                            <h:inputText id="idRefVigoracao" value="#{sociosBean.servicoPessoa.referenciaVigoracao}" size="5" class="referencia">
+                                <a4j:ajax event="change" render="this"/>
+                            </h:inputText>
+                            <h:outputLabel value="Ref. Validade: " styleClass="fontePadrao" rendered="#{sociosBean.renderServicos}"/>
+                            <h:inputText id="idRefValidade" value="#{sociosBean.servicoPessoa.referenciaValidade}" size="5" class="referencia" rendered="#{servicoPessoaBean.renderServicos}">
+                                <a4j:ajax event="change" render="this"/>
+                            </h:inputText>
+                            <h:outputLabel value="Dia Vencto: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idDiaVenct" value="#{sociosBean.servicoPessoa.nrDiaVencimento}" disabled="true">
+                                <a4j:ajax event="change" render="this"/>
+                                <f:selectItem itemValue="1" itemLabel="01"/>
+                                <f:selectItem itemValue="2" itemLabel="02"/>
+                                <f:selectItem itemValue="3" itemLabel="03"/>
+                                <f:selectItem itemValue="4" itemLabel="04"/>
+                                <f:selectItem itemValue="5" itemLabel="05"/>
+                                <f:selectItem itemValue="6" itemLabel="06"/>
+                                <f:selectItem itemValue="7" itemLabel="07"/>
+                                <f:selectItem itemValue="8" itemLabel="08"/>
+                                <f:selectItem itemValue="9" itemLabel="09"/>
+                                <f:selectItem itemValue="10" itemLabel="10"/>
+                                <f:selectItem itemValue="11" itemLabel="11"/>
+                                <f:selectItem itemValue="12" itemLabel="12"/>
+                                <f:selectItem itemValue="13" itemLabel="13"/>
+                                <f:selectItem itemValue="14" itemLabel="14"/>
+                                <f:selectItem itemValue="15" itemLabel="15"/>
+                                <f:selectItem itemValue="16" itemLabel="16"/>
+                                <f:selectItem itemValue="17" itemLabel="17"/>
+                                <f:selectItem itemValue="18" itemLabel="18"/>
+                                <f:selectItem itemValue="19" itemLabel="19"/>
+                                <f:selectItem itemValue="20" itemLabel="20"/>
+                                <f:selectItem itemValue="21" itemLabel="21"/>
+                                <f:selectItem itemValue="22" itemLabel="22"/>
+                                <f:selectItem itemValue="23" itemLabel="23"/>
+                                <f:selectItem itemValue="24" itemLabel="24"/>
+                                <f:selectItem itemValue="25" itemLabel="25"/>
+                                <f:selectItem itemValue="26" itemLabel="26"/>
+                                <f:selectItem itemValue="27" itemLabel="27"/>
+                                <f:selectItem itemValue="28" itemLabel="28"/>
+                                <f:selectItem itemValue="29" itemLabel="29"/>
+                                <f:selectItem itemValue="30" itemLabel="30"/>
+                                <f:selectItem itemValue="31" itemLabel="31"/>
+                            </h:selectOneMenu>
+                            <h:button value="Alterar dia vencimento" onclick="#{rich:component('dlg_dv')}.show();return false;"></h:button>
+                        </h:panelGrid>
+                        <hr />
+                        <h:panelGrid columns="8">
+                            <h:outputLabel value="Data Filiação: " styleClass="fontePadrao"/>
+                            <h:inputText value="#{sociosBean.matriculaSocios.emissao}" size="8" class="data"/>
+                            <h:outputLabel value="Grupo Categoria: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idGrupoCategoria" value="#{sociosBean.idGrupoCategoria}">
+                                <a4j:ajax event="change" render="idCategoria" />
+                                <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Categoria: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idCategoria" value="#{sociosBean.idCategoria}">
+                                <f:selectItems value="#{sociosBean.listaCategoria}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Número Matrícula: " styleClass="fontePadrao"/>
+                            <h:inputText id="iNrMatricula" value="#{sociosBean.matriculaSocios.nrMatricula}" size="5"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.cidade}" immediate="true"/>
+                            <h:outputLabel value="Cidade convênio: " styleClass="fontePadrao"/>
+                            <h:outputText value="#{sociosBean.matriculaSocios.cidade.cidade} - #{sociosBean.matriculaSocios.cidade.uf}" styleClass="fontePadraoNegrito"/>
+                        </h:panelGrid>                        
+                        <h:panelGrid columns="1">
+                            <h:outputLabel value="Observações: " styleClass="fontePadrao"/>
+                            <h:inputTextarea id="idObs" value="#{sociosBean.matriculaSocios.observacao}" cols="30" rows="3" onblur="upperCase(this);"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" style="float: right; position: relative; margin-left: 200px">
+                            <h:outputLabel rendered="#{sociosBean.matriculaSocios.motivoInativacao != null}" value="Este sócio esta inativo desde: #{sociosBean.matriculaSocios.inativo} por #{sociosBean.matriculaSocios.motivoInativacao.descricao}" style="font-size: 10pt; color: red"/>
+                            <a4j:commandLink rendered="#{sociosBean.matriculaSocios.motivoInativacao != null}" value="Clique aqui para reativar" onclick="#{rich:component('dlg_reativar_socio')}.show();return false;" style="font-size: 8pt"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1">
+                            <h:outputLabel value="Observações Aviso: " styleClass="fontePadrao" />
+                            <h:inputTextarea id="idObsAviso" value="#{sociosBean.matriculaSocios.observacaoAviso}" cols="30" rows="3" onblur="upperCase(this);" style="float: left"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <h:selectBooleanCheckbox id="idBloqAviso" value="#{sociosBean.matriculaSocios.bloqueiaObsAviso}"/>
+                            <h:outputLabel value=" Bloquear Obs. Aviso" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <rich:panel>
+                                <h:outputLabel value="Dependentes: " styleClass="fonteFranklinNegrito"/>
+                                <h:commandLink value="[ Adicionar ]" action="#{sociosBean.adicionarDependente}" styleClass="iLink fontePadraoNegrito"/>
+                                <rich:dataTable var="linha" style="width: 100%" id="tbl" value="#{sociosBean.listaDependentes}" iterationStatusVar="it">
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="#"/>
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Excluir"/>
+                                        </f:facet>
+                                        <a4j:commandLink value="| X |" styleClass="iLink" action="#{sociosBean.excluirDependente}" oncomplete="#{rich:component('dlg_message')}.show(); return false;" render="outConfirma">
+                                            <a4j:param value="#{it.index}" assignTo="#{sociosBean.idIndexDep}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nome"/>
+                                        </f:facet>
+                                        <a4j:commandLink value="...[]" styleClass="iLink" oncomplete="#{rich:component('dlg_dependente')}.show(); return false;" action="#{sociosBean.editarOUsalvar}" render="i_grid_dependente">
+                                            <a4j:param value="#{it.index}" assignTo="#{sociosBean.idIndexDep}" />
+                                            <h:outputLabel value="#{linha.argumento0.pessoa.documento} - #{linha.argumento0.pessoa.nome}"/>
+                                        </a4j:commandLink>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Parentesco"/>
+                                        </f:facet>
+                                        <h:selectOneMenu value="#{linha.argumento1}">
+                                            <a4j:ajax event="change" render="idValidadeDep" listener="#{sociosBean.atualizaValidadeTela(it.index)}"/>
+                                            <f:selectItems value="#{sociosBean.listaParentesco}"/>
+                                        </h:selectOneMenu>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Via Carteirinha"/>
+                                        </f:facet>
+                                        <h:inputText value="#{linha.argumento2}" size="3"/>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Validade Carteirinha"/>
+                                        </f:facet>
+                                        <h:inputText value="#{linha.argumento3}" size="8" class="data"/>
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Validade Dependente"/>
+                                        </f:facet>
+                                        <h:inputText id="idValidadeDep" value="#{linha.argumento4}" size="5" class="referencia"/>
+                                    </h:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </h:panelGrid>                        
+                        <h:panelGrid columns="4">
+                            <a4j:commandLink styleClass="idNovo iLink" value="Voltar" action="#{sociosBean.editarTitular()}" />
+                            <a4j:commandLink onclick="#{rich:component('dlg_save')}.show();return false;"  styleClass="idNovo iLink" style="width: 200px;" value="#{sociosBean.lblSocio} Cadastro" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <a4j:commandLink onclick="#{rich:component('dlg_delete')}.show();return false;" styleClass="idNovo iLink" style="width: 150px;" value="Excluir Sócio" disabled="#{controleAcessoBean.botaoExcluir}" />
+                            <a4j:commandLink onclick="#{rich:component('dlg_inativar_socio')}.show();return false;" styleClass="idNovo iLink" style="width: 150px;" value="Inativar Sócio" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.botaoExcluir}" />
+                        </h:panelGrid>
+                        <br />
+                        <h:panelGrid columns="7">
+                            <h:selectBooleanCheckbox id="idImprimirVerso" value="#{sociosBean.imprimirVerso}" disabled="#{sociosBean.desabilitaImpressao}">
+                                <a4j:ajax event="change" render="idDestinatio"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value=" Imprimir Verso" styleClass="fontePadrao" for="idImprimirVerso" style="cursor: pointer"/>
+
+                            <h:outputLabel value=" Destinatário: " styleClass="fontePadrao" style="margin-left: 20px;"/>
+                            <h:selectOneMenu id="idDestinatio" value="#{sociosBean.tipoDestinario}" disabled="#{sociosBean.desabilitaImpressao}">
+                                <a4j:ajax event="change" render="this"/>
+                                <f:selectItem itemValue="socio"   itemLabel="para o Sócio"/>
+                                <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
+                            </h:selectOneMenu>
+
+                            <!-- <a4j:commandLink id="idImprimirCarteirinha" value="Visualizar Carteirinha" styleClass="idNovo iLink" style="width: 200px; margin-left: 20px;" action="# {sociosBean.visualizarCarteirinha}" disabled="# {sociosBean.desabilitaImpressao}"/> -->
+                            <h:commandLink id="idImprimirCarteirinha" value="Visualizar Carteirinha" styleClass="idNovo iLink" style="width: 200px; margin-left: 20px;" action="#{sociosBean.visualizarCarteirinha}" disabled="#{sociosBean.desabilitaImpressao}" />
+                            <h:commandLink id="btnImprimirVerso" value="Imprimir Ficha" styleClass="idNovo iLink" style="width: 150px;" action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
+                        </h:panelGrid>
+                    </div>
+                </center>
+
+                <rich:popupPanel id="dlg_dependente" header="Dependente" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_dependente')}.hide();" width="800" height="400">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_dependente')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid id="i_grid_dependente">
+                            <h:outputScript library="js" name="jScripts.js" />
+                            <h:panelGrid columns="2">
+                                <h:column>
+                                    <h:panelGrid columns="3">
+                                        <h:outputLabel value="Pesquisar:" />
+                                        <h:inputText id="idPesquisa" value="#{sociosBean.pesquisaLista}" onblur="upperCase(this);" style="text-transform: uppercase">
+                                            <a4j:ajax event="keypress" render="this, tblFisica"/>
+                                        </h:inputText>
+                                        <h:column>
+                                            <a4j:status>
+                                                <f:facet name="start">
+                                                    <h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/>
+                                                </f:facet>
+                                            </a4j:status>
+                                        </h:column>
+                                    </h:panelGrid>
+                                    <div style="overflow-x: auto; height: 200px;  position: absolute; z-index: 99999">
+                                        <rich:dataGrid value="#{sociosBean.listaFisica}" id="tblFisica" var="linha" style="position: relative; margin-left: 130px;" rendered="#{sociosBean.listaFisica.size() > 0}">
+                                            <rich:column>
+                                                <a4j:commandLink value="#{linha.pessoa.nome}" action="#{sociosBean.editarDependente(linha)}" styleClass="iLink" render="idDtDependente,idNomeDep,idNasc,idSexo,idCpf,idRg,idEstadoCivil,idPai,idMae,idFoto,idPesquisa,tblFisica" />
+                                            </rich:column>
+                                        </rich:dataGrid>
+                                    </div>
+                                    <hr />
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Data: "/>
+                                        <h:inputText id="idDtDependente" value="#{sociosBean.dependente.pessoa.criacao}" size="10" maxlength="10" styleClass="data" converter="#{isDateString}">
+                                            <f:ajax event="change" render="@this" />
+                                        </h:inputText>
+                                        <h:outputLabel value="Nome: " />
+                                        <h:inputText id="idNomeDep" value="#{sociosBean.dependente.pessoa.nome}" size="80" converter="#{toUpperCase}">
+                                            <f:ajax event="blur" render="@this" />
+                                        </h:inputText>
+                                        <h:outputLabel value="Nascimento: " />
+                                        <h:column>
+                                            <h:panelGrid columns="3">
+                                                <h:inputText id="idNasc" size="10" maxlength="10" styleClass="data" value="#{sociosBean.dependente.nascimento}">
+                                                    <f:ajax event="change" render="@this" />
+                                                </h:inputText>
+                                                <h:outputLabel value="Sexo: " style="margin-left: 40px;"/>
+                                                <h:selectOneRadio id="idSexo" value="#{sociosBean.dependente.sexo}">
+                                                    <f:ajax event="change" render="@this" />
+                                                    <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                                    <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                                </h:selectOneRadio>
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <h:outputLabel value="CPF: "/>
+                                        <h:column>
+                                            <h:panelGrid columns="5">
+                                                <h:inputText id="idCpf" size="14" maxlength="14" class="cpf" value="#{sociosBean.dependente.pessoa.documento}">
+                                                    <f:ajax event="change" render="@this" />
+                                                </h:inputText>
+                                                <h:outputLabel value="RG: " style="margin-left: 40px;"/>
+                                                <h:inputText id="idRg" size="12" maxlength="10" value="#{sociosBean.dependente.rg}">
+                                                    <f:ajax event="change" render="@this" />
+                                                </h:inputText>
+                                                <h:outputLabel value="Estado Civil: " styleClass="fontePadrao" style="margin-left: 40px;"/>
+                                                <h:selectOneMenu id="idEstadoCivil" value="#{sociosBean.dependente.estadoCivil}">
+                                                    <f:ajax event="change" render="@this" />
+                                                    <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                                    <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                                    <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                                    <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                                    <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                                    <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                                    <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                    <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                                </h:selectOneMenu>
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <h:outputLabel value="Pai: " />
+                                        <h:inputText id="idPai" size="60" maxlength="100" value="#{sociosBean.dependente.pai}" converter="#{toUpperCase}">
+                                            <f:ajax event="blur" render="@this" />
+                                        </h:inputText>                                
+                                        <h:outputLabel value="Mãe: " />
+                                        <h:inputText id="idMae" size="60" maxlength="100" value="#{sociosBean.dependente.mae}" converter="#{toUpperCase}">
+                                            <f:ajax event="blur" render="@this" />
+                                        </h:inputText>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <center>
+                                        <h:graphicImage id="idFoto" value="/Imagens/Fotos/#{sociosBean.pessoaImagem}" title="Upload com alt+U" height="200" width="140"/>
+                                        <br />
+                                        <a4j:commandButton value="Excluir" action="#{sociosBean.excluirImagemDependente}" render="idFoto"/>
+                                    </center>                                    
+                                </h:column>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3">
+                                <a4j:commandButton value="Salvar" immediate="true" action="#{sociosBean.salvarFisicaDependente}" oncomplete="#{rich:component('dlg_message')}.show(); return false;"  render="idDtDependente,idNomeDep,idNasc,idSexo,idCpf,idRg,idEstadoCivil,idPai,idMae,idFoto,idPesquisa,tblFisica,tbl,outConfirma"/>
+                                <a4j:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" render="idDtDependente,idNomeDep,idNasc,idSexo,idCpf,idRg,idEstadoCivil,idPai,idMae,idFoto,idPesquisa,tbl,tblFisica"/>
+                                <a4j:commandButton value="Cancelar" oncomplete="#{rich:component('dlg_dependente')}.hide(); return false;"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="dlg_dv" header="Alterar dia de vencimento?" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_dv')}.hide();" width="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_dv')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Dia Vencto:" />
+                            <h:selectOneMenu value="#{sociosBean.servicoPessoa.nrDiaVencimento}" >
+                                <a4j:ajax event="change" render="this idDiaVenct" oncomplete="#{rich:component('dlg_dv')}.hide();"/>
+                                <f:selectItem itemValue="1" itemLabel="01"/>
+                                <f:selectItem itemValue="2" itemLabel="02"/>
+                                <f:selectItem itemValue="3" itemLabel="03"/>
+                                <f:selectItem itemValue="4" itemLabel="04"/>
+                                <f:selectItem itemValue="5" itemLabel="05"/>
+                                <f:selectItem itemValue="6" itemLabel="06"/>
+                                <f:selectItem itemValue="7" itemLabel="07"/>
+                                <f:selectItem itemValue="8" itemLabel="08"/>
+                                <f:selectItem itemValue="9" itemLabel="09"/>
+                                <f:selectItem itemValue="10" itemLabel="10"/>
+                                <f:selectItem itemValue="11" itemLabel="11"/>
+                                <f:selectItem itemValue="12" itemLabel="12"/>
+                                <f:selectItem itemValue="13" itemLabel="13"/>
+                                <f:selectItem itemValue="14" itemLabel="14"/>
+                                <f:selectItem itemValue="15" itemLabel="15"/>
+                                <f:selectItem itemValue="16" itemLabel="16"/>
+                                <f:selectItem itemValue="17" itemLabel="17"/>
+                                <f:selectItem itemValue="18" itemLabel="18"/>
+                                <f:selectItem itemValue="19" itemLabel="19"/>
+                                <f:selectItem itemValue="20" itemLabel="20"/>
+                                <f:selectItem itemValue="21" itemLabel="21"/>
+                                <f:selectItem itemValue="22" itemLabel="22"/>
+                                <f:selectItem itemValue="23" itemLabel="23"/>
+                                <f:selectItem itemValue="24" itemLabel="24"/>
+                                <f:selectItem itemValue="25" itemLabel="25"/>
+                                <f:selectItem itemValue="26" itemLabel="26"/>
+                                <f:selectItem itemValue="27" itemLabel="27"/>
+                                <f:selectItem itemValue="28" itemLabel="28"/>
+                                <f:selectItem itemValue="29" itemLabel="29"/>
+                                <f:selectItem itemValue="30" itemLabel="30"/>
+                                <f:selectItem itemValue="31" itemLabel="31"/>
+                            </h:selectOneMenu>                        
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="dlg_inativar_socio" header="Deseja inativar esse cadastro?" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_inativar_socio')}.hide();"  width="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_inativar_socio')}.hide();
+                                    return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>                        
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Data inativo: " styleClass="fontePadrao"/>
+                            <h:inputText id="idDtInativo" value="#{sociosBean.dataInativacao}" size="10" maxlength="10" styleClass="data" />
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:selectOneMenu id="idInativar" value="#{sociosBean.idInativacao}">
+                                <f:selectItems value="#{sociosBean.listaMotivoInativacao}"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.inativarSocio()}" oncomplete="#{rich:component('form_socios:dlg_inativar_socio')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
+                            <a4j:commandButton value="Não" title="Não" onclick="#{rich:component('dlg_inativar_socio')}.hide();return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="dlg_reativar_socio" header="Deseja reativar esse cadastro?" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_reativar_socio')}.hide();" width="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_reativar_socio')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>                        
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Data: "/>
+                            <h:outputText value="#{sociosBean.dataReativacao}" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.reativarSocio}" oncomplete="#{rich:component('form_socios:dlg_reativar_socio')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
+                            <a4j:commandButton value="Não" title="Não" onclick="#{rich:component('dlg_reativar_socio')}.hide();return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="dlg_save" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_save')}.hide();"  width="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_delete')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <f:facet name="header">
+                        <h:outputText value="#{sociosBean.lblSocioPergunta}" styleClass="fontePadrao"/>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.salvar}" oncomplete="#{rich:component('form_socios:dlg_save')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
+                            <a4j:commandButton value="Não" title="Não" onclick="#{rich:component('dlg_save')}.hide();return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="dlg_delete" header="Deseja excluir este registro?" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_delete')}.hide();"  width="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_delete')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.excluir}" oncomplete="#{rich:component('form_socios:dlg_delete')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
+                            <a4j:commandButton value="Não" title="Não" onclick="#{rich:component('dlg_delete')}.hide();return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
+
+                <rich:popupPanel id="dlg_message" header="Mensagem" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_message')}.hide();" >
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('dlg_message')}.hide();return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="1" id="outConfirma">
+                            <h:outputText value="#{sociosBean.msgConfirma}" />
+                            <h:commandButton value="OK" title="OK" action="socios"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
+            </h:form>
+            <form action="servletUpload" name="formFoto" enctype="multipart/form-data" method="post">  
+                <input id="idUpload" type="file" name="nFoto" onchange="submit();" style="visibility: hidden" accesskey="u"/>
+            </form>
+        </f:view>
+    </h:body>
+</ui:composition>

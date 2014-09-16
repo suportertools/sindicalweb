@@ -526,7 +526,7 @@ public class ImpressaoBoletosBean implements Serializable {
         List movs = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         try {
-            ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
+            ArquivoBancoBean arquivoBanco = new ArquivoBancoBean();
             Movimento mov = new Movimento();
             if (todasContas.equals("true")) {
                 msgImpressao = "Selecione específicas para gerar o Arquivo!";
@@ -556,14 +556,14 @@ public class ImpressaoBoletosBean implements Serializable {
     }
 
     public String baixarArquivosGerados() {
-        ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
+        ArquivoBancoBean arquivoBanco = new ArquivoBancoBean();
         arquivoBanco.baixarArquivosGerados();
 
         return null;
     }
 
     public void limparIn() {
-        ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
+        ArquivoBancoBean arquivoBanco = new ArquivoBancoBean();
         arquivoBanco.limparDiretorio("");
     }
 

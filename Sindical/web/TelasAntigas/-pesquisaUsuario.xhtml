@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Usuários</title>
+    </h:head>
+    <h:body styleClass="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_pesquisa_usuario">                
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Usuários" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <rich:panel styleClass="divMae no-margin border-radius no-border">
+                        <h:panelGrid columns="5" styleClass="margin">
+                            <h:outputText value="Pesquisar: " />
+                            <h:inputText value="#{usuarioBean.descricaoPesquisa}" />
+                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{usuarioBean.listaUsuario.clear()}" render="tbl" status="i_status"/>
+                            <h:outputText value="Usuários ativos: " styleClass="margin-left-max"/>
+                            <h:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}" title="Trazer somente usuários ativos" valueChangeListener="#{usuarioBean.listaUsuario.clear()}">
+                                <a4j:ajax event="change" render="@this, tbl" status="i_status" />
+                            </h:selectBooleanCheckbox>
+                        </h:panelGrid>                    
+                        <rich:dataTable value="#{usuarioBean.listaUsuario}" var="usuario" style="width: 800px;" id="tbl" rowClasses="text-center">
+                            <rich:column style="width: 25px;">
+                                <f:facet name="header">
+                                    <h:outputLabel value="ID"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.id}" styleClass="underline-hover" />
+                            </rich:column>
+                            <rich:column styleClass="textoEsquerda">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Nome"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.pessoa.nome}" styleClass="underline-hover"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputLabel value="Login"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.login}" styleClass="underline-hover"/>
+                            </rich:column>  
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputLabel value="Status" title="Ativo / Inátivo"/>
+                                </f:facet>
+                                <h:selectBooleanCheckbox value="#{usuario.ativo}" disabled="true"/>
+                            </rich:column>  
+                        </rich:dataTable>
+                    </rich:panel>
+                </center>
+            </h:form>
+        </f:view>
+        <p style="text-align: center">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>
+    </h:body>
+</ui:composition>

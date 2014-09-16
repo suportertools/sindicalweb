@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Feriádos</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_feriados">
+
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro Feriados" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 600px;">
+                        <h:panelGrid columns="4">
+                            <h:selectBooleanCheckbox id="idChkCidade" value="#{feriadosBean.chkCidades}">
+                                <a4j:ajax event="change" render="idCidade"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value=" Cidades " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idCidade" value="#{feriadosBean.idCidade}" >
+                                <f:selectItems value="#{feriadosBean.listaCidade}"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="6">
+                            <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                            <h:inputText id="idNome" size="50" value="#{feriadosBean.feriados.nome}"/>
+                            <h:outputLabel value="Data: " styleClass="fontePadrao"/>
+                            <h:inputText id="idData" size="10" maxlength="10" value="#{feriadosBean.feriados.data}" class="data"/>
+                            <a4j:commandButton image="/Imagens/novo.png" title="Adicionar" id="btnAdicionar" oncomplete="modalMensagem()" render="outConfirma,tbl" action="#{feriadosBean.salvar}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1">
+                            <rich:panel>
+                                <div style="overflow:auto; height:320px;">
+                                    <rich:dataTable value="#{feriadosBean.listaFeriados}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Excluir"/>
+                                            </f:facet>
+                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{feriadosBean.excluir(linha)}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Nome"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.nome}"/>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Data"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.data}"/>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cidade/UF"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.cidade.cidade} - #{linha.cidade.uf}"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </div>
+                            </rich:panel>
+                        </h:panelGrid>                        
+                    </div>
+                </center>
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{feriadosBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                 
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

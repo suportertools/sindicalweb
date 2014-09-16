@@ -1,0 +1,362 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Agendamento</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_agendamento_novo">
+                    <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
+                    <p:outputLabel value="Homologação" styleClass="fonteHeader"/>
+                    <div class="clear"></div>            
+                    <p:panel id="id_form_agendamento" style="border: 0; margin: 0; background: transparent;">
+                        <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
+                        <p:panel styleClass="divMae divFundo" style="text-align: left; width: 800px;" rendered="#{agendamentoBean.renderConcluir}">
+                            <h:outputScript library="js" name="jScripts.js" />
+                            <p:panelGrid id="i_panel_horario" columns="10" style="margin-left: 45px;">
+                                <h:outputText value="PROTOCOLO: " />
+                                <p:inputText id="iProt" size="10" value="#{agendamentoBean.protocolo}" disabled="#{agendamentoBean.disabledProtocolo}" >
+                                    <p:ajax event="blur" listener="#{agendamentoBean.pesquisarProtocolo}" update="i_panel_1" />
+                                </p:inputText>
+                                <h:outputText value="Data: " styleClass="fontePadrao"/>
+                                <h:outputText value="#{agendamentoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" style="margin-left: 5px;"/>
+                                <h:column>
+                                    <h:outputText value="Horário: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value=" Alterar >> " styleClass="fontePadrao" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}"/>
+                                    <h:outputText value="#{agendamentoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" rendered="#{agendamentoBean.ocultarHorarioAlternativo}"/>
+                                    <h:selectOneMenu id="id_horario_alternativo" value="#{agendamentoBean.idHorarioAlternativo}" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
+                                        <p:ajax event="change" update="@this"  />
+                                        <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
+                                    </h:selectOneMenu>
+                                    <p:commandButton styleClass="idNovo iLink" value="Ok" title="Adicionar horário alternativo" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
+                                        <p:ajax event="click" listener="#{agendamentoBean.adicionarHorarioAlternativo}" oncomplete="PF('dgl_painel_mensagem').show()" update="i_panel_horario, id_ocultar_horario_alternativo" /> 
+                                    </p:commandButton>
+                                </h:column>
+                                <p:commandButton image="/Imagens/horario.png" title="Transferir horário" update="i_panel_horario" action="#{agendamentoBean.trasfere()}" rendered="#{agendamentoBean.agendamento.id != -1}" styleClass="margin-left-max" />
+                                <p:outputPanel layout="block" rendered="#{agendamentoBean.renderTransfere}">
+                                    <p:calendar value="#{agendamentoBean.dataTransferencia}" pattern="dd/MM/yyyy" readonly="true">
+                                        <p:ajax event="dateSelect" update="i_panel_horario" />
+                                    </p:calendar>
+                                </p:outputPanel>
+                                <h:selectOneMenu id="i_horario_transferencia" value="#{agendamentoBean.idHorarioTransferencia}" rendered="#{agendamentoBean.renderTransfere}">
+                                    <p:ajax event="change" update="i_horario_transferencia"  />
+                                    <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
+                                </h:selectOneMenu>
+                                <p:commandButton action="#{agendamentoBean.salvarTransferencia()}" rendered="#{agendamentoBean.renderTransfere}" value="OK" oncomplete="PF('dgl_painel_mensagem').show()" update="i_painel_mensagem"/>
+                            </p:panelGrid>
+                            <p:panelGrid id="i_panel_1" columns="2" columnClasses="coluna1, coluna2" >
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">FUNCIONÁRIO</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>                                
+                                <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadraoVermelho"/>
+                                <h:column>
+                                    <h:selectOneMenu id="idMotivoDemissao" value="#{agendamentoBean.idMotivoDemissao}" >
+                                        <p:ajax event="change" update="@this"  />
+                                        <f:selectItems value="#{agendamentoBean.listaDemissao}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputText value="TIPO DE AVISO: " styleClass="fontePadraoVermelho margin-left-max"/>
+                                    <h:selectOneMenu id="idTipoAviso" value="#{agendamentoBean.tipoAviso}">
+                                        <p:ajax event="change" update="@this"  />
+                                        <f:selectItem itemValue="false" itemLabel="Imediato"/>
+                                        <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
+                                    </h:selectOneMenu>
+                                </h:column>                                
+                                <h:outputText value="CPF: " styleClass="fontePadraoVermelho" />
+                                <h:column>
+                                    <p:inputMask id="idCPF" value="#{agendamentoBean.fisica.pessoa.documento}" mask="999.999.999-99">
+                                        <p:ajax event="blur" listener="#{agendamentoBean.pesquisarFuncionarioCPF}" update="i_painel_mensagem id_form_agendamento" oncomplete="PF('dgl_painel_mensagem').show()" />
+                                    </p:inputMask>
+                                </h:column>
+                                <h:outputText value="NOME: " styleClass="fontePadraoVermelho margin-left-max"/>
+                                <h:column>
+                                    <p:inputText id="iFuncionario" size="50" value="#{agendamentoBean.fisica.pessoa.nome}"  onkeyup="upperCase(this);">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
+                                    <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
+                                    <p:calendar id="iNascimento" size="6" maxlength="10" value="#{agendamentoBean.fisica.dtNascimento}" >
+                                        <p:ajax event="dateSelect" update="@this" />
+                                    </p:calendar>
+                                </h:column>
+                                <p:commandButton  value="Endereço" oncomplete="PF('dgl_painel_endereco').show()" title="Pesquisar Endereço" /> 
+                                <h:column id="idOutEndX">
+                                    <p:outputLabel id="idOutEnd" value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao}, #{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <h:outputText value="Nº: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <p:inputText id="iNum" size="5" value="#{agendamentoBean.enderecoFisica.numero}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
+                                    <h:outputText value="COMPL.: " styleClass="fontePadrao margin-left-max" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <p:inputText id="iCompl" size="15" value="#{agendamentoBean.enderecoFisica.complemento}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
+                                    <h:outputText value="Pesquisar Endereço" rendered="#{agendamentoBean.enderecoFisica.endereco.id == -1}"/>
+                                </h:column>
+                                <h:outputText value="CARTEIRA: " styleClass="fontePadrao"/>
+                                <h:column>
+                                    <p:inputText id="iCarteira" size="10" value="#{agendamentoBean.fisica.carteira}"  onblur="upperCase(this);">
+                                        <p:ajax event="blur" update="@this"  />
+                                    </p:inputText>
+                                    <h:outputText value="SÉRIE: " styleClass="fontePadrao margin-left-max"/>
+                                    <p:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}"  onblur="upperCase(this);">
+                                        <p:ajax event="blur" update="@this"  />
+                                    </p:inputText>
+                                </h:column>
+                                <h:outputText value="SEXO: " styleClass="fontePadrao"/>
+                                <h:selectOneRadio id="idSexo" value="#{agendamentoBean.fisica.sexo}" styleClass="fontePadrao">
+                                    <p:ajax event="change" update="@this"  />
+                                    <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                    <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                </h:selectOneRadio>
+                                <p:commandButton id="btnFuncao" value="Função"  onclick="dgl_painel_profissao.show()"/> 
+                                <h:column>
+                                    <p:inputText id="idFuncao" size="40" value="#{agendamentoBean.profissao.cbo}  #{agendamentoBean.profissao.profissao}"  readonly="true">
+                                        <p:ajax event="click" oncomplete="PF('dgl_painel_profissao').show()" />
+                                    </p:inputText>
+                                    <h:outputText value="SETOR: " styleClass="fontePadrao margin-left-max"/>
+                                    <p:inputText id="iSetor" size="20" value="#{agendamentoBean.pessoaEmpresa.setor}"  onblur="upperCase(this);">
+                                        <p:ajax event="blur" update="@this"  />
+                                    </p:inputText>
+                                </h:column>                                
+                                <h:outputText value="ADMISSÃO: " styleClass="fontePadrao"/>
+                                <h:column>
+                                    <p:calendar id="iAdmissao" size="6" value="#{agendamentoBean.pessoaEmpresa.dtAdmissao}" >
+                                        <p:ajax event="dateSelect" update="@this"  />
+                                    </p:calendar>
+                                    <p:outputLabel value="DEMISSÃO: " styleClass="font-color-red margin-left-max"/>
+                                    <p:calendar id="iDemissao" size="6" value="#{agendamentoBean.pessoaEmpresa.dtDemissao}" >
+                                        <p:ajax event="dateSelect" update="@this"  />
+                                    </p:calendar>
+                                </h:column>
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">EMPRESA</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"  immediate="true" disabled="#{agendamentoBean.disabledEmpresa}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Pesquisar Empresa" styleClass="font-color-red" rendered="#{agendamentoBean.juridica.pessoa.id == -1}"/>
+                                    <h:outputText id="iEmpresa" value="#{agendamentoBean.juridica.pessoa.nome}" />
+                                    <h:outputText value="Telefone: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                    <h:outputText id="iEmpTelefone" value="#{agendamentoBean.juridica.pessoa.telefone1} / #{agendamentoBean.juridica.pessoa.telefone2}"  rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="STATUS: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iStatus" value="#{agendamentoBean.statusEmpresa}"  rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:commandLink id="iImprimirPlanilha" value="Imprimir Planilha" title="Imprimir Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.imprimirPlanilha}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" target="_blank"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <p:commandButton id="iEnviarPlanilha" value="Enviar Planilha por Email para" title="Enviar Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.enviarPlanilha}" oncomplete="PF('dgl_painel_mensagem').show()" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" update="i_painel_mensagem"/>
+                                    <p:selectOneMenu id="chkEmail" value="#{agendamentoBean.enviarPara}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" styleClass=" margin-left-max">
+                                        <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
+                                        <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
+                                    </p:selectOneMenu>                                    
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:outputText id="iContribuinte" value="#{agendamentoBean.strContribuinte}" styleClass="fontePadraoVermelho"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="ENDEREÇO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iEmpEndereco" value="#{agendamentoBean.strEndereco}"  rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>  
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iEscritorio" value="#{agendamentoBean.juridica.contabilidade.pessoa.nome}"  rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="TELEFONE: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iContTel" value="#{agendamentoBean.juridica.contabilidade.pessoa.telefone1} / #{agendamentoBean.juridica.contabilidade.pessoa.telefone2}"  rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">CONTATO</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Contato: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <p:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="20"  onblur="upperCase(this);">
+                                        <p:ajax event="blur" update="@this"  />
+                                    </p:inputText>
+                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>
+                                    <p:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="20"  onblur="lowerCase(this);">
+                                        <p:ajax event="blur" update="@this"  />
+                                    </p:inputText>
+                                    <p:commandButton id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" oncomplete="PF('dgl_painel_mensagem').show();" update="id_enviar_p_email, i_painel_mensagem" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" >
+                                        <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
+                                    </p:commandButton>
+                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left-max" title="Telefone"/>
+                                    <p:inputMask value="#{agendamentoBean.agendamento.telefone}" size="12" mask="(99) 999?9-9999">
+                                        <p:ajax event="change" update="@this"  />
+                                    </p:inputMask>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Observação: " styleClass="fontePadrao" />
+                                </h:column>
+                                <h:column>
+                                    <h:inputTextarea cols="70" rows="3" value="#{agendamentoBean.agendamento.observacao}" />
+                                </h:column>                                
+                            </p:panelGrid>
+                            <p:panelGrid columns="5" style="margin-top: 20px;" id="id_menu_acao">
+                                <p:commandButton onclick="dgl_painel_mensagem.show();" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" update="i_painel_mensagem" />
+                                <p:commandButton value="Voltar" action="#{agendamentoBean.cancelar}" type="submit" />
+                                <p:commandButton value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" />
+                                <p:commandButton value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <h:commandLink value="Imprimir Protocolo" id="i_imprime_protocolo_3" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento.id)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao"/>
+                            </p:panelGrid>
+                        </p:panel>
+                    </p:panel>
+                    <!-- PESQUISAR PROFISSAO -->
+                    <p:dialog modal="true" width="600" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar">
+                        <p:panel id="i_painel_profissao" styleClass="no-border">
+                            <p:panelGrid columns="6" styleClass="sbb">
+                                <h:outputLabel value="Profissão: " />
+                                <h:inputText id="idProf" size="20" value="#{agendamentoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                                <p:commandButton value="Inicial" action="#{agendamentoBean.inicial}" update="i_tbl_prof" />
+                                <p:commandButton value="Parcial" action="#{agendamentoBean.parcial}" update="i_tbl_prof" />
+                                <p:outputLabel value="Por: " />
+                                <p:selectOneMenu id="idPor" value="#{agendamentoBean.combo}" >
+                                    <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                    <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                            <p:panel id="i_tbl_prof" styleClass="margin-top-max sbb no-border" style="width: 500px;">
+                                <p:dataTable var="linha" value="#{agendamentoBean.listaProfissao}" scrollHeight="300" scrollable="true">
+                                    <p:column headerText="ID" styleClass="text-center" width="50">
+                                        <p:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" update=":form_agendedamento_novo:i_panel_1:idFuncao" oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                    <p:column headerText="Cbo" styleClass="text-center" width="50">
+                                        <p:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.cbo}" update=":form_agendedamento_novo:i_panel_1:idFuncao"  oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                    <p:column headerText="Profissão" width="300">
+                                        <p:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.profissao}" update=":form_agendedamento_novo:i_panel_1:idFuncao"  oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="i_painel_endereco" widgetVar="dgl_painel_endereco" modal="true" resizable="true" width="600" height="400" header="Endereço" closable="true">
+                        <p:panelGrid columns="4">
+                            <p:outputLabel value="Cep: " styleClass="fontePadrao"/>
+                            <p:inputText size="10" id="id_numero_cep" maxlength="8" value="#{agendamentoBean.cepEndereco}" styleClass="fontePadrao" >
+                                <p:ajax event="blur" update="@this" listener="#{agendamentoBean.limparPesquisaEndereco}" />
+                            </p:inputText>
+                            <p:commandButton value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" update="i_tbl_endereco"  />
+                            <p:commandButton value="Cadastrar" action="#{chamadaPaginaBean.endereco()}" immediate="true" />
+                        </p:panelGrid>
+                        <p:dataTable value="#{agendamentoBean.listaEnderecos}" var="linha" id="i_tbl_endereco" style="height:300px; width: 500px;" selectionMode="none" styleClass="margin-top-maior">
+                            <p:column width="50">
+                                <f:facet name="header">ID</f:facet>
+                                <p:commandButton action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" update="id_form_agendamento" oncomplete="PF('dgl_painel_endereco').hide()"  styleClass="underline-hover"/>
+                            </p:column>
+                            <p:column width="450">
+                                <f:facet name="header">Endereço</f:facet>
+                                <p:commandButton action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}" update="id_form_agendamento" oncomplete="PF('dgl_painel_endereco').hide()"  styleClass="underline-hover"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:dialog>
+                    <p:dialog id="i_painel_mensagem" widgetVar="dgl_painel_mensagem" modal="true" width="300" height="100" header="Mensagem" closable="true">
+                        <h:outputText value="#{agendamentoBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!agendamentoBean.imprimirPro}" />
+                        <h:commandLink value="#{agendamentoBean.msgConfirma}" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao" />
+                        <br /><br />
+                        <p:commandButton value="OK" title="Ok" action="homologacao" />
+                    </p:dialog>                    
+                </h:form>
+            </p:panel>            
+            <p:panel styleClass="no-border" style="margin: 0 auto;">
+                <h:form id="form_agendamento">
+                    <p:panel rendered="#{agendamentoBean.renderAgendamento}" styleClass="no-border">
+                        <p:messages id="id_mensagem" showDetail="true" showSummary="true" />
+                        <p:panel style="margin: 0 auto;">
+                            <h:panelGrid columns="5" style="margin: 0 auto;">
+                                <h:outputLabel value="Data: " />
+                                <h:column>
+                                    <p:calendar value="#{agendamentoBean.data}" pattern="dd/MM/yyyy" >
+                                        <p:ajax event="dateSelect" update="@this, tbl, id_mensagem" listener="#{agendamentoBean.mensagemAgendamento}" />
+                                    </p:calendar>
+                                </h:column>
+                                <h:outputLabel value="Status: "  style="margin-left: 20px;"/>
+                                <p:selectOneMenu id="idStatus" value="#{agendamentoBean.idStatus}">
+                                    <p:ajax event="change" update="tbl, id_mensagem" />
+                                    <f:selectItems value="#{agendamentoBean.listaStatus}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="#{agendamentoBean.msgAgendamento}" styleClass="font-color-red"/>
+                            </h:panelGrid>
+                        </p:panel>
+                        <br />
+                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="#{polling.existeUsuarioSessao()}" />
+                        <h:panelGrid columns="1" id="tbl">
+                            <p:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!">
+                                <p:column styleClass="text-center" width="30">
+                                    <f:facet name="header">
+                                        <h:outputText value="Horarios" rendered="false"/>
+                                        <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
+                                    </f:facet>
+                                    <p:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.horarios.hora}" styleClass="underline-hover"/>
+                                </p:column>
+                                <p:column rendered="#{agendamentoBean.renderedDisponivel}" headerText="Disponível">
+                                    <h:outputText value="#{objeto.quantidade}" rendered="#{agendamentoBean.renderedDisponivel}"/>
+                                </p:column>
+                                <p:column headerText="CNPJ" styleClass="text-center" width="120">
+                                    <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
+                                </p:column>
+                                <p:column headerText="Empresa" styleClass="text-center">
+                                    <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Funcionário" width="150">
+                                    <h:outputText value="#{objeto.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Homologador">
+                                    <h:outputText value="#{objeto.agendamento.homologador.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Contato">
+                                    <h:outputText value="#{objeto.agendamento.contato}"/>
+                                </p:column>
+                                <p:column headerText="Telefone" styleClass="text-center" width="100">
+                                    <h:outputText value="#{objeto.agendamento.telefone}"/>
+                                </p:column>
+                                <p:column headerText="Usuario">
+                                    <h:outputText value="#{objeto.agendamento.agendador.pessoa.nome}" />
+                                </p:column>
+                                <p:column styleClass="text-center" width="25">
+                                    <f:facet name="header">
+                                        <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{agendamentoBean.idStatus == 1}" title="Imprimir Protocolo"/>
+                                </p:column>
+                            </p:dataTable>                                
+                        </h:panelGrid>
+                    </p:panel>                    
+                </h:form>            
+            </p:panel>            
+        </f:view>
+    </h:body>
+</ui:composition>

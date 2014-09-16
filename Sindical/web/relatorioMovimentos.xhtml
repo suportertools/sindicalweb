@@ -163,10 +163,9 @@
                                 
                                 <h:panelGrid columns="2">
                                     <h:panelGrid rendered="#{relatorioMovimentoBean.chkContabilidade}" style="height: 350px!important">
-                                        <p:inputText id="i_pesquisa_contabil" value="#{relatorioMovimentoBean.pesquisaContabil}" size="85">
+                                        <p:inputText id="i_pesquisa_contabil" value="#{relatorioMovimentoBean.pesquisaContabil}" size="85" onkeypress="return event.keyCode !== 13;" placeholder="Digite sua pesquisa por CONTABILIDADE aqui ...">
                                             <p:ajax event="change" listener="#{relatorioMovimentoBean.acaoPesquisaContabil}" global="false" update="tbl_contabil"/>
                                         </p:inputText>
-                                        <p:watermark value="Digite sua pesquisa por CONTABILIDADE aqui ..." for="i_pesquisa_contabil"/>
 
                                         <p:selectOneRadio value="#{relatorioMovimentoBean.radioContabil}">  
                                             <f:selectItem itemLabel="Apenas os selecionados"      itemValue="selecionado" />  

@@ -15,6 +15,7 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+
     <managed-bean>
         <managed-bean-name>contribuicaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
@@ -28,35 +29,11 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>movimentosReceberBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.MovimentosReceberJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>tirarFotoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.TirarFotoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>acordoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.AcordoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>webContribuintesBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContribuintesJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>webContabilidadeBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContabilidadeJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
+   
     <managed-bean>
         <managed-bean-name>contribuicaoSocioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoSocioJSFBean</managed-bean-class>
@@ -70,23 +47,11 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>baixaBoletoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>retornoPadraoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>notificacaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.NotificacaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
+   
     <managed-bean>
         <managed-bean-name>bloqueioServicosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.BloqueioServicosJSFBean</managed-bean-class>

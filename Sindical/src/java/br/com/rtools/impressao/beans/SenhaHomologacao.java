@@ -37,12 +37,12 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class SenhaHomologacao implements Serializable {
 
     public void imprimir(Agendamento a) {
-        if (a.getRecepcao() == null) {
-            return;
-        }
-        if(a.getRecepcao().getPreposto().isEmpty()) {
-            return;
-        }
+//        if (a.getRecepcao() == null) {
+//            return;
+//        }
+//        if(a.getRecepcao().getPreposto().isEmpty()) {
+//            return;
+//        }
         try {
             Collection lista = parametros(a);
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
@@ -104,7 +104,7 @@ public class SenhaHomologacao implements Serializable {
                     senha.getFilial().getFilial().getPessoa().getDocumento(),
                     senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getNome(),
                     senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-                    senha.getAgendamento().getRecepcao().getPreposto(),
+                    (senha.getAgendamento().getRecepcao() == null) ? "" : senha.getAgendamento().getRecepcao().getPreposto(),
                     senha.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getNome(),
                     senha.getUsuario().getPessoa().getNome(),
                     senha.getData(),

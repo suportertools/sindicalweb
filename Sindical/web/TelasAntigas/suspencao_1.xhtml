@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Suspensão</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formSuspensao">
+                <c:set scope="request" var="object" value="${suspencaoBean.suspencao}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Suspensão" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="alinhaFormulario fontePadrao divFundo" style="width: 550px; height: 275px;">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <h:column><h:commandButton id="idPesquisaSocio" image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" title="Pesquisar Pessoa"/></h:column>
+                            <h:column>
+                                <h:outputLabel styleClass="fontePadrao" value="Pesquisar sócio" rendered="#{suspencaoBean.suspencao.pessoa.id == -1}" for="idPesquisaSocio"/>
+                                <h:outputText value="#{suspencaoBean.suspencao.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{suspencaoBean.suspencao.pessoa.nome != -1}"/>
+                            </h:column>                            
+                            <h:column><h:outputLabel styleClass="fontePadrao" value="Data Inicial:" for="idDataInicial"/> </h:column>
+                            <h:column><h:inputText id="idDataInicial" size="8" value="#{suspencaoBean.suspencao.dataInicial}" class="data" title="Data inicial"/></h:column>
+                            
+                            <h:column><h:outputLabel styleClass="fontePadrao" value="Data Final:" for="idDataFinal"/> </h:column>
+                            <h:column><h:inputText id="idDataFinal" size="8" value="#{suspencaoBean.suspencao.dataFinal}" class="data" title="Data final"/></h:column>
+
+                            <h:column><h:outputLabel value="Motivo: " styleClass="fonteFranklinNegrito" for="idText"/></h:column>
+                            <h:column><h:inputTextarea id="idText" styleClass="fontePadrao uppercase" rows="10" cols="40" value="#{suspencaoBean.suspencao.motivo}" title="Motivo da suspensão do sócio" /></h:column>                            
+                        </h:panelGrid>
+                    </div>
+                    <div class="clear"></div>
+                    <div style="float: left; margin-top: 15px;">
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{suspencaoBean.limpa()}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaSuspencao}" title="Pesquisar sócios suspensos"/>
+                    </div>
+                </div>
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Suspensão?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{suspencaoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta Suspensão?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{suspencaoBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{suspencaoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink lang="close" styleClass="idNovo iLink closeModal" action="#{suspencaoBean.novo()}" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

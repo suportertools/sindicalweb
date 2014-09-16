@@ -1,7 +1,7 @@
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.academia.beans.MatriculaAcademiaBean;
-import br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean;
+import br.com.rtools.arrecadacao.beans.BaixaBoletoBean;
 import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
@@ -550,8 +550,8 @@ public class BaixaGeralBean {
             total = "0.0";
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
-                ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
-                ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
+                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
+                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
             } else if (url.equals("movimentosReceberSocial")) {
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
             } else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")) {

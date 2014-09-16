@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Menu - Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .divMenuSocial, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
+            .corpoAcessos { width: 200px; height: 300px; }
+            .divMenuSocial {width: 980px;}
+            .divMenuSocial .divBotao {background: #e0e0e0;}
+            .divMenuSocial .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
+            .divMenuSocial .divBotao:hover {background: #abc4eb;}            
+        </style>
+    </h:head>
+    <h:body class="divMenu"><div Align="Center">
+            <f:subview id="header">
+                <ui:include src="templates/template.xhtml"/>
+                <ui:include src="templates/templateLinks.xhtml"/>
+            </f:subview>
+            <f:view>
+                <h:form id="formMenuSocial" style="border: 0; width: 980px; height: 800px; border-bottom: 1px dashed #888; ">
+                    <h:panelGrid cellpadding="0" cellspacing="0">
+                        <h:panelGrid columns="2">
+                            <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
+                            <h:column><h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" /></h:column>
+                        </h:panelGrid>
+                        <rich:toolbar styleClass="divMenuSocial" style="background: #e0e0e0; border: 0">
+                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                                <f:facet name="label">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <h:graphicImage value="/Imagens/cadastro.png" styleClass="pic"/>
+                                            <h:outputText value="Cadastro" styleClass="fontePadraoNegrito"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <rich:menuItem label="Associar / Física"  action="#{chamadaPaginaBean.pessoaFisica}" styleClass="divBotao"/>
+                                <rich:menuItem label="Suspensão de Socio" action="#{chamadaPaginaBean.suspencao}" styleClass="divBotao"/>
+                                <rich:menuItem label="Convênio Médico"    action="#{chamadaPaginaBean.convenioMedico}" styleClass="divBotao"/>
+                                <rich:menuItem label="Juridica"           action="#{chamadaPaginaBean.pessoaJuridica}" styleClass="divBotao"/>
+
+                                <rich:menuGroup label="Convênio Empresas" styleClass="divBotao">
+                                    <rich:menuItem label="Convênio"             action="#{chamadaPaginaBean.convenio}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Grupo Convênio"       action="#{chamadaPaginaBean.grupoConvenio}" styleClass="divBotao"/>
+                                    <rich:menuItem label="SubGrupo Convênio"    action="#{chamadaPaginaBean.subGrupoConvenio}" styleClass="divBotao"/>
+                                </rich:menuGroup>
+
+                                <rich:menuGroup label="Suporte" styleClass="divBotao">
+                                    <rich:menuItem label="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Banda"                action="#{chamadaPaginaBean.bandas}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Baile"                action="#{chamadaPaginaBean.baile}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Caravanas"            action="#{chamadaPaginaBean.caravana}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Categoria do Sócio"   action="#{chamadaPaginaBean.categoria}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Grupo Categoria"      action="#{chamadaPaginaBean.grupoCategoria}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Parentesco"           action="#{chamadaPaginaBean.parentesco}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Midia"                action="#{chamadaPaginaBean.midia}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Registro Empresarial"         action="#{chamadaPaginaBean.registroEmpresarial}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Desconto Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" styleClass="divBotao"/>
+                                </rich:menuGroup>
+                                <!-- <rich:menuItem label="Contrato"                 action="#{chamadaPaginaBean.contrato}" styleClass="divBotao"/> -->
+                            </rich:dropDownMenu>
+
+                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                                <f:facet name="label">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <h:graphicImage value="/Imagens/movimento.png" styleClass="pic"/>
+                                            <h:outputText value="Movimento" styleClass="fontePadraoNegrito"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <rich:menuItem label="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}" styleClass="divBotao"/>
+                                <rich:menuItem label="Geração Mensal"         action="#{chamadaPaginaBean.contribuicaoSocio}" styleClass="divBotao"/>
+                                <rich:menuItem label="Geração Individual"     action="#{chamadaPaginaBean.contribuicaoPorSocio}" styleClass="divBotao"/>
+                                <rich:menuItem label="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" styleClass="divBotao"/>
+                                <rich:menuItem label="Emissão de Guias"       action="#{chamadaPaginaBean.emissaoGuias}" styleClass="divBotao"/>
+                                <!-- <rich:menuItem label="Emissão de Carteirinha" action="# {chamadaPaginaBean.emissaoCarteirinha}" styleClass="divBotao"/> -->
+                                <rich:menuItem label="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" styleClass="divBotao"/>
+                                <rich:menuItem label="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" styleClass="divBotao"/>
+                            </rich:dropDownMenu>
+
+                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                                <f:facet name="label">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <h:graphicImage value="/Imagens/relatorio.png" styleClass="pic"/>
+                                            <h:outputText value="Relatórios" styleClass="fontePadraoNegrito"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <rich:menuItem label="Relatórios de Sócios"     action="#{chamadaPaginaBean.relatorioSocios}" styleClass="divBotao" />
+                                <rich:menuItem label="Cartão Social"            action="#{chamadaPaginaBean.cartaoSocial}" styleClass="divBotao" />
+                                <rich:menuItem label="Ficha Social Branco"      action="#{sociosBean.imprimirFichaSocialVazia()}" styleClass="divBotao" immediate="true" title="Imprimir Ficha Social em Branco"/>
+                            </rich:dropDownMenu>
+                        </rich:toolbar>
+                    </h:panelGrid>
+                </h:form>
+            </f:view>
+        </div>
+    </h:body>
+</ui:composition>

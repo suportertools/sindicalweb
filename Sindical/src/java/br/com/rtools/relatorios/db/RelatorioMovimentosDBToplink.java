@@ -216,7 +216,6 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
             } else if (ordem.equals("referencia")) {
                 textQuery = textQuery + ordem2 + " concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3))";
             }
-
         }
 
         try {

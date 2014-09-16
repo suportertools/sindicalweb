@@ -27,7 +27,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-@ManagedBean(name = "extratoTelaBean")
+@ManagedBean
 @SessionScoped
 public class ExtratoTelaJSFBean implements Serializable {
 

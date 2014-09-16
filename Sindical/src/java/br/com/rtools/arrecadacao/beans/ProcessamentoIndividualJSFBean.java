@@ -5,7 +5,7 @@ import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.MensagemConvencao;
 import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.financeiro.*;
-import br.com.rtools.financeiro.beans.MovimentoValorJSFBean;
+import br.com.rtools.financeiro.beans.MovimentoValorBean;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ManagedBean(name = "processamentoIndividualBean")
 @SessionScoped
-public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implements Serializable {
+public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implements Serializable {
 
     private String frenteVerso = "false";
     private String nImpressos = "false";

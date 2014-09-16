@@ -81,7 +81,7 @@ public class TipoServicoDBToplink extends DB implements TipoServicoDB {
     }
 
     @Override
-    public List pesquisaTodosComIds(List<Integer> arrayId) {
+    public List<TipoServico> pesquisaTodosComIds(List<Integer> arrayId) {
         try {
             int i = 0;
             if (arrayId == null) {

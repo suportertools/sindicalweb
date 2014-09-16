@@ -18,9 +18,12 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-public abstract class MovimentoValorJSFBean {
-
+@ManagedBean
+@SessionScoped
+public abstract class MovimentoValorBean {
     private DescontoEmpregado descontoEmpregado = new DescontoEmpregado();
     private FolhaEmpresa folhaEmpresa = new FolhaEmpresa();
     private String valor = "0";
@@ -33,7 +36,7 @@ public abstract class MovimentoValorJSFBean {
     private Movimento movimento = null;
     private int idTipoServico = -1;
 
-    public MovimentoValorJSFBean() {
+    public MovimentoValorBean() {
     }
 
     public abstract void carregarFolha();

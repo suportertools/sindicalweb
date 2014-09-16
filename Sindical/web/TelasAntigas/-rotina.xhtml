@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Cadastro de Rotina</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_rotina">          
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Rotina" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <rich:panel id="id_panel_rotina" styleClass="divMae divFundo" style="border: 0; width: 400px;">
+                        <c:set scope="request" var="object" value="${rotinaBean.rotina}"/>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Rotina: " styleClass="fontePadrao" for="idRotina"/>
+                            <h:inputText id="idRotina" size="50" value="#{rotinaBean.rotina.rotina}" style="margin-right: 30px"/>
+                            <h:outputLabel value="Página: " styleClass="fontePadrao" for="idPagina"/>
+                            <h:inputText id="idPagina" size="50" value="#{rotinaBean.rotina.pagina}"/>
+                            <h:outputLabel value="Classe: " styleClass="fontePadrao" for="idClasse"/>
+                            <h:inputText id="idClasse" size="20" value="#{rotinaBean.rotina.classe}"/>
+                            <h:outputLabel value="Ativo: " styleClass="fontePadrao" for="idAtivo"/>
+                            <h:selectBooleanCheckbox id="idAtivo" value="#{rotinaBean.rotina.ativo}" title="Ativa / Desativar Rotina">
+                                <a4j:ajax event="change"/>
+                            </h:selectBooleanCheckbox>
+                        </h:panelGrid>
+                        <div style="clear: both;"></div>
+                        <div style="float: left; margin-top: 15px;">
+                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar" oncomplete="#{rich:component('form_rotina:i_panel_salvar')}.show(); return false;"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{rotinaBean.novo}" title="Novo registro / Limpar"/>
+                            <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" oncomplete="#{rich:component('form_rotina:i_panel_excluir')}.show(); return false;" />
+                            <a4j:commandLink styleClass="idPesquisar iLink"  value="Pesquisar" action="#{chamadaPaginaBean.pesquisaRotina}" title="Pesquisar Rotina" />
+                        </div>                        
+                    </rich:panel>
+                </center>
+                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja salvar/atualizar este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide();
+                                return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{rotinaBean.salvar}" render="id_panel_rotina, i_panel_mensagem" oncomplete="#{rich:component('form_rotina:i_panel_salvar')}.hide(); #{rich:component('form_rotina:i_panel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_rotina:i_panel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja excluir este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide();
+                                return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Excluir" action="#{rotinaBean.excluir}" render="id_panel_rotina, i_panel_mensagem" oncomplete="#{rich:component('form_rotina:i_panel_excluir')}.hide(); #{rich:component('form_rotina:i_panel_mensagem')}.show();" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_rotina:i_panel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide();
+                                return false;"></h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{rotinaBean.mensagem}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_rotina:i_panel_mensagem')}.hide(); return false;" render="id_panel_rotina"/>
+                    </center>
+                </rich:popupPanel>                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

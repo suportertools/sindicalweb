@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Caravanas</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaCaravana">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Caravanas" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae">
+                        <div style="overflow:auto; height:380px;">
+                            <rich:panel>
+                                <rich:dataTable value="#{caravanaBean.listaCaravana}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#"/>
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}" />
+                                    </rich:column>
+                                    
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{caravanaBean.editar}" value="#{linha.id}" styleClass="iLink">
+                                            <a4j:param value="#{it.index}" assignTo="#{caravanaBean.idIndex}"/>
+                                        </h:commandLink>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Descrição"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.aEvento.descricaoEvento.descricao}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Grupo"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.aEvento.descricaoEvento.grupoEvento.descricao}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Data Saída"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.dataSaida}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Data Retorno"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.dataRetorno}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Data Chegada"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.dataChegada}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Hora Saída"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.horaSaida}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Hora Retorno"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.horaRetorno}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Hora Chegada"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.horaChegada}"/>
+                                    </rich:column>
+
+                                </rich:dataTable>
+                            </rich:panel>
+                        </div>                        
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

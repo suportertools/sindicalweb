@@ -92,6 +92,11 @@ public class ArquivoBancoBean implements Serializable{
     private boolean carregaPastas = false;
     private String strServicos = "";
 
+    public String limparArquivos(){
+        GenericaSessao.put("arquivoBancoBean", new ArquivoBancoBean());
+        return "retornoBanco";
+    }
+    
     public String getStrServicos() {
         if (!listaArquivoRetorno.isEmpty() && strServicos.isEmpty() && contaCobranca.getId() != -1) {
             // LAYOUT 2 = SINDICAL

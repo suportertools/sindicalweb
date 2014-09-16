@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Índice Mensal</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formIndiceMensal">
+                <c:set scope="request" var="object" value="${indiceMensalBean.indiceMensal}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Índice Mensal" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae divFundo" style="width: 620px;">
+                    <h:column>
+                        <h:outputLabel value="Índices: " styleClass="fontePadrao"/>
+                        <h:selectOneMenu value="#{indiceMensalBean.idIndice}">
+                            <a4j:ajax event="change" render="tbl" />
+                            <f:selectItems value="#{indiceMensalBean.listaIndices}" />
+                        </h:selectOneMenu>
+                    </h:column>
+                    <h:column>
+                        <h:outputLabel value="Mês: " styleClass="fontePadrao"/>
+                        <h:selectOneMenu id="idMes" value="#{indiceMensalBean.numMes}">
+                            <a4j:ajax event="change" render="idMes"/>
+                            <f:selectItem itemValue="1"  itemLabel="Janeiro"/>
+                            <f:selectItem itemValue="2"  itemLabel="Fevereiro"/>
+                            <f:selectItem itemValue="3"  itemLabel="Março"/>
+                            <f:selectItem itemValue="4"  itemLabel="Abril"/>
+                            <f:selectItem itemValue="5"  itemLabel="Maio"/>
+                            <f:selectItem itemValue="6"  itemLabel="Junho"/>
+                            <f:selectItem itemValue="7"  itemLabel="Julho"/>
+                            <f:selectItem itemValue="8"  itemLabel="Agosto"/>
+                            <f:selectItem itemValue="9"  itemLabel="Setembro"/>
+                            <f:selectItem itemValue="10" itemLabel="Outubro"/>
+                            <f:selectItem itemValue="11" itemLabel="Novembro"/>
+                            <f:selectItem itemValue="12" itemLabel="Dezembro"/>
+                        </h:selectOneMenu>
+                    </h:column>
+                    <h:column>
+                        <h:outputLabel value="Ano: " styleClass="fontePadrao"/>
+                        <h:selectOneMenu id="idAno" value="#{indiceMensalBean.ano}">
+                            <a4j:ajax event="change" render="idAno" />
+                            <f:selectItems value="#{indiceMensalBean.listaAnos}"/>
+                        </h:selectOneMenu>
+                    </h:column>
+                    <h:column>
+                        <h:outputLabel value="Valor: " styleClass="fontePadrao" for="idValor"/>
+                        <h:inputText id="idValor" size="10" value="#{indiceMensalBean.valor}">
+                            <a4j:ajax event="change" render="idValor" />
+                        </h:inputText>
+                        <a4j:commandButton image="/Imagens/iconAdd.png" value="Adicionar" render="tbl, idValor, outConfirma" styleClass="idAdicionar" action="#{indiceMensalBean.salvar}" oncomplete="modalMensagem()" />
+                    </h:column>
+                    <div style="clear: both;"></div>
+                    <div style="float: left; border-left: 1px solid #efefef; padding-left: 15px; overflow-x: auto">
+                        <p> GERENCIAR </p>
+                        <h:panelGroup style="overflow-y: scroll; height:200px; min-width: 300px; margin-top: 20px;" layout="block">
+                            <rich:dataTable value="#{indiceMensalBean.listaIndiceMensal}" var="linha" id="tbl" iterationStatusVar="it" style="width: 100%;">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#" />
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.id}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Índice"/>
+                                    </f:facet>
+                                    <a4j:commandLink value="#{linha.indice.descricao}" styleClass="iLink" />
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Valor"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.valor}" />
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Mês"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.mes}" />
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Ano"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.ano}" />
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Excluir"/>
+                                    </f:facet>
+                                    <center>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{indiceMensalBean.btnExcluir}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" >
+                                            <a4j:param value="#{it.index}" assignTo="#{indiceMensalBean.idIndex}"/>
+                                        </a4j:commandButton>
+                                    </center>
+                                </rich:column>
+                            </rich:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{indiceMensalBean.msgConfirma}" styleClass="fontePadrao" rendered="true"/>
+                            <br /><br />
+                            <!-- <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="outConfirma, formIndiceMensal, tbl, idMes, idAno, idValor" action="# {indiceMensalBean.limpar}"/> -->
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" action="indiceMensal"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+        <div style="clear: both;"></div>
+        <p style="text-align: center;">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>
+    </h:body>
+</ui:composition>

@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.beans;
 
+import br.com.rtools.financeiro.Impressao;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
@@ -8,8 +9,10 @@ import br.com.rtools.financeiro.db.MovimentosReceberDBToplink;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -17,10 +20,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
-
+@ManagedBean
+@SessionScoped
+public class MovimentosReceberBean extends MovimentoValorBean {
     private List<DataObject> listaMovimentos = new ArrayList();
     private Pessoa pessoa = new Pessoa();
     private String multa = "0";
@@ -75,6 +81,9 @@ public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
 
         if (!listaMovimentos.isEmpty()) {
             Movimento mov = new Movimento();
+            SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
             for (int i = 0; i < listaMovimentos.size(); i++) {
                 if ((Boolean) listaMovimentos.get(i).getArgumento0()) {
                     mov = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimentos.get(i).getArgumento16())));
@@ -101,9 +110,22 @@ public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
                     }
 
                     lista.add(mov);
+                    
+                    Impressao impressao = new Impressao();
+
+                    impressao.setUsuario(su.getSessaoUsuario());
+                    impressao.setDtVencimento(mov.getDtVencimento());
+                    impressao.setMovimento(mov);
+
+                    if (!sv.inserirObjeto(impressao)){
+                        sv.desfazerTransacao();
+                        return null;
+                    }                     
                 }
             }
+            sv.comitarTransacao();
         }
+        
 
         if (lista.isEmpty()) {
             msgConfirma = "Nenhum Boleto Selecionado!";

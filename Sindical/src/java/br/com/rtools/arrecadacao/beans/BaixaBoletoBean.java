@@ -13,10 +13,14 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class BaixaBoletoJSFBean {
+@ManagedBean
+@SessionScoped
+public class BaixaBoletoBean {
 
     private int idServicos = 0;
     private int index = 0;

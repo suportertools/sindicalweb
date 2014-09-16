@@ -33,7 +33,6 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
-import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mail;
@@ -63,7 +62,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class RelatorioMovimentoBean implements Serializable {
-
     private int idRelatorios = 0;
     private int idServicos = 0;
     private int idTipoServico = 0;
@@ -94,7 +92,7 @@ public class RelatorioMovimentoBean implements Serializable {
     private Juridica juridica = new Juridica();
     private List<Juridica> listaContabilidade = new ArrayList();
     private List<Juridica> listaContabilidadeSelecionada = new ArrayList();
-    private List<Juridica> listaPesquisa = new ArrayList();
+    private final List<Juridica> listaPesquisa = new ArrayList();
     private String pesquisaContabil = "";
     private String radioContabil = "selecionado";
     private String radioOrdem = "vencimento";
@@ -164,7 +162,27 @@ public class RelatorioMovimentoBean implements Serializable {
 
     }
 
+    public boolean validaLista(){
+        if (!chkCidadeBase && !chkContabilidade && !chkConvencao && !chkData && !chkEmpresa && !chkServicos && !chkTipoServico){
+            return false;
+        }
+        
+        if (chkEmpresa && juridica.getId() == -1){
+            return false;
+        }
+        
+        if (chkContabilidade && listaContabilidadeSelecionada.isEmpty()){
+            return false;
+        }
+        
+        if (chkCidadeBase && listaCidadesBaseSelecionado.isEmpty()){
+            return false;
+        }
+        return true;
+    }
+    
     public Collection listaPesquisa() {
+        
         RelatorioMovimentosDB db_rel = new RelatorioMovimentosDBToplink();
 
         Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
@@ -340,6 +358,7 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public void visualizar() {
+        if (!validaLista()){return;}
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaPesquisa());
         Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 
@@ -369,6 +388,8 @@ public class RelatorioMovimentoBean implements Serializable {
     }
     
     public void enviarEmail() {
+        if (!validaLista()){return;}
+        
         Collection collection = listaPesquisa();
         
         if (collection.isEmpty()){

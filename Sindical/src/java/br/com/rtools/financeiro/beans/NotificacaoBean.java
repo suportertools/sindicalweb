@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -56,13 +58,13 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class NotificacaoJSFBean implements Serializable {
-
+@ManagedBean
+@SessionScoped
+public class NotificacaoBean implements Serializable {
     private int idLista = 0;
     private int idTipoEnvio = 0;
     private List<SelectItem> itensLista = new ArrayList();
     private List<SelectItem> listaTipoEnvio = new ArrayList();
-    private String msgConfirma = "";
     private CobrancaLote lote = new CobrancaLote();
     private List<DataObject> listaNotificacao = new ArrayList();
     private int quantidade = 0;
@@ -84,7 +86,7 @@ public class NotificacaoJSFBean implements Serializable {
     private boolean progressoAtivo = false;
     private List<DataObject> listaArquivo = new ArrayList();
 
-    public NotificacaoJSFBean() {
+    public NotificacaoBean() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         registro = (Registro) sv.pesquisaCodigo(1, "Registro");
     }
@@ -253,8 +255,7 @@ public class NotificacaoJSFBean implements Serializable {
         sv.abrirTransacao();
 
         if (!sv.alterarObjeto(lote)) {
-            msgConfirma = "Erro ao atualizar Mensagem";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Erro", "Erro ao atualizar Mensagem");
             sv.desfazerTransacao();
             return null;
         }
@@ -285,15 +286,13 @@ public class NotificacaoJSFBean implements Serializable {
         }
 
         sv.comitarTransacao();
-        msgConfirma = "Notificação atualizada!";
-        GenericaMensagem.info("Sucesso", msgConfirma);
+        GenericaMensagem.info("Sucesso", "Notificação atualizada!");
         return null;
     }
 
     public String gerarNotificacao() {
         if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == -1) {
-            msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Erro", "Usuário não esta na sessão, faça seu login novamente!");
             return null;
         }
 
@@ -313,8 +312,7 @@ public class NotificacaoJSFBean implements Serializable {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         if (!sv.inserirObjeto(lote)) {
-            msgConfirma = "Erro ao Gerar Lote";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Erro", "Erro ao Gerar Lote");
             sv.desfazerTransacao();
             return null;
         }
@@ -326,8 +324,7 @@ public class NotificacaoJSFBean implements Serializable {
         if (!sv.executeQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " order by c.ds_nome, c.id_pessoa)")) {
 //            if ((Boolean) listaNotificacao.get(i).getArgumento0()) {
 //                if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) values (" + ((Vector) listaNotificacao.get(i).getArgumento1()).get(0) + "," + lote.getId() + ")")) {
-            msgConfirma = "Erro ao inserir Cobrança";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Erro", "Erro ao inserir Cobrança");
             sv.desfazerTransacao();
 
             sv.abrirTransacao();
@@ -340,8 +337,7 @@ public class NotificacaoJSFBean implements Serializable {
         }
 
         sv.comitarTransacao();
-        msgConfirma = "Gerado com sucesso!";
-        GenericaMensagem.info("Sucesso", msgConfirma);
+        GenericaMensagem.info("Sucesso", "Gerado com sucesso!");
         itensLista.clear();
         
         listaNotificacao.clear();
@@ -438,7 +434,6 @@ public class NotificacaoJSFBean implements Serializable {
         boolean erro = false;
         Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         if (usu.getId() == -1) {
-            msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
             return;
         }
         Registro reg = (Registro) sv.pesquisaCodigo(1, "Registro");
@@ -501,17 +496,14 @@ public class NotificacaoJSFBean implements Serializable {
         }
     }
 
-    public String enviarNotificacao() throws JRException {
+    public void enviarNotificacao() throws JRException {
         if (lote.getId() == -1) {
-            msgConfirma = "Selecione um Lote para envio!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            return null;
+            GenericaMensagem.warn("Erro", "Selecione um Lote para envio!");
+            return;
         }
 
         if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == -1) {
-            msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            return null;
+            return;
         }
 
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -521,9 +513,8 @@ public class NotificacaoJSFBean implements Serializable {
         List<Vector> result = db.listaNotificacaoEnvio(ct.getId(), lote.getId());
 
         if (result.isEmpty()) {
-            msgConfirma = "Lista de parametros para envio vazia!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            return null;
+            GenericaMensagem.warn("Erro", "Lista de parametros para envio vazia!");
+            return;
         }
 
         List<ParametroNotificacao> listax = new ArrayList();
@@ -537,20 +528,18 @@ public class NotificacaoJSFBean implements Serializable {
             ce.setUsuario(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")));
             ce.setTipoCobranca(ct);
             if (!sv.inserirObjeto(ce)) {
-                msgConfirma = "Erro ao salvar Cobrança Envio";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Erro ao salvar Cobrança Envio");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         }
 
         if (ct.getId() == 4 || ct.getId() == 5) {
             List<Vector> lista = db.pollingEmailTrue();
             if (!lista.isEmpty()) {
-                msgConfirma = "Existem notificações às " + lista.get(0).get(1) + " para serem enviadas, conclua o envio antes de notificar mais!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Existem notificações às " + lista.get(0).get(1) + " para serem enviadas, conclua o envio antes de notificar mais!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
 
             int id_compara = 0;
@@ -668,10 +657,9 @@ public class NotificacaoJSFBean implements Serializable {
                             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
 
                             if (!sv.inserirObjeto(link)) {
-                                msgConfirma = "Erro ao salvar Link de envio!";
-                                GenericaMensagem.warn("Erro", msgConfirma);
+                                GenericaMensagem.warn("Erro", "Erro ao salvar Link de envio!");
                                 sv.desfazerTransacao();
-                                return null;
+                                return;
                             }
 
                             PollingEmail pe = new PollingEmail();
@@ -687,10 +675,9 @@ public class NotificacaoJSFBean implements Serializable {
                             }
 
                             if (!sv.inserirObjeto(pe)) {
-                                msgConfirma = "Erro ao salvar Polling de envio!";
-                                GenericaMensagem.warn("Erro", msgConfirma);
+                                GenericaMensagem.warn("Erro", "Erro ao salvar Polling de envio!");
                                 sv.desfazerTransacao();
-                                return null;
+                                return;
                             }
                             atual++;
                         }
@@ -798,10 +785,9 @@ public class NotificacaoJSFBean implements Serializable {
                         link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
 
                         if (!sv.inserirObjeto(link)) {
-                            msgConfirma = "Erro ao salvar Link de envio!";
-                            GenericaMensagem.warn("Erro", msgConfirma);
+                            GenericaMensagem.warn("Erro", "Erro ao salvar Link de envio!");
                             sv.desfazerTransacao();
-                            return null;
+                            return;
                         }
 
 //                        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
@@ -824,7 +810,6 @@ public class NotificacaoJSFBean implements Serializable {
         }
 
         listaNotificacao.clear();
-        return "notificacao";
     }
 
     public String enviarEmailPolling(Links link) {
@@ -878,11 +863,9 @@ public class NotificacaoJSFBean implements Serializable {
 
             String[] retorno = mail.send("personalizado");            
             if (!retorno[1].isEmpty()) {
-                msgConfirma = retorno[1];
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", retorno[1]);
             } else {
-                msgConfirma = retorno[0];
-                GenericaMensagem.info("Sucesso", msgConfirma);
+                GenericaMensagem.info("Sucesso", retorno[0]);
             }
         } catch (Exception e) {
         }
@@ -918,8 +901,7 @@ public class NotificacaoJSFBean implements Serializable {
             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
 
             if (!sv.inserirObjeto(link)) {
-                msgConfirma = "Erro ao salvar Link de envio!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Erro ao salvar Link de envio!");
                 sv.desfazerTransacao();
                 return null;
             }
@@ -970,11 +952,9 @@ public class NotificacaoJSFBean implements Serializable {
             String[] retorno = mail.send("personalizado");
             
             if (!retorno[1].isEmpty()) {
-                msgConfirma = retorno[1];
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", retorno[1]);
             } else {
-                msgConfirma = retorno[0];
-                GenericaMensagem.info("Sucesso", msgConfirma);
+                GenericaMensagem.info("Sucesso", retorno[0]);
             }
         } catch (Exception e) {
         }
@@ -1023,7 +1003,7 @@ public class NotificacaoJSFBean implements Serializable {
             List<CobrancaLote> result = db.listaCobrancaLote();
             itensLista.add(new SelectItem(0, "<< Gerar novo Lote de Notificação >>", String.valueOf(-1)));
             for (int i = 0; i < result.size(); i++) {
-                itensLista.add(new SelectItem(new Integer(i + 1),
+                itensLista.add(new SelectItem(i + 1,
                         "Lote gerado - " + result.get(i).getEmissao() + " às " + result.get(i).getHora() + " - " + result.get(i).getUsuario().getLogin(),
                         String.valueOf(result.get(i).getId())));
             }
@@ -1033,14 +1013,6 @@ public class NotificacaoJSFBean implements Serializable {
 
     public void setItensLista(List<SelectItem> itensLista) {
         this.itensLista = itensLista;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
     }
 
     public CobrancaLote getLote() {

@@ -39,34 +39,47 @@
     
     <rule>
         <from>^/$</from>
-        <to>/indexLogin.jsf</to>
+        <to type="redirect">%{context-path}/Sindical/</to>
     </rule>
-    
-    <outbound-rule>
-        <from>^/indexLogin.jsf$</from>
-        <to>/$</to>
-    </outbound-rule>
-    
     <rule>
-        <from>^/index$</from>
+        <from>^/login$</from>
         <to>/indexLogin.jsf</to>
     </rule>
-    
-    <outbound-rule>
-        <from>^/indexLogin.jsf$</from>
-        <to>/index$</to>
-    </outbound-rule>
-        
     <rule>
         <from>^/web$</from>
         <to>/indexAcessoWeb.jsf</to>
     </rule>
     
+    <!-- REDIRECT CLIENTES -->
+    <rule>
+        <from>^/ComercioLimeira$</from>
+        <to type="redirect">%{context-path}/ComercioLimeira/</to>
+    </rule>
+    
+    <!-- REDIRECT TELAS -->
+    
+    
+    <!--
+    <outbound-rule>
+        <from>^/indexLogin.jsf$</from>
+        <to>/$</to>
+    </outbound-rule>
+    -->
+
+    <!--
+    <outbound-rule>
+        <from>^/indexLogin.jsf$</from>
+        <to>/index$</to>
+    </outbound-rule>
+    
+    
+    
+    
     <outbound-rule>
         <from>^/indexAcessoWeb.jsf$</from>
         <to>/web</to>
     </outbound-rule>
-
+-->
     <!--
 
     INSTALLATION

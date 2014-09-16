@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Registro Patronal</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formSuspensao">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Registro Patronal" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="alinhaFormulario fontePadrao divFundo" style="width: 550px;">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <h:column><h:commandButton id="idPesquisaPatronal" image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" title="Pesquisar Pessoa Jurídica"/></h:column>
+                            <h:column>
+                                <h:outputLabel styleClass="fontePadrao" value="Pesquisar Pessoa Jurídica" rendered="#{registroPatronalBean.patronal.pessoa.id == -1}" for="idPesquisaSocio"/>
+                                <h:outputText value="#{registroPatronalBean.patronal.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa Jurídica" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{registroPatronalBean.patronal.pessoa.id != -1}"/>
+                            </h:column>
+                            <h:column><h:commandButton id="idPesquisaConvencao" image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaConvencao}" immediate="true" title="Pesquisar Convenção"/></h:column>
+                            <h:column>
+                                <h:outputLabel styleClass="fontePadrao" value="Pesquisar Convenção" rendered="#{registroPatronalBean.patronal.convencao.id == -1}" for="idPesquisaConvencao"/>
+                                <h:outputText value="#{registroPatronalBean.patronal.convencao.descricao}" styleClass="fontePadraoNegrito" title="Pesquisa Convenção" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{registroPatronalBean.patronal.convencao.id != -1}"/>
+                            </h:column>
+                            <h:column><h:commandButton id="idPesquisaGrupoCidade" image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.grupoCidade}" immediate="true" title="Pesquisar grupo cidade"/></h:column>
+                            <h:column>
+                                <h:outputLabel styleClass="fontePadrao" value="Pesquisar Grupo Cidade" rendered="#{registroPatronalBean.patronal.grupoCidade.id == -1}" for="idPesquisaGrupoCidade"/>
+                                <h:outputText value="#{registroPatronalBean.patronal.grupoCidade.descricao}" styleClass="fontePadraoNegrito" title="Pesquisa Grupo Cidade" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{registroPatronalBean.patronal.grupoCidade.id != -1}" />
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <div class="margin-top-maior"></div>
+                        
+                        <h:outputLabel styleClass="fontePadraoNegrito margin-top-maior" value="Base territorial"/>
+                        
+                        <div class="clear"></div>
+                        
+                        <h:inputTextarea value="#{registroPatronalBean.patronal.baseTerritorial}" title="Base territorial - Cidades que pertecem a esse registro patronal" cols="65" rows="7" styleClass="margin-top-med padding"/>
+                        
+                        <br /><br />
+                        
+                        <h:panelGrid>
+                            <h:outputLabel value="Lista cnaes" styleClass="fonteExtratoTela"/>
+                            <h:panelGrid columns="3">
+                                <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisa Cnae"/>
+                                <h:outputText value="#{registroPatronalBean.cnae.numero} - #{registroPatronalBean.cnae.cnae}" styleClass="fontePadraoNegrito" rendered="#{registroPatronalBean.cnae.id != -1}"/>
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{registroPatronalBean.addCnae}" title="Adicionar um novo Cnae" oncomplete="modalMensagem()" render="outConfirma"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        
+                        <div style="height: 400px; overflow: auto">
+                            <rich:dataTable value="#{registroPatronalBean.listaPatronalCnae}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                    <h:outputText value="#{it.index}" />
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{registroPatronalBean.editarCnae(it.index)}" value="#{linha.id}" styleClass="iLink" />
+                                </rich:column>
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Número"/></f:facet>
+                                    <div style="width: 60px">
+                                        
+                                        <h:outputText value="#{linha.cnae.numero}" />
+                                    </div>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Cnae"/></f:facet>
+                                    <h:outputText value="#{linha.cnae.cnae}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Excluir"/></f:facet>
+                                    <h:commandButton image="/Imagens/excluirp.png" action="#{registroPatronalBean.excluirCnae(it.index)}" style="cursor: pointer" title="Excluir cnae #{linha.cnae.cnae}" />
+                                </rich:column>
+
+                            </rich:dataTable>
+                        </div>
+
+                    </div>
+                    <div class="clear"></div>
+                    <div style="float: left; margin-top: 15px;">
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{registroPatronalBean.novo}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPatronal}" title="Pesquisar patronal"/>
+                    </div>
+                </div>
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Patronal?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{registroPatronalBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta Patronal?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{registroPatronalBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{registroPatronalBean.msg}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink closeModal" action="#{registroPatronalBean.limpar}" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>
