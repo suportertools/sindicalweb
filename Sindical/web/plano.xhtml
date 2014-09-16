@@ -51,7 +51,7 @@
                                 </p:column>
                                 <!-- PLANO 4 -->
                                 <p:column styleClass="text-center" headerText="Plano 4" sortBy="#{listaPlanoContas.plano5.plano4.conta}" rendered="#{planoBean.visible[3]}">
-                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.numero} - #{listaPlanoContas.plano5.plano4.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:" rendered="#{planoBean.visible[4]}"/>
+                                    <p:commandLink value="#{listaPlanoContas.plano5.plano4.numero} - #{listaPlanoContas.plano5.plano4.conta}" action="#{planoBean.edit(listaPlanoContas.plano5.plano4)}" update=":form_plano:" />
                                 </p:column>
                                 <!-- PLANO 3 -->
                                 <p:column styleClass="text-center" headerText="Plano 3" sortBy="#{listaPlanoContas.plano5.plano4.plano3.conta}" rendered="#{planoBean.visible[2]}">
