@@ -178,6 +178,7 @@ public class PessoaBean implements Serializable {
     }
 
     public String getMascaraPesquisa() {
+        descPesquisa = "";
         return Mask.getMascaraPesquisa(porPesquisa, true);
     }
 }
