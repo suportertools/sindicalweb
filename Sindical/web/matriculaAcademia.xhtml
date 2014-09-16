@@ -125,7 +125,7 @@
                                             </h:column>
                                             <p:outputLabel value="Modalidade:" />
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 690px">
-                                                <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>
+                                                <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular1()}"/>
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaModalidades}"/>
                                             </p:selectOneMenu>
                                         </h:panelGrid>
@@ -140,8 +140,7 @@
                                     <p:panel header="Período / Grade">
                                         <h:panelGrid columns="3" id="id_grid_periodo_grade">
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 940px;">
-                                                <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade id_grid_validade" listener="#{matriculaAcademiaBean.recalcular()}"/>
-                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade id_grid_validade" listener="#{matriculaAcademiaBean.recalcular2}"/>
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaPeriodosGrade}"/>
                                             </p:selectOneMenu>                                            
                                         </h:panelGrid>                                        
@@ -182,8 +181,8 @@
                                             <p:inputText value="#{matriculaAcademiaBean.valorTaxa}" rendered="#{matriculaAcademiaBean.taxa}" readonly="true" size="5"/>
                                             <p:outputLabel value="Taxa cartão (R$):" rendered="#{matriculaAcademiaBean.taxaCartao}"/>
                                             <p:inputText value="#{matriculaAcademiaBean.valorCartao}" rendered="#{matriculaAcademiaBean.taxaCartao}" readonly="true" size="5"/>
-                                            <p:outputLabel value="Dia do Vencimento: " styleClass="margin-left-max" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}"/>
-                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}">
+                                            <p:outputLabel value="Dia do Vencimento: " styleClass="margin-left-max" />
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaDiaParcela}" />
                                             </p:selectOneMenu>
                                         </h:panelGrid>
@@ -223,7 +222,7 @@
                             </c:if>
                         </h:column>
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
-                            <c:if test="false">
+                            <c:if test="true">
                                 <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete_movimento').show();" type="button"/>
                             </c:if>
                         </h:column>                        
