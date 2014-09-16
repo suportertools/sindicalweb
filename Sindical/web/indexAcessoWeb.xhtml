@@ -4,137 +4,170 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:a4j="http://richfaces.org/a4j"
       xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
-        <title>Index acesso Web</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css" rel="stylesheet" type="text/css"/>
+        <title>Sindical - Acesso Web</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <!-- Latest compiled and minified CSS -->
+        <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" /> -->
+        <!-- <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css"/> -->
+
+        <!-- Optional theme -->
+        <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" /> -->
+
+        <!-- Latest compiled and minified JavaScript -->
+        <!-- <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
         
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/js/resources/jQuery.js" charset="iso-8859-1"/>
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/js/resources/jMarcaDagua.js" charset="iso-8859-1"/>
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/js/resources/jMascara.js" charset="iso-8859-1"/>
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/js/resources/jScripts.js" charset="iso-8859-1"/>
+        <!-- <link rel="shortcut icon" href="# {facesContext.externalContext.requestContextPath}/resourses/css/foundation/foundation.css"/>  -->
+        
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            
+            .ui-selectonemenu-trigger ui-state-default ui-corner-right{
+                width: 50px;
+            }
+            
+            .ui-panel{
+                padding: 15px;
+            }
+            
+            .ui-panel-title, .ui-panel-titlebar {
+                text-align: center !important;
+                background: #0066cc;
+                color: white;
+                font-weight: normal;
+            }
+            
+            .link-esqueci-senha{
+                float: right; margin-top: 20px; text-decoration: none; font-size: 10pt!important;
+            }
+            .link-esqueci-senha:hover {
+                text-decoration: underline;
+            }
+        </style>
     </h:head>
-    <h:body onload="#{rich:element('formLogin:login')}.focus();">
+    <h:body>
         <f:view>
-            <hr />
+            <ui:include src="templates/templateStatus.xhtml" />
             <h:form id="formLogin">
                 <input type="hidden" value="#{controleUsuarioBean.validaIndex}" />
-                <center>                    
-                    <a href="#{controleAcessoWebBean.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
-                    <br /><br />
-                    <h:panelGrid>
-                        <rich:panel style=" -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
-                            <div class="headerPanel" style="text-align: center">
-                                <h:outputText value="Acesso Sindical Web" styleClass="fontePanel"/>
-                            </div> 
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                                <rich:column><h:outputLabel value="Login: " styleClass="fontePadrao"/></rich:column> 
-                                <rich:column><h:inputText id="login" size="20" value="#{controleAcessoWebBean.pessoa.login}" autocomplete="off">
-                                        <a4j:ajax event="blur" render="this"/>
-                                            </h:inputText>
-                                </rich:column>
-                                <rich:column><h:outputLabel value="Senha: " styleClass="fontePadrao"/></rich:column>
-                                <rich:column>
-                                    <h:inputSecret size="20" value="#{controleAcessoWebBean.pessoa.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:entrar')}.onclick();}"/>
-                                    <a4j:commandLink styleClass="idNovo iLink" id="entrar" value="Entrar" action="#{controleAcessoWebBean.validacao}" render="outErro"/>
-                                </rich:column>
-                            </h:panelGrid>
-                            <h:outputText id="outErro" value="#{controleAcessoWebBean.msgLoginInvalido}" styleClass="corErro"/>
-                            <h:panelGrid>
-                                <h:commandLink value="Esqueci a Senha" action="#{controleAcessoWebBean.esqueciASenha}" styleClass="iLink fontePadrao" style="text-decoration: underline"/>
-                                <rich:panel  rendered="#{controleAcessoWebBean.renEsqueci}">
-                                    <h:panelGrid columns="2">
-                                        <h:outputText value="E-mail: " styleClass="fontePadrao"/>
-                                        <h:inputText value="#{controleAcessoWebBean.email}"/>
-                                    </h:panelGrid>
-                                    <h:panelGrid columns="5">
-                                        <h:outputLabel value="Tipo Pesquisa:" styleClass="fontePadrao"/>
-                                        <h:selectOneMenu id="iTipo" value="#{controleAcessoWebBean.strTipoPesquisa}" onchange="submit();">
-                                            <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
-                                            <f:selectItem itemValue="cpf"  itemLabel="CPF"/>
-                                            <f:selectItem itemValue="cei"  itemLabel="CEI"/>
-                                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
-                                        </h:selectOneMenu>
-                                        <h:inputText id="idInput" value="#{controleAcessoWebBean.descPesquisa}" class="#{controleAcessoWebBean.strTipoPesquisa}"/>
-                                        <h:commandButton id="iI" value="Inicial" action="#{controleAcessoWebBean.inicial}" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}"/>
-                                        <h:commandButton id="iP" value="Parcial" action="#{controleAcessoWebBean.parcial}" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}"/>
-                                    </h:panelGrid>
-                                    <h:panelGrid id="idEmp" columns="2" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}">
-                                        <h:outputLabel value="Empresas: " styleClass="fontePadrao"/>
-                                        <h:selectOneMenu id="iJuridica" value="#{controleAcessoWebBean.idJuridica}">
-                                            <a4j:ajax event="change" render="iJuridica, idInput"/>
-                                            <f:selectItems value="#{controleAcessoWebBean.listaEmpresa}"/>
-                                        </h:selectOneMenu>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid>
-                                        <h:commandButton value="Solicitar Login e Senha" action="#{controleAcessoWebBean.enviarEmail}"/>
-                                        <h:outputText id="idErr" styleClass="corErro" value="#{controleAcessoWebBean.msgEmail}"/>
-                                    </h:panelGrid>
-                                </rich:panel>
-                            </h:panelGrid>
-                        </rich:panel>
-                    </h:panelGrid>
-                    <h:panelGrid>
-                        <br />
-                        <h:outputLink value="#" styleClass="iLink fontePadrao" style="text-decoration: underline">
-                            <f:verbatim>Voltar para Site</f:verbatim>
-                        </h:outputLink>
-                        <br />
-                    </h:panelGrid>
                 
-                    <h:panelGrid style="text-align: center">
-                        <p style="color: red; font-weight: bold;" class="fontePadrao">
-                            Importante
-                        </p>                    
-                        <p class="fontePadrao">
-                            Para visualizar as guias, é necessário ter instalado em seu computador 
-                        </p>
-                        <p class="fontePadrao">
-                            um Software que possa ler arquivo de formato PDF.
-                        </p>
-                        <p class="fontePadrao">
-                            Caso não tenha, instale o Adobe Reader que pode ser baixado por este link abaixo:
-                        </p>
-                        <p style="text-align: center;" class="fontePadrao">
-                            <h:outputLink value="http://get.adobe.com/br/reader/" target="_blank">
-                                <h:graphicImage url="/Imagens/iconPDF.png" alt="Adobe Reader" style="width: 80px; height: 80px;" title="Baixar - Adobe Reader"/>
-                            </h:outputLink>
-                        </p>
-
-                        <h:outputLabel value="Compatibilidade" styleClass="fontePadrao" style="text-align: center"/>
+                <h:panelGrid style="margin: 0 auto; margin-top: 100px">
+                    <h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="300"/>
+                </h:panelGrid>
+                
+                <p:panel header="FAÇA O LOGIN NO SISTEMA" style="width: 350px; margin: 0 auto; margin-top: 10px">
+                    <p:messages showDetail="true" style="font-size: 10pt!important" autoUpdate="true" closable="true"/>
+                    <h:panelGrid style="margin-top: 30px; width: 100%">
+                        <p:outputLabel value="LOGIN" style="font-weight: bold; font-size: 10pt" for="i_login"/>
+                        <p:inputText id="i_login" value="#{controleAcessoWebBean.pessoa.login}" placeholder="Digite seu Login" style="width: 100%" autocomplete="off"/>
                         
-                        <h:panelGrid columns="6" styleClass="fontePadrao" style="text-align: right">
-                            <h:outputLink value="http://br.mozdev.org" target="_blank" title="Firefox">
-                                <h:graphicImage url="/Imagens/iconFirefox.gif" alt="Firefox"/>
-                            </h:outputLink>
+                        <p:outputLabel value="SENHA" style="font-weight: bold; font-size: 10pt" for="i_senha"/>
+                        <p:password id="i_senha" value="#{controleAcessoWebBean.pessoa.senha}" placeholder="Digite sua Senha" style="width: 100%" autocomplete="off"/>
 
-                            <h:outputLink value="http://www.apple.com/br/safari/" target="_blank" title="Firefox">
-                                <h:graphicImage url="/Imagens/iconSafari.gif" alt="Safari" title="Safari"/>
-                            </h:outputLink>
+                        <p:commandButton value="Entrar" style="width: 100%; margin-top: 20px" action="#{controleAcessoWebBean.validacao}"/>
 
-                            <h:outputLink value="http://www.opera.com/" target="_blank" title="Opera">
-                                <h:graphicImage url="/Imagens/iconOpera.gif" alt="Opera" title="Opera"/>
-                            </h:outputLink>
-
-                            <h:outputLink value="http://www.google.com/chrome" target="_blank" title="Chrome">
-                                <h:graphicImage url="/Imagens/iconChrome.gif" alt="Chrome" />
-                            </h:outputLink>
-
-                            <h:outputLink value="http://windows.microsoft.com/pt-BR/internet-explorer/products/ie/home" target="_blank" title="Internet Explorer">
-                                <h:graphicImage url="/Imagens/iconOffIE.gif" alt="Internet Explorer" />
-                            </h:outputLink>
-                        </h:panelGrid>
-                        <div style="clear: both;"></div>
+                        <p:commandLink value="Esqueci a Senha" onclick="PF('dlg_esqueci_senha').show()" styleClass="link-esqueci-senha" />
                     </h:panelGrid>
-                </center>
+                </p:panel>
             </h:form>
-        </f:view>
-        <table align="center">
-            <tr><td valign="baseline" ><font size="1,5"> -| R'Tools Desenvolvimento de Sistemas LTDA ® |- </font></td></tr>
-        </table>
+            
+            <h:form id="i_form_esqueci_senha">
+                <p:dialog widgetVar="dlg_esqueci_senha" modal="true" header="Recuperar minha Senha" resizable="false" style="width: 460px">
+                    <p:messages showDetail="true" style="font-size: 10pt!important" autoUpdate="true"/>
+                    <h:panelGrid>
+                        <p:outputLabel value="DIGITE SEU EMAIL E PESQUISE SUA EMPRESA." for="i_digite_email"/>
+                    </h:panelGrid>
+                        
+                    <h:panelGrid style="margin-top: 10px; width: 100%">
+                        <p:inputText id="i_digite_email" value="#{controleAcessoWebBean.email}" placeholder="Digite seu EMAIL" style="width: 100%"/>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid id="i_div_tipo" columns="2" style="margin-top: 20px; width: 100%" styleClass="fundoCinza">
+                        <h:column>
+                            <h:outputLabel value="Por" /><br />
+                            <p:selectOneMenu value="#{controleAcessoWebBean.strTipoPesquisa}" style="width: 80px">
+                                <p:ajax event="change" update="i_form_esqueci_senha:i_div_tipo" />
+                                <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
+                                <f:selectItem itemValue="cpf"  itemLabel="CPF"/>
+                                <f:selectItem itemValue="cei"  itemLabel="CEI"/>
+                                <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                            </p:selectOneMenu>
+                        </h:column>
 
+                        <h:column rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}" >
+                            <p:outputLabel value="Nome da Empresa" /><br />
+                            <p:inputText value="#{controleAcessoWebBean.descPesquisa}" style="width: 220px"/>
+                            <p:commandButton value="Pesquisar" action="#{controleAcessoWebBean.parcial}" update="i_lista_empresa"/>
+                        </h:column>
+                            
+                        <h:column rendered="#{controleAcessoWebBean.strTipoPesquisa == 'cnpj'}">
+                            <h:outputLabel value="CNPJ da Empresa" />
+                            <p:inputMask value="#{controleAcessoWebBean.descPesquisa}" mask="99.999.999/9999-99" style="text-align: center; width: 100%"/>
+                        </h:column>
+                            
+                        <h:column rendered="#{controleAcessoWebBean.strTipoPesquisa == 'cpf'}">
+                            <h:outputLabel value="CPF da Empresa" />
+                            <p:inputMask value="#{controleAcessoWebBean.descPesquisa}" mask="999.999.999-99" style="text-align: center; width: 100%"/>
+                        </h:column>
+
+                        <h:column rendered="#{controleAcessoWebBean.strTipoPesquisa == 'cei'}">
+                            <h:outputLabel value="CEI da Empresa" />
+                            <p:inputText value="#{controleAcessoWebBean.descPesquisa}" style="text-align: center; width: 100%"/>
+                        </h:column>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid id="i_lista_empresa">
+                        <h:column rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome' and controleAcessoWebBean.listaEmpresa.size() > 0}">
+                            <p:outputLabel value="Empresas" /><br />
+                            <p:selectOneMenu value="#{controleAcessoWebBean.idJuridica}" style="width: 450px">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{controleAcessoWebBean.listaEmpresa}"/>
+                            </p:selectOneMenu>
+                        </h:column>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid>
+                        <p:commandButton value="Enviar pedido de recuperação de Senha" action="#{controleAcessoWebBean.enviarEmail}" style="font-weight: bold; font-size: 10pt!important"/>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+            
+            <h:panelGrid style="margin: 0 auto;">
+                <p:outputLabel value="Navegadores Compatíveis" style="font-size: 8pt!important"/>
+            </h:panelGrid>
+            <h:panelGrid columns="6" style="margin: 0 auto;">
+                <h:outputLink value="http://br.mozdev.org" target="_blank" title="Firefox">
+                    <h:graphicImage url="/Imagens/iconFirefox.gif" alt="Firefox"/>
+                </h:outputLink>
+
+                <h:outputLink value="http://www.apple.com/br/safari/" target="_blank" title="Safari">
+                    <h:graphicImage url="/Imagens/iconSafari.gif" alt="Safari" title="Safari"/>
+                </h:outputLink>
+
+                <h:outputLink value="http://www.opera.com/" target="_blank" title="Opera">
+                    <h:graphicImage url="/Imagens/iconOpera.gif" alt="Opera" title="Opera"/>
+                </h:outputLink>
+
+                <h:outputLink value="http://www.google.com/chrome" target="_blank" title="Chrome">
+                    <h:graphicImage url="/Imagens/iconChrome.gif" alt="Chrome" />
+                </h:outputLink>
+
+                <h:outputLink value="http://windows.microsoft.com/pt-BR/internet-explorer/products/ie/home" target="_blank" title="Internet Explorer">
+                    <h:graphicImage url="/Imagens/iconOffIE.gif" alt="Internet Explorer" />
+                </h:outputLink>
+            </h:panelGrid>
+            
+            <h:panelGrid style="margin: 0 auto; margin-top: 100px">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="Direitos reservados R'tools Desenvolvimento de Sistemas LTDA | " style="font-size: 8pt!important"/>
+                    <p:link value="http://www.rtools.com.br" href="http://www.rtools.com.br" target="_blank" title="R'tools Desenvolvimento de Sistemas" style="font-size: 8pt!important"/>
+                </h:panelGrid>
+            </h:panelGrid>
+        </f:view>
     </h:body>
 </ui:composition>

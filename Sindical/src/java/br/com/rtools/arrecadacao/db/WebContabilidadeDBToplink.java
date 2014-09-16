@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.db;
 
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.principal.DB;
@@ -11,35 +12,33 @@ import javax.persistence.Query;
 public class WebContabilidadeDBToplink extends DB implements WebContabilidadeDB {
 
     @Override
-    public List listaEmpresasPertContabilidade(int idContabilidade) {
-        List result;
-        List listaC = new ArrayList();
-        Query qry = null;
+    public List<Juridica> listaEmpresasPertContabilidade(int idContabilidade) {
         JuridicaDB db = new JuridicaDBToplink();
-        String textQuery = "select j.id "
-                + "  from pes_juridica j, pes_pessoa p "
-                + " where j.id_pessoa = p.id "
-                + "   and j.id_contabilidade = " + idContabilidade
-                + "   and j.id in ( select id_juridica from arr_contribuintes_vw where dt_inativacao is null) "
-                + " order by p.ds_nome";
+//        String textQuery = 
+//                  " SELECT j.* "
+//                + "   FROM pes_juridica j "
+//                + "  INNER JOIN pes_pessoa p ON p.id = j.id_pessoa "
+//                + "  WHERE j.id_contabilidade = " + idContabilidade
+//                + "    AND j.id in ( SELECT jv.id_juridica FROM arr_contribuintes_vw jv WHERE jv.dt_inativacao IS NULL) "
+//                + "  ORDER BY p.ds_nome";
+        String textQuery = 
+                  " SELECT j.* "
+                + "   FROM pes_juridica j "
+                + "  INNER JOIN pes_pessoa p ON p.id = j.id_pessoa "
+                + "  INNER JOIN arr_contribuintes_vw jv ON j.id = jv.id_juridica AND jv.dt_inativacao IS NULL"
+                + "  WHERE j.id_contabilidade = " + idContabilidade
+                + "  ORDER BY p.ds_nome";
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
-            if (!result.isEmpty()) {
-                for (int i = 0; i < result.size(); i++) {
-                    listaC.add(db.pesquisaCodigo((Integer) ((Vector) result.get(i)).get(0)));
-                }
-            }
+            Query qry = getEntityManager().createNativeQuery(textQuery, Juridica.class);
+            return qry.getResultList();
         } catch (Exception e) {
-            listaC = new ArrayList();
+            
         }
-        return listaC;
+        return new ArrayList<>();
     }
 
     @Override
     public List pesquisaMovParaWebContabilidade(int id_pessoa) {
-        List result;
-        Query qry = null;
         String textQuery;
         textQuery = "select m.ds_documento Boleto, "
                 + "       se.id as id_servico, "
@@ -71,12 +70,12 @@ public class WebContabilidadeDBToplink extends DB implements WebContabilidadeDB 
                 + "   and m.id_baixa is null "
                 + " order by m.dt_vencimento";
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
         } catch (Exception e) {
-            result = new Vector();
+            
         }
-        return result;
+        return new ArrayList();
     }
 //    public List pesquisaMovParaWebContabilidade(int id_pessoa){
 //        List result;

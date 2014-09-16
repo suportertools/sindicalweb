@@ -27,32 +27,22 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
 public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean implements Serializable {
-
-    private String header = "Agendamento Web";
-    private String msgAgendamento = "";
-    private String msgConfirma = "";
+    //private String msgAgendamento = "";
     private String strEndereco = "";
-    private String tipoAviso = "true";
-    private String strSalvar = "Agendar";
     private String statusEmpresa = "REGULAR";
-    private boolean renderAgendamento = true;
-    private boolean renderConcluir = false;
-    private boolean renderBtnAgendar = true;
     private Date data = DataHoje.converte(new DataHoje().incrementarDias(1, DataHoje.data()));
     private int idStatus = 0;
-    private int idIndex = -1;
-    private int idIndexEndereco = -1;
     private int idMotivoDemissao = 0;
-    private List listaGrid = new ArrayList();
     private List listaEmDebito = new ArrayList();
     private Agendamento agendamento = new Agendamento();
     private Agendamento agendamentoProtocolo = new Agendamento();
     private Juridica juridica;
-    private FilialCidade sindicatoFilial;
+    private FilialCidade sindicatoFilial = new FilialCidade();
     private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private Fisica fisica = new Fisica();
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
@@ -60,131 +50,140 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     private PessoaEndereco enderecoFisica = new PessoaEndereco();
     private String cepEndereco = "";
     private List listaEnderecos = new ArrayList();
-    private boolean imprimirPro = false;
     private boolean readonlyFisica = false;
     private boolean readonlyEndereco = false;
     private String strContribuinte = "";
     private Registro registro = new Registro();
-
+    
+    private final List<DataObject> listaHorarios = new ArrayList<DataObject>();
+    private final List<SelectItem> listaStatus = new ArrayList<SelectItem>();
+    private final List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
+    private String tipoTelefone = "telefone";
+    
     public WebAgendamentoContribuinteBean() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb") != null) {
             JuridicaDB db = new JuridicaDBToplink();
+            FilialCidadeDB dbf = new FilialCidadeDBToplink();
+            PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+            
             juridica = db.pesquisaJuridicaPorPessoa(((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
+            enderecoEmpresa = dbp.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 5);
+            
+            if (enderecoEmpresa.getId() != -1) {
+                sindicatoFilial = dbf.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
+            }
+        
         }
     }
 
+    public void alterarTipoMascara(){
+        if (tipoTelefone.equals("telefone"))
+            tipoTelefone = "celular";
+        else
+            tipoTelefone = "telefone";
+        agendamento.setTelefone("");
+    }
+        
     public List<SelectItem> getListaStatus() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        List select = new ArrayList();
-        select.add(sadb.find("Status", 1));
-        select.add(sadb.find("Status", 2));
-        if (!select.isEmpty()) {
-            while (i < select.size()) {
-                result.add(new SelectItem(i,
-                        (String) ((Status) select.get(i)).getDescricao(),
-                        Integer.toString(((Status) select.get(i)).getId())));
-                i++;
+        if (listaStatus.isEmpty()){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            List<Status> select = new ArrayList();
+            select.add((Status)sv.find("Status", 1));
+            select.add((Status)sv.find("Status", 2));
+            for(int i = 0; i < select.size(); i++) {
+                listaStatus.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
             }
         }
-        return result;
+        return listaStatus;
     }
 
     public List<SelectItem> getListaMotivoDemissao() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        List select = sadb.listaObjeto("Demissao");
-        if (!select.isEmpty()) {
-            while (i < select.size()) {
-                result.add(new SelectItem(i, (String) ((Demissao) select.get(i)).getDescricao(), Integer.toString(((Demissao) select.get(i)).getId())));
-                i++;
+        if (listaMotivoDemissao.isEmpty()){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            List<Demissao> select = sv.listaObjeto("Demissao");
+            for (int i = 0; i < select.size(); i++) {
+                listaMotivoDemissao.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
             }
         }
-        return result;
+        return listaMotivoDemissao;
     }
 
-    public synchronized List getListaHorarios() {
-        listaGrid = new ArrayList();
-        List<Agendamento> ag;
-        List<Horarios> horario;
-        HomologacaoDB db = new HomologacaoDBToplink();
-        String agendador;
-        String homologador;
-        DataObject dtObj;
-        switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
-            //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
-            case 1: {
-                // TIRAR VALOR 1 DA PESQUISA PELO MAC DA FILIAL
-                int idDiaSemana = DataHoje.diaDaSemana(data);
-                horario = db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana);
-                strSalvar = "Agendar";
-                int qnt;
-                for (int i = 0; i < horario.size(); i++) {
-                    qnt = db.pesquisaQntdDisponivel(getSindicatoFilial().getFilial().getId(), horario.get(i), data);
-                    if (qnt == -1) {
-                        msgAgendamento = "Erro ao pesquisar horários disponíveis!";
-                        listaGrid.clear();
-                        break;
+    public synchronized List<DataObject> getListaHorarios() {
+        if (listaHorarios.isEmpty()){
+            List<Agendamento> ag;
+            List<Horarios> horario;
+            HomologacaoDB db = new HomologacaoDBToplink();
+            String agendador;
+            String homologador;
+            DataObject dtObj;
+            switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
+                //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
+                case 1: {
+                    // TIRAR VALOR 1 DA PESQUISA PELO MAC DA FILIAL
+                    int idDiaSemana = DataHoje.diaDaSemana(data);
+                    horario = db.pesquisaTodosHorariosDisponiveis(sindicatoFilial.getFilial().getId(), idDiaSemana);
+                    int qnt;
+                    for (int i = 0; i < horario.size(); i++) {
+                        qnt = db.pesquisaQntdDisponivel(getSindicatoFilial().getFilial().getId(), horario.get(i), data);
+                        if (qnt == -1) {
+                            //msgAgendamento = "Erro ao pesquisar horários disponíveis!";
+                            GenericaMensagem.error("Erro", "Não foi possível pesquisar horários disponíveis!");
+                            listaHorarios.clear();
+                            break;
+                        }
+                        if (qnt > 0) {
+                            dtObj = new DataObject(horario.get(i), // ARG 0 HORA
+                                    null, // ARG 1 CNPJ
+                                    null, //ARG 2 NOME
+                                    null, //ARG 3 HOMOLOGADOR
+                                    null, // ARG 4 CONTATO
+                                    null, // ARG 5 TELEFONE
+                                    null, // ARG 6 USUARIO
+                                    null,
+                                    qnt, // ARG 8 QUANTIDADE DISPONÍVEL
+                                    null);
+                            listaHorarios.add(dtObj);
+                        }
                     }
-                    if (qnt > 0) {
-                        dtObj = new DataObject(horario.get(i), // ARG 0 HORA
-                                null, // ARG 1 CNPJ
-                                null, //ARG 2 NOME
-                                null, //ARG 3 HOMOLOGADOR
-                                null, // ARG 4 CONTATO
-                                null, // ARG 5 TELEFONE
-                                null, // ARG 6 USUARIO
-                                null,
-                                qnt, // ARG 8 QUANTIDADE DISPONÍVEL
-                                null);
-                        listaGrid.add(dtObj);
-                    }
+                    break;
                 }
-                break;
-            }
-            // STATUS AGENDADO -----------------------------------------------------------------------------------------------
-            case 2: {
-                strSalvar = "Atualizar";
-                ag = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, ((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
-                for (int i = 0; i < ag.size(); i++) {
-                    if (ag.get(i).getAgendador() != null) {
-                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                    } else {
-                        agendador = "** Web User **";
-                    }
-                    if (ag.get(i).getHomologador() != null) {
-                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                    } else {
-                        homologador = "";
-                    }
+                // STATUS AGENDADO -----------------------------------------------------------------------------------------------
+                case 2: {
+                    ag = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, ((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
+                    for (int i = 0; i < ag.size(); i++) {
+                        if (ag.get(i).getAgendador() != null) {
+                            agendador = ag.get(i).getAgendador().getPessoa().getNome();
+                        } else {
+                            agendador = "** Web User **";
+                        }
+                        if (ag.get(i).getHomologador() != null) {
+                            homologador = ag.get(i).getHomologador().getPessoa().getNome();
+                        } else {
+                            homologador = "";
+                        }
 
-                    dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                            homologador, //ARG 3 HOMOLOGADOR
-                            ag.get(i).getContato(), // ARG 4 CONTATO
-                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                            agendador, // ARG 6 USUARIO
-                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                            ag.get(i).getData(), // ARG 8
-                            ag.get(i));// ARG 9 AGENDAMENTO
-                    listaGrid.add(dtObj);
+                        dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
+                                ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
+                                ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
+                                homologador, //ARG 3 HOMOLOGADOR
+                                ag.get(i).getContato(), // ARG 4 CONTATO
+                                ag.get(i).getTelefone(), // ARG 5 TELEFONE
+                                agendador, // ARG 6 USUARIO
+                                ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
+                                null, // ARG 8
+                                ag.get(i));// ARG 9 AGENDAMENTO
+                        listaHorarios.add(dtObj);
+                    }
+                    break;
                 }
-                break;
+                // ---------------------------------------------------------------------------------------------------------------
+                // ---------------------------------------------------------------------------------------------------------------
             }
-            // ---------------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------------
         }
-        return listaGrid;
+        return listaHorarios;
     }
 
     public String novoProtocolo() {
-        imprimirPro = false;
-        renderBtnAgendar = true;
-        renderAgendamento = false;
-        renderConcluir = true;
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -193,97 +192,107 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         if (profissao.getId() == -1) {
             profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
         }
-        msgAgendamento = "";
         return "webAgendamentoContribuinte";
     }
 
-    public String salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-        int ids[] = {1, 3, 4};
+    public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.find("Registro" , 1);
+        Registro reg = (Registro) sv.find("Registro" , 1);
         if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
-            return null;
+            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
         }
 
         if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
-            return null;
+            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
         }
 
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-            msgConfirma = "Digite o nome do Funcionário!";
-            return null;
+            //msgConfirma = "Digite o nome do Funcionário!";
+            GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
+            return;
         }
 
         if (!strContribuinte.isEmpty()) {
-            msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
-            return null;
+            //msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
+            GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
+            return;
         }
-
+        
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) sv.find("Demissao", Integer.parseInt(listaMotivoDemissao.get(idMotivoDemissao).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
-                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
-                        > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!";
-                    return null;
+                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
+                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!");
+                    return;
                 }
             } else if (demissao.getId() == 2) {
-                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
-                        > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!";
-                    return null;
+                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
+                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!");
+                    return;
                 }
             } else if (demissao.getId() == 3) {
-                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
-                        > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!";
-                    return null;
+                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
+                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!");
+                    return;
                 }
             }
         } else {
-            msgConfirma = "Data de Demissão é obrigatória!";
-            return null;
+            //msgConfirma = "Data de Demissão é obrigatória!";
+            GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
+            return;
         }
+        
 
+        
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find("TipoDocumento", 1));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                msgConfirma = "Documento Inválido!";
-                return null;
+                //msgConfirma = "Documento Inválido!";
+                GenericaMensagem.error("Atenção", "Documento Inválido!");
+                return;
             }
             if (sv.inserirObjeto(fisica.getPessoa())) {
                 sv.inserirObjeto(fisica);
             } else {
-                msgConfirma = "Erro ao Inserir pessoa!";
+                //msgConfirma = "Erro ao Inserir pessoa!";
+                GenericaMensagem.error("Atenção", "Erro ao inserir Pessoa, tente novamente!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         }
 
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
         if (age != null) {
-            msgConfirma = "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome();
+            //msgConfirma = "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome();
+            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome());
             sv.desfazerTransacao();
-            return null;
+            return;
         }
-
+        
+        PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+        int ids[] = {1, 3, 4};
+        
         if (enderecoFisica.getId() == -1) {
             if (enderecoFisica.getEndereco().getId() != -1) {
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaObjeto(ids[i], "TipoEndereco"));
+                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
-                        msgConfirma = "Erro ao Inserir endereço da pessoa!";
+                        //msgConfirma = "Erro ao Inserir endereço da pessoa!";
+                        GenericaMensagem.error("Atenção", "Erro ao inserir Endereço da Pessoa!");
                         sv.desfazerTransacao();
-                        return null;
+                        return;
                     }
                     pesEnd = new PessoaEndereco();
                     pesEnd.setComplemento(enderecoFisica.getComplemento());
@@ -294,15 +303,17 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
         } else {
             List<PessoaEndereco> ends = dbp.pesquisaEndPorPessoa(fisica.getPessoa().getId());
-            for (int i = 0; i < ends.size(); i++) {
-                ends.get(i).setComplemento(msgAgendamento);
-                ends.get(i).setEndereco(enderecoFisica.getEndereco());
-                ends.get(i).setNumero(enderecoFisica.getNumero());
-                ends.get(i).setPessoa(enderecoFisica.getPessoa());
-                if (!sv.alterarObjeto(ends.get(i))) {
-                    msgConfirma = "Erro ao atualizar endereço da pessoa!";
+            for (PessoaEndereco end : ends) {
+                //end.setComplemento(msgAgendamento);
+                end.setComplemento(enderecoFisica.getComplemento());
+                end.setEndereco(enderecoFisica.getEndereco());
+                end.setNumero(enderecoFisica.getNumero());
+                end.setPessoa(enderecoFisica.getPessoa());
+                if (!sv.alterarObjeto(end)) {
+                    //msgConfirma = "Erro ao atualizar endereço da pessoa!";
+                    GenericaMensagem.error("Atenção", "Erro ao atualizar Endereço da Pessoa!");
                     sv.desfazerTransacao();
-                    return null;
+                    return;
                 }
             }
         }
@@ -311,123 +322,125 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(juridica);
             pessoaEmpresa.setFuncao(profissao);
-            pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.inserirObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao Pessoa Empresa!";
+                //msgConfirma = "Erro ao Pessoa Empresa!";
+                GenericaMensagem.error("Atenção", "Erro ao Pessoa Empresa!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         } else {
-            pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.alterarObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao atualizar Pessoa Empresa!";
+                //msgConfirma = "Erro ao atualizar Pessoa Empresa!";
+                GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         }
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             sv.comitarTransacao();
-            return null;
+            return;
         } else {
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+                agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) salvarAcumuladoDB.find("Status", 2));
+                agendamento.setStatus((Status) sv.find("Status", 2));
                 if (sv.inserirObjeto(agendamento)) {
-                    msgConfirma = "Agendamento realizado com sucesso!";
+                    //msgConfirma = "Agendamento realizado com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Agendamento Concluído!");
                     setAgendamentoProtocolo(agendamento);
-                    limpar();
+                    PF.openDialog("dlg_protocolo");
                 } else {
-                    msgConfirma = "Erro ao salvar protocolo!";
+                    //msgConfirma = "Erro ao salvar protocolo!";
+                    GenericaMensagem.error("Atenção", "Erro ao salvar protocolo!");
                     sv.desfazerTransacao();
-                    return null;
+                    return;
                 }
             } else {
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+                agendamento.setDemissao(demissao);
                 if (sv.alterarObjeto(agendamento)) {
-                    msgConfirma = "Agendamento atualizado com sucesso!";
+                    //msgConfirma = "Agendamento atualizado com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Agendamento Atualizado!");
                     setAgendamentoProtocolo(agendamento);
-                    limpar();
                 } else {
-                    msgConfirma = "Erro ao atualizar protocolo!";
+                    //msgConfirma = "Erro ao atualizar protocolo!";
+                    GenericaMensagem.error("Atenção", "Erro ao atualizar Protocolo!");
                     sv.desfazerTransacao();
-                    return null;
+                    return;
                 }
             }
             sv.comitarTransacao();
-            imprimirPro = true;
         }
-        return null;
     }
 
-    public String agendar() {
-        if (data.getDay() == 6 || data.getDay() == 0) {
-            msgAgendamento = "Fins de semana não permitido!";
-            return "webAgendamentoContribuinte";
-        }
-
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data))
-                == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgAgendamento = "Data deve ser apartir de hoje, caso deseje marcar para esta data contate seu Sindicato!";
-            return "webAgendamentoContribuinte";
-        }
-
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgAgendamento = "Data anterior ao dia de hoje!";
-            return "webAgendamentoContribuinte";
-        }
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data())))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))) {
-            msgAgendamento = "Data maior que 3 meses!";
-            return "webAgendamentoContribuinte";
-        }
-
-        if (pesquisarFeriado()) {
-            msgAgendamento = "Esta data esta cadastrada como Feriado!";
-            return "webAgendamentoContribuinte";
-        }
-
-        renderAgendamento = false;
-        renderConcluir = true;
-        header = "Agendamento Web >> Concluir";
+    public void agendar(DataObject datao) {
+        fisica = new Fisica();
+        agendamento = new Agendamento();
+        enderecoFisica = new PessoaEndereco();
+        profissao = new Profissao();
+        pessoaEmpresa = new PessoaEmpresa();
+        
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
+            // STATUS DISPONÍVEL
             case 1: {
+                if (data.getDay() == 6 || data.getDay() == 0) {
+                    GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
+                    return;
+                }
+
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    GenericaMensagem.warn("Atenção",  "Data deve ser apartir de hoje, caso deseje marcar para esta data contate seu Sindicato!");
+                    return;
+                }
+
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData())) < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    GenericaMensagem.warn("Atenção", "Data anterior ao dia de hoje!");
+                    return;
+                }
+                if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data()))) < DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))) {
+                    GenericaMensagem.warn("Atenção", "Data maior que 3 meses!");
+                    return;
+                }
+
+                if (pesquisarFeriado()) {
+                    GenericaMensagem.warn("Atenção", "Esta data esta cadastrada como Feriado!");
+                    return;
+                }                
+                
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 if (data == null) {
-                    msgAgendamento = "Selecione uma data para Agendamento!";
-                    renderAgendamento = true;
-                    renderConcluir = false;
+                    GenericaMensagem.warn("Atenção", "Selecione uma data para Agendamento!");
+                    return;
                 } else {
-                    renderBtnAgendar = true;
                     if (profissao.getId() == -1) {
                         profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
                     }
                     agendamento.setData(DataHoje.converteData(data));
-                    agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
+                    agendamento.setHorarios((Horarios)  datao.getArgumento0());
                     agendamento.setFilial(getSindicatoFilial().getFilial());
-                    msgAgendamento = "";
                 }
                 setAgendamentoProtocolo(agendamento);
                 break;
             }
 
+            // STATUS AGENDADO
             case 2: {
                 PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                renderBtnAgendar = false;
-                agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
-                fisica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFisica();
+                agendamento = (Agendamento) datao.getArgumento9();
+                fisica = ((PessoaEmpresa) datao.getArgumento7()).getFisica();
                 enderecoFisica = db.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-                juridica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getJuridica();
+                juridica = ((PessoaEmpresa)  datao.getArgumento7()).getJuridica();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
-                profissao = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFuncao();
+                profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();
                 for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                     if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
                         idMotivoDemissao = (Integer) getListaMotivoDemissao().get(i).getValue();
@@ -435,11 +448,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                     }
                 }
                 setAgendamentoProtocolo(agendamento);
-                tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+                //tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
                 break;
             }
         }
-        return "webAgendamentoContribuinte";
+        RequestContext.getCurrentInstance().execute("PF('dlg_agendamento').show();");
     }
 
     public String imprimirPlanilha() {
@@ -470,28 +483,21 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public void limpar() {
+        String data = agendamento.getData(), horario = agendamento.getHorarios().getHora();
+        
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
-        tipoAviso = "true";
-        //msgConfirma = "";
-        msgAgendamento = "";
-        header = "Agendamento Web";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
         profissao = new Profissao();
         enderecoFisica = new PessoaEndereco();
+        
+        agendamento.setData(data);
+        agendamento.getHorarios().setHora(horario);
     }
 
     public String cancelar() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
-        tipoAviso = "true";
-        msgConfirma = "";
-        msgAgendamento = "";
-        header = "Agendamento Web";
         fisica = new Fisica();
         agendamento = new Agendamento();
         agendamentoProtocolo = agendamento;
@@ -512,7 +518,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != juridica.getId()) {
-                msgConfirma = "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome();
+                //msgConfirma = "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome();
+                GenericaMensagem.warn("Atenção", "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome());
                 fisica = new Fisica();
                 enderecoFisica = new PessoaEndereco();
                 return;
@@ -560,8 +567,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 enderecoFisica = new PessoaEndereco();
             }
         }
-        msgConfirma = "";
-        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/webAgendamentoContribuinte.jsf");
+        //msgConfirma = "";
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/webAgendamentoContribuinte.jsf");
     }
 
     public String pesquisaEndereco() {
@@ -573,28 +580,9 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         return null;
     }
 
-    public String editarEndereco() {
-        enderecoFisica.setEndereco((Endereco) listaEnderecos.get(idIndexEndereco));
+    public String editarEndereco(Endereco ende) {
+        enderecoFisica.setEndereco(ende);
         return null;
-    }
-
-    public void refreshForm() {
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    public boolean isRenderAgendamento() {
-        return renderAgendamento;
-    }
-
-    public void setRenderAgendamento(boolean renderAgendamento) {
-        this.renderAgendamento = renderAgendamento;
     }
 
     public int getIdStatus() {
@@ -603,22 +591,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public void setIdStatus(int idStatus) {
         this.idStatus = idStatus;
-    }
-
-    public String getMsgAgendamento() {
-        return msgAgendamento;
-    }
-
-    public void setMsgAgendamento(String msgAgendamento) {
-        this.msgAgendamento = msgAgendamento;
-    }
-
-    public boolean isRenderConcluir() {
-        return renderConcluir;
-    }
-
-    public void setRenderConcluir(boolean renderConcluir) {
-        this.renderConcluir = renderConcluir;
     }
 
     public Agendamento getAgendamento() {
@@ -664,7 +636,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     public String getStrEndereco() {
         PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
-            enderecoEmpresa = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 5);
             if (enderecoEmpresa.getId() != -1) {
                 String strCompl;
                 if (enderecoEmpresa.getComplemento().equals("")) {
@@ -698,53 +669,31 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         this.idMotivoDemissao = idMotivoDemissao;
     }
 
-    public String getTipoAviso() {
-        return tipoAviso;
-    }
-
-    public void setTipoAviso(String tipoAviso) {
-        this.tipoAviso = tipoAviso;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public String getStrSalvar() {
-        return strSalvar;
-    }
-
-    public void setStrSalvar(String strSalvar) {
-        this.strSalvar = strSalvar;
-    }
+//    public String getMsgConfirma() {
+//        return msgConfirma;
+//    }
+//
+//    public void setMsgConfirma(String msgConfirma) {
+//        this.msgConfirma = msgConfirma;
+//    }
 
     public String getStatusEmpresa() {
-        HomologacaoDB db = new HomologacaoDBToplink();
-        if (juridica.getId() != -1) {
-            listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
-        }
-        if (!listaEmDebito.isEmpty()) {
-            statusEmpresa = "EM DÉBITO";
-        } else {
-            statusEmpresa = "REGULAR";
+        if (statusEmpresa.isEmpty()){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            if (juridica.getId() != -1) {
+                listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
+            }
+            if (!listaEmDebito.isEmpty()) {
+                statusEmpresa = "EM DÉBITO";
+            } else {
+                statusEmpresa = "REGULAR";
+            }
         }
         return statusEmpresa;
     }
 
     public void setStatusEmpresa(String statusEmpresa) {
         this.statusEmpresa = statusEmpresa;
-    }
-
-    public boolean isRenderBtnAgendar() {
-        return renderBtnAgendar;
-    }
-
-    public void setRenderBtnAgendar(boolean renderBtnAgendar) {
-        this.renderBtnAgendar = renderBtnAgendar;
     }
 
     public String getCepEndereco() {
@@ -774,22 +723,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         this.listaEnderecos = listaEnderecos;
     }
 
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
-    public int getIdIndexEndereco() {
-        return idIndexEndereco;
-    }
-
-    public void setIdIndexEndereco(int idIndexEndereco) {
-        this.idIndexEndereco = idIndexEndereco;
-    }
-
     public Date getData() {
         return data;
     }
@@ -798,54 +731,22 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         this.data = data;
     }
 
-    public boolean isImprimirPro() {
-        return imprimirPro;
-    }
-
-    public void setImprimirPro(boolean imprimirPro) {
-        this.imprimirPro = imprimirPro;
-    }
-
     public String getStrContribuinte() {
         if (juridica.getId() != -1) {
             JuridicaDB db = new JuridicaDBToplink();
             List listax = db.listaJuridicaContribuinte(juridica.getId());
-            for (int i = 0; i < listax.size(); i++) {
-                if (((List) listax.get(0)).get(11) != null) {
-                    return strContribuinte = "Empresa Inativa";
-                } else {
-                    return strContribuinte = "";
-                }
+            
+            if (((List) listax.get(0)).get(11) != null) {
+                return strContribuinte = "Empresa Inativa";
+            } else {
+                return strContribuinte = "";
             }
+
         }
         return strContribuinte = "Empresa não contribuinte, não poderá efetuar um agendamento!";
     }
-//
-//    public String getAbrirModal() {
-//        return abrirModal;
-//    }
-//
-//    public void setAbrirModal(String abrirModal) {
-//        this.abrirModal = abrirModal;
-//    }
-//
-//    public Date getDataOposicao() {
-//        return dataOposicao;
-//    }
-//
-//    public void setDataOposicao(Date dataOposicao) {
-//        this.dataOposicao = dataOposicao;
-//    }
 
     public FilialCidade getSindicatoFilial() {
-        if (enderecoEmpresa.getId() == -1) {
-            getStrEndereco();
-        }
-
-        if (juridica.getId() != -1 && enderecoEmpresa.getId() != -1) {
-            FilialCidadeDB db = new FilialCidadeDBToplink();
-            sindicatoFilial = db.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
-        }
         return sindicatoFilial;
     }
 
@@ -898,5 +799,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public void setAgendamentoProtocolo(Agendamento agendamentoProtocolo) {
         this.agendamentoProtocolo = agendamentoProtocolo;
+    }
+
+    public String getTipoTelefone() {
+        return tipoTelefone;
+    }
+
+    public void setTipoTelefone(String tipoTelefone) {
+        this.tipoTelefone = tipoTelefone;
     }
 }

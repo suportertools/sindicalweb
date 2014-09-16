@@ -29,29 +29,24 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
-public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean implements Serializable{
+public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean implements Serializable {
 
-    private List listaGrid = new ArrayList();
+    private List<DataObject> listaHorarios = new ArrayList();
     private List listaEmDebito = new ArrayList();
-    private List listaEmpresas = new ArrayList();
-    private List<SelectItem> resultEmp = new ArrayList<SelectItem>();
+    private List<SelectItem> listaEmpresas = new ArrayList<SelectItem>();
+    //private List<SelectItem> resultEmp = new ArrayList<SelectItem>();
     private int idStatus = 0;
-    private int idIndex = -1;
-    private int idIndexEndereco = -1;
     private int idMotivoDemissao = 0;
     private int idSelectRadio = 0;
-    private String strSalvar = "Agendar";
-    private String msgAgendamento = "";
-    private String tipoAviso = "true";
+    //private String tipoAviso = "true";
     private String statusEmpresa = "REGULAR";
     private String strEndereco = "";
-    private String msgConfirma = "";
+
     private String filtraPor = "todos";
-    private boolean renderAgendamento = true;
-    private boolean renderConcluir = false;
     private boolean chkFiltrar = true;
     private boolean renderBtnAgendar = true;
     private Date data = DataHoje.converte(new DataHoje().incrementarDias(1, DataHoje.data()));
@@ -72,7 +67,132 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
     private Registro registro = new Registro();
     public List<SelectItem> listaStatus = new ArrayList<SelectItem>();
     public List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
-    
+
+    public WebAgendamentoContabilidadeBean() {
+        this.loadListEmpresa();
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        registro = (Registro) sv.find(new Registro(), 1);
+    }
+
+    public void loadListEmpresa() {
+        WebContabilidadeDB db = new WebContabilidadeDBToplink();
+        JuridicaDB dbJur = new JuridicaDBToplink();
+        if (juridica.getId() == -1) {
+            juridica = dbJur.pesquisaJuridicaPorPessoa(((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
+        }
+        List<Juridica> result = db.listaEmpresasPertContabilidade(juridica.getId());
+        if (!result.isEmpty()) {
+            for (int i = 0; i < result.size(); i++) {
+                listaEmpresas.add(new SelectItem(
+                        i,
+                        result.get(i).getPessoa().getDocumento() + " - " + result.get(i).getPessoa().getNome(),
+                        Integer.toString(result.get(i).getId())
+                ));
+            }
+        }
+    }
+
+    public void loadListHorarios() {
+        // ENDEREÇO DA EMPRESA SELECIONADA PARA PESQUISAR OS HORÁRIOS
+        if (listaEmpresas.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Nenhuma Empresa Encontrada!");
+            return;
+        }
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+
+        empresa = (Juridica) sv.pesquisaCodigo(Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()), "Juridica");
+        enderecoEmpresa = dbe.pesquisaEndPorPessoaTipo(empresa.getPessoa().getId(), 5);
+
+        sindicatoFilial = new FilialCidade();
+        // FILIAL DA EMPRESA
+        if (empresa.getId() != -1 && enderecoEmpresa.getId() != -1) {
+            FilialCidadeDB db = new FilialCidadeDBToplink();
+            sindicatoFilial = db.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
+        }
+        if (sindicatoFilial.getId() == -1) {
+            GenericaMensagem.warn("Atenção", "Filial não encontrada!");
+            return;
+        }
+
+        List<Agendamento> ag = new ArrayList<Agendamento>();
+        List<Horarios> horario;
+
+        HomologacaoDB db = new HomologacaoDBToplink();
+        String agendador;
+        String homologador;
+        switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
+            //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
+            case 1: {
+                int idDiaSemana = DataHoje.diaDaSemana(data);
+                horario = (List<Horarios>) db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana);
+
+                int qnt;
+                for (int i = 0; i < horario.size(); i++) {
+                    qnt = db.pesquisaQntdDisponivel(getSindicatoFilial().getFilial().getId(), horario.get(i), data);
+                    if (qnt == -1) {
+                        GenericaMensagem.error("Erro", "Não foi possivel encontrar horários disponíveis, contate seu Sindicato!");
+                        break;
+                    }
+                    if (qnt > 0) {
+                        listaHorarios.add(new DataObject(
+                                horario.get(i), // ARG 0 HORA
+                                null, // ARG 1 CNPJ
+                                null, //ARG 2 NOME
+                                null, //ARG 3 HOMOLOGADOR
+                                null, // ARG 4 CONTATO
+                                null, // ARG 5 TELEFONE
+                                null, // ARG 6 USUARIO
+                                null,
+                                qnt, // ARG 8 QUANTIDADE DISPONÍVEL
+                                null)
+                        );
+                    }
+                }
+                break;
+            }
+
+            // STATUS AGENDADO -----------------------------------------------------------------------------------------------
+            case 2: {
+                if (filtraPor.equals("selecionado")) {
+                    ag = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, empresa.getPessoa().getId());
+                } else {
+                    WebContabilidadeDB dbw = new WebContabilidadeDBToplink();
+                    List<Juridica> result = dbw.listaEmpresasPertContabilidade(juridica.getId());
+                    for (int w = 0; w < listaEmpresas.size(); w++) {
+                        ag.addAll(db.pesquisaAgendadoPorEmpresaSemHorario(sindicatoFilial.getFilial().getId(), data, result.get(w).getPessoa().getId()));
+                    }
+                }
+                for (int i = 0; i < ag.size(); i++) {
+                    if (ag.get(i).getAgendador() != null) {
+                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
+                    } else {
+                        agendador = "** Web User **";
+                    }
+                    if (ag.get(i).getHomologador() != null) {
+                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
+                    } else {
+                        homologador = "";
+                    }
+
+                    listaHorarios.add(new DataObject(
+                            ag.get(i).getHorarios(), // ARG 0 HORA
+                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
+                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
+                            homologador, //ARG 3 HOMOLOGADOR
+                            ag.get(i).getContato(), // ARG 4 CONTATO
+                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
+                            agendador, // ARG 6 USUARIO
+                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
+                            ag.get(i).getData(), // ARG 8
+                            ag.get(i))// ARG 9 AGENDAMENTO
+                    );
+                }
+                break;
+            }
+        }
+    }
+
     public String imprimirPlanilha() {
         if (listaEmDebito.isEmpty()) {
             return null;
@@ -122,123 +242,16 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         return listaMotivoDemissao;
     }
 
-    public List<SelectItem> getListaEmpresaPertencentes() {
-        if (resultEmp.isEmpty()) {
-            WebContabilidadeDB db = new WebContabilidadeDBToplink();
-            JuridicaDB dbJur = new JuridicaDBToplink();
-            int i = 0;
-            if (juridica.getId() == -1) {
-                juridica = dbJur.pesquisaJuridicaPorPessoa(((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
-            }
-            listaEmpresas = db.listaEmpresasPertContabilidade(juridica.getId());
-            if (!listaEmpresas.isEmpty()) {
-                while (i < listaEmpresas.size()) {
-                    resultEmp.add(new SelectItem(new Integer(i),
-                            ((Juridica) listaEmpresas.get(i)).getPessoa().getDocumento() + " - " + ((Juridica) listaEmpresas.get(i)).getPessoa().getNome(),
-                            Integer.toString(((Juridica) listaEmpresas.get(i)).getId())));
-                    i++;
-                }
-            }
-        }
-        return resultEmp;
-    }
-
-    public synchronized List getListaHorarios() {
-        if (getSindicatoFilial() != null) {
-            listaGrid = new ArrayList();
-            List<Agendamento> ag = new ArrayList<Agendamento>();
-            List<Horarios> horario;
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            HomologacaoDB db = new HomologacaoDBToplink();
-            String agendador;
-            String homologador;
-            DataObject dtObj = null;
-            switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
-                //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
-                case 1: {
-                    int idDiaSemana = DataHoje.diaDaSemana(data);
-                    horario = (List<Horarios>) db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana);
-                    strSalvar = "Agendar";
-                    int qnt;
-                    for (int i = 0; i < horario.size(); i++) {
-                        qnt = db.pesquisaQntdDisponivel(getSindicatoFilial().getFilial().getId(), horario.get(i), data);
-                        if (qnt == -1) {
-                            msgAgendamento = "Erro ao pesquisar horários disponíveis!";
-                            listaGrid.clear();
-                            break;
-                        }
-                        if (qnt > 0) {
-                            dtObj = new DataObject(horario.get(i), // ARG 0 HORA
-                                    null, // ARG 1 CNPJ
-                                    null, //ARG 2 NOME
-                                    null, //ARG 3 HOMOLOGADOR
-                                    null, // ARG 4 CONTATO
-                                    null, // ARG 5 TELEFONE
-                                    null, // ARG 6 USUARIO
-                                    null,
-                                    qnt, // ARG 8 QUANTIDADE DISPONÍVEL
-                                    null);
-                            listaGrid.add(dtObj);
-                        }
-                    }
-                    break;
-                }
-
-                // STATUS AGENDADO -----------------------------------------------------------------------------------------------
-                case 2: {
-                    strSalvar = "Atualizar";
-                    if (filtraPor.equals("selecionado")) {
-                        ag = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, ((Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaEmpresaPertencentes().get(idSelectRadio)).getDescription()), "Juridica")).getPessoa().getId());
-                    } else {
-                        for (int w = 0; w < listaEmpresas.size(); w++) {
-                            ag.addAll(db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, ((Juridica) listaEmpresas.get(w)).getPessoa().getId()));
-                        }
-                    }
-                    for (int i = 0; i < ag.size(); i++) {
-                        if (ag.get(i).getAgendador() != null) {
-                            agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                        } else {
-                            agendador = "** Web User **";
-                        }
-                        if (ag.get(i).getHomologador() != null) {
-                            homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                        } else {
-                            homologador = "";
-                        }
-
-                        dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                                ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                                ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                                homologador, //ARG 3 HOMOLOGADOR
-                                ag.get(i).getContato(), // ARG 4 CONTATO
-                                ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                                agendador, // ARG 6 USUARIO
-                                ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                                ag.get(i).getData(), // ARG 8
-                                ag.get(i));// ARG 9 AGENDAMENTO
-                        listaGrid.add(dtObj);
-                    }
-                    break;
-                }
-                // ---------------------------------------------------------------------------------------------------------------
-                // ---------------------------------------------------------------------------------------------------------------
-            }
-        }
-        return listaGrid;
-    }
-
-    public String novoProtocolo() {
+    public void novoProtocolo() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         imprimirPro = false;
         agendamentoProtocolo = new Agendamento();
         renderBtnAgendar = true;
-        renderAgendamento = false;
-        renderConcluir = true;
-        empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaEmpresaPertencentes().get(idSelectRadio)).getDescription()), "Juridica");
+        empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) listaEmpresas.get(idSelectRadio)).getDescription()), "Juridica");
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
         //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
-        agendamento.setFilial( getSindicatoFilial().getFilial() );
+        agendamento.setFilial(getSindicatoFilial().getFilial());
         agendamentoProtocolo = agendamento;
         if (empresa.getContabilidade() != null) {
             agendamento.setTelefone(empresa.getContabilidade().getPessoa().getTelefone1());
@@ -246,50 +259,77 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         if (profissao.getId() == -1) {
             profissao = (Profissao) salvarAcumuladoDB.pesquisaCodigo(0, "Profissao");
         }
-        msgAgendamento = "";
-        return "webAgendamentoContabilidade";
     }
 
-    public String agendar() {
-        if (data.getDay() == 6 || data.getDay() == 0) {
-            msgAgendamento = "Fins de semana não permitido!";
-            return "webAgendamentoContabilidade";
+    public void agendar(DataObject datao) {
+        // CAPITURAR ENDEREÇO DA EMPRESA
+
+        empresa = new Juridica();
+        enderecoEmpresa = new PessoaEndereco();
+        sindicatoFilial = new FilialCidade();
+
+        if (!listaEmpresas.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Nenhuma empresa encontrada para Agendar!");
+            return;
         }
 
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data))
-                == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgAgendamento = "Data deve ser apartir de hoje, caso deseje marcar para esta data contate seu Sindicato!";
-            return "webAgendamentoContabilidade";
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+
+        empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()), "Juridica");
+        enderecoEmpresa = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(empresa.getPessoa().getId(), 5);
+
+        if (enderecoEmpresa.getId() != -1) {
+            String strCompl;
+            if (enderecoEmpresa.getComplemento().isEmpty()) {
+                strCompl = " ";
+            } else {
+                strCompl = " ( " + enderecoEmpresa.getComplemento() + " ) ";
+            }
+
+            strEndereco = enderecoEmpresa.getEndereco().getLogradouro().getDescricao() + " "
+                    + enderecoEmpresa.getEndereco().getDescricaoEndereco().getDescricao() + ", " + enderecoEmpresa.getNumero() + " " + enderecoEmpresa.getEndereco().getBairro().getDescricao() + ","
+                    + strCompl + enderecoEmpresa.getEndereco().getCidade().getCidade() + " - " + enderecoEmpresa.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(enderecoEmpresa.getEndereco().getCep());
+        } else {
+            strEndereco = "";
         }
 
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgAgendamento = "Data anterior ao dia de hoje!";
-            return "webAgendamentoContabilidade";
+        // FILIAL DA EMPRESA
+        if (empresa.getId() != -1 && enderecoEmpresa.getId() != -1) {
+            FilialCidadeDB db = new FilialCidadeDBToplink();
+            sindicatoFilial = db.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
         }
 
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data())))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(data))) {
-            msgAgendamento = "Data maior que 3 meses!";
-            return "webAgendamentoContabilidade";
-        }
-
-        if (pesquisarFeriado()) {
-            msgAgendamento = "Esta data esta cadastrada como Feriado!";
-            return "webAgendamentoContabilidade";
-        }
-
-        renderAgendamento = false;
-        renderConcluir = true;
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             case 1: {
+                if (data.getDay() == 6 || data.getDay() == 0) {
+                    GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
+                    return;
+                }
+
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    GenericaMensagem.warn("Atenção", "Data deve ser apartir de hoje, caso deseje marcar para esta data contate seu Sindicato!");
+                    return;
+                }
+
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData())) < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    GenericaMensagem.warn("Atenção", "Data anterior ao dia de hoje!");
+                    return;
+                }
+                if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data()))) < DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))) {
+                    GenericaMensagem.warn("Atenção", "Data maior que 3 meses!");
+                    return;
+                }
+
+                if (pesquisarFeriado()) {
+                    GenericaMensagem.warn("Atenção", "Esta data esta cadastrada como Feriado!");
+                    return;
+                }
+
                 if (data == null) {
-                    msgAgendamento = "Selecione uma data para Agendamento!";
-                    renderAgendamento = true;
-                    renderConcluir = false;
+                    GenericaMensagem.warn("Atenção", "Selecione uma data para Agendamento!");
+                    return;
                 } else {
-                    renderBtnAgendar = true;
-                    SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                     if (empresa.getContabilidade() != null) {
                         agendamento.setTelefone(empresa.getContabilidade().getPessoa().getTelefone1());
                     }
@@ -298,10 +338,8 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                     }
 
                     agendamento.setData(DataHoje.converteData(data));
-                    agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
-                    msgAgendamento = "";
-                    //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
-                    agendamento.setFilial( getSindicatoFilial().getFilial() );
+                    agendamento.setHorarios((Horarios) datao.getArgumento0());
+                    agendamento.setFilial(sindicatoFilial.getFilial());
                     agendamentoProtocolo = agendamento;
                 }
                 break;
@@ -309,106 +347,106 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
             case 2: {
                 PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
                 renderBtnAgendar = false;
-                agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
+                agendamento = (Agendamento) datao.getArgumento9();
                 agendamentoProtocolo = agendamento;
-                fisica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFisica();
+                fisica = ((PessoaEmpresa) datao.getArgumento7()).getFisica();
                 enderecoFisica = db.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-                empresa = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getJuridica();
+                empresa = ((PessoaEmpresa) datao.getArgumento7()).getJuridica();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
-                profissao = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFuncao();
+                profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();
                 for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                     if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
                         idMotivoDemissao = (Integer) getListaMotivoDemissao().get(i).getValue();
                         break;
                     }
                 }
-                tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+                //tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
                 break;
             }
         }
-        return "webAgendamentoContabilidade";
+        RequestContext.getCurrentInstance().execute("PF('dlg_agendamento').show();");
     }
 
     public boolean pesquisarFeriado() {
         FeriadosDB db = new FeriadosDBToplink();
-        List listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
+        List listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), sindicatoFilial.getFilial());
         if (!listFeriados.isEmpty()) {
             return true;
         }
         return false;
     }
 
-    public String salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.find(new Registro(), 1);
-        if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
-            return null;
+    public void salvar() {
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
         }
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
-            return null;
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
         }
 
-        if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-            msgConfirma = "Digite o nome do Funcionário!";
-            return null;
+        if (fisica.getPessoa().getNome().isEmpty() || fisica.getPessoa().getNome() == null) {
+            GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
+            return;
         }
 
         if (!strContribuinte.isEmpty()) {
-            msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
+            return;
         }
         int ids[] = {1, 3, 4};
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) sv.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!";
-                    return null;
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!");
+                    return;
                 }
             } else if (demissao.getId() == 2) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!";
-                    return null;
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!");
+                    return;
                 }
             } else if (demissao.getId() == 3) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!";
-                    return null;
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!");
+                    return;
                 }
             }
         } else {
-            msgConfirma = "Data de Demissão é obrigatória!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
+            return;
         }
 
-        salvarAcumuladoDB.abrirTransacao();
+        sv.abrirTransacao();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find(new TipoDocumento(), 1));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find(new TipoDocumento(), 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                msgConfirma = "Documento Inválido!";
-                return null;
+                GenericaMensagem.warn("Atenção", "Documento Inválido!");
+                return;
             }
-            if (salvarAcumuladoDB.inserirObjeto(fisica.getPessoa())) {
-                salvarAcumuladoDB.inserirObjeto(fisica);
+            if (sv.inserirObjeto(fisica.getPessoa())) {
+                sv.inserirObjeto(fisica);
             } else {
-                msgConfirma = "Erro ao Inserir pessoa!";
-                salvarAcumuladoDB.desfazerTransacao();
-                return null;
+                GenericaMensagem.error("Erro", "Não foi possível salvar pessoa!");
+                sv.desfazerTransacao();
+                return;
             }
         }
 
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
         if (age != null) {
-            msgConfirma = "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome();
-            salvarAcumuladoDB.desfazerTransacao();
-            return null;
+            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome());
+            sv.desfazerTransacao();
+            return;
         }
 
         if (enderecoFisica.getId() == -1) {
@@ -416,11 +454,11 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaObjeto(ids[i], "TipoEndereco"));
-                    if (!salvarAcumuladoDB.inserirObjeto(pesEnd)) {
-                        msgConfirma = "Erro ao Inserir endereço da pessoa!";
-                        salvarAcumuladoDB.desfazerTransacao();
-                        return null;
+                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
+                    if (!sv.inserirObjeto(pesEnd)) {
+                        sv.desfazerTransacao();
+                        GenericaMensagem.error("Erro", "Não foi possível salvar endereço da pessoa!");
+                        return;
                     }
                     pesEnd = new PessoaEndereco();
                     pesEnd.setComplemento(enderecoFisica.getComplemento());
@@ -433,90 +471,83 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
             PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
             List<PessoaEndereco> ends = pessoaEnderecoDB.pesquisaEndPorPessoa(fisica.getPessoa().getId());
             for (int i = 0; i < ends.size(); i++) {
-                ends.get(i).setComplemento(msgAgendamento);
+                ends.get(i).setComplemento(enderecoFisica.getComplemento());
                 ends.get(i).setEndereco(enderecoFisica.getEndereco());
                 ends.get(i).setNumero(enderecoFisica.getNumero());
                 ends.get(i).setPessoa(enderecoFisica.getPessoa());
-                if (!salvarAcumuladoDB.alterarObjeto(ends.get(i))) {
-                    msgConfirma = "Erro ao atualizar endereço da pessoa!";
-                    salvarAcumuladoDB.desfazerTransacao();
-                    return null;
+                if (!sv.alterarObjeto(ends.get(i))) {
+                    sv.desfazerTransacao();
+                    GenericaMensagem.error("Erro", "Não foi possível atualizar endereço da pessoa!");
+                    return;
                 }
             }
         }
 
         if (pessoaEmpresa.getId() == -1) {
-            Profissao p =  profissao;
-            if(p == null) {
-                p = (Profissao) salvarAcumuladoDB.find(new Profissao(), 0);
+            Profissao p = profissao;
+            if (p == null) {
+                p = (Profissao) sv.find(new Profissao(), 0);
             }
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(empresa);
             pessoaEmpresa.setFuncao(p);
-            pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
-            if (!salvarAcumuladoDB.inserirObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao Pessoa Empresa!";
-                salvarAcumuladoDB.desfazerTransacao();
-                return null;
+            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+            if (!sv.inserirObjeto(pessoaEmpresa)) {
+                sv.desfazerTransacao();
+                GenericaMensagem.error("Erro", "Não foi possível salvar Pessoa Empresa!");
+                return;
             }
         } else {
-            pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
-            if (!salvarAcumuladoDB.alterarObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao atualizar Pessoa Empresa!";
-                salvarAcumuladoDB.desfazerTransacao();
-                return null;
+            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+            if (!sv.alterarObjeto(pessoaEmpresa)) {
+                sv.desfazerTransacao();
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                return;
             }
         }
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
-            salvarAcumuladoDB.comitarTransacao();
-            return null;
+            sv.comitarTransacao();
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
         } else {
+            Demissao demissaox = (Demissao) sv.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+                agendamento.setDemissao(demissaox);
                 agendamento.setHomologador(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) salvarAcumuladoDB.find(new Status(), 2));
-                if (salvarAcumuladoDB.inserirObjeto(agendamento)) {
-                    msgConfirma = "Agendamento realizado com sucesso";
+                agendamento.setStatus((Status) sv.find(new Status(), 2));
+                if (sv.inserirObjeto(agendamento)) {
                     agendamentoProtocolo = agendamento;
-                    limpar();
+                    GenericaMensagem.info("Sucesso", "Agendamento Salvo!");
                 } else {
-                    msgConfirma = "Erro ao salvar protocolo!";
-                    salvarAcumuladoDB.desfazerTransacao();
-                    agendamento.setId(-1);
-                    return null;
+                    GenericaMensagem.error("Erro", "Não foi possível salvar protocolo!");
+                    sv.desfazerTransacao();
+                    //agendamento.setId(-1);
+                    return;
                 }
             } else {
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
-                if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
-                    msgConfirma = "Agendamento atualizado com sucesso";
+                agendamento.setDemissao(demissaox);
+                if (sv.alterarObjeto(agendamento)) {
+                    GenericaMensagem.info("Sucesso", "Agendamento Atualizado!");
                     agendamentoProtocolo = agendamento;
-                    limpar();
                 } else {
-                    msgConfirma = "Erro ao atualizar protocolo!";
-                    salvarAcumuladoDB.desfazerTransacao();
-                    return null;
+                    sv.desfazerTransacao();
+                    GenericaMensagem.error("Erro", "Não foi possível Atualizar protocolo!");
+                    return;
                 }
             }
-            salvarAcumuladoDB.comitarTransacao();
+            sv.comitarTransacao();
             imprimirPro = true;
         }
-        return null;
     }
 
-    public String cancelar() {
+    public void cancelar() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
-        tipoAviso = "true";
-        //msgConfirma = "";
-        msgAgendamento = "";
         fisica = new Fisica();
         agendamento = new Agendamento();
         agendamentoProtocolo = agendamento;
@@ -524,16 +555,10 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         profissao = new Profissao();
         empresa = new Juridica();
         enderecoFisica = new PessoaEndereco();
-        return "webAgendamentoContabilidade";
     }
 
     public void limpar() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
-        tipoAviso = "true";
-        //msgConfirma = "";
-        msgAgendamento = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -553,7 +578,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != empresa.getId()) {
-                msgConfirma = "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome();
+                GenericaMensagem.warn("Atenção", "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome());
                 fisica = new Fisica();
                 enderecoFisica = new PessoaEndereco();
                 return;
@@ -574,7 +599,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
             Oposicao op = db.pesquisaFisicaOposicaoAgendamento(documento, empresa.getId(), DataHoje.ArrayDataHoje()[2] + DataHoje.ArrayDataHoje()[1]);
             if (op == null) {
-                msgConfirma = "Erro na pesquisa Oposição!";
+                //GenericaMensagem.error("Erro", "Não foi possível pesquisar Oposição");
                 op = new Oposicao();
             }
 
@@ -595,8 +620,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                 enderecoFisica = new PessoaEndereco();
             }
         }
-        msgConfirma = "";
-        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/webAgendamentoContabilidade.jsf");
+        //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/webAgendamentoContabilidade.jsf");
     }
 
     public String pesquisaEndereco() {
@@ -608,21 +632,10 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         return null;
     }
 
-    public String editarEndereco() {
-        enderecoFisica.setEndereco((Endereco) listaEnderecos.get(idIndexEndereco));
-        return null;
+    public void editarEndereco(Endereco endereco) {
+        enderecoFisica.setEndereco(endereco);
     }
 
-// VERIFICAR UMA FORMA PRA BLOQUEAR ESSE FERIADO ANTES DE AGENDAR --------------------------------------
-//    public boolean pesquisarFeriado(){
-//        FeriadosDB db = new FeriadosDBToplink();
-//        List listFeriados  = new ArrayList();
-//        listFeriados = db.pesquisarPorDataFilial( DataHoje.converteData(data), macFilial.getFilial());
-//        if (!listFeriados.isEmpty())
-//            return true;
-//        else
-//            return false;
-//    }
     public int getIdStatus() {
         return idStatus;
     }
@@ -639,52 +652,12 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         this.idMotivoDemissao = idMotivoDemissao;
     }
 
-    public String getStrSalvar() {
-        return strSalvar;
-    }
-
-    public void setStrSalvar(String strSalvar) {
-        this.strSalvar = strSalvar;
-    }
-
-    public boolean isRenderAgendamento() {
-        return renderAgendamento;
-    }
-
-    public void setRenderAgendamento(boolean renderAgendamento) {
-        this.renderAgendamento = renderAgendamento;
-    }
-
-    public String getMsgAgendamento() {
-        return msgAgendamento;
-    }
-
-    public void setMsgAgendamento(String msgAgendamento) {
-        this.msgAgendamento = msgAgendamento;
-    }
-
-    public boolean isRenderConcluir() {
-        return renderConcluir;
-    }
-
-    public void setRenderConcluir(boolean renderConcluir) {
-        this.renderConcluir = renderConcluir;
-    }
-
     public Agendamento getAgendamento() {
         return agendamento;
     }
 
     public void setAgendamento(Agendamento agendamento) {
         this.agendamento = agendamento;
-    }
-
-    public String getTipoAviso() {
-        return tipoAviso;
-    }
-
-    public void setTipoAviso(String tipoAviso) {
-        this.tipoAviso = tipoAviso;
     }
 
     public Fisica getFisica() {
@@ -721,32 +694,6 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
     }
 
     public String getStrEndereco() {
-        if (!getListaEmpresaPertencentes().isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
-            empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaEmpresaPertencentes().get(idSelectRadio)).getDescription()), "Juridica");
-            enderecoEmpresa = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(empresa.getPessoa().getId(), 5);
-            if (enderecoEmpresa.getId() != -1) {
-                String strCompl;
-                if (enderecoEmpresa.getComplemento().equals("")) {
-                    strCompl = " ";
-                } else {
-                    strCompl = " ( " + enderecoEmpresa.getComplemento() + " ) ";
-                }
-
-                strEndereco = enderecoEmpresa.getEndereco().getLogradouro().getDescricao() + " "
-                        + enderecoEmpresa.getEndereco().getDescricaoEndereco().getDescricao() + ", " + enderecoEmpresa.getNumero() + " " + enderecoEmpresa.getEndereco().getBairro().getDescricao() + ","
-                        + strCompl + enderecoEmpresa.getEndereco().getCidade().getCidade() + " - " + enderecoEmpresa.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(enderecoEmpresa.getEndereco().getCep());
-            } else {
-                strEndereco = "";
-            }
-            //}else{
-            //    enderecoEmpresa = new PessoaEndereco();
-            //    strEndereco = "";
-            // }
-        } else {
-            strEndereco = "";
-        }
         return strEndereco;
     }
 
@@ -790,14 +737,6 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         this.idSelectRadio = idSelectRadio;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
     public boolean isChkFiltrar() {
         return chkFiltrar;
     }
@@ -839,22 +778,6 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
     public void setEnderecoFisica(PessoaEndereco enderecoFisica) {
         this.enderecoFisica = enderecoFisica;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
-    public int getIdIndexEndereco() {
-        return idIndexEndereco;
-    }
-
-    public void setIdIndexEndereco(int idIndexEndereco) {
-        this.idIndexEndereco = idIndexEndereco;
     }
 
     public Date getData() {
@@ -904,11 +827,6 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
     }
 
     public FilialCidade getSindicatoFilial() {
-        getStrEndereco();
-        if (empresa.getId() != -1 && enderecoEmpresa.getId() != -1) {
-            FilialCidadeDB db = new FilialCidadeDBToplink();
-            sindicatoFilial = db.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
-        }
         return sindicatoFilial;
     }
 
@@ -929,9 +847,6 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
     }
 
     public Registro getRegistro() {
-        if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-        }
         return registro;
     }
 
@@ -945,5 +860,21 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
     public void setAgendamentoProtocolo(Agendamento agendamentoProtocolo) {
         this.agendamentoProtocolo = agendamentoProtocolo;
+    }
+
+    public List<SelectItem> getListaEmpresas() {
+        return listaEmpresas;
+    }
+
+    public void setListaEmpresas(List<SelectItem> listaEmpresas) {
+        this.listaEmpresas = listaEmpresas;
+    }
+
+    public List<DataObject> getListaHorarios() {
+        return listaHorarios;
+    }
+
+    public void setListaHorarios(List<DataObject> listaHorarios) {
+        this.listaHorarios = listaHorarios;
     }
 }
