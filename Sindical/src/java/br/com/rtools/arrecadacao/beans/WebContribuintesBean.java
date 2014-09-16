@@ -11,7 +11,7 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.beans.MovimentoValorJSFBean;
+import br.com.rtools.financeiro.beans.MovimentoValorBean;
 import br.com.rtools.financeiro.db.ContaCobrancaDB;
 import br.com.rtools.financeiro.db.ContaCobrancaDBToplink;
 import br.com.rtools.financeiro.db.FTipoDocumentoDB;
@@ -33,6 +33,7 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -40,16 +41,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
+@ManagedBean
+@SessionScoped
+public class WebContribuintesBean extends MovimentoValorBean {
 
     private Juridica juridica = new Juridica();
     private Servicos servico = new Servicos();
     private TipoServico tipoServico = new TipoServico();
     private Pessoa pessoa = null;
-    private List<DataObject> listMovimentos = new ArrayList();
+    private List<DataObject> listaMovimento = new ArrayList();
+    private List<DataObject> listaMovimentoSelecionado = new ArrayList();
     private String strReferencia = "";
     private String strVencimento = "";
     private String strFiltroRef = "";
@@ -64,18 +70,97 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
     private String lblLink = "";
     private Registro registro = new Registro();
 
-    public WebContribuintesJSFBean() {
+    public WebContribuintesBean() {
         FilialDB filDB = new FilialDBToplink();
         registro = filDB.pesquisaRegistroPorFilial(1);
+        pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb");
+        
+        loadList();
     }
 
-    public String actionRender() {
-        if (renderNovo) {
-            renderNovo = false;
+    public void loadList() {
+        listaMovimento.clear();
+        WebContribuintesDB db = new WebContribuintesDBToplink();
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        JuridicaDB dbJur = new JuridicaDBToplink();
+        juridica = dbJur.pesquisaJuridicaPorPessoa(pessoa.getId());
+
+        List lista = new ArrayList();
+        if (strFiltroRef.isEmpty()) {
+            lista = db.pesquisaMovParaWebContribuinte(juridica.getPessoa().getId());
         } else {
-            renderNovo = true;
+            lista = db.pesquisaMovParaWebContribuinteComRef(juridica.getPessoa().getId(), strFiltroRef);
         }
-        return "webContribuinte";
+
+        for (int i = 0; i < lista.size(); i++) {
+            if (((Vector) lista.get(i)).get(5) == null) {
+                ((Vector) lista.get(i)).set(5, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(6) == null) {
+                ((Vector) lista.get(i)).set(6, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(7) == null) {
+                ((Vector) lista.get(i)).set(7, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(8) == null) {
+                ((Vector) lista.get(i)).set(8, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(9) == null) {
+                ((Vector) lista.get(i)).set(9, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(10) == null) {
+                ((Vector) lista.get(i)).set(10, 0.0);
+            }
+            if (((Vector) lista.get(i)).get(11) == null) {
+                ((Vector) lista.get(i)).set(11, 0.0);
+            }
+
+            if (((Integer) ((Vector) lista.get(i)).get(13)) < 0) {
+                ((Vector) lista.get(i)).set(13, 0);
+            }
+
+            // data ----
+            boolean hdata, hvalor;
+            int data1 = DataHoje.converteDataParaInteger(DataHoje.converteData((Date) ((Vector) lista.get(i)).get(4)));
+
+            if (data1 < DataHoje.converteDataParaInteger(DataHoje.data())) {
+                hdata = true;
+            } else {
+                hdata = false;
+            }
+
+            // valor ----
+            if ((Integer) ((Vector) lista.get(i)).get(2) == 4) {
+                hvalor = false;
+            } else {
+                hvalor = true;
+            }
+
+            listaMovimento.add(new DataObject(
+                    false,
+                    ((Vector) lista.get(i)).get(0), // boleto
+                    sv.pesquisaCodigo((Integer) ((Vector) lista.get(i)).get(1), "Servicos"), // servico
+                    sv.pesquisaCodigo((Integer) ((Vector) lista.get(i)).get(2), "TipoServico"), // tipo
+                    ((Vector) lista.get(i)).get(3), // referencia
+                    DataHoje.converteData((Date) ((Vector) lista.get(i)).get(4)), // vencimento
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(5))), // valor_mov
+                    ((Vector) lista.get(i)).get(6), // valor_folha
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(7))), // multa
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(8))), // juros
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(9))), // correcao
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(10))), // desconto
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(11))), // valor_calculado
+                    ((Vector) lista.get(i)).get(12), // meses em atraso
+                    ((Vector) lista.get(i)).get(13), // dias em atraso
+                    ((Vector) lista.get(i)).get(14), // indice
+                    ((Vector) lista.get(i)).get(15), // id movimento
+                    Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(11))), // valor_calculado original
+                    hdata, // null
+                    hvalor, // null
+                    "0", // null
+                    null // null
+            ));
+        }
     }
 
     public List<SelectItem> getListaVencimento() {
@@ -107,8 +192,7 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
     }
 
     public List<SelectItem> getListaTipoServico() {
-        List<SelectItem> listaTipoServico = new Vector<SelectItem>();
-        FilialDB filDB = new FilialDBToplink();
+        List<SelectItem> listaTipoServico = new ArrayList<>();
         DataHoje data = new DataHoje();
         ServicosDB dbSer = new ServicosDBToplink();
         Servicos servicos = dbSer.pesquisaCodigo(Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
@@ -117,9 +201,10 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         if ((!data.integridadeReferencia(strReferencia))
                 || (registro == null)
                 || (servicos == null)) {
+            listaTipoServico.add(new SelectItem(0, "Digite uma referência", "0"));
             return listaTipoServico;
         }
-        List select = null;
+
         List<Integer> listaIds = new ArrayList<Integer>();
 
         if (registro.getTipoEmpresa().equals("E")) {
@@ -153,46 +238,41 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         } else {
             return listaTipoServico;
         }
-        select = db.pesquisaTodosComIds(listaIds);
-        if (select.size() != 0) {
-            while (i < select.size()) {
+        List<TipoServico> select = db.pesquisaTodosComIds(listaIds);
+        if (!select.isEmpty()) {
+            for (int x = 0; x < select.size(); x++) {
                 listaTipoServico.add(new SelectItem(
-                        new Integer(i),
-                        (String) ((TipoServico) select.get(i)).getDescricao(),
-                        Integer.toString(((TipoServico) select.get(i)).getId())));
-                i++;
+                        x,
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())));
             }
+        } else {
+            listaTipoServico.add(new SelectItem(0, "Selecionar um Tipo Serviço", "0"));
         }
         return listaTipoServico;
     }
-    
+
     @Override
     public void carregarFolha(DataObject data) {
-        
+        MovimentoDB db = new MovimentoDBToplink();
+        Movimento movimento = db.pesquisaCodigo((Integer) data.getArgumento16());
+        super.carregarFolha(movimento);
     }
 
     @Override
     public void carregarFolha() {
-        if (!listMovimentos.isEmpty()) {
-            MovimentoDB db = new MovimentoDBToplink();
-            Movimento movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listMovimentos.get(idIndex).getArgumento16())));
-            super.carregarFolha(movimento);
-        }
+
     }
 
     @Override
     public void atualizaValorGrid(String tipo) {
-        listMovimentos.get(idIndex).setArgumento6(super.atualizaValor(true, tipo));
-        listMovimentos.clear();
+        //listaMovimento.get(idIndex).setArgumento6(super.atualizaValor(true, tipo));
+        //listMovimentos.clear();
+        super.atualizaValor(true, tipo);
+        loadList();
     }
 
-    public String btnExcluirMov() {
-        listMovimentos.remove(idIndex);
-        msgConfirma = "";
-        return null;
-    }
-
-    public String imprimirComValorCalculado() {
+    public void imprimirComValorCalculado() {
         List<Movimento> lista = new ArrayList<Movimento>();
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
@@ -204,65 +284,54 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
 
         sv.abrirTransacao();
 
-        boolean vazio = true;
         String dataValida = "";
         DataHoje dh = new DataHoje();
 
-        for (int x = 0; x < listMovimentos.size(); x++) {
-            if ((Boolean) ((DataObject) listMovimentos.get(x)).getArgumento0()) {
+        if (listaMovimentoSelecionado.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Nenhum boleto foi selecionado!");
+            return;
+        }
 
-                if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
-                    dataValida = (String) ((DataObject) listMovimentos.get(x)).getArgumento5();
-                } else {
-                    dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), (String) ((DataObject) listMovimentos.get(x)).getArgumento5());
-                }
-                if (validaBloqueio(dataValida)) {
-                    msgConfirma = "Não é possivel imprimir boletos vencidos! " + registro.getMensagemBloqueioBoletoWeb();
-                    return null;
-                }
-                vazio = false;
+        for (DataObject listMovimento : listaMovimentoSelecionado) {
+            if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
+                dataValida = (String) ((DataObject) listMovimento).getArgumento5();
+            } else {
+                dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), (String) ((DataObject) listMovimento).getArgumento5());
+            }
+            if (validaBloqueio(dataValida)) {
+                GenericaMensagem.warn("Atenção", "Não é possivel imprimir boletos vencidos! " + registro.getMensagemBloqueioBoletoWeb());
+                return;
             }
         }
 
-        if (vazio) {
-            msgConfirma = "Nenhum boleto foi selecionado!";
-            return null;
-        }
-
-        for (int i = 0; i < listMovimentos.size(); i++) {
-            if ((Boolean) listMovimentos.get(i).getArgumento0()) {
-                movimento = ((Movimento) sv.pesquisaCodigo((Integer) listMovimentos.get(i).getArgumento16(), "Movimento"));
-
-                // COM VALOR ALTERADO ---------
-                if (Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento12()) != 0) {
-                    listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento12()));
-                } else {
-                    if (Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento6()) <= 0) {
-                        msgConfirma = "Valor não pode ser zerado!";
-                        return null;
-                    }
-
-                    listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento6()));
+        for (DataObject listMovimento : listaMovimentoSelecionado) {
+            movimento = ((Movimento) sv.pesquisaCodigo((Integer) listMovimento.getArgumento16(), "Movimento"));
+            // COM VALOR ALTERADO ---------
+            if (Moeda.substituiVirgulaFloat((String) listMovimento.getArgumento12()) != 0) {
+                listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimento.getArgumento12()));
+            } else {
+                if (Moeda.substituiVirgulaFloat((String) listMovimento.getArgumento6()) <= 0) {
+                    GenericaMensagem.warn("Atenção", "Valor não pode ser zerado!");
+                    return;
                 }
-
-                //COM DATA ALTERADA ---------
-                if (movimento.getDtVencimento().before(DataHoje.dataHoje()) && !movimento.getVencimento().equals(DataHoje.data())) {
-                    data = getListaVencimento().get(Integer.parseInt((String) listMovimentos.get(i).getArgumento20())).getDescription();
-                    listaVencimentos.add(data);
-                } else {
-                    listaVencimentos.add(movimento.getVencimento());
-                }
-
-                lista.add(movimento);
-                impressaoWeb = new ImpressaoWeb(-1,
-                        movimento,
-                        pessoa,
-                        DataHoje.dataHoje(), DataHoje.hora());
-                if (!sv.inserirObjeto(impressaoWeb)) {
-                    msgConfirma = "Erro ao salvar impressão web";
-                    sv.desfazerTransacao();
-                    return null;
-                }
+                listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimento.getArgumento6()));
+            }
+            //COM DATA ALTERADA ---------
+            if (movimento.getDtVencimento().before(DataHoje.dataHoje()) && !movimento.getVencimento().equals(DataHoje.data())) {
+                data = getListaVencimento().get(Integer.parseInt((String) listMovimento.getArgumento20())).getDescription();
+                listaVencimentos.add(data);
+            } else {
+                listaVencimentos.add(movimento.getVencimento());
+            }
+            lista.add(movimento);
+            impressaoWeb = new ImpressaoWeb(-1,
+                    movimento,
+                    pessoa,
+                    DataHoje.dataHoje(), DataHoje.hora());
+            if (!sv.inserirObjeto(impressaoWeb)) {
+                GenericaMensagem.error("Erro", "Erro ao salvar Impressão Web, tente novamente!");
+                sv.desfazerTransacao();
+                return;
             }
         }
         sv.comitarTransacao();
@@ -271,8 +340,8 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         lista = imp.atualizaContaCobrancaMovimento(lista);
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, impVerso);
         imp.visualizar(null);
-        atualizarGrid();
-        return null;
+        
+        loadList();
     }
 
     public boolean validaBloqueio(String data) {
@@ -290,123 +359,25 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         }
     }
 
-    public String atualizarGrid() {
-        listMovimentos.clear();
-        //getListaMovimentos();
-        return null;
-    }
-
-    public List getListaMovimentos() {
-        if (listMovimentos.isEmpty()) {
-            List lista = new ArrayList();
-            WebContribuintesDB db = new WebContribuintesDBToplink();
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            JuridicaDB dbJur = new JuridicaDBToplink();
-            juridica = dbJur.pesquisaJuridicaPorPessoa(pessoa.getId());
-
-            if (strFiltroRef.isEmpty()) {
-                lista = db.pesquisaMovParaWebContribuinte(juridica.getPessoa().getId());
-            } else {
-                lista = db.pesquisaMovParaWebContribuinteComRef(juridica.getPessoa().getId(), strFiltroRef);
-            }
-
-            for (int i = 0; i < lista.size(); i++) {
-                if (((Vector) lista.get(i)).get(5) == null) {
-                    ((Vector) lista.get(i)).set(5, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(6) == null) {
-                    ((Vector) lista.get(i)).set(6, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(7) == null) {
-                    ((Vector) lista.get(i)).set(7, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(8) == null) {
-                    ((Vector) lista.get(i)).set(8, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(9) == null) {
-                    ((Vector) lista.get(i)).set(9, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(10) == null) {
-                    ((Vector) lista.get(i)).set(10, 0.0);
-                }
-                if (((Vector) lista.get(i)).get(11) == null) {
-                    ((Vector) lista.get(i)).set(11, 0.0);
-                }
-
-                if (((Integer) ((Vector) lista.get(i)).get(13)) < 0) {
-                    ((Vector) lista.get(i)).set(13, 0);
-                }
-
-                // data ----
-                boolean hdata, hvalor;
-                int data1 = DataHoje.converteDataParaInteger(DataHoje.converteData((Date) ((Vector) lista.get(i)).get(4)));
-
-                if (data1 < DataHoje.converteDataParaInteger(DataHoje.data())) {
-                    hdata = true;
-                } else {
-                    hdata = false;
-                }
-
-                // valor ----
-                if ((Integer) ((Vector) lista.get(i)).get(2) == 4) {
-                    hvalor = false;
-                } else {
-                    hvalor = true;
-                }
-
-
-                listMovimentos.add(new DataObject(
-                        false,
-                        ((Vector) lista.get(i)).get(0), // boleto
-                        sv.pesquisaCodigo((Integer) ((Vector) lista.get(i)).get(1), "Servicos"), // servico
-                        sv.pesquisaCodigo((Integer) ((Vector) lista.get(i)).get(2), "TipoServico"), // tipo
-                        ((Vector) lista.get(i)).get(3), // referencia
-                        DataHoje.converteData((Date) ((Vector) lista.get(i)).get(4)), // vencimento
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(5))), // valor_mov
-                        ((Vector) lista.get(i)).get(6), // valor_folha
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(7))), // multa
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(8))), // juros
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(9))), // correcao
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(10))), // desconto
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(11))), // valor_calculado
-                        ((Vector) lista.get(i)).get(12), // meses em atraso
-                        ((Vector) lista.get(i)).get(13), // dias em atraso
-                        ((Vector) lista.get(i)).get(14), // indice
-                        ((Vector) lista.get(i)).get(15), // id movimento
-                        Moeda.converteR$(Double.toString((Double) ((Vector) lista.get(i)).get(11))), // valor_calculado original
-                        hdata, // null
-                        hvalor, // null
-                        "0", // null
-                        null // null
-                        ));
-            }
-        }
-        return listMovimentos;
-    }
-
     public String imprimirBoleto() {
-        int i = 0;
         Movimento movimento;
         List<Movimento> lista = new ArrayList<Movimento>();
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
-        while (i < listMovimentos.size()) {
-            if ((Boolean) listMovimentos.get(i).getArgumento0()) {
-                movimento = (Movimento) ((DataObject) listMovimentos.get(i)).getArgumento1();
+        for (int i = 0; i < listaMovimentoSelecionado.size(); i++) {
+                movimento = (Movimento) listaMovimentoSelecionado.get(i).getArgumento1();
                 lista.add(movimento);
                 listaValores.add(movimento.getValor());
                 listaVencimentos.add(movimento.getVencimento());
-            }
-            i++;
+            
         }
-
         ImprimirBoleto imp = new ImprimirBoleto();
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, impVerso);
         imp.visualizar(null);
         return null;
     }
 
-    public String adicionarBoleto() {
+    public void adicionarBoleto() {
         try {
             MensagemConvencao mc = new MensagemConvencao();
             ServicosDB dbSer = new ServicosDBToplink();
@@ -419,33 +390,34 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             DataHoje dh = new DataHoje();
 
             if (getListaServicos().isEmpty()) {
-                msgConfirma = "Lista de Serviços está vazia!";
-                return null;
+                GenericaMensagem.error("Erro", "Lista de Serviços está vazia!");
+                return;
             }
 
-            if (getListaTipoServico().isEmpty()) {
-                msgConfirma = "Lista de Tipo Serviço está vazia!";
-                return null;
+            if (getListaTipoServico().size() == 1 && getListaTipoServico().get(0).getDescription().equals("0")) {
+                GenericaMensagem.error("Erro", "Não é possível adicionar Boleto sem Tipo Serviço!");
+                return;
             }
 
             servico = dbSer.pesquisaCodigo(Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
             tipoServico = dbTipo.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()));
             contaCob = ctaCobraDB.pesquisaServicoCobranca(servico.getId(), tipoServico.getId());
             if (contaCob == null) {
-                msgConfirma = "  Não existe conta Cobrança para gerar!";
-                return null;
+                //msgConfirma = ;
+                GenericaMensagem.warn("Atenção", "Não existe conta Cobrança para gerar, contate seu Sindicato.");
+                return;
             }
 
             MovimentoDB dbm = new MovimentoDBToplink();
 
             if (dbm.pesquisaMovimentos(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
-                msgConfirma = " Este boleto já existe!";
-                return null;
+                GenericaMensagem.error("Atenção", "Este boleto já existe!");
+                return;
             }
 
             if (dbm.pesquisaMovimentosAcordado(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
-                msgConfirma = " Já foi gerado um Acordo para esta referência, serviço e tipo de serviço!";
-                return null;
+                GenericaMensagem.warn("Atenção", "Já foi gerado um Acordo para esta REFERÊNCIA, SERVIÇO e TIPO SERVIÇO!");
+                return;
             }
 
             if ((new DataHoje()).integridadeReferencia(strReferencia)) {
@@ -461,15 +433,14 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
                     }
 
                     if (validaBloqueio(dataValida)) {
-                        msgConfirma = " Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb();
-                        return null;
+                        GenericaMensagem.warn("Atenção", "Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb());
+                        return;
                     }
 
 //                    strVencimento = mc.getVencimento();
 //                    if (strVencimento.equals("")) {
 //                        strVencimento = DataHoje.data();
 //                    }
-
                     Movimento movi = new Movimento(-1,
                             null,
                             servico.getPlano5(),
@@ -494,23 +465,22 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
                             0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0, null);
 
                     if (GerarMovimento.salvarUmMovimento(new Lote(), movi)) {
-                        listMovimentos.clear();
-                        msgConfirma = "Gerado com sucesso!";
+                        loadList();
+                        GenericaMensagem.info("Sucesso", "Boleto Adicionado!");
                         renderNovo = false;
                     } else {
-                        msgConfirma = "Erro ao Gerar boletos!";
+                        GenericaMensagem.error("Erro", "Erro ao Gerar boletos, tente novamente!");
                     }
-
                 } else {
-                    msgConfirma = "Entrar em contato com seu Sindicato para permitir a criação desta referência !";
+                    GenericaMensagem.warn("Atenção", "Entrar em contato com seu Sindicato para permitir a criação desta referência!");
                 }
             } else {
                 msgConfirma = " Referência não esta válida!";
+                GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println(e);
         }
-        return null;
     }
 
     public String carregaUsuarioPG() {
@@ -528,7 +498,11 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             String dataS = "01/" + strReferencia;
             if (!(data.faixaCincoAnosApos(dataS))) {
                 strReferencia = "";
+                GenericaMensagem.warn("Atenção", "Essa referência não é válida, faixa de 5 anos após!");
             }
+        } else {
+            strReferencia = "";
+            GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
         }
     }
 
@@ -541,7 +515,6 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
     }
 
     public Pessoa getPessoa() {
-        pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb");
         return pessoa;
     }
 
@@ -644,5 +617,21 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
 
     public void setRenderNovo(boolean renderNovo) {
         this.renderNovo = renderNovo;
+    }
+
+    public List<DataObject> getListaMovimento() {
+        return listaMovimento;
+    }
+
+    public void setListaMovimento(List<DataObject> listaMovimento) {
+        this.listaMovimento = listaMovimento;
+    }
+
+    public List<DataObject> getListaMovimentoSelecionado() {
+        return listaMovimentoSelecionado;
+    }
+
+    public void setListaMovimentoSelecionado(List<DataObject> listaMovimentoSelecionado) {
+        this.listaMovimentoSelecionado = listaMovimentoSelecionado;
     }
 }

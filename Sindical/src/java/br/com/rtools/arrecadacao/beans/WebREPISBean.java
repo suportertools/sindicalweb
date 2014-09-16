@@ -255,9 +255,23 @@ public class WebREPISBean implements Serializable {
             }
             Patronal patronal = dbr.pesquisaPatronalPorSolicitante(getPessoaSolicitante().getId());
             if (patronal == null) {
-                message = "Nenhum patronal encontrado!";
+                message = "Nenhuma patronal encontrado!";
                 return;
             }
+            JuridicaDB dbj = new JuridicaDBToplink();    
+            Juridica juridicax = dbj.pesquisaJuridicaPorPessoa(pessoaSolicitante.getId());
+            PisoSalarialLote lote = dbr.pesquisaPisoSalarial(getAno(), patronal.getId(), juridicax.getPorte().getId());
+            
+            if (lote.getId() == -1){
+                message = "Patronal sem Lote, contate seu Sindicato!";
+                return;
+            }
+            
+            if (DataHoje.menorData(lote.getValidade(), DataHoje.data())){
+                message = "Solicitação para esta patronal vencida!";
+                return;
+            }
+            
             repisMovimento.setAno(getAno());
             repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
