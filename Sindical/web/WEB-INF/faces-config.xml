@@ -15,12 +15,6 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>contaCobrancaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ContaCobrancaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
     <managed-bean>
         <managed-bean-name>contribuicaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
@@ -78,12 +72,6 @@
     <managed-bean>
         <managed-bean-name>baixaBoletoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>fechamentoComissaoAcordoJSFBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.FechamentoComissaoAcordoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
