@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Grupo Categoria</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formGrupoCategoria">
+                <c:set scope="request" var="object" value="${grupoCategoriaBean.grupoCategoria}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Grupo Categoria" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 400px;">
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
+                            <h:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}" onblur="upperCase(this);" />
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Matrícula: " styleClass="fontePadrao"/>
+                            <h:inputText id="idMatricula" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrProximaMatricula}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Validade do Cartão em Meses: " styleClass="fontePadrao"/>
+                            <h:inputText id="idValidade" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrValidadeMesCartao}"/>
+                        </h:panelGrid>
+
+                        <h:panelGroup style="overflow:auto; height:200px; width:300px;" layout="block">
+                            <rich:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="coluna">
+                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
+                                    <h:commandLink value="#{linha.id}" action="#{grupoCategoriaBean.editar}">
+                                        <a4j:param value="#{it.index}" assignTo="#{grupoCategoriaBean.idIndex}" />
+                                    </h:commandLink>                                
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Nome"/></f:facet>
+                                    <h:outputText value="#{linha.grupoCategoria}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Matricula"/></f:facet>
+                                    <h:outputText value="#{linha.nrProximaMatricula}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Validade Meses"/></f:facet>
+                                    <h:outputText value="#{linha.nrValidadeMesCartao}"/>
+                                </rich:column>
+
+                            </rich:dataTable>
+                        </h:panelGroup>                        
+                    </div>
+                    <h:panelGrid columns="1" style="clear: both; float: left; margin-left: 5%; width: 95%;">
+                        <h:column>
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar registro" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <a4j:commandLink value="Novo" styleClass="idNovo iLink" action="#{grupoCategoriaBean.novo}" immediate="true"/>
+                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir registro" disabled="#{controleAcessoBean.botaoExcluir}" />
+                        </h:column>
+                    </h:panelGrid>
+                </center>
+
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Cadastro?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{grupoCategoriaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir este Cadastro?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{grupoCategoriaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{grupoCategoriaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink" value="OK" title="OK" action="#{grupoCategoriaBean.novo}"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

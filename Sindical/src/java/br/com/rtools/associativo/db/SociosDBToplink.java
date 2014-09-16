@@ -97,7 +97,8 @@ public class SociosDBToplink extends DB implements SociosDB {
                     + "  from Socios s "
                     + " where s.parentesco.id <> 1 "
                     + "   and s.matriculaSocios.id = " + id_matricula +
-                      "   and s.servicoPessoa.ativo = true");
+                      "   and s.servicoPessoa.ativo = true"
+                    + " order by s.servicoPessoa.pessoa.nome");
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();
@@ -111,7 +112,8 @@ public class SociosDBToplink extends DB implements SociosDB {
                     + "  from Socios s "
                     + " where s.parentesco.id <> 1 "
                     + "   and s.matriculaSocios.id = " + id_matricula +
-                      "   and s.servicoPessoa.ativo = false");
+                      "   and s.servicoPessoa.ativo = false"
+                    + " order by s.servicoPessoa.pessoa.nome");
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();

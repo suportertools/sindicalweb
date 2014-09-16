@@ -9,7 +9,7 @@ import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.beans.MovimentosReceberJSFBean;
+import br.com.rtools.financeiro.beans.MovimentosReceberBean;
 import br.com.rtools.financeiro.db.ContaCobrancaDB;
 import br.com.rtools.financeiro.db.ContaCobrancaDBToplink;
 import br.com.rtools.financeiro.db.FTipoDocumentoDB;
@@ -38,11 +38,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 
-public class AcordoJSFBean {
+@ManagedBean
+@SessionScoped
+public class AcordoBean {
 
     private List<DataObject> listaVizualizado = new ArrayList();
     private List<DataObject> listaOperado = new ArrayList();
@@ -378,8 +382,8 @@ public class AcordoJSFBean {
 
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("movimentosReceber")) {
-                ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
-                ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
+                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
+                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
             } else if (url.equals("movimentosReceberSocial")){
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
             }

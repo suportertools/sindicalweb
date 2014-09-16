@@ -7,15 +7,25 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -87,6 +97,15 @@ public class ControleAcessoWebBean implements Serializable {
     }
 
     public String validacao() throws IOException {
+        if (pessoa.getLogin().isEmpty()){
+            GenericaMensagem.error("Login Inválido", "Digite um LOGIN válido!");
+            return null;
+        }
+        
+        if (pessoa.getSenha().isEmpty()){
+            GenericaMensagem.error("Login Inválido", "Digite uma SENHA válida!");
+            return null;
+        }
         String pagina = null;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("indicaAcesso", "web");
         UsuarioDB db = new UsuarioDBToplink();
@@ -98,11 +117,13 @@ public class ControleAcessoWebBean implements Serializable {
                 JuridicaDB dbj = new JuridicaDBToplink();
                 List listax = dbj.listaJuridicaContribuinte(dbj.pesquisaJuridicaPorPessoa(pessoaContribuinte.getId()).getId());
                 if (listax.isEmpty()) {
-                    msgLoginInvalido = "Usuário não contribuinte!";
+                    //msgLoginInvalido = "Usuário não contribuinte!";
+                    GenericaMensagem.error("Login Inválido", "Usuário não Contribuinte");
                     return null;
                 } else {
                     if (((List) listax.get(0)).get(11) != null) {
-                        msgLoginInvalido = "Contribuinte inativo, contate seu sindicato!";
+                        //msgLoginInvalido = "Contribuinte inativo, contate seu sindicato!";
+                        GenericaMensagem.error("Login Inválido", "Contribuinte inativo, contate seu Sindicato!");
                         return null;
                     } else {
                     }
@@ -142,9 +163,11 @@ public class ControleAcessoWebBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         } else {
             if (pessoa == null) {
-                msgLoginInvalido = "Usuário ou/e senha inválidos!";
+                //msgLoginInvalido = "Usuário ou/e senha inválidos!";
+                GenericaMensagem.error("Login Inválido", "Usuário ou/e senha Inválidos!");
             } else {
-                msgLoginInvalido = "Usuário não Contribuinte, ou Contabilidade sem Empresa!";
+                //msgLoginInvalido = "Usuário não Contribuinte, ou Contabilidade sem Empresa!";
+                GenericaMensagem.error("Login Inválido", "Usuário não Contribuinte, ou Contabilidade sem Empresa!");
             }
             pessoa = new Pessoa();
 //           pessoaContribuinte = new Pessoa();
@@ -156,47 +179,88 @@ public class ControleAcessoWebBean implements Serializable {
         return pagina;
     }
 
-    public String enviarEmail() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
-        empresa = new Juridica();
-        if (!strTipoPesquisa.equals("nome")) {
-            List lista = dbJur.pesquisaJuridicaPorDoc(descPesquisa);
-            if (!lista.isEmpty()) {
-                empresa = (Juridica) lista.get(0);
-                if (!email.equals("")) {
-                    if (validaEmail(empresa)) {
-                        msgEmail = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), empresa);
-                    } else {
-                        msgEmail = "E-mail digitado inválido!";
-                    }
-                } else {
-                    msgEmail = "Digite um e-mail para verificação!";
-                }
-            } else {
-                msgEmail = "Empresa não encontrada em Sistema, Contate o seu Sindicato";
-            }
-        } else {
-            if (!getListaEmpresa().isEmpty()) {
-                empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaEmpresa().get(idJuridica).getDescription()), "Juridica");
-                if (empresa != null) {
-                    if (!email.equals("")) {
-                        if (validaEmail(empresa)) {
-                            msgEmail = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), empresa);
-                        } else {
-                            msgEmail = "E-mail digitado inválido!";
-                        }
-                    } else {
-                        msgEmail = "Digite um e-mail para verificação!";
-                    }
-                } else {
-                    msgEmail = "Empresa não encontrada em Sistema, Contate o seu Sindicato";
-                }
-            } else {
-                msgEmail = "Pesquise a sua Empresa Para concluir solicitacao!";
-            }
+    public void enviarEmail() {
+        if (email.isEmpty()){
+            GenericaMensagem.warn("Erro", "Digite um Email para verificação!");
+            return;
         }
-        return "indexAcessoWeb";
+        Juridica empresax = new Juridica();
+        
+        if (strTipoPesquisa.equals("nome")) {
+            if (descPesquisa.isEmpty()){
+                GenericaMensagem.warn("Atenção", "Digite o nome da Empresa para Pesquisar!");
+                return;
+            }
+            
+            if (getListaEmpresa().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Pesquise sua empresa para concluir a Solicitação!");
+                return;
+            }
+            
+            empresax = (Juridica) new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(getListaEmpresa().get(idJuridica).getDescription()), "Juridica");
+            if (empresax == null) {
+                GenericaMensagem.warn("Não foi possível completar seu pedido", "Empresa não encontrada no Sistema, Contate o seu Sindicato.");
+                return;
+            }
+        }else{
+            if (descPesquisa.isEmpty()){
+                GenericaMensagem.warn("Atenção", "Digite o documento da Empresa!");
+                return;
+            }
+            
+            JuridicaDB db = new JuridicaDBToplink();
+            List<Juridica> lista = db.pesquisaJuridicaPorDoc(descPesquisa);
+            
+            if (lista.isEmpty()){
+                GenericaMensagem.warn("Não foi possível completar seu pedido", "Empresa não encontrada no Sistema, Contate o seu Sindicato.");
+                return;
+            }
+            empresax = (Juridica) lista.get(0);
+        }
+        
+        if (!validaEmail(empresax)) {
+            GenericaMensagem.warn("Não foi possível completar seu pedido", "E-mail digitado é Inválido!");
+            return;
+        }
+            
+        DaoInterface di = new Dao();
+        Mail mail = new Mail();
+        mail.setFiles(new ArrayList());
+        mail.setEmail(
+                new Email(
+                        -1,
+                        DataHoje.dataHoje(),
+                        DataHoje.livre(new Date(), "HH:mm"),
+                        (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                        (Rotina) di.find(new Rotina(), 261),
+                        null,
+                        "Envio de Login e Senha",
+                        "<h5><b>Login: </b> " + empresax.getPessoa().getLogin() + "</h5><br /> <h5><b>Senha: </b> " + empresax.getPessoa().getSenha()+"</h5>",
+                        false,
+                        false
+                )
+        );
+        List<Pessoa> pessoas = new ArrayList();
+        pessoas.add(empresax.getPessoa());
+
+        List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+        EmailPessoa emailPessoa = new EmailPessoa();
+        for (Pessoa pe : pessoas) {
+            emailPessoa.setDestinatario(pe.getEmail1());
+            emailPessoa.setPessoa(pe);
+            emailPessoa.setRecebimento(null);
+            emailPessoas.add(emailPessoa);
+            mail.setEmailPessoas(emailPessoas);
+            emailPessoa = new EmailPessoa();
+        }
+
+        String[] retorno = mail.send("personalizado");
+
+        if (!retorno[1].isEmpty()) {
+            GenericaMensagem.error("Erro", retorno[1]);
+        } else {
+            GenericaMensagem.info("Confirmação", "Seu LOGIN e SENHA foram enviados para o email cadastrado!");
+        }
     }
 
     public boolean validaEmail(Juridica emp) {

@@ -22,7 +22,7 @@ public interface TipoServicoDB {
 
     public List pesquisaTipoServico(String desc, String como);
 
-    public List pesquisaTodosComIds(List<Integer> arrayId);
+    public List<TipoServico> pesquisaTodosComIds(List<Integer> arrayId);
 
     public List pesquisaTodosPeloContaCobranca();
 }

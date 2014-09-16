@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Permissões</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPermissao">
+            <c:set scope="request" var="object" value="${permissaoBean.permissao}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Permissões" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <rich:panel styleClass="divMae" style="text-align: left; border: 0;">
+                        <h:panelGrid columns="4" id="id_painel_permissao">
+                            <h:column>
+                                <h:outputLabel value="Módulo: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu value="#{permissaoBean.idModulo}">
+                                    <a4j:ajax event="change" render="id_painel_permissao tbl"/>
+                                    <f:selectItems value="#{permissaoBean.listaModulos}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Rotina: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu value="#{permissaoBean.idRotina}">
+                                    <f:selectItems value="#{permissaoBean.listaRotinas}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="id_painel_permissao, tbl, outConfirma" status="i_status"/>
+                            </h:column>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <rich:panel style="overflow:auto; height:300px;">
+                                <rich:dataTable var="linha" style="width:100%" value="#{permissaoBean.listaPermissoes}" id="tbl" iterationStatusVar="it">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Permissões adicionadas" />
+                                    </f:facet>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="..."/>
+                                        </f:facet>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="id_painel_permissao tbl" status="i_status"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Módulo"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.modulo.descricao}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Rotina"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.rotina.rotina}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Evento"/>
+                                        </f:facet>
+                                        <h:outputText value="Inclusão, Alteração, Exclusão, Consulta"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </h:panelGrid>                        
+                    </rich:panel>
+                </center>                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

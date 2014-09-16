@@ -194,7 +194,7 @@
                                             
                                             <h:panelGrid id="i_p" columns="2" style="width: 100%">
                                                 <p:selectBooleanCheckbox id="i_chk_email" value="#{juridicaBean.juridica.emailEscritorio}" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.juridica.cobrancaEscritorio)}" itemLabel="Email cobrança Escritório"/>
-                                                <p:commandLink value="Bloquear de Contribuição" action="#{juridicaBean.bloqueioContribuicao}" rendered="#{juridicaBean.juridica.id != -1}" style="float: right"/>
+                                                <p:commandLink value="Bloqueio de Contribuição" action="#{juridicaBean.bloqueioContribuicao}" rendered="#{juridicaBean.juridica.id != -1}" style="float: right"/>
                                             </h:panelGrid>
                                         </h:panelGrid>
                                     </p:tab>

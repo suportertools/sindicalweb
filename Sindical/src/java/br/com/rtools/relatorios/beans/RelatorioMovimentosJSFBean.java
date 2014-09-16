@@ -6,7 +6,7 @@ import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.beans.MovimentoValorJSFBean;
+import br.com.rtools.financeiro.beans.MovimentoValorBean;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.impressao.ParametroMovimentos;
 import br.com.rtools.pessoa.Juridica;
@@ -35,7 +35,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
+public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
 
     private Juridica juridica = new Juridica();
     private int idRelatorios = 0;

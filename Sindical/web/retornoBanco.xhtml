@@ -61,8 +61,9 @@
                                 <h:panelGrid columns="3">
                                     <a4j:commandButton action="#{arquivoBancoBean.enviarArquivoBaixar(false)}" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" value="Dar Baixa" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
 
-                                    <a4j:commandButton oncomplete="#{rich:component('panelComparacao')}.show()" value="Comparar boletos"
-                                                       action="#{arquivoBancoBean.refreshPastas}" render="tblRel"/>
+                                    <a4j:commandButton oncomplete="#{rich:component('panelComparacao')}.show()" value="Comparar boletos" action="#{arquivoBancoBean.refreshPastas}" render="tblRel"/>
+                                    
+                                    <h:commandButton value="Limpar" action="#{arquivoBancoBean.limparArquivos()}" />
                                 </h:panelGrid>
                             </rich:panel> 
 

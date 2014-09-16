@@ -8,7 +8,6 @@ import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
-import org.apache.catalina.tribes.util.Arrays;
 
 public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
 
