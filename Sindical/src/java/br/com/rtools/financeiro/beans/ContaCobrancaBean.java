@@ -14,15 +14,17 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class ContaCobrancaJSFBean {
+@ManagedBean
+@SessionScoped
+public class ContaCobrancaBean {
 
     private ContaCobranca contaCobranca = new ContaCobranca();
     private List<ContaCobranca> listaContaCobranca = new ArrayList();
-    private int idIndex = -1;
     private int idLayout = 0;
     private String msgConfirma = "";
     private String repasse = "0.0";
@@ -153,7 +155,6 @@ public class ContaCobrancaJSFBean {
         contaCobranca = new ContaCobranca();
         listaContaCobranca.clear();
         sicas = "";
-        idIndex = -1;
         idLayout = 0;
         repasse = "0.0";
         codigoCedente = "";
@@ -201,18 +202,16 @@ public class ContaCobrancaJSFBean {
 
     public List<SelectItem> getListaLayout() {
         ContaCobrancaDB db = new ContaCobrancaDBToplink();
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         List layouts = db.pesquisaLayouts();
         for (int i = 0; i < layouts.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Layout) layouts.get(i)).getDescricao(),
-                    Integer.toString(((Layout) layouts.get(i)).getId())));
+            result.add(new SelectItem(i, ((Layout) layouts.get(i)).getDescricao(), Integer.toString(((Layout) layouts.get(i)).getId())));
         }
         return result;
     }
 
-    public String editar() {
-        contaCobranca = (ContaCobranca) listaContaCobranca.get(idIndex);
+    public String editar(ContaCobranca c) {
+        contaCobranca = c;
         ContaCobrancaDB db = new ContaCobrancaDBToplink();
         List<Layout> layouts = db.pesquisaLayouts();
         for (int i = 0; i < layouts.size(); i++) {
@@ -240,14 +239,6 @@ public class ContaCobrancaJSFBean {
         }
         codigoCedente = contaCobranca.getCodCedente();
         return null;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 
     public String getRepasse() {
