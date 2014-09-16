@@ -29,9 +29,12 @@
                                 <p:outputLabel value="Ativo: " styleClass="fontePadrao" for="idAtivo"/>
                                 <p:selectBooleanCheckbox id="idAtivo" value="#{rotinaBean.rotina.ativo}"></p:selectBooleanCheckbox>
                             </p:panelGrid>
-                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" style="float: left;" onclick="PF('i_dlg_s').show();" title="Salvar esta rotina?" />
-                            <p:commandButton value="Novo" action="#{rotinaBean.clear}" title="Nova rotina" style="float: left;" update=":formRotinasNovo: :formRotinas:"/>
-                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show();" title="Excluir esta rotina?" style="float: left;"/>
+                            <h:panelGrid columns="4">
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show();" title="Salvar esta rotina?" />
+                                <p:commandButton value="Novo" action="#{rotinaBean.clear}" title="Nova rotina" update=":formRotinasNovo: :formRotinas:"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show();" title="Excluir esta rotina?" />
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaRotina')}" rendered="false"/>                            
+                            </h:panelGrid>
                             <br />
                             <p:growl autoUpdate="true" id="i_msg" showDetail="true" />  
                         </p:panel>
