@@ -196,7 +196,7 @@
                                                style="font-size: 11pt!important"/>
 
                                 <p:inputText size="5" value="#{webAgendamentoContribuinteBean.enderecoFisica.numero}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" placeholder="Número"/>
-                                <p:inputText size="50" value="#{webAgendamentoContribuinteBean.enderecoFisica.complemento}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" placeholder="Complemento" converter="#{toUpperCase}">
+                                <p:inputText size="40" value="#{webAgendamentoContribuinteBean.enderecoFisica.complemento}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" placeholder="Complemento" converter="#{toUpperCase}">
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </c:if>
