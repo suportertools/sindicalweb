@@ -72,7 +72,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             if (enderecoEmpresa.getId() != -1) {
                 sindicatoFilial = dbf.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
             }
-        
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            registro = (Registro) sv.find("Registro" , 1);
         }
     }
 
@@ -197,27 +198,22 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) sv.find("Registro" , 1);
-        if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
-            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
         }
 
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
-            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
         }
 
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-            //msgConfirma = "Digite o nome do Funcionário!";
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
             return;
         }
 
         if (!strContribuinte.isEmpty()) {
-            //msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
         }
@@ -227,43 +223,35 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
-                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!";
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!");
                     return;
                 }
             } else if (demissao.getId() == 2) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
-                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!";
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!");
                     return;
                 }
             } else if (demissao.getId() == 3) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
-                    //msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!";
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!");
                     return;
                 }
             }
         } else {
-            //msgConfirma = "Data de Demissão é obrigatória!";
             GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
             return;
         }
-        
-
         
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
             fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                //msgConfirma = "Documento Inválido!";
                 GenericaMensagem.error("Atenção", "Documento Inválido!");
                 return;
             }
             if (sv.inserirObjeto(fisica.getPessoa())) {
                 sv.inserirObjeto(fisica);
             } else {
-                //msgConfirma = "Erro ao Inserir pessoa!";
                 GenericaMensagem.error("Atenção", "Erro ao inserir Pessoa, tente novamente!");
                 sv.desfazerTransacao();
                 return;
@@ -273,7 +261,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
         if (age != null) {
-            //msgConfirma = "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome();
             GenericaMensagem.warn("Atenção", "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome());
             sv.desfazerTransacao();
             return;
@@ -289,7 +276,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 for (int i = 0; i < ids.length; i++) {
                     pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
-                        //msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         GenericaMensagem.error("Atenção", "Erro ao inserir Endereço da Pessoa!");
                         sv.desfazerTransacao();
                         return;
@@ -304,13 +290,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         } else {
             List<PessoaEndereco> ends = dbp.pesquisaEndPorPessoa(fisica.getPessoa().getId());
             for (PessoaEndereco end : ends) {
-                //end.setComplemento(msgAgendamento);
                 end.setComplemento(enderecoFisica.getComplemento());
                 end.setEndereco(enderecoFisica.getEndereco());
                 end.setNumero(enderecoFisica.getNumero());
                 end.setPessoa(enderecoFisica.getPessoa());
                 if (!sv.alterarObjeto(end)) {
-                    //msgConfirma = "Erro ao atualizar endereço da pessoa!";
                     GenericaMensagem.error("Atenção", "Erro ao atualizar Endereço da Pessoa!");
                     sv.desfazerTransacao();
                     return;
@@ -322,17 +306,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(juridica);
             pessoaEmpresa.setFuncao(profissao);
-            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.inserirObjeto(pessoaEmpresa)) {
-                //msgConfirma = "Erro ao Pessoa Empresa!";
                 GenericaMensagem.error("Atenção", "Erro ao Pessoa Empresa!");
                 sv.desfazerTransacao();
                 return;
             }
         } else {
-            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.alterarObjeto(pessoaEmpresa)) {
-                //msgConfirma = "Erro ao atualizar Pessoa Empresa!";
                 GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 sv.desfazerTransacao();
                 return;
@@ -341,10 +321,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            //msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             sv.comitarTransacao();
-            return;
         } else {
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
@@ -483,7 +461,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public void limpar() {
-        String data = agendamento.getData(), horario = agendamento.getHorarios().getHora();
+        String datax = agendamento.getData();
+        Horarios horario = agendamento.getHorarios();
         
         strEndereco = "";
         fisica = new Fisica();
@@ -492,8 +471,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         profissao = new Profissao();
         enderecoFisica = new PessoaEndereco();
         
-        agendamento.setData(data);
-        agendamento.getHorarios().setHora(horario);
+        agendamento.setData(datax);
+        agendamento.setHorarios(horario);
     }
 
     public String cancelar() {
@@ -669,14 +648,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         this.idMotivoDemissao = idMotivoDemissao;
     }
 
-//    public String getMsgConfirma() {
-//        return msgConfirma;
-//    }
-//
-//    public void setMsgConfirma(String msgConfirma) {
-//        this.msgConfirma = msgConfirma;
-//    }
-
     public String getStatusEmpresa() {
         if (statusEmpresa.isEmpty()){
             HomologacaoDB db = new HomologacaoDBToplink();
@@ -767,9 +738,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public Registro getRegistro() {
-        if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro",1 );
-        }
         return registro;
     }
 

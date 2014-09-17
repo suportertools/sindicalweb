@@ -38,14 +38,11 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     private List<DataObject> listaHorarios = new ArrayList();
     private List listaEmDebito = new ArrayList();
     private List<SelectItem> listaEmpresas = new ArrayList<SelectItem>();
-    //private List<SelectItem> resultEmp = new ArrayList<SelectItem>();
     private int idStatus = 0;
     private int idMotivoDemissao = 0;
     private int idSelectRadio = 0;
-    //private String tipoAviso = "true";
     private String statusEmpresa = "REGULAR";
     private String strEndereco = "";
-
     private String filtraPor = "todos";
     private boolean chkFiltrar = true;
     private boolean renderBtnAgendar = true;
@@ -61,19 +58,28 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
     private PessoaEndereco enderecoFisica = new PessoaEndereco();
     private String cepEndereco = "";
-    private List listaEnderecos = new ArrayList();
-    private boolean imprimirPro = false;
+    private List<Endereco> listaEnderecos = new ArrayList();
     private String strContribuinte = "";
     private Registro registro = new Registro();
-    public List<SelectItem> listaStatus = new ArrayList<SelectItem>();
-    public List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
-
+    public List<SelectItem> listaStatus = new ArrayList<>();
+    public List<SelectItem> listaMotivoDemissao = new ArrayList<>();
+    private String tipoTelefone = "telefone";
+    
     public WebAgendamentoContabilidadeBean() {
-        this.loadListEmpresa();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         registro = (Registro) sv.find(new Registro(), 1);
+        this.loadListEmpresa();
+        this.loadListHorarios();
     }
 
+    public void alterarTipoMascara(){
+        if (tipoTelefone.equals("telefone"))
+            tipoTelefone = "celular";
+        else
+            tipoTelefone = "telefone";
+        agendamento.setTelefone("");
+    }    
+    
     public void loadListEmpresa() {
         WebContabilidadeDB db = new WebContabilidadeDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
@@ -94,6 +100,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void loadListHorarios() {
         // ENDEREÇO DA EMPRESA SELECIONADA PARA PESQUISAR OS HORÁRIOS
+        listaHorarios.clear();
         if (listaEmpresas.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Nenhuma Empresa Encontrada!");
             return;
@@ -111,7 +118,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             sindicatoFilial = db.pesquisaFilialPorCidade(enderecoEmpresa.getEndereco().getCidade().getId());
         }
         if (sindicatoFilial.getId() == -1) {
-            GenericaMensagem.warn("Atenção", "Filial não encontrada!");
+            GenericaMensagem.warn("Atenção", "Filial não encontrada, não é possível visualizar horários!");
             return;
         }
 
@@ -244,7 +251,6 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void novoProtocolo() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        imprimirPro = false;
         agendamentoProtocolo = new Agendamento();
         renderBtnAgendar = true;
         empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) listaEmpresas.get(idSelectRadio)).getDescription()), "Juridica");
@@ -267,8 +273,12 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         empresa = new Juridica();
         enderecoEmpresa = new PessoaEndereco();
         sindicatoFilial = new FilialCidade();
-
-        if (!listaEmpresas.isEmpty()) {
+        agendamento = new Agendamento();
+        pessoaEmpresa = new PessoaEmpresa();
+        fisica = new Fisica();
+        enderecoFisica = new PessoaEndereco();
+        
+        if (listaEmpresas.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Nenhuma empresa encontrada para Agendar!");
             return;
         }
@@ -379,14 +389,14 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
-        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
-            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            return;
-        }
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            return;
-        }
+//        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+//            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+//            return;
+//        }
+//        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+//            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+//            return;
+//        }
 
         if (fisica.getPessoa().getNome().isEmpty() || fisica.getPessoa().getNome() == null) {
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
@@ -491,14 +501,12 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(empresa);
             pessoaEmpresa.setFuncao(p);
-            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.inserirObjeto(pessoaEmpresa)) {
                 sv.desfazerTransacao();
                 GenericaMensagem.error("Erro", "Não foi possível salvar Pessoa Empresa!");
                 return;
             }
         } else {
-            //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!sv.alterarObjeto(pessoaEmpresa)) {
                 sv.desfazerTransacao();
                 GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
@@ -542,7 +550,6 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 }
             }
             sv.comitarTransacao();
-            imprimirPro = true;
         }
     }
 
@@ -558,13 +565,18 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     }
 
     public void limpar() {
-        strEndereco = "";
+        String datax = agendamento.getData();
+        Horarios horario = agendamento.getHorarios();
+        //strEndereco = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
         profissao = new Profissao();
-        empresa = new Juridica();
+        //empresa = new Juridica();
         enderecoFisica = new PessoaEndereco();
+        
+        agendamento.setData(datax);
+        agendamento.setHorarios(horario);
     }
 
     public void pesquisarFuncionarioCPF() throws IOException {
@@ -761,11 +773,11 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         this.cepEndereco = cepEndereco;
     }
 
-    public List getListaEnderecos() {
+    public List<Endereco> getListaEnderecos() {
         return listaEnderecos;
     }
 
-    public void setListaEnderecos(List listaEnderecos) {
+    public void setListaEnderecos(List<Endereco> listaEnderecos) {
         this.listaEnderecos = listaEnderecos;
     }
 
@@ -794,21 +806,6 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void setFiltraPor(String filtraPor) {
         this.filtraPor = filtraPor;
-    }
-
-//    public CalendarDataModel getCalendarModel() {
-//        return calendarModel;
-//    }
-//
-//    public void setCalendarModel(CalendarDataModel calendarModel) {
-//        this.calendarModel = calendarModel;
-//    }
-    public boolean isImprimirPro() {
-        return imprimirPro;
-    }
-
-    public void setImprimirPro(boolean imprimirPro) {
-        this.imprimirPro = imprimirPro;
     }
 
     public String getStrContribuinte() {
@@ -876,5 +873,13 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void setListaHorarios(List<DataObject> listaHorarios) {
         this.listaHorarios = listaHorarios;
+    }
+
+    public String getTipoTelefone() {
+        return tipoTelefone;
+    }
+
+    public void setTipoTelefone(String tipoTelefone) {
+        this.tipoTelefone = tipoTelefone;
     }
 }

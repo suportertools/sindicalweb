@@ -71,7 +71,7 @@ public class EnderecoDBToplink extends DB implements EnderecoDB {
     }
 
     @Override
-    public List pesquisaEnderecoCep(String cep) {
+    public List<Endereco> pesquisaEnderecoCep(String cep) {
         try {
             Query qry = getEntityManager().createQuery("select ende from Endereco ende "
                     + " where ende.cep = :d_cep "

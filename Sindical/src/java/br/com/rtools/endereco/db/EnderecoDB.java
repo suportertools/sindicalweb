@@ -17,7 +17,7 @@ public interface EnderecoDB {
 
     public Endereco pesquisaCodigo(int id);
 
-    public List pesquisaEnderecoCep(String cep);
+    public List<Endereco> pesquisaEnderecoCep(String cep);
 
     public List pesquisaTodos();
 
