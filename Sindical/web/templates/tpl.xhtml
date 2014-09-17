@@ -1,0 +1,68 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>
+            <ui:insert name="title">Sistema Sindical</ui:insert>
+        </title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <ui:insert name="meta_head">
+        </ui:insert>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <script type="text/javascript">
+            window.history.forward(1);
+        </script>
+        <style type="text/css">
+            .ui-datalist-item {float: left!important;}
+            * {font-family: 'lucida grande', verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important;}
+            .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover { background: #ECF3FE; }
+        </style>
+        <ui:insert name="style">
+        </ui:insert>        
+    </h:head>
+    <h:body onload="#{controleAcessoBean.validacao}">
+        <!-- ALTERA LOGO -->
+        <h:form id="form_logo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
+            <p:dialog id="i_dlg_logo" widgetVar="dlg_logo" modal="true"  header="Anexar logo" closable="true">
+                <p:fileUpload label="Procurar"
+                              cancelLabel="Cancelar"
+                              uploadLabel="Anexar"
+                              mode="advanced"                                          
+                              dragDropSupport="true"
+                              multiple="false"
+                              update=":header:formTemplateLinks:i_logo"
+                              immediate="true"
+                              fileUploadListener="#{configuracaoBean.upload}"
+                              oncomplete="PF('dlg_logo').hide()" />
+            </p:dialog>
+        </h:form>        
+        <!-- ALTERA LOGO -->
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <div id="header">
+                    <ui:insert name="top">
+                        <ui:include src="templateTop.xhtml" /> 
+                    </ui:insert>
+                </div>
+                <ui:insert name="header">
+                </ui:insert>
+                <ui:insert name="content">
+                </ui:insert>
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <ui:insert name="footer">
+                <ui:include src="templateFooter.xhtml" />
+            </ui:insert>
+        </div>
+    </h:body>
+</html>
