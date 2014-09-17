@@ -181,15 +181,15 @@
 
                         <h:panelGrid columns="4" style="margin-top: 10px">
                             <p:commandButton value="Endereço" disabled="#{webAgendamentoContribuinteBean.fisica.id != -1}" onclick="PF('dlg_endereco').show()"/>
-                            <c:if test="#{webAgendamentoContribuinteBean.fisica.id != -1}">
+                            <h:panelGrid rendered="#{webAgendamentoContribuinteBean.fisica.id != -1}">
                                 <h:outputLabel value="#{webAgendamentoContribuinteBean.enderecoFisica.endereco.logradouro.descricao} 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.endereco.descricaoEndereco.descricao}, 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.numero} 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.endereco.cidade.cidade} - #{webAgendamentoContribuinteBean.enderecoFisica.endereco.cidade.uf} 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.complemento}" style="font-size: 11pt!important"/>
-                            </c:if>
+                            </h:panelGrid>
 
-                            <c:if test="#{webAgendamentoContribuinteBean.fisica.id == -1}">
+                            <h:panelGrid rendered="#{webAgendamentoContribuinteBean.fisica.id == -1}" columns="3">
                                 <h:outputLabel value="#{webAgendamentoContribuinteBean.enderecoFisica.endereco.logradouro.descricao} 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.endereco.descricaoEndereco.descricao}, 
                                                #{webAgendamentoContribuinteBean.enderecoFisica.endereco.cidade.cidade} - #{webAgendamentoContribuinteBean.enderecoFisica.endereco.cidade.uf}" 
@@ -199,7 +199,7 @@
                                 <p:inputText size="40" value="#{webAgendamentoContribuinteBean.enderecoFisica.complemento}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" placeholder="Complemento" converter="#{toUpperCase}">
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
-                            </c:if>
+                            </h:panelGrid>
                         </h:panelGrid>
                         
                         <h:panelGrid columns="4" style="margin-top: 10px">

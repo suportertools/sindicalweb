@@ -464,7 +464,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         String datax = agendamento.getData();
         Horarios horario = agendamento.getHorarios();
         
-        strEndereco = "";
+        //strEndereco = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -473,6 +473,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         
         agendamento.setData(datax);
         agendamento.setHorarios(horario);
+        agendamento.setFilial(sindicatoFilial.getFilial());
     }
 
     public String cancelar() {
