@@ -389,14 +389,14 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
-//        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
-//            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-//            return;
-//        }
-//        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-//            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-//            return;
-//        }
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
+        }
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            return;
+        }
 
         if (fisica.getPessoa().getNome().isEmpty() || fisica.getPessoa().getNome() == null) {
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
