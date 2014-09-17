@@ -577,6 +577,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         
         agendamento.setData(datax);
         agendamento.setHorarios(horario);
+        agendamento.setFilial(sindicatoFilial.getFilial());
     }
 
     public void pesquisarFuncionarioCPF() throws IOException {
