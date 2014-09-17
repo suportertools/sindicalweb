@@ -109,8 +109,8 @@ public class DB {
                 //cliente = "comercio_itapetininga";
                 cliente = "ComercioRP";
                 //cliente = "SincovagaSP";
-                configuracao.setHost("localhost");
-                configuracao.setSenha("989899");
+                configuracao.setHost("192.168.1.102");
+                configuracao.setSenha("r#@tools");
             }
 //            } else {
 //                if (cliente.equals("ServidoresRP")) {
