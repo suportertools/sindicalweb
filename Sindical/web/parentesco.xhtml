@@ -1,109 +1,78 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:p="http://primefaces.org/ui">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="template/tpl.xhtml">
+        <ui:define name="title">Parentesco</ui:define>
+        <ui:define name="content">            
+            <h:outputText value="Parentesco" styleClass="fonteHeader" />
+            <h:form id="formParentesco">
+                <c:set scope="request" var="object" value="${parentescoBean.parentesco}"/>
+                <p:panel styleClass="fundoCinza" style="clear: both">
+                    <h:panelGrid columns="8">
+                        <p:column>
+                            <h:outputLabel value="Parentesco" /><br />
+                            <p:inputText size="40" value="#{parentescoBean.parentesco.parentesco}" />
+                        </p:column>
 
-    <h:head>
-        <title>Sindical - Parentesco</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-        <style type="text/css">
-            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
-            .ui-button { padding: 3px!important; }            
-        </style>
+                        <p:column>
+                            <h:outputLabel value="Validade" /><h:outputLabel value="(anos)" style="font-size: 7pt!important"/><br />
+                            <p:inputText size="2" value="#{parentescoBean.parentesco.nrValidade}" maxlength="4" />
+                        </p:column>
 
-        <script type="text/javascript">
+                        <p:column>
+                            <br />
+                            <p:selectBooleanCheckbox id="idValidade" value="#{parentescoBean.parentesco.validade}" itemLabel="Validade por Nasc."/>
+                        </p:column>
 
-        </script>
-    </h:head>
-    <h:body>
-        <!-- INICIA DIV wrap e main -->
-        <div id="wrapx">
-            <div id="mainx">
-                <!-- INICIA DIV wrap e main -->  
-                <f:subview id="header">
-                    <ui:include src="templates/templatePrime.xhtml"/>
-                </f:subview>
-                <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
-                        <h:outputText value="Parentesco" styleClass="fonteHeader" />
-                        <h:form id="formParentesco">
-                            <c:set scope="request" var="object" value="${parentescoBean.parentesco}"/>
-                            <p:panel styleClass="fundoCinza" style="clear: both">
-                                <h:panelGrid columns="8">
-                                    <p:column>
-                                        <h:outputLabel value="Parentesco" /><br />
-                                        <p:inputText size="40" value="#{parentescoBean.parentesco.parentesco}" />
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <h:outputLabel value="Validade" /><h:outputLabel value="(anos)" style="font-size: 7pt!important"/><br />
-                                        <p:inputText size="2" value="#{parentescoBean.parentesco.nrValidade}" maxlength="4" />
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:selectBooleanCheckbox id="idValidade" value="#{parentescoBean.parentesco.validade}" itemLabel="Validade por Nasc."/>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:selectBooleanCheckbox id="idAtivo" value="#{parentescoBean.parentesco.ativo}" itemLabel="Ativo" style="margin-left: 10px"/>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:selectOneRadio value="#{parentescoBean.parentesco.sexo}" style="margin-left: 10px">
-                                            <f:selectItem itemValue="F" itemLabel="Feminino" />
-                                            <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                        </p:selectOneRadio>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton value="Salvar" action="#{parentescoBean.salvar()}" update="formParentesco" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton ajax="false" styleClass="idNovo iLink" value="Novo" action="#{parentescoBean.novo}" title="Novo"/>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton value="Excluir" action="#{parentescoBean.excluir()}" update="formParentesco" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                                    </p:column>
-                                </h:panelGrid>
-                            </p:panel>
-                            <p:messages id="i_msg" showDetail="true" closable="true" /> 
-                            <p:dataTable value="#{parentescoBean.listaParentesco}" var="linha" id="tbl">
-                                <p:column headerText="Parentesco">
-                                    <p:commandLink value="#{linha.parentesco}" action="#{parentescoBean.editar(linha)}"/>
-                                </p:column>
-                                
-                                <p:column headerText="Sexo">
-                                    <h:outputLabel value="Masculino" rendered="#{linha.sexo == 'M'}"/>
-                                    <h:outputLabel value="Feminino" rendered="#{linha.sexo == 'F'}"/>
-                                </p:column>
-                                
-                                <p:column headerText="Validade">
-                                    <h:outputLabel value="#{linha.nrValidade} anos" />
-                                </p:column>
-                            </p:dataTable>
-                        </h:form>
-                    </p:panel>
-                </f:view>
-                <!-- FINALIZA div wrap main -->
-            </div>
-        </div>
-        <!-- FINALIZA div wrap main -->
+                        <p:column>
+                            <br />
+                            <p:selectBooleanCheckbox id="idAtivo" value="#{parentescoBean.parentesco.ativo}" itemLabel="Ativo" style="margin-left: 10px"/>
+                        </p:column>
 
-        <div id="footerx">
-            <f:subview id="footer">
-                <ui:include src="templates/templateFooter.xhtml"/>
-            </f:subview>
-        </div>                
-    </h:body>
-</ui:composition>
+                        <p:column>
+                            <br />
+                            <p:selectOneRadio value="#{parentescoBean.parentesco.sexo}" style="margin-left: 10px">
+                                <f:selectItem itemValue="F" itemLabel="Feminino" />
+                                <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                            </p:selectOneRadio>
+                        </p:column>
+
+                        <p:column>
+                            <br />
+                            <p:commandButton value="Salvar" action="#{parentescoBean.salvar()}" update="formParentesco" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
+                        </p:column>
+
+                        <p:column>
+                            <br />
+                            <p:commandButton ajax="false" styleClass="idNovo iLink" value="Novo" action="#{parentescoBean.novo}" title="Novo"/>
+                        </p:column>
+
+                        <p:column>
+                            <br />
+                            <p:commandButton value="Excluir" action="#{parentescoBean.excluir()}" update="formParentesco" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                        </p:column>
+                    </h:panelGrid>
+                </p:panel>
+                <p:messages id="i_msg" showDetail="true" closable="true" /> 
+                <p:dataTable value="#{parentescoBean.listaParentesco}" var="linha" id="tbl">
+                    <p:column headerText="Parentesco">
+                        <p:commandLink value="#{linha.parentesco}" action="#{parentescoBean.editar(linha)}"/>
+                    </p:column>
+
+                    <p:column headerText="Sexo">
+                        <h:outputLabel value="Masculino" rendered="#{linha.sexo == 'M'}"/>
+                        <h:outputLabel value="Feminino" rendered="#{linha.sexo == 'F'}"/>
+                    </p:column>
+
+                    <p:column headerText="Validade">
+                        <h:outputLabel value="#{linha.nrValidade} anos" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
