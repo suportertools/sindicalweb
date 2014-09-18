@@ -1,1 +1,0 @@
-INSERT INTO age_agenda (ds_nome, ds_obs, ds_email1, id_tipo_endereco, id_grupo_agenda ) VALUES ('AURELIA','','',5,15);INSERT INTO age_telefone (id_agenda, id_tipo_telefone, ds_ddi, ds_ddd , ds_telefone) VALUES ((SELECT MAX(id) as id FROM age_agenda),3,'55','16','9105-9218');
