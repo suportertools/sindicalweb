@@ -1123,6 +1123,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String associarFisica() {
         if (fisica.getId() == -1) {
             msgSocio = "Cadastre uma pessoa fisica para associar!";
+            GenericaMensagem.warn("Validação", "Cadastre uma pessoa fisica para associar!");
             return "pessoaFisica";
         } else {
             msgSocio = "";
