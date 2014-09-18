@@ -137,10 +137,13 @@ public class CnaeDBToplink extends DB implements CnaeDB {
         List result = null;
         desc = desc.toLowerCase().toUpperCase() + "%";
         try {
-            Query qry = getEntityManager().createQuery("select c from Cnae c "
-                    + " where c.id not in (select cc.cnae.id "
-                    + "                      from CnaeConvencao cc) "
-                    + " and (c.numero) like :ds_Cnae");
+            Query qry = getEntityManager().createQuery(""
+                    + " SELECT C FROM Cnae AS C                                 "
+                    + "  WHERE C.id NOT IN (                                    "
+                    + "      SELECT CC.cnae.id                                  "
+                    + "        FROM CnaeConvencao AS CC                         "
+                    + "      )                                                  "
+                    + "    AND (C.numero) LIKE :ds_Cnae");
             if (!desc.equals("%%") && !desc.equals("%")) {
                 qry.setParameter("ds_Cnae", desc);
             } else {
