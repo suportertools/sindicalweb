@@ -259,7 +259,7 @@
                                             </h:panelGrid>                        
                                         </p:dialog>
 
-                                        <c:if test="#{fisicaBean.fisica.id != -1}">
+                                        <h:column rendered="#{fisicaBean.fisica.id != -1}">
                                             <p:panel style="margin-top: 10px" styleClass="fundoCinza">
                                                 <h:panelGrid columns="2" style="width: 100%">
                                                     <p:column rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.matriculaSocios.motivoInativacao == null}">
@@ -311,7 +311,7 @@
                                                     </p:column>
                                                 </h:panelGrid>
                                             </p:panel>
-                                        </c:if>
+                                        </h:column>
                                     </p:tab>
 
                                     <p:tab title="Local de Trabalho" id="i_panel_profissao">
