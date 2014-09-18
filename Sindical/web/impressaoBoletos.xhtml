@@ -220,7 +220,7 @@
                                 </h:column>
                             </p:panel>
                             
-                            <h:panelGrid id="i_panel_botao" columns="4" style="float: left">
+                            <h:panelGrid id="i_panel_botao" columns="5" style="float: left">
                                 <h:column>
                                     <p:commandButton ajax="false" id="i_imprimir" value="Visualizar" rendered="#{!impressaoBoletosBean.desabilitaVi}" action="#{impressaoBoletosBean.imprimirBoleto}" />
                                 </h:column>
@@ -235,6 +235,9 @@
 
                                 <h:column>
                                     <p:commandButton ajax="false" value="Etiqueta dos Escritórios" action="#{impressaoBoletosBean.etiquetaEscritorio}" />
+                                </h:column>
+                                <h:column>
+                                    <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pesquisa('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(90)}" />
                                 </h:column>
                             </h:panelGrid>
                             
