@@ -2,115 +2,83 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Gerar contribuição</title>
+        <title>Cnae Convenção</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+                background: #ECF3FE;
+            }            
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="gerarContribuicao">
-
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Gerar Contribuição" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <div class="divMae">
-                        <h:panelGrid columns="5" style="float: left">
-                            <h:outputLabel value="Contribuição: "/>
-                            <h:selectOneMenu  id="cbContribuicao" value="#{contribuicaoBean.idContribuicao}">
-                                <f:selectItems value="#{contribuicaoBean.listaServico}" />
-                            </h:selectOneMenu>
-
-                            <h:outputLabel value="Referência: "/>
-                            <h:inputText id="idRefCampo" size="7" class="referencia" value="#{contribuicaoBean.referencia}" />
-
-                            <a4j:commandButton value="Filtrar" action="#{contribuicaoBean.filtrar}" render="tbl"/>
-                        </h:panelGrid>
-
-                        <br /><br />
-                        <rich:dataTable value="#{contribuicaoBean.lista}" var="linha" iterationStatusVar="it" style="width:100%; clear: both" id="tbl">
-                            <rich:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#" />
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <ui:include src="templates/templateStatus.xhtml"/>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Gerar Contribuição" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_contribuicao">
+                            <p:messages showDetail="true" showSummary="true" autoUpdate="true" />
+                            <p:panel styleClass="margin-top-max">
+                                <h:panelGrid columns="5">
+                                    <h:outputLabel value="Contribuição: "/>
+                                    <p:selectOneMenu value="#{contribuicaoBean.idContribuicao}">
+                                        <f:selectItems value="#{contribuicaoBean.listServico}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Referência: "/>
+                                    <p:inputMask value="#{contribuicaoBean.referencia}" mask="99/9999" size="5"/>
+                                    <p:commandButton value="Filtrar" action="#{contribuicaoBean.filter}" update=":form_contribuicao:"/>
+                                </h:panelGrid>
+                                <p:dataTable value="#{contribuicaoBean.listaContribuicoes}" var="listaContribuicoes" rowIndexVar="index" selection="#{contribuicaoBean.selectedListaContribuicoes}" rowKey="#{listaContribuicoes.sequencia}" styleClass="margin-top-max" emptyMessage="Nenhuma contribuição gerada!">
+                                    <p:column selectionMode="multiple" style="width:16px;text-align:center" rendered="#{contribuicaoBean.visibleSelection}"/>
+                                    <p:column headerText="Sequência" styleClass="text-center" width="70">
+                                        <h:outputLabel value="#{listaContribuicoes.sequencia + 1}"/>
+                                    </p:column>
+                                    <p:column headerText="Convenção">
+                                        <h:outputLabel value="#{listaContribuicoes.convencaoCidade.convencao.descricao}" />
+                                    </p:column>
+                                    <p:column headerText="Grupo cidade">
+                                        <h:outputLabel value="#{listaContribuicoes.convencaoCidade.grupoCidade.descricao}" />
+                                    </p:column>
+                                    <p:column headerText="Contribuição" styleClass="text-center">
+                                        <p:selectOneMenu value="#{listaContribuicoes.contribuicao}" style="w">
+                                            <p:ajax event="change" listener="#{contribuicaoBean.updateServico(index)}" update=":form_contribuicao:" global="false"/>
+                                            <f:selectItems value="#{contribuicaoBean.listServico}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column headerText="Vencimento" styleClass="text-center">
+                                        <h:outputLabel value="#{listaContribuicoes.vencimento}" />
+                                    </p:column>
+                                </p:dataTable>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Gerar contribuições" action="#{contribuicaoBean.proccess()}" />                                        
                                 </f:facet>
-                                <h:outputText value="#{it.index}"/>
-                            </rich:column>                                  
+                            </p:panel>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                            <rich:column>
-                                <h:outputLabel value="#{linha.argumento1 + 1}"/>
-                            </rich:column>
-
-                            <rich:column styleClass="centralizar">
-                                <h:selectBooleanCheckbox id="marcar" value="#{linha.argumento0}" rendered="#{linha.argumento3 != null}">
-                                    <a4j:ajax event="change" render="this" />
-                                </h:selectBooleanCheckbox>
-                            </rich:column>
-
-                            <rich:column>
-                                <f:facet name="header"><h:outputText value="Convenção"/></f:facet>
-                                <h:outputText value="#{linha.argumento2.convencao.descricao}"/>
-                            </rich:column>
-
-                            <rich:column>
-                                <f:facet name="header"><h:outputText value="Grupo de Cidade"/></f:facet>
-                                <h:outputText value="#{linha.argumento2.grupoCidade.descricao}"/>
-                            </rich:column>
-
-                            <rich:column styleClass="centralizar">
-                                <f:facet name="header"><h:outputText value="Contribuição"/></f:facet>
-                                <h:selectOneMenu value="#{linha.argumento5}">
-                                    <a4j:ajax event="change" listener="#{contribuicaoBean.alterarServicoDaGrid(it.index)}" render="tbl" />
-                                    <f:selectItems value="#{contribuicaoBean.listaServico}" />
-                                </h:selectOneMenu>
-                            </rich:column>
-
-                            <rich:column styleClass="centralizar">
-                                <f:facet name="header">
-                                    <h:outputText value="Vencimento"/>
-                                </f:facet>
-                                <h:outputLabel id="vencimentoGrid" value="#{linha.argumento3}"/>
-                            </rich:column>
-                        </rich:dataTable>
-                        <br />
-                        <a4j:commandButton value="Gerar contribuições" action="#{contribuicaoBean.processar}" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" render="outConfirma" style="float: left"/>
-                    </div>
-                </center>
-
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-
-                </div>                
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{contribuicaoBean.mensagem}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="OK" title="OK" onclick="fecharModal();"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                  
-
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
