@@ -1525,6 +1525,9 @@ public class SociosBean implements Serializable {
             if (!grupoCategorias.isEmpty()){
                 for (int i = 0; i < grupoCategorias.size(); i++) {
                     listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
+                    if(grupoCategorias.get(i).getGrupoCategoria().toUpperCase().equals("COMERCIÁRIO")) {
+                        idGrupoCategoria = i;
+                    }
                 }
             }else{
                 listaGrupoCategoria.add(new SelectItem(0, "Nenhum Grupo Categoria Encontrado", "0"));
