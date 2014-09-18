@@ -17,12 +17,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>contribuicaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>updateBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.UpdateBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
