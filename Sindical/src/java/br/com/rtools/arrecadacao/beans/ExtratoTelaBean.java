@@ -29,7 +29,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class ExtratoTelaJSFBean implements Serializable {
+public class ExtratoTelaBean implements Serializable {
 
     private int idContribuicao = 0;
     private int idTipoServico = 0;
@@ -73,7 +73,7 @@ public class ExtratoTelaJSFBean implements Serializable {
     private String valorExtenso = "";
     private List<Impressao> listaImpressao = new ArrayList();
 
-    public ExtratoTelaJSFBean() {
+    public ExtratoTelaBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
         if (!controx.getListaExtratoTela()) {
             porPesquisa = "naoRecebidas";

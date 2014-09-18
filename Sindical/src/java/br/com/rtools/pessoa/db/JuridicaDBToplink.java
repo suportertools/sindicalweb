@@ -108,14 +108,23 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         if (por.equals("email2")) field = "p.ds_email2";
         if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) field = "p.ds_documento";
         
-        textQuery = " SELECT j.id FROM pes_juridica j " +
+        int maxResults = 300;
+        if (desc.length() == 1) {
+            maxResults = 50;
+        } else if (desc.length() == 2) {
+            maxResults = 150;
+        } else if (desc.length() == 3) {
+            maxResults = 200;
+        }        
+        
+        textQuery = " SELECT j.* FROM pes_juridica j " +
             "  INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
             "  WHERE LOWER(TRANSLATE("+field+")) LIKE ('" + desc + "')" +
-            "  ORDER BY p.ds_nome";
+            "  ORDER BY p.ds_nome LIMIT " + maxResults;
         
         if (por.equals("endereco")) {
             textQuery =
-                      "       SELECT jur.id "
+                      "       SELECT jur.* "
                     + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
                     + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
                     + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
@@ -133,27 +142,33 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                     + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                           "
                     + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                                 "
                     + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "'"
-                    + "  ORDER BY pes.ds_nome LIMIT 1000 ";
-        }        
-        
-        Query qry = getEntityManager().createNativeQuery(textQuery);
-
-        List<Vector> result_list = qry.getResultList();
-        List<Object> return_list = new ArrayList<Object>();
-
-        if (!result_list.isEmpty()){
-            if (result_list.size() > 1){
-                String listId = "";
-                for (int i = 0; i < result_list.size(); i++){
-                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
-                }
-                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id IN ( " + listId + " )").getResultList();
-            }else{
-                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id = " + (Integer) result_list.get(0).get(0)).getResultList();
-            }
+                    + "  ORDER BY pes.ds_nome LIMIT " + maxResults;
         }
         
-        return return_list;
+        Query query = getEntityManager().createNativeQuery(textQuery, Juridica.class);
+        
+        List list = query.getResultList();
+        if(!list.isEmpty()) {
+            return list;
+        }
+        return new ArrayList();
+
+//        List<Vector> result_list = qry.getResultList();
+//        List<Object> return_list = new ArrayList<Object>();
+//
+//        if (!result_list.isEmpty()){
+//            if (result_list.size() > 1){
+//                String listId = "";
+//                for (int i = 0; i < result_list.size(); i++){
+//                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
+//                }
+//                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id IN ( " + listId + " )").getResultList();
+//            }else{
+//                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id = " + (Integer) result_list.get(0).get(0)).getResultList();
+//            }
+//        }
+        
+        //return return_list;
 //        
 //        if (por.equals("endereco")) {
 //            desc = desc.toLowerCase().toUpperCase();
