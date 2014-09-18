@@ -13,64 +13,6 @@ import javax.persistence.Query;
 public class CnaeConvencaoDBToplink extends DB implements CnaeConvencaoDB {
 
     @Override
-    public boolean insert(CnaeConvencao cnaeConvencao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(cnaeConvencao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(CnaeConvencao cnaeConvencao) {
-        try {
-            getEntityManager().merge(cnaeConvencao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(CnaeConvencao cnaeConvencao) {
-        try {
-            getEntityManager().remove(cnaeConvencao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public CnaeConvencao pesquisaCodigo(int id) {
-        CnaeConvencao result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("CnaeConvencao.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (CnaeConvencao) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select cc from CnaeConvencao cc ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
     public CnaeConvencao pesquisaCnaeComConvencao(int idCnae) {
         try {
             Query qry = getEntityManager().createQuery("select cc from CnaeConvencao cc "
