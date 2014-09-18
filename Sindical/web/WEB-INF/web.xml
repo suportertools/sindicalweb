@@ -45,13 +45,23 @@
     <context-param>
         <param-name>facelets.FACELETS_BUFFER_SIZE</param-name>
         <param-value>500000</param-value>
-    </context-param>    
+    </context-param>
+    
+    <context-param>
+        <param-name>facelets.DEVELOPMENT</param-name>
+        <param-value>true</param-value>
+    </context-param>          
     
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <context-param>
+        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>    
     
     <servlet-mapping>  
         <servlet-name>Faces Servlet</servlet-name>  

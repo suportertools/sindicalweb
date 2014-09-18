@@ -1,1 +1,0 @@
-ALTER TABLE conv_movimento ADD COLUMN ds_controle_cortesia character varying(200);

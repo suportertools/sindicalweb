@@ -88,8 +88,8 @@
                                                 
                                             </h:column>                                            
                                             <br />
-                                            <h:outputLabel value="Descrição:" for="iDescricao" />
-                                            <p:inputText id="iDescricao" class="iDescricaoc" size="48" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="#{toUpperCase}">
+                                            <h:outputLabel value="Descrição:"  />
+                                            <p:inputText size="48" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="#{toUpperCase}">
                                                 <p:ajax event="blur" update="@this" global="false"/>
                                             </p:inputText>
                                         </h:panelGrid>
