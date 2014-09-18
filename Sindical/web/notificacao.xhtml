@@ -47,8 +47,11 @@
                                     </p:column>
                                     
                                     <p:column>
-                                        <p:commandButton id="id_atualizar" style="width: 100px" onclick="PF('i_dlg_a').show()" value="Atualizar" title="Atualizar Mensagem Editada" rendered="#{notificacaoBean.lote.id != -1}"/>
-                                        <p:commandButton id="id_gerar" style="float: right; clear: both" onclick="PF('i_dlg_s').show()"  value="Gerar Notificação" title="Gerar Notificação para essas Opções" rendered="#{notificacaoBean.lote.id == -1}" />
+                                        <h:panelGrid columns="3">
+                                            <p:commandButton id="id_atualizar" style="width: 100px" onclick="PF('i_dlg_a').show()" value="Atualizar" title="Atualizar Mensagem Editada" rendered="#{notificacaoBean.lote.id != -1}"/>
+                                            <p:commandButton id="id_gerar" style="float: right; clear: both" onclick="PF('i_dlg_s').show()"  value="Gerar Notificação" title="Gerar Notificação para essas Opções" rendered="#{notificacaoBean.lote.id == -1}" />
+                                            <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pesquisa('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(181)}" />
+                                        </h:panelGrid>
                                     </p:column>
                                         
                                     <p:column>
