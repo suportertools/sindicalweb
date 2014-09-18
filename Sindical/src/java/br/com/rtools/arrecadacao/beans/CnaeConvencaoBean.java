@@ -13,9 +13,13 @@ import br.com.rtools.pessoa.db.CnaeDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -24,12 +28,31 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class CnaeConvencaoBean implements Serializable {
 
-    private List<DataObject> listaCnaes = new ArrayList();
-    private List<DataObject> listaCnaesAdc = new ArrayList();
-    private Cnae cnae = new Cnae();
-    private String descricao = "";
-    private int idConvencao = 0;
-    private String msgConfirma = "";
+    private List<Cnae> listCnaes;
+    private List<CnaeConvencao> listCnaesConvencao;
+    private List<SelectItem> listConvencao;
+    private List<Cnae> selectedCnae;
+    private List<CnaeConvencao> selectedCnaeConvencao;
+    private Cnae cnae;
+    private String descricao;
+    private int idConvencao;
+
+    @PostConstruct
+    public void init() {
+        listCnaes = new ArrayList<>();
+        listCnaesConvencao = new ArrayList<>();
+        listConvencao = new ArrayList<>();
+        selectedCnae = null;
+        selectedCnaeConvencao = null;
+        cnae = new Cnae();
+        descricao = "";
+        idConvencao = 0;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("cnaeConvencaoBean");
+    }
 
     public int getIdConvencao() {
         return idConvencao;
@@ -47,133 +70,106 @@ public class CnaeConvencaoBean implements Serializable {
         this.descricao = descricao;
     }
 
-    public void refreshForm() {
-    }
-
-    public String salvarSelecionados() {
-        NovoLog novoLog = new NovoLog();
-        DaoInterface di = new Dao();
-        novoLog.startList();
-        int iConvencao = Integer.parseInt(getListaConvencao().get(idConvencao).getDescription());
-        Convencao convencao = (Convencao) di.find(new Convencao(), iConvencao);
-        di.openTransaction();
-        for (int i = 0; i < listaCnaes.size(); i++) {
-            if ((Boolean) listaCnaes.get(i).getArgumento0()) {
-                CnaeConvencao cnaeConvencao = new CnaeConvencao(-1, (Cnae) listaCnaes.get(i).getArgumento1(), convencao);
-                if (di.save(cnaeConvencao)) {
+    public void adddeleteSelected() {
+        if (selectedCnae != null) {
+            NovoLog novoLog = new NovoLog();
+            novoLog.startList();
+            int iConvencao = Integer.parseInt(getListConvencao().get(idConvencao).getDescription());
+            Dao dao = new Dao();
+            Convencao convencao = (Convencao) dao.find(new Convencao(), iConvencao);
+            dao.openTransaction();
+            for (int i = 0; i < selectedCnae.size(); i++) {
+                CnaeConvencao cnaeConvencao = new CnaeConvencao(-1, (Cnae) selectedCnae.get(i), convencao);
+                if (dao.save(cnaeConvencao)) {
                     novoLog.save(
                             "ID: " + cnaeConvencao.getId()
                             + " - Cnae: (" + cnaeConvencao.getCnae().getId() + ") " + cnaeConvencao.getCnae().getCnae() + " - " + cnaeConvencao.getCnae().getNumero()
                             + " - Descrição: " + cnaeConvencao.getConvencao().getDescricao()
                     );
-                    msgConfirma = "CNAES adcionados com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Registro adicionado");
                 } else {
                     novoLog.cancelList();
-                    di.rollback();
-                    msgConfirma = "Erro ao adicionar CNAE!";
-                    return null;
+                    dao.rollback();
+                    GenericaMensagem.warn("Erro", "Ao adicionar registro");
+                    return;
                 }
             }
-        }
-        novoLog.saveList();
-        di.commit();
-
-        atualizaListaDisponiveis();
-        atualizarListaAdc();
-        return null;
-    }
-
-    public void atualizaListaDisponiveis() {
-        listaCnaes.clear();
-        CnaeDB dbCnae = new CnaeDBToplink();
-        List<Cnae> list = dbCnae.pesquisaCnaeSemConvencao(descricao);
-        for (int i = 0; i < list.size(); i++) {
-            listaCnaes.add(new DataObject(false, list.get(i)));
+            novoLog.saveList();
+            dao.commit();
+            listCnaes.clear();
+            listCnaesConvencao.clear();
+            selectedCnae = null;
+            selectedCnaeConvencao = null;
         }
     }
 
-    public void atualizarListaAdc() {
-        listaCnaesAdc.clear();
-        CnaeConvencaoDB db = new CnaeConvencaoDBToplink();
-        int iConvencao = Integer.parseInt(getListaConvencao().get(idConvencao).getDescription());
-        List<CnaeConvencao> listaCnaeCon = db.pesquisarCnaeConvencaoPorConvencao(iConvencao);
-        for (int i = 0; i < listaCnaeCon.size(); i++) {
-            listaCnaesAdc.add(new DataObject(false, (CnaeConvencao) (listaCnaeCon.get(i))));
-        }
+    public void updateDisponiveis() {
+        listCnaes.clear();
+
     }
 
-    public String excluirTodos() {
+    public void updateSelected() {
+        listCnaesConvencao.clear();
+        getListCnaesConvencao();
+    }
+
+    public void deleteAll() {
         NovoLog novoLog = new NovoLog();
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         novoLog.startList();
-        if (!listaCnaesAdc.isEmpty()) {
-            di.openTransaction();
-            for (int i = 0; i < listaCnaesAdc.size(); i++) {
-                CnaeConvencao cn = (CnaeConvencao) di.find(new CnaeConvencao(), ((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId());
-                if (!di.delete(cn)) {
-                    di.rollback();
-                    msgConfirma = "Erro ao excluir Registros!";
+        if (!listCnaesConvencao.isEmpty()) {
+            dao.openTransaction();
+            for (int i = 0; i < listCnaesConvencao.size(); i++) {
+                if (!dao.delete(listCnaesConvencao.get(i))) {
+                    dao.rollback();
+                    GenericaMensagem.warn("Erro", "Ao excluir registro!");
+                    novoLog.cancelList();
+                    return;
+                }
+                novoLog.delete(
+                        "ID: " + listCnaesConvencao.get(i).getId()
+                        + " - Cnae: (" + listCnaesConvencao.get(i).getCnae().getId() + ") " + listCnaesConvencao.get(i).getCnae().getCnae() + " - " + listCnaesConvencao.get(i).getCnae().getNumero()
+                        + " - Descrição: " + listCnaesConvencao.get(i).getConvencao().getDescricao()
+                );
+            }
+            novoLog.saveList();
+            dao.commit();
+            listCnaes.clear();
+            listCnaesConvencao.clear();
+            GenericaMensagem.info("Sucesso", "Registro(s) removido(s)");
+            selectedCnae = null;
+            selectedCnaeConvencao = null;
+        }
+    }
+
+    public String deleteSelected() {
+        NovoLog novoLog = new NovoLog();
+        Dao dao = new Dao();
+        novoLog.startList();
+        if (selectedCnaeConvencao != null) {
+            dao.openTransaction();
+            for (int i = 0; i < selectedCnaeConvencao.size(); i++) {
+                if (!dao.delete(selectedCnaeConvencao.get(i))) {
+                    dao.rollback();
+                    GenericaMensagem.warn("Erro", "Ao excluir registro!");
                     novoLog.cancelList();
                     return null;
                 }
                 novoLog.delete(
-                        "ID: " + cn.getId()
-                        + " - Cnae: (" + cn.getCnae().getId() + ") " + cn.getCnae().getCnae() + " - " + cn.getCnae().getNumero()
-                        + " - Descrição: " + cn.getConvencao().getDescricao()
+                        "ID: " + selectedCnaeConvencao.get(i).getId()
+                        + " - Cnae: (" + selectedCnaeConvencao.get(i).getCnae().getId() + ") " + selectedCnaeConvencao.get(i).getCnae().getCnae() + " - " + selectedCnaeConvencao.get(i).getCnae().getNumero()
+                        + " - Descrição: " + selectedCnaeConvencao.get(i).getConvencao().getDescricao()
                 );
             }
             novoLog.saveList();
-            di.commit();
-            atualizaListaDisponiveis();
-            atualizarListaAdc();
-            msgConfirma = "Cnaes excluídos com sucesso!";
+            dao.commit();
+            listCnaes.clear();
+            listCnaesConvencao.clear();
+            GenericaMensagem.info("Sucesso", "Registro(s) removido(s)");
+            selectedCnae = null;
+            selectedCnaeConvencao = null;
         }
         return null;
-    }
-
-    public String excluirSelecionados() {
-        NovoLog novoLog = new NovoLog();
-        DaoInterface di = new Dao();
-        novoLog.startList();
-        if (!listaCnaesAdc.isEmpty()) {
-            di.openTransaction();
-            for (int i = 0; i < listaCnaesAdc.size(); i++) {
-                if ((Boolean) listaCnaesAdc.get(i).getArgumento0()) {
-                    CnaeConvencao cn = (CnaeConvencao) di.find(new CnaeConvencao(), ((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId());
-                    if (!di.delete(cn)) {
-                        di.rollback();
-                        msgConfirma = "Erro ao excluir Registros!";
-                        novoLog.cancelList();
-                        return null;
-                    }
-                    novoLog.delete(
-                            "ID: " + cn.getId()
-                            + " - Cnae: (" + cn.getCnae().getId() + ") " + cn.getCnae().getCnae() + " - " + cn.getCnae().getNumero()
-                            + " - Descrição: " + cn.getConvencao().getDescricao()
-                    );
-                }
-            }
-            di.commit();
-            novoLog.saveList();
-            atualizaListaDisponiveis();
-            atualizarListaAdc();
-            msgConfirma = "Cnaes excluídos com sucesso!";
-        }
-        return null;
-    }
-
-    public List<SelectItem> getListaConvencao() {
-        List<SelectItem> convencoes = new ArrayList<SelectItem>();
-        int i = 0;
-        ConvencaoDB db = new ConvencaoDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            convencoes.add(new SelectItem(i,
-                    (String) ((Convencao) select.get(i)).getDescricao(),
-                    Integer.toString(((Convencao) select.get(i)).getId())));
-            i++;
-        }
-        return convencoes;
     }
 
     public Cnae getCnae() {
@@ -184,38 +180,61 @@ public class CnaeConvencaoBean implements Serializable {
         this.cnae = cnae;
     }
 
-    public List<DataObject> getListaCnaes() {
-        if (listaCnaes.isEmpty() && !descricao.isEmpty()) {
-            atualizaListaDisponiveis();
+    public List<Cnae> getListCnaes() {
+        if(!descricao.isEmpty()) {
+            if (listCnaes.isEmpty()) {
+                CnaeDB dbCnae = new CnaeDBToplink();
+                listCnaes = dbCnae.pesquisaCnaeSemConvencao(descricao);
+            }            
         }
-        return listaCnaes;
+        return listCnaes;
     }
 
-    public void setListaCnaes(List<DataObject> listaCnaes) {
-        this.listaCnaes = listaCnaes;
+    public void setListCnaes(List<Cnae> listCnaes) {
+        this.listCnaes = listCnaes;
     }
 
-    public List<DataObject> getListaCnaesAdc() {
-        if (!getListaConvencao().isEmpty()) {
-            int iConvencao = Integer.parseInt(getListaConvencao().get(idConvencao).getDescription());
-            if (listaCnaesAdc.isEmpty()) {
-                atualizarListaAdc();
-            } else if (iConvencao != ((CnaeConvencao) listaCnaesAdc.get(0).getArgumento1()).getConvencao().getId()) {
-                atualizarListaAdc();
+    public List<CnaeConvencao> getListCnaesConvencao() {
+        if (listCnaesConvencao.isEmpty()) {
+            CnaeConvencaoDB db = new CnaeConvencaoDBToplink();
+            int iConvencao = Integer.parseInt(getListConvencao().get(idConvencao).getDescription());
+            listCnaesConvencao = db.pesquisarCnaeConvencaoPorConvencao(iConvencao);
+        }
+        return listCnaesConvencao;
+    }
+
+    public void setListCnaesConvencao(List<CnaeConvencao> listCnaesConvencao) {
+        this.listCnaesConvencao = listCnaesConvencao;
+    }
+
+    public List<Cnae> getSelectedCnae() {
+        return selectedCnae;
+    }
+
+    public void setSelectedCnae(List<Cnae> selectedCnae) {
+        this.selectedCnae = selectedCnae;
+    }
+
+    public List<CnaeConvencao> getSelectedCnaeConvencao() {
+        return selectedCnaeConvencao;
+    }
+
+    public void setSelectedCnaeConvencao(List<CnaeConvencao> selectedCnaeConvencao) {
+        this.selectedCnaeConvencao = selectedCnaeConvencao;
+    }
+
+    public List<SelectItem> getListConvencao() {
+        if (listConvencao.isEmpty()) {
+            Dao dao = new Dao();
+            List<Convencao> list = (List<Convencao>) dao.list(new Convencao(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listConvencao.add(new SelectItem(i, (String) ((Convencao) list.get(i)).getDescricao(), Integer.toString(((Convencao) list.get(i)).getId())));
             }
         }
-        return listaCnaesAdc;
+        return listConvencao;
     }
 
-    public void setListaCnaesAdc(List<DataObject> listaCnaesAdc) {
-        this.listaCnaesAdc = listaCnaesAdc;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setListConvencao(List<SelectItem> listConvencao) {
+        this.listConvencao = listConvencao;
     }
 }
