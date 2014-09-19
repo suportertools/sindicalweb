@@ -274,14 +274,15 @@ public class Dao extends DB implements DaoInterface {
 
     @Override
     public Object rebind(Object object) {
+        openTransaction();
         try {
-            openTransaction();
             object = find(object);
             getEntityManager().merge(object);
             getEntityManager().refresh(object);
             getEntityManager().flush();
             commit();
         } catch (Exception e) {
+            rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
         }
         return object;
