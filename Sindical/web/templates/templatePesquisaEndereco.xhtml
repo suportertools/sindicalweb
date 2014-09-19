@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <f:view>
+        <h:panelGrid columns="5">
+            <h:outputText value="Por CEP: "/>
+            <p:inputText value="#{pesquisaEnderecoBean.cep}" size="8" converter="#{thisNumber}">
+                <p:ajax event="change" update="@this" />
+            </p:inputText>
+            <p:commandButton widgetVar="btnPesquisar" action="#{pesquisaEnderecoBean.find}"  icon="ui-icon-search" update="i_tbl_endereco"/>
+            <h:outputText value=" ou " style="margin-left: 25px"/>
+            <p:commandButton title="PESQUISA AVANÇADA"  action="#{chamadaPaginaBean.pesquisaEndereco}" ajax="false" value="PESQUISA AVANÇADA" style="margin-left: 25px"/>
+        </h:panelGrid>
+        <h:panelGrid id="i_tbl_endereco">
+            <p:dataTable value="#{pesquisaEnderecoBean.listaEndereco}" var="endereco" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                <p:column width="25">
+                    <p:commandButton icon="ui-icon-link" action="#{pesquisaEnderecoBean.put(endereco)}" title="Selecionar: #{endereco.id}" />
+                </p:column>
+                <p:column headerText="Cidade">
+                    <h:outputText value="#{endereco.cidade.cidade}"/>
+                </p:column>
+
+                <p:column headerText="Bairro">
+                    <h:outputText value="#{endereco.bairro.descricao}"/>
+                </p:column>
+
+                <p:column headerText="Logradouro">
+                    <h:outputText value="#{endereco.logradouro.descricao}"/>
+                </p:column>
+
+                <p:column headerText="Descricao">
+                    <h:outputText value="#{endereco.descricaoEndereco.descricao}"/>
+                </p:column>
+
+                <p:column headerText="CEP">
+                    <h:outputText value="#{endereco.cep}"/>
+                </p:column>
+
+                <p:column headerText="Faixa">
+                    <h:outputText value="#{endereco.faixa}"/>
+                </p:column>
+            </p:dataTable>
+        </h:panelGrid>
+    </f:view>
+</ui:composition>
