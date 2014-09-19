@@ -1,0 +1,134 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Configuração Homologação</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />    
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <f:metadata>  
+                <f:event type="preRenderView" listener="${configuracaoHomologacaoBean.load()}"/>  
+            </f:metadata>            
+            <p:panel styleClass="wrapper no-border">
+                <h:outputText value="Você não possui permissões para efetuar operações nesta rotina!" styleClass="fonteHeader" rendered="#{controleAcessoBean.botaoSalvar}" title="salvar / alterar / excluir"/>
+                <h:form id="form_ch" rendered="#{!controleAcessoBean.botaoSalvar}">
+                    <h:outputText value="Configuração Homologação" styleClass="fonteHeader" />
+                    <c:set scope="request" var="object" value="${configuracaoHomologacaoBean.configuracaoHomologacao}"/>
+                    <div style="clear: both;"></div>
+                    <p:messages id="id_messages" showDetail="true" closable="true" />
+                    <p:growl id="id_messages_growl" showDetail="true"  />
+                    <div style="clear: both;"></div>
+                    <p:panel styleClass="margin-top-max">
+                        <f:facet name="header">Nome Empresa: #{configuracaoHomologacaoBean.registro.filial.pessoa.nome}</f:facet>
+                        <p:tabView>
+                            <p:ajax event="tabChange" listener="#{configuracaoHomologacaoBean.onChange}"/>                            
+                            <p:tab title="Agendamento">
+                                <h:panelGrid cellpadding="5" columns="2">
+                                    <h:outputLabel value="Tempo de atualização de agendamentos" />
+                                    <p:column>
+                                        <p:spinner value="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshAgendamento}" max="120" min="5" size="5" stepFactor="0">
+                                            <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                        </p:spinner>
+                                    </p:column>                                        
+                                </h:panelGrid>
+                                <p:panel header="Campos obrigatórios">
+                                    <h:panelGrid cellpadding="5" columns="4">
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaCpf}" itemLabel="Valida CPF" disabled="true">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaNome}" itemLabel="Valida nome" disabled="true">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaFuncao}" itemLabel="Valida função">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaCarteira}" itemLabel="Valida CTPS">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaSerie}" itemLabel="Valida série">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaEndereco}" itemLabel="Valida endereço" disabled="true">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaAdmissao}" itemLabel="Valida data admissão" disabled="true">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaDemissao}" itemLabel="Valida data demissão" disabled="true">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaContato}" itemLabel="Valida contato">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaEmail}" itemLabel="Valida email">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column> 
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaTelefone}" itemLabel="Valida telefone">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                    </h:panelGrid>
+                                    </p:panel>
+                            </p:tab>
+                            <p:tab title="Recepção">
+                                <h:panelGrid cellpadding="5" columns="2">
+                                    <h:outputLabel value="Tempo de atualização de recepção" />
+                                    <p:column>
+                                        <p:spinner value="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshRecepcao}" max="120" min="5" size="5" stepFactor="0">
+                                            <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                        </p:spinner>
+                                    </p:column>                                        
+                                    <h:outputLabel value="Tempo de atualização de atendimento" />
+                                    <p:column>
+                                        <p:spinner value="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshAtendimento}" max="120" min="5" size="5" stepFactor="0">
+                                            <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                        </p:spinner>
+                                    </p:column>                                    
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Homologação">
+                                <h:panelGrid cellpadding="5" columns="2">
+                                    <h:outputLabel value="Tempo de atualização de homologagão" />
+                                    <p:column>
+                                        <p:spinner value="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshRecepcao}" max="120" min="5" size="5" stepFactor="0">
+                                            <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                        </p:spinner>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:tab>
+                        </p:tabView>
+                    </p:panel>
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
