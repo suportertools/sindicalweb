@@ -9,6 +9,7 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.ConfiguracaoHomologacao;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
@@ -89,6 +90,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private String enviarPara = "contabilidade";
     private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private boolean imprimirPro = false;
+    private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
+    private int counter = getConfiguracaoHomologacao().getTempoRefreshAgendamento();
 
     public String salvarTransferencia() {
         if (getDataTransferencia().getDay() == 6 || getDataTransferencia().getDay() == 0) {
@@ -450,23 +453,31 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         return "agendamento";
     }
 
-    public String salvar() {
+    public String save() {
         styleDestaque = "";
         msgConfirma = "";
-        if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-            msgConfirma = "Digite o nome do Funcionário!";
-            return null;
+        Dao dao = new Dao();
+        if (configuracaoHomologacao.isValidaNome()) {
+            if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
+                msgConfirma = "Digite o nome do Funcionário!";
+                return null;
+            }
+        }
+        if (configuracaoHomologacao.isValidaFuncao()) {
+            if (profissao.getId() == -1) {
+                msgConfirma = "Informar a função!";
+                return null;
+            }
         }
         if (!strContribuinte.isEmpty()) {
             msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
             return null;
         }
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
         List listDocumento;
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) sv.find("Demissao", Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) dao.find(new Demissao(), Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -504,10 +515,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
 
         // SALVAR FISICA -----------------------------------------------
-        sv.abrirTransacao();
-        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
+        dao.openTransaction();
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-            sv.desfazerTransacao();
+            dao.rollback();
             msgConfirma = "Documento Inválido!";
             return null;
         }
@@ -517,20 +528,20 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     fisica.getDtNascimento(),
                     fisica.getRg()).isEmpty()) {
                 msgConfirma = "Esta pessoa já esta cadastrada!";
-                sv.desfazerTransacao();
+                dao.rollback();
                 return null;
             }
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
-                sv.desfazerTransacao();
+                dao.rollback();
                 msgConfirma = "Documento já existente!";
                 return null;
             }
 
-            if (sv.inserirObjeto(fisica.getPessoa())) {
-                sv.inserirObjeto(fisica);
+            if (dao.save(fisica.getPessoa())) {
+                dao.save(fisica);
             } else {
-                sv.desfazerTransacao();
+                dao.rollback();
                 msgConfirma = "Erro ao Inserir pessoa!";
                 return null;
             }
@@ -538,7 +549,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             for (Object listDocumento1 : listDocumento) {
                 if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
-                    sv.desfazerTransacao();
+                    dao.rollback();
                     msgConfirma = "Documento já existente!";
                     return null;
                 }
@@ -549,21 +560,21 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (!fisi.isEmpty()) {
                 for (Fisica fisi1 : fisi) {
                     if (fisi1.getId() != fisica.getId()) {
-                        sv.desfazerTransacao();
+                        dao.rollback();
                         msgConfirma = "Esta pessoa já esta cadastrada!";
                         return null;
                     }
                 }
             }
-            if (sv.alterarObjeto(fisica.getPessoa())) {
-                if (sv.alterarObjeto(fisica)) {
+            if (dao.update(fisica.getPessoa())) {
+                if (dao.update(fisica)) {
                 } else {
-                    sv.desfazerTransacao();
+                    dao.rollback();
                     msgConfirma = "Erro ao alterar Física!";
                     return null;
                 }
             } else {
-                sv.desfazerTransacao();
+                dao.rollback();
                 msgConfirma = "Erro ao alterar Pessoa!";
                 return null;
             }
@@ -571,7 +582,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB dba = new HomologacaoDBToplink();
 
         if (dba.pesquisaFisicaAgendada(fisica.getId()) != null && agendamento.getId() == -1) {
-            sv.desfazerTransacao();
+            dao.rollback();
             msgConfirma = "Pessoa já foi agendada!";
             return null;
         }
@@ -588,11 +599,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (enderecoFisica.getEndereco().getId() != -1) {
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
-                int ids[] = {1, 3, 4};
+                Object ids[] = {1, 3, 4};
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
-                    if (!sv.inserirObjeto(pesEnd)) {
-                        sv.desfazerTransacao();
+                    pesEnd.setTipoEndereco((TipoEndereco) dao.find(new TipoEndereco(), ids[i]));
+                    if (!dao.save(pesEnd)) {
+                        dao.rollback();
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         return null;
                     }
@@ -610,8 +621,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 end.setEndereco(enderecoFisica.getEndereco());
                 end.setNumero(enderecoFisica.getNumero());
                 end.setPessoa(enderecoFisica.getPessoa());
-                if (!sv.alterarObjeto(end)) {
-                    sv.desfazerTransacao();
+                if (!dao.update(end)) {
+                    dao.rollback();
                     msgConfirma = "Erro ao atualizar endereço da pessoa!";
                     return null;
                 }
@@ -628,7 +639,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) sv.find("Status", 2));
+                agendamento.setStatus((Status) dao.find(new Status(), 2));
                 break;
             }
             case 2: {
@@ -648,33 +659,49 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) sv.find("Status", 2));
+                agendamento.setStatus((Status) dao.find(new Status(), 2));
                 break;
             }
         }
 
         if (pessoaEmpresa.getId() == -1) {
-            if (!sv.inserirObjeto(pessoaEmpresa)) {
-                sv.desfazerTransacao();
+            if (!dao.save(pessoaEmpresa)) {
+                dao.rollback();
                 msgConfirma = "Erro ao inserir Pessoa Empresa!";
                 return null;
             }
         } else {
-            if (!sv.alterarObjeto(pessoaEmpresa)) {
-                sv.desfazerTransacao();
+            if (!dao.update(pessoaEmpresa)) {
+                dao.rollback();
                 msgConfirma = "Erro ao alterar Pessoa Empresa!";
                 return null;
             }
         }
-        if (agendamento.getContato().isEmpty()) {
-            sv.desfazerTransacao();
-            msgConfirma = "Informar o nome do contato!";
-            return null;
+        if (configuracaoHomologacao.isValidaContato()) {
+            if (agendamento.getContato().isEmpty()) {
+                dao.rollback();
+                msgConfirma = "Informar o nome do contato!";
+                return null;
+            }
+        }
+        if (configuracaoHomologacao.isValidaTelefone()) {
+            if (agendamento.getTelefone().isEmpty()) {
+                dao.rollback();
+                msgConfirma = "Informar o telefone!";
+                return null;
+            }
+        }
+        if (configuracaoHomologacao.isValidaEmail()) {
+            if (agendamento.getEmail().isEmpty()) {
+                dao.rollback();
+                msgConfirma = "Informar o email!";
+                return null;
+            }
         }
         if (agendamento.getId() == -1) {
             if (idStatusI == 1) {
                 if (!dba.existeHorarioDisponivel(agendamento.getDtData(), agendamento.getHorarios())) {
-                    sv.desfazerTransacao();
+                    dao.rollback();
                     listaHorarioTransferencia.clear();
                     msgConfirma = "Não existe mais disponibilidade para o horário agendado!";
                     ocultarHorarioAlternativo = false;
@@ -685,17 +712,17 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             agendamento.setAgendador((Usuario) GenericaSessao.getObject("sessaoUsuario")); // USUARIO SESSAO
             agendamento.setRecepcao(null);
             agendamento.setDtEmissao(DataHoje.dataHoje());
-            if (sv.inserirObjeto(agendamento)) {
-                sv.comitarTransacao();
+            if (dao.save(agendamento)) {
+                dao.commit();
                 msgConfirma = "Para imprimir Protocolo clique aqui! ";
             } else {
                 //agendamento.setId(-1);
                 msgConfirma = "Erro ao realizar este agendamento!";
-                sv.desfazerTransacao();
+                dao.rollback();
             }
         } else {
-            if (sv.alterarObjeto(agendamento)) {
-                sv.comitarTransacao();
+            if (dao.update(agendamento)) {
+                dao.rollback();
                 if (isOposicao) {
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
                     styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
@@ -705,7 +732,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 }
             } else {
                 msgConfirma = "Erro ao atualizar agendamento!";
-                sv.desfazerTransacao();
+                dao.rollback();
             }
         }
         strSalvar = "Atualizar";
@@ -1360,8 +1387,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         homologacaoDB.verificaNaoAtendidosSegRegistroAgendamento();
     }
-    
-    public String getEstiloTabela(){
+
+    public String getEstiloTabela() {
         return "";
     }
 
@@ -1413,7 +1440,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 ListaAgendamento listaAgendamento = new ListaAgendamento();
                 Usuario u = new Usuario();
                 listaAgendamento.setAgendamento(agendamento1);
-                
+
                 if (agendamento1.getAgendador() == null) {
                     listaAgendamento.setUsuarioAgendador("** Web User **");
                 } else {
@@ -1424,7 +1451,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 if (dbat.pessoaOposicao(listaAgendamento.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
                     listaAgendamento.setTblEstilo("tblAgendamentoOposicao");
                 }
-                
+
                 listaHorarios.add(listaAgendamento);
             }
             strSalvar = "Atualizar";
@@ -1450,5 +1477,28 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setStyleDestaque(String styleDestaque) {
         this.styleDestaque = styleDestaque;
+    }
+
+    public ConfiguracaoHomologacao getConfiguracaoHomologacao() {
+        if (configuracaoHomologacao.getId() == -1) {
+            Dao dao = new Dao();
+            configuracaoHomologacao = (ConfiguracaoHomologacao) dao.find(new ConfiguracaoHomologacao(), 1);
+        }
+        return configuracaoHomologacao;
+    }
+
+    public void setConfiguracaoHomologacao(ConfiguracaoHomologacao configuracaoHomologacao) {
+        this.configuracaoHomologacao = configuracaoHomologacao;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void increment() {
+        counter--;
+        if (counter == -1) {
+            counter = configuracaoHomologacao.getTempoRefreshAgendamento();
+        }
     }
 }
