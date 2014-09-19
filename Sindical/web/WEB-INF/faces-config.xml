@@ -1583,6 +1583,12 @@
             <to-view-id>/statusAtendimento.jsf</to-view-id>
             <redirect/>
         </navigation-case>          
+        
+        <navigation-case>
+            <from-outcome>configuracaoHomologacao</from-outcome>
+            <to-view-id>/configuracaoHomologacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
