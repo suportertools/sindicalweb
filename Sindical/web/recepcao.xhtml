@@ -59,12 +59,12 @@
                                                 <h:column>
                                                     <br />
                                                     <p:inputText value="#{recepcaoBean.dataInicialString}" rendered="#{!recepcaoBean.ocultaDatapesquisa}" readonly="true" style="font-weight: bold; text-align: center" size="7"/>
-                                                    <p:inputMask value="#{recepcaoBean.dataInicialString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999">
-                                                        <p:ajax event="change" update="@this" global="false"/>
+                                                    <p:inputMask value="#{recepcaoBean.dataInicialString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
+                                                        <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputMask>
                                                     <h:outputLabel value=" até " rendered="#{recepcaoBean.ocultaDatapesquisa}" />
-                                                    <p:inputMask value="#{recepcaoBean.dataFinalString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999">
-                                                        <p:ajax event="change" update="@this" global="false"/>
+                                                    <p:inputMask value="#{recepcaoBean.dataFinalString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
+                                                        <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputMask>
                                                 </h:column>
 
@@ -148,12 +148,12 @@
 
                                                 <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50">
                                                     <center>
-                                                        <c:if test="#{!linha.argumento10.equals('')}">
+                                                        <h:column rendered="${!linha.argumento10.equals('')}">
                                                             <p:commandLink ajax="false" action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha" style="font-size: 8pt!important" />
-                                                        </c:if>
-                                                        <c:if test="#{linha.argumento10.equals('')}">
+                                                        </h:column>
+                                                        <h:column rendered="${linha.argumento10.equals('')}">
                                                             <h:outputLabel value="#{linha.argumento10}" style="font-size: 8pt!important"/>
-                                                        </c:if>
+                                                        </h:column>
                                                     </center>
                                                 </p:column>
 
