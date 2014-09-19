@@ -33,6 +33,9 @@ public class RepisMovimento implements Serializable {
     @JoinColumn(name = "id_patronal", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Patronal patronal;
+    @JoinColumn(name = "id_certidao_tipo", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    private CertidaoTipo certidaoTipo;
 
     public RepisMovimento() {
         this.id = -1;
@@ -43,9 +46,10 @@ public class RepisMovimento implements Serializable {
         this.ano = 0;
         this.repisStatus = new RepisStatus();
         this.patronal = new Patronal();
+        this.certidaoTipo = new CertidaoTipo();
     }
 
-    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus, Patronal patronal) {
+    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus, Patronal patronal, CertidaoTipo certidaoTipo) {
         this.id = id;
         setDataEmissaoString(dataEmissaoString);
         this.contato = contato;
@@ -54,6 +58,7 @@ public class RepisMovimento implements Serializable {
         this.ano = ano;
         this.repisStatus = repisStatus;
         this.patronal = patronal;
+        this.certidaoTipo = certidaoTipo;
     }
 
     public int getId() {
@@ -134,5 +139,13 @@ public class RepisMovimento implements Serializable {
 
     public void setPatronal(Patronal patronal) {
         this.patronal = patronal;
+    }
+
+    public CertidaoTipo getCertidaoTipo() {
+        return certidaoTipo;
+    }
+
+    public void setCertidaoTipo(CertidaoTipo certidaoTipo) {
+        this.certidaoTipo = certidaoTipo;
     }
 }

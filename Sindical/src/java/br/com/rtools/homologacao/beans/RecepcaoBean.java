@@ -164,7 +164,7 @@ public class RecepcaoBean implements Serializable {
     
     public void gerarSenha() {
         // parei aqui.. testar o gerar senha e alterar a variavel recepcao para agendamentoEdit.recepcao
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         di.openTransaction();
         
         if (registro.isSenhaHomologacao()){
@@ -215,6 +215,9 @@ public class RecepcaoBean implements Serializable {
 //            }
         }
         
+        if (agendamentoEdit.getRecepcao().getId() == -1)
+            agendamentoEdit.setRecepcao(null);
+        
         if (!di.update(agendamentoEdit)) {
             //msgConfirma = "Erro ao atualizar agendamento!";
             GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Agendamento!");
@@ -223,7 +226,7 @@ public class RecepcaoBean implements Serializable {
         }
         
         SenhaHomologacao senhaHomologacao = new SenhaHomologacao();
-        Collection<ParametroSenha> list = senhaHomologacao.parametros(agendamentoEdit);
+        Collection<ParametroSenha> list = senhaHomologacao.parametros(agendamentoEdit, di);
         if (!list.isEmpty()) {
             //msgConfirma = "Senha gerada com sucesso";
             GenericaMensagem.info("Sucesso", "Senha Gerada!");
@@ -365,6 +368,9 @@ public class RecepcaoBean implements Serializable {
             //agendamentoEdit.setRecepcao(recepcao);
         }
 
+        if (agendamentoEdit.getRecepcao().getId() == -1)
+            agendamentoEdit.setRecepcao(null);
+        
         if (!di.update(agendamentoEdit)) {
             //msgConfirma = "Erro ao atualizar!";
             GenericaMensagem.error("Erro", "Erro ao atualizar Agendamento!");
@@ -377,7 +383,7 @@ public class RecepcaoBean implements Serializable {
         GenericaMensagem.info("Sucesso", "Agendamento atualizado!");
         di.commit();
     }
-
+    
     public void agendar(DataObject datao) {
         if (getData() != null) {
             if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))

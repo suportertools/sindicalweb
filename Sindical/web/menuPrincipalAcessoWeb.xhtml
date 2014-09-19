@@ -22,29 +22,29 @@
                                 <p:submenu label="CONTABILIDADE" rendered="#{controleAcessoWebBean.pessoaContabilidade != null and controleAcessoWebBean.pessoaContribuinte != null and controleAcessoWebBean.pessoaPatronal == null}">
                                     <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" disabled="#{!controleAcessoWebBean.registro.boletoWeb}" ajax="false"/>
                                     <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" disabled="#{!controleAcessoWebBean.registro.agendamentoWeb}" ajax="false"/>
-                                    <p:menuitem value="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}" ajax="false"/>
+                                    <p:menuitem value="Solicitar Certidões" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}" ajax="false"/>
                                 </p:submenu>
                                 
                                 <p:submenu label="CONTABILIDADE" rendered="#{controleAcessoWebBean.pessoaContabilidade != null and controleAcessoWebBean.pessoaContribuinte == null and controleAcessoWebBean.pessoaPatronal == null}">
                                     <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" disabled="#{!controleAcessoWebBean.registro.boletoWeb}"/>
                                     <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" disabled="#{!controleAcessoWebBean.registro.agendamentoWeb}"/>
-                                    <p:menuitem value="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
+                                    <p:menuitem value="Solicitar Certidões" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
                                 </p:submenu>
                                 
                                 <p:submenu label="CONTRIBUINTE" rendered="#{controleAcessoWebBean.pessoaContabilidade != null and controleAcessoWebBean.pessoaContribuinte != null and controleAcessoWebBean.pessoaPatronal == null}">
                                     <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" disabled="#{controleAcessoWebBean.registro.boletoWeb}"/>
                                     <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" disabled="#{controleAcessoWebBean.registro.agendamentoWeb}"/>
-                                    <p:menuitem value="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
+                                    <p:menuitem value="Solicitar Certidões" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
                                 </p:submenu>
                                 
                                 <p:submenu label="CONTRIBUINTE" rendered="#{controleAcessoWebBean.pessoaContribuinte != null and controleAcessoWebBean.pessoaContabilidade == null and controleAcessoWebBean.pessoaPatronal == null}">
                                     <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" disabled="#{!controleAcessoWebBean.registro.boletoWeb}" />
                                     <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" disabled="#{!controleAcessoWebBean.registro.agendamentoWeb}" />
-                                    <p:menuitem value="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
+                                    <p:menuitem value="Solicitar Certidões" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
                                 </p:submenu>
                                 
                                 <p:submenu label="PATRONAL" rendered="#{controleAcessoWebBean.pessoaPatronal != null}">
-                                    <p:menuitem value="Liberação de REPIS" action="#{chamadaPaginaBean.webLiberacaoREPIS}" />
+                                    <p:menuitem value="Liberação de Certidões" action="#{chamadaPaginaBean.webLiberacaoREPIS}" />
                                 </p:submenu>
                             </p:menu>
                         </h:panelGrid>

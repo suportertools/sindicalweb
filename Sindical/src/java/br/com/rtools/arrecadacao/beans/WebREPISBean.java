@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.beans;
 
+import br.com.rtools.arrecadacao.CertidaoTipo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -27,6 +28,7 @@ import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
 import java.io.Serializable;
@@ -58,12 +60,14 @@ public class WebREPISBean implements Serializable {
     private Pessoa pessoaContabilidade = new Pessoa();
     private Pessoa pessoaSolicitante = new Pessoa();
     private Pessoa escritorio = new Pessoa();
-    private List<SelectItem> listComboPessoa = new ArrayList<SelectItem>();
-    private List<SelectItem> listComboRepisStatus = new ArrayList<SelectItem>();
-    private List<RepisMovimento> listRepisMovimento = new ArrayList<RepisMovimento>();
-    private List<RepisMovimento> listRepisMovimentoPatronal = new ArrayList<RepisMovimento>();
+    private List<SelectItem> listComboPessoa = new ArrayList();
+    private List<SelectItem> listComboRepisStatus = new ArrayList();
+    private List<SelectItem> listComboCertidaoTipo = new ArrayList();
+    private List<RepisMovimento> listRepisMovimento = new ArrayList();
+    private List<RepisMovimento> listRepisMovimentoPatronal = new ArrayList();
     private int idPessoa = 0;
     private int idRepisStatus = 0;
+    private int indexCertidaoTipo = 0;
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
@@ -314,7 +318,7 @@ public class WebREPISBean implements Serializable {
         }
     }
 
-    public String edit(RepisMovimento rm) {
+    public void edit(RepisMovimento rm) {
         repisMovimento = rm;
         if (repisMovimento.getId() != -1) {
             setShowPessoa(false);
@@ -329,7 +333,8 @@ public class WebREPISBean implements Serializable {
                 escritorio = jur.getPessoa();
             }
         }
-        return null;
+//        PF.update("form_libera_repis");
+//        PF.openDialog("dlg_repis");
     }
 
     public String printCertificado(RepisMovimento rm) {
@@ -728,5 +733,34 @@ public class WebREPISBean implements Serializable {
 
     public void setEscritorio(Pessoa escritorio) {
         this.escritorio = escritorio;
+    }
+
+    public List<SelectItem> getListComboCertidaoTipo() {
+        if (listComboCertidaoTipo.isEmpty()){
+            WebREPISDB db = new WebREPISDBToplink();
+            
+            List<CertidaoTipo> result = db.listaCertidaoTipo();
+            
+            for (int i = 0; i < result.size(); i++){
+                listComboCertidaoTipo.add(
+                        new SelectItem(
+                            i, result.get(i).getDescricao(), String.valueOf(result.get(i).getId())
+                        )
+                );
+            }
+        }
+        return listComboCertidaoTipo;
+    }
+
+    public void setListComboCertidaoTipo(List<SelectItem> listComboCertidaoTipo) {
+        this.listComboCertidaoTipo = listComboCertidaoTipo;
+    }
+
+    public int getIndexCertidaoTipo() {
+        return indexCertidaoTipo;
+    }
+
+    public void setIndexCertidaoTipo(int indexCertidaoTipo) {
+        this.indexCertidaoTipo = indexCertidaoTipo;
     }
 }

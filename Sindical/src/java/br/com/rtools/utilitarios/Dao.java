@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class Dao extends DB implements DaoInterface {
 
@@ -158,7 +159,7 @@ public class Dao extends DB implements DaoInterface {
             getEntityManager().merge(objeto);
             getEntityManager().flush();
             return true;
-        } catch (Exception e) {
+        } catch (EJBQLException e) {
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             return false;
         }
