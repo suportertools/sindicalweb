@@ -514,8 +514,7 @@
                                     <p:tab id="i_tab_endereco" title="Endereço da Pessoa Física #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
                                         <h:panelGrid id="i_panel_add_endereco">
                                             <h:panelGrid columns="2" rendered="#{fisicaBean.enderecox.id == -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
-                                                <p:commandButton icon="ui-icon-search" title="Pesquisar Endereço"  action="#{chamadaPaginaBean.pesquisaEndereco}" />
-                                                <p:commandLink ajax="false" value="PESQUISAR ENDEREÇO"  action="#{chamadaPaginaBean.pesquisaEndereco}"/>
+                                                <p:commandButton onclick="PF('dlg_pesquisa_endereco').show()" value="Pesquisar endereço" action="#{pesquisaEnderecoBean.put('pessoaFisica')}" update="@this :form_pessoa_fisica:i_pesquisa_endereco"/>
                                             </h:panelGrid>
 
                                             <h:panelGrid rendered="#{fisicaBean.enderecox.id != -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
@@ -676,11 +675,17 @@
                                 </p:dialog>
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="600" header="Detalhes">
-                                <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                <p:ajax event="close" listener="#{pessoaCardBean.close}"/>
                                 <p:panel id="i_pessoa_juridica_card">
                                     <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
                                         <ui:param name="idPessoa" value="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id}" />
                                     </ui:include>      
+                                </p:panel>
+                            </p:dialog>                  
+                            <p:dialog widgetVar="dlg_pesquisa_endereco" modal="true" resizable="false" height="600" width="1000" header="Pesquisar Endereço">
+                                <p:ajax event="close" listener="#{pesquisaEnderecoBean.clear()}"/>
+                                <p:panel id="i_pesquisa_endereco" styleClass="no-border">                                    
+                                    <ui:include src="templates/templatePesquisaEndereco.xhtml" />    
                                 </p:panel>
                             </p:dialog>                  
                         </h:form>
