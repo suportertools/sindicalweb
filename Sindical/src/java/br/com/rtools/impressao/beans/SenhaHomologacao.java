@@ -8,6 +8,7 @@ import br.com.rtools.impressao.ParametroSenha;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
@@ -66,10 +67,24 @@ public class SenhaHomologacao implements Serializable {
     }
 
     public Collection<ParametroSenha> parametros(Agendamento a) {
-        if (a.getId() == -1) {
+        Dao dao = new Dao();
+        dao.openTransaction();
+        Collection<ParametroSenha> list = parametros(a, dao);
+        if (list == null) {
+            GenericaMensagem.warn("Erro", "Ao gerar senha!");
+            dao.rollback();
             return new ArrayList();
+        } else {
+            GenericaMensagem.warn("Sucesso", "Senha gerada com sucesso!");
+            dao.commit();
         }
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        return list;
+    }
+
+    public Collection<ParametroSenha> parametros(Agendamento a, Dao dao) {
+        if (a.getId() == -1) {
+            return null;
+        }
         Collection lista = new ArrayList<ParametroSenha>();
         HomologacaoDB db = new HomologacaoDBToplink();
         Senha senha = db.pesquisaSenhaAgendamento(a.getId());
@@ -81,35 +96,30 @@ public class SenhaHomologacao implements Serializable {
             senha.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
             senha.setFilial(mc.getFilial());
             senha.setSenha(db.pesquisaUltimaSenha(mc.getFilial().getId()) + 1);
-            sv.abrirTransacao();
-            if (!sv.inserirObjeto(senha)) {
-                GenericaMensagem.warn("Erro", "Ao gerar senha!");
-                sv.desfazerTransacao();
+            if (!dao.save(senha)) {
                 return null;
             }
-            GenericaMensagem.warn("Sucesso", "Senha gerada com sucesso!");
-            sv.comitarTransacao();
         } else {
-            sv.abrirTransacao();
-            if (!sv.alterarObjeto(senha)) {
-                sv.desfazerTransacao();
-                GenericaMensagem.warn("Erro", "Ao atualizar senha");
+            if (!dao.update(senha)) {
                 return null;
             }
-            sv.comitarTransacao();
         }
-        if (senha.getId() != -1) {
-            lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    senha.getFilial().getFilial().getPessoa().getNome(),
-                    senha.getFilial().getFilial().getPessoa().getDocumento(),
-                    senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-                    senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-                    (senha.getAgendamento().getRecepcao() == null) ? "" : senha.getAgendamento().getRecepcao().getPreposto(),
-                    senha.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getNome(),
-                    senha.getUsuario().getPessoa().getNome(),
-                    senha.getData(),
-                    senha.getHora(),
-                    String.valueOf(senha.getSenha())));
+        try {
+            if (senha.getId() != -1) {
+                lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        senha.getFilial().getFilial().getPessoa().getNome(),
+                        senha.getFilial().getFilial().getPessoa().getDocumento(),
+                        senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getNome(),
+                        senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
+                        (senha.getAgendamento().getRecepcao() == null) ? "" : senha.getAgendamento().getRecepcao().getPreposto(),
+                        senha.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getNome(),
+                        senha.getUsuario().getPessoa().getNome(),
+                        senha.getData(),
+                        senha.getHora(),
+                        String.valueOf(senha.getSenha())));
+            }
+        } catch (Exception e) {
+            return null;
         }
         return lista;
     }
