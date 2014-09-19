@@ -37,6 +37,9 @@
                                         <p:menuitem value="Níveis"                  action="#{chamadaPaginaBean.nivel}" />
                                         <p:menuitem value="Filial Departamento"     action="#{chamadaPaginaBean.pagina('filialDepartamento')}" />
                                     </p:submenu>  
+                                    <p:submenu label="Departamentos">  
+                                        <p:menuitem value="Homologação" action="#{chamadaPaginaBean.pagina('configuracaoHomologacao')}" />
+                                    </p:submenu>  
                                     <p:separator />  
                                     <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pagina('pesquisaLog')}" title="Registro de atividades"  />
                                     <c:if test="#{controleUsuarioBean.clienteString.equals('Rtools')}">
