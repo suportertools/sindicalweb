@@ -17,6 +17,12 @@
             <ui:include src="templates/templateLinks.xhtml"/>
         </f:subview>
         <f:view>
+            <!-- <a4j:region>
+                <h:form id="form_count">
+                    <h:outputText id="txt_count" value="# {agendamentoBean.counter}" />
+                    <a4j:poll interval="1000" action="# {agendamentoBean.increment}" render="form_count" limitRender="false" />
+                </h:form>
+            </a4j:region> -->
             <h:form id="form_agendamento">
                 <h:outputLink id="i_status_inativo" value=""></h:outputLink>
                 <center>
@@ -110,19 +116,27 @@
                                     </h:inputText>
                                     <h:outputText value="Pesquisar Endereço" rendered="#{agendamentoBean.enderecoFisica.endereco.id == -1}"/>
                                 </h:column>
-                                <h:outputText value="CARTEIRA: " styleClass="fontePadrao"/>
                                 <h:column>
-                                    <h:inputText id="iCarteira" size="10" value="#{agendamentoBean.fisica.carteira}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
-                                    <h:outputText value="SÉRIE: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
-                                    <h:outputText value="CÓDIGO DO FUNCIONÁRIO: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="iCodigo" size="8" value="#{agendamentoBean.pessoaEmpresa.codigo}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
+                                    <h:outputLabel value="CARTEIRA: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaCarteira}" />
+                                    <h:outputLabel value="CARTEIRA: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaCarteira}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="8">
+                                        <h:inputText id="iCarteira" size="10" value="#{agendamentoBean.fisica.carteira}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                            <a4j:ajax event="blur" render="this"  />
+                                        </h:inputText>
+                                        <h:column>
+                                            <h:outputText value="SÉRIE: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaSerie}"/>
+                                            <h:outputText value="SÉRIE: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaSerie}"/>                                            
+                                        </h:column>
+                                        <h:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                            <a4j:ajax event="blur" render="this"  />
+                                        </h:inputText>
+                                        <h:outputText value="CÓD. DO FUNCIONÁRIO: " styleClass="fontePadrao margin-left-max"/>
+                                        <h:inputText id="iCodigo" size="8" value="#{agendamentoBean.pessoaEmpresa.codigo}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                            <a4j:ajax event="blur" render="this"  />
+                                        </h:inputText>
+                                    </h:panelGrid>
                                 </h:column>
                                 <h:outputText value="SEXO: " styleClass="fontePadrao"/>
                                 <h:selectOneRadio id="idSexo" value="#{agendamentoBean.fisica.sexo}" styleClass="fontePadrao">
@@ -140,7 +154,7 @@
                                         <a4j:ajax event="blur" render="this"  />
                                     </h:inputText>
                                 </h:column>                                
-                                <h:outputText value="ADMISSÃO: " styleClass="fontePadrao"/>
+                                <h:outputText value="ADMISSÃO: " styleClass="fontePadraoVermelho"/>
                                 <h:column>
                                     <h:inputText id="iAdmissao" size="10" value="#{agendamentoBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito data">
                                         <a4j:ajax event="blur" render="this"  />
@@ -219,23 +233,32 @@
                                 <h:column>
                                 </h:column>
                                 <h:column>
-                                    <h:outputText value="Contato: " styleClass="fontePadrao"/>
+                                    <h:outputText value="Contato: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaContato}"/>
+                                    <h:outputText value="Contato: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaContato}"/>
                                 </h:column>
                                 <h:column>
-                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="16" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
-                                        <f:ajax event="blur" render="@this"  />
-                                    </h:inputText>
-                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left"/>
-                                    <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="40" >
-                                        <f:ajax event="blur" render="@this" />
-                                    </h:inputText>
-                                    <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
-                                        <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
-                                    </a4j:commandLink>
-                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left" title="Telefone"/>
-                                    <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="12" styleClass="telefone">
-                                        <f:ajax event="change" render="@this"  />
-                                    </h:inputText>
+                                    <h:panelGrid columns="10">
+                                        <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="16" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
+                                            <f:ajax event="blur" render="@this"  />
+                                        </h:inputText>
+                                        <h:column>
+                                            <h:outputText value="Email: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaEmail}"/>
+                                            <h:outputText value="Email: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaEmail}"/>
+                                        </h:column>
+                                        <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="40" >
+                                            <f:ajax event="blur" render="@this" />
+                                        </h:inputText>
+                                        <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
+                                            <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
+                                        </a4j:commandLink>
+                                        <h:column>
+                                            <h:outputText value="Tel: " styleClass="fontePadrao" title="Telefone" rendered="#{!agendamentoBean.configuracaoHomologacao.validaTelefone}"/>
+                                            <h:outputText value="Tel: " styleClass="fontePadraoVermelho" title="Telefone" rendered="#{agendamentoBean.configuracaoHomologacao.validaTelefone}"/>
+                                        </h:column>
+                                        <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="12" styleClass="telefone">
+                                            <f:ajax event="change" render="@this"  />
+                                        </h:inputText>
+                                    </h:panelGrid>
                                 </h:column>
                                 <h:column>
                                     <h:outputText value="Observação: " styleClass="fontePadrao" />
@@ -245,7 +268,7 @@
                                 </h:column>                                
                             </h:panelGrid>
                             <h:panelGrid columns="5" style="margin-top: 20px;" id="id_menu_acao">
-                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
                                 <a4j:commandLink styleClass="idSalvar iLink"    value="Voltar" action="#{agendamentoBean.cancelar}" render="id_form_agendamento, id_form_agendamento_novo" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
@@ -276,8 +299,13 @@
                             </h:panelGrid>
                         </h:panelGrid> 
                         <div style="overflow:auto; height:600px;">
-                            <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}" style="margin-top: 15px;">
-                                <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
+                            <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}" style="margin-top: 15px;">                                
+                                <f:facet name="footer">
+                                    <h:panelGrid style="margin-top: 25px;">
+                                        <h:outputLabel value="Esta lista é atualizada a cada #{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento} segundos" />
+                                    </h:panelGrid>
+                                </f:facet>
+                                <a4j:poll id="poolMonitor" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}000" render="tbl, @this" />
                                 <rich:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" style="width: 95%" rowClasses="#{objeto.tblEstilo}">
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
