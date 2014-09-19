@@ -5,6 +5,7 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.ServicoPessoa;
@@ -113,6 +114,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
         GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
+        GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
     }
 
     public String getEnderecoCobranca() {
@@ -1678,14 +1680,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public Endereco getEnderecox() {
         if (GenericaSessao.getObject("enderecoPesquisa") != null) {
-            enderecox = (Endereco) GenericaSessao.getObject("enderecoPesquisa");
+            enderecox = (Endereco) GenericaSessao.getObject("enderecoPesquisa", true);
 
             enderecoCompleto = enderecox.getLogradouro().getDescricao() + " "
                     + enderecox.getDescricaoEndereco().getDescricao() + ", "
                     + enderecox.getCidade().getCidade() + " - "
                     + enderecox.getCidade().getUf();
-
-            GenericaSessao.remove("enderecoPesquisa");
 
             if (visibleEditarEndereco) {
                 pessoaEndereco.setEndereco(enderecox);
