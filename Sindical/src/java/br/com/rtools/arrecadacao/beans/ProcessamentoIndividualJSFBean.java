@@ -444,6 +444,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
     public String btnExcluirMov(int index) {
         listMovimentos.remove(index);
         msgConfirma = "";
+        processou = false;
         return null;
     }
 
@@ -495,9 +496,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                 } else {
                     movim = (Movimento) listMovimentos.get(i).getArgumento1();
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
-                    movim.setVencimento(((Movimento) listMovimentos.get(i).getArgumento1()).getVencimento());
+                    String vencto = ((Movimento) listMovimentos.get(i).getArgumento1()).getVencimento();
 
                     if (GerarMovimento.salvarUmMovimento(lote, movim)) {
+                        movim.setVencimento(vencto);
                         msgConfirma = "Gerado com sucesso!";
                     } else {
                         msgConfirma = "Erro ao Gerar boletos!";

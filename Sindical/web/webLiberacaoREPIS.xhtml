@@ -45,10 +45,10 @@
                     </p:panel>
                     <p:dataTable styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" var="repisMovimento" id="tbl" style="width: 100%" rowKey="it" emptyMessage="Nenhum registro encontrado"> 
                         <p:column styleClass="text-center" headerText="ID" width="30" rendered="false">
-                            <p:commandLink action="#{webREPISBean.edit(repisMovimento)}" value="#{repisMovimento.id}" onclick="PF('dlg_repis').show();" update=":form_libera_repis:idShowPessoa"/>
+                            <p:commandLink action="#{webREPISBean.edit(repisMovimento)}" value="#{repisMovimento.id}" update=":form_libera_repis:idShowPessoa"/>
                         </p:column>
                         <p:column headerText="CNPJ/Nome" width="400">
-                            <p:commandLink action="#{webREPISBean.edit(repisMovimento)}" value="#{repisMovimento.pessoa.documento} - #{repisMovimento.pessoa.nome}" onclick="PF('dlg_repis').show();" update=":form_libera_repis:idShowPessoa" style="font-size: 8pt!important"/>
+                            <p:commandLink action="#{webREPISBean.edit(repisMovimento)}" value="#{repisMovimento.pessoa.documento} - #{repisMovimento.pessoa.nome}" style="font-size: 8pt!important" onclick="PF('dlg_repis').show()" update=":form_libera_repis:idShowPessoa :form_libera_repis:i_header"/>
                         </p:column>
                         <p:column headerText="Prot." width="50" style="text-align: center">
                             <p:outputLabel value="#{repisMovimento.id}"/>
@@ -58,6 +58,9 @@
                         </p:column>
                         <p:column headerText="Emissão" width="70" style="text-align: center">
                             <p:outputLabel value="#{repisMovimento.dataEmissaoString}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" style="text-align: center">
+                            <p:outputLabel value="#{repisMovimento.certidaoTipo.descricao}"/>
                         </p:column>
                         <p:column headerText="Solicitante">
                             <p:outputLabel value="#{repisMovimento.contato}" style="font-size: 8pt!important"/>
@@ -74,8 +77,12 @@
                         <h:outputText id="outConfirma" value="#{webREPISBean.message}" />
                         <br /><br />
                         <p:commandButton value="OK" action="#{webREPISBean.limparRepisLiberacao}" title="OK" />
-                    </p:dialog>                            
-                    <p:dialog widgetVar="dlg_repis" width="1000" modal="true" closable="true" header="Liberação Repis">
+                    </p:dialog> 
+                    
+                    <p:dialog widgetVar="dlg_repis" width="1000" modal="true" closable="true" dynamic="true">
+                        <f:facet name="header">
+                            <h:outputLabel id="i_header" value="Liberação #{webREPISBean.repisMovimento.certidaoTipo.descricao}"></h:outputLabel>
+                        </f:facet>
                         <h:panelGrid id="idShowPessoa">
                             <h:panelGrid columns="2">
                                 <h:outputText value="Status: " />
@@ -97,7 +104,7 @@
                                 <h:outputText value="#{webREPISBean.escritorio.nome}"  />
                             </h:panelGrid>
                             <h:panelGrid columns="2">
-                                <h:outputText value="CNPJ: " />edit
+                                <h:outputText value="CNPJ: " />
                                 <h:outputText value="#{webREPISBean.repisMovimento.pessoa.documento}"  />
                             </h:panelGrid>
                             <h:panelGrid columns="2">

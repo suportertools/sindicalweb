@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.db;
 
+import br.com.rtools.arrecadacao.CertidaoTipo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -51,4 +52,6 @@ public interface WebREPISDB {
     public Patronal pesquisaPatronalPorSolicitante(int id_solicitante);
 
     public List<RepisMovimento> listaProtocolosPorPatronal(int idPatronal);
+    
+    public List<CertidaoTipo> listaCertidaoTipo();
 }

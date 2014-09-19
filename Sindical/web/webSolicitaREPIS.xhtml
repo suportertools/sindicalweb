@@ -43,7 +43,7 @@
                 </p:panel>
             </h:form>
             <p:panel styleClass="wrapper" style="border: 0px;">
-                <h:outputText value="Solicitação de REPIS" styleClass="fonteHeader" />
+                <h:outputText value="Solicitação de Certidões" styleClass="fonteHeader" />
                 <div class="clear"></div>
                 <h:form id="form_sr">
                     <p:panel styleClass="fundoCinza">
@@ -63,9 +63,16 @@
                             <p:outputLabel value=" -- Somente para SOLICITAR" />
                         </p:tab>
                     </p:accordionPanel>
-                    <h:panelGrid columns="2" styleClass="margin-top-max">
-                        <p:commandButton value="Solicitar" action="#{webREPISBean.solicitarREPIS}" update=":form_sr:" oncomplete="PF('dlg_message').show()" />
-                        <p:commandButton value="Andamento do Protocolo" action="#{webREPISBean.clear}" update=":form_sr_list:" />
+                    <h:panelGrid columns="2" styleClass="margin-top-max" style="width: 100%">
+                        <h:column>
+                            <p:commandButton value="Solicitar" action="#{webREPISBean.solicitarREPIS}" update=":form_sr:" oncomplete="PF('dlg_message').show()" style="float: left"/>
+                            <p:selectOneMenu id="i_certidao_tipo" value="#{webREPISBean.indexCertidaoTipo}" style="float: left">
+                                <f:selectItems value="#{webREPISBean.listComboCertidaoTipo}"/>
+                            </p:selectOneMenu>
+                        </h:column>
+                        <h:column>
+                            <p:commandButton value="Ver andamento do Protocolo" action="#{webREPISBean.clear}" update=":form_sr_list:" style="float: right"/>
+                        </h:column>
                     </h:panelGrid>
                     <p:panel rendered="false">
                         <h:outputLabel styleClass="fonteExtratoTela" value="Enviar arquivos"/>
@@ -135,7 +142,7 @@
 
                     <p:dataTable styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimento}" var="repisMovimento" id="tbl" style="width: 100%" rendered="#{webREPISBean.showProtocolo}" emptyMessage="Nenhum registro encontrado!">
                         <f:facet name="header">
-                            Lista de REPIS solicitado
+                            Lista de Certidões Solicitadas
                         </f:facet> 
                         <p:column headerText="CNPJ" width="100" styleClass="text-center">
                             <h:outputText value="#{repisMovimento.pessoa.documento}"/>
@@ -154,6 +161,9 @@
                         </p:column>
                         <p:column headerText="Solicitante" styleClass="text-center">
                             <h:outputText value="#{repisMovimento.contato}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" styleClass="text-center">
+                            <h:outputText value="#{repisMovimento.certidaoTipo.descricao}"/>
                         </p:column>
                         <p:column headerText="Certificado" width="25" styleClass="text-center">
                             <h:commandLink action="#{webREPISBean.printCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3}">

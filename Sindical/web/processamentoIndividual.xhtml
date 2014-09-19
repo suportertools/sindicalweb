@@ -169,36 +169,35 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <h:panelGrid id="i_panel_b" style="margin-top: 15px; width: 100%">
-                                <h:panelGrid rendered="#{processamentoIndividualBean.listaMovimentos.size() > 0}" columns="5">
-                                    <p:column><br />
-                                        <p:commandButton value="Gerar Guias" update="i_panel_b i_msg" disabled="#{controleAcessoBean.botaoSalvar}" action="#{processamentoIndividualBean.gerarBoleto}" style="margin-right: 20px"/>
+                            <p:panel id="i_panel_b" styleClass="fundoCinza" style="margin-top: 15px;">
+                                <h:panelGrid rendered="#{processamentoIndividualBean.listaMovimentos.size() > 0}" columns="4" style=" width: 100%">
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Gerar Guias" update="i_panel_b i_msg" disabled="#{controleAcessoBean.botaoSalvar}" action="#{processamentoIndividualBean.gerarBoleto}" />
                                     </p:column>
 
                                     <p:column>
+                                        <h:panelGrid columns="2">
                                         <h:outputLabel value=" Enviar email para " rendered="#{processamentoIndividualBean.processou}"/><br />
                                         <p:selectOneMenu rendered="#{processamentoIndividualBean.processou}" value="#{processamentoIndividualBean.tipoEnvio}" style="padding-right: 20px;">
                                             <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
                                             <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
                                         </p:selectOneMenu>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton value="Enviar" action="#{processamentoIndividualBean.enviarEmail}" rendered="#{processamentoIndividualBean.processou}" style="margin-right: 20px" update="i_msg"/>
+                                        <p:commandButton value="Enviar" action="#{processamentoIndividualBean.enviarEmail}" rendered="#{processamentoIndividualBean.processou}" update="i_msg"/>
+                                        </h:panelGrid>
                                     </p:column>
 
                                     <p:column>
                                         <br />
-                                        <p:commandButton ajax="false" value="Limpar Todos" action="#{processamentoIndividualBean.limparTodos}" rendered="#{processamentoIndividualBean.processou}" style="margin-right: 230px"/>
+                                        <p:commandButton ajax="false" value="Limpar Todos" action="#{processamentoIndividualBean.limparTodos}" rendered="#{processamentoIndividualBean.processou}"/>
                                     </p:column>
                                     
                                     <p:column>
-                                        <p:selectBooleanCheckbox value="#{processamentoIndividualBean.imprimeVerso}" rendered="#{processamentoIndividualBean.processou}" itemLabel="Imprimir Verso"/><br />
+                                        <p:selectBooleanCheckbox value="#{processamentoIndividualBean.imprimeVerso}" rendered="#{processamentoIndividualBean.processou}" itemLabel="Imprimir Verso" style="float: right"/><br />
                                         <h:commandLink value="Clique aqui para visualizar Boletos" action="#{processamentoIndividualBean.imprimirBoleto}" rendered="#{processamentoIndividualBean.processou}" style="float: right; font-size: 12pt!important" target="_blank"/>
                                     </p:column>
                                 </h:panelGrid>
-                            </h:panelGrid>                              
+                            </p:panel>                              
                             
                             <p:dialog widgetVar="i_dlg_email" header="Envio de Email para" resizable="false" modal="true">
                                 <h:panelGrid id="i_email_para" style="width: 100%" columns="1">

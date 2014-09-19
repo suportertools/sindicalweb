@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.db;
 
+import br.com.rtools.arrecadacao.CertidaoTipo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -308,6 +309,22 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         } catch (Exception e) {
         }
         return null;
+    }
+    
+    public List<CertidaoTipo> listaCertidaoTipo(){
+        try {
+            Query qry = getEntityManager().createQuery(
+                      " SELECT ct "
+                    + "   FROM CertidaoTipo ct "
+                    + "  WHERE ct.ativo = true "
+                    + "  ORDER BY ct.id "
+            );
+            
+            return qry.getResultList();
+        }catch(Exception e){
+            
+        }
+        return new ArrayList();
     }
 
 }

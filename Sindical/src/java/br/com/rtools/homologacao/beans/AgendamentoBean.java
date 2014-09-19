@@ -689,7 +689,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 sv.comitarTransacao();
                 msgConfirma = "Para imprimir Protocolo clique aqui! ";
             } else {
-                agendamento.setId(-1);
+                //agendamento.setId(-1);
                 msgConfirma = "Erro ao realizar este agendamento!";
                 sv.desfazerTransacao();
             }
