@@ -84,7 +84,7 @@ public class Agendamento implements Serializable {
         this.telefone = "";
         this.email = "";
         this.filial = new Filial();
-        this.recepcao = new Recepcao();
+        this.recepcao = null;
         this.observacao = "";
     }
 

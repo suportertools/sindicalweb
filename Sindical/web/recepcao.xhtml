@@ -13,10 +13,17 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
+            .tblListaRecepcaox{
+                background-color: #39ff9c!important;
+                //color: #CCFF66!important;
+            }
+            .tblAgendamentoOposicaox{
+                background-color: #ff8282!important;
+                //color: #CCFF66!important;
+            }
         </style>
 
         <script type="text/javascript">
-
         </script>
     </h:head>
     <h:body>
@@ -261,7 +268,7 @@
                                             </h:column>     
                                             <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
                                                 <h:outputLabel value="Horário de Chegada"  style="color: red"/><br />
-                                                <p:inputMask value="#{recepcaoBean.agendamentoEdit.recepcao.horaInicialFuncionario}" size="13" mask="99:99" style="text-align: center"/>
+                                                <p:inputMask value="#{recepcaoBean.recepcao.horaInicialFuncionario}" size="13" mask="99:99" style="text-align: center"/>
                                             </h:column>
                                         </h:panelGrid>
                                         
@@ -276,13 +283,13 @@
                                             <h:panelGrid columns="3">
                                                 <h:column>
                                                     <h:outputLabel value="Preposto"  style="color: red"/><br />
-                                                    <p:inputText value="#{recepcaoBean.agendamentoEdit.recepcao.preposto}" converter="#{toUpperCase}" size="40">
+                                                    <p:inputText value="#{recepcaoBean.recepcao.preposto}" converter="#{toUpperCase}" size="40">
                                                         <p:ajax event="change" update="@this" global="false" />
                                                     </p:inputText>
                                                 </h:column>
                                                 <h:column>
                                                     <h:outputLabel value="Horário de Chegada"  style="color: red;"/><br />
-                                                    <p:inputMask value="#{recepcaoBean.agendamentoEdit.recepcao.horaInicialPreposto}" size="13" mask="99:99" style="text-align: center"/>
+                                                    <p:inputMask value="#{recepcaoBean.recepcao.horaInicialPreposto}" size="13" mask="99:99" style="text-align: center"/>
                                                 </h:column>
                                             </h:panelGrid>
                                         </p:panel>
@@ -352,8 +359,8 @@
                                 <p:dialog widgetVar="dlg_gerar_senha" header="Gerar uma Senha" resizable="false" modal="true">
                                     <h:outputLabel value="Deseja realmente GERAR uma senha? " />
                                     <h:panelGrid style="clear: both" columns="2">
-                                        <p:commandButton value="Sim" oncomplete="PF('dlg_gerar_senha').hide()" action="#{recepcaoBean.gerarSenha()}" update="formRecepcao" title="Gerar a Senha" style="float: left" icon="ui-icon-check"/>
-                                        <p:commandButton value="Não" onclick="PF('dlg_gerar_senha').hide()" style="float: left" icon="ui-icon-close"/>  
+                                        <p:commandButton value="Sim" onclick="PF('dlg_gerar_senha').hide()" action="#{recepcaoBean.gerarSenha()}" update="formRecepcao" title="Gerar a Senha" style="float: left" icon="ui-icon-check" ajax="false"/>
+                                        <p:commandButton value="Fechar" onclick="PF('dlg_gerar_senha').hide()" style="float: left" icon="ui-icon-close"/>  
                                     </h:panelGrid>
                                 </p:dialog>
                                 
