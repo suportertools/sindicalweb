@@ -133,7 +133,7 @@
                                     </h:panelGrid>
                                 </div>
                                 <div style="float: left; width: 400px;" class="margin-left-max">
-                                    <c:if test="#{agendaTelefoneBean.agenda.id != -1}">
+                                    <h:column rendered="#{agendaTelefoneBean.agenda.id != -1}">
                                         <p:panel header="Telefone">
                                             <p:messages id="messages_telefone" showDetail="true" autoUpdate="true" closable="true"/>
                                             <h:panelGrid id="i_panel_cadastro_telefone">
@@ -165,9 +165,9 @@
                                                 </p:row>
                                             </h:panelGrid>
                                         </p:panel>
-                                        <p:panel  id="tbl_agenda_telefone" styleClass="margin-top-max" header="Lista de telefones">
-                                            <c:if test="#{agendaTelefoneBean.listAgendaTelefones.size() > 0}">
-                                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listAgendaTelefones}">
+                                        <p:panel  id="tbl_agenda_telefone" styleClass="margin-top-max">
+                                            <h:column rendered="#{agendaTelefoneBean.listAgendaTelefones.size() > 0}">
+                                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listAgendaTelefones}" emptyMessage="Nenhum registro encontrado!">
                                                     <p:column headerText="Tipo">
                                                         <p:commandLink action="#{agendaTelefoneBean.editAgendaTelefone(telefone)}" value="#{telefone.tipoTelefone.descricao}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
                                                     </p:column>
@@ -181,14 +181,13 @@
                                                         <p:commandButton icon="ui-icon-trash" action="#{agendaTelefoneBean.removeAgendaTelefone(telefone)}" update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone"/>
                                                     </p:column>                                    
                                                 </p:dataTable>
-                                            </c:if>
-                                            <c:if test="#{agendaTelefoneBean.listAgendaTelefones.size() == 0}">
-                                                <f:facet name="header">
-                                                    Lista de telefones - Nenhum telefone cadastrado!
-                                                </f:facet> 
-                                            </c:if>
+                                            </h:column>
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Nenhum telefone cadastrado!" rendered="#{agendaTelefoneBean.listAgendaTelefones.size() == 0}"/>
+                                                <h:outputLabel value="Lista de telefones" rendered="#{agendaTelefoneBean.listAgendaTelefones.size() > 0}"/>
+                                            </f:facet>
                                         </p:panel>
-                                    </c:if>
+                                    </h:column>
                                 </div>
                             </div>
                         </p:panel>
