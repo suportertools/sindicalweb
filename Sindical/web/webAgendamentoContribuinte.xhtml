@@ -91,7 +91,7 @@
                                     <h:outputLabel value="Protocolo" style="font-weight: bold"/><br />
                                     <h:outputText  value="#{linha.argumento9.id}"/>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <h:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                     <h:outputText value="#{linha.argumento6}"/>
@@ -201,7 +201,7 @@
                                 </p:inputText>
                             </h:panelGrid>
                         </h:panelGrid>
-                        
+
                         <h:panelGrid columns="4" style="margin-top: 10px">
                             <h:column>
                                 <h:outputLabel value="Setor"/><br />
@@ -211,14 +211,21 @@
                             </h:column>
 
                             <h:column>
-                                <h:outputLabel value="Carteira"/><br />
+                                <h:column>
+                                    <h:outputLabel value="Carteira" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaCarteira}" styleClass="font-color-red"/>
+                                    <h:outputLabel value="Carteira" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaCarteira}"/><br />
+                                </h:column>
                                 <p:inputText size="10" value="#{webAgendamentoContribuinteBean.fisica.carteira}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}">
 
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
-                                <h:outputLabel value="Série" /><br />
+                                <h:column>
+                                    <h:outputLabel value="Série" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaSerie}" styleClass="font-color-red"/>
+                                    <h:outputLabel value="Série" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaSerie}" />
+                                    <br />
+                                </h:column>
                                 <p:inputText size="15" maxlength="15" value="#{webAgendamentoContribuinteBean.fisica.serie}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}">
 
                                 </p:inputText>
@@ -243,12 +250,12 @@
                                     <br />
                                     <p:inputText size="50" value="#{webAgendamentoContribuinteBean.profissao.cbo} - #{webAgendamentoContribuinteBean.profissao.profissao}" readonly="true" onclick="PF('dlg_profissao').show()" />
                                 </h:column>
-                                
+
                                 <h:column>
-                                    <h:outputLabel value="Admissão" /><br />
+                                    <h:outputLabel value="Admissão" styleClass="font-color-red"/><br />
                                     <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:outputLabel value="Demissão" style="color: red; font-weight: bold"/><br />
                                     <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
@@ -300,7 +307,10 @@
 
                             <h:panelGrid id="i_panel_contato" columns="5">
                                 <h:column>
-                                    <h:outputText value="Contato"/><br />
+                                    <h:column>
+                                        <h:outputLabel value="Contato" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaContato}" styleClass="font-color-red"/>
+                                        <h:outputText value="Contato" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaContato}"/><br />
+                                    </h:column>
                                     <p:inputText value="#{webAgendamentoContribuinteBean.agendamento.contato}" size="20" converter="#{toUpperCase}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:inputText>
@@ -308,7 +318,10 @@
 
 
                                 <h:column>
-                                    <h:outputText value="E-mail" /><br />
+                                    <h:column>
+                                        <h:outputLabel value="Email" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaEmail}" styleClass="font-color-red"/>
+                                        <h:outputText value="Email" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaEmail}"/><br />
+                                    </h:column>
                                     <p:inputText value="#{webAgendamentoContribuinteBean.agendamento.email}" size="30" converter="#{toLowerCase}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:inputText>
@@ -316,7 +329,10 @@
 
                                 <h:column>
                                     <c:if test="#{webAgendamentoContribuinteBean.tipoTelefone.equals('telefone')}">
-                                        <h:outputLabel value="Telefone"/><br />
+                                        <h:column>
+                                            <h:outputLabel value="Telefone" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaTelefone}" styleClass="font-color-red"/>
+                                            <h:outputText value="Telefone" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaTelefone}"/><br />
+                                        </h:column>
                                         <p:inputMask value="#{webAgendamentoContribuinteBean.agendamento.telefone}" style="text-align: center" mask="(99) 9999-9999" size="13">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputMask>
@@ -328,23 +344,23 @@
                                         </p:inputMask>
                                     </c:if>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <br />
                                     <p:commandButton icon="ui-icon-help" title="Alterar Máscara do Telefone" action="#{webAgendamentoContribuinteBean.alterarTipoMascara()}" update="i_panel_contato" global="false"/>
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>
-                        
+
                         <h:outputLabel value="** CONFIRA AS INFORMAÇÕES LANÇADAS. EM CASO DE ERRO ENTRAR EM CONTATO COM O SINDICATO **" style="color: red"/>
-                        
+
                         <h:panelGrid columns="2" style="width: 100%">
                             <h:column>
                                 <p:commandButton value="Agendar" action="#{webAgendamentoContribuinteBean.salvar}" rendered="#{webAgendamentoContribuinteBean.agendamento.id == -1}" update=":formAgendamentoContribuinte:tbl :formAgendamentoContribuinte:i_panel_agendamento"/>
                                 <p:commandButton value="Novo" action="#{webAgendamentoContribuinteBean.limpar()}" rendered="#{webAgendamentoContribuinteBean.agendamento.id == -1}" update=":formAgendamentoContribuinte:i_panel_agendamento"/>
                                 <p:commandButton value="Fechar" onclick="PF('dlg_agendamento').hide()"/>
                             </h:column>
-                            
+
                             <h:column>
                                 <p:commandButton value="Imprimir Protocolo" action="#{protocoloAgendamento.imprimir(webAgendamentoContribuinteBean.agendamento)}" rendered="#{webAgendamentoContribuinteBean.agendamento.id != -1}" style="float: right" ajax="false"/>
                             </h:column>
@@ -358,7 +374,7 @@
                     <p:commandButton value="Sim" action="#{protocoloAgendamento.imprimir(webAgendamentoContribuinteBean.agendamento)}" onclick="PF('dlg_protocolo').hide()" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
                     <p:commandButton value="Não" onclick="PF('dlg_protocolo').hide()" style="float: left" icon="ui-icon-close"/>    
                 </p:dialog>
-                    
+
                 <p:dialog widgetVar="dlg_endereco" header="Endereço" resizable="false" modal="true" width="400">
                     <h:panelGrid id="i_panel_endereco">
                         <h:panelGrid columns="2">
