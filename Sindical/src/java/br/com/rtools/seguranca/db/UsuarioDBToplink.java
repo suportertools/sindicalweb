@@ -24,7 +24,6 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
 
     @Override
     public Pessoa ValidaUsuarioWeb(String login, String senha) {
-        Pessoa result = null;
         try {
             Query qry = getEntityManager().createQuery(
                     "select pes"
@@ -33,11 +32,13 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
                     + "   and pes.senha = :sen");
             qry.setParameter("log", login);
             qry.setParameter("sen", senha);
-            result = (Pessoa) qry.getSingleResult();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return (Pessoa) qry.getSingleResult();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
         }
-        return result;
+        return null;
     }
 
     @Override
