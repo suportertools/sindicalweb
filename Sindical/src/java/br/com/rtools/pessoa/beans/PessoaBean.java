@@ -118,10 +118,12 @@ public class PessoaBean implements Serializable {
 
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
+        listaPessoa.clear();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
+        listaPessoa.clear();
     }
 
     public String pesquisarPessoa() {
@@ -129,7 +131,7 @@ public class PessoaBean implements Serializable {
         return "pesquisaPessoa";
     }
 
-    public String editar(Pessoa p) {
+    public synchronized String editar(Pessoa p) {
         pessoa = p;
         GenericaSessao.put("pessoaPesquisa", pessoa);
         GenericaSessao.put("linkClicado", true);
@@ -178,7 +180,10 @@ public class PessoaBean implements Serializable {
     }
 
     public String getMascaraPesquisa() {
-        descPesquisa = "";
         return Mask.getMascaraPesquisa(porPesquisa, true);
+    }
+    
+    public void limparMascara() {
+        descPesquisa = "";
     }
 }
