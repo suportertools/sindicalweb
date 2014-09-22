@@ -54,7 +54,7 @@
                         </h:panelGrid>        
                     </p:panel>
                 </h:panelGrid>
-                
+
                 <h:panelGrid style="margin: 0 auto; width: 1024px;">
                     <h:panelGroup style="overflow:auto; height:150px" layout="block">
                         <p:selectOneRadio layout="grid" value="#{webAgendamentoContabilidadeBean.idSelectRadio}" columns="1">
@@ -69,7 +69,7 @@
                 <h:panelGrid style="margin: 0 auto; width: 1024px">
                     <p:messages autoUpdate="true" closable="true" showDetail="true"/>
                 </h:panelGrid>
-                
+
                 <h:panelGrid style="margin: 0 auto; width: 1024px">
                     <p:dataTable value="#{webAgendamentoContabilidadeBean.listaHorarios}" var="linha" id="tbl" emptyMessage="Nenhum horário para esta data!">
                         <p:column width="15">  
@@ -83,7 +83,7 @@
                         <p:column width="70" style="text-align: center">
                             <h:outputText value="#{linha.argumento8}"/>
                         </p:column>
-                        
+
                         <p:column headerText="CNPJ" width="150" style="text-align: center">
                             <h:outputText value="#{linha.argumento1}"/>
                         </p:column>
@@ -106,7 +106,7 @@
                                     <h:outputLabel value="Protocolo" style="font-weight: bold"/><br />
                                     <h:outputText  value="#{linha.argumento9.id}"/>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <h:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                     <h:outputText value="#{linha.argumento6}"/>
@@ -130,7 +130,7 @@
                         </p:rowExpansion>
                     </p:dataTable>
                 </h:panelGrid>
-                
+
                 <p:commandLink styleClass="idNovo iLink" style="width: 200px;" value="Agendar sem Horário" action="#{webAgendamentoContabilidadeBean.novoProtocolo()}" rendered="#{webAgendamentoContabilidadeBean.registro.agendarSemHorarioWeb}"/>
 
                 <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true">
@@ -164,7 +164,7 @@
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>
-                        
+
                         <h:panelGrid columns="4" style="margin-top: 20px; width: 820px">
                             <h:column>
                                 <h:outputLabel value="CPF" style="color: red; font-weight: bold"/><br />
@@ -193,7 +193,7 @@
                                 </p:selectOneButton>
                             </h:column>
                         </h:panelGrid>
-                        
+
                         <h:panelGrid columns="4" style="margin-top: 10px">
                             <p:commandButton value="Endereço" disabled="#{webAgendamentoContabilidadeBean.fisica.id != -1}" onclick="PF('dlg_endereco').show()"/>
                             <h:panelGrid rendered="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
@@ -216,7 +216,7 @@
                                 </p:inputText>
                             </h:panelGrid>
                         </h:panelGrid>
-                        
+
                         <h:panelGrid columns="4" style="margin-top: 10px">
                             <h:column>
                                 <h:outputLabel value="Setor"/><br />
@@ -224,16 +224,23 @@
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
-
                             <h:column>
-                                <h:outputLabel value="Carteira"/><br />
+
+                                <h:column>
+                                    <h:outputLabel value="Carteira" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaCarteira}" styleClass="font-color-red"/>
+                                    <h:outputLabel value="Carteira" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaCarteira}"/><br />
+                                </h:column>
                                 <p:inputText size="10" value="#{webAgendamentoContabilidadeBean.fisica.carteira}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
 
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
-                                <h:outputLabel value="Série" /><br />
+                                <h:column>
+                                    <h:outputLabel value="Série" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaSerie}" styleClass="font-color-red"/>
+                                    <h:outputLabel value="Série" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaSerie}" />
+                                    <br />
+                                </h:column>
                                 <p:inputText size="15" maxlength="15" value="#{webAgendamentoContabilidadeBean.fisica.serie}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
 
                                 </p:inputText>
@@ -246,7 +253,7 @@
                                 </p:inputText>
                             </h:column>
                         </h:panelGrid>   
-                        
+
                         <p:panel styleClass="fundoCinza">
                             <h:panelGrid columns="4">
                                 <h:column>
@@ -258,19 +265,19 @@
                                     <br />
                                     <p:inputText size="50" value="#{webAgendamentoContabilidadeBean.profissao.cbo} - #{webAgendamentoContabilidadeBean.profissao.profissao}" readonly="true" onclick="PF('dlg_profissao').show()" />
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:outputLabel value="Admissão" /><br />
                                     <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:outputLabel value="Demissão" style="color: red; font-weight: bold"/><br />
                                     <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>
-                        
+
                         <p:panel style="margin-top: 10px">
                             <h:panelGrid columns="4">
                                 <h:column>
@@ -303,7 +310,10 @@
 
                             <h:panelGrid id="i_panel_contato" columns="5">
                                 <h:column>
-                                    <h:outputText value="Contato"/><br />
+                                    <h:column>
+                                        <h:outputLabel value="Contato" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaContato}" styleClass="font-color-red"/>
+                                        <h:outputText value="Contato" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaContato}"/><br />
+                                    </h:column>
                                     <p:inputText value="#{webAgendamentoContabilidadeBean.agendamento.contato}" size="20" converter="#{toUpperCase}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:inputText>
@@ -311,7 +321,10 @@
 
 
                                 <h:column>
-                                    <h:outputText value="E-mail" /><br />
+                                    <h:column>
+                                        <h:outputLabel value="Email" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaEmail}" styleClass="font-color-red"/>
+                                        <h:outputText value="Email" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaEmail}"/><br />
+                                    </h:column>
                                     <p:inputText value="#{webAgendamentoContabilidadeBean.agendamento.email}" size="30" converter="#{toLowerCase}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:inputText>
@@ -319,7 +332,10 @@
 
                                 <h:column>
                                     <c:if test="#{webAgendamentoContabilidadeBean.tipoTelefone.equals('telefone')}">
-                                        <h:outputLabel value="Telefone"/><br />
+                                        <h:column>
+                                            <h:outputLabel value="Telefone" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaTelefone}" styleClass="font-color-red"/>
+                                            <h:outputText value="Telefone" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaTelefone}"/><br />
+                                        </h:column>
                                         <p:inputMask value="#{webAgendamentoContabilidadeBean.agendamento.telefone}" style="text-align: center" mask="(99) 9999-9999" size="13">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputMask>
@@ -331,37 +347,37 @@
                                         </p:inputMask>
                                     </c:if>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <br />
                                     <p:commandButton icon="ui-icon-help" title="Alterar Máscara do Telefone" action="#{webAgendamentoContabilidadeBean.alterarTipoMascara()}" update="i_panel_contato" global="false"/>
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>
-                        
+
                         <h:outputLabel value="** CONFIRA AS INFORMAÇÕES LANÇADAS. EM CASO DE ERRO ENTRAR EM CONTATO COM O SINDICATO **" style="color: red"/>
-                        
+
                         <h:panelGrid columns="2" style="width: 100%">
                             <h:column>
                                 <p:commandButton value="Agendar" action="#{webAgendamentoContabilidadeBean.salvar}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update=":formAgendamentoContabilidade:tbl :formAgendamentoContabilidade:i_panel_agendamento"/>
                                 <p:commandButton value="Novo" action="#{webAgendamentoContabilidadeBean.limpar()}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update=":formAgendamentoContabilidade:i_panel_agendamento"/>
                                 <p:commandButton value="Fechar" onclick="PF('dlg_agendamento').hide()"/>
                             </h:column>
-                            
+
                             <h:column>
                                 <p:commandButton value="Imprimir Protocolo" action="#{protocoloAgendamento.imprimir(webAgendamentoContabilidadeBean.agendamento)}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id != -1}" style="float: right" ajax="false"/>
                             </h:column>
                         </h:panelGrid>                        
                     </h:panelGrid>                
                 </p:dialog>
-                
+
                 <p:dialog widgetVar="dlg_protocolo" header="Imprimir Protocolo de Homologação" resizable="false" modal="true" width="300">
                     <h:outputLabel value="IMPRIMIR ESSE PROTOCOLO?" />
                     <br /><br />
                     <p:commandButton value="Sim" action="#{protocoloAgendamento.imprimir(webAgendamentoContabilidadeBean.agendamento)}" onclick="PF('dlg_protocolo').hide()" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
                     <p:commandButton value="Não" onclick="PF('dlg_protocolo').hide()" style="float: left" icon="ui-icon-close"/>    
                 </p:dialog>
-                    
+
                 <p:dialog widgetVar="dlg_endereco" header="Endereço" resizable="false" modal="true" width="400">
                     <h:panelGrid id="i_panel_endereco">
                         <h:panelGrid columns="2">
