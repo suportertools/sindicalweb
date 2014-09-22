@@ -85,7 +85,7 @@ public class RecepcaoBean implements Serializable {
     private Date dataFinal;
     private Fisica fisica;
     private Juridica juridica;
-    //private Recepcao recepcao;
+    private Recepcao recepcao;
     private Registro registro;
     private Profissao profissao;
     private int idMotivoDemissao;
@@ -132,7 +132,7 @@ public class RecepcaoBean implements Serializable {
         dataFinal = DataHoje.dataHoje();
         fisica = new Fisica();
         juridica = new Juridica();
-        //recepcao = new Recepcao();
+        recepcao = new Recepcao();
         registro = new Registro();
         profissao = new Profissao();
         idMotivoDemissao = 0;
@@ -160,6 +160,7 @@ public class RecepcaoBean implements Serializable {
     public void fecharModal(){
         agendamentoEdit = new Agendamento();
         openDialog = false;
+        recepcao = new Recepcao();
     }
     
     public void gerarSenha() {
@@ -168,12 +169,13 @@ public class RecepcaoBean implements Serializable {
         di.openTransaction();
         
         if (registro.isSenhaHomologacao()){
-            if (!agendamentoEdit.getRecepcao().getPreposto().isEmpty()) {
+            if (!recepcao.getPreposto().isEmpty()) {
                 //msgConfirma = "Informar o nome do preposto!";
 //                GenericaMensagem.warn("Atenção", "Informar o NOME DO PREPOSTO!");
 //                return;
-                if (agendamentoEdit.getRecepcao().getHoraInicialPreposto().isEmpty()) {
+                if (recepcao.getHoraInicialPreposto().isEmpty()) {
                     GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
+                    di.rollback();
                     return;
                 }
             }         
@@ -184,28 +186,29 @@ public class RecepcaoBean implements Serializable {
 //                return;
 //            }
 
-            if (agendamentoEdit.getRecepcao().getHoraInicialFuncionario().isEmpty()) {
+            if (recepcao.getHoraInicialFuncionario().isEmpty()) {
                 //msgConfirma = "Funcionário ainda não esta presente, aguarde sua chegada!";
                 GenericaMensagem.warn("Atenção", "FUNCIONÁRIO ainda não esta presente, aguarde sua chegada!");
+                di.rollback();
                 return;
             }
 
-            if (agendamentoEdit.getRecepcao().getId() == -1) {
-                if (!di.save(agendamentoEdit.getRecepcao())) {
+            if (recepcao.getId() == -1) {
+                if (!di.save(recepcao)) {
                     //msgConfirma = "Erro ao salvar recepção!";
                     GenericaMensagem.error("Erro", "Não foi possível SALVAR Recepção!");
                     di.rollback();
                     return;
                 }
             } else {
-                if (!di.update(agendamentoEdit.getRecepcao())) {
+                if (!di.update(recepcao)) {
                     //msgConfirma = "Erro ao atualizar recepção!";
                     GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Recepção!");
                     di.rollback();
                     return;
                 }
             }
-            //agendamentoEdit.setRecepcao(recepcao);
+            agendamentoEdit.setRecepcao(recepcao);
             
 
 //            if (recepcao == null || recepcao.getId() == -1) {
@@ -215,8 +218,8 @@ public class RecepcaoBean implements Serializable {
 //            }
         }
         
-        if (agendamentoEdit.getRecepcao().getId() == -1)
-            agendamentoEdit.setRecepcao(null);
+//        if (recepcao.getId() == -1)
+//            agendamentoEdit.setRecepcao(null);
         
         if (!di.update(agendamentoEdit)) {
             //msgConfirma = "Erro ao atualizar agendamento!";
@@ -230,6 +233,7 @@ public class RecepcaoBean implements Serializable {
         if (!list.isEmpty()) {
             //msgConfirma = "Senha gerada com sucesso";
             GenericaMensagem.info("Sucesso", "Senha Gerada!");
+            senhaHomologacao.imprimir(agendamentoEdit);
         } else {
             //msgConfirma = "Erro ao gerar senha!";
             di.rollback();
@@ -335,41 +339,39 @@ public class RecepcaoBean implements Serializable {
     }
 
     public void salvar() {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         di.openTransaction();
         if (registro.isSenhaHomologacao()) {
-            if (!agendamentoEdit.getRecepcao().getPreposto().isEmpty()) {
+            if (!recepcao.getPreposto().isEmpty()) {
                 //msgConfirma = "Informar o nome do preposto!";
 //                GenericaMensagem.warn("Atenção", "Informar o NOME DO PREPOSTO!");
 //                return;
-                if (agendamentoEdit.getRecepcao().getHoraInicialPreposto().isEmpty()) {
+                if (recepcao.getHoraInicialPreposto().isEmpty()) {
                     GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
+                    di.rollback();
                     return;
                 }
             }
 
-            if (!agendamentoEdit.getRecepcao().getPreposto().isEmpty() && !agendamentoEdit.getRecepcao().getHoraInicialPreposto().isEmpty()) {
-                if (agendamentoEdit.getRecepcao().getId() == -1) {
-                    if (!di.save(agendamentoEdit.getRecepcao())) {
+            if (!recepcao.getHoraInicialFuncionario().isEmpty()) {
+                if (recepcao.getId() == -1) {
+                    if (!di.save(recepcao)) {
                         //msgConfirma = "Erro ao salvar recepção!";
                         GenericaMensagem.error("Erro", "Erro ao salvar Recepção!");
                         di.rollback();
                         return;
                     }
                 } else {
-                    if (!di.update(agendamentoEdit.getRecepcao())) {
+                    if (!di.update(recepcao)) {
                         //msgConfirma = "Erro ao atualizar recepção!";
                         GenericaMensagem.error("Erro", "Erro ao atualizar Recepção!");
                         di.rollback();
                         return;
                     }
                 }
+                agendamentoEdit.setRecepcao(recepcao);
             }
-            //agendamentoEdit.setRecepcao(recepcao);
         }
-
-        if (agendamentoEdit.getRecepcao().getId() == -1)
-            agendamentoEdit.setRecepcao(null);
         
         if (!di.update(agendamentoEdit)) {
             //msgConfirma = "Erro ao atualizar!";
@@ -391,13 +393,14 @@ public class RecepcaoBean implements Serializable {
                 return;
             }
         }
+        Dao di = new Dao();
         int idCaso = Integer.parseInt(datao.getArgumento12().toString());
         switch (idCaso) {
             case 2:
             case 3:
             case 4:
             case 7: {
-                agendamentoEdit = (Agendamento) datao.getArgumento9();
+                agendamentoEdit = (Agendamento) di.find(datao.getArgumento9());
                 //fisica = ((PessoaEmpresa) datao.getArgumento7()).getFisica();
                 //juridica = ((PessoaEmpresa) datao.getArgumento7()).getJuridica();
                 //pessoaEmpresa = agendamentoEdit.getPessoaEmpresa();
@@ -416,7 +419,7 @@ public class RecepcaoBean implements Serializable {
                 break;
             }
             case 5: {
-                agendamentoEdit = (Agendamento) datao.getArgumento9();
+                agendamentoEdit = (Agendamento) di.find(datao.getArgumento9());
                 if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == agendamentoEdit.getHomologador().getId()) {
                     //fisica = ((PessoaEmpresa) datao.getArgumento7()).getFisica();
                     //juridica = ((PessoaEmpresa) datao.getArgumento7()).getJuridica();
@@ -445,8 +448,8 @@ public class RecepcaoBean implements Serializable {
         cancelamento = (Cancelamento) dB.pesquisaCancelamentoPorAgendanto(agendamentoEdit.getId());
         if (cancelamento == null) cancelamento = new Cancelamento();
         
-        if (registro.isSenhaHomologacao() && agendamentoEdit.getRecepcao() == null)
-            agendamentoEdit.setRecepcao(new Recepcao());
+        if (agendamentoEdit.getRecepcao() != null)
+            recepcao = agendamentoEdit.getRecepcao();
         
         getStrEndereco();
         openDialog = true;
@@ -631,12 +634,12 @@ public class RecepcaoBean implements Serializable {
             if (senha != null && !isOposicao) {
                 if (senha.getId() != -1) {
                     // senhaString = senha.getId() == -1 ? null : senha.getSenha();
-                    senhaId = "tblListaRecepcao";
+                    senhaId = "tblListaRecepcaox";
                     senhaString = ((Integer) senha.getSenha()).toString();
                 } else {
                 }
             }else{
-                senhaId = "tblAgendamentoOposicao";
+                senhaId = "tblAgendamentoOposicaox";
             }
             
             dtObj = new DataObject(
@@ -1269,5 +1272,13 @@ public class RecepcaoBean implements Serializable {
 
     public void setOpenDialog(boolean openDialog) {
         this.openDialog = openDialog;
+    }
+
+    public Recepcao getRecepcao() {
+        return recepcao;
+    }
+
+    public void setRecepcao(Recepcao recepcao) {
+        this.recepcao = recepcao;
     }
 }

@@ -32,8 +32,8 @@
                                 </p:submenu>
                                 
                                 <p:submenu label="CONTRIBUINTE" rendered="#{controleAcessoWebBean.pessoaContabilidade != null and controleAcessoWebBean.pessoaContribuinte != null and controleAcessoWebBean.pessoaPatronal == null}">
-                                    <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" disabled="#{controleAcessoWebBean.registro.boletoWeb}"/>
-                                    <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" disabled="#{controleAcessoWebBean.registro.agendamentoWeb}"/>
+                                    <p:menuitem value="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" disabled="#{!controleAcessoWebBean.registro.boletoWeb}"/>
+                                    <p:menuitem value="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" disabled="#{!controleAcessoWebBean.registro.agendamentoWeb}"/>
                                     <p:menuitem value="Solicitar Certidões" action="#{chamadaPaginaBean.webSolicitaREPIS}" disabled="#{!controleAcessoWebBean.registro.repisWeb}"/>
                                 </p:submenu>
                                 

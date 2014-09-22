@@ -40,11 +40,12 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
 @SessionScoped
 public class ArquivoBancoBean implements Serializable{
-    private int idContrib = 0;
+
     private int indexArquivos = -1;
     private File files;
     private FileOutputStream file = null;
@@ -92,6 +93,86 @@ public class ArquivoBancoBean implements Serializable{
     private boolean carregaPastas = false;
     private String strServicos = "";
 
+    private int index_contribuicao = 0;
+    private List<SelectItem> listaServicos = new ArrayList();
+    
+    public void fileUpload(FileUploadEvent event) {
+        String caminhoA = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/");
+        String caminhoB = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes/");
+        
+        File fileA = new File(caminhoA);
+        if (!fileA.exists()) {
+            fileA.mkdir();
+        }
+        
+        File fileB = new File(caminhoB);
+        if (!fileB.exists()) {
+            fileB.mkdir();
+        }
+        
+        String file_name = event.getFile().getFileName();
+        
+        String caminho = caminhoB;
+        caminho = caminho + "/" + file_name;
+        try {
+            File fl = new File(caminho);
+            InputStream in = event.getFile().getInputstream();
+            FileOutputStream out = new FileOutputStream(fl.getPath());
+
+            byte[] buf = new byte[(int) event.getFile().getSize()];
+            int count;
+            while ((count = in.read(buf)) >= 0) {
+                out.write(buf, 0, count);
+            }
+            
+            in.close();
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    public List<SelectItem> getListaServicos() {
+        if (listaServicos.isEmpty()){
+            ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
+            List<ContaCobranca> result = servDB.listaContaCobrancaAtivo();
+            if (result.isEmpty()) {
+                listaServicos.add(new SelectItem(0, "Nenhuma Contribuição Encontrada", "0"));
+                return listaServicos;
+            }
+            
+            for (int i = 0; i < result.size(); i++) {
+                // LAYOUT 2 = SINDICAL
+                if (result.get(i).getLayout().getId() == 2) {
+                    listaServicos.add(
+                            new SelectItem(
+                            new Integer(i),
+                            result.get(i).getApelido() + " - "
+                            + result.get(i).getSicasSindical(),//SICAS NO CASO DE SINDICAL
+                            Integer.toString(result.get(i).getId())));
+                } else {
+                    listaServicos.add(
+                            new SelectItem(
+                            new Integer(i),
+                            result.get(i).getApelido() + " - "
+                            + result.get(i).getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
+                            Integer.toString(result.get(i).getId())));
+                }
+            }
+            
+            if (!listaServicos.isEmpty()) {
+                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                contaCobranca = (ContaCobranca) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) listaServicos.get(index_contribuicao)).getDescription()), "ContaCobranca");
+            }
+        }
+        return listaServicos;
+    }
+
+    public void setListaServicos(List<SelectItem> listaServicos) {
+        this.listaServicos = listaServicos;
+    }    
+    
     public String limparArquivos(){
         GenericaSessao.put("arquivoBancoBean", new ArquivoBancoBean());
         return "retornoBanco";
@@ -113,40 +194,6 @@ public class ArquivoBancoBean implements Serializable{
 
     public String novoServico() {
         return null;
-    }
-
-    public List<SelectItem> getListaServicoCobranca() {
-        List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
-        int i = 0;
-        ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-        List<ContaCobranca> select = servDB.listaContaCobrancaAtivo();
-        if (select == null) {
-            select = new ArrayList<ContaCobranca>();
-        }
-        while (i < select.size()) {
-            // LAYOUT 2 = SINDICAL
-            if (select.get(i).getLayout().getId() == 2) {
-                servicoCobranca.add(
-                        new SelectItem(
-                        new Integer(i),
-                        select.get(i).getApelido() + " - "
-                        + select.get(i).getSicasSindical(),//SICAS NO CASO DE SINDICAL
-                        Integer.toString(select.get(i).getId())));
-            } else {
-                servicoCobranca.add(
-                        new SelectItem(
-                        new Integer(i),
-                        select.get(i).getApelido() + " - "
-                        + select.get(i).getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
-                        Integer.toString(select.get(i).getId())));
-            }
-            i++;
-        }
-        if (!servicoCobranca.isEmpty()) {
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            contaCobranca = (ContaCobranca) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) servicoCobranca.get(idContrib)).getDescription()), "ContaCobranca");
-        }
-        return servicoCobranca;
     }
 
     public String criarDataArquivo() {
@@ -1493,12 +1540,12 @@ public class ArquivoBancoBean implements Serializable{
     public void refreshForm() {
     }
 
-    public int getIdContrib() {
-        return idContrib;
+    public int getIndex_contribuicao() {
+        return index_contribuicao;
     }
 
-    public void setIdContrib(int idContrib) {
-        this.idContrib = idContrib;
+    public void setIndex_contribuicao(int index_contribuicao) {
+        this.index_contribuicao = index_contribuicao;
     }
 
     public String getMsgOk() {
@@ -1539,7 +1586,7 @@ public class ArquivoBancoBean implements Serializable{
     }
 
     public String getLblPendente() {
-        if (contaCobranca.getId() != -1 && !getListaServicoCobranca().isEmpty()) {
+        if (contaCobranca.getId() != -1 && !listaServicos.isEmpty()) {
             if (contaCobranca.getLayout().getId() == 2) {
                 //caminho = caminho +"/"+ contaCobranca.getApelido()+"_"+contaCobranca.getSicasSindical();
                 lblPendente = contaCobranca.getApelido() + "-" + contaCobranca.getSicasSindical();

@@ -1068,7 +1068,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             
             AtendimentoDB dbat = new AtendimentoDBTopLink();
             if (dbat.pessoaOposicao(agendamentos.get(i).getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
-                listaAgendamento.setTblEstilo("tblAgendamentoOposicao");
+                listaAgendamento.setTblEstilo("tblAgendamentoOposicaox");
             }
             
             if (agendamentos.get(i).getAgendador() == null) {

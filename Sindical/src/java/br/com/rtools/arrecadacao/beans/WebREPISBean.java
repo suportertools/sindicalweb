@@ -276,12 +276,19 @@ public class WebREPISBean implements Serializable {
                 return;
             }
             
+            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+            PessoaEndereco pend = dbe.pesquisaEndPorPessoaTipo(pessoaSolicitante.getId(), 5);
+            // AQUI ---
+            pend.getEndereco().getCidade().getId();
+            
+            
             repisMovimento.setAno(getAno());
             repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
             repisMovimento.setDataResposta(null);
             repisMovimento.setDataEmissao(DataHoje.dataHoje());
             repisMovimento.setPatronal(patronal);
+            repisMovimento.setCertidaoTipo( (CertidaoTipo) di.find("CertidaoTipo", Integer.valueOf(listComboCertidaoTipo.get(indexCertidaoTipo).getDescription())) );
             di.openTransaction();
             if (!showAndamentoProtocolo(pessoaSolicitante.getId())) {
                 if (di.save(repisMovimento)) {

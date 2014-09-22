@@ -8,6 +8,7 @@
     <h:head>
         <title>Cadastro de Oposição</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
@@ -31,25 +32,22 @@
                         <h:panelGrid columns="2">
                             <p:outputLabel value="CPF: " />
                             <h:column>
-                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" readonly="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf">
-                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update=":form_oposicao:" />
+                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" readonly="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf" placeholder="999.999.999-99">
+                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update="form_oposicao i_panel_oposicao" />
                                 </p:inputMask>
-                                <p:watermark value="999.999.999-99" for="idCPF" />
                             </h:column>                                
                             <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" title="Pesquisa Pessoa Jurídica" disabled="#{oposicaoBean.desabilitaPessoa}" id="idPesquisaJuridica"/>
                             <h:column>
-                                <c:if test="#{oposicaoBean.oposicao.juridica.pessoa.id != -1}">
+                                <h:column rendered="#{oposicaoBean.oposicao.juridica.pessoa.id != -1}">
                                     <h:panelGrid columns="5">
-                                        <p:outputLabel value="CNPJ:"  for="idPesquisaJuridica"/>
-                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.documento}" readonly="true" />
-                                        <p:outputLabel value="Razão Social:" />
-                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.nome}" readonly="true"  size="80"/>
+                                        <p:outputLabel value="#{oposicaoBean.oposicao.juridica.pessoa.documento}" style="font-size: 11pt!important"/>
+                                        <p:outputLabel value="#{oposicaoBean.oposicao.juridica.pessoa.nome}" style="font-size: 11pt!important"/>
                                         <p:outputLabel value="#{oposicaoBean.msgEmpresa}" />
                                     </h:panelGrid>
-                                </c:if>
-                                <c:if test="#{oposicaoBean.oposicao.juridica.pessoa.id == -1}">
+                                </h:column>
+                                <h:column rendered="#{oposicaoBean.oposicao.juridica.pessoa.id == -1}">
                                     <p:outputLabel for="idPesquisaJuridica" value="Pesquisar Pessoa Jurídica" />
-                                </c:if>
+                                </h:column>
                             </h:column>
                             <p:outputLabel value="Emissão: " />
                             <p:inputText value="#{oposicaoBean.oposicao.emissao}" size="8" readonly ="true"/>
@@ -116,7 +114,7 @@
                     </p:panel>
                     <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
                         <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();"  />
-                        <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.destroy()}" update=":form_oposicao:"/>
+                        <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.destroy()}" update="form_oposicao"/>
                         <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="PF('dlg_delete').show();"/>
                         <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaOposicao}"/>                            
                     </h:panelGrid>
