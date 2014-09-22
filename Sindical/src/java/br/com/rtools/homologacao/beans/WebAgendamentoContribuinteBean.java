@@ -346,13 +346,19 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         if (pessoaEmpresa.getId() == -1) {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(juridica);
+            if(profissao.getId() == -1) {
+                profissao = null;
+            }
             pessoaEmpresa.setFuncao(profissao);
             if (!dao.save(pessoaEmpresa)) {
-                GenericaMensagem.error("Atenção", "Erro ao Pessoa Empresa!");
+                GenericaMensagem.error("Atenção", "Erro ao adicionar Pessoa Empresa!");
                 dao.rollback();
                 return;
             }
         } else {
+            if(profissao.getId() == -1) {
+                profissao = null;
+            }
             if (!dao.update(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 dao.rollback();
@@ -459,7 +465,12 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 enderecoFisica = db.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
                 juridica = ((PessoaEmpresa) datao.getArgumento7()).getJuridica();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
-                profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();
+                PessoaEmpresa pe = ((PessoaEmpresa) datao.getArgumento7());
+                if(pe.getFuncao() == null) {
+                    profissao = new Profissao();
+                } else {
+                    profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();                    
+                }
                 for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                     if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
                         idMotivoDemissao = (Integer) getListaMotivoDemissao().get(i).getValue();
