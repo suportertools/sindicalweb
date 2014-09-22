@@ -11,6 +11,7 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.ConfiguracaoHomologacao;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Status;
@@ -64,22 +65,24 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     public List<SelectItem> listaStatus = new ArrayList<>();
     public List<SelectItem> listaMotivoDemissao = new ArrayList<>();
     private String tipoTelefone = "telefone";
-    
+    private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
+
     public WebAgendamentoContabilidadeBean() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        registro = (Registro) sv.find(new Registro(), 1);
+        Dao dao = new Dao();
+        registro = (Registro) dao.find(new Registro(), 1);
         this.loadListEmpresa();
         this.loadListHorarios();
     }
 
-    public void alterarTipoMascara(){
-        if (tipoTelefone.equals("telefone"))
+    public void alterarTipoMascara() {
+        if (tipoTelefone.equals("telefone")) {
             tipoTelefone = "celular";
-        else
+        } else {
             tipoTelefone = "telefone";
+        }
         agendamento.setTelefone("");
-    }    
-    
+    }
+
     public void loadListEmpresa() {
         WebContabilidadeDB db = new WebContabilidadeDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
@@ -105,10 +108,10 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             GenericaMensagem.warn("Atenção", "Nenhuma Empresa Encontrada!");
             return;
         }
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
 
-        empresa = (Juridica) sv.pesquisaCodigo(Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()), "Juridica");
+        empresa = (Juridica) dao.find(new Juridica(), Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()));
         enderecoEmpresa = dbe.pesquisaEndPorPessoaTipo(empresa.getPessoa().getId(), 5);
 
         sindicatoFilial = new FilialCidade();
@@ -207,8 +210,9 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         ImprimirBoleto imp = new ImprimirBoleto();
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
+        Dao dao = new Dao();
         for (int i = 0; i < listaEmDebito.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaEmDebito.get(i)).get(0), "Movimento");
+            Movimento m = (Movimento) dao.find(new Movimento(), (Integer) ((List) listaEmDebito.get(i)).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -219,10 +223,10 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public List<SelectItem> getListaStatus() {
         if (listaStatus.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            Dao dao = new Dao();
             List select = new ArrayList();
-            select.add((Status) salvarAcumuladoDB.pesquisaCodigo(1, "Status"));
-            select.add((Status) salvarAcumuladoDB.pesquisaCodigo(2, "Status"));
+            select.add((Status) dao.find(new Status(), 1));
+            select.add((Status) dao.find(new Status(), 2));
             if (!select.isEmpty()) {
                 for (int i = 0; i < select.size(); i++) {
                     listaStatus.add(new SelectItem(new Integer(i),
@@ -236,8 +240,8 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public List<SelectItem> getListaMotivoDemissao() {
         if (listaMotivoDemissao.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List select = salvarAcumuladoDB.listaObjeto("Demissao");
+            Dao dao = new Dao();
+            List select = dao.list(new Demissao());
             if (!select.isEmpty()) {
                 for (int i = 0; i < select.size(); i++) {
                     listaMotivoDemissao.add(new SelectItem(new Integer(i),
@@ -250,20 +254,19 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     }
 
     public void novoProtocolo() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         agendamentoProtocolo = new Agendamento();
         renderBtnAgendar = true;
-        empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) listaEmpresas.get(idSelectRadio)).getDescription()), "Juridica");
+        empresa = (Juridica) dao.find(new Juridica(), Integer.parseInt(((SelectItem) listaEmpresas.get(idSelectRadio)).getDescription()));
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
-        //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
         agendamento.setFilial(getSindicatoFilial().getFilial());
         agendamentoProtocolo = agendamento;
         if (empresa.getContabilidade() != null) {
             agendamento.setTelefone(empresa.getContabilidade().getPessoa().getTelefone1());
         }
         if (profissao.getId() == -1) {
-            profissao = (Profissao) salvarAcumuladoDB.pesquisaCodigo(0, "Profissao");
+            profissao = (Profissao) dao.find(new Profissao(), 0);
         }
     }
 
@@ -277,16 +280,16 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         pessoaEmpresa = new PessoaEmpresa();
         fisica = new Fisica();
         enderecoFisica = new PessoaEndereco();
-        
+
         if (listaEmpresas.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Nenhuma empresa encontrada para Agendar!");
             return;
         }
 
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
 
-        empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()), "Juridica");
+        empresa = (Juridica) dao.find(new Juridica(), Integer.parseInt(listaEmpresas.get(idSelectRadio).getDescription()));
         enderecoEmpresa = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(empresa.getPessoa().getId(), 5);
 
         if (enderecoEmpresa.getId() != -1) {
@@ -344,7 +347,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                         agendamento.setTelefone(empresa.getContabilidade().getPessoa().getTelefone1());
                     }
                     if (profissao.getId() == -1) {
-                        profissao = (Profissao) salvarAcumuladoDB.pesquisaCodigo(0, "Profissao");
+                        profissao = (Profissao) dao.find(new Profissao(), 0);
                     }
 
                     agendamento.setData(DataHoje.converteData(data));
@@ -387,8 +390,43 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     }
 
     public void salvar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
+        Dao dao = new Dao();
+        if (configuracaoHomologacao.isWebValidaFuncao()) {
+            if (profissao.getId() == -1) {
+                GenericaMensagem.warn("Validação", "Informar a função/profissão!");
+                return;
+            }
+        }
+        if (configuracaoHomologacao.isWebValidaCarteira()) {
+            if (fisica.getCarteira().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar o número da carteira de trabalho!");
+                return;
+            }
+        }
+        if (configuracaoHomologacao.isWebValidaSerie()) {
+            if (fisica.getSerie().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar o número de série da carteira de trabalho!");
+                return;
+            }
+        }
+        if (configuracaoHomologacao.isWebValidaContato()) {
+            if (agendamento.getContato().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar nome do contato!");
+                return;
+            }
+        }
+        if (configuracaoHomologacao.isWebValidaEmail()) {
+            if (agendamento.getEmail().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar email!");
+                return;
+            }
+        }
+        if (configuracaoHomologacao.isWebValidaTelefone()) {
+            if (agendamento.getTelefone().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar telefone!");
+                return;
+            }
+        }
         if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
@@ -397,19 +435,16 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
         }
-
         if (fisica.getPessoa().getNome().isEmpty() || fisica.getPessoa().getNome() == null) {
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
             return;
         }
-
         if (!strContribuinte.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
         }
-        int ids[] = {1, 3, 4};
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) sv.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) dao.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -435,18 +470,18 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             return;
         }
 
-        sv.abrirTransacao();
+        dao.openTransaction();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find(new TipoDocumento(), 1));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 GenericaMensagem.warn("Atenção", "Documento Inválido!");
                 return;
             }
-            if (sv.inserirObjeto(fisica.getPessoa())) {
-                sv.inserirObjeto(fisica);
+            if (dao.save(fisica.getPessoa())) {
+                dao.save(fisica);
             } else {
                 GenericaMensagem.error("Erro", "Não foi possível salvar pessoa!");
-                sv.desfazerTransacao();
+                dao.rollback();
                 return;
             }
         }
@@ -455,18 +490,18 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
         if (age != null) {
             GenericaMensagem.warn("Atenção", "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome());
-            sv.desfazerTransacao();
+            dao.rollback();
             return;
         }
-
+        int ids[] = {1, 3, 4};
         if (enderecoFisica.getId() == -1) {
             if (enderecoFisica.getEndereco().getId() != -1) {
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
-                    if (!sv.inserirObjeto(pesEnd)) {
-                        sv.desfazerTransacao();
+                    pesEnd.setTipoEndereco((TipoEndereco) dao.find(new TipoEndereco(), ids[i]));
+                    if (!dao.save(pesEnd)) {
+                        dao.rollback();
                         GenericaMensagem.error("Erro", "Não foi possível salvar endereço da pessoa!");
                         return;
                     }
@@ -485,8 +520,8 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 ends.get(i).setEndereco(enderecoFisica.getEndereco());
                 ends.get(i).setNumero(enderecoFisica.getNumero());
                 ends.get(i).setPessoa(enderecoFisica.getPessoa());
-                if (!sv.alterarObjeto(ends.get(i))) {
-                    sv.desfazerTransacao();
+                if (!dao.update(ends.get(i))) {
+                    dao.rollback();
                     GenericaMensagem.error("Erro", "Não foi possível atualizar endereço da pessoa!");
                     return;
                 }
@@ -496,19 +531,19 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         if (pessoaEmpresa.getId() == -1) {
             Profissao p = profissao;
             if (p == null) {
-                p = (Profissao) sv.find(new Profissao(), 0);
+                p = (Profissao) dao.find(new Profissao(), 0);
             }
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(empresa);
             pessoaEmpresa.setFuncao(p);
-            if (!sv.inserirObjeto(pessoaEmpresa)) {
-                sv.desfazerTransacao();
+            if (!dao.save(pessoaEmpresa)) {
+                dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível salvar Pessoa Empresa!");
                 return;
             }
         } else {
-            if (!sv.alterarObjeto(pessoaEmpresa)) {
-                sv.desfazerTransacao();
+            if (!dao.update(pessoaEmpresa)) {
+                dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
                 return;
             }
@@ -516,11 +551,10 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            sv.comitarTransacao();
+            dao.commit();
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            return;
         } else {
-            Demissao demissaox = (Demissao) sv.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+            Demissao demissaox = (Demissao) dao.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
@@ -528,28 +562,28 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 agendamento.setHomologador(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) sv.find(new Status(), 2));
-                if (sv.inserirObjeto(agendamento)) {
+                agendamento.setStatus((Status) dao.find(new Status(), 2));
+                if (dao.save(agendamento)) {
                     agendamentoProtocolo = agendamento;
                     GenericaMensagem.info("Sucesso", "Agendamento Salvo!");
                 } else {
                     GenericaMensagem.error("Erro", "Não foi possível salvar protocolo!");
-                    sv.desfazerTransacao();
+                    dao.rollback();
                     //agendamento.setId(-1);
                     return;
                 }
             } else {
                 agendamento.setDemissao(demissaox);
-                if (sv.alterarObjeto(agendamento)) {
+                if (dao.update(agendamento)) {
                     GenericaMensagem.info("Sucesso", "Agendamento Atualizado!");
                     agendamentoProtocolo = agendamento;
                 } else {
-                    sv.desfazerTransacao();
+                    dao.rollback();
                     GenericaMensagem.error("Erro", "Não foi possível Atualizar protocolo!");
                     return;
                 }
             }
-            sv.comitarTransacao();
+            dao.commit();
         }
     }
 
@@ -574,7 +608,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         profissao = new Profissao();
         //empresa = new Juridica();
         enderecoFisica = new PessoaEndereco();
-        
+
         agendamento.setData(datax);
         agendamento.setHorarios(horario);
         agendamento.setFilial(sindicatoFilial.getFilial());
@@ -583,11 +617,11 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     public void pesquisarFuncionarioCPF() throws IOException {
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
             String documento = fisica.getPessoa().getDocumento();
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            Dao dao = new Dao();
             FisicaDB dbFis = new FisicaDBToplink();
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
             HomologacaoDB db = new HomologacaoDBToplink();
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != empresa.getId()) {
@@ -882,5 +916,17 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void setTipoTelefone(String tipoTelefone) {
         this.tipoTelefone = tipoTelefone;
+    }
+
+    public ConfiguracaoHomologacao getConfiguracaoHomologacao() {
+        if (configuracaoHomologacao.getId() == -1) {
+            Dao dao = new Dao();
+            configuracaoHomologacao = (ConfiguracaoHomologacao) dao.find(new ConfiguracaoHomologacao(), 1);
+        }
+        return configuracaoHomologacao;
+    }
+
+    public void setConfiguracaoHomologacao(ConfiguracaoHomologacao configuracaoHomologacao) {
+        this.configuracaoHomologacao = configuracaoHomologacao;
     }
 }
