@@ -44,7 +44,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}">
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this" global="false"/>
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
@@ -52,7 +52,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}">
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this"  global="false"/>
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
@@ -60,7 +60,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText type="password"  autocomplete="off" size="15" value="#{usuarioBean.usuario.senha}" rendered="#{usuarioBean.disSenha}">
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this"  global="false"/>
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
@@ -68,7 +68,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText type="password" autocomplete="off" size="15" value="#{usuarioBean.confirmaSenha}" rendered="#{usuarioBean.disSenha}">
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this" global="false" />
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
@@ -81,7 +81,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText type="password"  value="#{usuarioBean.senhaAntiga}" autocomplete="off"  rendered="#{usuarioBean.disNovaSenha}">
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this"  global="false"/>
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
@@ -89,14 +89,14 @@
                                     </h:column>
                                     <h:column>
                                         <p:inputText type="password"  value="#{usuarioBean.usuario.senha}" autocomplete="off" rendered="#{usuarioBean.disNovaSenha}" >
-                                            <p:ajax event="blur" update="@this" />
+                                            <p:ajax event="blur" update="@this"  global="false"/>
                                         </p:inputText>
                                     </h:column>
                                     <h:column>
                                     </h:column>
                                     <h:column>
                                         <p:selectBooleanCheckbox id="idAtivaUsuario"  value="#{usuarioBean.usuario.ativo}" itemLabel="Ativo?">
-                                            <p:ajax event="change" update="idAtivaUsuario" />
+                                            <p:ajax event="change" update="idAtivaUsuario"  global="false"/>
                                         </p:selectBooleanCheckbox>
                                     </h:column>                        
                                 </h:panelGrid>
