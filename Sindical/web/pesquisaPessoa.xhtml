@@ -28,13 +28,16 @@
                             <h:outputText value="Pesquisa Pessoas" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
-                                <h:panelGrid columns="4">
-                                    <p:inputMask value="#{pessoaBean.descPesquisa}" size="50" mask="#{pessoaBean.mascaraPesquisa}">
-                                        <p:ajax event="blur" update="@this" global="false" />
-                                    </p:inputMask>
+                                <h:panelGrid columns="6">
+                                    <p:column>
+                                        <p:inputText value="#{pessoaBean.descPesquisa}" size="50" rendered="#{pessoaBean.porPesquisa.equals('nome')}"/>
+                                        <p:inputMask value="#{pessoaBean.descPesquisa}" size="50" mask="#{pessoaBean.mascaraPesquisa}" rendered="#{!pessoaBean.porPesquisa.equals('nome')}">
+                                            <p:ajax event="blur" update="@this" global="false" />
+                                        </p:inputMask>
+                                    </p:column>
 
                                     <p:selectOneMenu value="#{pessoaBean.porPesquisa}">
-                                        <p:ajax event="change" update="i_panel_pesquisa" />
+                                        <p:ajax event="change" update="i_panel_pesquisa" listener="#{pessoaBean.limparMascara}"/>
                                         <f:selectItem itemValue="nome" itemLabel="Nome"/>
                                         <f:selectItem itemValue="cei"      itemLabel="CEI"/>
                                         <f:selectItem itemValue="cnpj"      itemLabel="CNPJ"/>
@@ -42,8 +45,13 @@
                                         <f:selectItem itemValue="telefone1" itemLabel="Telefone"/>
                                     </p:selectOneMenu>
 
-                                    <p:commandButton value="Inicial" action="#{pessoaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoa:i_panel_grid" />
-                                    <p:commandButton value="Parcial" action="#{pessoaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoa:i_panel_grid" />
+                                    <p:commandButton id="i_pesquisa_inicial" value="Inicial" action="#{pessoaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoa:" />
+                                    <p:commandButton value="Parcial" action="#{pessoaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoa:" />
+                                    <h:column>
+                                        <div class="margin-top-max">
+                                            <ui:include src="templates/templateStatusLoader.xhtml"/>
+                                        </div>
+                                    </h:column>
                                 </h:panelGrid>
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
@@ -53,7 +61,7 @@
                             <h:panelGrid id="i_panel_grid" style="width: 100%">
                                 <p:dataTable value="#{pessoaBean.listaPessoa}" var="pessoa" id="tbl" emptyMessage="Nenhuma registro encontrado" scrollHeight="450" scrollable="true">
                                     <p:column headerText="ID" styleClass="text-center" width="50">
-                                        <p:commandLink action="#{pessoaBean.editar(pessoa)}" value="#{pessoa.id}"/>
+                                        <p:commandLink action="#{pessoaBean.editar(pessoa)}" value="#{pessoa.id}" />
                                     </p:column>
                                     <p:column headerText="Nome">
                                         <p:commandLink action="#{pessoaBean.editar(pessoa)}" value="#{pessoa.nome}"/>
@@ -70,10 +78,11 @@
                                 </p:dataTable>
                             </h:panelGrid>
                         </h:form>
+                        <!-- 
                         <p:ajaxStatus id="i_sstatus" onstart="PF('i_xdlg_modal').show()" onsuccess="PF('i_xdlg_modal').hide();" />
                         <p:dialog modal="true" widgetVar="i_xdlg_modal" header="Status" draggable="false" closable="false">  
                             <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
-                        </p:dialog> 
+                        </p:dialog>  -->
                     </p:panel>
 
                 </f:view>        
