@@ -35,7 +35,7 @@
 
                             <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both">
                                 <p:tabView id="i_tabview_fisica" activeIndex="#{fisicaBean.indexPessoaFisica}" style="width: 990px">
-                                    <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" /> 
+                                    <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered"/> 
                                     <p:tab title="Cadastro Pessoal">                            
                                         <h:outputScript name="script_primefaces.js" library="js" />
                                         <h:outputScript name="tradutor_primefaces.js" library="js" />
@@ -510,68 +510,70 @@
                                 </p:tabView>
 
                                 <!-- ENDEREÇO -->
-                                <p:accordionPanel id="i_acc_tab_endereco" activeIndex="#{fisicaBean.indexNovoEndereco}" widgetVar="wdg_acc_end">
-                                    <p:tab id="i_tab_endereco" title="Endereço da Pessoa Física #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
-                                        <h:panelGrid id="i_panel_add_endereco">
-                                            <h:panelGrid columns="2" rendered="#{fisicaBean.enderecox.id == -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
-                                                <p:commandButton onclick="PF('dlg_pesquisa_endereco').show()" value="Pesquisar endereço" action="#{pesquisaEnderecoBean.put('pessoaFisica')}" update="@this :form_pessoa_fisica:i_pesquisa_endereco"/>
-                                            </h:panelGrid>
-
-                                            <h:panelGrid rendered="#{fisicaBean.enderecox.id != -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
-                                                <h:panelGrid columns="1">
-                                                    <p:outputLabel value="#{fisicaBean.enderecoCompleto}" style="font-size: 12pt!important; color: red;" title="Endereço para Cobrança"/>
+                                <h:panelGrid id="i_end_rendered">
+                                    <p:accordionPanel id="i_acc_tab_endereco" activeIndex="#{fisicaBean.indexNovoEndereco}" widgetVar="wdg_acc_end" rendered="#{fisicaBean.indexPessoaFisica != 1}">
+                                        <p:tab id="i_tab_endereco" title="Endereço da Pessoa Física #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
+                                            <h:panelGrid id="i_panel_add_endereco">
+                                                <h:panelGrid columns="2" rendered="#{fisicaBean.enderecox.id == -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
+                                                    <p:commandButton onclick="PF('dlg_pesquisa_endereco').show()" value="Pesquisar endereço" action="#{pesquisaEnderecoBean.put('pessoaFisica')}" update="@this :form_pessoa_fisica:i_pesquisa_endereco"/>
                                                 </h:panelGrid>
 
-                                                <h:panelGrid columns="3">
-                                                    <p:column>
-                                                        <p:outputLabel value="Número"/><br />
-                                                        <p:inputText size="10" value="#{fisicaBean.numero}" />
-                                                    </p:column>
+                                                <h:panelGrid rendered="#{fisicaBean.enderecox.id != -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
+                                                    <h:panelGrid columns="1">
+                                                        <p:outputLabel value="#{fisicaBean.enderecoCompleto}" style="font-size: 12pt!important; color: red;" title="Endereço para Cobrança"/>
+                                                    </h:panelGrid>
 
-                                                    <p:column>
-                                                        <p:outputLabel value="Complemento"/><br />
-                                                        <p:inputText size="35" value="#{fisicaBean.complemento}" />
-                                                    </p:column>
+                                                    <h:panelGrid columns="3">
+                                                        <p:column>
+                                                            <p:outputLabel value="Número"/><br />
+                                                            <p:inputText size="10" value="#{fisicaBean.numero}" />
+                                                        </p:column>
 
-                                                    <p:column>
-                                                        <br />
-                                                        <p:commandButton icon="ui-icon-plus"  action="#{fisicaBean.adicionarEnderecos}" update="i_panel_grid_pendereco i_panel_add_endereco i_acc_tab_endereco" title="Adicionar"/>
-                                                    </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Complemento"/><br />
+                                                            <p:inputText size="35" value="#{fisicaBean.complemento}" />
+                                                        </p:column>
+
+                                                        <p:column>
+                                                            <br />
+                                                            <p:commandButton icon="ui-icon-plus"  action="#{fisicaBean.adicionarEnderecos}" update="i_panel_grid_pendereco i_panel_add_endereco i_acc_tab_endereco" title="Adicionar"/>
+                                                        </p:column>
+                                                    </h:panelGrid>
                                                 </h:panelGrid>
                                             </h:panelGrid>
-                                        </h:panelGrid>
 
-                                        <h:panelGrid id="i_panel_grid_pendereco">
-                                            <p:dataTable value="#{fisicaBean.listaPessoaEndereco}" var="pessoaEndereco" scrollable="true" scrollHeight="150" emptyMessage="Nenhum resultado encontrado" rowIndexVar="index" rendered="#{fisicaBean.listaPessoaEndereco.size() > 0}">
-                                                <p:column width="25">
-                                                    <p:commandButton icon="ui-icon-pencil" action="#{fisicaBean.editarPessoaEndereco(pessoaEndereco, index)}" title="Editar Endereço de #{pessoaEndereco.tipoEndereco.descricao}" oncomplete="PF('i_dlg_editar_endereco').show()" update=":form_pessoa_fisica:i_panel_editar_endereco"/>
-                                                </p:column>
-                                                <p:column headerText="Tipo">
-                                                    <p:outputLabel value="#{pessoaEndereco.tipoEndereco.descricao}" />
-                                                </p:column>
-                                                <p:column headerText="Logradouro" styleClass="text-center">
-                                                    <p:outputLabel value="#{pessoaEndereco.endereco.logradouro.descricao}"/>
-                                                </p:column>
-                                                <p:column headerText="Descrição">
-                                                    <p:outputLabel value="#{pessoaEndereco.endereco.descricaoEndereco.descricao}, #{pessoaEndereco.numero}"/>
-                                                </p:column>
-                                                <p:column headerText="Complemento">
-                                                    <p:outputLabel value="#{pessoaEndereco.complemento}"/>
-                                                </p:column>
-                                                <p:column headerText="Bairro">
-                                                    <p:outputLabel value="#{pessoaEndereco.endereco.bairro.descricao}"/>
-                                                </p:column>
-                                                <p:column headerText="Cidade / UF">
-                                                    <p:outputLabel value="#{pessoaEndereco.endereco.cidade.cidade} - #{pessoaEndereco.endereco.cidade.uf}"/>
-                                                </p:column>
-                                                <p:column headerText="CEP" width="80" styleClass="text-center">
-                                                    <p:outputLabel value="#{pessoaEndereco.endereco.cep}"/>
-                                                </p:column>
-                                            </p:dataTable>
-                                        </h:panelGrid>
+                                            <h:panelGrid id="i_panel_grid_pendereco">
+                                                <p:dataTable value="#{fisicaBean.listaPessoaEndereco}" var="pessoaEndereco" scrollable="true" scrollHeight="150" emptyMessage="Nenhum resultado encontrado" rowIndexVar="index" rendered="#{fisicaBean.listaPessoaEndereco.size() > 0}">
+                                                    <p:column width="25">
+                                                        <p:commandButton icon="ui-icon-pencil" action="#{fisicaBean.editarPessoaEndereco(pessoaEndereco, index)}" title="Editar Endereço de #{pessoaEndereco.tipoEndereco.descricao}" oncomplete="PF('i_dlg_editar_endereco').show()" update=":form_pessoa_fisica:i_panel_editar_endereco"/>
+                                                    </p:column>
+                                                    <p:column headerText="Tipo">
+                                                        <p:outputLabel value="#{pessoaEndereco.tipoEndereco.descricao}" />
+                                                    </p:column>
+                                                    <p:column headerText="Logradouro" styleClass="text-center">
+                                                        <p:outputLabel value="#{pessoaEndereco.endereco.logradouro.descricao}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Descrição">
+                                                        <p:outputLabel value="#{pessoaEndereco.endereco.descricaoEndereco.descricao}, #{pessoaEndereco.numero}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Complemento">
+                                                        <p:outputLabel value="#{pessoaEndereco.complemento}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Bairro">
+                                                        <p:outputLabel value="#{pessoaEndereco.endereco.bairro.descricao}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Cidade / UF">
+                                                        <p:outputLabel value="#{pessoaEndereco.endereco.cidade.cidade} - #{pessoaEndereco.endereco.cidade.uf}"/>
+                                                    </p:column>
+                                                    <p:column headerText="CEP" width="80" styleClass="text-center">
+                                                        <p:outputLabel value="#{pessoaEndereco.endereco.cep}"/>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </h:panelGrid>
 
-                                    </p:tab>
-                                </p:accordionPanel>
+                                        </p:tab>
+                                    </p:accordionPanel>
+                                </h:panelGrid>
 
                                 <p:dialog id="i_panel_editar_endereco" widgetVar="i_dlg_editar_endereco" header="Editar Endereço de #{fisicaBean.pessoaEndereco.tipoEndereco.descricao.toUpperCase()}" resizable="false" width="400" modal="true" visible="#{fisicaBean.visibleEditarEndereco}">
                                     <h:panelGrid>
