@@ -3,8 +3,6 @@ package br.com.rtools.endereco.beans;
 import br.com.rtools.endereco.*;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
-import br.com.rtools.pessoa.beans.FisicaBean;
-import br.com.rtools.pessoa.beans.JuridicaBean;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
@@ -56,7 +54,7 @@ public class PesquisaEnderecoBean implements Serializable {
             case "pessoaJuridica":
                 GenericaSessao.put("enderecoPesquisa", e);
                 PF.closeDialog("dlg_pesquisa_endereco");
-                PF.update("form_pessoa_juridica:");
+                PF.update("formPessoaJuridica:");
         }
         return tcase;
     }
