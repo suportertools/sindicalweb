@@ -226,20 +226,20 @@
 
                                             <p:column>
                                                 <p:panel header="Foto do Perfil" id="i_panel_imagens" style="width: 330px; height: 428px; text-align: center">
-                                                    <c:if test="#{fisicaBean.fotoTempPerfil.equals('') and fisicaBean.fotoPerfil.equals('')}" >
+                                                    <h:column rendered="#{fisicaBean.fotoTempPerfil.equals('') and fisicaBean.fotoPerfil.equals('')}" >
                                                         <p:graphicImage value="/Imagens/user_female.png" rendered="#{fisicaBean.fisica.sexo.equals('F')}"/>
                                                         <p:graphicImage value="/Imagens/user_male.png" rendered="#{fisicaBean.fisica.sexo.equals('M')}"/>
-                                                    </c:if>
+                                                    </h:column>
 
-                                                    <c:if test="#{!fisicaBean.fotoTempPerfil.equals('')}" >
+                                                    <h:column rendered="#{!fisicaBean.fotoTempPerfil.equals('')}" >
                                                         <p:graphicImage value="#{fisicaBean.fotoTempPerfil}" id="i_perfil_temp" style="max-width: 300px; max-height: 395px"/>
                                                         <div class="clear"></div>
-                                                    </c:if>
+                                                    </h:column>
 
-                                                    <c:if test="#{!fisicaBean.fotoPerfil.equals('')}" >
+                                                    <h:column rendered="#{!fisicaBean.fotoPerfil.equals('')}" >
                                                         <p:graphicImage value="#{fisicaBean.fotoPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px"/>
                                                         <div class="clear"></div>
-                                                    </c:if>                                        
+                                                    </h:column>                                        
                                                 </p:panel>
 
                                                 <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" style="float: right" rendered="#{!fisicaBean.fotoTempPerfil.equals('') or !fisicaBean.fotoPerfil.equals('')}" update=":form_pessoa_fisica"/>
@@ -702,7 +702,7 @@
                                           mode="advanced"                                          
                                           multiple="false"
                                           sizeLimit="204800"
-                                          update=":form_pessoa_fisica"
+                                          update=":form_pessoa_fisica:"
                                           fileUploadListener="#{fisicaBean.upload}"
                                           oncomplete="PF('dgl_upload').hide()" />
                         </p:dialog>
