@@ -591,7 +591,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void adicionarEnderecos() {
         Dao dao = new Dao();
-        List<TipoEndereco> tipoEnderecos = (List<TipoEndereco>) dao.find("TipoEndereco", new Object[]{1, 3, 4});
+        List<TipoEndereco> tipoEnderecos = (List<TipoEndereco>) dao.find("TipoEndereco", new int[]{1, 3, 4});
         if (enderecox.getId() != -1) {
 
             listaPessoaEndereco.clear();
@@ -1078,7 +1078,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (!dao.delete(agenda, true)) {
                 ErrorCodeDao errorCodeDao = dao.deleteErrorCode(agenda);
                 GenericaMensagem.warn("Erro", "Não foi possível remover este agendamento!");
-                GenericaMensagem.error("Sistema", errorCodeDao.getSimpleMessage());
+                //GenericaMensagem.error("Sistema", errorCodeDao.getSimpleMessage());
                 return null;
             }
         }
@@ -1087,7 +1087,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         } else {
             ErrorCodeDao errorCodeDao = dao.deleteErrorCode(pe);
             GenericaMensagem.warn("Erro", "Não foi possível remover esta empresa!");
-            GenericaMensagem.error("Sistema", errorCodeDao.getSimpleMessage());
+            //GenericaMensagem.error("Sistema", errorCodeDao.getSimpleMessage());
         }
         listaPessoaEmpresa.clear();
         return null;
