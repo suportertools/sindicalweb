@@ -1245,7 +1245,7 @@ public class RecepcaoBean implements Serializable {
 //    }
 
     public List<Senha> getListaAtendimentoSimples() {
-        if (listaAtendimentoSimples.isEmpty()){
+        if (listaAtendimentoSimples.isEmpty() && macFilial != null){
             HomologacaoDB db = new HomologacaoDBToplink();
             SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
             

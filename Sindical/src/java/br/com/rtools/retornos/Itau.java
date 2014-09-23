@@ -15,49 +15,36 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 public class Itau extends ArquivoRetorno {
-
-    public Itau(ContaCobranca contaCobranca, boolean pendentes) {
-        super(contaCobranca, pendentes);
+    private String linha = "", 
+                   pasta = "", 
+                   cnpj = "", 
+                   codigoCedente = "", 
+                   nossoNumero = "", 
+                   dataVencimento = "", 
+                   valorTaxa = "",
+                   valorPago = "",
+                   valorCredito = "",
+                   valorRepasse = "",
+                   dataPagamento = "",
+                   dataCredito = "";
+    public Itau(ContaCobranca contaCobranca) {
+        super(contaCobranca);
     }
 
     @Override
     public List<GenericaRetorno> sicob(boolean baixar, String host) {
-        GenericaRetorno genericaRetorno = new GenericaRetorno();
-        FacesContext context = FacesContext.getCurrentInstance();
-        String pasta = "";
-        String linha = null;
-        String cnpj = "";
-        String codigoCedente = "";
-        String nossoNumero = "";
-        String valorTaxa = "";
-        String valorPago = "";
-        String dataPagamento = "";
-        String dataVencimento = "";
-        String caminho = "";
+        host = host + "/pendentes/";
+        pasta = host;
+        
 
-        if (super.isPendentes()) {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
-            if (baixar) {
-                caminho += "/" + super.getContaCobranca().getApelido() + "_" + super.getContaCobranca().getCodCedente();
-                caminho += "/pendentes";
-                //            pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
-            } else {
-                //            caminho = caminho + "/" +super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
-                //            caminho = caminho + "/"+host;
-                //            pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/"+host;
-            }
-        } else {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
-        }
-
-        File fl = new File(caminho);
+        File fl = new File(host);
         File listFile[] = fl.listFiles();
         List<GenericaRetorno> listaRetorno = new ArrayList();
         if (listFile != null) {
             int qntRetornos = listFile.length;
             for (int u = 0; u < qntRetornos; u++) {
                 try {
-                    FileReader reader = new FileReader(caminho + "/" + listFile[u].getName());
+                    FileReader reader = new FileReader(host + listFile[u].getName());
                     BufferedReader buffReader = new BufferedReader(reader);
                     List lista = new Vector();
                     while ((linha = buffReader.readLine()) != null) {
@@ -89,7 +76,8 @@ public class Itau extends ArquivoRetorno {
                             dataPagamento = ((String) lista.get(i)).substring(295, 301);//ok
                             dataPagamento = dataPagamento.substring(0, dataPagamento.length() - 2) + "20" + dataPagamento.substring(dataPagamento.length() - 2, dataPagamento.length());
 
-                            genericaRetorno = new GenericaRetorno(cnpj, //1 ENTIDADE
+                            listaRetorno.add(new GenericaRetorno(
+                                    cnpj, //1 ENTIDADE
                                     codigoCedente, //2 NESTE CASO SICAS
                                     nossoNumero, //3
                                     valorPago, //4
@@ -104,8 +92,8 @@ public class Itau extends ArquivoRetorno {
                                     pasta, // 13 NOME DA PASTA
                                     listFile[u].getName(), //14 NOME DO ARQUIVO
                                     "", //15 DATA CREDITO
-                                    ""); // 16 SEQUENCIAL DO ARQUIVO
-                            listaRetorno.add(genericaRetorno);
+                                    "") // 16 SEQUENCIAL DO ARQUIVO
+                            );
                         }
                         i++;
                     }
@@ -129,7 +117,7 @@ public class Itau extends ArquivoRetorno {
 
     @Override
     public String darBaixaSicob(String caminho, Usuario usuario) {
-        String mensagem = super.baixarArquivo(this.sicob(true, ""), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
         return mensagem;
     }
 

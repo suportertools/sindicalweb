@@ -13,6 +13,10 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
+            
+            .columnx{
+                width: 500px;
+            }
         </style>
         
         <script type="text/javascript">
@@ -26,26 +30,73 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Retorno Banco" styleClass="fonteHeader" />
-                        <h:form id="formRetornoBanco" enctype="multipart/form-data"> 
+                        <h:form id="formRetornoBancoEnvio" enctype="multipart/form-data"> 
+                            <c:set scope="request" var="object" value="${arquivoBancoBean.retornoBanco}"/>
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="2">
                                     <h:column>
                                         <h:outputLabel value="Contribuição"/><br />
-                                        <p:selectOneMenu value="#{arquivoBancoBean.index_contribuicao}" disabled="#{arquivoBancoBean.outros}" style="width: 300px">
+                                        <p:selectOneMenu value="#{arquivoBancoBean.index_contribuicao}" style="width: 300px">
+                                            <p:ajax event="change" listener="#{arquivoBancoBean.atualizaContaCobranca()}" global="false" update=":formRetornoBanco:"/>
                                             <f:selectItems value="#{arquivoBancoBean.listaServicos}" />
                                         </p:selectOneMenu>
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
-                            
+                            <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true"/>
                             <h:panelGrid>
-                                <p:fileUpload fileUploadListener="#{arquivoBancoBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="100000" fileLimit="3" style="width: 995px" 
-                                              cancelLabel="Cancelar" uploadLabel="Enviar para o Servidor" label="Escolher Arquivos" />
+                                <p:fileUpload fileUploadListener="#{arquivoBancoBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="1000000" fileLimit="3" style="width: 995px" 
+                                              cancelLabel="Cancelar" uploadLabel="Enviar para o Servidor" label="Escolher Arquivos" update="i_msg :formRetornoBanco" invalidFileMessage="Arquivo Inválido!" invalidSizeMessage="Arquivo Inválido!"/>
                                 
+                            </h:panelGrid>
+                        </h:form>
+                        
+                        <h:form id="formRetornoBanco">
+                            <h:panelGrid columns="2" style="width: 995px;" columnClasses="columnx">
+                                <p:column>
+                                    <p:dataGrid value="#{arquivoBancoBean.listaArquivosPendentes}" var="linha" columns="1" emptyMessage="Nenhum Arquivo Encontrado" style="width: 500px!important; height: 200px!important">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Arquivos Enviados" />
+                                        </f:facet>
+                                        <h:outputLabel value="#{linha}" />
+                                    </p:dataGrid>
+                                </p:column>
+
+                                <p:column>
+                                    <p:dataGrid value="#{arquivoBancoBean.listaDocumentos}" var="linha" emptyMessage="Nenhum Documento em Aberto" style="height: 200px!important">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Documentos para verificação" />
+                                        </f:facet>
+                                        <p:column headerText="Excluir Verificação" style="text-align: center">
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" rendered="#{linha.argumento4}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Documento">
+                                            <h:outputText value="#{linha.argumento1}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Status" style="text-align: center">
+                                            <h:outputText value="#{linha.argumento2}"/>
+                                        </p:column>
+                                    </p:dataGrid>
+                                </p:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2" style="width: 995px;" columnClasses="columnx">
+                                <h:column>
+                                    <p:commandButton action="#{arquivoBancoBean.enviarArquivoBaixar}" value="Baixar Arquivos" disabled="#{controleAcessoBean.botaoSalvar}" update="formRetornoBanco" rendered="#{arquivoBancoBean.listaArquivosPendentes.size() != 0}"/>
+                                    <p:commandLink value="Limpar Arquivos Enviados" action="#{arquivoBancoBean.limparArquivosEnviados()}" style="margin-left: 20px" update="formRetornoBanco" rendered="#{arquivoBancoBean.listaArquivosPendentes.size() != 0}"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <p:commandLink value="Imprimir Documentos" action="#{arquivoBancoBean.imprimirDocumentos}" style="margin-right: 50px" />
+                                    <p:commandLink value="Atualizar Boletos Cadastrados" action="#{arquivoBancoBean.atualizarBoletoCadastro()}" />
+                                </h:column>
                             </h:panelGrid>
                         </h:form>
                     </p:panel>
