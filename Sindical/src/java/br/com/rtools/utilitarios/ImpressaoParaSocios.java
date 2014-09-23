@@ -329,7 +329,7 @@ public class ImpressaoParaSocios {
                 listaSocios.add(new FichaSocial(0,
                         matriculaSocios.getTitular().getId(),
                         matriculaSocios.getNrMatricula(),
-                        socios.getServicoPessoa().getDtEmissao(),
+                        matriculaSocios.getDtEmissao(),
                         null,
                         matriculaSocios.getCategoria().getGrupoCategoria().getGrupoCategoria(),
                         matriculaSocios.getCategoria().getCategoria(),
