@@ -315,6 +315,7 @@
                                     </p:tab>
 
                                     <p:tab title="Local de Trabalho" id="i_panel_profissao">
+                                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" />
                                         <h:panelGrid columns="2">
                                             <h:column>
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" id="i_pesquisar_empresa"/>
@@ -386,7 +387,7 @@
                                                     <p:outputLabel value="#{pessoaEmpresa.funcao.cbo} - #{pessoaEmpresa.funcao.profissao}" title="#{pessoaEmpresa.funcao.cbo} - #{pessoaEmpresa.funcao.profissao}"/>
                                                 </p:column>
                                                 <p:column width="30">
-                                                    <p:commandButton icon="ui-icon-trash" action="#{fisicaBean.excluirEmpresaAnterior(pessoaEmpresa)}" update="i_tbl_empresa_b"  title="Remover"/>
+                                                    <p:commandButton icon="ui-icon-trash" action="#{fisicaBean.excluirEmpresaAnterior(pessoaEmpresa)}" update="i_tbl_empresa_b, :form_pessoa_fisica:"  title="Remover"/>
                                                 </p:column>                                
                                             </p:dataTable>
                                         </p:panel>
