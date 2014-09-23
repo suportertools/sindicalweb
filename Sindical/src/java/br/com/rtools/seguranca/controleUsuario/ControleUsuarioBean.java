@@ -135,7 +135,7 @@ public class ControleUsuarioBean implements Serializable {
                 Diretorio.criar("Arquivos/downloads/remessa");
                 Diretorio.criar("Arquivos/downloads/repis");
                 Diretorio.criar("Arquivos/notificacao");
-                Diretorio.criar("Arquivos/retorno/pendentes");
+                Diretorio.criar("Arquivos/retorno/pendentes"); // EXCLUIR DEPOIS DA DATA 01/11/2014 EM FASE DE TESTES
                 Diretorio.criar("Arquivos/senhas");
             }
 

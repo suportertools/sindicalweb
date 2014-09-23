@@ -16,52 +16,37 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 public class Santander extends ArquivoRetorno {
-
-    public Santander(ContaCobranca contaCobranca, boolean pendentes) {
-        super(contaCobranca, pendentes);
+    private String linha = "", 
+                   pasta = "", 
+                   cnpj = "", 
+                   codigoCedente = "", 
+                   nossoNumero = "", 
+                   dataVencimento = "", 
+                   valorTaxa = "",
+                   valorPago = "",
+                   valorCredito = "",
+                   valorRepasse = "",
+                   dataPagamento = "",
+                   dataCredito = "",
+                   sequencialArquivo = "";
+    
+    public Santander(ContaCobranca contaCobranca) {
+        super(contaCobranca);
     }
 
     @Override
     public List<GenericaRetorno> sicob(boolean baixar, String host) {
-        GenericaRetorno genericaRetorno = new GenericaRetorno();
-        FacesContext context = FacesContext.getCurrentInstance();
-        String pasta = "";
-        String linha = null;
-        String cnpj = "";
-        String codigoCedente = "";
-        String nossoNumero = "";
-        String valorTaxa = "";
-        String valorPago = "";
-        String dataPagamento = "";
-        String dataVencimento = "";
-        String caminho = "";
-        String valorCredito = "";
-        String dataCredito = "";
-        if (super.isPendentes()) {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
-            if (baixar) {
-                caminho += "/" + super.getContaCobranca().getApelido() + "_" + super.getContaCobranca().getCodCedente();
-                caminho += "/pendentes";
-                //pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/pendentes";
-                //            pasta = caminho;
-            } else {
-                //caminho += "/" +super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
-                //caminho += "/"+host;
-                //pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/"+host;
-                //            pasta = caminho;
-            }
-        } else {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
-        }
-
-        File fl = new File(caminho);
+        host = host + "/pendentes/";
+        pasta = host;
+        
+        File fl = new File(host);
         File listFile[] = fl.listFiles();
         List<GenericaRetorno> listaRetorno = new ArrayList();
         if (listFile != null) {
             int qntRetornos = listFile.length;
             for (int u = 0; u < qntRetornos; u++) {
                 try {
-                    FileReader reader = new FileReader(caminho + "/" + listFile[u].getName());
+                    FileReader reader = new FileReader(host + listFile[u].getName());
                     BufferedReader buffReader = new BufferedReader(reader);
                     List lista = new Vector();
                     while ((linha = buffReader.readLine()) != null) {
@@ -95,7 +80,7 @@ public class Santander extends ArquivoRetorno {
                             valorCredito = ((String) lista.get(i)).substring(97, 107);
                             dataCredito = ((String) lista.get(i)).substring(145, 153);
 
-                            genericaRetorno = new GenericaRetorno(
+                            listaRetorno.add(new GenericaRetorno(
                                     cnpj, //1 ENTIDADE
                                     codigoCedente, //2 NESTE CASO SICAS
                                     nossoNumero, //3
@@ -111,13 +96,12 @@ public class Santander extends ArquivoRetorno {
                                     pasta, // 13 NOME DA PASTA
                                     listFile[u].getName(), //14 NOME DO ARQUIVO
                                     dataCredito, //15 DATA CREDITO
-                                    ""); // 16 SEQUENCIAL DO ARQUIVO
-                            listaRetorno.add(genericaRetorno);
+                                    "") // 16 SEQUENCIAL DO ARQUIVO
+                            );
                             i++;
                         }
                     }
-                } catch (IOException e) {
-                } catch (NumberFormatException e) {
+                } catch (IOException | NumberFormatException e) {
                 }
             }
         }

@@ -75,19 +75,19 @@ public class RetornoPadraoJSFBean {
                     if (!listaCaminho.get(i).getArgumento4().toString().equals("vazio")) {
                         if (ArquivoRetorno.CAIXA_FEDERAL == cc.getContaBanco().getBanco().getId()) {
                             if (ArquivoRetorno.SICOB == cc.getLayout().getId()) {
-                                arquivoRetorno = new CaixaFederal(cc, pendentes);
+                                arquivoRetorno = new CaixaFederal(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSicob(caminho, usuario);
                             } else if (ArquivoRetorno.SINDICAL == cc.getLayout().getId()) {
-                                arquivoRetorno = new CaixaFederal(cc, pendentes);
+                                arquivoRetorno = new CaixaFederal(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSindical(caminho, usuario);
                             } else if (ArquivoRetorno.SIGCB == cc.getLayout().getId()) {
-                                arquivoRetorno = new CaixaFederal(cc, pendentes);
+                                arquivoRetorno = new CaixaFederal(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSigCB(caminho, usuario);
                             }
                             // BANCO DO BRASIL ------------------------------------------------------------------------------
                         } else if (ArquivoRetorno.BANCO_BRASIL == cc.getContaBanco().getBanco().getId()) {
                             if (ArquivoRetorno.SICOB == cc.getLayout().getId()) {
-                                arquivoRetorno = new BancoBrasil(cc, pendentes);
+                                arquivoRetorno = new BancoBrasil(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSicob(caminho, usuario);
                             } else if (ArquivoRetorno.SINDICAL == cc.getLayout().getId()) {
                                 msgConfirma = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -97,7 +97,7 @@ public class RetornoPadraoJSFBean {
                             // REAL ------------------------------------------------------------------------------
                         } else if (ArquivoRetorno.REAL == cc.getContaBanco().getBanco().getId()) {
                             if (ArquivoRetorno.SICOB == cc.getLayout().getId()) {
-                                arquivoRetorno = new Real(cc, pendentes);
+                                arquivoRetorno = new Real(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSicob(caminho, usuario);
                             } else if (ArquivoRetorno.SINDICAL == cc.getLayout().getId()) {
                                 msgConfirma = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -107,7 +107,7 @@ public class RetornoPadraoJSFBean {
                             // ITAU --------------------------------------------------------------------------------
                         } else if (ArquivoRetorno.ITAU == cc.getContaBanco().getBanco().getId()) {
                             if (ArquivoRetorno.SICOB == cc.getLayout().getId()) {
-                                arquivoRetorno = new Itau(cc, pendentes);
+                                arquivoRetorno = new Itau(cc);
                                 msgConfirma = arquivoRetorno.darBaixaSicob(caminho, usuario);
                             } else if (ArquivoRetorno.SINDICAL == cc.getLayout().getId()) {
                                 msgConfirma = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";

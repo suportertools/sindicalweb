@@ -18,7 +18,6 @@ import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.pessoa.DocumentoInvalido;
 import br.com.rtools.pessoa.Juridica;
-import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.retornos.*;
@@ -34,6 +33,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -44,13 +44,11 @@ import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
 @SessionScoped
-public class ArquivoBancoBean implements Serializable{
-
+public final class ArquivoBancoBean implements Serializable {
     private int indexArquivos = -1;
-    private File files;
     private FileOutputStream file = null;
-    private FileReader reader = null;
-    private BufferedReader buffReader = null;
+    //private FileReader reader = null;
+    //private BufferedReader buffReader = null;
     private FileWriter writer = null;
     private BufferedWriter buffWriter = null;
     private Juridica juridica = new Juridica();
@@ -59,7 +57,7 @@ public class ArquivoBancoBean implements Serializable{
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private Movimento movimento = new Movimento();
     private ContaCobranca contaCobranca = new ContaCobranca();
-    private String linha = null;
+    //private String linha = null;
     private String conteudoRemessa = null;
     private String jur = null;
     private String pesEnd = null;
@@ -80,14 +78,13 @@ public class ArquivoBancoBean implements Serializable{
     private String vlrPago = null;
     private String msgOk = "";
     private String lblPendente = "";
-    private List lista = new Vector();
     private List listaJuridica = new Vector();
     private List listaMovimentos = new Vector();
     private List listaArquivoRemessa = new Vector<GenericaQuery>();
     private List listaArquivoRetorno = new Vector<GenericaQuery>();
-    private List listaPendencias = new Vector<GenericaQuery>();
+    //private List listaPendencias = new Vector<GenericaQuery>();
     private List listaRetorno = new Vector<GenericaQuery>();
-    private List<DataObject> listaDocumentos = new Vector<DataObject>();
+    private List<DataObject> listaDocumentos = new ArrayList();
     private List listaPasta = new ArrayList();
     private boolean outros = false;
     private boolean carregaPastas = false;
@@ -95,72 +92,165 @@ public class ArquivoBancoBean implements Serializable{
 
     private int index_contribuicao = 0;
     private List<SelectItem> listaServicos = new ArrayList();
+    private List<String> listaArquivosPendentes = new ArrayList();
+
+    public ArquivoBancoBean() {
+        this.getListaServicos();
+        this.loadListaArquivosBaixar();
+        this.loadListaDocumentos();
+    }
+
+    public void loadListaArquivosBaixar() {
+        listaArquivosPendentes.clear();
+        Object objs[] = caminhoServicoPendente();
+        String caminho = (String) objs[0];
+        try {
+            File filex = new File(caminho);
+            File listFile[] = filex.listFiles();
+
+            for (File linha_file : listFile) {
+                listaArquivosPendentes.add(linha_file.getName());
+            }
+        } catch (Exception e) {
+        }
+    }
     
+    public void loadListaDocumentos(){
+        listaDocumentos.clear();
+        DataObject dtObject = null;
+        String documento = "", digito = "";
+        boolean encontrado = false;
+        
+        DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
+        List<DocumentoInvalido> listaDoc = new ArrayList<DocumentoInvalido>();
+        List<DocumentoInvalido> listaDocCadastrado = new ArrayList<DocumentoInvalido>();
+        
+        listaDoc = dbDocInv.pesquisaTodos();
+
+        if (listaDoc == null) {
+            return;
+        }
+        
+        listaDocCadastrado = dbDocInv.pesquisaNumeroBoletoPessoa();
+        for (int i = 0; i < listaDoc.size(); i++) {
+            encontrado = false;
+            for (int w = 0; w < listaDocCadastrado.size(); w++) {
+                if (listaDoc.get(i).getId() == listaDocCadastrado.get(w).getId()) {
+                    documento = listaDoc.get(i).getDocumentoInvalido().substring(
+                            listaDoc.get(i).getDocumentoInvalido().length() - 12,
+                            listaDoc.get(i).getDocumentoInvalido().length());
+                    digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
+                    dtObject = new DataObject(false,
+                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
+                            "** CADASTRADO **",// -- STATUS
+                            listaDoc.get(i),
+                            false,
+                            listaDoc.get(i).getDtImportacao());
+
+                    listaDocumentos.add(dtObject);
+
+                    encontrado = true;
+                }
+            }
+            if (!encontrado) {
+                documento = listaDoc.get(i).getDocumentoInvalido().substring(
+                        listaDoc.get(i).getDocumentoInvalido().length() - 12,
+                        listaDoc.get(i).getDocumentoInvalido().length());
+                digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
+                if (ValidaDocumentos.isValidoCNPJ(documento + digito)) {
+                    dtObject = new DataObject(false,
+                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
+                            "** VERIFICAR **",// -- STATUS
+                            listaDoc.get(i),
+                            true,
+                            listaDoc.get(i).getDtImportacao());
+                    listaDocumentos.add(dtObject);
+                } else {
+                    dtObject = new DataObject(false,
+                            documento,// -- DOCUMENTO
+                            "** INVALIDO **",// -- STATUS
+                            listaDoc.get(i),
+                            true,
+                            listaDoc.get(i).getDtImportacao());
+                    listaDocumentos.add(dtObject);
+                }
+            }
+        }
+    }
+
     public void fileUpload(FileUploadEvent event) {
-        String caminhoA = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/");
-        String caminhoB = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes/");
-        
-        File fileA = new File(caminhoA);
-        if (!fileA.exists()) {
-            fileA.mkdir();
+        String cod = "";
+        if (contaCobranca.getLayout().getId() == 2) {
+            cod = contaCobranca.getSicasSindical();
+        } else {
+            cod = contaCobranca.getCodCedente();
         }
         
-        File fileB = new File(caminhoB);
-        if (!fileB.exists()) {
-            fileB.mkdir();
-        }
-        
+        Diretorio.criar("Arquivos/retorno/" + cod + "/");
+        Diretorio.criar("Arquivos/retorno/" + cod + "/pendentes/");
+
+//        String caminhoA = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/"+cod+"/");
+        String caminhoB = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/" + cod + "/pendentes/");
+
         String file_name = event.getFile().getFileName();
-        
         String caminho = caminhoB;
         caminho = caminho + "/" + file_name;
         try {
             File fl = new File(caminho);
+
+            FileOutputStream out;
             InputStream in = event.getFile().getInputstream();
-            FileOutputStream out = new FileOutputStream(fl.getPath());
+            out = new FileOutputStream(fl.getPath());
 
             byte[] buf = new byte[(int) event.getFile().getSize()];
             int count;
             while ((count = in.read(buf)) >= 0) {
                 out.write(buf, 0, count);
             }
-            
+
             in.close();
             out.flush();
             out.close();
+            
+            if (!verificaArquivos(fl, contaCobranca)) {
+                GenericaMensagem.error("Erro "+ fl.getName(), "Arquivo não pode ser enviado, verifique se a CONTRIBUIÇÃO e a CONTA estão corretas!");
+                fl.delete();
+            }
+            
+            loadListaArquivosBaixar();
         } catch (IOException e) {
             System.out.println(e);
         }
     }
 
     public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()){
+        if (listaServicos.isEmpty()) {
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
             List<ContaCobranca> result = servDB.listaContaCobrancaAtivo();
             if (result.isEmpty()) {
                 listaServicos.add(new SelectItem(0, "Nenhuma Contribuição Encontrada", "0"));
                 return listaServicos;
             }
-            
+
             for (int i = 0; i < result.size(); i++) {
                 // LAYOUT 2 = SINDICAL
                 if (result.get(i).getLayout().getId() == 2) {
                     listaServicos.add(
                             new SelectItem(
-                            new Integer(i),
-                            result.get(i).getApelido() + " - "
-                            + result.get(i).getSicasSindical(),//SICAS NO CASO DE SINDICAL
-                            Integer.toString(result.get(i).getId())));
+                                    i,
+                                    result.get(i).getApelido() + " - "
+                                    + result.get(i).getSicasSindical(),//SICAS NO CASO DE SINDICAL
+                                    Integer.toString(result.get(i).getId())));
                 } else {
                     listaServicos.add(
                             new SelectItem(
-                            new Integer(i),
-                            result.get(i).getApelido() + " - "
-                            + result.get(i).getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
-                            Integer.toString(result.get(i).getId())));
+                                    i,
+                                    result.get(i).getApelido() + " - "
+                                    + result.get(i).getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
+                                    Integer.toString(result.get(i).getId())));
                 }
             }
-            
+
             if (!listaServicos.isEmpty()) {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
                 contaCobranca = (ContaCobranca) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) listaServicos.get(index_contribuicao)).getDescription()), "ContaCobranca");
@@ -171,13 +261,34 @@ public class ArquivoBancoBean implements Serializable{
 
     public void setListaServicos(List<SelectItem> listaServicos) {
         this.listaServicos = listaServicos;
-    }    
-    
-    public String limparArquivos(){
-        GenericaSessao.put("arquivoBancoBean", new ArquivoBancoBean());
-        return "retornoBanco";
     }
-    
+
+    public void limparArquivosEnviados() {
+        Object objs[] = caminhoServicoPendente();
+        String caminho = (String) objs[0]+ "/";
+        try {
+            File filex = new File(caminho);
+            File listFile[] = filex.listFiles();
+
+            for (File linha_file : listFile) {
+                linha_file.delete();
+            }
+            GenericaMensagem.info("OK", "Arquivos Excluídos!");
+            loadListaArquivosBaixar();
+        } catch (Exception e) {
+            GenericaMensagem.error("Erro", "Não foi possível excluir arquivos, tente novamente!");
+        }
+    }
+
+    public void atualizaContaCobranca() {
+        if (!listaServicos.isEmpty()) {
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            contaCobranca = (ContaCobranca) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) listaServicos.get(index_contribuicao)).getDescription()), "ContaCobranca");
+        }
+        
+        loadListaArquivosBaixar();
+    }
+
     public String getStrServicos() {
         if (!listaArquivoRetorno.isEmpty() && strServicos.isEmpty() && contaCobranca.getId() != -1) {
             // LAYOUT 2 = SINDICAL
@@ -234,7 +345,6 @@ public class ArquivoBancoBean implements Serializable{
 
             destino += "/ARQX" + DataHoje.hora().replace(":", "") + ".REM";
 
-
             file = new FileOutputStream(destino);
             file.close();
             writer = new FileWriter(destino);
@@ -278,7 +388,6 @@ public class ArquivoBancoBean implements Serializable{
             conteudoRemessa += "00000000";
 
             // Nome Sindicato
-
             conteudoRemessa += nome_sindicato;
             // Nome do Banco
             conteudoRemessa += nome_banco;
@@ -327,7 +436,6 @@ public class ArquivoBancoBean implements Serializable{
             buffWriter.newLine();
 
             // Lista Movimento
-
             sv.abrirTransacao();
             for (int i = 0; i < movs.size(); i++) {
                 // FIM DE HEADER DE ARQUIVO
@@ -525,7 +633,6 @@ public class ArquivoBancoBean implements Serializable{
 
             /* TRAILER DE ARQUIVO --------------------- */
             //qntBoletos += Integer.toString(Integer.parseInt(qntBoletos) * 3) ;
-
             qntLinhas = qntLinhas.substring(0, 6 - Integer.toString(((movs.size() * 3) + 4)).length()) + ((movs.size() * 3) + 4);
             String qntLote = ("000000").substring(0, 6 - Integer.toString(rb.getLote()).length()) + rb.getLote();
             conteudoRemessa = "10499999         " + qntLote + qntLinhas + "                                                                                                                                                                                                                   ";
@@ -624,38 +731,39 @@ public class ArquivoBancoBean implements Serializable{
     public String lerArquivoTXTRetorno() {
         GenericaQuery generica = new GenericaQuery();
         Object objs[] = null;
-
+        List listax = new ArrayList();
         String caminho = (String) objs[0];
         File fl = new File(caminho);
         File listFile[] = fl.listFiles();
+        String linha = "";
         if (listFile != null) {
             int qntRetornos = listFile.length;
             listaRetorno = new Vector<GenericaQuery>();
             for (int u = 0; u < qntRetornos; u++) {
                 try {
-                    reader = new FileReader(caminho + "/" + listFile[u].getName());
-                    buffReader = new BufferedReader(reader);
-                    lista = new Vector();
+                    Reader reader = new FileReader(caminho + "/" + listFile[u].getName());
+                    BufferedReader buffReader = new BufferedReader(reader);
+                    listax = new ArrayList();
                     while ((linha = buffReader.readLine()) != null) {
-                        lista.add(linha);
+                        listax.add(linha);
                     }
                     int i = 0;
-                    while (i < lista.size()) {
+                    while (i < listax.size()) {
                         if (i < 1) {
-                            cnpj = ((String) lista.get(i)).substring(18, 32);
-                            sicas = ((String) lista.get(i)).substring(33, 39);
+                            cnpj = ((String) listax.get(i)).substring(18, 32);
+                            sicas = ((String) listax.get(i)).substring(33, 39);
                         }
-                        if (((String) lista.get(i)).substring(13, 14).equals("T")) {
-                            nossoNum = ((String) lista.get(i)).substring(133, 148);
-                            dtVencimento = ((String) lista.get(i)).substring(73, 81);
-                            vlrTaxa = ((String) lista.get(i)).substring(198, 213);
+                        if (((String) listax.get(i)).substring(13, 14).equals("T")) {
+                            nossoNum = ((String) listax.get(i)).substring(133, 148);
+                            dtVencimento = ((String) listax.get(i)).substring(73, 81);
+                            vlrTaxa = ((String) listax.get(i)).substring(198, 213);
                         }
 
                         i++;
-                        if (i < lista.size() && ((String) lista.get(i)).substring(13, 14).equals("U")) {
-                            vlrPago = ((String) lista.get(i)).substring(77, 92);
-                            vlrLiquido = ((String) lista.get(i)).substring(95, 107);
-                            dtLiquidacao = ((String) lista.get(i)).substring(145, 153);
+                        if (i < listax.size() && ((String) listax.get(i)).substring(13, 14).equals("U")) {
+                            vlrPago = ((String) listax.get(i)).substring(77, 92);
+                            vlrLiquido = ((String) listax.get(i)).substring(95, 107);
+                            dtLiquidacao = ((String) listax.get(i)).substring(145, 153);
                             generica = new GenericaQuery(cnpj, //argumento0
                                     sicas, //argumento1
                                     nossoNum, //argumento2
@@ -698,7 +806,7 @@ public class ArquivoBancoBean implements Serializable{
     public List getListaArquivoRemessa() {
         GenericaQuery generica = new GenericaQuery();
         FacesContext context = FacesContext.getCurrentInstance();
-        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/remessas/"));
+        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/remessas/"));
         File listFile[] = files.listFiles();
         String[] parametros = new String[6];
         listaArquivoRemessa.clear();
@@ -728,6 +836,7 @@ public class ArquivoBancoBean implements Serializable{
         GenericaQuery generica = new GenericaQuery();
         Object objs[] = caminhoPendente();
         String caminho = (String) objs[0];
+        File files = null;
         try {
             if (!outros) {
                 files = new File(caminho);
@@ -784,42 +893,41 @@ public class ArquivoBancoBean implements Serializable{
         return listaArquivoRetorno;
     }
 
-    public List getListaPendencias() {
-        GenericaQuery generica = new GenericaQuery();
-        Object objs[] = caminhoServicoPendente();
-        String caminho = (String) objs[0];
-        try {
-            if (!outros) {
-                files = new File(caminho);
-                File listFile[] = files.listFiles();
-                String[] parametros = new String[6];
-                listaPendencias.clear();
-                int numArq = listFile.length;
-                int i = 0;
-                while (i < numArq) {
-                    parametros[0] = listFile[i].getName();
-                    parametros[1] = "";
-                    parametros[2] = "";
-                    parametros[3] = "";
-                    parametros[4] = "";
-                    parametros[5] = "";
-                    generica = new GenericaQuery(
-                            parametros[0],
-                            parametros[1],
-                            parametros[2],
-                            parametros[3],
-                            parametros[4],
-                            parametros[5]);
-                    listaPendencias.add(generica);
-                    i++;
-                }
-            }
-        } catch (Exception e) {
-            return new ArrayList();
-        }
-        return listaPendencias;
-    }
-
+//    public List getListaPendencias() {
+//        GenericaQuery generica = new GenericaQuery();
+//        Object objs[] = caminhoServicoPendente();
+//        String caminho = (String) objs[0];
+//        try {
+//            if (!outros) {
+//                files = new File(caminho);
+//                File listFile[] = files.listFiles();
+//                String[] parametros = new String[6];
+//                listaPendencias.clear();
+//                int numArq = listFile.length;
+//                int i = 0;
+//                while (i < numArq) {
+//                    parametros[0] = listFile[i].getName();
+//                    parametros[1] = "";
+//                    parametros[2] = "";
+//                    parametros[3] = "";
+//                    parametros[4] = "";
+//                    parametros[5] = "";
+//                    generica = new GenericaQuery(
+//                            parametros[0],
+//                            parametros[1],
+//                            parametros[2],
+//                            parametros[3],
+//                            parametros[4],
+//                            parametros[5]);
+//                    listaPendencias.add(generica);
+//                    i++;
+//                }
+//            }
+//        } catch (Exception e) {
+//            return new ArrayList();
+//        }
+//        return listaPendencias;
+//    }
     public List getListaPastas() {
         if (carregaPastas) {
             listaPasta = new ArrayList();
@@ -828,6 +936,7 @@ public class ArquivoBancoBean implements Serializable{
             String caminho = (String) objs[0];
             //ServicoContaCobranca scc = (ServicoContaCobranca)objs[1];
             Object[] obj = new Object[2];
+            File files = null;
             try {
                 files = new File(caminho);
                 File listFile[] = files.listFiles();
@@ -890,21 +999,21 @@ public class ArquivoBancoBean implements Serializable{
             // CAIXA FEDERAL ------------------------------------------------------------------------------
             if (ArquivoRetorno.CAIXA_FEDERAL == scc.getContaBanco().getBanco().getId()) {
                 if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                    ar = new CaixaFederal(scc, true);
+                    ar = new CaixaFederal(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sicob(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
                         }
                     }
                 } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                    ar = new CaixaFederal(scc, true);
+                    ar = new CaixaFederal(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sindical(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
                         }
                     }
                 } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
-                    ar = new CaixaFederal(scc, true);
+                    ar = new CaixaFederal(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sigCB(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
@@ -914,7 +1023,7 @@ public class ArquivoBancoBean implements Serializable{
                 // BANCO DO BRASIL ------------------------------------------------------------------------------
             } else if (ArquivoRetorno.BANCO_BRASIL == scc.getContaBanco().getBanco().getId()) {
                 if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                    ar = new BancoBrasil(scc, true);
+                    ar = new BancoBrasil(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sicob(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
@@ -926,7 +1035,7 @@ public class ArquivoBancoBean implements Serializable{
                 // REAL ------------------------------------------------------------------------------
             } else if (ArquivoRetorno.REAL == scc.getContaBanco().getBanco().getId()) {
                 if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                    ar = new Real(scc, true);
+                    ar = new Real(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sicob(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
@@ -938,7 +1047,7 @@ public class ArquivoBancoBean implements Serializable{
                 // ITAU ------------------------------------------------------------------------------
             } else if (ArquivoRetorno.ITAU == scc.getContaBanco().getBanco().getId()) {
                 if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                    ar = new Itau(scc, true);
+                    ar = new Itau(scc);
                     for (int i = 0; i < listaPasta.size(); i++) {
                         if ((Boolean) ((DataObject) listaPasta.get(i)).getArgumento0()) {
                             genericaRetorno.addAll(ar.sicob(false, ((String) ((DataObject) listaPasta.get(i)).getArgumento1())));
@@ -1074,146 +1183,107 @@ public class ArquivoBancoBean implements Serializable{
         carregaPastas = true;
     }
 
-    public List<DataObject> getListaDocsAberto() {
-        DataObject dtObject = null;
-        String documento = "";
-        String digito = "";
-        boolean encontrado = false;
-        DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
-        List<DocumentoInvalido> listaDoc = new ArrayList<DocumentoInvalido>();
-        List<DocumentoInvalido> listaDocCadastrado = new ArrayList<DocumentoInvalido>();
-        listaDocumentos = new Vector<DataObject>();
-        listaDoc = dbDocInv.pesquisaTodos();
-        
-        if (listaDoc == null)
-            return new ArrayList();
-        listaDocCadastrado = dbDocInv.pesquisaNumeroBoletoPessoa();
-        for (int i = 0; i < listaDoc.size(); i++) {
-            encontrado = false;
-            for (int w = 0; w < listaDocCadastrado.size(); w++) {
-                if (listaDoc.get(i).getId() == listaDocCadastrado.get(w).getId()) {
-                    documento = listaDoc.get(i).getDocumentoInvalido().substring(
-                            listaDoc.get(i).getDocumentoInvalido().length() - 12,
-                            listaDoc.get(i).getDocumentoInvalido().length());
-                    digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
-                    dtObject = new DataObject(false,
-                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
-                            "** CADASTRADO **",// -- STATUS
-                            listaDoc.get(i),
-                            false,
-                            listaDoc.get(i).getDtImportacao());
-                    
-                    listaDocumentos.add(dtObject);
-                    
-                    encontrado = true;
-                }
-            }
-            if (!encontrado) {
-                documento = listaDoc.get(i).getDocumentoInvalido().substring(
-                        listaDoc.get(i).getDocumentoInvalido().length() - 12,
-                        listaDoc.get(i).getDocumentoInvalido().length());
-                digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
-                if (ValidaDocumentos.isValidoCNPJ(documento + digito)) {
-                    dtObject = new DataObject(false,
-                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
-                            "** VERIFICAR **",// -- STATUS
-                            listaDoc.get(i),
-                            true,
-                            listaDoc.get(i).getDtImportacao());
-                    listaDocumentos.add(dtObject);
-                } else {
-                    dtObject = new DataObject(false,
-                            documento,// -- DOCUMENTO
-                            "** INVALIDO **",// -- STATUS
-                            listaDoc.get(i),
-                            true,
-                            listaDoc.get(i).getDtImportacao());
-                    listaDocumentos.add(dtObject);
-                }
-            }
+    public void atualizarBoletoCadastro() {
+        if (listaDocumentos.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Não existe nenhum Documento para ser Atualizado!");
+            return;
         }
-        return listaDocumentos;
-    }
-    
-    public void atualizarBoletoCadastro(){
         MovimentoDB db = new MovimentoDBToplink();
         List<Movimento> lm = new ArrayList<Movimento>();
         List<Juridica> l_juridicax = new ArrayList<Juridica>();
         JuridicaDB dbj = new JuridicaDBToplink();
-                
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         for (DataObject listaDocumento : listaDocumentos) {
-            DocumentoInvalido di = (DocumentoInvalido)sv.pesquisaCodigo( ((DocumentoInvalido)listaDocumento.getArgumento3()).getId(), "DocumentoInvalido");
-            
-            if (!(Boolean)listaDocumento.getArgumento4()){
+            DocumentoInvalido di = (DocumentoInvalido) sv.pesquisaCodigo(((DocumentoInvalido) listaDocumento.getArgumento3()).getId(), "DocumentoInvalido");
+
+            if (!(Boolean) listaDocumento.getArgumento4()) {
                 lm = db.pesquisaMovimentoCadastrado(di.getDocumentoInvalido());
                 l_juridicax = dbj.pesquisaJuridicaPorDoc(listaDocumento.getArgumento1().toString());
-                if (!l_juridicax.isEmpty() && !lm.isEmpty()){
-                    
+                if (!l_juridicax.isEmpty() && !lm.isEmpty()) {
+
                     sv.abrirTransacao();
                     for (Movimento lmovimento : lm) {
 
                         lmovimento.getLote().setPessoa(l_juridicax.get(0).getPessoa());
 
-                        if (!sv.alterarObjeto(lmovimento.getLote())){ sv.desfazerTransacao(); return; }
+                        if (!sv.alterarObjeto(lmovimento.getLote())) {
+                            sv.desfazerTransacao();
+                            GenericaMensagem.error("Erro", "Não foi possível atualizar Lista!");
+                            return;
+                        }
 
                         lmovimento.setPessoa(l_juridicax.get(0).getPessoa());
                         lmovimento.setBeneficiario(l_juridicax.get(0).getPessoa());
                         lmovimento.setTitular(l_juridicax.get(0).getPessoa());;
 
-                        if (!sv.alterarObjeto(lmovimento)){ sv.desfazerTransacao(); return; }
-                      
+                        if (!sv.alterarObjeto(lmovimento)) {
+                            sv.desfazerTransacao();
+                            GenericaMensagem.error("Erro", "Não foi possível atualizar Lista!");
+                            return;
+                        }
+
                     }
-                    
+
                     di.setChecado(true);
-                    if (!sv.alterarObjeto(di)){ sv.desfazerTransacao(); return; }
+                    if (!sv.alterarObjeto(di)) {
+                        sv.desfazerTransacao();
+                        GenericaMensagem.error("Erro", "Não foi possível atualizar Lista!");
+                        return;
+                    }
                     sv.comitarTransacao();
-                    
+
+                    GenericaMensagem.info("OK", "Lista Atualizada!");
                 }
-            }else if ((Boolean)listaDocumento.getArgumento0()){
+            } else if ((Boolean) listaDocumento.getArgumento0()) {
                 sv.abrirTransacao();
 
                 di.setChecado(true);
-                
-                if (!sv.alterarObjeto(di)){ sv.desfazerTransacao(); return; }
-                
+
+                if (!sv.alterarObjeto(di)) {
+                    sv.desfazerTransacao();
+                    GenericaMensagem.error("Erro", "Não foi possível atualizar Lista!");
+                    return;
+                }
+
                 sv.comitarTransacao();
+                
+                GenericaMensagem.info("OK", "Lista Atualizada!");
             }
         }
         
-        listaDocumentos.clear();
+        loadListaDocumentos();
     }
-    
-    public String enviarArquivoBaixar(boolean pendentes) {
+
+    public void enviarArquivoBaixar() {
         try {
-            Usuario usuario = new Usuario();
-            usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
             Object objs[] = caminhoServico();
             String caminhoCompleto = (String) objs[0];
             ContaCobranca scc = (ContaCobranca) objs[1];
             String result = "";
-            ArquivoRetorno arquivoRetorno = null;
-            if (!validarArquivos(objs)) {
-                return null;
-            }
-            if (!listaArquivoRetorno.isEmpty() || pendentes) {
-                if (!outros) {
+            ArquivoRetorno arquivoRetorno;
+//            if (!validarArquivos(objs)) {
+//                return;
+//            }
+            if (!listaArquivosPendentes.isEmpty()) {
+//                if (!outros) {
                     // CAIXA FEDERAL ------------------------------------------------------------------------------
                     if (ArquivoRetorno.CAIXA_FEDERAL == scc.getContaBanco().getBanco().getId()) {
                         if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                            arquivoRetorno = new CaixaFederal(scc, pendentes);
+                            arquivoRetorno = new CaixaFederal(scc);
                             result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                            arquivoRetorno = new CaixaFederal(scc, pendentes);
+                            arquivoRetorno = new CaixaFederal(scc);
                             result = arquivoRetorno.darBaixaSindical(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
-                            arquivoRetorno = new CaixaFederal(scc, pendentes);
+                            arquivoRetorno = new CaixaFederal(scc);
                             result = arquivoRetorno.darBaixaSigCB(caminhoCompleto, usuario);
                         }
                         // BANCO DO BRASIL ------------------------------------------------------------------------------
                     } else if (ArquivoRetorno.BANCO_BRASIL == scc.getContaBanco().getBanco().getId()) {
                         if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                            arquivoRetorno = new BancoBrasil(scc, pendentes);
+                            arquivoRetorno = new BancoBrasil(scc);
                             result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
                             result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -1223,7 +1293,7 @@ public class ArquivoBancoBean implements Serializable{
                         // REAL ------------------------------------------------------------------------------
                     } else if (ArquivoRetorno.REAL == scc.getContaBanco().getBanco().getId()) {
                         if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                            arquivoRetorno = new Real(scc, pendentes);
+                            arquivoRetorno = new Real(scc);
                             result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
                             result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -1233,7 +1303,7 @@ public class ArquivoBancoBean implements Serializable{
                         // ITAU --------------------------------------------------------------------------------
                     } else if (ArquivoRetorno.ITAU == scc.getContaBanco().getBanco().getId()) {
                         if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                            arquivoRetorno = new Itau(scc, pendentes);
+                            arquivoRetorno = new Itau(scc);
                             result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
                             result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -1242,7 +1312,7 @@ public class ArquivoBancoBean implements Serializable{
                         }
                     } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
                         if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                            arquivoRetorno = new Santander(scc, pendentes);
+                            arquivoRetorno = new Santander(scc);
                             result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
                         } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
                             result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -1251,18 +1321,18 @@ public class ArquivoBancoBean implements Serializable{
                         }
                     }
                     //------------------------------------------------------
-                } else {
-                    arquivoRetorno = new RetornoPadrao(scc, pendentes);
-                    result = arquivoRetorno.darBaixaPadrao(usuario);
-                }
-            } else {
-                result = "Lista Vazia!";
-            }
-            msgOk = "Processamento concluído! --- " + result;
+//                } else {
+//                    arquivoRetorno = new RetornoPadrao(scc, pendentes);
+//                    result = arquivoRetorno.darBaixaPadrao(usuario);
+//                }
+            } 
+            
+            GenericaMensagem.info("Sucesso", "Arquivos Baixados");
+            loadListaArquivosBaixar();
+            loadListaDocumentos();
         } catch (Exception e) {
-            return null;
+            
         }
-        return null;
     }
 
     public void testar() {
@@ -1281,7 +1351,7 @@ public class ArquivoBancoBean implements Serializable{
                 File listFile[] = fl.listFiles();
                 int numArq = listFile.length;
                 for (int i = 0; i < numArq; i++) {
-                    if (verificaArquivos(listFile[i], scc)) {
+                    //if (verificaArquivos(listFile[i], scc)) {
                         File fil = new File(caminho);
                         fil.mkdir();
 
@@ -1298,11 +1368,11 @@ public class ArquivoBancoBean implements Serializable{
 //                        in.close();
 //                        out.flush();
 //                        out.close();
-                    } else {
-                        listFile[i].delete();
-                        msgOk = "Serviço e Conta não correspondem com os arquivos!";
-                        return false;
-                    }
+//                    } else {
+//                        listFile[i].delete();
+//                        msgOk = "Serviço e Conta não correspondem com os arquivos!";
+//                        return false;
+//                    }
                 }
             } catch (Exception e) {
                 System.out.println(e);
@@ -1386,99 +1456,95 @@ public class ArquivoBancoBean implements Serializable{
         return obj;
     }
 
-    public boolean verificaArquivos(File file, ContaCobranca scc) {
-        if (!listaArquivoRetorno.isEmpty()) {
-            try {
-                reader = new FileReader(file);
-                buffReader = new BufferedReader(reader);
-                lista = new Vector();
-                lista.add(buffReader.readLine());
+    public boolean verificaArquivos(File filex, ContaCobranca scc) {
+        try {
+            Reader reader = new FileReader(filex);
+            BufferedReader buffReader = new BufferedReader(reader);
+            String linha = buffReader.readLine();
 
-                reader.close();
-                buffReader.close();
-                // CAIXA FEDERAL --------------------------------------------------------------------------------
-                if (ArquivoRetorno.CAIXA_FEDERAL == scc.getContaBanco().getBanco().getId()) {
-                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                        String xxx = ((String) lista.get(0)).substring(59, 70);
-                        if (((String) lista.get(0)).substring(59, 70).equals(scc.getCodCedente())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                        if (((String) lista.get(0)).substring(33, 38).equals(scc.getSicasSindical())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
-                        if (((String) lista.get(0)).substring(58, 64).equals(scc.getCodCedente())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                    // BANCO DO BRASIL ------------------------------------------------------------------------------
-                } else if (ArquivoRetorno.BANCO_BRASIL == scc.getContaBanco().getBanco().getId()) {
-                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                        String xxx = ((String) lista.get(0)).substring(66, 70);
-                        if (((String) lista.get(0)).substring(66, 70).equals(scc.getCodCedente())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                        return false;
-                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+            reader.close();
+            buffReader.close();
+            // CAIXA FEDERAL --------------------------------------------------------------------------------
+            if (ArquivoRetorno.CAIXA_FEDERAL == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    //String xxx = linha.substring(59, 70);
+                    if (linha.substring(59, 70).equals(scc.getCodCedente())) {
+                        return true;
+                    } else {
                         return false;
                     }
-                    // REAL --------------------------------------------------------------------------------------
-                } else if (ArquivoRetorno.REAL == scc.getContaBanco().getBanco().getId()) {
-                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                        if (((String) lista.get(0)).substring(63, 70).equals(scc.getCodCedente())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                        return false;
-                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    if (linha.substring(33, 38).equals(scc.getSicasSindical())) {
+                        return true;
+                    } else {
                         return false;
                     }
-                    // ITAU --------------------------------------------------------------------------------------
-                } else if (ArquivoRetorno.ITAU == scc.getContaBanco().getBanco().getId()) {
-                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                        if (((String) lista.get(0)).substring(32, 37).equals(scc.getCodCedente())) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                        return false;
-                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
-                        return false;
-                    }
-                } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
-                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
-                        int codc = Integer.valueOf( lista.get(0).toString().substring(53, 61) );
-                        int compara = Integer.valueOf( scc.getCodCedente() );
-                        if (codc == compara) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
-                        return false;
-                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    if (linha.substring(58, 64).equals(scc.getCodCedente())) {
+                        return true;
+                    } else {
                         return false;
                     }
                 }
-            } catch (Exception e) {
+                // BANCO DO BRASIL ------------------------------------------------------------------------------
+            } else if (ArquivoRetorno.BANCO_BRASIL == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    if (linha.substring(66, 70).equals(scc.getCodCedente())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    return false;
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    return false;
+                }
+                // REAL --------------------------------------------------------------------------------------
+            } else if (ArquivoRetorno.REAL == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    if (linha.substring(63, 70).equals(scc.getCodCedente())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    return false;
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    return false;
+                }
+                // ITAU --------------------------------------------------------------------------------------
+            } else if (ArquivoRetorno.ITAU == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    if (linha.substring(32, 37).equals(scc.getCodCedente())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    return false;
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    return false;
+                }
+            } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    int codc = Integer.valueOf(linha.toString().substring(53, 61));
+                    int compara = Integer.valueOf(scc.getCodCedente());
+                    if (codc == compara) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    return false;
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    return false;
+                }
             }
+        } catch (Exception e) {
         }
         return false;
     }
-
+    
     public String excluirArquivo() {
         Object objs[] = null;
         String caminho = "";//(String)objs[0]+"/"+((GenericaQuery)getHtmlDataTableExcluir().getRowData()).getArgumento0();
@@ -1489,7 +1555,11 @@ public class ArquivoBancoBean implements Serializable{
         return "retornoBanco";
     }
 
-    public String imprimirDocumentos() {
+    public void imprimirDocumentos() {
+        if (listaDocumentos.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Não existe nenhum Documento para ser Impresso!");
+            return;
+        }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
@@ -1509,6 +1579,7 @@ public class ArquivoBancoBean implements Serializable{
                             true,
                             DataHoje.converteData((Date) ((DataObject) listaDocumentos.get(i)).getArgumento5())));
                 }
+                
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaDocs);
                 JasperPrint print = JasperFillManager.fillReport(
                         jasper,
@@ -1521,12 +1592,15 @@ public class ArquivoBancoBean implements Serializable{
                 saida.write(arquivo, 0, arquivo.length);
                 saida.flush();
                 saida.close();
-            } catch (Exception erro) {
-                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            } catch (JRException | IOException erro) {
+                //System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+                GenericaMensagem.error("Erro", erro.getMessage());
             }
         } catch (Exception erro) {
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            //System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            GenericaMensagem.error("Erro", erro.getMessage());
         }
+        
         FacesContext.getCurrentInstance().responseComplete();
         Download download = new Download(
                 "Documentos Inválidos.pdf",
@@ -1534,10 +1608,6 @@ public class ArquivoBancoBean implements Serializable{
                 "pdf",
                 FacesContext.getCurrentInstance());
         download.baixar();
-        return null;
-    }
-    
-    public void refreshForm() {
     }
 
     public int getIndex_contribuicao() {
@@ -1581,9 +1651,9 @@ public class ArquivoBancoBean implements Serializable{
         this.indexArquivos = indexArquivos;
     }
 
-    public void setListaPendencias(List listaPendencias) {
-        this.listaPendencias = listaPendencias;
-    }
+//    public void setListaPendencias(List listaPendencias) {
+//        this.listaPendencias = listaPendencias;
+//    }
 
     public String getLblPendente() {
         if (contaCobranca.getId() != -1 && !listaServicos.isEmpty()) {
@@ -1611,5 +1681,21 @@ public class ArquivoBancoBean implements Serializable{
 
     public void setContaCobranca(ContaCobranca contaCobranca) {
         this.contaCobranca = contaCobranca;
+    }
+
+    public List<String> getListaArquivosPendentes() {
+        return listaArquivosPendentes;
+    }
+
+    public void setListaArquivosPendentes(List<String> listaArquivosPendentes) {
+        this.listaArquivosPendentes = listaArquivosPendentes;
+    }
+
+    public List<DataObject> getListaDocumentos() {
+        return listaDocumentos;
+    }
+
+    public void setListaDocumentos(List<DataObject> listaDocumentos) {
+        this.listaDocumentos = listaDocumentos;
     }
 }

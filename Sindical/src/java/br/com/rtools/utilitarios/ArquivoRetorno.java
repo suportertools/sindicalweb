@@ -22,7 +22,7 @@ import javax.servlet.ServletContext;
 public abstract class ArquivoRetorno {
 
     private ContaCobranca contaCobranca;
-    private boolean pendentes;
+//    private boolean pendentes;
     public final static int SICOB = 1;
     public final static int SINDICAL = 2;
     public final static int SIGCB = 3;
@@ -47,44 +47,28 @@ public abstract class ArquivoRetorno {
 
     public abstract String darBaixaPadrao(Usuario usuario);
 
-    protected ArquivoRetorno(ContaCobranca contaCobranca, boolean pendentes) {
+    protected ArquivoRetorno(ContaCobranca contaCobranca) {
         this.contaCobranca = contaCobranca;
-        this.pendentes = pendentes;
+//        this.pendentes = pendentes;
     }
 
     protected String baixarArquivo(List<GenericaRetorno> listaParametros, String caminho, Usuario usuario) {
         String cnpj = "";
         String referencia = "";
         String dataVencto = "";
-        //String fatorQuitacao = "";
         String result = "";
         String destino = caminho + "/" + DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1] + "-" + DataHoje.ArrayDataHoje()[0];
-        String path = "";
-        if (this.pendentes) {
-            path = caminho + "/pendentes";
-        } else {
-            path = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes/");
-        }
 
         boolean moverArquivo = true;
-
-        List<String> listaDtPagamentos = new ArrayList<String>();
-        List<Float> listaTaxa = new ArrayList<Float>();
-        //List<Movimento> listaMovimentos = new ArrayList();
-        //List<DocumentoInvalido> listaDocumentoInvalido = new ArrayList();
-        //List<Float> listaValor = new ArrayList();
-        List<String> errors = new ArrayList<String>();
+        List<String> errors = new ArrayList();
 
         MovimentoDB db = new MovimentoDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaDB dbPes = new PessoaDBToplink();
-        //DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
         FTipoDocumentoDB dbft = new FTipoDocumentoDBToplink();
-        FilialDB dbFilial = new FilialDBToplink();
         List<Movimento> movimento = new ArrayList();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        //DocumentoInvalido docInv = new DocumentoInvalido();
-        File fl = new File(path);
+        File fl = new File(caminho + "/pendentes/");
         File listFls[] = fl.listFiles();
         File flDes = new File(destino); // 0 DIA, 1 MES, 2 ANO
         flDes.mkdir();
@@ -94,19 +78,6 @@ public abstract class ArquivoRetorno {
         // LAYOUT 2 = SINDICAL
         if (this.getContaCobranca().getLayout().getId() == 2) {
             for (int u = 0; u < listaParametros.size(); u++) {
-//                listaDocumentoInvalido = dbDocInv.pesquisaNumeroBoletoPessoa();
-//                if (!listaDocumentoInvalido.isEmpty()){
-//                    for(int w = 0; w < listaDocumentoInvalido.size(); w++){
-//                        docInv = listaDocumentoInvalido.get(w);
-//                        dbDocInv.getEntityManager().getTransaction().begin();
-//                        if (dbDocInv.delete(docInv))
-//                            dbDocInv.getEntityManager().getTransaction().commit();
-//                        else
-//                            dbDocInv.getEntityManager().getTransaction().rollback();
-//                        docInv = new DocumentoInvalido();
-//                    }
-//                    listaDocumentoInvalido = new ArrayList();
-//                }
                 // VERIFICA O TIPO DA EMPRESA -------------------------------------------------------------------------------------------------
                 // ----------------------------------------------------------------------------------------------------------------------------
                 if ( ((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro")).getTipoEmpresa().equals("E")) {
@@ -377,10 +348,6 @@ public abstract class ArquivoRetorno {
                         this.getContaCobranca().getId());
                 if (!movimento.isEmpty()) {
                     if (movimento.size() == 1) {
-                        //listaDtPagamentos.add(DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));
-                        //listaTaxa.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100);
-                        //listaValor.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100);
-
                         movimento.get(0).setValorBaixa(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100);
                         movimento.get(0).setTaxa(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100);
 
@@ -388,16 +355,12 @@ public abstract class ArquivoRetorno {
                     }
                 }
                 movimento = new ArrayList();
-                //listaDtPagamentos = new ArrayList<String>();
-                //listaTaxa = new ArrayList<Float>();
-                //listaValor = new ArrayList();
             }
         }
 
-
         // TERMINAR O CASO DE PENDENTES OU NÃO --------------------------------
         if (listFls != null) {
-            if (this.pendentes && moverArquivo) {
+            if (moverArquivo) {
                 for (int i = 0; i < listFls.length; i++) {
                     flDes = new File(caminho + "/pendentes/" + listFls[i].getName());
 
@@ -410,44 +373,46 @@ public abstract class ArquivoRetorno {
                         result = " Erro ao mover arquivo!";
                     }
                 }
-            } else if (this.pendentes && !moverArquivo) {
-            } else if (moverArquivo) {
-                for (int i = 0; i < listFls.length; i++) {
-                    try {
-                        fl = new File(path + "/" + listFls[i].getName());
-                        flDes = new File(destino + "/" + listFls[i].getName());
-                        if (flDes.exists()) {
-                            flDes.delete();
-                        }
-
-                        if (!fl.renameTo(flDes)) {
-                            result = " Erro ao mover arquivo!";
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
-            } else {
-                for (int i = 0; i < listFls.length; i++) {
-                    try {
-                        flDes = new File(caminho + "/pendentes"); // 0 DIA, 1 MES, 2 ANO
-                        flDes.mkdir();
-
-                        fl = new File(path + "/" + listFls[i].getName());
-
-                        flDes = new File(caminho + "/pendentes/" + listFls[i].getName());
-                        if (flDes.exists()) {
-                            flDes.delete();
-                        }
-
-                        if (!fl.renameTo(flDes)) {
-                            result = " Erro ao mover arquivo!";
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
-            }
+            } 
+//            else if (this.pendentes && !moverArquivo) {
+//                
+//            } else if (moverArquivo) {
+//                for (int i = 0; i < listFls.length; i++) {
+//                    try {
+//                        fl = new File(path + "/" + listFls[i].getName());
+//                        flDes = new File(destino + "/" + listFls[i].getName());
+//                        if (flDes.exists()) {
+//                            flDes.delete();
+//                        }
+//
+//                        if (!fl.renameTo(flDes)) {
+//                            result = " Erro ao mover arquivo!";
+//                        }
+//                    } catch (Exception e) {
+//                        continue;
+//                    }
+//                }
+//            } else {
+//                for (int i = 0; i < listFls.length; i++) {
+//                    try {
+//                        flDes = new File(caminho + "/pendentes"); // 0 DIA, 1 MES, 2 ANO
+//                        flDes.mkdir();
+//
+//                        fl = new File(path + "/" + listFls[i].getName());
+//
+//                        flDes = new File(caminho + "/pendentes/" + listFls[i].getName());
+//                        if (flDes.exists()) {
+//                            flDes.delete();
+//                        }
+//
+//                        if (!fl.renameTo(flDes)) {
+//                            result = " Erro ao mover arquivo!";
+//                        }
+//                    } catch (Exception e) {
+//                        continue;
+//                    }
+//                }
+//            }
         }
         return result;
     }
@@ -463,140 +428,12 @@ public abstract class ArquivoRetorno {
     public void setContaCobranca(ContaCobranca contaCobranca) {
         this.contaCobranca = contaCobranca;
     }
-
-    public boolean isPendentes() {
-        return pendentes;
-    }
-
-    public void setPendentes(boolean pendentes) {
-        this.pendentes = pendentes;
-    }
+//
+//    public boolean isPendentes() {
+//        return pendentes;
+//    }
+//
+//    public void setPendentes(boolean pendentes) {
+//        this.pendentes = pendentes;
+//    }
 }
-// VERIFICA SE EXISTE BOLETO NA TABELA DE DOCUMENTOS INVALIDOS  -----------------------------------------
-// ------------------------------------------------------------------------------------------------------
-//                listaDocumentoInvalido = dbDocInv.pesquisaNumeroBoleto(listaParametros.get(u).getNossoNumero());
-//                if(!listaDocumentoInvalido.isEmpty() && listaDocumentoInvalido.get(0).isChecado()){
-////                    listaDtPagamentos.add(DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));
-////                    listaTaxa.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100);
-////                    listaValor.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100);
-//                    
-//                    docInv = dbDocInv.pesquisaCodigo(listaDocumentoInvalido.get(0).getId());
-//                    
-//                    Movimento movi = new Movimento(-1, 
-//                            null, 
-//                            this.getServicoContaCobranca().getServicos().getPlano5(), 
-//                            dbPes.pesquisaCodigo(0),
-//                            this.getServicoContaCobranca().getServicos(),
-//                            null,
-//                            tipoServico,
-//                            null,
-//                            0,
-//                            referencia,
-//                            dataVencto,
-//                            1,
-//                            true,
-//                            "E",
-//                            false,
-//                            dbPes.pesquisaCodigo(0),
-//                            dbPes.pesquisaCodigo(0),
-//                            "",
-//                            "",
-//                            dataVencto,
-//                            0,0,0,0,0,
-//                            Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
-//                            Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-//                            dbft.pesquisaCodigo(2),0);
-//                    
-//                    GerarMovimento.salvarUmMovimento(new Lote(), movi);      
-//                    GerarMovimento.baixarMovimento(movi, usuario, DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));      
-//
-//                    dbDocInv.getEntityManager().getTransaction().begin();
-//                    if (dbDocInv.delete(docInv))
-//                        dbDocInv.getEntityManager().getTransaction().commit();
-//                    else
-//                        dbDocInv.getEntityManager().getTransaction().rollback();
-//                }else{
-//                    // VERIFICA SE EXISTE BOLETO PELO NUMERO DO DOCUMENTO DA PESSOA ------------------------------------------------------
-//                    // -------------------------------------------------------------------------------------------------------------------
-//                    
-//                    movimento = db.pesquisaMovPorTipoDocumentoBaixado(listaParametros.get(u).getNossoNumero(), referencia, this.getServicoContaCobranca().getContaCobranca().getId(), tipoServico);
-//                    if (movimento.isEmpty()){
-//                        movimento = db.pesquisaMovPorTipoDocumentoList(listaParametros.get(u).getNossoNumero(), referencia, this.getServicoContaCobranca().getContaCobranca().getId(), tipoServico);
-//                        if (!movimento.isEmpty()){
-//                            listaDtPagamentos.add(DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));
-//                            listaTaxa.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100);
-//                            listaValor.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100);
-//                            listaMovimentos.add(movimento.get(0));
-//                        }else{
-//                            List<Juridica> listJuridica = dbJur.pesquisaJuridicaParaRetorno(listaParametros.get(u).getNossoNumero());
-//                            if (!listJuridica.isEmpty()){
-////                                listaDtPagamentos.add(DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));
-////                                listaTaxa.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100);
-////                                listaValor.add(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100);
-//
-//                                Movimento movi = new Movimento(-1, 
-//                                        null, 
-//                                        this.getServicoContaCobranca().getServicos().getPlano5(), 
-//                                        dbPes.pesquisaCodigo(0),
-//                                        this.getServicoContaCobranca().getServicos(),
-//                                        null,
-//                                        tipoServico,
-//                                        null,
-//                                        Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-//                                        referencia,
-//                                        dataVencto,
-//                                        1,
-//                                        true,
-//                                        "E",
-//                                        false,
-//                                        dbPes.pesquisaCodigo(0),
-//                                        dbPes.pesquisaCodigo(0),
-//                                        "",
-//                                        "",
-//                                        dataVencto,
-//                                        0,0,0,0,0,
-//                                        Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
-//                                        Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-//                                        dbft.pesquisaCodigo(3),0);
-//
-//                                GerarMovimento.salvarUmMovimento(new Lote(), movi);
-//                                
-//                                GerarMovimento.baixarMovimento(movi, usuario, DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()));   
-////                                listaMovBaixar.add(movi);
-////                                OperacaoMovimento op = new OperacaoMovimento(listaMovBaixar);
-////                                op.gerarMovimentoSemVerificacao( dbRot.pesquisaCodigo(4) );
-//                                if (movi.getId() != -1)
-//                                    listaMovimentos.add( movi );
-//                                else{
-//                                    errors.add(" Verifique o Cadastro de: "+ movi.getPessoa().getNome());
-//                                    moverArquivo = false;
-//                                }
-//                            }else{
-//                                listaDocumentoInvalido = dbDocInv.pesquisaNumeroBoleto(listaParametros.get(u).getNossoNumero());
-//                                if(listaDocumentoInvalido.isEmpty()){
-//                                    docInv.setImportacao(DataHoje.data());
-//                                    docInv.setChecado(false);
-//                                    docInv.setDocumentoInvalido(listaParametros.get(u).getNossoNumero());
-//                                    dbDocInv.insert(docInv);
-//                                }else{
-//                                    docInv = listaDocumentoInvalido.get(0);
-//                                    docInv.setImportacao(DataHoje.data());
-//                                    dbDocInv.getEntityManager().getTransaction().begin();
-//                                    if(dbDocInv.update(docInv))
-//                                        dbDocInv.getEntityManager().getTransaction().commit();
-//                                    else
-//                                        dbDocInv.getEntityManager().getTransaction().rollback();
-//                                }
-//                                docInv = new DocumentoInvalido();
-//                                movimento = new ArrayList();
-//                                movimento.add(new Movimento());
-//                                //errors.add("Boleto não encontrado "+ listaParametros.get(u).getNossoNumero());
-//                                moverArquivo = false;
-//                            }
-//                        }
-//                    }else{
-//                        movimento = new ArrayList();
-//                        movimento.add(new Movimento());
-//                        //errors.add("Boleto ja Baixado "+ listaParametros.get(u).getNossoNumero());
-//                    }
-//                }       

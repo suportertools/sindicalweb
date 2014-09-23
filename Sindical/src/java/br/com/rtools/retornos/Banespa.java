@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Banespa extends ArquivoRetorno {
-
-    public Banespa(ContaCobranca contaCobranca, boolean pendentes) {
-        super(contaCobranca, pendentes);
+    public Banespa(ContaCobranca contaCobranca) {
+        super(contaCobranca);
     }
 
     @Override

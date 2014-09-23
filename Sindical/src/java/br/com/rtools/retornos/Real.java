@@ -15,49 +15,37 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 public class Real extends ArquivoRetorno {
-
-    public Real(ContaCobranca contaCobranca, boolean pendentes) {
-        super(contaCobranca, pendentes);
+    private String linha = "", 
+                   pasta = "", 
+                   cnpj = "", 
+                   codigoCedente = "", 
+                   nossoNumero = "", 
+                   dataVencimento = "", 
+                   valorTaxa = "",
+                   valorPago = "",
+                   valorCredito = "",
+                   valorRepasse = "",
+                   dataPagamento = "",
+                   dataCredito = "",
+                   sequencialArquivo = "";
+    
+    public Real(ContaCobranca contaCobranca) {
+        super(contaCobranca);
     }
 
     @Override
     public List<GenericaRetorno> sicob(boolean baixar, String host) {
-        GenericaRetorno genericaRetorno = new GenericaRetorno();
-        FacesContext context = FacesContext.getCurrentInstance();
-        String pasta = "";
-        String linha = null;
-        String cnpj = "";
-        String codigoCedente = "";
-        String nossoNumero = "";
-        String valorTaxa = "";
-        String valorPago = "";
-        String dataPagamento = "";
-        String dataVencimento = "";
-        String caminho = "";
-
-        if (super.isPendentes()) {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
-            if (baixar) {
-                caminho += "/" + super.getContaCobranca().getApelido() + "_" + super.getContaCobranca().getCodCedente();
-                caminho += "/pendentes";
-                //            pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
-            } else {
-                //            caminho = caminho + "/" +super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
-                //            caminho = caminho + "/"+host;
-                //            pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/"+host;
-            }
-        } else {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
-        }
-
-        File fl = new File(caminho);
+        host = host + "/pendentes/";
+        pasta = host;
+        
+        File fl = new File(host);
         File listFile[] = fl.listFiles();
         List<GenericaRetorno> listaRetorno = new ArrayList();
         if (listFile != null) {
             int qntRetornos = listFile.length;
             for (int u = 0; u < qntRetornos; u++) {
                 try {
-                    FileReader reader = new FileReader(caminho + "/" + listFile[u].getName());
+                    FileReader reader = new FileReader(host + listFile[u].getName());
                     BufferedReader buffReader = new BufferedReader(reader);
                     List lista = new Vector();
                     while ((linha = buffReader.readLine()) != null) {
@@ -90,7 +78,8 @@ public class Real extends ArquivoRetorno {
                             valorPago = ((String) lista.get(i)).substring(77, 92);
                             dataPagamento = ((String) lista.get(i)).substring(137, 145);
 
-                            genericaRetorno = new GenericaRetorno(cnpj, //1 ENTIDADE
+                            listaRetorno.add(new GenericaRetorno(
+                                    cnpj, //1 ENTIDADE
                                     codigoCedente, //2 NESTE CASO SICAS
                                     nossoNumero, //3
                                     valorPago, //4
@@ -105,8 +94,8 @@ public class Real extends ArquivoRetorno {
                                     pasta, // 13 NOME DA PASTA
                                     listFile[u].getName(), //14 NOME DO ARQUIVO
                                     "", //15 DATA CREDITO
-                                    ""); // 16 SEQUENCIAL DO ARQUIVO
-                            listaRetorno.add(genericaRetorno);
+                                    "") // 16 SEQUENCIAL DO ARQUIVO
+                            );
                             i++;
                         }
                     }
@@ -142,7 +131,7 @@ public class Real extends ArquivoRetorno {
 
     @Override
     public String darBaixaSicob(String caminho, Usuario usuario) {
-        String mensagem = super.baixarArquivo(this.sicob(true, ""), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
         return mensagem;
     }
 

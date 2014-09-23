@@ -26,8 +26,8 @@ import javax.servlet.ServletContext;
 
 public class RetornoPadrao extends ArquivoRetorno {
 
-    public RetornoPadrao(ContaCobranca contaCobranca, boolean pendentes) {
-        super(contaCobranca, pendentes);
+    public RetornoPadrao(ContaCobranca contaCobranca) {
+        super(contaCobranca);
     }
 
     @Override
