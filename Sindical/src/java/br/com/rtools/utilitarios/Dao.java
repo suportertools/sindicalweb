@@ -3,12 +3,16 @@ package br.com.rtools.utilitarios;
 import br.com.rtools.principal.DB;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.DatabaseException;
 import oracle.toplink.essentials.exceptions.EJBQLException;
+import oracle.toplink.essentials.exceptions.TopLinkException;
 
 public class Dao extends DB implements DaoInterface {
 
@@ -269,6 +273,42 @@ public class Dao extends DB implements DaoInterface {
             getEntityManager().getTransaction().rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * <p>
+     * <strong>Delete Error Code</strong></p>
+     *
+     * @param object
+     *
+     * @author Bruno
+     *
+     * @return String code error
+     */
+    public ErrorCodeDao deleteErrorCode(final Object object) {
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().remove(find(object));
+            getEntityManager().flush();
+            getEntityManager().getTransaction().rollback();
+            return null;
+        } catch (DatabaseException e) {
+            getEntityManager().getTransaction().rollback();
+            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
+            return ErrorCodeDao.databaseExceptionMessage(e);
+        } catch (TopLinkException e) {
+            getEntityManager().getTransaction().rollback();
+            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
+            return ErrorCodeDao.toplinkExceptionMessage(e);
+        } catch (PersistenceException e) {
+            getEntityManager().getTransaction().rollback();
+            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
+            return ErrorCodeDao.persistenceExceptionMessage(e);
+        } catch (Exception e) {
+            getEntityManager().getTransaction().rollback();
+            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
+            return ErrorCodeDao.exceptionMessage(e);
         }
     }
 
@@ -536,7 +576,7 @@ public class Dao extends DB implements DaoInterface {
     public List listQuery(Object className, String find) {
         return listQuery(className.getClass().getSimpleName(), find, new Object[]{});
     }
-    
+
     /**
      * <p>
      * <strong>List Query</strong></p>
