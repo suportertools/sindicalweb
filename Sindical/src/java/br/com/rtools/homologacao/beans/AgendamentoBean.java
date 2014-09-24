@@ -91,7 +91,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private boolean imprimirPro = false;
     private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
-    private int counter = getConfiguracaoHomologacao().getTempoRefreshAgendamento();
+    private int counter = 0;
 
     public String salvarTransferencia() {
         if (getDataTransferencia().getDay() == 6 || getDataTransferencia().getDay() == 0) {
