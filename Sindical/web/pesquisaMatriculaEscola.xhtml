@@ -53,36 +53,33 @@
                     <h:panelGrid id="i_panel_grid" style="width: 100%">
                         <p:dataTable value="#{matriculaEscolaBean.listaMatriculaEscolas}" var="listaMatriculaEscola" emptyMessage="Nenhum registro encontrado">
                             <p:column headerText="Matrícula" style="width: 50px" styleClass="text-center">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.id}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.id}" immediate="true"/>
                             </p:column>
                             <p:column headerText="Nome do Aluno">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.aluno.nome}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.aluno.nome}" />
                             </p:column>
                             <p:column headerText="Responsável">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.responsavel.nome}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.responsavel.nome}" />
                             </p:column>
                             <p:column headerText="Nome do Curso">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.curso}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.curso}" />
                             </p:column>
                             <p:column headerText="Período" styleClass="text-center">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.periodo}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.periodo}" />
                             </p:column>
                             <p:column headerText="Valor do Curso (R$)" styleClass="text-center">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.valorTotalString}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.valorTotalString}" />
                             </p:column>
                             <p:column headerText="Status">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.escStatus.descricao}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.escStatus.descricao}" />
                             </p:column>
                             <p:column headerText="Filial">
-                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.nome} - CNPJ: #{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.documento}" />
+                                <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.nome} - CNPJ: #{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.documento}" />
                             </p:column>
                         </p:dataTable>
                     </h:panelGrid>
                 </h:form>
             </p:panel>
-        </f:view>        
-        <f:subview id="footer">
-            <ui:include src="templates/templateFooter.xhtml"/>
-        </f:subview>
+        </f:view>  
     </h:body>
 </ui:composition>
