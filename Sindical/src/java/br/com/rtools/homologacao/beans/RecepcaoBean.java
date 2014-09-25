@@ -20,21 +20,27 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Polling;
+import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +53,15 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.persistence.EntityManager;
+import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -242,6 +257,157 @@ public class RecepcaoBean implements Serializable {
         }
         di.commit();
     }
+    
+
+//    public void gerarSenha() {
+//        // parei aqui.. testar o gerar senha e alterar a variavel recepcao para agendamentoEdit.recepcao
+//        DB db = new DB();
+//        EntityManager em = db.getEntityManager();
+//        em.getTransaction().begin();
+//        if (registro.isSenhaHomologacao()) {
+//            if (!recepcao.getPreposto().isEmpty()) {
+//                //msgConfirma = "Informar o nome do preposto!";
+////                GenericaMensagem.warn("Atenção", "Informar o NOME DO PREPOSTO!");
+////                return;
+//                if (recepcao.getHoraInicialPreposto().isEmpty()) {
+//                    GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
+//                    em.getTransaction().rollback();
+//                    return;
+//                }
+//            }
+//
+////            if (agendamentoEdit.getRecepcao().getHoraInicialPreposto().isEmpty()) {
+////                //msgConfirma = "Preposto ainda não esta presente, aguarde sua chegada!";
+////                GenericaMensagem.warn("Atenção", "PREPOSTO ainda não esta presente, aguarde sua chegada!");
+////                return;
+////            }
+//            if (recepcao.getHoraInicialFuncionario().isEmpty()) {
+//                //msgConfirma = "Funcionário ainda não esta presente, aguarde sua chegada!";
+//                GenericaMensagem.warn("Atenção", "FUNCIONÁRIO ainda não esta presente, aguarde sua chegada!");
+//                em.getTransaction().rollback();
+//                return;
+//            }
+//
+//            boolean sucesso = true;
+//            if (recepcao.getId() == -1) {
+//                try {
+//                    em.persist(recepcao);
+//                    em.flush();
+//                } catch (Exception e) {
+//                    //msgConfirma = "Erro ao atualizar recepção!";
+//                    sucesso = false;
+//                    GenericaMensagem.error("Erro", "Não foi possível SALVAR Recepção!");
+//                    em.getTransaction().rollback();
+//                    return;
+//                }
+//            } else {
+//                try {
+//                    em.merge(recepcao);
+//                    em.flush();
+//                } catch (Exception e) {
+//                    //msgConfirma = "Erro ao atualizar recepção!";
+//                    sucesso = false;
+//                    GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Recepção!");
+//                    em.getTransaction().rollback();
+//                    return;
+//                }
+//            }
+////            if (recepcao == null || recepcao.getId() == -1) {
+////                //msgConfirma = "Agendamento ainda não possui cadastro de preposto!";
+////                GenericaMensagem.warn("Atenção", "Agendamento ainda não possui cadastro de preposto!");
+////                return;
+////            }
+//        }
+//
+////        if (recepcao.getId() == -1)
+////            agendamentoEdit.setRecepcao(null);
+//        agendamentoEdit.setRecepcao(recepcao);
+//        if (recepcao.getId() == -1) {
+//            try {
+//                em.merge(agendamentoEdit);
+//                em.flush();
+//            } catch (Exception e) {
+//                //msgConfirma = "Erro ao atualizar agendamento!";
+//                GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Agendamento!");
+//                em.getTransaction().rollback();
+//                return;
+//            }
+//        }
+//
+//        SenhaHomologacao senhaHomologacao = new SenhaHomologacao();
+//        Collection lista = new ArrayList<ParametroSenha>();
+//        HomologacaoDB hdb = new HomologacaoDBToplink();
+//        Senha senha = hdb.pesquisaSenhaAgendamento(agendamentoEdit.getId());
+//        MacFilial mc = MacFilial.getAcessoFilial();
+//        if (senha.getId() == -1) {
+//            senha.setAgendamento(agendamentoEdit);
+//            senha.setDtData(DataHoje.dataHoje());
+//            senha.setHora(DataHoje.horaMinuto());
+//            senha.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
+//            senha.setFilial(mc.getFilial());
+//            senha.setSenha(hdb.pesquisaUltimaSenha(mc.getFilial().getId()) + 1);
+//            try {
+//                em.persist(senha);
+//                em.flush();
+//            } catch (Exception e) {
+//                //msgConfirma = "Erro ao atualizar agendamento!";
+//                GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Agendamento!");
+//                em.getTransaction().rollback();
+//                return;
+//            }
+//        } else {
+//            try {
+//                em.merge(senha);
+//                em.flush();
+//            } catch (Exception e) {
+//                //msgConfirma = "Erro ao atualizar recepção!";
+//                GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Recepção!");
+//                em.getTransaction().rollback();
+//                return;
+//            }
+//        }
+//        try {
+//            if (senha.getId() != -1) {
+//                lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                        senha.getFilial().getFilial().getPessoa().getNome(),
+//                        senha.getFilial().getFilial().getPessoa().getDocumento(),
+//                        senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getNome(),
+//                        senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
+//                        (senha.getAgendamento().getRecepcao() == null) ? "" : senha.getAgendamento().getRecepcao().getPreposto(),
+//                        senha.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getNome(),
+//                        senha.getUsuario().getPessoa().getNome(),
+//                        senha.getData(),
+//                        senha.getHora(),
+//                        String.valueOf(senha.getSenha())));
+//            }
+//        } catch (Exception e) {
+//            em.getTransaction().rollback();
+//            return;
+//        }
+//        
+//        em.getTransaction().commit();
+//        
+//        try {
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//            String nomeDownload = "senha_" + DataHoje.hora().replace(":", "") + ".pdf";
+//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
+//            Diretorio.criar("Arquivos/senhas");
+//            if (!new File(pathPasta).exists()) {
+//                File file = new File(pathPasta);
+//                file.mkdir();
+//            }
+//            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+//            salvaArquivos.salvaNaPasta(pathPasta);
+//            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+//            download.baixar();
+//            download.remover();
+//        } catch (JRException e) {
+//        }        
+//        return;
+//    }    
 
     public void pesquisarProtocolo() {
 
