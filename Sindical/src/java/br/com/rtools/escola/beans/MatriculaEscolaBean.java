@@ -964,6 +964,11 @@ public class MatriculaEscolaBean implements Serializable {
         }
     }
 
+    public String editar(int id) {
+        int i = id;
+        return null;
+    }
+    
     public String editar(MatriculaEscola me) {
         idStatusFiltro = 5;
         escolaAutorizadosDetalhes = new EscolaAutorizados();
