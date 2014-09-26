@@ -722,7 +722,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         } else {
             if (dao.update(agendamento)) {
-                dao.rollback();
+                dao.commit();
                 if (isOposicao) {
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
                     styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
