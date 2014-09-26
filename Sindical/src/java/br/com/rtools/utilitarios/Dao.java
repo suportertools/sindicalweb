@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.FlushModeType;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.DatabaseException;
@@ -134,6 +136,7 @@ public class Dao extends DB implements DaoInterface {
         if (!activeSession()) {
             return false;
         }
+        
         Class classe = objeto.getClass();
         int id;
         try {
@@ -143,30 +146,19 @@ public class Dao extends DB implements DaoInterface {
                 Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Objeto esta passando -1");
                 return false;
             }
-        } catch (IllegalAccessException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage());
-            return false;
-        } catch (IllegalArgumentException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage());
-            return false;
-        } catch (NoSuchMethodException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage());
-            return false;
-        } catch (SecurityException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage());
-            return false;
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage());
             return false;
         }
+        
         try {
             getEntityManager().merge(objeto);
             getEntityManager().flush();
             return true;
-        } catch (EJBQLException e) {
-            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
-            return false;
+        } catch (Exception e) {
+            //e.printStackTrace();
         }
+        return false;
     }
 
     /**

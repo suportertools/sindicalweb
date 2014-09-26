@@ -24,6 +24,7 @@
         </style>
 
         <script type="text/javascript">
+
         </script>
     </h:head>
     <h:body>
@@ -40,16 +41,19 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Recepção" styleClass="fonteHeader" />
                         <h:panelGrid style="clear: both;">
-                            <h:form id="formRecepcao">
+                            <h:form id="formRecepcao" >
                                 <c:set scope="request" var="object" value="${recepcaoBean.agendamento}"/>
-                                <p:tabView id="i_tabview" style="width: 1000px">
+                                <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl" rendered="false"/>
+                                <p:poll global="false" interval="1" update=":formRecepcao:i_tabview:i_progress_update" listener="#{recepcaoBean.progress()}" />
+                                
+                                <p:tabView id="i_tabview" style="width: 1000px" >
                                     <p:tab title="Homologações">
                                         <p:panel styleClass="fundoCinza">
                                             <h:panelGrid id="i_panel_pesquisa" columns="6">
                                                 <p:column>
                                                     <h:outputLabel value="Status" styleClass="fontePadrao" /><br />
-                                                    <p:selectOneMenu value="#{recepcaoBean.idStatus}" >
-                                                        <p:ajax event="change" listener="#{recepcaoBean.limparPesquisaProtocolo}" update="i_panel_pesquisa i_panel_tbl"/>
+                                                    <p:selectOneMenu id="i_status" value="#{recepcaoBean.idStatus}" >
+                                                        <p:ajax event="change" listener="#{recepcaoBean.loadListHorarios()}" update=":formRecepcao"/>
                                                         <f:selectItems value="#{recepcaoBean.listaStatus}"/>
                                                     </p:selectOneMenu>
                                                 </p:column>
@@ -57,7 +61,7 @@
                                                 <h:column>
                                                     <h:outputLabel value="Data"/><br />
                                                     <p:selectOneMenu value="#{recepcaoBean.dataPesquisa}">
-                                                        <p:ajax event="change" listener="#{recepcaoBean.limparPesquisaProtocolo}" update=":formRecepcao" />
+                                                        <p:ajax event="change" listener="#{recepcaoBean.loadListHorarios()}" update=":formRecepcao" />
                                                         <f:selectItem itemValue="hoje" itemLabel="Hoje" />
                                                         <f:selectItem itemValue="periodo"   itemLabel="Período"/>
                                                     </p:selectOneMenu>
@@ -67,26 +71,26 @@
                                                     <br />
                                                     <p:inputText value="#{recepcaoBean.dataInicialString}" rendered="#{!recepcaoBean.ocultaDatapesquisa}" readonly="true" style="font-weight: bold; text-align: center" size="7"/>
                                                     <p:inputMask value="#{recepcaoBean.dataInicialString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
-                                                        <p:ajax event="blur" update="@this" global="false"/>
+                                                        <p:ajax event="blur" update="i_panel_tbl" listener="#{recepcaoBean.loadListHorarios()}" global="false"/>
                                                     </p:inputMask>
                                                     <h:outputLabel value=" até " rendered="#{recepcaoBean.ocultaDatapesquisa}" />
                                                     <p:inputMask value="#{recepcaoBean.dataFinalString}" rendered="#{recepcaoBean.ocultaDatapesquisa}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
-                                                        <p:ajax event="blur" update="@this" global="false"/>
+                                                        <p:ajax event="blur" update="i_panel_tbl" listener="#{recepcaoBean.loadListHorarios()}" global="false"/>
                                                     </p:inputMask>
                                                 </h:column>
 
                                                 <h:column>
                                                     <h:outputLabel for="i_protocolo" value="Protocolo" /><br />
-                                                    <p:inputText id="i_protocolo" value="#{recepcaoBean.numeroProtocolo}" size="2" title="Digite o número do protocolo gerado no agendamento" disabled="#{recepcaoBean.desabilitaPesquisaProtocolo}">
+                                                    <p:inputText id="i_protocolo" value="#{recepcaoBean.numeroProtocolo}" size="2" title="Digite o número do protocolo gerado no agendamento" disabled="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}">
                                                         <p:ajax event="change" update="@this" global="false"/>
                                                     </p:inputText>
-                                                    <p:commandButton icon="ui-icon-search" update="i_panel_tbl" title="Pesquisa por número de protocolo" disabled="#{recepcaoBean.desabilitaPesquisaProtocolo}"/>
+                                                    <p:commandButton icon="ui-icon-search" update="i_panel_tbl" title="Pesquisa por número de protocolo" action="#{recepcaoBean.loadListHorarios()}" disabled="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}"/>
                                                 </h:column>
 
                                                 <h:column>
                                                     <br />
                                                     <p:commandButton value="Pesquisar Pessoa" action="#{recepcaoBean.pesquisar()}" title="Escolha a opção do tipo de pesquisa para pessoa">
-                                                        <p:ajax event="click" update="i_panel_pesquisa" listener="#{recepcaoBean.limparPesquisaProtocolo}"/> 
+                                                        
                                                     </p:commandButton>
                                                 </h:column>
                                                 <h:column>
@@ -106,16 +110,20 @@
                                                 </h:column>
 
                                                 <h:column>
-                                                    <p:commandButton icon="ui-icon-close" rendered="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}" action="#{recepcaoBean.limparPesquisa}" update="i_panel_pesquisa i_panel_pessoa" />
+                                                    <p:commandButton icon="ui-icon-close" rendered="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}" action="#{recepcaoBean.limparPesquisa}" update=":formRecepcao" />
                                                 </h:column>
 
                                                 <h:column>
-                                                    <p:selectBooleanCheckbox value="#{recepcaoBean.dataPesquisaTodas}" itemLabel="Pesquisar todas datas" style="margin-left: 30px" rendered="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}"/>
+                                                    <p:selectBooleanCheckbox value="#{recepcaoBean.dataPesquisaTodas}" itemLabel="Pesquisar todas datas" style="margin-left: 30px" rendered="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}">
+                                                        <p:ajax event="change" listener="#{recepcaoBean.loadListHorarios()}" update=":formRecepcao"/>
+                                                    </p:selectBooleanCheckbox>
                                                 </h:column>
                                             </h:panelGrid>
                                         </p:panel>
 
                                         <h:panelGrid id="i_panel_tbl">
+                                            <h:outputLabel value="Atualizar Lista em" style="float: right"/>
+                                            <p:progressBar id="i_progress_update" value="#{recepcaoBean.progressUpdate}" labelTemplate="#{recepcaoBean.progressUpdate}" style="width: 100px; float: right"/>
                                             <p:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 100%;" id="tbl" rowStyleClass="#{linha.argumento8}" emptyMessage="Nenhuma Homologação Encontrada">
                                                 <p:column width="15">  
                                                     <p:rowToggler />  
@@ -128,7 +136,7 @@
                                                 <p:column style="text-align: center" width="50">
                                                     <f:facet name="header">
                                                         <h:outputLabel value="Horarios" rendered="false"/>
-                                                        <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" />
+                                                        <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" rendered="false"/>
                                                     </f:facet>
                                                     <p:commandLink action="#{recepcaoBean.agendar(linha)}" value="#{linha.argumento0.hora}" title="Horário" oncomplete="PF('dlg_recepcao').show()" update=":formRecepcao:i_panel_homologacao"/>
                                                 </p:column>

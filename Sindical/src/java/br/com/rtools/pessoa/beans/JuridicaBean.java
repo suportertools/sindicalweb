@@ -158,7 +158,7 @@ public class JuridicaBean implements Serializable {
             knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
 
             if (resultado.getCod_erro() != 0) {
-                GenericaMensagem.warn("Erro", resultado.getDesc_erro());
+                GenericaMensagem.warn("Falha na Busca", resultado.getDesc_erro());
                 return;
             }
             

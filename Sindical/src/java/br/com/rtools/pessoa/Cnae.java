@@ -11,7 +11,6 @@ import javax.persistence.*;
     @NamedQuery(name = "Cnae.findName", query = "SELECT CN FROM Cnae AS CN WHERE UPPER(CN.cnae) LIKE :pdescricao ORDER BY CN.cnae ASC, CN.numero ASC ")
 })
 public class Cnae implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
