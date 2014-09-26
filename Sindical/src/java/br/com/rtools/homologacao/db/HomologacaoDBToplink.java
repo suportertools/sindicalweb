@@ -669,7 +669,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query qry = getEntityManager().createQuery("select s "
                     + " from Senha s "
                     + " where s.senha = ("
-                    + "         select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.ateMovimento is null and s2.filial.id = " + id_filial 
+                    //+ "         select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.ateMovimento is null and s2.filial.id = " + id_filial + " and s2.horaChamada = ''"
+                    + "         select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.ateMovimento is null and s2.filial.id = " + id_filial + " and s2.agendamento.status.id = 2"
                     + "                 ) "
                     + " and s.agendamento.status.id = 2 "
                     + " and s.ateMovimento is null "
