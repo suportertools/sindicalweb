@@ -422,12 +422,11 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     }
 
     @Override
-    public List listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
+    public List<Vector> listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
             String descNrBoletoFin, int descEmpresa, String ordenacao) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
-        Query qry = null;
         String textQuery;
         if (data == true) {
             if (faixaData.equals("recebimento")) {
@@ -527,14 +526,13 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 + "   and m.id_tipo_servico = t.id " + cntData + cntContrib + cntNrBoletos + cntEmpresa + cntTipo
                 + " order by " + ordem + ", nome";
 
-        List result = new ArrayList();
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
         } catch (Exception e) {
-            result = new Vector();
+            
         }
-        return result;
+        return new Vector();
     }
 
     @Override
@@ -543,9 +541,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             String descNrBoletoFin, int descEmpresa, String ordenacao) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
-        List result = new ArrayList();
-        Query qry = null;
-        String textQuery;
         if (data == true) {
             if (faixaData.equals("recebimento")) {
                 cntData = " and ba.dt_baixa >= '" + descDataIni + "'"
@@ -601,7 +596,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             ordem = "ba.dt_importacao desc";
         }
 
-        textQuery = "select m.id            as id, "
+        String textQuery = "select m.id            as id, "
                 + "       p.ds_documento  as documento, "
                 + "       p.ds_nome       as nome, "
                 + "       m.ds_documento  as boleto, "
@@ -643,14 +638,14 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 + "   and m.id_servicos = s.id "
                 + "   and m.id_tipo_servico = t.id " + cntData + cntContrib + cntNrBoletos + cntEmpresa + cntTipo
                 + " order by " + ordem + ", nome";
+        
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
         } catch (Exception e) {
-
-            result = new Vector();
+            
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
@@ -659,9 +654,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             String descNrBoletoFin, int descEmpresa, String ordenacao) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
-        List result = new ArrayList();
-        Query qry = null;
-        String textQuery;
         if (data == true) {
             if (faixaData.equals("recebimento")) {
                 cntData = " and ba.dt_baixa >= '" + descDataIni + "'"
@@ -717,7 +709,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             ordem = "ba.dt_importacao desc";
         }
 
-        textQuery = "select m.id            as id, "
+        String textQuery = "select m.id            as id, "
                 + "       p.ds_documento  as documento, "
                 + "       p.ds_nome       as nome, "
                 + "       m.ds_documento  as boleto, "
@@ -758,13 +750,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 + "   and m.id_baixa is null " + cntData + cntContrib + cntNrBoletos + cntEmpresa + cntTipo
                 + " order by " + ordem + ", nome";
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
         } catch (Exception e) {
-
-            result = new Vector();
+            
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
@@ -773,9 +764,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             String descNrBoletoFin, int descEmpresa, String ordenacao) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
-        List result = new ArrayList();
-        Query qry = null;
-        String textQuery;
         if (data == true) {
             if (faixaData.equals("recebimento")) {
                 cntData = " and ba.dt_baixa >= '" + descDataIni + "'"
@@ -831,7 +819,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             ordem = "ba.dt_importacao desc";
         }
 
-        textQuery = "select m.id            as id, "
+        String textQuery = "select m.id            as id, "
                 + "       p.ds_documento  as documento, "
                 + "       p.ds_nome       as nome, "
                 + "       m.ds_documento  as boleto, "
@@ -873,13 +861,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 + "   and m.dt_vencimento < '" + DataHoje.data() + "'" + cntData + cntContrib + cntNrBoletos + cntEmpresa + cntTipo
                 + " order by " + ordem + ", nome";
         try {
-            qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
         } catch (Exception e) {
-
-            result = new Vector();
+            
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
