@@ -50,7 +50,7 @@
                                 <h:column>
                                     <h:outputLabel value="Referência"/><br />
                                     <p:inputMask disabled="#{processamentoIndividualBean.marcarReferencia}" size="5" value="#{processamentoIndividualBean.strReferencia}"  mask="99/9999" style="font-weight: bold">
-                                        <p:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" update="i_panel_dados" />
+                                        <p:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" update="i_panel_dados" global="false"/>
                                     </p:inputMask>
                                 </h:column>
 
@@ -73,7 +73,7 @@
                                 <h:column>
                                     <h:outputLabel value="Vencimento" /><br />
                                     <p:inputMask size="8" mask="99/99/9999" disabled="#{processamentoIndividualBean.marcarVencimento}"  value="#{processamentoIndividualBean.vencimento}" style="font-weight: bold">
-                                        <p:ajax event="blur" listener="#{processamentoIndividualBean.atualizaRef}" update="i_panel_dados"/>
+                                        <p:ajax event="change" listener="#{processamentoIndividualBean.atualizaRef}" update="i_panel_dados" global="false"/>
                                     </p:inputMask>
                                 </h:column>
 
