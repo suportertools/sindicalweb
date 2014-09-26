@@ -14,8 +14,18 @@ public class knu {
     return (cPtr == 0) ? null : new ReceitaCPF(cPtr, true);
   }
 
+  public static ReceitaCPF receitaCPF_HTML(String cpf) {
+    long cPtr = knuJNI.receitaCPF_HTML(cpf);
+    return (cPtr == 0) ? null : new ReceitaCPF(cPtr, false);
+  }
+
   public static ReceitaCNPJ receitaCNPJ(String cnpj) {
     long cPtr = knuJNI.receitaCNPJ(cnpj);
+    return (cPtr == 0) ? null : new ReceitaCNPJ(cPtr, true);
+  }
+
+  public static ReceitaCNPJ receitaCNPJOffline(String cnpj) {
+    long cPtr = knuJNI.receitaCNPJOffline(cnpj);
     return (cPtr == 0) ? null : new ReceitaCNPJ(cPtr, true);
   }
 
@@ -97,6 +107,11 @@ public class knu {
   public static IpvaSP ipvaSP(String renavam, String cpf_cnpj) {
     long cPtr = knuJNI.ipvaSP(renavam, cpf_cnpj);
     return (cPtr == 0) ? null : new IpvaSP(cPtr, true);
+  }
+
+  public static Veiculo consultarPlaca(String placa) {
+    long cPtr = knuJNI.consultarPlaca(placa);
+    return (cPtr == 0) ? null : new Veiculo(cPtr, true);
   }
 
   public static Nfe consultarNfeHtml(String chave) {
@@ -307,6 +322,16 @@ public class knu {
   public static SintegraPI sintegraPI_IE(String ie) {
     long cPtr = knuJNI.sintegraPI_IE(ie);
     return (cPtr == 0) ? null : new SintegraPI(cPtr, true);
+  }
+
+  public static SintegraPR sintegraPR_CNPJ(String cnpj) {
+    long cPtr = knuJNI.sintegraPR_CNPJ(cnpj);
+    return (cPtr == 0) ? null : new SintegraPR(cPtr, true);
+  }
+
+  public static SintegraPR sintegraPR_IE(String ie) {
+    long cPtr = knuJNI.sintegraPR_IE(ie);
+    return (cPtr == 0) ? null : new SintegraPR(cPtr, true);
   }
 
   public static SintegraRJ sintegraRJ_CNPJ(String cnpj) {

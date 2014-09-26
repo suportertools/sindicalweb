@@ -72,13 +72,12 @@ public class Agendamento implements Serializable {
 
     public Agendamento() {
         this.id = -1;
-        this.setData("");
-        this.setEmissao("");
+        this.dtData = null;
         this.horarios = new Horarios();
         this.status = new Status();
         this.pessoaEmpresa = new PessoaEmpresa();
-        this.agendador = new Usuario();
-        this.homologador = new Usuario();
+        this.agendador = null;
+        this.homologador = null;
         this.demissao = new Demissao();
         this.contato = "";
         this.telefone = "";
@@ -86,6 +85,7 @@ public class Agendamento implements Serializable {
         this.filial = new Filial();
         this.recepcao = null;
         this.observacao = "";
+        this.dtEmissao = null;
     }
 
     public Agendamento(int id, String data, Horarios horarios, Status status, PessoaEmpresa pessoaEmpresa, Usuario agendador, Usuario homologador, Demissao demissao, String contato, String telefone, String email, Filial filial, Recepcao recepcao, String observacao, String emissao) {

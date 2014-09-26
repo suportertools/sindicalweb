@@ -15,7 +15,7 @@
             .ui-selectonemenu {padding-right: 25px!important;}
             
             .columnx{
-                width: 500px;
+                width: 500px; top: 0; 
             }
         </style>
         
@@ -50,8 +50,8 @@
                             </p:panel>
                             <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true"/>
                             <h:panelGrid>
-                                <p:fileUpload fileUploadListener="#{arquivoBancoBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="1000000" fileLimit="3" style="width: 995px" 
-                                              cancelLabel="Cancelar" uploadLabel="Enviar para o Servidor" label="Escolher Arquivos" update="i_msg :formRetornoBanco" invalidFileMessage="Arquivo Inválido!" invalidSizeMessage="Arquivo Inválido!"/>
+                                <p:fileUpload fileUploadListener="#{arquivoBancoBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="1000000" multiple="true" style="width: 995px" 
+                                              cancelLabel="Cancelar" uploadLabel="Enviar para o Servidor" label="Escolher Arquivos" update="i_msg :formRetornoBanco" invalidFileMessage="Arquivo Inválido!" invalidSizeMessage="Arquivo Inválido!" />
                                 
                             </h:panelGrid>
                         </h:form>
@@ -59,16 +59,18 @@
                         <h:form id="formRetornoBanco">
                             <h:panelGrid columns="2" style="width: 995px;" columnClasses="columnx">
                                 <p:column>
-                                    <p:dataGrid value="#{arquivoBancoBean.listaArquivosPendentes}" var="linha" columns="1" emptyMessage="Nenhum Arquivo Encontrado" style="width: 500px!important; height: 200px!important">
+                                    <p:dataTable value="#{arquivoBancoBean.listaArquivosPendentes}" var="linha" emptyMessage="Nenhum Arquivo Encontrado" scrollable="true" scrollHeight="200">
                                         <f:facet name="header">
                                             <h:outputLabel value="Arquivos Enviados" />
                                         </f:facet>
-                                        <h:outputLabel value="#{linha}" />
-                                    </p:dataGrid>
+                                        <p:column headerText="Nome" style="text-align: center">
+                                            <h:outputLabel value="#{linha}" />
+                                        </p:column>
+                                    </p:dataTable>
                                 </p:column>
 
                                 <p:column>
-                                    <p:dataGrid value="#{arquivoBancoBean.listaDocumentos}" var="linha" emptyMessage="Nenhum Documento em Aberto" style="height: 200px!important">
+                                    <p:dataTable value="#{arquivoBancoBean.listaDocumentos}" var="linha" emptyMessage="Nenhum Documento em Aberto" scrollable="true" scrollHeight="200">
                                         <f:facet name="header">
                                             <h:outputLabel value="Documentos para verificação" />
                                         </f:facet>
@@ -83,7 +85,7 @@
                                         <p:column headerText="Status" style="text-align: center">
                                             <h:outputText value="#{linha.argumento2}"/>
                                         </p:column>
-                                    </p:dataGrid>
+                                    </p:dataTable>
                                 </p:column>
                             </h:panelGrid>
                             
@@ -94,8 +96,8 @@
                                 </h:column>
                                 
                                 <h:column>
-                                    <p:commandLink value="Imprimir Documentos" action="#{arquivoBancoBean.imprimirDocumentos}" style="margin-right: 50px" />
-                                    <p:commandLink value="Atualizar Boletos Cadastrados" action="#{arquivoBancoBean.atualizarBoletoCadastro()}" />
+                                    <p:commandLink value="Imprimir Documentos" action="#{arquivoBancoBean.imprimirDocumentos}" style="margin-right: 50px" ajax="false" target="BLANK" rendered="#{arquivoBancoBean.listaDocumentos.size() != 0}"/>
+                                    <p:commandLink value="Atualizar Boletos Cadastrados" action="#{arquivoBancoBean.atualizarBoletoCadastro()}" update="formRetornoBanco" rendered="#{arquivoBancoBean.listaDocumentos.size() != 0}"/>
                                 </h:column>
                             </h:panelGrid>
                         </h:form>

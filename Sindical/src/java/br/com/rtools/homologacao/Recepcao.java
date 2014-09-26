@@ -10,9 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "hom_recepcao")
-@NamedQuery(name = "Recepcao.pesquisaID", query = "SELECT R FROM Recepcao AS R WHERE R.id = :pid")
+@NamedQuery(name = "Recepcao.pesquisaID", query = "SELECT r FROM Recepcao r WHERE r.id = :pid")
 public class Recepcao implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

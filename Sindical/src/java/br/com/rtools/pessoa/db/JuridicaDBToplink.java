@@ -146,10 +146,13 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         }
         
         Query query = getEntityManager().createNativeQuery(textQuery, Juridica.class);
-        
+        try{
         List list = query.getResultList();
         if(!list.isEmpty()) {
             return list;
+        }
+        }catch(EJBQLException e){
+            e.getMessage();
         }
         return new ArrayList();
 

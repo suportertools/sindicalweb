@@ -36,14 +36,30 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class SenhaHomologacao implements Serializable {
 
     public void imprimir(Agendamento a) {
-//        if (a.getRecepcao() == null) {
-//            return;
-//        }
-//        if(a.getRecepcao().getPreposto().isEmpty()) {
-//            return;
-//        }
         try {
             Collection lista = parametros(a);
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+            JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+            String nomeDownload = "senha_" + DataHoje.hora().replace(":", "") + ".pdf";
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
+            Diretorio.criar("Arquivos/senhas");
+            if (!new File(pathPasta).exists()) {
+                File file = new File(pathPasta);
+                file.mkdir();
+            }
+            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+            salvaArquivos.salvaNaPasta(pathPasta);
+            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+            download.baixar();
+            download.remover();
+        } catch (JRException e) {
+        }
+    }
+    
+    public void imprimir(Agendamento a, Collection lista) {
+        try {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
