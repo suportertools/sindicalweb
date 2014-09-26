@@ -34,7 +34,7 @@
                                 <h:panelGrid columns="2" rendered="#{baixaGeralBean.listaMovimentos.size() > 0}">
                                     <p:column>
                                         <h:outputLabel value="Valor total para Baixa" style="font-size: 12pt!important;"/><br />
-                                        <h:outputText value="R$ #{baixaGeralBean.total}" style="background: white; font-size: 20pt!important; margin-right: 80px"/>
+                                        <p:inputText value="R$ #{baixaGeralBean.total}" readonly="true" styleClass="input-text-med bg-yellow-ligth no-border bold border-dashed font-color-red font-size-12" />
                                     </p:column>
 
                                     <p:column>
