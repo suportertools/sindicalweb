@@ -201,16 +201,20 @@ public class RecepcaoBean implements Serializable {
         di.openTransaction();
         
         if (registro.isSenhaHomologacao()){
-            if (!recepcao.getPreposto().isEmpty()) {
-                if (recepcao.getHoraInicialPreposto().isEmpty()) {
-                    GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
-                    di.rollback();
-                    return;
-                }
-            }         
-
             if (recepcao.getHoraInicialFuncionario().isEmpty()) {
                 GenericaMensagem.warn("Atenção", "FUNCIONÁRIO ainda não esta presente, aguarde sua chegada!");
+                di.rollback();
+                return;
+            }
+
+            if (recepcao.getPreposto().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Informar o NOME do preposto!");
+                di.rollback();
+                return;
+            }
+            
+            if (recepcao.getHoraInicialPreposto().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
                 di.rollback();
                 return;
             }
