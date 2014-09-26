@@ -238,7 +238,7 @@
 
                                 <p:dialog widgetVar="dlg_recepcao" header="Dados da Homologação" resizable="false" modal="true" visible="#{recepcaoBean.openDialog}">
                                     <p:ajax event="close" listener="#{recepcaoBean.fecharModal()}" update="formRecepcao"/>  
-                                    <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                                    <p:messages showDetail="true" closable="true"/>
                                     <h:panelGrid id="i_panel_homologacao">
                                         <p:panel styleClass="fundoCinza" style="width: 810px">
                                             <h:panelGrid columns="4">
