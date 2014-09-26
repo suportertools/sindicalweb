@@ -50,47 +50,47 @@ public class ControleUsuarioBean implements Serializable {
     public String validacao() throws Exception {
         String pagina = null;
         String nomeCliente = null;
-//        if (GenericaSessao.exists("sessaoCliente")) {
-//            nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
-//            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
-//                DBExternal dbe = new DBExternal();
-//                if (dbe.getConnection() != null) {
-//                    try {
-//                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '" + nomeCliente + "'";
-//                        ResultSet resultSet = dbe.getStatment().executeQuery(string);
-//                        String id = "";
-//                        String ativo = "";
-//                        while (resultSet.next()) {
-//                            id = resultSet.getString("id");
-//                            ativo = resultSet.getString("is_ativo");
-//                            if (ativo.equals("f")) {
-//                                resultSet.close();
-//                                dbe.getStatment().close();
-//                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
-//                                GenericaMensagem.warn(msgErro, "");
-//                                return null;
-//                            }
-//                        }
-//                        if (!id.equals("")) {
-//                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = " + id;
-//                            int result = dbe.getStatment().executeUpdate(string);
-//                            if (result != 1) {
-//                                dbe.getStatment().close();
-//                                msgErro = "@ Erro ao atualizar contador!";
-//                                GenericaMensagem.warn(msgErro, "");
-//                                return null;
-//                            }
-//                        }
-//                    } catch (SQLException exception) {
-//                        dbe.closeStatment();
-//                        msgErro = "@ Erro!";
-//                        GenericaMensagem.warn(msgErro, "");
-//                        return null;
-//                    }
-//                    dbe.getStatment().close();
-//                }
-//            }
-//        }
+        if (GenericaSessao.exists("sessaoCliente")) {
+            nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
+            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
+                DBExternal dbe = new DBExternal();
+                if (dbe.getConnection() != null) {
+                    try {
+                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '" + nomeCliente + "'";
+                        ResultSet resultSet = dbe.getStatment().executeQuery(string);
+                        String id = "";
+                        String ativo = "";
+                        while (resultSet.next()) {
+                            id = resultSet.getString("id");
+                            ativo = resultSet.getString("is_ativo");
+                            if (ativo.equals("f")) {
+                                resultSet.close();
+                                dbe.getStatment().close();
+                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
+                                GenericaMensagem.warn(msgErro, "");
+                                return null;
+                            }
+                        }
+                        if (!id.equals("")) {
+                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = " + id;
+                            int result = dbe.getStatment().executeUpdate(string);
+                            if (result != 1) {
+                                dbe.getStatment().close();
+                                msgErro = "@ Erro ao atualizar contador!";
+                                GenericaMensagem.warn(msgErro, "");
+                                return null;
+                            }
+                        }
+                    } catch (SQLException exception) {
+                        dbe.closeStatment();
+                        msgErro = "@ Erro!";
+                        GenericaMensagem.warn(msgErro, "");
+                        return null;
+                    }
+                    dbe.getStatment().close();
+                }
+            }
+        }
         NovoLog log = new NovoLog();
         if (macFilial != null) {
             Object objs[] = new Object[2];
