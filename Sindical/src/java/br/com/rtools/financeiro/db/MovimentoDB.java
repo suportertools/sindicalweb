@@ -3,6 +3,7 @@ package br.com.rtools.financeiro.db;
 import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.pessoa.Pessoa;
+import java.util.ArrayList;
 //import br.com.rtools.listax.GGeracao;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +48,7 @@ public interface MovimentoDB {
 
     public boolean verificaMovimentoArrecadacao(int idPessoa, String referencia, int idServico, int idTipoServico);
 
-    public List listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
+    public List<Vector> listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
             String descNrBoletoFin, int descEmpresa, String ordenacao);
 
