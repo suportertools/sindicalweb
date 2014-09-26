@@ -53,10 +53,10 @@
                                         <f:selectItem itemValue="especifico"       itemLabel="Específico"/>
                                     </p:selectOneRadio>
                                     <h:panelGrid styleClass="no-border margin-top-max" id="id_contabilidades" columns="2">
-                                        <p:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
+                                        <h:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
                                             <p:ajax event="change" update="@this" />
                                             <f:selectItems value="#{relatorioContribuintesBean.listaContabilidades}"/>
-                                        </p:selectOneMenu>
+                                        </h:selectOneMenu>
                                     </h:panelGrid>
                                 </p:panel>
                             </p:tab>
