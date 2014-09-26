@@ -64,7 +64,7 @@
                                 </h:selectOneMenu>
                             </h:column>
 
-                            <a4j:commandButton value="Filtrar" style="margin-left: 15px" action="#{extratoTelaBean.filtrar}" render="tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso, idSomarVlNaoRecebido" 
+                            <a4j:commandButton value="Filtrar" style="margin-left: 15px" action="#{extratoTelaBean.loadList()}" render="tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso, idSomarVlNaoRecebido" 
                                                onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)"/>
 
                         </h:panelGrid>
@@ -239,7 +239,7 @@
 
                                     <rich:column>
                                         <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                        <h:outputText value="#{linha.argumento11}"/>
+                                        <h:outputText value="#{linha.argumento11}" style="float: right"/>
                                     </rich:column>
 
                                     <rich:column styleClass="coluna">
@@ -313,32 +313,32 @@
 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
                                     <h:outputLabel value="Total Recebido: " styleClass="fonteExtratoTela" for="idSomarVlRecebido"/> <br />
-                                    <h:inputText id="idSomarVlRecebido" size="15" value="#{extratoTelaBean.somarVlRecebido}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarVlRecebido" size="15" value="#{extratoTelaBean.vlRecebido}" readonly="true" style="font-weight:bold; text-align: right"/>
                                 </h:column>
                                 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
                                     <h:outputLabel value="Total NÃO Recebido: " styleClass="fonteExtratoTela" for="idSomarVlNaoRecebido"/> <br />
-                                    <h:inputText id="idSomarVlNaoRecebido" size="15" value="#{extratoTelaBean.somarVlNaoRecebido}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarVlNaoRecebido" size="15" value="#{extratoTelaBean.vlNaoRecebido}" readonly="true" style="font-weight:bold; text-align: right"/>
                                 </h:column>
 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
                                     <h:outputLabel value="Total Valor: " styleClass="fonteExtratoTela" for=""/> <br />
-                                    <h:inputText id="idSomarVlTotal" size="15" value="#{extratoTelaBean.somarVlTotal}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarVlTotal" size="15" value="#{extratoTelaBean.vlTotal}" readonly="true" style="font-weight:bold; text-align: right" />
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Total Taxa: " styleClass="fonteExtratoTela" for="idSomarTaxa"/> <br />
-                                    <h:inputText id="idSomarTaxa" size="10" value="#{extratoTelaBean.somarTaxa}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarTaxa" size="10" value="#{extratoTelaBean.vlTaxa}" readonly="true" style="font-weight:bold; text-align: right" />
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Total Liquido: " styleClass="fonteExtratoTela" for="idSomarVlLiquido"/> <br />
-                                    <h:inputText id="idSomarVlLiquido" size="15" value="#{extratoTelaBean.somarVlLiquido}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarVlLiquido" size="15" value="#{extratoTelaBean.vlLiquido}" readonly="true" style="font-weight:bold; text-align: right" />
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Liquido - Repasse: " styleClass="fonteExtratoTela" for="idSomarVlLiquidoRepasse"/> <br />
-                                    <h:inputText id="idSomarVlLiquidoRepasse" size="12" value="#{extratoTelaBean.somarVlLiquidoRepasse}" readonly="true" style="font-weight:bold;"/>
+                                    <h:inputText id="idSomarVlLiquidoRepasse" size="12" value="#{extratoTelaBean.vlRepasse}" readonly="true" style="font-weight:bold; text-align: right" />
                                 </h:column>
                             </h:panelGrid>
                         </rich:panel>
