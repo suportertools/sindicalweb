@@ -20,27 +20,21 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,15 +46,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.persistence.EntityManager;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
@@ -68,6 +53,7 @@ import org.primefaces.model.ScheduleEvent;
 @ManagedBean
 @SessionScoped
 public class RecepcaoBean implements Serializable {
+
     private Agendamento agendamento;
     private Agendamento agendamentoEdit;
     private int idStatus;
@@ -116,7 +102,7 @@ public class RecepcaoBean implements Serializable {
     private List<SelectItem> listaMotivoDemissao;
     private int progressUpdate;
     private int progressLabel;
-    
+
     @PostConstruct
     public void init() {
         agendamento = new Agendamento();
@@ -178,29 +164,29 @@ public class RecepcaoBean implements Serializable {
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("fisicaPesquisa");
     }
-    
-    public void progress(){
+
+    public void progress() {
         progressUpdate = progressUpdate - 10;
         progressLabel--;
-        if (progressUpdate == 0){
+        if (progressUpdate == 0) {
             progressUpdate = 100;
             progressLabel = 10;
             loadListHorarios();
             PF.update(":formRecepcao:i_tabview:i_status; :formRecepcao:i_tabview:i_panel_tbl");
         }
     }
-    
-    public void fecharModal(){
+
+    public void fecharModal() {
         agendamentoEdit = new Agendamento();
         openDialog = false;
         recepcao = new Recepcao();
     }
-    
+
     public void gerarSenha() {
         Dao di = new Dao();
         di.openTransaction();
-        
-        if (registro.isSenhaHomologacao()){
+
+        if (registro.isSenhaHomologacao()) {
             if (recepcao.getHoraInicialFuncionario().isEmpty()) {
                 GenericaMensagem.warn("Atenção", "FUNCIONÁRIO ainda não esta presente, aguarde sua chegada!");
                 di.rollback();
@@ -212,7 +198,7 @@ public class RecepcaoBean implements Serializable {
                 di.rollback();
                 return;
             }
-            
+
             if (recepcao.getHoraInicialPreposto().isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Informar o HORÁRIO que o preposto chegou!");
                 di.rollback();
@@ -234,18 +220,19 @@ public class RecepcaoBean implements Serializable {
             }
             agendamentoEdit.setRecepcao(recepcao);
         }
-        
-            if (!di.update(agendamentoEdit)) {
+
+        if (!di.update(agendamentoEdit)) {
             GenericaMensagem.error("Erro", "Não foi possível ATUALIZAR Agendamento!");
             di.rollback();
             return;
         }
-        
+
         SenhaHomologacao senhaHomologacao = new SenhaHomologacao();
         Collection<ParametroSenha> list = senhaHomologacao.parametros(agendamentoEdit, di);
         if (!list.isEmpty()) {
             GenericaMensagem.info("Sucesso", "Senha Gerada!");
-            senhaHomologacao.imprimir(agendamentoEdit, list);
+            //senhaHomologacao.imprimir(agendamentoEdit, list);
+            senhaHomologacao.imprimir(list);
         } else {
             di.rollback();
             GenericaMensagem.error("Erro", "Não foi possível GERAR SENHA!");
@@ -254,14 +241,13 @@ public class RecepcaoBean implements Serializable {
         di.commit();
         loadListHorarios();
     }
-    
 
     public void cancelarHorario() {
         if (cancelamento.getMotivo().isEmpty() || cancelamento.getMotivo().length() <= 5) {
             GenericaMensagem.warn("Atenção", "Motivo de Cancelamento inválido");
             return;
         }
-        
+
         DaoInterface di = new Dao();
         agendamentoEdit.setStatus((Status) di.find(new Status(), 3));
         di.openTransaction();
@@ -276,17 +262,17 @@ public class RecepcaoBean implements Serializable {
             GenericaMensagem.error("Erro", "Erro ao atualizar Pessoa Empresa");
             return;
         }
-        
+
         cancelamento.setAgendamento(agendamentoEdit);
         cancelamento.setDtData(DataHoje.dataHoje());
         cancelamento.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
-        
+
         if (!di.save(cancelamento)) {
             di.rollback();
             GenericaMensagem.error("Erro", "Erro ao salvar Cancelamento");
             return;
         }
-        
+
         GenericaMensagem.info("Sucesso", "Homologação Cancelada!");
         di.commit();
         //cancelamento = new Cancelamento();
@@ -312,11 +298,11 @@ public class RecepcaoBean implements Serializable {
     }
 
     public List<SelectItem> getListaStatus() {
-        if (listaStatus.isEmpty()){
+        if (listaStatus.isEmpty()) {
             SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
             List<Status> list = (List<Status>) sadb.pesquisaObjeto(new int[]{2, 3, 4, 5, 7}, "Status");
             if (!list.isEmpty()) {
-            int i = 0;
+                int i = 0;
                 for (i = 0; i < list.size(); i++) {
                     listaStatus.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
                 }
@@ -327,7 +313,7 @@ public class RecepcaoBean implements Serializable {
     }
 
     public List<SelectItem> getListaMotivoDemissao() {
-        if (listaMotivoDemissao.isEmpty()){
+        if (listaMotivoDemissao.isEmpty()) {
             DaoInterface di = new Dao();
             List<Demissao> list = (List<Demissao>) di.list(new Demissao(), true);
             if (!list.isEmpty()) {
@@ -368,7 +354,7 @@ public class RecepcaoBean implements Serializable {
                 agendamentoEdit.setRecepcao(recepcao);
             }
         }
-        
+
         if (!di.update(agendamentoEdit)) {
             GenericaMensagem.error("Erro", "Erro ao atualizar Agendamento!");
             di.rollback();
@@ -379,7 +365,7 @@ public class RecepcaoBean implements Serializable {
         GenericaMensagem.info("Sucesso", "Agendamento atualizado!");
         di.commit();
     }
-    
+
     public void agendar(DataObject datao) {
         if (getData() != null) {
             if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))
@@ -421,14 +407,17 @@ public class RecepcaoBean implements Serializable {
                 }
             }
         }
-        
+
         HomologacaoDB dB = new HomologacaoDBToplink();
         cancelamento = (Cancelamento) dB.pesquisaCancelamentoPorAgendanto(agendamentoEdit.getId());
-        if (cancelamento == null) cancelamento = new Cancelamento();
-        
-        if (agendamentoEdit.getRecepcao() != null)
+        if (cancelamento == null) {
+            cancelamento = new Cancelamento();
+        }
+
+        if (agendamentoEdit.getRecepcao() != null) {
             recepcao = agendamentoEdit.getRecepcao();
-        
+        }
+
         getStrEndereco();
         openDialog = true;
     }
@@ -589,7 +578,6 @@ public class RecepcaoBean implements Serializable {
 //    public void setRecepcao(Recepcao recepcao) {
 //        this.recepcao = recepcao;
 //    }
-
     public String getTipoPesquisa() {
         return tipoPesquisa;
     }
@@ -689,11 +677,12 @@ public class RecepcaoBean implements Serializable {
     public String getDataFinalString() {
         return dataFinalString;
     }
-    
+
     public void setDataFinalString(String dataFinalString) {
         this.dataFinalString = dataFinalString;
         this.dataFinal = DataHoje.converte(dataFinalString);
     }
+
     public void setData(String dataFinal) {
         this.dataFinal = DataHoje.converte(dataFinal);
     }
@@ -838,9 +827,9 @@ public class RecepcaoBean implements Serializable {
         setDataFinal(event.getStartDate());
     }
 
-    public void loadListHorarios(){
+    public void loadListHorarios() {
         listaHorarios.clear();
-        
+
         if (macFilial == null) {
             return;
         }
@@ -850,19 +839,19 @@ public class RecepcaoBean implements Serializable {
         if (isPesquisarPessoaJuridicaFiltro == true) {
             fisica = new Fisica();
         }
-        
-        if (dataPesquisa.equals("hoje")){
+
+        if (dataPesquisa.equals("hoje")) {
             dataInicial = DataHoje.dataHoje();
             dataInicialString = DataHoje.data();
         }
-        
+
         if (juridica.getId() != -1 || fisica.getId() != -1) {
             desabilitaPesquisaProtocolo = true;
             numeroProtocolo = "";
         } else {
             desabilitaPesquisaProtocolo = false;
         }
-        
+
         HomologacaoDB db = new HomologacaoDBToplink();
         List<Agendamento> ag;
         setData(DataHoje.dataHoje());
@@ -968,7 +957,7 @@ public class RecepcaoBean implements Serializable {
             }
 
         }
-        
+
         for (int i = 0; i < ag.size(); i++) {
             if (ag.get(i).getAgendador() != null) {
                 agendador = ag.get(i).getAgendador().getPessoa().getNome();
@@ -993,7 +982,7 @@ public class RecepcaoBean implements Serializable {
             if (dbat.pessoaOposicao(ag.get(i).getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
                 isOposicao = true;
             }
-            
+
             if (senha != null && !isOposicao) {
                 Cancelamento can = (Cancelamento) db.pesquisaCancelamentoPorAgendanto(ag.get(i).getId());
                 if (senha.getId() != -1 && can == null) {
@@ -1001,13 +990,13 @@ public class RecepcaoBean implements Serializable {
                     senhaId = "tblListaRecepcaox";
                     senhaString = ((Integer) senha.getSenha()).toString();
                 } else {
-                    
+
                 }
-            }else{
+            } else {
                 senhaId = "tblAgendamentoOposicaox";
                 senhaString = ((Integer) senha.getSenha()).toString();
             }
-            
+
             listaHorarios.add(new DataObject(
                     ag.get(i).getHorarios(), // ARG 0 HORA
                     ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
@@ -1028,15 +1017,16 @@ public class RecepcaoBean implements Serializable {
             );
         }
     }
-    
-    public void loadListaAtendimentoSimples(){
-        if (listaAtendimentoSimples.isEmpty() && macFilial != null){
+
+    public void loadListaAtendimentoSimples() {
+        if (listaAtendimentoSimples.isEmpty() && macFilial != null) {
             HomologacaoDB db = new HomologacaoDBToplink();
             SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
-            
+
             listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
         }
     }
+
     public List<Senha> getListaAtendimentoSimples() {
         return listaAtendimentoSimples;
     }
@@ -1086,8 +1076,6 @@ public class RecepcaoBean implements Serializable {
     }
 }
 
-
-    
 //    public void gerarSenha() {
 //        // parei aqui.. testar o gerar senha e alterar a variavel recepcao para agendamentoEdit.recepcao
 //        DB db = new DB();
@@ -1237,4 +1225,4 @@ public class RecepcaoBean implements Serializable {
 //        }        
 //        return;
 //    }   
-    
+
