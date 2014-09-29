@@ -31,6 +31,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -381,12 +382,15 @@ public class AcordoBean {
 
             imprimir = false;
 
-            String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-            if (url.equals("movimentosReceber")) {
-                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
-                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
-            } else if (url.equals("movimentosReceberSocial")){
-                ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            String url = (String) GenericaSessao.getString("urlRetorno");
+            switch (url) {
+                case "movimentosReceber":
+                    ((MovimentosReceberBean) GenericaSessao.getObject("movimentosReceberBean")).getListMovimentoReceber().clear();
+                    ((MovimentosReceberBean) GenericaSessao.getObject("movimentosReceberBean")).setDesconto("0");
+                    break;
+                case "movimentosReceberSocial":
+                    ((MovimentosReceberSocialJSFBean) GenericaSessao.getObject("movimentosSocialBean")).getListaMovimento().clear();
+                    break;
             }
         } catch (Exception e) {
             mensagem = "Acordo não foi gerado";
