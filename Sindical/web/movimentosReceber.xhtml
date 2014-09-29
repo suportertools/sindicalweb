@@ -1,285 +1,214 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Movimentos a Receber</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 5px!important;}
+        </style>        
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formMovimentoReceber">
-
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Movimentos a Receber" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                </center>
-                <div class="divMae">
-                    <div class="fontePadrao divFundo">
-                        <h:panelGrid columns="6">
-                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
-                            <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
-                            <h:outputText id="i_nome" value="#{movimentosReceberBean.pessoa.nome}" title="#{movimentosReceberBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
-                            <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{movimentosReceberBean.removerPesquisa}" style="margin-left: 10px" rendered="#{movimentosReceberBean.pessoa.id != -1}" render="i_nome, b_remover, tbl" />
-                        </h:panelGrid>
-                        <h:panelGroup style="overflow:auto; margin-top: 20px;" layout="block">
-                        <div class="fontePadrao divFundo" style="background: white;">
-                            <rich:dataTable value="#{movimentosReceberBean.listaMovimentos}" var="linha" style="width: 100%" id="tbl" iterationStatusVar="it" onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-                                <rich:column styleClass="coluna">
-                                    <f:facet name="header"><h:outputText value="#"/></f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column> 
-
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:selectBooleanCheckbox  value="#{movimentosReceberBean.marcarTodos}">
-                                            <a4j:ajax event="change" render="tbl soma_total soma_multa soma_juros soma_correcao soma_acrescimo soma_acrescimo_sem_sindical soma_total_receber" listener="#{movimentosReceberBean.marcar}"/>
-                                        </h:selectBooleanCheckbox>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <ui:include src="templates/templateStatus.xhtml"/>
+                    <h:form id="form_movimento_receber">
+                        <p:panel styleClass="wrapper no-border">
+                            <p:messages autoUpdate="true" closable="true" showDetail="true" showSummary="true" />
+                            <p:growl id="id_messages_growl" showDetail="true" showSummary="true" autoUpdate="true" />
+                            <h:outputText value="Movimentos a Receber" styleClass="fonteHeader"/>
+                            <div class="clear"></div>
+                            <h:panelGrid columns="6" id="i_grid_pessoa">
+                                <p:commandButton icon="ui-icon-search" value="Pesquisa Pessoa: " action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                                <p:outputLabel value="#{movimentosReceberBean.pessoa.nome}" title="#{movimentosReceberBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
+                                <p:commandButton icon="ui-icon-close" action="#{movimentosReceberBean.removerPesquisa}" rendered="#{movimentosReceberBean.pessoa.id != -1}" update=":form_movimento_receber:" />
+                            </h:panelGrid>
+                            <h:panelGrid id="tbl" styleClass="margin-top-max no-border">
+                                <p:dataTable value="#{movimentosReceberBean.listMovimentoReceber}" var="listMovimentoReceber" rowIndexVar="index" emptyMessage="Nenhum movimento encontrado!">
+                                    <p:column styleClass="text-center" width="20">
+                                        <f:facet name="header">
+                                            <p:selectBooleanCheckbox  value="#{movimentosReceberBean.marcarTodos}" disabled="#{movimentosReceberBean.listMovimentoReceber.size() == 0}">
+                                                <p:ajax event="change" update=":form_movimento_receber:tbl :form_movimento_receber:i_grid_calculo" listener="#{movimentosReceberBean.selectedAll()}"/>
+                                            </p:selectBooleanCheckbox>
+                                        </f:facet>
+                                        <p:selectBooleanCheckbox value="#{listMovimentoReceber.selected}" >
+                                            <p:ajax event="change" update="@this :form_movimento_receber:i_grid_calculo" global="false"/>
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>
+                                    <p:column headerText="Boleto" width="120" styleClass="font">
+                                        <p:outputLabel value="#{listMovimentoReceber.boleto}" title="#{listMovimentoReceber.boleto} - Registro nº#{listMovimentoReceber.idMovimento}"/>
+                                    </p:column>
+                                    <p:column headerText="Serviço" width="100" styleClass="text-center">
+                                        <h:outputText value="#{listMovimentoReceber.servico}" title="#{listMovimentoReceber.servico}"/>
+                                    </p:column>
+                                    <p:column headerText="Tipo" width="50">
+                                        <h:outputText value="#{listMovimentoReceber.tipo}"/>
+                                    </p:column>
+                                    <p:column headerText="Ref." styleClass="text-center" width="50">
+                                        <h:outputText value="#{listMovimentoReceber.referencia}"/>
+                                    </p:column>
+                                    <p:column headerText="Vencto" styleClass="text-center" width="70">
+                                        <h:outputText value="#{listMovimentoReceber.vencimento}"/>
+                                    </p:column>
+                                    <p:column headerText="Valor" styleClass="text-center">
+                                        <p:commandLink id="valor_folha" style="text-decoration: underline; color: blue;" value="#{listMovimentoReceber.valorMovimento}" rendered="#{!listMovimentoReceber.tipo.equals('Acordo')}" action="#{movimentosReceberBean.carregarFolha}" oncomplete="PF('dlg_folha_empresa').show()" update=":form_movimento_receber:i_folha_empresa" global="false" actionListener="#{movimentosReceberBean.addIndex(index)}" />
+                                        <h:outputText value="#{listMovimentoReceber.valorMovimento}" rendered="#{listMovimentoReceber.tipo.equals('Acordo')}" />
+                                    </p:column>
+                                    <p:column headerText="Valor Calculado" styleClass="text-center">
+                                        <h:outputText id="tbl_valor_calculado" value="#{listMovimentoReceber.valorCalculado}" styleClass="bold font-color-red"/>
+                                    </p:column>
+                                    <p:column headerText="Multa" styleClass="text-center" width="50">
+                                        <h:outputText value="#{listMovimentoReceber.multa}"/>
+                                    </p:column>
+                                    <p:column headerText="Juros" styleClass="text-center" width="40">
+                                        <h:outputText value="#{listMovimentoReceber.juros}" />
+                                    </p:column>
+                                    <p:column headerText="Correção" styleClass="text-center" width="55">
+                                        <h:outputText value="#{listMovimentoReceber.correcao}"/>
+                                    </p:column>
+                                    <p:column headerText="Desc." styleClass="text-center" width="50">
+                                        <h:outputText id="tbl_desconto" value="#{listMovimentoReceber.desconto}"/>
+                                    </p:column>
+                                    <p:column headerText="Dias em atraso" styleClass="text-center">
+                                        <h:outputText value="#{listMovimentoReceber.diasAtraso}"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="Obs: - Ref. = Referência; - Vencto = Vencimento; - Desc. = Desconto." style="color: gray" />
                                     </f:facet>
-                                    <h:selectBooleanCheckbox id="idSelecionar" value="#{linha.argumento0}">
-                                        <a4j:ajax event="change" render="soma_total soma_multa soma_juros soma_correcao soma_acrescimo soma_acrescimo_sem_sindical soma_total_receber"/>
-                                    </h:selectBooleanCheckbox>
-                                </rich:column>
-                                
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
-                                    <h:outputText value="#{linha.argumento16}"/>
-                                </rich:column>
-                                
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
-                                    <h:outputText value="#{linha.argumento1}" styleClass="todosCheckbox"/>
-                                </rich:column>
+                                </p:dataTable>
+                            </h:panelGrid>                    
+                            <p:panelGrid style="width: 100%" styleClass="margin-top-max" id="i_grid_calculo" rendered="#{movimentosReceberBean.listMovimentoReceber.size() > 0}">
+                                <f:facet name="header">
+                                    <p:row>
+                                        <p:column>
+                                            <p:outputLabel value="Total (R$)" />                                    
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Multa (R$)"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Juros (%)"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Correção (R$)"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Acréscimo (R$)"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Acréscimo S/ Sindical (R$)"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Desconto"  />
+                                        </p:column>                                    
+                                        <p:column>
+                                            <p:outputLabel value="Total à Receber (R$)"  styleClass="bold"/>
+                                        </p:column>
+                                    </p:row>
+                                </f:facet>
+                                <p:row>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_total" value="#{movimentosReceberBean.total}" styleClass="bold text-center" readonly="true" size="10"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_multa" value="#{movimentosReceberBean.multa}" styleClass="bold text-center" readonly="true" size="5"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_juros" value="#{movimentosReceberBean.juros}" styleClass="bold text-center" readonly="true" size="5"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_correcao" value="#{movimentosReceberBean.correcao}" styleClass="bold text-center" readonly="true" size="10"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_acrescimo" value="#{movimentosReceberBean.acrescimo}" styleClass="bold text-center" readonly="true" size="10"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText id="soma_acrescimo_sem_sindical" value="#{movimentosReceberBean.acrescimoSemSindical}" styleClass="bold text-center" readonly="true"  size="10"/>
+                                    </p:column>
+                                    <p:column styleClass="text-center">                                
+                                        <p:inputText id="soma_desconto" size="10" value="#{movimentosReceberBean.desconto}" styleClass="text-center bold" style="color: blue">
+                                            <p:ajax event="change" update="soma_desconto soma_total_receber tbl" listener="#{movimentosReceberBean.calculoDesconto}" global="false"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column styleClass="text-center">
+                                        <p:inputText readonly="true" id="soma_total_receber" value="#{movimentosReceberBean.totalPagar}" styleClass="bold input-text-min bg-yellow-ligth text-center font-color-red" />
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                                <p:commandButton value="Acordo" title="Fazer acordo " action="#{movimentosReceberBean.telaAcordo()}" update=":form_movimento_receber:" rendered="#{movimentosReceberBean.listMovimentoReceber.size() > 0}"/>
+                                <h:commandLink action="#{movimentosReceberBean.imprimir}" title="Imprimir Boleto " target="_blank" rendered="#{movimentosReceberBean.listMovimentoReceber.size() > 0}">
+                                    <p:button value="Imprimir" icon="ui-icon-print" />
+                                </h:commandLink>
+                                <h:commandLink action="#{movimentosReceberBean.imprimirPlanilha}" title="Planilha Débito" target="_blank" rendered="#{movimentosReceberBean.listMovimentoReceber.size() > 0}">
+                                    <p:button value="Planilha Débito" icon="ui-icon-print" />
+                                </h:commandLink>
+                            </h:panelGrid>
+                        </p:panel>
+                        <p:dialog widgetVar="dlg_folha_empresa" modal="true" width="600" closable="true" header="Folha Empresa">
+                            <h:panelGrid id="i_folha_empresa">
+                                <p:tabView>
+                                    <p:tab title="Valor do Boleto">
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Digite um valor para o Boleto: "/>
+                                            <p:inputText size="10" value="#{movimentosReceberBean.valorBoleto}">
+                                                <p:ajax event="blur" update="@this" global="false"/>
+                                            </p:inputText>
+                                            <h:column>
+                                                <ui:include src="templates/templateStatusLoader.xhtml"/>
+                                            </h:column>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton update=":form_movimento_receber:tbl" value="OK" action="#{movimentosReceberBean.atualizaValorGrid('valor')}" onclick="PF('dlg_folha_empresa').close();" />
+                                            <p:commandButton value="Cancelar" onclick="PF('dlg_folha_empresa').close();"/>
+                                        </h:panelGrid>
+                                    </p:tab>
+                                    <p:tab title="Valor por Desconto Empregado">
+                                        <h:panelGrid>
+                                            <p:commandLink disabled="#{not movimentosReceberBean.mostrarPainel}" update=":form_movimento_receber:" id="Cadastrar" value="#{movimentosReceberBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel id="lbEdit"  value="#{movimentosReceberBean.labelFolha}:" />
+                                            <p:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" value="#{movimentosReceberBean.valor}" >
+                                                <p:ajax event="change" update="@this"/>
+                                            </p:inputText>
+                                            <p:outputLabel id="lbEdit2"  value="#{movimentosReceberBean.labelFolha2}:" />
+                                            <p:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" value="#{movimentosReceberBean.qtdFuncionario}" >
+                                                <p:ajax event="change" update="@this"/>
+                                            </p:inputText>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                                            <p:commandButton disabled="#{movimentosReceberBean.mostrarPainel}" update=":form_movimento_receber:tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid('descontoEmpregado')}" onclick="PF('dlg_folha_empresa').close()"/>
+                                            <p:commandButton id="cancelar" value="Cancelar" onclick="PF('dlg_folha_empresa').close()"/>
+                                        </h:panelGrid>                                
+                                    </p:tab>
+                                </p:tabView>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
-                                    <h:outputText value="#{linha.argumento2}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
-                                    <h:outputText value="#{linha.argumento3}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Referência"/></f:facet>
-                                    <h:outputText value="#{linha.argumento4}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                                    <h:outputText value="#{linha.argumento5}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                    
-                                    <a4j:commandLink id="valor_folha" style="text-decoration: underline; color: blue;" value="#{linha.argumento6}" rendered="#{linha.argumento3 != 'Acordo'}"
-                                                     action="#{movimentosReceberBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="i_panel_valor">
-                                        <a4j:param value="#{it.index}" assignTo="#{movimentosReceberBean.index}" />
-                                    </a4j:commandLink>
-                                    <h:outputText value="#{linha.argumento6}" rendered="#{linha.argumento3 == 'Acordo'}" />
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Valor calculado"/></f:facet>
-                                    <h:outputText id="tbl_valor_calculado" value="#{linha.argumento12}" style="font-weight: bold"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Multa"/></f:facet>
-                                    <h:outputText value="#{linha.argumento8}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Juros"/></f:facet>
-                                    <h:outputText value="#{linha.argumento9}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Correção"/></f:facet>
-                                    <h:outputText value="#{linha.argumento10}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Desconto"/></f:facet>
-                                    <h:outputText id="tbl_desconto" value="#{linha.argumento11}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Dias em atraso"/></f:facet>
-                                    <h:outputText value="#{linha.argumento14}"/>
-                                </rich:column>
-
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="Beneficiário"/></f:facet>
-                                    <h:outputText value=""/>
-                                </rich:column>
-                            </rich:dataTable>
-                            </div>
-                            <div class="fontePadrao divFundo" style="background: white; margin-top: 25px;">
-                                <rich:panel style="border: 0">
-                                    <h:panelGrid columns="20">
-                                        <h:column>
-                                            <h:outputText value="Total: " styleClass="fontePadraoPequeno"/>
-                                            <h:outputText id="soma_total" value="#{movimentosReceberBean.total}" styleClass="fontePadraoNegrito" />
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Multa: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
-                                            <h:outputText id="soma_multa" value="#{movimentosReceberBean.multa}" styleClass="fontePadraoNegrito"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Juros: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
-                                            <h:outputText id="soma_juros" value="#{movimentosReceberBean.juros}" styleClass="fontePadraoNegrito"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Correção: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
-                                            <h:outputText id="soma_correcao" value="#{movimentosReceberBean.correcao}" styleClass="fontePadraoNegrito"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Acréscimo: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
-                                            <h:outputText id="soma_acrescimo" value="#{movimentosReceberBean.acrescimo}" styleClass="fontePadraoNegrito"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Acréscimo S/ Sindical: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
-                                            <h:outputText id="soma_acrescimo_sem_sindical" value="#{movimentosReceberBean.acrescimoSemSindical}" styleClass="fontePadraoNegrito"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:outputText value="Desconto: " styleClass="fontePadrao" style="margin-left: 15px"/>
-                                            <h:inputText id="soma_desconto" size="10" value="#{movimentosReceberBean.desconto}" styleClass="fontePadrao">
-                                                <!-- <a4j:ajax event="blur" render="soma_desconto soma_total_receber tbl" listener="# {movimentosReceberBean.limpaLista}"/> -->
-                                                <a4j:ajax event="change" render="soma_desconto soma_total_receber tbl" listener="#{movimentosReceberBean.calculoDesconto}"/>
-                                            </h:inputText>
-                                                
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <div class="divFundo" style="margin-left: 15px;">
-                                                <h:outputText value="Total à Receber: "  styleClass="fontePadraoNegrito"/>
-                                                <h:outputText id="soma_total_receber" value="#{movimentosReceberBean.totalPagar}" styleClass="fontePadraoNegrito" style="background: white; "/>
-                                            </div>
-                                        </h:column>
-                                    </h:panelGrid>
-                                </rich:panel>
-                            </div>
-
-                        </h:panelGroup>
-                    </div>
-                    <div style="clear: both;"></div>
-                    <div style="float: left; margin-top: 15px;">
-                        <!-- <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar boletos" action="# {movimentosReceberBean.telaBaixa()}" oncomplete="modalMensagem()" render="outConfirma"/> -->
-                        <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer acordo " action="#{movimentosReceberBean.telaAcordo()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                        <h:commandLink styleClass="idPesquisar iLink" value="Imprimir" action="#{movimentosReceberBean.imprimir()}" title="Imprimir Boleto " target="_blank"/>
-                        <h:commandLink styleClass="idNovo iLink" action="#{movimentosReceberBean.imprimirPlanilha}" value="Planilha Débito" style="width: 150px" title="Planilha Débito" target="_blank"/>
-                        <h:outputLabel value="#{movimentosReceberBean.msgConfirma}" styleClass="corErro" />
-                    </div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divFolhaEmpresa" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <rich:tabPanel id="i_panel_valor" switchType="client">
-                                <rich:tab header="Valor do Boleto">
-                                    <h:outputText value="Digite um valor para o Boleto" style="font-weight: bold; float: left"/><br />
-                                    <br />
-                                    <h:inputText size="10" id="idValorBoleto" value="#{movimentosReceberBean.valorBoleto}" style="text-align: right; float: left">
-                                        <a4j:ajax event="blur" render="idValorBoleto"/>
-                                    </h:inputText>
-
-                                    <br />
-
-                                    <table border="0" align="center" cellspacing="5" >
-                                        <tr align="center">
-                                            <td>
-                                                <a4j:commandLink styleClass="idNovo iLink" render="tbl" value="OK" action="#{movimentosReceberBean.atualizaValorGrid('valor')}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
-                                            </td>
-                                            <td>
-                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" render="tbl" value="Cancelar" />
-                                            </td>
-                                        </tr>
-                                    </table>  
-                                </rich:tab>
-                                <rich:tab header="Valor por Desconto Empregado">
-                                    <h:panelGrid>
-                                        <a4j:commandLink disabled="#{not movimentosReceberBean.mostrarPainel}" render="tbl" id="Cadastrar" value="#{movimentosReceberBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" styleClass="fontePadrao"/>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid>
-                                        <h:outputText id="lbEdit"  value="#{movimentosReceberBean.labelFolha}" styleClass="fonteRederencia"/>
-                                        <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{movimentosReceberBean.valor}" >
-                                            <a4j:ajax event="change" render="idValorMes"/>
-                                        </h:inputText>
-
-                                        <h:outputText id="lbEdit2"  value="#{movimentosReceberBean.labelFolha2}" styleClass="fonteRederencia"/>
-
-                                        <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{movimentosReceberBean.qtdFuncionario}" >
-                                            <a4j:ajax event="change" render="qfun"/>
-                                        </h:inputText>
-                                    </h:panelGrid>
-
-                                    <br />
-                                    <table border="0" align="center" cellspacing="5" >
-                                        <tr align="center">
-                                            <td>
-                                                <a4j:commandLink styleClass="idNovo iLink" disabled="#{movimentosReceberBean.mostrarPainel}" render="tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid('descontoEmpregado')}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
-                                            </td>
-                                            <td>
-                                                <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl" value="Cancelar" />
-                                            </td>
-                                        </tr>
-                                    </table>    
-                                </rich:tab>
-                            </rich:tabPanel>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                  
-                
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{movimentosReceberBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
