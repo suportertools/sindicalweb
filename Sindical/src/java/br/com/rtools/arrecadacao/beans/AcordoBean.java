@@ -28,7 +28,6 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
@@ -366,24 +365,12 @@ public class AcordoBean {
         }
         List<Movimento> listaAcordo = new ArrayList<Movimento>();
         List<String> listaHistorico = new ArrayList();
-//        Dao dao = new Dao();
-//        Movimento ma;
-//        Movimento m;
-//        for (int i = 0; i < listaOperado.size(); i++) {
-//            m = (Movimento) listaOperado.get(i).getArgumento2();
-//            ma = (Movimento) dao.find(new Movimento(), m.getId());
-//            if(ma.getAcordo() != null) {
-//                mensagem = "MOVIMENTO JÁ ACORDADO! Documento: " + ma.getDocumento() + " - Gerado por: " + ma.getAcordo().getUsuario().getPessoa().getNome();
-//                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
-//                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos();
-//                ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
-//                return;
-//            }
-//            listaAcordo.add((Movimento) listaOperado.get(i).getArgumento2());
-//            listaHistorico.add((String) listaOperado.get(i).getArgumento3());
-//            ma = new Movimento();
-//            m = new Movimento();
-//        }
+
+        for (int i = 0; i < listaOperado.size(); i++) {
+            listaAcordo.add((Movimento) listaOperado.get(i).getArgumento2());
+            listaHistorico.add((String) listaOperado.get(i).getArgumento3());
+        }
+
         try {
             // 07-11-2011 dep arrecad. secrp rogerio afirmou que o nr_ctr_boleto dos acordados tem que ser zerados,
             // para que nao haja conflito com os novos boletos gerados (* (nr_num_documento, nr_ctr_boleto, id_conta_cobranca) *)
@@ -398,7 +385,7 @@ public class AcordoBean {
             if (url.equals("movimentosReceber")) {
                 ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
                 ((MovimentosReceberBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
-            } else if (url.equals("movimentosReceberSocial")) {
+            } else if (url.equals("movimentosReceberSocial")){
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
             }
         } catch (Exception e) {
@@ -1096,7 +1083,7 @@ public class AcordoBean {
     }
 
     public void setListaVizualizado(List<DataObject> listaVizualizado) {
-        this.setListaVizualizado(listaVizualizado);
+        this.listaVizualizado = listaVizualizado;
     }
 
     public String getEmailPara() {
