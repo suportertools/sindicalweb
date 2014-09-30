@@ -98,6 +98,18 @@
         <param-value>false</param-value>
     </context-param>
     
+    <!-- 
+    <servet>
+        <servet-name>Push Servlet</servet-name>
+        <servet-class>org.primefaces.push.PushServlet</servet-class>
+        <async-suported>true</async-suported>
+    </servet>    
+    
+    <servet-mapping>
+        <servlet-name>Push Servlet</servlet-name>  
+        <url-pattern>/primepush/*</url-pattern> 
+    </servet-mapping>    -->
+    
     
     
     <!-- ERRORS AND EXCEPTIONS -->    
