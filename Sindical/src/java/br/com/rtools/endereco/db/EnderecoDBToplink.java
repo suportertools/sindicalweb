@@ -74,7 +74,7 @@ public class EnderecoDBToplink extends DB implements EnderecoDB {
     public List<Endereco> pesquisaEnderecoCep(String cep) {
         try {
             Query qry = getEntityManager().createQuery("select ende from Endereco ende "
-                    + " where ende.cep = :d_cep "
+                    + " where ende.cep = :d_cep and ende.ativo = true"
                     + " order by ende.descricaoEndereco.descricao");
             qry.setParameter("d_cep", cep);
             return (qry.getResultList());
@@ -121,6 +121,7 @@ public class EnderecoDBToplink extends DB implements EnderecoDB {
                     + "      AND cid.ds_uf = '" + uf + "'"
                     + "      AND logr.ds_descricao = '" + logradouro + "'"
                     + "      AND UPPER(translate(des.ds_descricao)) LIKE '" + AnaliseString.removerAcentos(descricao) + "'"
+                    + "      AND ende.is_ativo = true"
                     + " ORDER BY des.ds_descricao");
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {

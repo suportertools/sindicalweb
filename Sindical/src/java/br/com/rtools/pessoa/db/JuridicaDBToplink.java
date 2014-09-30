@@ -1,12 +1,14 @@
 package br.com.rtools.pessoa.db;
 
 import br.com.rtools.arrecadacao.CnaeConvencao;
+import br.com.rtools.arrecadacao.Empregados;
 import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,43 +17,6 @@ import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class JuridicaDBToplink extends DB implements JuridicaDB {
-
-//    @Override
-//    public boolean insert(Juridica juridica) {
-//        try {
-//            getEntityManager().getTransaction().begin();
-//            getEntityManager().persist(juridica);
-//            getEntityManager().flush();
-//            getEntityManager().getTransaction().commit();
-//            return true;
-//        } catch (Exception e) {
-//            getEntityManager().getTransaction().rollback();
-//            return false;
-//        }
-//    }
-//
-//    @Override
-//    public boolean update(Juridica juridica) {
-//        try {
-//            getEntityManager().merge(juridica);
-//            getEntityManager().flush();
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
-//
-//    @Override
-//    public boolean delete(Juridica juridica) {
-//        try {
-//            getEntityManager().remove(juridica);
-//            getEntityManager().flush();
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
-
     @Override
     public Juridica pesquisaCodigo(int id) {
         Juridica result = null;
@@ -64,16 +29,6 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         }
         return result;
     }
-
-//    @Override
-//    public List pesquisaTodos() {
-//        try {
-//            Query qry = getEntityManager().createQuery("select jur from Juridica jur ");
-//            return (qry.getResultList());
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
 
     @Override
     public List<PessoaEndereco> pesquisarPessoaEnderecoJuridica(int id) {
@@ -155,93 +110,6 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             e.getMessage();
         }
         return new ArrayList();
-
-//        List<Vector> result_list = qry.getResultList();
-//        List<Object> return_list = new ArrayList<Object>();
-//
-//        if (!result_list.isEmpty()){
-//            if (result_list.size() > 1){
-//                String listId = "";
-//                for (int i = 0; i < result_list.size(); i++){
-//                    if (i == 0) listId = result_list.get(i).get(0).toString(); else listId += ", " +  result_list.get(i).get(0).toString();
-//                }
-//                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id IN ( " + listId + " )").getResultList();
-//            }else{
-//                return getEntityManager().createQuery("SELECT j FROM Juridica j WHERE j.id = " + (Integer) result_list.get(0).get(0)).getResultList();
-//            }
-//        }
-        
-        //return return_list;
-//        
-//        if (por.equals("endereco")) {
-//            desc = desc.toLowerCase().toUpperCase();
-//            String queryEndereco = ""
-//                    + "       SELECT jur.id "
-//                    + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
-//                    + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
-//                    + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
-//                    + "  INNER JOIN end_cidade cid ON (cid.id = ende.id_cidade)                                                                                                              "
-//                    + "  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
-//                    + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
-//                    + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
-//                    + "  INNER JOIN pes_juridica jur ON (jur.id_pessoa = pes.id)                                                                                                               "
-//                    + "  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || pesend.ds_numero || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%" + desc + "%')  "
-//                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%" + desc + "%')  "
-//                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%" + desc + "%')                                "
-//                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%" + desc + "%')                                                    "
-//                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%') || ', ' || pesend.ds_numero                                                                                "
-//                    + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                               "
-//                    + "     OR UPPER(enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                                                           "
-//                    + "     OR UPPER(cid.ds_cidade) LIKE UPPER('%" + desc + "%')                                                                                                                 "
-//                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' LIMIT 1000 ";
-//
-//            Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
-//            List listEndereco = qryEndereco.getResultList();
-//            String listaId = "";
-//            if (!listEndereco.isEmpty()) {
-//                for (int i = 0; i < listEndereco.size(); i++) {
-//                    if (i == 0) {
-//                        listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-//                    } else {
-//                        listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
-//                    }
-//                }
-//                textQuery = " SELECT JUR FROM Juridica AS JUR WHERE JUR.id IN(" + listaId + ") ORDER BY JUR.pessoa.nome ASC";
-//            }
-//        }
-//
-//        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")) {
-//            por = "documento";
-//            if (como.equals("P")) {
-//
-//                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-//                textQuery = "select jur from Juridica jur, "
-//                        + "                Pessoa pes     "
-//                        + " where jur.pessoa.id = pes.id  "
-//                        + "   and UPPER(pes." + por + ") like :desc"
-//                        + " order by jur.pessoa.nome";
-//            } else if (como.equals("I")) {
-//                por = "documento";
-//                desc = desc.toLowerCase().toUpperCase() + "%";
-//                textQuery = "select jur from Juridica jur, "
-//                        + "                Pessoa pes     "
-//                        + " where jur.pessoa.id = pes.id  "
-//                        + "   and UPPER(pes." + por + ") like :desc"
-//                        + " order by jur.pessoa.nome";
-//            }
-//        }
-//        try {
-//            Query qry = getEntityManager().createQuery(textQuery);
-//            if (!desc.equals("%%") && !desc.equals("%")) {
-//                if (!por.equals("endereco")) {
-//                    qry.setParameter("desc", desc);
-//                }
-//            }
-//            lista = qry.getResultList();
-//        } catch (Exception e) {
-//            lista = new ArrayList();
-//        }
-//        return lista;
     }
 
     @Override
@@ -364,7 +232,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    listJur.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
+                    listJur.add((Juridica)new Dao().find(new Juridica(), (Integer) ((Vector) vetor.get(i)).get(0)));
                 }
             }
             return listJur;
@@ -492,5 +360,22 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             }
         } catch (EJBQLException e) {}
         return false;
+    }
+    
+    @Override
+    public Empregados pesquisaEmpregados(int id_juridica){
+        Query qry = getEntityManager().createQuery(
+                " SELECT em FROM Empregados em"
+              + "  WHERE em.referencia = :p_referencia "
+              + "   AND em.juridica.id = :p_juridica"
+        );
+        
+        try{
+            qry.setParameter("p_referencia", DataHoje.data().substring(3));
+            qry.setParameter("p_juridica", id_juridica);
+            
+            return (Empregados) qry.getSingleResult();
+        }catch(Exception e){}
+        return null;
     }
 }

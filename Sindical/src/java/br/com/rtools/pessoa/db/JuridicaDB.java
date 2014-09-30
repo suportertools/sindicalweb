@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.db;
 
 import br.com.rtools.arrecadacao.CnaeConvencao;
+import br.com.rtools.arrecadacao.Empregados;
 import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -61,4 +62,6 @@ public interface JuridicaDB {
      * @return 
      */
     public boolean empresaInativa(Pessoa pessoa, String motivo);
+    
+    public Empregados pesquisaEmpregados(int id_juridica);
 }

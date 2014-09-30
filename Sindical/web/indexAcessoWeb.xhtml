@@ -62,7 +62,7 @@
                 
                 <p:panel header="FAÇA O LOGIN NO SISTEMA" style="width: 350px; margin: 0 auto; margin-top: 10px">
                     <p:messages showDetail="true" style="font-size: 10pt!important" autoUpdate="true" closable="true"/>
-                    <h:panelGrid style="margin-top: 30px; width: 100%">
+                    <h:panelGrid style="margin-top: 30px; width: 100%" rendered="#{!controleAcessoWebBean.registro.acessoWebDocumento}">
                         <p:outputLabel value="LOGIN" style="font-weight: bold; font-size: 10pt" for="i_login"/>
                         <p:inputText id="i_login" value="#{controleAcessoWebBean.pessoa.login}" placeholder="Digite seu Login" style="width: 100%" autocomplete="off"/>
                         
@@ -72,6 +72,13 @@
                         <p:commandButton value="Entrar" style="width: 100%; margin-top: 20px" action="#{controleAcessoWebBean.validacao}"/>
 
                         <p:commandLink value="Esqueci a Senha" onclick="PF('dlg_esqueci_senha').show()" styleClass="link-esqueci-senha" />
+                    </h:panelGrid>
+                    
+                    <h:panelGrid style="margin-top: 30px; width: 100%" rendered="#{controleAcessoWebBean.registro.acessoWebDocumento}">
+                        <p:outputLabel value="CNPJ" style="font-weight: bold; font-size: 10pt" for="i_cnpj"/>
+                        <p:inputMask id="i_cnpj" value="#{controleAcessoWebBean.documento}" placeholder="Digite seu CNPJ" style="width: 100%; text-align: center" autocomplete="off" mask="99.999.999/9999-99"/>
+                        
+                        <p:commandButton value="Entrar" style="width: 100%; margin-top: 20px" action="#{controleAcessoWebBean.validacaoDocumento()}" update=":i_form_empregado"/>
                     </h:panelGrid>
                 </p:panel>
             </h:form>
@@ -134,6 +141,48 @@
                     <h:panelGrid>
                         <p:commandButton value="Enviar pedido de recuperação de Senha" action="#{controleAcessoWebBean.enviarEmail}" style="font-weight: bold; font-size: 10pt!important"/>
                     </h:panelGrid>
+                </p:dialog>
+            </h:form>
+            
+            <h:form id="i_form_empregado">
+                <p:dialog id="i_d" widgetVar="dlg_empregados" modal="true" header="Quantidade de Empregados" resizable="false" style="width: 460px">
+                    <p:outputLabel value="Informe a quantidade de empregados para este mês" />
+                    <br />
+                    <br />
+                    <p:inputText value="#{controleAcessoWebBean.empregados.quantidade}" style="text-align: right">
+                        <p:ajax event="change" update="@this i_panel_quantidade" global="false"/>
+                    </p:inputText>
+                    <p:commandButton value="Salvar" oncomplete="PF('dlg_empregados_confirma').show()" update="i_panel_quantidade"/>
+                    <p:commandButton value="Cancelar" onclick="PF('dlg_empregados').hide()"/>
+                </p:dialog>
+                
+                <p:dialog widgetVar="dlg_empregados_confirma" modal="true" header="Salvar Quantidade" resizable="false" style="width: 200px">
+                    <h:panelGrid id="i_panel_quantidade" columns="3">
+                        <p:outputLabel value="Empresa possui " />
+                        <p:outputLabel value=" #{controleAcessoWebBean.empregados.quantidade} " style="font-weight: bold; color: red"/>
+                        <p:outputLabel value=" empregados" />
+                    </h:panelGrid>
+                    <br />
+                    <p:commandButton value="Confirmar e Entrar" action="#{controleAcessoWebBean.salvarEmpregados()}" oncomplete="PF('dlg_empregados_confirma').hide(); PF('dlg_empregados').hide()"/>
+                    <p:commandButton value="Não, alterar quantidade" onclick="PF('dlg_empregados_confirma').hide()"/>
+                </p:dialog>
+            </h:form>
+            <h:form id="i_form_login_patronal">
+                <p:dialog id="i_d" widgetVar="dlg_patronal" modal="true" header="" resizable="false" style="width: 460px">
+                    <p:panel header="FAÇA O LOGIN NO SISTEMA" style="width: 350px; margin: 0 auto; margin-top: 10px">
+                        <p:messages showDetail="true" style="font-size: 10pt!important" autoUpdate="true" closable="true"/>
+                        <h:panelGrid style="margin-top: 30px; width: 100%">
+                            <p:outputLabel value="LOGIN" style="font-weight: bold; font-size: 10pt" for="i_login_p"/>
+                            <p:inputText id="i_login_p" value="#{controleAcessoWebBean.pessoa.login}" placeholder="Digite seu Login" style="width: 100%" autocomplete="off"/>
+
+                            <p:outputLabel value="SENHA" style="font-weight: bold; font-size: 10pt" for="i_senha_p"/>
+                            <p:password id="i_senha_p" value="#{controleAcessoWebBean.pessoa.senha}" placeholder="Digite sua Senha" style="width: 100%" autocomplete="off"/>
+
+                            <p:commandButton value="Entrar" style="width: 100%; margin-top: 20px" action="#{controleAcessoWebBean.validacao}"/>
+
+                            <p:commandLink value="Esqueci a Senha" onclick="PF('dlg_esqueci_senha').show()" styleClass="link-esqueci-senha" />
+                        </h:panelGrid>
+                    </p:panel>
                 </p:dialog>
             </h:form>
             

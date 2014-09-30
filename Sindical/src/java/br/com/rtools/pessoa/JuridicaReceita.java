@@ -40,7 +40,10 @@ public class JuridicaReceita implements Serializable {
     private String cnae;
     @Column(name = "ds_status", length = 30)
     private String status;
-
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_abertura")
+    private Date dtAbertura;
+    
     public JuridicaReceita() {
         this.id = -1;
         this.pessoa = new Pessoa();
@@ -55,9 +58,10 @@ public class JuridicaReceita implements Serializable {
         this.numero = "";
         this.cnae = "";
         this.status = "";
+        this.dtAbertura = null;
     }
 
-    public JuridicaReceita(int id, Pessoa pessoa, Date dtPesquisa, String documento, String nome, String fantasia, String cep, String descricaoEndereco, String bairro, String complemento, String numero, String cnae, String status) {
+    public JuridicaReceita(int id, Pessoa pessoa, Date dtPesquisa, String documento, String nome, String fantasia, String cep, String descricaoEndereco, String bairro, String complemento, String numero, String cnae, String status, Date dtAbertura) {
         this.id = id;
         this.pessoa = pessoa;
         this.dtPesquisa = dtPesquisa;
@@ -71,6 +75,7 @@ public class JuridicaReceita implements Serializable {
         this.numero = numero;
         this.cnae = cnae;
         this.status = status;
+        this.dtAbertura = dtAbertura;
     }
 
     public int getId() {
@@ -183,5 +188,13 @@ public class JuridicaReceita implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Date getDtAbertura() {
+        return dtAbertura;
+    }
+
+    public void setDtAbertura(Date dtAbertura) {
+        this.dtAbertura = dtAbertura;
     }
 }

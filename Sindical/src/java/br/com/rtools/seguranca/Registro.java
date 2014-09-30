@@ -113,7 +113,9 @@ public class Registro implements java.io.Serializable {
     private Date homolocaoHabilitaCorrecao;
     @Column(name = "sis_email_marketing_resposta", length = 50)
     private String sisEmailMarketingResposta;
-
+    @Column(name = "is_acesso_web_documento", columnDefinition = "boolean default false")
+    private boolean acessoWebDocumento;
+    
     public Registro() {
         this.id = -1;
         this.filial = new Juridica();
@@ -162,6 +164,7 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketing = false;
         this.homolocaoHabilitaCorrecao = new Date();
         this.sisEmailMarketingResposta = "";
+        this.acessoWebDocumento = false;
     }
 
     public Registro(int id,
@@ -209,7 +212,8 @@ public class Registro implements java.io.Serializable {
             int homolocaoLimiteMeses,
             Date homolocaoHabilitaCorrecao,
             boolean sisEmailMarketing,
-            String sisEmailMarketingResposta) {
+            String sisEmailMarketingResposta,
+            boolean acessoWebDocumento) {
 
         this.id = id;
         this.filial = filial;
@@ -257,6 +261,7 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketing = sisEmailMarketing;
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
+        this.acessoWebDocumento = acessoWebDocumento;
     }
 
     public int getId() {
@@ -659,5 +664,13 @@ public class Registro implements java.io.Serializable {
      */
     public void setSisEmailMarketingResposta(String sisEmailMarketingResposta) {
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
+    }
+
+    public boolean isAcessoWebDocumento() {
+        return acessoWebDocumento;
+    }
+
+    public void setAcessoWebDocumento(boolean acessoWebDocumento) {
+        this.acessoWebDocumento = acessoWebDocumento;
     }
 }

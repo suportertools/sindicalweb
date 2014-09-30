@@ -337,7 +337,7 @@ public class RecepcaoBean implements Serializable {
                 }
             }
 
-            if (!recepcao.getHoraInicialFuncionario().isEmpty()) {
+            //if (!recepcao.getHoraInicialFuncionario().isEmpty()) {
                 if (recepcao.getId() == -1) {
                     if (!di.save(recepcao)) {
                         GenericaMensagem.error("Erro", "Erro ao salvar Recepção!");
@@ -352,7 +352,7 @@ public class RecepcaoBean implements Serializable {
                     }
                 }
                 agendamentoEdit.setRecepcao(recepcao);
-            }
+            //}
         }
 
         if (!di.update(agendamentoEdit)) {
@@ -364,6 +364,7 @@ public class RecepcaoBean implements Serializable {
         }
         GenericaMensagem.info("Sucesso", "Agendamento atualizado!");
         di.commit();
+        loadListHorarios();
     }
 
     public void agendar(DataObject datao) {
