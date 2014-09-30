@@ -77,7 +77,7 @@ public class WebREPISBean implements Serializable {
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
-    private boolean showPessoa = true;
+    //private boolean showPessoa = true;
     //private String message = "";
     private RepisMovimento repisMovimento = new RepisMovimento();
     private String descPesquisa = "";
@@ -177,7 +177,7 @@ public class WebREPISBean implements Serializable {
 
     public String limparRepisLiberacao() {
         repisMovimento = new RepisMovimento();
-        setShowPessoa(true);
+        //setShowPessoa(true);
         listRepisMovimentoPatronal.clear();
         return "webLiberacaoREPIS";
     }
@@ -317,7 +317,7 @@ public class WebREPISBean implements Serializable {
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Status atualizado com sucesso!");
 
-                setShowPessoa(true);
+                //setShowPessoa(true);
                 listRepisMovimento.clear();
                 repisMovimento = new RepisMovimento();
             } else {
@@ -329,8 +329,8 @@ public class WebREPISBean implements Serializable {
 
     public void edit(RepisMovimento rm) {
         repisMovimento = rm;
-        if (repisMovimento.getId() != -1) {
-            setShowPessoa(false);
+        //if (repisMovimento.getId() != -1) {
+            //setShowPessoa(false);
             for (int i = 0; i < getListComboRepisStatus().size(); i++) {
                 if (Integer.parseInt(listComboRepisStatus.get(i).getDescription()) == repisMovimento.getRepisStatus().getId()) {
                     setIdRepisStatus(i);
@@ -341,7 +341,7 @@ public class WebREPISBean implements Serializable {
             if (jur != null) {
                 escritorio = jur.getPessoa();
             }
-        }
+        //}
 //        PF.update("form_libera_repis");
 //        PF.openDialog("dlg_repis");
     }
@@ -380,22 +380,22 @@ public class WebREPISBean implements Serializable {
                     String ref = result.get(0).getReferenciaInicial().substring(3)+"/"+ result.get(0).getReferenciaFinal().substring(3);
                     
                     Collection<ParametroCertificado> vetor = new ArrayList();
-                    String logoPatronal = "",
-                           logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/certificado_domingo_fundo.png");
-                           //logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + repis.getPatronal().getId());
-//                    if (new File(logoCaminho + ".jpg").exists()) {
-//                        logoCaminho = logoCaminho + ".jpg";
-//                    } else if (new File(logoCaminho + ".JPG").exists()) {
-//                        logoCaminho = logoCaminho + ".JPG";
-//                    } else if (new File(logoCaminho + ".png").exists()) {
-//                        logoCaminho = logoCaminho + ".png";
-//                    } else if (new File(logoCaminho + ".PNG").exists()) {
-//                        logoCaminho = logoPatronal + repis.getPatronal().getId() + ".PNG";
-//                    } else if (new File(logoCaminho + ".gif").exists()) {
-//                        logoCaminho = logoCaminho + ".gif";
-//                    } else {
-//                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
-//                    }
+                    String logoPatronal = "", 
+                           imagemFundo = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/certificado_domingo_fundo.png"),
+                           logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + repis.getPatronal().getId());
+                    if (new File(logoCaminho + ".jpg").exists()) {
+                        logoCaminho = logoCaminho + ".jpg";
+                    } else if (new File(logoCaminho + ".JPG").exists()) {
+                        logoCaminho = logoCaminho + ".JPG";
+                    } else if (new File(logoCaminho + ".png").exists()) {
+                        logoCaminho = logoCaminho + ".png";
+                    } else if (new File(logoCaminho + ".PNG").exists()) {
+                        logoCaminho = logoPatronal + repis.getPatronal().getId() + ".PNG";
+                    } else if (new File(logoCaminho + ".gif").exists()) {
+                        logoCaminho = logoCaminho + ".gif";
+                    } else {
+                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
+                    }
                     
                     String ende = (ee.getComplemento().isEmpty()) 
                             ? ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " - "+ee.getEndereco().getBairro().getDescricao() +" CEP: " + ee.getEndereco().getCep() + " " + ee.getEndereco().getCidade().getCidadeToString()
@@ -419,7 +419,6 @@ public class WebREPISBean implements Serializable {
                         if (valor.toString().equals("0")) {
                             valor = null;
                         }
-
 
                         vetor.add(
                                 new ParametroCertificado(
@@ -445,7 +444,8 @@ public class WebREPISBean implements Serializable {
                                         "0000000000".substring(0, 10 - String.valueOf(repis.getId()).length()) + String.valueOf(repis.getId()),
                                         DataHoje.dataExtenso(repis.getDataEmissaoString(), 3),
                                         ende,
-                                        ref
+                                        ref,
+                                        imagemFundo
                                 )
                         );
 
@@ -484,125 +484,6 @@ public class WebREPISBean implements Serializable {
         }
         return null;
     }
-
-//    public String printCertificado(RepisMovimento rm) {
-//        JuridicaDB dbj = new JuridicaDBToplink();
-//        WebREPISDB dbw = new WebREPISDBToplink();
-//
-//        Juridica jur = dbj.pesquisaJuridicaPorPessoa(rm.getPessoa().getId());
-//        List<List> listax = dbj.listaJuridicaContribuinte(jur.getId());
-//
-//        if (listax.isEmpty()) {
-//            GenericaMensagem.warn("Atenção", "Empresa não contribuinte");
-//            return null;
-//        }
-//
-//        Patronal patronal = rm.getPatronal();
-//        if (patronal.getId() == -1) {
-//            GenericaMensagem.warn("Atenção", "Patronal não encontrada, contate seu sindicato!");
-//            return null;
-//        }
-//
-//        byte[] arquivo = new byte[0];
-//
-//        if (rm.getId() != -1) {
-//            try {
-//                List ljasper = new ArrayList();
-//                JasperReport jasper;
-//
-//                Collection<ParametroCertificado> vetor = new ArrayList();
-//                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(rm.getAno(), patronal.getId(), jur.getPorte().getId());
-//                if (lote.getId() == -1) {
-//                    GenericaMensagem.warn("Atenção", "Piso / Lote Salarial não encontrado, contate seu sindicato!");
-//                    return null;
-//                }
-//
-//                List<PisoSalarial> lista = dbw.listaPisoSalarialLote(lote.getId());
-//                Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
-//                PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-//                PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
-//
-//                for (int i = 0; i < lista.size(); i++) {
-//                    BigDecimal valor = new BigDecimal(lista.get(i).getValor());
-//                    if (valor.toString().equals("0")) {
-//                        valor = null;
-//                    }
-//                    String logoPatronal = "";
-//                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + patronal.getId());
-//                    if (new File(logoCaminho + ".jpg").exists()) {
-//                        logoCaminho = logoCaminho + ".jpg";
-//                    } else if (new File(logoCaminho + ".JPG").exists()) {
-//                        logoCaminho = logoCaminho + ".JPG";
-//                    } else if (new File(logoCaminho + ".png").exists()) {
-//                        logoCaminho = logoCaminho + ".png";
-//                    } else if (new File(logoCaminho + ".PNG").exists()) {
-//                        logoCaminho = logoPatronal + patronal.getId() + ".PNG";
-//                    } else if (new File(logoCaminho + ".gif").exists()) {
-//                        logoCaminho = logoCaminho + ".gif";
-//                    } else {
-//                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
-//                    }
-//                    vetor.add(
-//                            new ParametroCertificado(
-//                                    patronal.getPessoa().getNome(),
-//                                    logoCaminho,
-//                                    patronal.getBaseTerritorial(),
-//                                    sindicato.getPessoa().getNome(),
-//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-//                                    rm.getPessoa().getNome(),
-//                                    rm.getPessoa().getDocumento(),
-//                                    jur.getPorte().getDescricao(),
-//                                    lista.get(i).getDescricao(),
-//                                    valor,
-//                                    lista.get(i).getPisoSalarialLote().getMensagem(),
-//                                    lista.get(i).getPisoSalarialLote().getDtValidade(),
-//                                    sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
-//                                    lista.get(i).getPisoSalarialLote().getAno(),
-//                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
-//                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
-//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
-//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
-//                                    String.valueOf(rm.getId()),
-//                                    "0000000000".substring(0, 10 - String.valueOf(rm.getId()).length()) + String.valueOf(rm.getId()),
-//                                    DataHoje.dataExtenso(rm.getDataEmissaoString(), 3))
-//                    );
-//                }
-//
-//                //* JASPER 1 *//
-//                jasper = (JasperReport) JRLoader.loadObject(
-//                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper"));
-//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-//                ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
-//
-//                JRPdfExporter exporter = new JRPdfExporter();
-//                ByteArrayOutputStream retorno = new ByteArrayOutputStream();
-//
-//                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
-//                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
-//                exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
-//                exporter.exportReport();
-//
-//                arquivo = retorno.toByteArray();
-//
-//                String nomeDownload = "repis_" + rm.getId() + "_" + rm.getPessoa().getId() + ".pdf";
-//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
-//                SalvaArquivos sa = new SalvaArquivos(arquivo,
-//                        nomeDownload,
-//                        false);
-//                sa.salvaNaPasta(pathPasta);
-//
-//                Download download = new Download(nomeDownload,
-//                        pathPasta,
-//                        "application/pdf",
-//                        FacesContext.getCurrentInstance());
-//                download.baixar();
-//                download.remover();
-//            } catch (JRException e) {
-//                e.getMessage();
-//            }
-//        }
-//        return null;
-//    }
 
     public String getEnderecoString() {
         PessoaEnderecoDB enderecoDB = new PessoaEnderecoDBToplink();
@@ -821,13 +702,13 @@ public class WebREPISBean implements Serializable {
         this.pessoaEndereco = pessoaEndereco;
     }
 
-    public boolean isShowPessoa() {
-        return showPessoa;
-    }
-
-    public void setShowPessoa(boolean showPessoa) {
-        this.showPessoa = showPessoa;
-    }
+//    public boolean isShowPessoa() {
+//        return showPessoa;
+//    }
+//
+//    public void setShowPessoa(boolean showPessoa) {
+//        this.showPessoa = showPessoa;
+//    }
 
     public boolean isRenderContabil() {
         return renderContabil;
