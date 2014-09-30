@@ -119,19 +119,6 @@ public class CnaeDBToplink extends DB implements CnaeDB {
         return result;
     }
 
-    public List pesquisaCnaeComConvencao(int numCnae, int numCnaeConvencao) {
-        List result;
-        try {
-            Query qry = getEntityManager().createQuery("select c from Cnae c where c.id = :numCnae and");
-            qry.setParameter("numCnae", numCnae);
-            qry.setParameter("numCnaeConvencao", numCnaeConvencao);
-            result = qry.getResultList();
-        } catch (Exception e) {
-            result = null;
-        }
-        return result;
-    }
-
     @Override
     public List pesquisaCnaeSemConvencao(String desc) {
         List result = null;
