@@ -36,6 +36,10 @@
                                 <p:outputLabel value="#{movimentosReceberBean.pessoa.nome}" title="#{movimentosReceberBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
                                 <p:commandButton icon="ui-icon-close" action="#{movimentosReceberBean.removerPesquisa}" rendered="#{movimentosReceberBean.pessoa.id != -1}" update=":form_movimento_receber:" />
                             </h:panelGrid>
+                            <h:panelGrid rendered="#{movimentosReceberBean.bloqueioRotina != null}">
+                                <p:outputLabel value="Acordo bloqueado por: #{movimentosReceberBean.bloqueioRotina.usuario.pessoa.nome} - Empresa: #{movimentosReceberBean.bloqueioRotina.pessoa.nome}" style="color: red;" styleClass="bold"/>
+                                <p:commandButton value="Desbloquear" action="#{movimentosReceberBean.removeBloqueioRotina}" rendered="#{movimentosReceberBean.unlock}" update=":form_movimento_receber:" style="color: red;"/>
+                            </h:panelGrid>
                             <h:panelGrid id="tbl" styleClass="margin-top-max no-border">
                                 <p:dataTable value="#{movimentosReceberBean.listMovimentoReceber}" var="listMovimentoReceber" rowIndexVar="index" emptyMessage="Nenhum movimento encontrado!">
                                     <p:column styleClass="text-center" width="20">
