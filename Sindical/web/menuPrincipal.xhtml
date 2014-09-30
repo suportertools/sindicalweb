@@ -56,7 +56,7 @@
                                 </p:submenu>
                                 <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Social"      action="#{chamadaPaginaBean.menuSocial}" />
-                                    <p:menuitem value="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" />
+                                    <p:menuitem value="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" actionListener="#{bloqueioRotinaBean.liberaRotinasBloqueadas}"/>
                                     <p:menuitem value="Financeiro"  action="#{chamadaPaginaBean.menuFinanceiro}" />
                                     <p:menuitem value="Homologação" action="#{chamadaPaginaBean.menuHomologacao}" actionListener="#{agendamentoBean.verificaNaoAtendidos}"/>
                                     <p:menuitem value="Academia"    action="#{chamadaPaginaBean.menuAcademia}" />
