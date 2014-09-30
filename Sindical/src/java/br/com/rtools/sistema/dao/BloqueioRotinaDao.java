@@ -21,4 +21,28 @@ public class BloqueioRotinaDao extends DB {
         return null;
     }
 
+    public boolean liberaRotinasBloqueadas() {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT *                                          "
+                    + "   FROM sis_bloqueio_rotina                      "
+                    + "  WHERE dt_bloqueio < CURRENT_DATE LIMIT 1       ");
+            if (!qry.getResultList().isEmpty()) {
+                getEntityManager().getTransaction().begin();
+                Query qryUpdateAgendamento = getEntityManager().createNativeQuery(
+                        "  DELETE FROM sis_bloqueio_rotina                      "
+                        + " WHERE dt_bloqueio < CURRENT_DATE                    ");
+                if (qryUpdateAgendamento.executeUpdate() == 0) {
+                    getEntityManager().getTransaction().rollback();
+                    return false;
+                }
+                getEntityManager().getTransaction().commit();
+            }
+        } catch (Exception e) {
+            getEntityManager().getTransaction().rollback();
+            return false;
+        }
+        return true;
+    }
+
 }
