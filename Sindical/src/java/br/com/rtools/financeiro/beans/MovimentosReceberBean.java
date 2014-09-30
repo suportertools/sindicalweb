@@ -9,8 +9,12 @@ import br.com.rtools.financeiro.db.MovimentosReceberDBToplink;
 import br.com.rtools.financeiro.lista.ListMovimentoReceber;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
+import br.com.rtools.sistema.BloqueioRotina;
+import br.com.rtools.sistema.dao.BloqueioRotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -44,11 +48,13 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
     private String totalSemSindical;
     private boolean marcarTodos;
     private int index;
+    private BloqueioRotina bloqueioRotina;
 
     @PostConstruct
     public void init() {
         listaMovimentos = new ArrayList<>();
         listMovimentoReceber = new ArrayList<>();
+        bloqueioRotina = null;
         pessoa = new Pessoa();
         multa = "0";
         juros = "0";
@@ -443,9 +449,22 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
     public void atualizaValorGrid(String tipo) {
         Dao dao = new Dao();
         Movimento m = (Movimento) dao.find(new Movimento(), Integer.parseInt(listMovimentoReceber.get(index).getIdMovimento()));
-        if (m != null && m.getAcordo() != null) {
-            GenericaMensagem.warn("Boleto " + listMovimentoReceber.get(index).getBoleto() + " já acordado", "Data do acordo: " + m.getAcordo().getData() + " - Usuário: " + m.getAcordo().getUsuario().getPessoa().getNome());
-            return;
+        BloqueioRotinaDao bloqueioRotinaDao = new BloqueioRotinaDao();
+        bloqueioRotina = bloqueioRotinaDao.existUsuarioRotinaPessoa(95, pessoa.getId());
+        if (bloqueioRotina == null) {
+            bloqueioRotina = new BloqueioRotina();
+            bloqueioRotina.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
+            bloqueioRotina.setRotina((Rotina) dao.find(new Rotina(), 95));
+            bloqueioRotina.setPessoa(m.getPessoa());
+            bloqueioRotina.setBloqueio(DataHoje.dataHoje());
+            dao.save(bloqueioRotina, true);
+        } else {
+            if (bloqueioRotina.getUsuario().getId() != ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId()) {
+                pessoa = new Pessoa();
+                listMovimentoReceber.clear();
+                GenericaMensagem.warn("Empresa em processo de acordo", "Responsável pelo acordo: " + bloqueioRotina.getUsuario().getPessoa().getNome());
+                return;
+            }
         }
         listMovimentoReceber.get(index).setValorMovimento(super.atualizaValor(true, tipo));
         listMovimentoReceber.clear(); // LIMPANDO AQUI PARA ATUALIZAR O VALOR CALCULADO
@@ -465,7 +484,6 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //        listaMovimentos.get(index).setArgumento6(super.atualizaValor(true, tipo));
 //        listaMovimentos.clear(); // LIMPANDO AQUI PARA ATUALIZAR O VALOR CALCULADO
 //    }
-    
     public void selected() {
         for (int j = 0; j < listMovimentoReceber.size(); j++) {
             listMovimentoReceber.get(j).setSelected(marcarTodos);
@@ -641,6 +659,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         listaMovimentos.clear();
         listMovimentoReceber.clear();
         desconto = "0";
+        bloqueioRotina = null;
         return "movimentosReceber";
     }
 
@@ -792,6 +811,14 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
             listaMovimentos.clear();
             listMovimentoReceber.clear();
             desconto = "0";
+            BloqueioRotinaDao bloqueioRotinaDao = new BloqueioRotinaDao();
+            bloqueioRotina = bloqueioRotinaDao.existUsuarioRotinaPessoa(95, pessoa.getId());
+            if (bloqueioRotina != null) {
+                if (bloqueioRotina.getUsuario().getId() != ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId()) {
+                    GenericaMensagem.warn("Empresa em processo de acordo", "Responsável pelo acordo: " + bloqueioRotina.getUsuario().getPessoa().getNome());
+                    pessoa = new Pessoa();
+                }
+            }
         }
         return pessoa;
     }
@@ -892,4 +919,37 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
     public void carregarFolha(DataObject valor) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public BloqueioRotina getBloqueioRotina() {
+        return bloqueioRotina;
+    }
+
+    public void setBloqueioRotina(BloqueioRotina bloqueioRotina) {
+        this.bloqueioRotina = bloqueioRotina;
+    }
+
+    public void removeBloqueioRotina() {
+        if (bloqueioRotina != null) {
+            if (bloqueioRotina.getId() != -1) {
+                Dao dao = new Dao();
+                boolean s = dao.delete(bloqueioRotina, true);
+                if(s) {
+                    bloqueioRotina = null;
+                }
+                GenericaSessao.remove("bovimentosReceberBean");
+            }
+        }
+    }
+
+    public boolean isUnlock() {
+        if (bloqueioRotina != null) {
+            if (bloqueioRotina.getId() != -1) {
+                if (bloqueioRotina.getUsuario().getId() == ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
