@@ -440,7 +440,6 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         if (!listMovimentoReceber.isEmpty()) {
             Dao dao = new Dao();
             Movimento movimento = (Movimento) dao.find(new Movimento(), Integer.parseInt(listMovimentoReceber.get(index).getIdMovimento()));
-            // movimento.setValor(listMovimentoReceber.get(index).getValorMovimento());
             super.carregarFolha(movimento);
         }
     }
@@ -580,6 +579,20 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
             return "0";
         }
     }
+    
+//    public String getJuros() {
+//        if (!listaMovimentos.isEmpty()) {
+//            float soma = 0;
+//            for (int i = 0; i < listaMovimentos.size(); i++) {
+//                if ((Boolean) listaMovimentos.get(i).getArgumento0()) {
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listaMovimentos.get(i).getArgumento9()));
+//                }
+//            }
+//            return juros = Moeda.converteR$Float(soma);
+//        } else {
+//            return "0";
+//        }
+//    }    
 
     public String getCorrecao() {
         if (!listMovimentoReceber.isEmpty()) {
@@ -609,7 +622,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         float c = 0;
         if (!listMovimentoReceber.isEmpty()) {
             for (int i = 0; i < listMovimentoReceber.size(); i++) {
-                if (!listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL") && (listMovimentoReceber.get(i).getSelected())) {
+                if (!listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL") && listMovimentoReceber.get(i).getSelected()) {
                     m = Moeda.somaValores(m, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
                     j = Moeda.somaValores(j, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
                     c = Moeda.somaValores(c, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
@@ -673,7 +686,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 
         for (int i = 0; i < listMovimentoReceber.size(); i++) {
             if (!listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL") && listMovimentoReceber.get(i).getSelected()) {
-                acre = Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()), Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros())), Moeda.converteUS$((String) listMovimentoReceber.get(i).getDesconto()));
+                acre = Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()), Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros())), Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
 
                 desc = Moeda.multiplicarValores(Moeda.divisaoValores(Float.valueOf(desconto), Moeda.substituiVirgulaFloat(acrescimoSemSindical)), 100);
                 desc = Moeda.divisaoValores(Moeda.multiplicarValores(acre, desc), 100);
@@ -838,7 +851,17 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         if (desconto.isEmpty()) {
             desconto = "0";
         }
-        this.desconto = Moeda.substituiVirgula(desconto);
+        try {
+            float d = Moeda.substituiVirgulaFloat(desconto);
+            if(d < 0) {
+                this.desconto = "0";                
+            } else {
+                this.desconto = Moeda.substituiVirgula(desconto);                
+            }
+            
+        } catch (Exception e) {
+            this.desconto = "0";
+        }
     }
 
     public boolean isMarcarTodos() {
