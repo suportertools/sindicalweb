@@ -167,7 +167,7 @@
                                 <h:outputText value="#{webREPISBean.repisMovimento.contato}"  />
                             </h:panelGrid>
                             <h:panelGrid columns="4">
-                                <p:commandButton oncomplete="PF('dlg_repis').hide(); PF('dlg_message').show()" value="Atualizar" action="#{webREPISBean.updateStatus}" update=":form_libera_repis:" />
+                                <p:commandButton oncomplete="PF('dlg_repis').hide()" value="Atualizar" action="#{webREPISBean.updateStatus}" update=":form_libera_repis:" />
                             </h:panelGrid>
                         </h:panelGrid>                                
                     </p:dialog>
