@@ -90,11 +90,11 @@
                                     </p:submenu>
                                     <p:submenu label="Endereço" icon="ui-icon-contact" style="margin-right: 15px">
                                         <p:menuitem value="Endereço"      action="#{chamadaPaginaBean.endereco}"/>
-                                        <p:menuitem value="Bairro"        action="#{chamadaPaginaBean.bairro}"/>
+                                        <p:menuitem value="Bairro"        action="#{chamadaPaginaBean.paginaSimples('Bairro', 'Bairro')}"/>
                                         <p:menuitem value="Cidade"        action="#{chamadaPaginaBean.cidade}"/>
-                                        <p:menuitem value="Logradouro"    action="#{chamadaPaginaBean.logradouro}"/>
-                                        <p:menuitem value="Descrição"     action="#{chamadaPaginaBean.descricaoEndereco}"/>
-                                        <p:menuitem value="Tipo Endereço" action="#{chamadaPaginaBean.tipoEndereco}"/>
+                                        <p:menuitem value="Logradouro"    action="#{chamadaPaginaBean.paginaSimples('Logradouro', 'Logradouro')}"/>
+                                        <p:menuitem value="Descrição"     action="#{chamadaPaginaBean.paginaSimples('DescricaoEndereco', 'Descrição Endereço')}"/>
+                                        <p:menuitem value="Tipo Endereço" action="#{chamadaPaginaBean.paginaSimples('TipoEndereco', 'Tipo Endereço')}"/>
                                     </p:submenu>
                                     <p:submenu label="Agenda" icon="ui-icon-document">  
                                         <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.pagina('agendaTelefone')}" actionListener="#{agendaTelefoneBean.putType('agendaTelefone')}" title="Cadastro"/>
