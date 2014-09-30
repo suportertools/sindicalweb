@@ -1,6 +1,8 @@
 package br.com.rtools.arrecadacao.beans;
 
+import br.com.rtools.arrecadacao.CertidaoDisponivel;
 import br.com.rtools.arrecadacao.CertidaoTipo;
+import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -27,9 +29,10 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -41,12 +44,12 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
@@ -62,17 +65,20 @@ public class WebREPISBean implements Serializable {
     private Pessoa escritorio = new Pessoa();
     private List<SelectItem> listComboPessoa = new ArrayList();
     private List<SelectItem> listComboRepisStatus = new ArrayList();
-    private List<SelectItem> listComboCertidaoTipo = new ArrayList();
+    private List<SelectItem> listComboCertidaoDisponivel = new ArrayList();
+    private List<SelectItem> listaTipoCertidao = new ArrayList();
     private List<RepisMovimento> listRepisMovimento = new ArrayList();
     private List<RepisMovimento> listRepisMovimentoPatronal = new ArrayList();
+    private List<RepisMovimento> listRepisMovimentoPatronalSelecionado = new ArrayList();
     private int idPessoa = 0;
     private int idRepisStatus = 0;
+    private int indexCertidaoDisponivel = 0;
     private int indexCertidaoTipo = 0;
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
     private boolean showPessoa = true;
-    private String message = "";
+    //private String message = "";
     private RepisMovimento repisMovimento = new RepisMovimento();
     private String descPesquisa = "";
     private String porPesquisa = "nome";
@@ -106,84 +112,62 @@ public class WebREPISBean implements Serializable {
         return "webLiberacaoREPIS";
     }
 
-    public String pesquisar() {
-        WebREPISDB db = new WebREPISDBToplink();
+    public void liberarListaSolicitacao() {
+        DaoInterface di = new Dao();
+        di.openTransaction();
 
-        //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
-        listRepisMovimentoPatronal.clear();
-        getListRepisMovimentoPatronal();
+        for (RepisMovimento listRepis : listRepisMovimentoPatronalSelecionado) {
+            RepisMovimento rm = (RepisMovimento) di.find(new RepisMovimento(), listRepis.getId());
 
-        List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
-        for (int i = 0; i < listRepisMovimentoPatronal.size(); i++) {
-            if (tipoPesquisa.equals("nome")) {
-                if (listRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimentoPatronal.get(i));
-                }
-            } else if (tipoPesquisa.equals("cnpj")) {
-                if (listRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimentoPatronal.get(i));
-                }
-            } else if (tipoPesquisa.equals("protocolo")) {
-                if (Integer.toString(listRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimentoPatronal.get(i));
-                }
-            } else if (tipoPesquisa.equals("status")) {
-                if (listRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimentoPatronal.get(i));
-                }
-            } else if (tipoPesquisa.equals("socilitante")) {
-                if (listRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimentoPatronal.get(i));
-                }
+            RepisStatus rs = (RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription()));
+            rm.setRepisStatus(rs);
+            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4){
+                rm.setDataResposta(DataHoje.dataHoje());
+            }else{
+                rm.setDataResposta(null);
+            }
+
+            if (!di.update(rm)) {
+                di.rollback();
+                GenericaMensagem.error("Erro", "Não foi possível atualizar STATUS, tente novamente!");
+                return;
             }
         }
+        GenericaMensagem.info("Sucesso", "Registros Atualizados");
+        di.commit();
 
         listRepisMovimentoPatronal.clear();
+        listRepisMovimentoPatronalSelecionado.clear();
+    }
 
-        listRepisMovimentoPatronal.addAll(lista);
-        return "webLiberacaoREPIS";
+    public void pesquisar() {
+        WebREPISDB db = new WebREPISDBToplink();
+        listRepisMovimentoPatronal.clear();
+        listRepisMovimentoPatronalSelecionado.clear();
+        Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
+        
+        if (tipoPesquisa.equals("tipo")){
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, listaTipoCertidao.get(indexCertidaoTipo).getDescription(), patro.getId());
+        }else{
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId());
+        }
+        
     }
 
     public String pesquisarPorSolicitante() {
         WebREPISDB db = new WebREPISDBToplink();
-
-        //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
         listRepisMovimento.clear();
-        getListRepisMovimento();
-
-        List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
-        for (int i = 0; i < listRepisMovimento.size(); i++) {
-            if (tipoPesquisa.equals("nome")) {
-                if (listRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimento.get(i));
-                }
-            } else if (tipoPesquisa.equals("cnpj")) {
-                if (listRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimento.get(i));
-                }
-            } else if (tipoPesquisa.equals("protocolo")) {
-                if (Integer.toString(listRepisMovimento.get(i).getId()).equals(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimento.get(i));
-                }
-            } else if (tipoPesquisa.equals("status")) {
-                if (listRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimento.get(i));
-                }
-            } else if (tipoPesquisa.equals("socilitante")) {
-                if (listRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
-                    lista.add(listRepisMovimento.get(i));
-                }
-            }
+        Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
+        if (renderEmpresa) {
+            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, pessoa.getId(), -1, getAno());
+        } else {
+            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, -1, pessoa.getId(), getAno());
         }
 
-        listRepisMovimento.clear();
-
-        listRepisMovimento.addAll(lista);
         return null;
     }
 
     public void limpar() {
-        message = "";
         repisMovimento = new RepisMovimento();
         showProtocolo = false;
         pessoaSolicitante = new Pessoa();
@@ -209,31 +193,27 @@ public class WebREPISBean implements Serializable {
     public List listPessoaRepisAno() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         //getPessoa();
-        List result = new ArrayList();
+        List<RepisMovimento> result = new ArrayList();
         if (renderEmpresa) {
-            result = wsrepisdb.validaPessoaRepisAno(pessoa.getId(), getAno());
+            result = wsrepisdb.pesquisarListaSolicitacao("", "", pessoa.getId(), -1, getAno());
         } else if (renderContabil) {
-            result = wsrepisdb.listaProtocolosPorContabilidade(pessoa.getId(), getAno());
+            result = wsrepisdb.pesquisarListaSolicitacao("", "", -1, pessoa.getId(), getAno());
         }
         return result;
     }
 
     public boolean showAndamentoProtocolo(int idPessoa) {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
-        if (wsrepisdb.validaPessoaRepisAno(idPessoa, getAno()).size() > 0) {
+        CertidaoDisponivel cd = (CertidaoDisponivel) new Dao().find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
+        if (wsrepisdb.validaPessoaRepisAnoTipo(idPessoa, getAno(), cd.getCertidaoTipo().getId()).size() > 0) {
             return true;
         }
         return false;
     }
 
     public void solicitarREPIS() {
-        message = "";
         DaoInterface di = new Dao();
 
-//        if (listaArquivosEnviados.isEmpty()){
-//            message = " PROCURAR SÍNDICATO! ";
-//            return null;
-//        }
         if (!listComboPessoa.isEmpty()) {
             if (Integer.parseInt(listComboPessoa.get(idPessoa).getDescription()) > 0) {
                 setPessoaSolicitante((Pessoa) di.find(new Pessoa(), Integer.parseInt(listComboPessoa.get(idPessoa).getDescription())));
@@ -243,7 +223,7 @@ public class WebREPISBean implements Serializable {
         }
         WebREPISDB dbr = new WebREPISDBToplink();
         if (!dbr.listaAcordoAberto(pessoaSolicitante.getId()).isEmpty()) {
-            message = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
+            GenericaMensagem.warn("Atenção", "Não foi possível concluir sua solicitação. Consulte o sindícato!");
             return;
         }
 
@@ -251,76 +231,98 @@ public class WebREPISBean implements Serializable {
         setShowProtocolo(false);
 
         if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
-            message = " PROCURAR SÍNDICATO! ";
+            GenericaMensagem.warn("Atenção", "Não foi possível concluir sua solicitação. Consulte o sindícato!");
         } else {
             if (repisMovimento.getContato().isEmpty()) {
-                message = " Informar o nome do solicitante! ";
+                GenericaMensagem.warn("Atenção", "Informe o nome do solicitante!");
                 return;
             }
             Patronal patronal = dbr.pesquisaPatronalPorSolicitante(getPessoaSolicitante().getId());
             if (patronal == null) {
-                message = "Nenhuma patronal encontrado!";
+                GenericaMensagem.warn("Atenção", "Nenhuma patronal encontrada!");
                 return;
             }
-            JuridicaDB dbj = new JuridicaDBToplink();    
+            JuridicaDB dbj = new JuridicaDBToplink();
             Juridica juridicax = dbj.pesquisaJuridicaPorPessoa(pessoaSolicitante.getId());
             PisoSalarialLote lote = dbr.pesquisaPisoSalarial(getAno(), patronal.getId(), juridicax.getPorte().getId());
-            
-            if (lote.getId() == -1){
-                message = "Patronal sem Lote, contate seu Sindicato!";
+
+            if (lote.getId() == -1) {
+                GenericaMensagem.warn("Atenção", "Patronal sem Lote, contate seu Sindicato!");
                 return;
             }
-            
-            if (DataHoje.menorData(lote.getValidade(), DataHoje.data())){
-                message = "Solicitação para esta patronal vencida!";
+
+            if (DataHoje.menorData(lote.getValidade(), DataHoje.data())) {
+                GenericaMensagem.warn("Atenção", "Solicitação para esta patronal vencida!");
                 return;
             }
-            
-            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-            PessoaEndereco pend = dbe.pesquisaEndPorPessoaTipo(pessoaSolicitante.getId(), 5);
-            // AQUI ---
-            pend.getEndereco().getCidade().getId();
-            
-            
+
+            //PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+            //PessoaEndereco pend = dbe.pesquisaEndPorPessoaTipo(pessoaSolicitante.getId(), 5);
+
+            if (listComboCertidaoDisponivel.size() == 1) {
+                GenericaMensagem.warn("Atenção", "Nenhuma Certidão disponível!");
+                return;
+            }
+
+            CertidaoDisponivel cd = (CertidaoDisponivel) di.find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
+            if (cd.isPeriodoConvencao()) {
+                List<ConvencaoPeriodo> result = dbr.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
+
+                if (result.isEmpty()) {
+                    GenericaMensagem.warn("Atenção", "Contribuinte fora do período de Convenção!");
+                    return;
+                }
+            }
+
             repisMovimento.setAno(getAno());
             repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
             repisMovimento.setDataResposta(null);
             repisMovimento.setDataEmissao(DataHoje.dataHoje());
             repisMovimento.setPatronal(patronal);
-            repisMovimento.setCertidaoTipo( (CertidaoTipo) di.find("CertidaoTipo", Integer.valueOf(listComboCertidaoTipo.get(indexCertidaoTipo).getDescription())) );
+            repisMovimento.setCertidaoTipo(cd.getCertidaoTipo());
+            
             di.openTransaction();
             if (!showAndamentoProtocolo(pessoaSolicitante.getId())) {
                 if (di.save(repisMovimento)) {
                     di.commit();
-                    message = "Solicitação encaminhada com sucesso.";
+                    GenericaMensagem.info("Sucesso", "Solicitação encaminhada com sucesso!");
+                    limpar();
                 } else {
                     di.rollback();
-                    message = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
+                    GenericaMensagem.error("Erro", "Não foi possível concluir sua solicitação. Consulte o sindicato!");
                 }
             } else {
-                message = " Repis já solicitado! ";
+                GenericaMensagem.warn("Atenção", "Certidão já solicitada!");
                 di.rollback();
+                limpar();
             }
         }
     }
 
     public void updateStatus() {
-        message = "";
         DaoInterface di = new Dao();
         if (repisMovimento.getId() != -1) {
-            repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription())));
-            repisMovimento.setDataResposta(DataHoje.dataHoje());
+            RepisStatus rs = (RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription()));
+            repisMovimento.setRepisStatus(rs);
+            
+            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4){
+                repisMovimento.setDataResposta(DataHoje.dataHoje());
+            }else{
+                repisMovimento.setDataResposta(null);
+            }
+            
             di.openTransaction();
             if (di.update(repisMovimento)) {
                 di.commit();
-                message = "Status atualizado com sucesso.";
+                GenericaMensagem.info("Sucesso", "Status atualizado com sucesso!");
+
                 setShowPessoa(true);
                 listRepisMovimento.clear();
                 repisMovimento = new RepisMovimento();
             } else {
                 di.rollback();
-                message = "Falha na atualização do Status!";
+                GenericaMensagem.error("Erro", "Falha na atualização do Status!");
             }
         }
     }
@@ -344,110 +346,263 @@ public class WebREPISBean implements Serializable {
 //        PF.openDialog("dlg_repis");
     }
 
-    public String printCertificado(RepisMovimento rm) {
+    public String imprimirCertificado(RepisMovimento rm) {
+        List<RepisMovimento> listam = new ArrayList();
+        listam.add(rm);
+        imprimirCertificado(listam);
+        return null;
+    }
+    
+    public String imprimirCertificado(List<RepisMovimento> listam) {
         JuridicaDB dbj = new JuridicaDBToplink();
-        Juridica jur = dbj.pesquisaJuridicaPorPessoa(rm.getPessoa().getId());
         WebREPISDB dbw = new WebREPISDBToplink();
-        List<List> listax = dbj.listaJuridicaContribuinte(jur.getId());
-        if (listax.isEmpty()) {
-            message = "Empresa não contribuinte";
-            return null;
-        }
-        int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
-        //Patronal patronal = dbw.pesquisaPatronalPorConvGrupo(id_convencao, id_grupo);
-        Patronal patronal = rm.getPatronal();
-        if (patronal.getId() == -1) {
-            message = "Patronal não encontrada, contate seu sindicato!";
-            return null;
-        }
-        byte[] arquivo;
-        arquivo = new byte[0];
+        List lista_jasper = new ArrayList();
+        try {
+            Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
 
-        if (rm.getId() != -1) {
-            try {
-                JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper")));
-                Collection vetor = new ArrayList<ParametroCertificado>();
-                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(rm.getAno(), patronal.getId(), jur.getPorte().getId());
-                if (lote.getId() == -1) {
-                    message = "Piso / Lote Salarial não encontrado, contate seu sindicato!";
-                    return null;
-                }
-                List<PisoSalarial> lista = dbw.listaPisoSalarialLote(lote.getId());
-                Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
-                PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-                PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
-                for (int i = 0; i < lista.size(); i++) {
-                    BigDecimal valor = new BigDecimal(lista.get(i).getValor());
-                    if (valor.toString().equals("0")) {
-                        valor = null;
+            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+            PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
+
+            for (RepisMovimento repis : listam) {
+                if (repis.getRepisStatus().getId() == 3 || repis.getRepisStatus().getId() == 4 || repis.getRepisStatus().getId() == 5){
+                    Juridica juridica = dbj.pesquisaJuridicaPorPessoa(repis.getPessoa().getId());
+                    PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repis.getAno(), repis.getPatronal().getId(), juridica.getPorte().getId());
+                    PessoaEndereco ee = dbe.pesquisaEndPorPessoaTipo(repis.getPessoa().getId(), 5);
+                    List<PisoSalarial> listapiso = dbw.listaPisoSalarialLote(lote.getId());
+                    
+                    List<List> listax = dbj.listaJuridicaContribuinte(juridica.getId());
+                    if (listax.isEmpty()) return null;
+                    int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
+                    
+                    List<ConvencaoPeriodo> result = dbw.listaConvencaoPeriodo(ee.getEndereco().getCidade().getId(), id_convencao);
+                    if (result.isEmpty()) return null;
+                    
+                    String ref = result.get(0).getReferenciaInicial().substring(3)+"/"+ result.get(0).getReferenciaFinal().substring(3);
+                    
+                    Collection<ParametroCertificado> vetor = new ArrayList();
+                    String logoPatronal = "",
+                           logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/certificado_domingo_fundo.png");
+                           //logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + repis.getPatronal().getId());
+//                    if (new File(logoCaminho + ".jpg").exists()) {
+//                        logoCaminho = logoCaminho + ".jpg";
+//                    } else if (new File(logoCaminho + ".JPG").exists()) {
+//                        logoCaminho = logoCaminho + ".JPG";
+//                    } else if (new File(logoCaminho + ".png").exists()) {
+//                        logoCaminho = logoCaminho + ".png";
+//                    } else if (new File(logoCaminho + ".PNG").exists()) {
+//                        logoCaminho = logoPatronal + repis.getPatronal().getId() + ".PNG";
+//                    } else if (new File(logoCaminho + ".gif").exists()) {
+//                        logoCaminho = logoCaminho + ".gif";
+//                    } else {
+//                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
+//                    }
+                    
+                    String ende = (ee.getComplemento().isEmpty()) 
+                            ? ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " - "+ee.getEndereco().getBairro().getDescricao() +" CEP: " + ee.getEndereco().getCep() + " " + ee.getEndereco().getCidade().getCidadeToString()
+                            : ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " ( "+ee.getComplemento()+" ) - "+ee.getEndereco().getBairro().getDescricao() +" CEP: " + ee.getEndereco().getCep() + " " + ee.getEndereco().getCidade().getCidadeToString();
+
+                    for (PisoSalarial piso : listapiso) {
+                        File file = null;
+                        if (repis.getCertidaoTipo().getId() == 1){
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
+                        }else if (repis.getCertidaoTipo().getId() == 2){
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS.jasper"));
+                        }else if (repis.getCertidaoTipo().getId() == 3){
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS.jasper"));
+                        }else if (repis.getCertidaoTipo().getId() == 4){
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));
+                        }
+                        
+                        JasperReport jasper = (JasperReport) JRLoader.loadObject(file);                        
+                        
+                        BigDecimal valor = new BigDecimal(piso.getValor());
+                        if (valor.toString().equals("0")) {
+                            valor = null;
+                        }
+
+
+                        vetor.add(
+                                new ParametroCertificado(
+                                        repis.getPessoa().getNome(),
+                                        logoCaminho,
+                                        repis.getPatronal().getBaseTerritorial(),
+                                        sindicato.getPessoa().getNome(),
+                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                        repis.getPessoa().getNome(),
+                                        repis.getPessoa().getDocumento(),
+                                        juridica.getPorte().getDescricao(),
+                                        piso.getDescricao(),
+                                        valor,
+                                        piso.getPisoSalarialLote().getMensagem(),
+                                        piso.getPisoSalarialLote().getDtValidade(),
+                                        sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
+                                        piso.getPisoSalarialLote().getAno(),
+                                        //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
+                                        //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
+                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
+                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
+                                        String.valueOf(repis.getId()),
+                                        "0000000000".substring(0, 10 - String.valueOf(repis.getId()).length()) + String.valueOf(repis.getId()),
+                                        DataHoje.dataExtenso(repis.getDataEmissaoString(), 3),
+                                        ende,
+                                        ref
+                                )
+                        );
+
+                        JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+                        lista_jasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
                     }
-                    String logoPatronal = "";
-                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + patronal.getId());
-                    if (new File(logoCaminho + ".jpg").exists()) {
-                        logoCaminho = logoCaminho + ".jpg";
-                    } else if (new File(logoCaminho + ".JPG").exists()) {
-                        logoCaminho = logoCaminho + ".JPG";
-                    } else if (new File(logoCaminho + ".png").exists()) {
-                        logoCaminho = logoCaminho + ".png";
-                    } else if (new File(logoCaminho + ".PNG").exists()) {
-                        logoCaminho = logoPatronal + patronal.getId() + ".PNG";
-                    } else if (new File(logoCaminho + ".gif").exists()) {
-                        logoCaminho = logoCaminho + ".gif";
-                    } else {
-                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
-                    }
-                    vetor.add(
-                            new ParametroCertificado(
-                                    patronal.getPessoa().getNome(),
-                                    logoCaminho,
-                                    patronal.getBaseTerritorial(),
-                                    sindicato.getPessoa().getNome(),
-                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                                    rm.getPessoa().getNome(),
-                                    rm.getPessoa().getDocumento(),
-                                    jur.getPorte().getDescricao(),
-                                    lista.get(i).getDescricao(),
-                                    valor,
-                                    lista.get(i).getPisoSalarialLote().getMensagem(),
-                                    lista.get(i).getPisoSalarialLote().getDtValidade(),
-                                    sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
-                                    lista.get(i).getPisoSalarialLote().getAno(),
-                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
-                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
-                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
-                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
-                                    String.valueOf(rm.getId()),
-                                    "0000000000".substring(0, 10 - String.valueOf(rm.getId()).length()) + String.valueOf(rm.getId()),
-                                    DataHoje.dataExtenso(rm.getDataEmissaoString(), 3))
-                    );
                 }
-
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-                JasperPrint print = JasperFillManager.fillReport(
-                        jasper,
-                        null,
-                        dtSource);
-                arquivo = JasperExportManager.exportReportToPdf(print);
-
-                String nomeDownload = "repis_" + rm.getId() + "_" + rm.getPessoa().getId() + ".pdf";
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
-                SalvaArquivos sa = new SalvaArquivos(arquivo,
-                        nomeDownload,
-                        false);
-                sa.salvaNaPasta(pathPasta);
-
-                Download download = new Download(nomeDownload,
-                        pathPasta,
-                        "application/pdf",
-                        FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException e) {
-                e.getMessage();
             }
+            
+            JRPdfExporter exporter = new JRPdfExporter();
+            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, lista_jasper);
+            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
+            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
+            exporter.exportReport();
+
+            byte[] arquivo = retorno.toByteArray();
+
+            String nomeDownload = "certificado_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
+            SalvaArquivos sa = new SalvaArquivos(arquivo,
+                    nomeDownload,
+                    false);
+            sa.salvaNaPasta(pathPasta);
+
+            Download download = new Download(nomeDownload,
+                    pathPasta,
+                    "application/pdf",
+                    FacesContext.getCurrentInstance());
+            download.baixar();
+            download.remover();
+        } catch (Exception e) {
+            e.getMessage();
+            GenericaMensagem.error("Erro", "Arquivo de Certidão não encontrado! "+e.getMessage());
         }
         return null;
     }
+
+//    public String printCertificado(RepisMovimento rm) {
+//        JuridicaDB dbj = new JuridicaDBToplink();
+//        WebREPISDB dbw = new WebREPISDBToplink();
+//
+//        Juridica jur = dbj.pesquisaJuridicaPorPessoa(rm.getPessoa().getId());
+//        List<List> listax = dbj.listaJuridicaContribuinte(jur.getId());
+//
+//        if (listax.isEmpty()) {
+//            GenericaMensagem.warn("Atenção", "Empresa não contribuinte");
+//            return null;
+//        }
+//
+//        Patronal patronal = rm.getPatronal();
+//        if (patronal.getId() == -1) {
+//            GenericaMensagem.warn("Atenção", "Patronal não encontrada, contate seu sindicato!");
+//            return null;
+//        }
+//
+//        byte[] arquivo = new byte[0];
+//
+//        if (rm.getId() != -1) {
+//            try {
+//                List ljasper = new ArrayList();
+//                JasperReport jasper;
+//
+//                Collection<ParametroCertificado> vetor = new ArrayList();
+//                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(rm.getAno(), patronal.getId(), jur.getPorte().getId());
+//                if (lote.getId() == -1) {
+//                    GenericaMensagem.warn("Atenção", "Piso / Lote Salarial não encontrado, contate seu sindicato!");
+//                    return null;
+//                }
+//
+//                List<PisoSalarial> lista = dbw.listaPisoSalarialLote(lote.getId());
+//                Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
+//                PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+//                PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
+//
+//                for (int i = 0; i < lista.size(); i++) {
+//                    BigDecimal valor = new BigDecimal(lista.get(i).getValor());
+//                    if (valor.toString().equals("0")) {
+//                        valor = null;
+//                    }
+//                    String logoPatronal = "";
+//                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + patronal.getId());
+//                    if (new File(logoCaminho + ".jpg").exists()) {
+//                        logoCaminho = logoCaminho + ".jpg";
+//                    } else if (new File(logoCaminho + ".JPG").exists()) {
+//                        logoCaminho = logoCaminho + ".JPG";
+//                    } else if (new File(logoCaminho + ".png").exists()) {
+//                        logoCaminho = logoCaminho + ".png";
+//                    } else if (new File(logoCaminho + ".PNG").exists()) {
+//                        logoCaminho = logoPatronal + patronal.getId() + ".PNG";
+//                    } else if (new File(logoCaminho + ".gif").exists()) {
+//                        logoCaminho = logoCaminho + ".gif";
+//                    } else {
+//                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
+//                    }
+//                    vetor.add(
+//                            new ParametroCertificado(
+//                                    patronal.getPessoa().getNome(),
+//                                    logoCaminho,
+//                                    patronal.getBaseTerritorial(),
+//                                    sindicato.getPessoa().getNome(),
+//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                                    rm.getPessoa().getNome(),
+//                                    rm.getPessoa().getDocumento(),
+//                                    jur.getPorte().getDescricao(),
+//                                    lista.get(i).getDescricao(),
+//                                    valor,
+//                                    lista.get(i).getPisoSalarialLote().getMensagem(),
+//                                    lista.get(i).getPisoSalarialLote().getDtValidade(),
+//                                    sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
+//                                    lista.get(i).getPisoSalarialLote().getAno(),
+//                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
+//                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
+//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
+//                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
+//                                    String.valueOf(rm.getId()),
+//                                    "0000000000".substring(0, 10 - String.valueOf(rm.getId()).length()) + String.valueOf(rm.getId()),
+//                                    DataHoje.dataExtenso(rm.getDataEmissaoString(), 3))
+//                    );
+//                }
+//
+//                //* JASPER 1 *//
+//                jasper = (JasperReport) JRLoader.loadObject(
+//                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper"));
+//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+//                ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
+//
+//                JRPdfExporter exporter = new JRPdfExporter();
+//                ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+//
+//                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
+//                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
+//                exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
+//                exporter.exportReport();
+//
+//                arquivo = retorno.toByteArray();
+//
+//                String nomeDownload = "repis_" + rm.getId() + "_" + rm.getPessoa().getId() + ".pdf";
+//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
+//                SalvaArquivos sa = new SalvaArquivos(arquivo,
+//                        nomeDownload,
+//                        false);
+//                sa.salvaNaPasta(pathPasta);
+//
+//                Download download = new Download(nomeDownload,
+//                        pathPasta,
+//                        "application/pdf",
+//                        FacesContext.getCurrentInstance());
+//                download.baixar();
+//                download.remover();
+//            } catch (JRException e) {
+//                e.getMessage();
+//            }
+//        }
+//        return null;
+//    }
 
     public String getEnderecoString() {
         PessoaEnderecoDB enderecoDB = new PessoaEnderecoDBToplink();
@@ -513,14 +668,14 @@ public class WebREPISBean implements Serializable {
     public void setIdPessoa(int idPessoa) {
         this.idPessoa = idPessoa;
     }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+//
+//    public String getMessage() {
+//        return message;
+//    }
+//
+//    public void setMessage(String message) {
+//        this.message = message;
+//    }
 
     public int getAno() {
         return Integer.parseInt(DataHoje.livre(DataHoje.dataHoje(), "yyyy"));
@@ -624,11 +779,12 @@ public class WebREPISBean implements Serializable {
     }
 
     public List<RepisMovimento> getListRepisMovimentoPatronal() {
-        WebREPISDB wsrepisdb = new WebREPISDBToplink();
         if (listRepisMovimentoPatronal.isEmpty()) {
+            WebREPISDB wsrepisdb = new WebREPISDBToplink();
             Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
 //            listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
-            listRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronal(patro.getId());
+            //listRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronal(patro.getId());
+            listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("", "", patro.getId());
         }
         return listRepisMovimentoPatronal;
     }
@@ -742,25 +898,97 @@ public class WebREPISBean implements Serializable {
         this.escritorio = escritorio;
     }
 
-    public List<SelectItem> getListComboCertidaoTipo() {
-        if (listComboCertidaoTipo.isEmpty()){
+    public List<SelectItem> getListComboCertidaoDisponivel() {
+        if (listComboCertidaoDisponivel.isEmpty()) {
             WebREPISDB db = new WebREPISDBToplink();
-            
-            List<CertidaoTipo> result = db.listaCertidaoTipo();
-            
+            JuridicaDB dbj = new JuridicaDBToplink();
+
+            Juridica juridica = null;
+            if (pessoaContribuinte != null) {
+                juridica = dbj.pesquisaJuridicaPorPessoa(pessoaContribuinte.getId());
+            } else {
+                juridica = dbj.pesquisaJuridicaPorPessoa(Integer.valueOf(listComboPessoa.get(idPessoa).getDescription()));
+            }
+
+            List<List> listax = dbj.listaJuridicaContribuinte(juridica.getId());
+
+            if (listax.isEmpty()) {
+                listComboCertidaoDisponivel.add(new SelectItem(0, "Nenhuma Certidão Disponível", "0"));
+                return listComboCertidaoDisponivel;
+            }
+
+            int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
+            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+            PessoaEndereco pend = dbe.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 5);
+
+            if (pend == null) {
+                listComboCertidaoDisponivel.add(new SelectItem(0, "Nenhuma Certidão Disponível", "0"));
+                return listComboCertidaoDisponivel;
+            }
+
+            List<CertidaoDisponivel> result = db.listaCertidaoDisponivel(pend.getEndereco().getCidade().getId(), id_convencao);
+
+            if (result.isEmpty()) {
+                listComboCertidaoDisponivel.add(new SelectItem(0, "Nenhuma Certidão Disponível", "0"));
+                return listComboCertidaoDisponivel;
+            }
+
+            for (int i = 0; i < result.size(); i++) {
+                listComboCertidaoDisponivel.add(new SelectItem(
+                        i, result.get(i).getCertidaoTipo().getDescricao(), String.valueOf(result.get(i).getId())
+                )
+                );
+            }
+
+//            
+//            List<CertidaoTipo> result = db.listaCertidaoTipo();
+//            
+//            for (int i = 0; i < result.size(); i++){
+//                listComboCertidaoTipo.add(
+//                        new SelectItem(
+//                            i, result.get(i).getDescricao(), String.valueOf(result.get(i).getId())
+//                        )
+//                );
+//            }
+        }
+        return listComboCertidaoDisponivel;
+    }
+
+    public void setListComboCertidaoDisponivel(List<SelectItem> listComboCertidaoDisponivel) {
+        this.listComboCertidaoDisponivel = listComboCertidaoDisponivel;
+    }
+
+    public int getIndexCertidaoDisponivel() {
+        return indexCertidaoDisponivel;
+    }
+
+    public void setIndexCertidaoDisponivel(int indexCertidaoDisponivel) {
+        this.indexCertidaoDisponivel = indexCertidaoDisponivel;
+    }
+
+    public List<RepisMovimento> getListRepisMovimentoPatronalSelecionado() {
+        return listRepisMovimentoPatronalSelecionado;
+    }
+
+    public void setListRepisMovimentoPatronalSelecionado(List<RepisMovimento> listRepisMovimentoPatronalSelecionado) {
+        this.listRepisMovimentoPatronalSelecionado = listRepisMovimentoPatronalSelecionado;
+    }
+
+    public List<SelectItem> getListaTipoCertidao() {
+        if (listaTipoCertidao.isEmpty()){
+            Dao di = new Dao();
+            List<CertidaoTipo> result = di.list("CertidaoTipo");
             for (int i = 0; i < result.size(); i++){
-                listComboCertidaoTipo.add(
-                        new SelectItem(
-                            i, result.get(i).getDescricao(), String.valueOf(result.get(i).getId())
-                        )
+                listaTipoCertidao.add(new SelectItem(
+                        i, result.get(i).getDescricao(), Integer.toString(result.get(i).getId()))
                 );
             }
         }
-        return listComboCertidaoTipo;
+        return listaTipoCertidao;
     }
 
-    public void setListComboCertidaoTipo(List<SelectItem> listComboCertidaoTipo) {
-        this.listComboCertidaoTipo = listComboCertidaoTipo;
+    public void setListaTipoCertidao(List<SelectItem> listaTipoCertidao) {
+        this.listaTipoCertidao = listaTipoCertidao;
     }
 
     public int getIndexCertidaoTipo() {

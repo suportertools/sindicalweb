@@ -27,6 +27,8 @@ public class Endereco implements java.io.Serializable {
     private String cep;
     @Column(name = "ds_faixa", length = 100, nullable = true)
     private String faixa;
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
+    private boolean ativo;
 
     public Endereco() {
         this.id = -1;

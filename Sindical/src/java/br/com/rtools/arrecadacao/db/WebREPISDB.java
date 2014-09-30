@@ -1,6 +1,8 @@
 package br.com.rtools.arrecadacao.db;
 
+import br.com.rtools.arrecadacao.CertidaoDisponivel;
 import br.com.rtools.arrecadacao.CertidaoTipo;
+import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -18,6 +20,8 @@ public interface WebREPISDB {
     public List listaContabilidadeWeb();
 
     public List validaPessoaRepisAno(int idPessoa, int ano);
+    
+    public List validaPessoaRepisAnoTipo(int idPessoa, int ano, int id_tipo_certidao);
 
     public List listaProtocolosPorContabilidade(int idPessoa, int ano);
 
@@ -54,4 +58,10 @@ public interface WebREPISDB {
     public List<RepisMovimento> listaProtocolosPorPatronal(int idPatronal);
     
     public List<CertidaoTipo> listaCertidaoTipo();
+    
+    public List<CertidaoDisponivel> listaCertidaoDisponivel(int id_cidade, int id_convencao);
+    public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao);
+    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal);
+    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano);
+    
 }

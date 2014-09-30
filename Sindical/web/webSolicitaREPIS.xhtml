@@ -57,23 +57,28 @@
                             <p:outputLabel value="#{webREPISBean.pessoaContribuinte.nome}"/>
                         </p:tab>
                         <p:tab title="CONTRIBUINTE(S)" rendered="#{webREPISBean.renderContabil}" >
-                            <p:selectOneMenu id="idComboContabilidade" value="#{webREPISBean.idPessoa}">
-                                <f:selectItems value="#{webREPISBean.listComboPessoa}"/>
-                            </p:selectOneMenu>
-                            <p:outputLabel value=" -- Somente para SOLICITAR" />
+                            <h:panelGrid columns="2" style="width: 650px">
+                                <p:selectOneMenu id="idComboContabilidade" value="#{webREPISBean.idPessoa}" style="padding-right: 20px;">
+                                    <p:ajax event="change" update="@this :form_sr:i_panel_solicitar" listener="#{webREPISBean.listComboCertidaoDisponivel.clear()}"/>
+                                    <f:selectItems value="#{webREPISBean.listComboPessoa}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Somente para SOLICITAR*" style="margin-left: 20px; font-weight: bold; color: red"/>
+                            </h:panelGrid>
                         </p:tab>
                     </p:accordionPanel>
-                    <h:panelGrid columns="2" styleClass="margin-top-max" style="width: 100%">
+                    <p:messages id="i_msg" showDetail="true" closable="true" />
+                    <h:panelGrid id="i_panel_solicitar" columns="2" styleClass="margin-top-max" style="width: 100%">
                         <h:column>
-                            <p:commandButton value="Solicitar" action="#{webREPISBean.solicitarREPIS}" update=":form_sr:" oncomplete="PF('dlg_message').show()" style="float: left"/>
-                            <p:selectOneMenu id="i_certidao_tipo" value="#{webREPISBean.indexCertidaoTipo}" style="float: left">
-                                <f:selectItems value="#{webREPISBean.listComboCertidaoTipo}"/>
+                            <p:commandButton value="Solicitar" action="#{webREPISBean.solicitarREPIS}" update=":form_sr:" style="float: left"/>
+                            <p:selectOneMenu value="#{webREPISBean.indexCertidaoDisponivel}" style="float: left; padding-right: 20px">
+                                <f:selectItems value="#{webREPISBean.listComboCertidaoDisponivel}"/>
                             </p:selectOneMenu>
                         </h:column>
                         <h:column>
                             <p:commandButton value="Ver andamento do Protocolo" action="#{webREPISBean.clear}" update=":form_sr_list:" style="float: right"/>
                         </h:column>
                     </h:panelGrid>
+                    
                     <p:panel rendered="false">
                         <h:outputLabel styleClass="fonteExtratoTela" value="Enviar arquivos"/>
                         <div align="center" style="overflow:auto; height:225px;">
@@ -98,29 +103,20 @@
                             </div> 
                         </label>     
                     </p:panel>
+
                     <p:dialog widgetVar="dlg_status" width="400" modal="true">
-                        <p:outputLabel value="Aguarde}" />
+                        <p:outputLabel value="Aguarde" />
                     </p:dialog>
-                    <p:dialog widgetVar="dlg_message" width="400" modal="true" header="Mensagem">
-                        <p:outputLabel id="outConfirma" value="#{webREPISBean.message}" />
-                        <f:facet name="footer">
-                            <p:commandButton value="OK" action="#{webREPISBean.limpar()}" title="OK" update=":form_sr: :form_sr_list:"/>
-                        </f:facet>                                
-                    </p:dialog>
-                    <p:dialog widgetVar="dlg_message_print" width="400" modal="true" header="Mensagem">
-                        <p:outputLabel  />
-                        <f:facet name="footer">
-                            <p:commandButton value="OK" title="OK" update=":form_sr: :form_sr_list:"/>
-                        </f:facet>                                
-                    </p:dialog>                            
                 </h:form>
+                
+                
                 <h:form id="form_sr_list">
                     <p:panel header="Pesquisar">
                         <h:panelGrid id="i_panel" columns="3" styleClass="margin-top">
                             <p:inputText size="100" value="#{webREPISBean.descricao}" rendered="#{!webREPISBean.tipoPesquisa.equals('cnpj')}" />
                             <p:inputMask mask="99.999.999/9999-99" size="20" value="#{webREPISBean.descricao}" rendered="#{webREPISBean.tipoPesquisa.equals('cnpj')}" />
                             <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 25px;">
-                                <p:ajax event="change" update="@this, :form_sr_list:" listener="#{webREPISBean.listRepisMovimento.clear()}"/>
+                                <p:ajax event="change" update="@this, :form_sr_list:" />
                                 <f:selectItem itemLabel="Nome" itemValue="nome"/>
                                 <f:selectItem itemLabel="CNPJ" itemValue="cnpj"/>
                                 <f:selectItem itemLabel="Protocolo" itemValue="protocolo"/>
@@ -144,32 +140,39 @@
                         <f:facet name="header">
                             Lista de Certidões Solicitadas
                         </f:facet> 
-                        <p:column headerText="CNPJ" width="100" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.pessoa.documento}"/>
+                        <p:column width="15">  
+                            <p:rowToggler />  
+                        </p:column>  
+                        <p:column headerText="CNPJ" width="120" styleClass="text-center">
+                            <h:outputText value="#{repisMovimento.pessoa.documento}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Nome">
-                            <h:outputText value="#{repisMovimento.pessoa.nome}"/>
+                        <p:column headerText="Nome" width="300" >
+                            <h:outputText value="#{repisMovimento.pessoa.nome}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Protocolo" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.id}"/>
-                        </p:column>                            
                         <p:column headerText="STATUS" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.repisStatus.descricao}"/>
+                            <h:outputText value="#{repisMovimento.repisStatus.descricao}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Emissão" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.dataEmissaoString}"/>
+                        <p:column headerText="Emissão" styleClass="text-center" width="70">
+                            <h:outputText value="#{repisMovimento.dataEmissaoString}" style="font-size: 8pt!important"/>
                         </p:column>
                         <p:column headerText="Solicitante" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.contato}"/>
+                            <h:outputText value="#{repisMovimento.contato}" style="font-size: 8pt!important"/>
                         </p:column>
                         <p:column headerText="Tipo" styleClass="text-center">
-                            <h:outputText value="#{repisMovimento.certidaoTipo.descricao}"/>
+                            <h:outputText value="#{repisMovimento.certidaoTipo.descricao}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Certificado" width="25" styleClass="text-center">
-                            <h:commandLink action="#{webREPISBean.printCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3}">
-                                <p:button icon="ui-icon-print" />
-                            </h:commandLink> 
+                        <p:column headerText="..." width="25" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3}" ajax="false"/>
                         </p:column>
+                        
+                        <p:rowExpansion>
+                            <h:panelGrid columns="5" styleClass="sbb">
+                                <p:column>
+                                    <h:outputLabel value="Procolo" style="font-weight: bold"/><br />
+                                    <h:outputText value="#{repisMovimento.id}" style="margin-left: 20px"/>
+                                </p:column>
+                            </h:panelGrid>
+                        </p:rowExpansion>
                     </p:dataTable>
                 </h:form>
 

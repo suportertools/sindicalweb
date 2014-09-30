@@ -18,6 +18,8 @@ public class DescricaoEndereco implements Serializable {
     private int id;
     @Column(name = "ds_descricao", length = 100, nullable = false, unique = true)
     private String descricao;
+    @Column(name = "is_ativo", columnDefinition = "boolean default true")
+    private boolean ativo;
 
     public DescricaoEndereco() {
         this.id = -1;

@@ -1,6 +1,8 @@
 package br.com.rtools.arrecadacao.db;
 
+import br.com.rtools.arrecadacao.CertidaoDisponivel;
 import br.com.rtools.arrecadacao.CertidaoTipo;
+import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
@@ -8,6 +10,9 @@ import br.com.rtools.arrecadacao.RepisMovimento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.DataHoje;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -77,7 +82,28 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             return result;
         }
     }
-
+    
+    @Override
+    public List validaPessoaRepisAnoTipo(int idPessoa, int ano, int id_tipo_certidao) {
+        List result = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "select rm "
+                    + "  from RepisMovimento rm "
+                    + " where rm.pessoa.id = :idPessoa "
+                    + "   and rm.ano = :ano "
+                    + "   and rm.certidaoTipo.id = :idTipo "
+            );
+            qry.setParameter("idPessoa", idPessoa);
+            qry.setParameter("ano", ano);
+            qry.setParameter("idTipo", id_tipo_certidao);
+            result = qry.getResultList();
+            return result;
+        } catch (Exception e) {
+            return result;
+        }
+    }
+    
     @Override
     public List listaProtocolosPorContabilidade(int idPessoa, int ano) {
         List result = new ArrayList();
@@ -311,6 +337,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         return null;
     }
     
+    @Override
     public List<CertidaoTipo> listaCertidaoTipo(){
         try {
             Query qry = getEntityManager().createQuery(
@@ -326,5 +353,151 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         }
         return new ArrayList();
     }
+    
+    @Override
+    public List<CertidaoDisponivel> listaCertidaoDisponivel(int id_cidade, int id_convencao){
+        try {
+            Query qry = getEntityManager().createQuery(
+                      " SELECT cd "
+                    + "   FROM CertidaoDisponivel cd "
+                    + "  WHERE cd.cidade.id = " + id_cidade 
+                    + "    AND cd.convencao.id = " + id_convencao 
+                    + "  ORDER BY cd.certidaoTipo.descricao "
+            );
+            return qry.getResultList();
+        }catch(Exception e){
+            
+        }
+        return new ArrayList();
+    }
 
+    @Override
+    public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao){
+        try {
+            String referencia = DataHoje.DataToArray(DataHoje.data())[2]+DataHoje.DataToArray(DataHoje.data())[1];
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT cp.* FROM arr_convencao_periodo cp "
+                  + "  WHERE cp.id_convencao = "+id_convencao+" "
+                  + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = "+id_cidade+")"
+                  + "    AND ( "+referencia+" > CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
+                  + "         AND "+referencia+" < CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
+                  + "    ) ", ConvencaoPeriodo.class
+            );
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal){
+        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
+        descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
+        
+        String inner = "", and = "";
+        
+        String textQry = 
+                " SELECT rm.* " +
+                "   FROM arr_repis_movimento rm ";
+        
+        
+        inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
+               + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+        and   += "  WHERE pa.id = "+id_patronal;
+        
+        if (!descricao.isEmpty()){
+            switch (por) {
+                case "nome":
+                    and   += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao+"%'";
+                    break;
+                case "cnpj":
+                    and   += "    AND p.ds_documento LIKE '%"+descricao+"'";
+                    break;
+                case "protocolo":
+                    and   += "    AND rm.id = "+descricao;
+                    break;
+                case "status":
+                    inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
+                    and   += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%"+descricao+"%'";
+                    break;
+                case "solicitante":
+                    and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
+                    break;
+                case "tipo":
+                    and   += "    AND rm.id_certidao_tipo = " + descricao;
+                    break;
+            }
+        }
+        
+        textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC";
+        
+        Query qry = getEntityManager().createNativeQuery(
+            textQry, RepisMovimento.class
+        );
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
+        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
+        descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
+        
+        String inner = "", and = "";
+        
+        String textQry = 
+                " SELECT rm.* " +
+                "   FROM arr_repis_movimento rm ";
+        
+        if (id_pessoa != -1){
+            inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
+                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+            and   += "  WHERE p.id = "+id_pessoa+" AND rm.nr_ano = " + ano;
+        }else{
+            inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
+                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+            and   += "  WHERE rm.id_pessoa IN (SELECT j.id_pessoa FROM pes_juridica j" +
+                     "                          WHERE j.id_contabilidade = " + id_contabilidade
+                   + "                        )"
+                   + "   AND rm.nr_ano = " + ano;
+        }
+        
+        if (!descricao.isEmpty()){
+            switch (por) {
+                case "nome":
+                    and   += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao+"%'";
+                    break;
+                case "cnpj":
+                    and   += "    AND p.ds_documento LIKE '%"+descricao+"'";
+                    break;
+                case "protocolo":
+                    and   += "    AND rm.id = "+descricao;
+                    break;
+                case "status":
+                    inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
+                    and   += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%"+descricao+"%'";
+                    break;
+                case "solicitante":
+                    and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
+                    break;
+            }
+        }
+        
+        textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC";
+        
+        Query qry = getEntityManager().createNativeQuery(
+            textQry, RepisMovimento.class
+        );
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
 }

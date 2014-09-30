@@ -622,7 +622,14 @@ public class SimplesBean implements Serializable {
                     } else if (desc.length() == 3) {
                         maxResults = 200;
                     }
-                    String queryString = " SELECT t.* FROM " + tableName + "  as t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%' limit " + maxResults;
+                    
+                    String queryString = "";
+                    
+                    if (tableName.equals("end_bairro") || tableName.equals("end_descricao_endereco"))
+                        queryString = " SELECT t.* FROM " + tableName + "  AS t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%' AND is_ativo = true limit " + maxResults;
+                    else
+                        queryString = " SELECT t.* FROM " + tableName + "  AS t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%' limit " + maxResults;
+                    
                     try {
                         Query query = dao.getEntityManager().createNativeQuery(queryString, o.getClass());
                         lista = query.getResultList();

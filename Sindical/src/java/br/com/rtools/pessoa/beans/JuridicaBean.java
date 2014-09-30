@@ -147,11 +147,11 @@ public class JuridicaBean implements Serializable {
                 System.loadLibrary("knu");
             } catch (Exception e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
-                GenericaMensagem.warn("Erro", "Consulta temporárimente indisponível!");
+                GenericaMensagem.warn("Erro", "Consulta temporarimente indisponível!");
                 return;
             } catch (UnsatisfiedLinkError e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
-                GenericaMensagem.warn("Erro", "Consulta temporárimente indisponível!");
+                GenericaMensagem.warn("Erro", "Consulta temporarimente indisponível!");
                 return;
             }
 
@@ -183,6 +183,7 @@ public class JuridicaBean implements Serializable {
             juridicaReceita.setCnae(resultado.getAtividade_principal());
             juridicaReceita.setPessoa(null);
             juridicaReceita.setStatus(resultado.getSituacao_cadastral());
+            juridicaReceita.setDtAbertura(DataHoje.converte(resultado.getData_abertura()));
 
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
