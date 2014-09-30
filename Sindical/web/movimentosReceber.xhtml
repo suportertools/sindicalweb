@@ -104,7 +104,7 @@
                                             <p:outputLabel value="Multa (R$)"  />
                                         </p:column>                                    
                                         <p:column>
-                                            <p:outputLabel value="Juros (%)"  />
+                                            <p:outputLabel value="Juros (R$)"  />
                                         </p:column>                                    
                                         <p:column>
                                             <p:outputLabel value="Correção (R$)"  />
@@ -143,8 +143,8 @@
                                         <p:inputText id="soma_acrescimo_sem_sindical" value="#{movimentosReceberBean.acrescimoSemSindical}" styleClass="bold text-center" readonly="true"  size="10"/>
                                     </p:column>
                                     <p:column styleClass="text-center">                                
-                                        <p:inputText id="soma_desconto" size="10" value="#{movimentosReceberBean.desconto}" styleClass="text-center bold" style="color: blue">
-                                            <p:ajax event="change" update="soma_desconto soma_total_receber tbl" listener="#{movimentosReceberBean.calculoDesconto}" global="false"/>
+                                        <p:inputText id="soma_desconto" size="10" value="#{movimentosReceberBean.desconto}" styleClass="text-center bold" style="color: blue" converter="#{toCurrency}">
+                                            <p:ajax event="change" update="soma_desconto tbl soma_total_receber tbl" listener="#{movimentosReceberBean.calculoDesconto}" global="false"/>
                                         </p:inputText>
                                     </p:column>
                                     <p:column styleClass="text-center">
