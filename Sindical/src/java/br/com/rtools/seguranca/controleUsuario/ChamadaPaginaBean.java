@@ -992,11 +992,6 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "cobrancaMensal");
     }
     
-    public synchronized String statusAtendimento() {
-        GenericaSessao.remove("statusAtendimentoBean");
-        return metodoGenerico(2, "statusAtendimento");
-    }
-
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

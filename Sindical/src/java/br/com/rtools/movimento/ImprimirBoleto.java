@@ -427,8 +427,14 @@ public class ImprimirBoleto {
                     //codc = swap[44] + "-" + codc.substring(codc.length() - 1, codc.length()); 17/03/2014 -- HOMOLOGAÇÃO DE ARCERBURGO EXIRGIU A RETIRADA DESDE DV
                     codc = swap[44];
                 }
+                
+                // SE TIPO ACORDO NÃO MOSTRAR REFERÊNCIA 
+                String referencia = "";
+                if (lista.get(i).getTipoServico().getId() != 4){
+                    referencia = lista.get(i).getReferencia();
+                }
                 vetor.add(new ParametroBoleto(
-                        lista.get(i).getReferencia(), // ref (referencia)
+                        referencia, // ref (referencia)
                         imprimeVerso, // imprimeVerso
                         swap[0], //escritorio
                         lista.get(i).getServicos().getDescricao(), //  contribuicao (servico)

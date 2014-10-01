@@ -926,5 +926,27 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return result;
     }
+    
+    @Override
+    public List<Senha> listaSequenciaSenha(int id_filial){
+        try{
+            Query qry = getEntityManager().createQuery(
+                    "SELECT s "
+                  + "  FROM Senha s"
+                  + " WHERE s.dtData = :pdata"
+                  + "   AND s.filial.id = :pfilial"
+                  + "   AND (s.horaChamada = '' OR s.horaChamada is null)"
+                  + " ORDER BY s.senha ASC"
+            );
+        
+            qry.setParameter("pdata", DataHoje.dataHoje());
+            qry.setParameter("pfilial", id_filial);
+            
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
 
 }

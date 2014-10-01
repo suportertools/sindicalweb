@@ -12,19 +12,15 @@ public class AteStatus implements java.io.Serializable {
     private int id;
     @Column(name = "ds_descricao", length = 50, nullable = false, unique = true)
     private String descricao;
-    @Column(name = "is_reserva", columnDefinition = "boolean default false")
-    private boolean reserva;
     
     public AteStatus() {
         this.id = -1;
         this.descricao = "";
-        this.reserva = false;
     }
 
-    public AteStatus(int id, String descricao, boolean reserva) {
+    public AteStatus(int id, String descricao) {
         this.id = id;
         this.descricao = descricao;
-        this.reserva = reserva;
     }
 
     public int getId() {
@@ -41,13 +37,5 @@ public class AteStatus implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public boolean isReserva() {
-        return reserva;
-    }
-
-    public void setReserva(boolean reserva) {
-        this.reserva = reserva;
     }
 }

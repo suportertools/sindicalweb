@@ -73,4 +73,6 @@ public interface HomologacaoDB {
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario);
     
     public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario);
+    
+    public List<Senha> listaSequenciaSenha(int id_filial);
 }

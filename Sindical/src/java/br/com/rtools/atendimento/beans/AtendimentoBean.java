@@ -16,10 +16,14 @@ import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.PermissaoUsuario;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
+import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -69,6 +73,7 @@ public class AtendimentoBean implements Serializable {
     private int idOperacao = 0;
     private List<SelectItem> listaAtendimentoOperacoes = new ArrayList<SelectItem>();
     private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
+    
     private String horaEmissaoString = "";
     private Juridica empresa = new Juridica();
     private Usuario usuario = new Usuario();
@@ -78,6 +83,10 @@ public class AtendimentoBean implements Serializable {
     private StreamedContent fileDownload = null;
     private boolean visibleModal = false;
     private String tipoTelefone = "telefone";
+    
+    private List<SelectItem> listaUsuarios = new ArrayList<SelectItem>();
+    private int index_usuario = 0;
+    private boolean chkReserva = false;
     
     public AtendimentoBean(){
         usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
@@ -351,9 +360,16 @@ public class AtendimentoBean implements Serializable {
         ateMovimento.setFilial(filial);
         ateMovimento.setOperacao((AteOperacao) sv.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
         ateMovimento.setStatus((AteStatus) sv.pesquisaCodigo(1, "AteStatus"));
-        ateMovimento.setJuridica(empresa.getId() == -1 ? null : empresa);
-        ateMovimento.setAtendente(null);
+        ateMovimento.setJuridica((empresa == null || empresa.getId() == -1) ? null : empresa);
         ateMovimento.setPessoa(sisPessoa);
+        ateMovimento.setAtendente(null);
+        
+        if (chkReserva && !listaUsuarios.isEmpty()){
+            PermissaoUsuario pu = (PermissaoUsuario) sv.pesquisaCodigo( Integer.valueOf(listaUsuarios.get(index_usuario).getDescription()), "PermissaoUsuario");
+            ateMovimento.setReserva(pu.getUsuario());
+        }else{
+            ateMovimento.setReserva(null);
+        }
         
         sv.abrirTransacao();
         if (ateMovimento.getId() == -1) {
@@ -420,6 +436,17 @@ public class AtendimentoBean implements Serializable {
                 
         setHoraEmissaoString(ateMovimento.getHoraEmissao());
         verificaPessoaOposicao();
+        
+        chkReserva = ateMovimento.getReserva() != null;
+        if (chkReserva){
+            for(int i = 0; i < getListaUsuarios().size(); i++){
+                PermissaoUsuario pu = (PermissaoUsuario) new Dao().find(new PermissaoUsuario(), Integer.valueOf(listaUsuarios.get(i).getDescription()));
+                if ( pu.getUsuario().getId() == ateMovimento.getReserva().getId() ){
+                    index_usuario = i;
+                }
+            }
+        }
+        
         return null;
     }
 
@@ -736,6 +763,51 @@ public class AtendimentoBean implements Serializable {
 
     public void setTipoTelefone(String tipoTelefone) {
         this.tipoTelefone = tipoTelefone;
+    }
+
+    public List<SelectItem> getListaUsuarios() {
+        if (listaUsuarios.isEmpty()){
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+//            Permissao permissao = db.pesquisaPermissao(4, 114, 4);
+            
+//            AtendimentoDB db = new AtendimentoDBTopLink();
+            // DEPARTAMENTO 8 - HOMOLOGAÇÃO ---
+            List<PermissaoUsuario> result = db.listaPermissaoUsuarioDepartamento(8);
+            
+            if (result.isEmpty()){
+                listaUsuarios.add(new SelectItem(0, "Nenhum Usuário Encontrado", "0") );
+                return listaUsuarios;
+            }
+            
+            for (int i = 0; i < result.size(); i++){
+                listaUsuarios.add(new SelectItem(
+                        i, 
+                        result.get(i).getUsuario().getPessoa().getNome(), 
+                        Integer.toString(result.get(i).getId()) )
+                );
+            }
+        }
+        return listaUsuarios;
+    }
+
+    public void setListaUsuarios(List<SelectItem> listaUsuarios) {
+        this.listaUsuarios = listaUsuarios;
+    }
+
+    public int getIndex_usuario() {
+        return index_usuario;
+    }
+
+    public void setIndex_usuario(int index_usuario) {
+        this.index_usuario = index_usuario;
+    }
+
+    public boolean isChkReserva() {
+        return chkReserva;
+    }
+
+    public void setChkReserva(boolean chkReserva) {
+        this.chkReserva = chkReserva;
     }
 
 }

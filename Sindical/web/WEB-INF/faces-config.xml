@@ -1579,12 +1579,6 @@
         </navigation-case>          
         
         <navigation-case>
-            <from-outcome>statusAtendimento</from-outcome>
-            <to-view-id>/statusAtendimento.jsf</to-view-id>
-            <redirect/>
-        </navigation-case>          
-        
-        <navigation-case>
             <from-outcome>configuracaoHomologacao</from-outcome>
             <to-view-id>/configuracaoHomologacao.jsf</to-view-id>
             <redirect/>

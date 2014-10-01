@@ -125,11 +125,22 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <h:panelGrid columns="1" style="margin-top: 10px;">
+                            <h:panelGrid id="i_panel_e_u" columns="2" style="margin-top: 10px; width: 100%">
                                 <h:column>
                                     <p:outputLabel value="Empresa" /><br />
-                                    <p:commandLink value="#{atendimentoBean.empresa.pessoa.nome}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id != -1}" style="font-weight: bold"/>
-                                    <p:commandButton value="Adicionar uma Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id == -1}" ajax="false"/>
+                                    <p:commandLink value="#{atendimentoBean.empresa.pessoa.nome}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id != -1}" style="font-weight: bold; font-size: 11pt!important"/>
+                                    <p:commandButton value="Adicionar uma Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa == null or atendimentoBean.empresa.id == -1}" ajax="false"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <p:selectBooleanCheckbox value="#{atendimentoBean.chkReserva}" itemLabel="Reservar para Usuário" style="float: right">
+                                            <p:ajax event="change" update="@this i_panel_e_u" />
+                                    </p:selectBooleanCheckbox>
+                                    <br /><br />
+                                    <p:selectOneMenu value="#{atendimentoBean.index_usuario}" rendered="#{atendimentoBean.chkReserva}" style="float: right">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{atendimentoBean.listaUsuarios}"/>
+                                    </p:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
 

@@ -51,4 +51,6 @@ public interface PermissaoUsuarioDB {
     public PermissaoDepartamento pesquisaPermissaoDepartamento(int id_departamento, int id_nivel, int id_permissao);
 
     public boolean existePermissaoUsuario(PermissaoUsuario permissaoUsuario);
+    
+    public List<PermissaoUsuario> listaPermissaoUsuarioDepartamento(int id_departamento);
 }

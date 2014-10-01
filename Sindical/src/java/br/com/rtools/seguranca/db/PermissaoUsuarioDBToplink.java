@@ -314,4 +314,22 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
         }
         return false;
     }
+    
+    public List<PermissaoUsuario> listaPermissaoUsuarioDepartamento(int id_departamento){
+        try{
+            Query qry = getEntityManager().createQuery(
+                    " SELECT pu "
+                  + "   FROM PermissaoUsuario pu "
+                  + "  WHERE pu.departamento.id = :pid "
+                  + "  ORDER BY pu.usuario.pessoa.nome"
+            );
+            
+            qry.setParameter("pid", id_departamento);
+            
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
 }

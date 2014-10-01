@@ -38,9 +38,10 @@ public class Endereco implements java.io.Serializable {
         this.descricaoEndereco = new DescricaoEndereco();
         this.cep = "";
         this.faixa = "";
+        this.ativo = true;
     }
 
-    public Endereco(int id, Cidade cidade, Bairro bairro, Logradouro logradouro, DescricaoEndereco descricaoEndereco, String cep, String faixa) {
+    public Endereco(int id, Cidade cidade, Bairro bairro, Logradouro logradouro, DescricaoEndereco descricaoEndereco, String cep, String faixa, boolean ativo) {
         this.id = id;
         this.cidade = cidade;
         this.bairro = bairro;
@@ -48,6 +49,7 @@ public class Endereco implements java.io.Serializable {
         this.descricaoEndereco = descricaoEndereco;
         this.cep = cep;
         this.faixa = faixa;
+        this.ativo = ativo;
     }
 
     public int getId() {
@@ -104,6 +106,14 @@ public class Endereco implements java.io.Serializable {
 
     public void setFaixa(String faixa) {
         this.faixa = faixa;
+    }
+    
+    public boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
     public String getEnderecoToString() {
