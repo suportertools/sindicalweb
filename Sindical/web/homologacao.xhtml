@@ -270,7 +270,7 @@
 
                                     <h:column>
                                         <br />
-                                        <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at i_msg" style="margin-left: 600px"/>
+                                        <p:commandButton value="Atendimento" action="#{homologacaoBean.retornaSequenciaSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at i_msg" style="margin-left: 600px"/>
                                     </h:column>
                                 </h:panelGrid>
                                 <p:commandButton icon="ui-icon-info" value="Existe(m) atendimento(s) não finalizado" rendered="#{homologacaoBean.listAtendimentoAberto().size() > 0}" style="color: red; margin-bottom: 15px!important;" onclick="PF('dlg_atendimentos').show()" update="id_atendimentos"/>
@@ -282,7 +282,8 @@
                         </h:panelGrid>
                         <br />
                         <!-- <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="# {polling.habilita}" /> -->
-                        <p:poll interval="15" update="tbl, tbl_at" global="false" listener="#{homologacaoBean.loadListaHomologacao()}"/>
+                        <p:poll interval="10" update="tbl" global="false" listener="#{homologacaoBean.loadListaHomologacao()}" rendered="false"/>
+                        <p:poll interval="10" update="tbl_at" global="false" listener="#{homologacaoBean.loadListaAtendimentoSimples()}" rendered="false"/>
                             
                         <h:panelGrid columns="1" id="tbl" style="margin: 0 auto; width: 1015px">
                             <p:outputLabel value="HOMOLOGAÇÕES" style="font-size: 11pt!important"/>
@@ -414,8 +415,8 @@
                         
                         <h:panelGrid columns="4">
                             <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
-                            <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
-                            <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
+                            <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" />
+                            <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" />
                             <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()"/>
                         </h:panelGrid>
                     </p:dialog> 

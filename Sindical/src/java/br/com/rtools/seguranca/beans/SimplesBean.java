@@ -278,13 +278,13 @@ public class SimplesBean implements Serializable {
     public Object convertToObject(String tipo) {
         Object o = null;
         if (tipo.equals("Bairro")) {
-            o = (Bairro) new Bairro(id, descricao);
+            o = (Bairro) new Bairro(id, descricao, true);
         } else if (tipo.equals("Logradouro")) {
             o = (Logradouro) new Logradouro(id, descricao);
         } else if (tipo.equals("GrupoCidade")) {
             o = (GrupoCidade) new GrupoCidade(id, descricao);
         } else if (tipo.equals("DescricaoEndereco")) {
-            o = (DescricaoEndereco) new DescricaoEndereco(id, descricao);
+            o = (DescricaoEndereco) new DescricaoEndereco(id, descricao, true);
         } else if (tipo.equals("TipoEndereco")) {
             o = (TipoEndereco) new TipoEndereco(id, descricao);
         } else if (tipo.equals("TipoDocumento")) {

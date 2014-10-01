@@ -38,12 +38,8 @@
         <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}"> 
             <!-- <h:form id="formTemplateLinks" onsubmit="# {chamadaPaginaBean.controleLinksX} ">-->
             <p:panel style="border: 0; width: 1024px">                
-                <c:if test="#{configuracaoBean.usuario.id == 1}">
-                    <h:graphicImage id="i_logo" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left; cursor: pointer; border: 2px dashed gray;" onclick="PF('dlg_logo').show();" title="Alterar imagem" alt="Pesquisar uma imagem"/>
-                </c:if>
-                <c:if test="#{configuracaoBean.usuario.id != 1}">
-                    <h:graphicImage id="i_logo" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left" />
-                </c:if>
+                <h:graphicImage id="i_logo_update" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left; cursor: pointer; border: 2px dashed gray;" onclick="PF('dlg_logo').show();" title="Alterar imagem" alt="Pesquisar uma imagem" rendered="#{configuracaoBean.usuario.id == 1}"/>
+                <h:graphicImage id="i_logo" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left" rendered="#{configuracaoBean.usuario.id != 1}"/>
                 <br /><br />
                 <p:panel style="float: right; border: 0px; top:0px">
                     <h:outputLabel value="Bem vindo " style="float: left; font-size: 10pt; margin-left: 50px"/>

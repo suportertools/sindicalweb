@@ -18,17 +18,19 @@ public class Bairro implements Serializable {
     private int id;
     @Column(name = "ds_descricao", length = 70, nullable = false, unique = true)
     private String descricao;
-    @Column(name = "is_ativo", columnDefinition = "boolean default true")
+    @Column(name = "is_ativo", nullable = false, columnDefinition = "boolean default true")
     private boolean ativo;
 
     public Bairro() {
         this.id = -1;
         this.descricao = "";
+        this.ativo = true;
     }
 
-    public Bairro(int id, String descricao) {
+    public Bairro(int id, String descricao, boolean ativo) {
         this.id = id;
         this.descricao = descricao;
+        this.ativo = ativo;
     }
 
     public int getId() {
@@ -45,5 +47,13 @@ public class Bairro implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+    
+    public boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }
