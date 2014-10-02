@@ -104,7 +104,7 @@ public class FeriadosBean implements Serializable {
                 for (int i = 0; i < anos; i++) {
                     f.setNome(feriados.getNome());
                     f.setCidade(feriados.getCidade());
-                    if(i == 0) {
+                    if (i == 0) {
                         f.setData(dataPadrao);
                     } else {
                         f.setData(dh.incrementarAnos(i, dataPadrao));
