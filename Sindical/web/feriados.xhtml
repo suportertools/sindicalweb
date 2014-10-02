@@ -23,6 +23,7 @@
                         <p:ajax event="eventSelect" listener="#{feriadosBean.edit}" update="i_panel_grid_fer" oncomplete="PF('eventDialog').show()" />  
                     </p:schedule>
                     <p:dialog widgetVar="eventDialog" header="Cadastro" resizable="false" modal="true" >
+                        <p:ajax event="close" listener="#{feriadosBean.setReplicar(false)}" />
                         <p:panel id="i_panel_grid_fer"  style="border: 0; margin: 0; background: transparent">
                             <p:panel styleClass="fundoCinza">
                                 <h:panelGrid columns="1">
@@ -40,7 +41,15 @@
                                 </p:calendar>
                                 <p:outputLabel value="Nome:" for="idNome"/>
                                 <p:inputText id="idNome" size="50" value="#{feriadosBean.feriados.nome}"/>
+                                <h:column />
                             </p:panelGrid>                            
+                            <h:panelGrid id="i_ano" columns="6" styleClass="margin-top-max">
+                                <p:selectBooleanCheckbox value="#{feriadosBean.replicar}" itemLabel="Replicar por" rendered="#{feriadosBean.feriados.id == -1}">
+                                    <p:ajax update="i_ano" event="change" />
+                                </p:selectBooleanCheckbox>
+                                <p:spinner value="#{feriadosBean.anos}" rendered="#{feriadosBean.replicar}" min="0" max="50" stepFactor="0" /> 
+                                <h:outputText value=" Anos" rendered="#{feriadosBean.replicar}"/>
+                            </h:panelGrid>
                             <p:panel id="id_panel_grid_cidade" styleClass="fundoCinza no-border margin-top-max" style="margin-top: 20px!important;">
                                 <h:outputText value="Cidades:" rendered="#{feriadosBean.chkCidades}"/>
                                 <p:selectOneMenu id="idCidade" value="#{feriadosBean.index}" rendered="#{feriadosBean.chkCidades}" styleClass="margin-left-max">
@@ -50,10 +59,11 @@
                         </p:panel>
                         <f:facet name="footer">
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('eventDialog').hide(); PF('dlg_save').show();" title="Deseja salvar este feriado?" />
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('eventDialog').hide();
+                                        PF('dlg_save').show();" title="Deseja salvar este feriado?" />
                                 <p:commandButton value="Remover" action="#{feriadosBean.delete()}" update="i_msg :formFeriadoNovo:, :formFeriado:i_panel_grid_feriados, schedule" disabled="#{controleAcessoBean.botaoExcluir}"/>                                
                             </h:panelGrid>
-                            </f:facet>
+                        </f:facet>
                     </p:dialog>
                     <p:dialog widgetVar="dlg_save" header="Deseja salvar este feriado?" resizable="false" width="400" modal="true">
                         <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{feriadosBean.save}" onclick="PF('dlg_save').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":formFeriadoNovo:, :formFeriado:i_panel_grid_feriados, schedule, i_msg"/> 
@@ -61,8 +71,14 @@
                     </p:dialog>
                     <p:growl id="i_msg" showSummary="true" showDetail="true"/>
                 </h:form>                
-                <h:form id="formFeriado">                    
-                    <p:panel id="i_panel_grid_feriados" >
+                <h:form id="formFeriado">
+                    <h:panelGrid columns="3">
+                        <p:outputLabel value="Ano:" />
+                        <p:spinner value="#{feriadosBean.ano}" stepFactor="0" min="1900" max="2050">
+                            <p:ajax event="change" listener="#{feriadosBean.clearList}" update="@this :formFeriado:i_panel_grid_feriados" />
+                        </p:spinner>
+                    </h:panelGrid>
+                    <p:panel id="i_panel_grid_feriados" styleClass="margin-top-max">
                         <p:dataTable value="#{feriadosBean.listFeriados}" var="feriado" scrollable="true" scrollHeight="150" emptyMessage="Não existe(m) feriados(s) para esta data" id="tbl">
                             <f:facet name="footer">E - Excluir</f:facet>
                             <p:column width="80" styleClass="text-center" headerText="Data">
@@ -80,8 +96,7 @@
                                 <p:commandButton icon="ui-icon-trash" action="#{feriadosBean.delete(feriado)}" update=":formFeriadoNovo:i_msg :formFeriado:i_panel_grid_feriados :formFeriadoNovo:schedule" disabled="#{controleAcessoBean.botaoExcluir}"/>
                             </p:column>                             
                         </p:dataTable>                        
-                    </p:panel>
-                    <h:outputScript name="tradutor_primefaces.js" library="js" /> 
+                    </p:panel>                    
                 </h:form>
             </p:panel>
         </f:view>
