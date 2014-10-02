@@ -42,7 +42,6 @@
                         </p:panelGrid>
                         <p:panelGrid columns="1" styleClass="sbb margin-top-max">
                             <p:column>
-                                <!-- <p:commandButton icon="ui-icon-plus" value="Adicionar" title="Adicionar"  type="button" disabled="# {controleAcessoBean.botaoSalvar}"/> -->
                                 <p:commandButton icon="ui-icon-plus"  value="Adicionar" title="Adicionar" action="#{descontoServicoEmpresaBean.save()}" update="growl :form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton value="Novo" action="#{descontoServicoEmpresaBean.clear()}" styleClass="margin-left-max" update=":form_novo_desconto: :form_desconto:" />
                             </p:column>
