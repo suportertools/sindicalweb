@@ -102,4 +102,18 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
         }
         return new ArrayList();
     }
+    
+    @Override
+    public List pesquisaTodosFeriados() {
+        try {
+            Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC ");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }            
+        } catch (Exception e) {
+            
+        }
+        return new ArrayList();
+    }
 }
