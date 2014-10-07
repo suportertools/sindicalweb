@@ -62,17 +62,17 @@
                                     </p:column>
                                     
                                     <p:column>
-                                        <c:if test="#{notificacaoBean.idTipoEnvio == 3 or notificacaoBean.idTipoEnvio == 4}">
+                                        <h:column rendered="#{notificacaoBean.idTipoEnvio == 3 or notificacaoBean.idTipoEnvio == 4}">
                                             <p:commandButton value="Enviar" title="Enviar Notificação por Email" rendered="#{notificacaoBean.lote.id != -1}" onclick="PF('i_dlg_e').show()"/>
-                                        </c:if>
+                                        </h:column>
                                         
-                                        <c:if test="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}">
+                                        <h:column rendered="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}">
                                             <p:commandButton value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.lote.id != -1}" onclick="PF('i_dlg_e').show()"/>
-                                        </c:if>
+                                        </h:column>
                                         
-                                        <c:if test="#{notificacaoBean.idTipoEnvio == 5 or notificacaoBean.idTipoEnvio == 6}">
+                                        <h:column rendered="#{notificacaoBean.idTipoEnvio == 5 or notificacaoBean.idTipoEnvio == 6}">
                                             <p:commandButton ajax="false" value="Criar Etiquetas" title="Criar etiquetas de Notificação" rendered="#{notificacaoBean.lote.id != -1}" action="#{notificacaoBean.gerarEtiquetas}"/>
-                                        </c:if>
+                                        </h:column>
                                     </p:column>
                                         
                                     <p:dialog widgetVar="i_dlg_s" header="Deseja Realmente Gerar esta Notificação?" resizable="false" width="400" modal="true">
