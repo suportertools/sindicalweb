@@ -36,9 +36,9 @@
                                             <h:column>
                                                 <p:commandButton value="Nova Mensagem" action="#{emailBean.newMessage}" rendered="#{!emailBean.filterNewMessage}" update=":form_email:" />
                                                 <p:commandButton icon="ui-icon-arrowreturnthick-1-w" title="Voltar" action="#{emailBean.clear}" rendered="#{emailBean.filterNewMessage}" update=":form_email:" styleClass="margin-left-max"/>
-                                                <c:if test="#{emailBean.urlRetorno.equals('')}">
+                                                <h:column rendered="#{emailBean.urlRetorno.equals('')}">
                                                     <p:commandButton icon="ui-icon-disk" title="Salvar em rascunho" rendered="#{emailBean.filterNewMessage}" action="#{emailBean.saveDraft()}" update=":form_email:" styleClass="margin-left-max"/>
-                                                </c:if>
+                                                </h:column>
                                                 <p:commandButton value="Enviar" rendered="#{emailBean.filterNewMessage}" styleClass="margin-left-max" action="#{emailBean.send()}" update=":form_email:" />
                                                 <p:selectBooleanCheckbox value="#{emailBean.filter}" rendered="#{!emailBean.filterNewMessage}" styleClass="margin-left-max" itemLabel="Filtrar">
                                                     <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}" />
@@ -48,7 +48,7 @@
                                                 </p:selectBooleanCheckbox>
                                                 <p:commandButton icon="ui-icon-refresh" action="#{emailBean.listEmailPessoas.clear()}" rendered="#{!emailBean.filterNewMessage}" update=":form_email:" styleClass="margin-left-max" title="Atualizar enviados"/>
                                             </h:column>
-                                            <c:if test="#{emailBean.filter}">
+                                            <h:column rendered="#{emailBean.filter}">
                                                 <h:panelGrid rendered="#{!emailBean.filterNewMessage}" columns="2" styleClass="margin-top-max">
                                                     <p:selectBooleanButton value="#{emailBean.filterByRotina}" onLabel="Desabilita Rotina:" offLabel="Habilita Rotina:" style="width: 150px">
                                                         <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}" />
@@ -109,7 +109,7 @@
                                                         </h:panelGrid>
                                                     </h:column>
                                                 </h:panelGrid>
-                                            </c:if>
+                                            </h:column>
                                             <h:panelGrid rendered="#{emailBean.filterNewMessage}" columns="1" styleClass="margin-top-max" cellpadding="2">
                                                 <p:outputLabel value="Prioridade:" />
                                                 <p:selectOneMenu value="#{emailBean.index[1]}" >
