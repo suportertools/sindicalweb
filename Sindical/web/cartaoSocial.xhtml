@@ -164,7 +164,7 @@
                                 <h:outputLabel value="Nenhuma carteirinha foi selecionada!" />  
                             </c:if>
 
-                            <c:if test="#{cartaoSocialBean.listaSelecionado.size() != 0}">
+                            <h:column rendered="#{cartaoSocialBean.listaSelecionado.size() != 0}">
                                 <p:dataTable id="i_tbl_dlg" var="linha" value="#{cartaoSocialBean.listaHistorico}" emptyMessage="Nenhum histórico foi encontrado!">  
                                     <p:column headerText="Código" style="text-align: center">  
                                         <h:outputText value="#{linha.argumento0.carteirinha.pessoa.id}" />  
@@ -186,7 +186,7 @@
                                         <h:outputText value="#{linha.argumento3.usuario.pessoa.nome}" />  
                                     </p:column>  
                                 </p:dataTable>  
-                            </c:if>
+                            </h:column>
                         </h:panelGrid>
                         <br />
                         <p:commandButton value="OK" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg').hide()" icon="ui-icon-close"/>       
