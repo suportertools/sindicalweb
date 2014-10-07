@@ -42,16 +42,14 @@
                                     </p:submenu>  
                                     <p:separator />  
                                     <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pagina('pesquisaLog')}" title="Registro de atividades"  />
-                                    <c:if test="#{controleUsuarioBean.clienteString.equals('Rtools')}">
-                                        <p:submenu label="Sistema">
-                                            <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" />                                            
-                                        </p:submenu> 
-                                        <p:submenu label="Ordem Serviço"> 
-                                            <p:menuitem value="Ordem Serviço"    />
-                                            <p:menuitem value="Prioridade" />                                            
-                                            <p:menuitem value="Status" />                                            
-                                        </p:submenu>
-                                    </c:if>
+                                    <p:submenu label="Sistema" rendered="#{controleUsuarioBean.clienteString.equals('Rtools')}">
+                                        <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" />                                            
+                                    </p:submenu> 
+                                    <p:submenu label="Ordem Serviço" rendered="#{controleUsuarioBean.clienteString.equals('Rtools')}"> 
+                                        <p:menuitem value="Ordem Serviço"    />
+                                        <p:menuitem value="Prioridade" />                                            
+                                        <p:menuitem value="Status" />                                            
+                                    </p:submenu>
                                     <p:menuitem value="Sair do Sistema" action="#{usuarioBean.sairSistema}" /> 
                                 </p:submenu>
                                 <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">
