@@ -39,7 +39,7 @@ import org.primefaces.event.TabChangeEvent;
 @ManagedBean
 @SessionScoped
 public class JuridicaBean implements Serializable {
-
+    
     private Juridica juridica = new Juridica();
     private Juridica contabilidade = new Juridica();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
@@ -108,18 +108,18 @@ public class JuridicaBean implements Serializable {
     private List<SelectItem> listaMotivoInativacao = new ArrayList<SelectItem>();
     private String atualiza = "";
     private JuridicaReceita juridicaReceita = new JuridicaReceita();
-
+    
     public void pesquisaCnpj() {
         if (juridica.getId() != -1) {
             return;
         }
-
+        
         if (juridica.getPessoa().getDocumento().isEmpty()) {
             return;
         }
-
+        
         String documento = AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento());
-
+        
         if (!validaTipoDocumento(2, documento)) {
             msgDocumento = "Documento inválido!";
             GenericaMensagem.warn("Erro", "Documento Inválido!");
@@ -133,16 +133,16 @@ public class JuridicaBean implements Serializable {
                 return;
             }
         }
-
+        
         PessoaDB db = new PessoaDBToplink();
-
+        
         juridicaReceita = db.pesquisaJuridicaReceita(documento);
         if (juridicaReceita.getPessoa() != null && juridicaReceita.getPessoa().getId() != -1) {
             GenericaMensagem.warn("Erro", "Pessoa já cadastrada no Sistema!");
             return;
         }
         if (juridicaReceita.getId() == -1) {
-
+            
             try {
                 System.loadLibrary("knu");
             } catch (Exception e) {
@@ -154,9 +154,9 @@ public class JuridicaBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Consulta temporarimente indisponível!");
                 return;
             }
-
+            
             knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
-
+            
             if (resultado.getCod_erro() != 0) {
                 GenericaMensagem.warn("Falha na Busca", resultado.getDesc_erro());
                 return;
@@ -166,12 +166,12 @@ public class JuridicaBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Erro ao pesquisar na Receita!");
                 return;
             }
-
+            
             if (resultado.getSituacao_cadastral().equals("BAIXADA")) {
                 GenericaMensagem.warn("Erro", "Erro ao pesquisar na Receita!");
                 return;
             }
-
+            
             juridicaReceita.setNome(resultado.getNome_empresarial());
             juridicaReceita.setFantasia(resultado.getNome_empresarial());
             juridicaReceita.setDocumento(documento);
@@ -184,11 +184,11 @@ public class JuridicaBean implements Serializable {
             juridicaReceita.setPessoa(null);
             juridicaReceita.setStatus(resultado.getSituacao_cadastral());
             juridicaReceita.setDtAbertura(DataHoje.converte(resultado.getData_abertura()));
-
+            
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
+            
             sv.abrirTransacao();
-
+            
             if (!sv.inserirObjeto(juridicaReceita)) {
                 GenericaMensagem.warn("Erro", "Erro ao Salvar pesquisa!");
                 sv.desfazerTransacao();
@@ -196,31 +196,31 @@ public class JuridicaBean implements Serializable {
             }
             
             sv.comitarTransacao();
-
+            
             juridica.getPessoa().setNome(juridicaReceita.getNome());
             juridica.setFantasia(juridicaReceita.getNome());
-
+            
             String result[] = juridicaReceita.getCnae().split(" ");
             CnaeDB dbc = new CnaeDBToplink();
-
+            
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
-
+            
             if (listac.isEmpty()) {
                 GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
                 return;
             }
             retornaCnaeReceita(listac.get(0));
-
+            
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-
+            
             String cep = juridicaReceita.getCep();
             cep = cep.replace(".", "").replace("-", "");
-
+            
             String descricao[] = AnaliseString.removerAcentos(resultado.getLogradouro()).split(" ");
             String bairros[] = AnaliseString.removerAcentos(resultado.getBairro()).split(" ");
-
+            
             endereco = dbe.enderecoReceita(cep, descricao, bairros);
-
+            
             if (endereco != null) {
                 TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
                 List tiposE = dbt.listaTipoEnderecoParaJuridica();
@@ -231,7 +231,7 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco.setNumero(juridicaReceita.getNumero());
                     pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
                     listaEnd.add(pessoaEndereco);
-
+                    
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
@@ -241,32 +241,32 @@ public class JuridicaBean implements Serializable {
         } else {
             juridica.getPessoa().setNome(juridicaReceita.getNome());
             juridica.setFantasia(juridicaReceita.getNome());
-
+            
             String result[] = juridicaReceita.getCnae().split(" ");
             CnaeDB dbc = new CnaeDBToplink();
-
+            
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
-
+            
             if (listac.isEmpty()) {
                 GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
                 return;
             }
             retornaCnaeReceita(listac.get(0));
-
+            
             if (juridicaReceita.getStatus().equals("BAIXADA")) {
                 GenericaMensagem.warn("Erro", "Esta empresa esta INATIVA na receita!");
             }
-
+            
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-
+            
             String cep = juridicaReceita.getCep();
             cep = cep.replace(".", "").replace("-", "");
-
+            
             String descricao[] = AnaliseString.removerAcentos(juridicaReceita.getDescricaoEndereco()).split(" ");
             String bairros[] = AnaliseString.removerAcentos(juridicaReceita.getBairro()).split(" ");
-
+            
             endereco = dbe.enderecoReceita(cep, descricao, bairros);
-
+            
             if (endereco != null) {
                 TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
                 List tiposE = dbt.listaTipoEnderecoParaJuridica();
@@ -277,7 +277,7 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco.setNumero(juridicaReceita.getNumero());
                     pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
                     listaEnd.add(pessoaEndereco);
-
+                    
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
@@ -337,11 +337,10 @@ public class JuridicaBean implements Serializable {
 //                ex.printStackTrace();
 //            }
 //        }
-    
     public void accordion(TabChangeEvent event) {
         indicaTab = ((TabView) event.getComponent()).getActiveIndex();
     }
-        
+    
     public void pesquisaDocumento() {
         JuridicaDB db = new JuridicaDBToplink();
         if (!juridica.getPessoa().getDocumento().isEmpty()) {
@@ -351,24 +350,24 @@ public class JuridicaBean implements Serializable {
             }
         }
     }
-
+    
     public String getInadimplente() {
         if (juridica.getId() != -1) {
             JuridicaDB db = new JuridicaDBToplink();
             int[] in = db.listaInadimplencia(juridica.getPessoa().getId());
-
+            
             if (in[0] > 0 && in[1] > 0) {
                 return "Esta empresa está inadimplente em " + in[0] + " mes(es) e com " + in[1] + " movimento(s) em atraso.";
             }
         }
         return "";
     }
-
+    
     public String getContribuinte() {
         JuridicaDB db = new JuridicaDBToplink();
         if (juridica.getId() != -1) {
             List listax = db.listaJuridicaContribuinte(juridica.getId());
-
+            
             for (int i = 0; i < listax.size(); i++) {
                 if (((List) listax.get(0)).get(11) != null) {
                     // CONTRIBUINTE INATIVO
@@ -400,7 +399,7 @@ public class JuridicaBean implements Serializable {
         renderAtivoInativo = false;
         return "NÃO CONTRIBUINTE";
     }
-
+    
     public void inativarContribuintes() {
         JuridicaDB db = new JuridicaDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -423,14 +422,14 @@ public class JuridicaBean implements Serializable {
             GenericaMensagem.error("Erro", "Não existe Motivo de Inativação!");
         }
     }
-
+    
     public String getEnderecoCobranca() {
         PessoaEndereco ende = null;
         String strCompl;
         if (!listaEnd.isEmpty()) {
             ende = (PessoaEndereco) listaEnd.get(0);
         }
-
+        
         if (ende != null) {
             if (ende.getComplemento() == null || ende.getComplemento().isEmpty()) {
                 strCompl = " ";
@@ -449,7 +448,7 @@ public class JuridicaBean implements Serializable {
         }
         return enderecoCobranca;
     }
-
+    
     public List<ContribuintesInativos> getListaContribuintesInativos() {
         if (listaContribuintesInativos.isEmpty()) {
             ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
@@ -460,7 +459,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaContribuintesInativos;
     }
-
+    
     public String btnExcluirMotivoInativacao(ContribuintesInativos linha) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         contribuintesInativos = linha;//(ContribuintesInativos) listaContribuintesInativos.get(idIndexInativacao);
@@ -483,17 +482,17 @@ public class JuridicaBean implements Serializable {
         getContribuinte();
         return null;
     }
-
+    
     public String reativarContribuintes() {
         retornarCnaeConvencao();
         if (cnaeConvencao == null || cnaeConvencao.getCnae().getId() == -1) {
             GenericaMensagem.warn("Erro", "Cnae atual não pertence a Categoria!");
             return null;
         }
-
+        
         ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
         ContribuintesInativos cont = db.pesquisaContribuintesInativos(juridica.getId());
-
+        
         if (cont.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             contribuintesInativos = (ContribuintesInativos) sv.pesquisaCodigo(cont.getId(), "ContribuintesInativos");
@@ -515,16 +514,16 @@ public class JuridicaBean implements Serializable {
         //GenericaMensagem.warn("Erro", "Salve o cadastro para efetuar a ativação");
         return null;
     }
-
+    
     public void setEnderecoCobranca(String enderecoCobranca) {
         this.enderecoCobranca = enderecoCobranca;
     }
-
+    
     public String getDtAtivacao() {
         String dt = "";
         return dt;
     }
-
+    
     public String getDtAtivacaoInativo() {
         String dt = "";
         if (contribuintesInativos != null) {
@@ -536,7 +535,7 @@ public class JuridicaBean implements Serializable {
         }
         return dt;
     }
-
+    
     public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         JuridicaDB db = new JuridicaDBToplink();
@@ -546,7 +545,7 @@ public class JuridicaBean implements Serializable {
         if (listaEnd.isEmpty() || pessoa.getId() == -1) {
             adicionarEnderecos();
         }
-
+        
         juridica.setPorte((Porte) new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(getListaPorte().get(idPorte).getDescription()), "Porte"));
 
 //        if (!chkEndContabilidade) {
@@ -561,7 +560,7 @@ public class JuridicaBean implements Serializable {
                 GenericaMensagem.error("Erro", "O campo nome não pode ser nulo!");
                 return null;
             }
-
+            
             if (Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4) {
                 pessoa.setDocumento("0");
             } else {
@@ -573,29 +572,29 @@ public class JuridicaBean implements Serializable {
                     }
                 }
             }
-
+            
             if (!validaTipoDocumento(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento())) {
                 GenericaMensagem.error("Erro", "Documento Invalido!");
                 return null;
             }
-
+            
             if (listaEnd.isEmpty()) {
                 GenericaMensagem.error("Erro", "Cadastro não pode ser salvo sem Endereço!");
                 return null;
             }
-
+            
             if (juridica.getPessoa().getId() == -1) {
                 dbSalvar.inserirObjeto(pessoa);
                 juridica.setPessoa(pessoa);
                 if (juridica.getCnae().getId() == -1) {
                     juridica.setCnae(null);
                 }
-
+                
                 if (juridicaReceita.getId() != -1) {
                     juridicaReceita.setPessoa(pessoa);
                     dbSalvar.alterarObjeto(juridicaReceita);
                 }
-
+                
                 gerarLoginSenhaPessoa(juridica.getPessoa(), dbSalvar);
                 if (dbSalvar.inserirObjeto(juridica)) {
                     GenericaMensagem.info("Sucesso", "Cadastro salvo!");
@@ -614,7 +613,7 @@ public class JuridicaBean implements Serializable {
                 GenericaMensagem.error("Erro", "O campo nome não pode ser nulo!");
                 return null;
             }
-
+            
             if (Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4) {
                 juridica.getPessoa().setDocumento("0");
             } else {
@@ -640,8 +639,9 @@ public class JuridicaBean implements Serializable {
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
                 
-                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1 && juridica.getContabilidade().getId() != juridica.getId())
+                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1 && juridica.getContabilidade().getId() != juridica.getId()) {
                     dbSalvar.alterarObjeto(juridica.getContabilidade());
+                }
                 
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
                 dbSalvar.comitarTransacao();
@@ -655,10 +655,10 @@ public class JuridicaBean implements Serializable {
         }
         getContribuinte();
         salvarEndereco();
-
+        
         return null;
     }
-
+    
     public String novo() {
 //        juridica = new Juridica();
 //        contabilidade = new Juridica();
@@ -685,7 +685,7 @@ public class JuridicaBean implements Serializable {
         GenericaSessao.put("juridicaBean", new JuridicaBean());
         return "pessoaJuridica";
     }
-
+    
     public void novoGenerico() {
         juridica = new Juridica();
         contabilidade = new Juridica();
@@ -708,7 +708,7 @@ public class JuridicaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
     }
-
+    
     public String excluir() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         PessoaEnderecoDB dbPE = new PessoaEnderecoDBToplink();
@@ -717,7 +717,7 @@ public class JuridicaBean implements Serializable {
             return null;
         }
         List<PessoaEndereco> listaEndereco = dbPE.pesquisaEndPorPessoa(juridica.getPessoa().getId());
-
+        
         sv.abrirTransacao();
         if (!listaEndereco.isEmpty()) {
             PessoaEndereco pe;
@@ -730,10 +730,10 @@ public class JuridicaBean implements Serializable {
                 }
             }
         }
-
+        
         ContribuintesInativosDB dbCI = new ContribuintesInativosDBToplink();
         List<ContribuintesInativos> listaCI = dbCI.listaContribuintesInativos(juridica.getId());
-
+        
         if (!listaCI.isEmpty()) {
             ContribuintesInativos ci;
             for (int i = 0; i < listaCI.size(); i++) {
@@ -756,7 +756,7 @@ public class JuridicaBean implements Serializable {
         //  EXCLUIR OS EMAILS ENVIADOS PESSOA --------------------------------------------------------------
         EnvioEmailsDB db = new EnvioEmailsDBToplink();
         List<EnvioEmails> listE = db.pesquisaTodosPorPessoa(juridica.getPessoa().getId());
-
+        
         for (int i = 0; i < listE.size(); i++) {
             if (!sv.deletarObjeto((EnvioEmails) sv.pesquisaCodigo(listE.get(i).getId(), "EnvioEmails"))) {
                 GenericaMensagem.error("Erro", "Erro ao excluir Emails enviados!");
@@ -764,11 +764,11 @@ public class JuridicaBean implements Serializable {
                 return null;
             }
         }
-
+        
         PessoaDB dbp = new PessoaDBToplink();
         String documento = AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento());
         JuridicaReceita jr = dbp.pesquisaJuridicaReceita(documento);
-
+        
         if (jr.getId() != -1) {
             if (!sv.deletarObjeto(sv.pesquisaCodigo(jr.getId(), "JuridicaReceita"))) {
                 GenericaMensagem.error("Erro", "Erro ao excluir Pesquisa da Receita!");
@@ -790,19 +790,25 @@ public class JuridicaBean implements Serializable {
         novoGenerico();
         return null;
     }
-
+    
     public String editar(Juridica j) {
+        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        juridica = j;
+        if (url != null && !url.isEmpty() && !url.equals("pessoaJuridica")) {
+            GenericaSessao.remove("juridicaBean");
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+            return url;
+        }
+        
         listaContribuintesInativos.clear();
         listaEmpresasPertencentes.clear();
         contribuintesInativos = new ContribuintesInativos();
-        juridica = j;
         if (juridica.getContabilidade() == null) {
             contabilidade = new Juridica();
         } else {
             contabilidade = juridica.getContabilidade();
         }
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -813,7 +819,7 @@ public class JuridicaBean implements Serializable {
                 }
             }
         }
-
+        
         if (!getListaPorte().isEmpty()) {
             for (int o = 0; o < listaPorte.size(); o++) {
                 if (Integer.parseInt(listaPorte.get(o).getDescription()) == juridica.getPorte().getId()) {
@@ -821,26 +827,24 @@ public class JuridicaBean implements Serializable {
                 }
             }
         }
-
-        if (url != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
-            getContribuinte();
-            if (juridica.getContabilidade() == null) {
-                renChkEndereco = "false";
-            } else {
-                renChkEndereco = "true";
-            }
-            renNovoEndereco = false;
-            renEndereco = false;
-            alterarEnd = true;
-            listaEnd = new ArrayList();
-            enderecoCobranca = "NENHUM";
-            getListaEnderecos();
-
-            if (contabilidade != null) {
-                if (contabilidade.getId() != -1) {
-                    PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                    // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
+        
+        getContribuinte();
+        if (juridica.getContabilidade() == null) {
+            renChkEndereco = "false";
+        } else {
+            renChkEndereco = "true";
+        }
+        renNovoEndereco = false;
+        renEndereco = false;
+        alterarEnd = true;
+        listaEnd = new ArrayList();
+        enderecoCobranca = "NENHUM";
+        getListaEnderecos();
+        
+        if (contabilidade != null) {
+            if (contabilidade.getId() != -1) {
+                PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+                // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
 //                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
 //                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
 //                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
@@ -848,9 +852,7 @@ public class JuridicaBean implements Serializable {
 //                    } else {
 //                        chkEndContabilidade = false;
 //                    }
-                }
             }
-            return url;
         }
         return "pessoaJuridica";
     }
@@ -921,7 +923,7 @@ public class JuridicaBean implements Serializable {
                 }
             }
         }
-
+        
         if (url != null) {
             if (!getListaTipoDocumento().isEmpty()) {
                 for (int o = 0; o < listaTipoDocumento.size(); o++) {
@@ -946,7 +948,7 @@ public class JuridicaBean implements Serializable {
         }
         return "pessoaJuridica";
     }
-
+    
     public String editarEmpresaContabilidade() {
         // JuridicaDB db = new JuridicaDBToplink();
         //juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
@@ -986,7 +988,7 @@ public class JuridicaBean implements Serializable {
         }
         return "pessoaJuridica";
     }
-
+    
     public String editarContabilidade(Juridica j) {
         contabilidade = j; //(Juridica) listaContabilidade.get(idIndexContabilidade);
         juridica.setContabilidade(contabilidade);
@@ -1032,7 +1034,7 @@ public class JuridicaBean implements Serializable {
                 num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
                 if (!listaEnd.isEmpty() && (pessoaEndereco.getTipoEndereco().getId() == 2)) {
-
+                    
                     if (pessoaEndereco.getId() != -1) {
                         // PessoaEndereco pessoaEndeAnt = new PessoaEndereco();
                         PessoaEndereco pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 2);
@@ -1066,7 +1068,7 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
-
+                    
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setEndereco(endereco);
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setComplemento(pessoaEndereco.getComplemento());
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setNumero(pessoaEndereco.getNumero());
@@ -1082,7 +1084,7 @@ public class JuridicaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
         return "pessoaJuridica";
     }
-
+    
     public boolean comparaEndereco(PessoaEndereco pessoaEnde1, PessoaEndereco pessoaEnde2) {
         boolean compara;
         if (pessoaEnde1 != null && pessoaEnde2 != null) {
@@ -1102,7 +1104,7 @@ public class JuridicaBean implements Serializable {
         }
         return compara;
     }
-
+    
     public List<PessoaEndereco> getListaEnderecos() {
         // PessoaEndereco pesEn = new PessoaEndereco();
         String strCompl;
@@ -1120,7 +1122,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaEnd;
     }
-
+    
     public void abreEndereco() {
         listaEnd = getListaEnderecos();
         if (listaEnd.isEmpty()) {
@@ -1133,7 +1135,7 @@ public class JuridicaBean implements Serializable {
             renNovoEndereco = false;
         }
     }
-
+    
     public void salvarEndereco() {
         //VERIFICAR ENDERECO CONTABILIDADE
         verificarEndContabilidade();
@@ -1176,12 +1178,12 @@ public class JuridicaBean implements Serializable {
                         }
                     }
                 }
-
+                
             }
             pessoaEndereco = new PessoaEndereco();
         }
     }
-
+    
     public void verificarEndContabilidade() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
@@ -1213,25 +1215,25 @@ public class JuridicaBean implements Serializable {
             }
         }
     }
-
+    
     public void pesquisaContabilidadeI() {
         if (!contabilidade.getPessoa().getNome().isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
             listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "I");
-        }else{
+        } else {
             listaContabilidade = new ArrayList<Juridica>();
         }
     }
-
+    
     public void pesquisaContabilidadeP() {
         if (!contabilidade.getPessoa().getNome().isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
             listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "P");
-        }else{
+        } else {
             listaContabilidade = new ArrayList<Juridica>();
         }
     }
-
+    
     public String atualizarEndJuridicaComContabil() {
         if (juridica.getId() != -1) {
             JuridicaDB db = new JuridicaDBToplink();
@@ -1260,7 +1262,7 @@ public class JuridicaBean implements Serializable {
         }
         return null;
     }
-
+    
     public String RetornarObjetoDaGrid(PessoaEndereco linha, int index) {
         pessoaEndereco = linha;//(PessoaEndereco) listaEnd.get(idIndexEndereco);
         idIndexEndereco = index;
@@ -1276,13 +1278,13 @@ public class JuridicaBean implements Serializable {
         alterarEnd = true;
         return "pessoaJuridica";
     }
-
+    
     public List getListaPessoaEndereco() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
         return result;
     }
-
+    
     public String CarregarEndereco() {
         EnderecoDB db_endereco = new EnderecoDBToplink();
         int idEndereco = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paramEndereco"));
@@ -1290,7 +1292,7 @@ public class JuridicaBean implements Serializable {
         setEnderecoCompleto((pessoaEndereco.getEndereco().getLogradouro().getDescricao()) + " " + pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao());
         return "pessoaJuridica";
     }
-
+    
     public List<String> BuscaTipoEndereco(Object event) {
         //List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
@@ -1298,7 +1300,7 @@ public class JuridicaBean implements Serializable {
         List<String> result = db.pesquisaTipoEnderecoParaJuridica('%' + txtDigitado + '%');
         return (result);
     }
-
+    
     public List<String> BuscaTipoDocumento(Object event) {
         //List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
@@ -1306,18 +1308,18 @@ public class JuridicaBean implements Serializable {
         List<String> result = db.pesquisaTipoDocumento('%' + txtDigitado + '%');
         return (result);
     }
-
+    
     public List getPesquisaEndPorPessoa() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         List result = db.pesquisaEndPorPessoa(juridica.getPessoa().getId());
         return result;
     }
-
+    
     public String voltarEndereco() {
         indicaTab = 0;
         return "pessoaJuridica";
     }
-
+    
     public boolean getHabilitar() {
         if (juridica.getPessoa().getId() == -1) {
             return true;
@@ -1325,7 +1327,7 @@ public class JuridicaBean implements Serializable {
             return false;
         }
     }
-
+    
     public boolean getHabilitarFilial() {
         if ((juridica.getPessoa().getId() != -1) && (filialMatriz.equals("m"))) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -1351,7 +1353,7 @@ public class JuridicaBean implements Serializable {
             return true;
         }
     }
-
+    
     public String excluirPessoaEndereco() {
         if (pessoaEndereco.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -1366,32 +1368,32 @@ public class JuridicaBean implements Serializable {
         setEnderecoCompleto("");
         return "pessoaJuridica";
     }
-
+    
     public void refreshForm() {
     }
-
+    
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
         listaJuridica.clear();
     }
-
+    
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
         listaJuridica.clear();
     }
-
+    
     public void acaoPesquisaCnaeInicial() {
         comoPesquisaCnae = "I";
         descPesquisaCnae = descPesquisaCnae.replace("-", "").replace("/", "").replace(".", "");
         listaCnae.clear();
     }
-
+    
     public void acaoPesquisaCnaeParcial() {
         comoPesquisaCnae = "P";
         descPesquisaCnae = descPesquisaCnae.replace("-", "").replace("/", "").replace(".", "");
         listaCnae.clear();
     }
-
+    
     public List<Cnae> getListaCnae() {
         if (listaCnae.isEmpty()) {
             CnaeDB db = new CnaeDBToplink();
@@ -1399,11 +1401,11 @@ public class JuridicaBean implements Serializable {
         }
         return listaCnae;
     }
-
+    
     public void setListaCnae(List<Cnae> listaCnae) {
         this.listaCnae = listaCnae;
     }
-
+    
     public void retornaCnaeReceita(Cnae cn) {
         juridica.setCnae(cn);
         CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
@@ -1415,7 +1417,7 @@ public class JuridicaBean implements Serializable {
             colorContri = "red";
         }
     }
-
+    
     public String retornaCnae(Cnae cn) {
         //Cnae tcnae = null;
         //Cnae tcnae = (Cnae) listaCnae.get(idIndexCnae);
@@ -1438,7 +1440,7 @@ public class JuridicaBean implements Serializable {
             return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
     }
-
+    
     public String JuridicaFilialGrid() {
         filial = new Filial();
         int i = filial.getFilial().getId();
@@ -1453,14 +1455,14 @@ public class JuridicaBean implements Serializable {
         //setIndicaTab("filial");
         return "pessoaJuridica";
     }
-
+    
     public List getPesquisaJuridicaFilial() {
         //List result = null;
         FilialDB db = new FilialDBToplink();
         List result = db.pesquisaJuridicaFilial(juridica.getId());
         return result;
     }
-
+    
     public void excluirFilial() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         FilialDB db = new FilialDBToplink();
@@ -1473,14 +1475,14 @@ public class JuridicaBean implements Serializable {
         }
         filial = new Filial();
     }
-
+    
     public List getPesquisaFilial() {
         //List result = null;
         FilialDB db = new FilialDBToplink();
         List result = db.pesquisaFilial(descPesquisa, porPesquisa, comoPesquisa, juridica.getId());
         return result;
     }
-
+    
     public boolean getHabilitarComboBoxFilial() {
         if (juridica.getPessoa().getId() == -1) {
             return false;
@@ -1488,7 +1490,7 @@ public class JuridicaBean implements Serializable {
             return true;
         }
     }
-
+    
     public String getColocarMascara() {
         int i = Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription());
         // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
@@ -1507,7 +1509,7 @@ public class JuridicaBean implements Serializable {
         }
         return mask;
     }
-
+    
     public List<SelectItem> getListaTipoDocumento() {
         if (listaTipoDocumento.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -1518,7 +1520,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaTipoDocumento;
     }
-
+    
     public String getRetornarEnderecoAmbos() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
             log = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getLogradouro().getDescricao();
@@ -1529,7 +1531,7 @@ public class JuridicaBean implements Serializable {
         }
         return enderecoCompleto;
     }
-
+    
     public CnaeConvencao retornarCnaeConvencao() {
         CnaeConvencaoDB dbCnae = new CnaeConvencaoDBToplink();
         if (juridica.getCnae() != null && juridica.getCnae().getId() != -1) {
@@ -1539,7 +1541,7 @@ public class JuridicaBean implements Serializable {
         }
         return cnaeConvencao;
     }
-
+    
     public void btnExcluirContabilidadePertencente() {
 //        if (juridica.getId() != -1) {
 //            //chkEndContabilidade = false;
@@ -1554,20 +1556,20 @@ public class JuridicaBean implements Serializable {
 //            juridica.setCobrancaEscritorio(false);
 //            listaEnd.set(1, listaEnd.get(0));
 //        }
-        
+
         juridica.setContabilidade(null);
         juridica.setEmailEscritorio(false);
         juridica.setCobrancaEscritorio(false);
-
-        if (!listaEnd.isEmpty()){
-            PessoaEndereco pe = (PessoaEndereco)listaEnd.get(1);
-            pe.setComplemento( ((PessoaEndereco)listaEnd.get(0)).getComplemento() );
-            pe.setEndereco( ((PessoaEndereco)listaEnd.get(0)).getEndereco() );
-            pe.setNumero( ((PessoaEndereco)listaEnd.get(0)).getNumero() );
+        
+        if (!listaEnd.isEmpty()) {
+            PessoaEndereco pe = (PessoaEndereco) listaEnd.get(1);
+            pe.setComplemento(((PessoaEndereco) listaEnd.get(0)).getComplemento());
+            pe.setEndereco(((PessoaEndereco) listaEnd.get(0)).getEndereco());
+            pe.setNumero(((PessoaEndereco) listaEnd.get(0)).getNumero());
             listaEnd.set(1, pe);
         }
     }
-
+    
     public List<SelectItem> getListaMotivoInativacao() {
         if (listaMotivoInativacao.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -1580,17 +1582,17 @@ public class JuridicaBean implements Serializable {
         }
         return listaMotivoInativacao;
     }
-
+    
     public String pesquisarPessoaJuridicaGeracaoCadastrar() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "processamentoIndividual");
         return "pessoaJuridica";
     }
-
+    
     public boolean validaTipoDocumento(int idDoc, String docS) {
         // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
         //String documento = "";
         String documento = docS.replace(".", "").replace("/", "").replace("-", "");
-
+        
         boolean ye = false;
         if (idDoc == 1) {
             ye = ValidaDocumentos.isValidoCPF(documento);
@@ -1605,10 +1607,10 @@ public class JuridicaBean implements Serializable {
         if (idDoc == 4) {
             ye = true;
         }
-
+        
         return ye;
     }
-
+    
     public String linkDaReceita() {
         if (juridica != null) {
             int i = 0;
@@ -1633,7 +1635,7 @@ public class JuridicaBean implements Serializable {
         }
         return null;
     }
-
+    
     public List<DataObject> getListaEmpresasPertencentes() {
         JuridicaDB db = new JuridicaDBToplink();
         PessoaEnderecoDB dbPe = new PessoaEnderecoDBToplink();
@@ -1648,7 +1650,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaEmpresasPertencentes;
     }
-
+    
     public void enviarEmail() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         EnvioEmailsDB dbE = new EnvioEmailsDBToplink();
@@ -1658,7 +1660,7 @@ public class JuridicaBean implements Serializable {
 //                dbE.insert(envioEmails);
 //                GenericaMensagem.warn("Erro", "Enviado com Sucesso. Confira email cadastrado!");
 //            }
-            
+
             DaoInterface di = new Dao();
             Mail mail = new Mail();
             mail.setFiles(new ArrayList());
@@ -1671,7 +1673,7 @@ public class JuridicaBean implements Serializable {
                             (Rotina) di.find(new Rotina(), 82),
                             null,
                             "Envio de Login e Senha",
-                            "<h5><b>Login: </b> " + juridica.getPessoa().getLogin() + "</h5><br /> <h5><b>Senha: </b> " + juridica.getPessoa().getSenha()+"</h5>",
+                            "<h5><b>Login: </b> " + juridica.getPessoa().getLogin() + "</h5><br /> <h5><b>Senha: </b> " + juridica.getPessoa().getSenha() + "</h5>",
                             false,
                             false
                     )
@@ -1691,7 +1693,7 @@ public class JuridicaBean implements Serializable {
             }
             
             String[] retorno = mail.send("personalizado");
-
+            
             if (!retorno[1].isEmpty()) {
                 msgConfirma = retorno[1];
                 GenericaMensagem.error("Erro", msgConfirma);
@@ -1704,7 +1706,7 @@ public class JuridicaBean implements Serializable {
             GenericaMensagem.warn("Erro", "Pesquisar uma Empresa para envio!");
         }
     }
-
+    
     public String enviarEmailParaTodos() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         JuridicaDB juridicaDB = new JuridicaDBToplink();
@@ -1713,7 +1715,7 @@ public class JuridicaBean implements Serializable {
         msgConfirma = EnviarEmail.EnviarEmailAutomatico(reg, juridicas);
         return null;
     }
-
+    
     public boolean isRenEnviarEmail() {
         if (juridica.getId() == 1) {
             return false;
@@ -1721,7 +1723,7 @@ public class JuridicaBean implements Serializable {
             return true;
         }
     }
-
+    
     public void gerarLoginSenhaPessoa(Pessoa pessoa, SalvarAcumuladoDB dbSalvar) {
         String login = "", senha = "", nome = "";
         senha = senha + DataHoje.hora().replace(":", "");
@@ -1742,7 +1744,7 @@ public class JuridicaBean implements Serializable {
         pessoa.setSenha(senha);
         dbSalvar.alterarObjeto(pessoa);
     }
-
+    
     public void atualizaEnvioEmails() {
         if (juridica.getId() != -1) {
             envioEmails = new EnvioEmails();
@@ -1755,137 +1757,137 @@ public class JuridicaBean implements Serializable {
             listEn = new ArrayList();
         }
     }
-
+    
     public String bloqueioContribuicao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).bloqueioServicos();
     }
-
+    
     public String extratoTela() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
     }
-
+    
     public String retornaDaInativacao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return "pessoaJuridica";
     }
-
+    
     public void setFilialSwap(Filial filialSwap) {
         this.filialSwap = filialSwap;
     }
-
+    
     public Filial getFilialSwap() {
         return filialSwap;
     }
-
+    
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-
+    
     public Filial getFilial() {
         return filial;
     }
-
+    
     public void setFilialMatriz(String filialMatriz) {
         this.filialMatriz = filialMatriz;
     }
-
+    
     public String getFilialMatriz() {
         return filialMatriz;
     }
-
+    
     public void setComoPesquisaCnae(String comoPesquisaCnae) {
         this.comoPesquisaCnae = comoPesquisaCnae;
     }
-
+    
     public String getComoPesquisaCnae() {
         return comoPesquisaCnae;
     }
-
+    
     public void setPorPesquisaCnae(String porPesquisaCnae) {
         this.porPesquisaCnae = porPesquisaCnae;
     }
-
+    
     public String getPorPesquisaCnae() {
         return porPesquisaCnae;
     }
-
+    
     public void setDescPesquisaCnae(String descPesquisaCnae) {
         this.descPesquisaCnae = descPesquisaCnae;
     }
-
+    
     public String getDescPesquisaCnae() {
         return descPesquisaCnae;
     }
-
+    
     public void setComoPesquisa(String comoPesquisa) {
         this.comoPesquisa = comoPesquisa;
     }
-
+    
     public String getComoPesquisa() {
         return comoPesquisa;
     }
-
+    
     public void setPorPesquisa(String porPesquisa) {
         this.porPesquisa = porPesquisa;
     }
-
+    
     public String getPorPesquisa() {
         return porPesquisa;
     }
-
+    
     public void setDescPesquisa(String descPesquisa) {
         this.descPesquisa = descPesquisa;
     }
-
+    
     public String getDescPesquisa() {
         return descPesquisa;
     }
-
+    
     public void setEnderecoDeletado(String enderecoDeletado) {
         this.enderecoDeletado = enderecoDeletado;
     }
-
+    
     public String getEnderecoDeletado() {
         return enderecoDeletado;
     }
-
+    
     public void setPessoaEndereco(PessoaEndereco pessoaEndereco) {
         this.pessoaEndereco = pessoaEndereco;
     }
-
+    
     public PessoaEndereco getPessoaEndereco() {
         return pessoaEndereco;
     }
-
+    
     public void setEnderecoCompleto(String enderecoCompleto) {
         this.enderecoCompleto = enderecoCompleto;
     }
-
+    
     public String getEnderecoCompleto() {
         return enderecoCompleto;
     }
-
+    
     public void setIndicaTab(int indicaTab) {
         this.indicaTab = indicaTab;
     }
-
+    
     public int getIndicaTab() {
         return indicaTab;
     }
-
-    public Juridica getJuridica() {        
+    
+    public Juridica getJuridica() {
         if (juridica.getFantasia().isEmpty() || juridica.getFantasia() == null) {
             juridica.setFantasia(juridica.getPessoa().getNome());
         }
         return juridica;
     }
-
+    
     public void setJuridica(Juridica juridica) {
         this.juridica = juridica;
     }
-
+    
     public String getStrGrupoCidade() {
         ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
         if (convencao.getId() != -1 && !listaEnd.isEmpty()) {
@@ -1902,67 +1904,67 @@ public class JuridicaBean implements Serializable {
         }
         return strGrupoCidade;
     }
-
+    
     public void setStrGrupoCidade(String strGrupoCidade) {
         this.strGrupoCidade = strGrupoCidade;
     }
-
+    
     public String getMsgConfirma() {
         return msgConfirma;
     }
-
+    
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
     }
-
+    
     public boolean getMarcar() {
         return marcar;
     }
-
+    
     public void setMarcar(boolean marcar) {
         this.marcar = marcar;
     }
-
+    
     public int getIdTipoDocumento() {
         return idTipoDocumento;
     }
-
+    
     public void setIdTipoDocumento(int idTipoDocumento) {
         this.idTipoDocumento = idTipoDocumento;
     }
-
+    
     public int getIdMotivoInativacao() {
         return idMotivoInativacao;
     }
-
+    
     public void setIdMotivoInativacao(int idMotivoInativacao) {
         this.idMotivoInativacao = idMotivoInativacao;
     }
-
+    
     public Convencao getConvencao() {
         return convencao;
     }
-
+    
     public void setConvencao(Convencao convencao) {
         this.convencao = convencao;
     }
-
+    
     public CnaeConvencao getCnaeConvencao() {
         return cnaeConvencao;
     }
-
+    
     public void setCnaeConvencao(CnaeConvencao cnaeConvencao) {
         this.cnaeConvencao = cnaeConvencao;
     }
-
+    
     public String getCnaeContribuinte() {
         return cnaeContribuinte;
     }
-
+    
     public void setCnaeContribuinte(String cnaeContribuinte) {
         this.cnaeContribuinte = cnaeContribuinte;
     }
-
+    
     public String abrirPDFConvencao() {
 //        ImprimirBoleto imp = new ImprimirBoleto();
 //        ConvencaoCidade conv = new ConvencaoCidade();
@@ -1975,7 +1977,7 @@ public class JuridicaBean implements Serializable {
                     String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                     File fl = new File(caminho);
                     if (fl.exists()) {
-
+                        
                         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                         response.sendRedirect("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                         //imp.visualizar(fl);
@@ -1986,7 +1988,7 @@ public class JuridicaBean implements Serializable {
         }
         return null;
     }
-
+    
     public String getStrCnaeConvencao() {
         //CnaeConvencao cc = new CnaeConvencao();
         CnaeConvencao cc = retornarCnaeConvencao();
@@ -1999,19 +2001,19 @@ public class JuridicaBean implements Serializable {
         }
         return strCnaeConvencao;
     }
-
+    
     public void setStrCnaeConvencao(String strCnaeConvencao) {
         this.strCnaeConvencao = strCnaeConvencao;
     }
-
+    
     public ContribuintesInativos getContribuintesInativos() {
         return contribuintesInativos;
     }
-
+    
     public void setContribuintesInativos(ContribuintesInativos contribuintesInativos) {
         this.contribuintesInativos = contribuintesInativos;
     }
-
+    
     public String getStrSimpleEndereco() {
         if (juridica.getId() == -1) {
             strSimpleEndereco = "Adicionar Endereço";
@@ -2020,23 +2022,23 @@ public class JuridicaBean implements Serializable {
         }
         return strSimpleEndereco;
     }
-
+    
     public void setStrSimpleEndereco(String strSimpleEndereco) {
         this.strSimpleEndereco = strSimpleEndereco;
     }
-
+    
     public boolean getRenNovoEndereco() {
         return renNovoEndereco;
     }
-
+    
     public void setRenNovoEndereco(boolean renNovoEndereco) {
         this.renNovoEndereco = renNovoEndereco;
     }
-
+    
     public boolean getRenEndereco() {
         return renEndereco;
     }
-
+    
     public void setRenEndereco(boolean renEndereco) {
         this.renEndereco = renEndereco;
     }
@@ -2058,39 +2060,39 @@ public class JuridicaBean implements Serializable {
     public void setRenChkEndereco(String renChkEndereco) {
         this.renChkEndereco = renChkEndereco;
     }
-
+    
     public String getColorContri() {
         return colorContri;
     }
-
+    
     public void setColorContri(String colorContri) {
         this.colorContri = colorContri;
     }
-
+    
     public String getNumDocumento() {
         return numDocumento;
     }
-
+    
     public void setNumDocumento(String numDocumento) {
         this.numDocumento = numDocumento;
     }
-
+    
     public void setHabServContabil(boolean habServContabil) {
         this.habServContabil = habServContabil;
     }
-
+    
     public void setListaTipoDocumento(List<SelectItem> listaTipoDocumento) {
         this.setListaTipoDocumento(listaTipoDocumento);
     }
-
+    
     public EnvioEmails getEnvioEmails() {
         return envioEmails;
     }
-
+    
     public void setEnvioEmails(EnvioEmails envioEmails) {
         this.envioEmails = envioEmails;
     }
-
+    
     public String getAtualiza() {
         if (atualiza.isEmpty()) {
             atualiza = "Agora ";
@@ -2099,7 +2101,7 @@ public class JuridicaBean implements Serializable {
         }
         return atualiza;
     }
-
+    
     public void setAtualiza(String atualiza) {
         this.atualiza = atualiza;
     }
@@ -2139,7 +2141,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaJuridica;
     }
-
+    
     public String status(Juridica j) {
         String status;
         JuridicaDB db = new JuridicaDBToplink();
@@ -2155,79 +2157,79 @@ public class JuridicaBean implements Serializable {
         }
         return status;
     }
-
+    
     public int getIdIndex() {
         return idIndex;
     }
-
+    
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
     }
-
+    
     public int getIdIndexCnae() {
         return idIndexCnae;
     }
-
+    
     public void setIdIndexCnae(int idIndexCnae) {
         this.idIndexCnae = idIndexCnae;
     }
-
+    
     public int getIdIndexEndereco() {
         return idIndexEndereco;
     }
-
+    
     public void setIdIndexEndereco(int idIndexEndereco) {
         this.idIndexEndereco = idIndexEndereco;
     }
-
+    
     public int getIdIndexInativacao() {
         return idIndexInativacao;
     }
-
+    
     public void setIdIndexInativacao(int idIndexInativacao) {
         this.idIndexInativacao = idIndexInativacao;
     }
-
+    
     public boolean isRenderAtivoInativo() {
         return renderAtivoInativo;
     }
-
+    
     public void setRenderAtivoInativo(boolean renderAtivoInativo) {
         this.renderAtivoInativo = renderAtivoInativo;
     }
-
+    
     public Juridica getContabilidade() {
         return contabilidade;
     }
-
+    
     public void setContabilidade(Juridica contabilidade) {
         this.contabilidade = contabilidade;
     }
-
+    
     public int getIdIndexContabilidade() {
         return idIndexContabilidade;
     }
-
+    
     public void setIdIndexContabilidade(int idIndexContabilidade) {
         this.idIndexContabilidade = idIndexContabilidade;
     }
-
+    
     public List<Juridica> getListaContabilidade() {
         return listaContabilidade;
     }
-
+    
     public void setListaContabilidade(List<Juridica> listaContabilidade) {
         this.listaContabilidade = listaContabilidade;
     }
-
+    
     public int getIdIndexPertencente() {
         return idIndexPertencente;
     }
-
+    
     public void setIdIndexPertencente(int idIndexPertencente) {
         this.idIndexPertencente = idIndexPertencente;
     }
-
+    
     public String getStrArquivo() {
         //ConvencaoCidade conv = new ConvencaoCidade();
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
@@ -2250,19 +2252,19 @@ public class JuridicaBean implements Serializable {
         }
         return strArquivo;
     }
-
+    
     public void setStrArquivo(String strArquivo) {
         this.strArquivo = strArquivo;
     }
-
+    
     public String getMsgDocumento() {
         return msgDocumento;
     }
-
+    
     public void setMsgDocumento(String msgDocumento) {
         this.msgDocumento = msgDocumento;
     }
-
+    
     public String getMaskCnae() {
         if (porPesquisaCnae.equals("cnae")) {
             maskCnae = "cnae";
@@ -2271,19 +2273,19 @@ public class JuridicaBean implements Serializable {
         }
         return maskCnae;
     }
-
+    
     public void setMaskCnae(String maskCnae) {
         this.maskCnae = maskCnae;
     }
-
+    
     public int getIdPorte() {
         return idPorte;
     }
-
+    
     public void setIdPorte(int idPorte) {
         this.idPorte = idPorte;
     }
-
+    
     public List<SelectItem> getListaPorte() {
         if (listaPorte.isEmpty()) {
             List<Porte> select = new SalvarAcumuladoDBToplink().listaObjeto("Porte");
@@ -2295,22 +2297,22 @@ public class JuridicaBean implements Serializable {
         }
         return listaPorte;
     }
-
+    
     public void setListaPorte(List<SelectItem> listaPorte) {
         this.listaPorte = listaPorte;
     }
-
+    
     public String limparCampoPesquisa() {
         setDescPesquisa("");
         return null;
     }
-
+    
     public void limparCnae() {
         //if (juridica.getId() != -1) {
-            juridica.setCnae(null);
+        juridica.setCnae(null);
         //}
     }
-
+    
     public String getMascaraPesquisaJuridica() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
     }
