@@ -35,17 +35,21 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
@@ -172,7 +176,12 @@ public class RecepcaoBean implements Serializable {
             progressUpdate = 100;
             progressLabel = 10;
             loadListHorarios();
-            PF.update(":formRecepcao:i_tabview:i_status; :formRecepcao:i_tabview:i_panel_tbl");
+            //PF.update(":formRecepcao:i_tabview:i_status; :formRecepcao:i_tabview:i_panel_tbl");
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("");
+            } catch (IOException ex) {
+                Logger.getLogger(RecepcaoBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -984,18 +993,19 @@ public class RecepcaoBean implements Serializable {
                 isOposicao = true;
             }
 
-            if (senha != null && !isOposicao) {
+            
+            if (senha != null && senha.getId() != -1){
+                senhaString = ((Integer) senha.getSenha()).toString();
+            }
+            
+            if (!isOposicao) {
                 Cancelamento can = (Cancelamento) db.pesquisaCancelamentoPorAgendanto(ag.get(i).getId());
                 if (senha.getId() != -1 && can == null) {
-                    // senhaString = senha.getId() == -1 ? null : senha.getSenha();
                     senhaId = "tblListaRecepcaox";
-                    senhaString = ((Integer) senha.getSenha()).toString();
-                } else {
-
-                }
+                } 
             } else {
                 senhaId = "tblAgendamentoOposicaox";
-                senhaString = ((Integer) senha.getSenha()).toString();
+                
             }
 
             listaHorarios.add(new DataObject(

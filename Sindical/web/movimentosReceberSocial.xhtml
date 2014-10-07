@@ -110,7 +110,7 @@
                             </h:panelGrid>
                             
                             <p:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!">
-                                <p:column style="text-align: center;">
+                                <p:column style="text-align: center; width: 15px">
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosSocialBean.calculoDesconto()}"/>
                                     </p:selectBooleanCheckbox>

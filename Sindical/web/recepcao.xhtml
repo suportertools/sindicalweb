@@ -43,7 +43,7 @@
                         <h:panelGrid style="clear: both;">
                             <h:form id="formRecepcao" >
                                 <c:set scope="request" var="object" value="${recepcaoBean.agendamento}"/>
-                                <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl"/>
+                                <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl" rendered="false"/>
                                 <p:poll global="false" interval="1" update=":formRecepcao:i_tabview:i_progress_update" listener="#{recepcaoBean.progress()}" />
                                 
                                 <p:tabView id="i_tabview" style="width: 1000px" >
@@ -163,10 +163,10 @@
 
                                                 <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50">
                                                     <center>
-                                                        <h:column rendered="${!linha.argumento10.equals('')}">
+                                                        <h:column rendered="#{!linha.argumento10.equals('')}">
                                                             <p:commandLink ajax="false" action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha" style="font-size: 8pt!important" />
                                                         </h:column>
-                                                        <h:column rendered="${linha.argumento10.equals('')}">
+                                                        <h:column rendered="#{linha.argumento10.equals('')}">
                                                             <h:outputLabel value="#{linha.argumento10}" style="font-size: 8pt!important"/>
                                                         </h:column>
                                                     </center>
@@ -211,6 +211,20 @@
                                                         </p:column>
                                                     </h:panelGrid>
                                                 </p:rowExpansion>
+                                                
+                                                <f:facet name="footer">
+                                                    <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                                        <h:column>
+                                                            <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                                            <h:outputLabel value="Contém Oposição" />
+                                                        </h:column>
+                                                        
+                                                        <h:column>
+                                                            <div style="width: 15px; height: 15px; background: #39ff9c; float: left; margin-right: 5px"></div>
+                                                            <h:outputLabel value="Contém Senha" />
+                                                        </h:column>
+                                                    </h:panelGrid>
+                                                </f:facet>                                                
                                             </p:dataTable>
                                         </h:panelGrid>                                            
                                     </p:tab>

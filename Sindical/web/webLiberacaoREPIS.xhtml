@@ -30,26 +30,44 @@
                 <h:form id="form_libera_repis">
                     <p:ajaxStatus></p:ajaxStatus>
                     <p:panel styleClass="fundoCinza">
-                        <h:panelGrid id="i_panel" columns="5">
-                            <p:inputMask size="30" value="#{webREPISBean.descricao}" mask="#{webREPISBean.tipoPesquisa.equals('cnpj') ? '99?.999.999/9999-99' : ''}" rendered="#{!webREPISBean.tipoPesquisa.equals('tipo')}" />
-                            <p:selectOneMenu value="#{webREPISBean.indexCertidaoTipo}" rendered="#{webREPISBean.tipoPesquisa.equals('tipo')}" style="padding-right: 15px;">
-                                <p:ajax update="@this" event="change" />
-                                <f:selectItems value="#{webREPISBean.listaTipoCertidao}" />
-                            </p:selectOneMenu>
-                            <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 15px;">
-                                <p:ajax event="change" update="@this, :form_libera_repis:" />
-                                <f:selectItem itemLabel="Nome" itemValue="nome"/>
-                                <f:selectItem itemLabel="CNPJ" itemValue="cnpj"/>
-                                <f:selectItem itemLabel="Protocolo" itemValue="protocolo"/>
-                                <f:selectItem itemLabel="Status" itemValue="status"/>
-                                <f:selectItem itemLabel="Solicitante" itemValue="solicitante"/>
-                                <f:selectItem itemLabel="Tipo" itemValue="tipo"/>
-                            </p:selectOneMenu>
-                            <p:commandButton id="i_pesquisar" value="Pesquisar" action="#{webREPISBean.pesquisar()}" style="margin-left: 15px;" update="tbl"/>
+                        <h:panelGrid id="i_panel" columns="2" style="width: 100%">
+                            <h:column>
+                                <h:panelGrid columns="4">
+                                    <p:inputMask size="30" value="#{webREPISBean.descricao}" mask="#{webREPISBean.tipoPesquisa.equals('cnpj') ? '99?.999.999/9999-99' : ''}" rendered="#{!webREPISBean.tipoPesquisa.equals('tipo') and !webREPISBean.tipoPesquisa.equals('status')}" />
+                                    <p:selectOneMenu value="#{webREPISBean.indexCertidaoTipo}" rendered="#{webREPISBean.tipoPesquisa.equals('tipo')}" style="padding-right: 15px;">
+                                        <p:ajax update="@this" event="change" />
+                                        <f:selectItems value="#{webREPISBean.listaTipoCertidao}" />
+                                    </p:selectOneMenu>
+                                    <p:selectOneMenu value="#{webREPISBean.indexStatus}" rendered="#{webREPISBean.tipoPesquisa.equals('status')}" style="padding-right: 15px;">
+                                        <p:ajax update="@this" event="change" />
+                                        <f:selectItems value="#{webREPISBean.listaStatus}" />
+                                    </p:selectOneMenu>                                    
+                                    <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 15px;">
+                                        <p:ajax event="change" update="@this, :form_libera_repis:" />
+                                        <f:selectItem itemLabel="Nome" itemValue="nome"/>
+                                        <f:selectItem itemLabel="CNPJ" itemValue="cnpj"/>
+                                        <f:selectItem itemLabel="Protocolo" itemValue="protocolo"/>
+                                        <f:selectItem itemLabel="Status" itemValue="status"/>
+                                        <f:selectItem itemLabel="Solicitante" itemValue="solicitante"/>
+                                        <f:selectItem itemLabel="Tipo" itemValue="tipo"/>
+                                    </p:selectOneMenu>
+                                    <p:commandButton id="i_pesquisar" value="Pesquisar" action="#{webREPISBean.pesquisar()}" style="margin-left: 15px;" update="tbl"/>
+                                </h:panelGrid>
+                            </h:column>
+                            <h:column>
+                                <p:menuButton value="#{webREPISBean.valueLenght}" style="float: right">
+                                    <p:menuitem value="15" actionListener="#{webREPISBean.alterValueLenght('15')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="50" actionListener="#{webREPISBean.alterValueLenght('50')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="100" actionListener="#{webREPISBean.alterValueLenght('100')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="200" actionListener="#{webREPISBean.alterValueLenght('200')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:separator />
+                                    <p:menuitem value="Tudo (não recomendado)" actionListener="#{webREPISBean.alterValueLenght('tudo')}" update="@this i_panel tbl" />
+                                </p:menuButton>
+                            </h:column>
                         </h:panelGrid>
                     </p:panel>
                     <p:messages id="i_msg" showDetail="true" closable="true" />
-                    <p:dataTable id="tbl" styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" selection="#{webREPISBean.listRepisMovimentoPatronalSelecionado}" rowKey="#{repisMovimento.id}" var="repisMovimento" style="width: 100%" emptyMessage="Nenhum registro encontrado."> 
+                    <p:dataTable id="tbl" styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" selection="#{webREPISBean.listRepisMovimentoPatronalSelecionado}" rowKey="#{repisMovimento.id}" var="repisMovimento" style="width: 100%" emptyMessage="Nenhum registro encontrado." scrollable="true" scrollHeight="450"> 
                         <p:ajax event="rowSelect" update=":form_libera_repis:i_panel_alterar" global="false"/>
                         <p:ajax event="rowSelectCheckbox" update=":form_libera_repis:i_panel_alterar" global="false"/>
                         <p:ajax event="rowUnselect"  update=":form_libera_repis:i_panel_alterar" global="false"/>
@@ -69,7 +87,7 @@
                         <p:column headerText="STATUS" width="60" style="text-align: center">
                             <p:outputLabel value="#{repisMovimento.repisStatus.descricao}"/>
                         </p:column>
-                        <p:column headerText="Emissão" width="70" style="text-align: center">
+                        <p:column headerText="Emissão" width="70" style="text-align: center" sortBy="#{repisMovimento.dataEmissao}">
                             <p:outputLabel value="#{repisMovimento.dataEmissaoString}"/>
                         </p:column>
                         <p:column headerText="Tipo" style="text-align: center">
@@ -78,7 +96,7 @@
                         <p:column headerText="Solicitante">
                             <p:outputLabel value="#{repisMovimento.contato}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Resposta" width="70" style="text-align: center">
+                        <p:column headerText="Resposta" width="70" style="text-align: center" sortBy="#{repisMovimento.dataResposta}">
                             <p:outputLabel value="#{repisMovimento.dataRespostaString}"/>
                         </p:column>
                         <p:column headerText="..." width="25" styleClass="text-center">

@@ -487,7 +487,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         }
 
         HomologacaoDB dba = new HomologacaoDBToplink();
-        Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
+        Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), empresa.getId());
         if (age != null) {
             GenericaMensagem.warn("Atenção", "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome());
             dao.rollback();

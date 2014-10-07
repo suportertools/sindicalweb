@@ -50,20 +50,16 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private int idHorarioAlternativo = 0;
     private String tipoAviso = "true";
     private String strEndereco = "";
-    private String msgAgendamento = "";
-    private String msgConfirma = "";
-    private String strSalvar = "Agendar";
     private String statusEmpresa = "REGULAR";
     private String cepEndereco = "";
     private String strContribuinte = "";
     private String emailEmpresa = "";
     private String styleDestaque = "";
-    private List listaGrid = new ArrayList();
     private List listaMovimento = new ArrayList();
-    private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDemissao = new ArrayList<SelectItem>();
-    private List<SelectItem> listaHorarioTransferencia = new ArrayList<SelectItem>();
-    private List<ListaAgendamento> listaHorarios = new ArrayList<ListaAgendamento>();
+    private List<SelectItem> listaStatus = new ArrayList();
+    private List<SelectItem> listaDemissao = new ArrayList();
+    private List<SelectItem> listaHorarioTransferencia = new ArrayList();
+    private List<ListaAgendamento> listaHorarios = new ArrayList();
     private Juridica juridica = new Juridica();
     private Fisica fisica = new Fisica();
     private Date data = DataHoje.dataHoje();
@@ -71,74 +67,162 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private Agendamento agendamento = new Agendamento();
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
     private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
-    private boolean renderAgendamento = true;
-    private boolean renderConcluir = false;
     private boolean renderCancelarHorario = false;
     private boolean renderCancelar = true;
-    private boolean disabledEmpresa = false;
-    private boolean disabledProtocolo = false;
     private boolean renderedDisponivel = false;
-    private boolean renderTransfere = false;
     private boolean ocultarHorarioAlternativo = true;
     private MacFilial macFilial = null;
     private int protocolo = 0;
     private int idIndex = -1;
     private int idIndexEndereco = -1;
     private int id_protocolo = -1;
-    private List listaEnderecos = new ArrayList();
+    private List<Endereco> listaEnderecos = new ArrayList();
     private PessoaEndereco enderecoFisica = new PessoaEndereco();
     private String enviarPara = "contabilidade";
     private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private boolean imprimirPro = false;
     private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
     private int counter = 0;
+    
+    private Registro registro = new Registro();
+    private boolean visibleModal = false;
+    private String tipoTelefone = "telefone";
+    
+    public AgendamentoBean() {
+        macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
+            
+        Dao dao = new Dao();
+        registro = (Registro) dao.find(new Registro(), 1);
 
-    public String salvarTransferencia() {
+        if (macFilial != null)
+            this.loadListaHorarios();
+        
+        this.loadListaHorariosTransferencia();
+    }    
+    
+    public void alterarTipoMascara() {
+        if (tipoTelefone.equals("telefone")) {
+            tipoTelefone = "celular";
+        } else {
+            tipoTelefone = "telefone";
+        }
+        agendamento.setTelefone("");
+    }
+    
+    public final void loadListaHorariosTransferencia(){
+        listaHorarioTransferencia.clear();
+        idHorarioTransferencia = 0;
+        
+        HomologacaoDB db = new HomologacaoDBToplink();
+        int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
+        List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
+        int qnt;
+        int j = 0;
+        for (Horarios listh : select) {
+            qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), listh, getDataTransferencia());
+            if (qnt == -1) {
+                listaHorarioTransferencia.add(new SelectItem(0, "Nenhum horário disponível", "0"));
+                return;
+            }
+            if (qnt > 0) {
+                listaHorarioTransferencia.add(new SelectItem(j, listh.getHora() + " (" + qnt + ")", String.valueOf(listh.getId())));
+                j++;
+            }
+        }
+    }
+    
+    public final void loadListaHorarios(){
+        listaHorarios.clear();
+        if (macFilial == null) {
+            return;
+        }
+        
+        int idNrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        int diaDaSemana = DataHoje.diaDaSemana(data);
+        renderedDisponivel = idNrStatus != 2 && idNrStatus != 3 && idNrStatus != 4 && idNrStatus != 5 && idNrStatus != 6 && idNrStatus != 7;
+        HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
+        List<Agendamento> agendamentos;
+        List<Horarios> horarios;
+        if (idNrStatus == 1 || idNrStatus == 6) {
+            horarios = homologacaoDB.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
+            for (int j = 0; j < horarios.size(); j++) {
+                ListaAgendamento listaAgendamento = new ListaAgendamento();
+                if (idNrStatus == 1) {
+                    int quantidade = homologacaoDB.pesquisaQntdDisponivel(macFilial.getFilial().getId(), horarios.get(j), getData());
+                    if (quantidade == -1) {
+                        GenericaMensagem.error("Erro", "Não foi possível pesquisar horários disponíveis!");
+                        break;
+                    }
+                    if (quantidade > 0) {
+                        listaAgendamento.setQuantidade(quantidade);
+                        listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
+                        listaHorarios.add(listaAgendamento);
+                    }
+                } else {
+                    listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
+                    listaHorarios.add(listaAgendamento);
+                }
+            }
+        } else {
+            agendamentos = homologacaoDB.pesquisaAgendamento(idNrStatus, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
+            for (Agendamento agenda : agendamentos) {
+                ListaAgendamento listaAgendamento = new ListaAgendamento();
+                Usuario u = new Usuario();
+                listaAgendamento.setAgendamento(agenda);
+
+                if (agenda.getAgendador() == null) {
+                    listaAgendamento.setUsuarioAgendador("** Web User **");
+                } else {
+                    listaAgendamento.setUsuarioAgendador(agenda.getAgendador().getPessoa().getNome());
+                }
+
+                AtendimentoDB dbat = new AtendimentoDBTopLink();
+                if (dbat.pessoaOposicao(listaAgendamento.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
+                    listaAgendamento.setTblEstilo("tblAgendamentoOposicaox");
+                }
+
+                listaHorarios.add(listaAgendamento);
+            }
+        }
+    }
+    
+    public void salvarTransferencia() {
         if (getDataTransferencia().getDay() == 6 || getDataTransferencia().getDay() == 0) {
-            msgConfirma = "Fins de semana não permitido!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Fins de semana não permitido!");
+            return;
         }
         if (DataHoje.converteDataParaInteger(DataHoje.converteData(getDataTransferencia()))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgConfirma = "Data anterior ao dia de hoje!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Data anterior ao dia de hoje!");
+            return;
         }
-        Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).find("Registro", 1);
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data())))
+        
+        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(registro.getHomolocaoLimiteMeses(), DataHoje.data())))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(getDataTransferencia()))) {
-            msgConfirma = "Data maior que " + reg.getHomolocaoLimiteMeses() + " meses!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Data maior que " + registro.getHomolocaoLimiteMeses() + " meses!");
+            return;
         }
 
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         agendamento.setDtData(dataTransferencia);
-        if (getListaHorarioTransferencia().isEmpty()) {
-            msgConfirma = "Não existem horários para esse dia da semana!";
-            return null;
+        if (listaHorarioTransferencia.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Não existem horários para esse dia da semana!");
+            return;
         }
-        Horarios h = (Horarios) sv.find("Horarios", Integer.valueOf(getListaHorarioTransferencia().get(idHorarioTransferencia).getDescription()));
+        
+        Horarios h = (Horarios) sv.find("Horarios", Integer.valueOf(listaHorarioTransferencia.get(idHorarioTransferencia).getDescription()));
         agendamento.setHorarios(h);
 
         sv.abrirTransacao();
         if (!sv.alterarObjeto(agendamento)) {
             sv.desfazerTransacao();
-            msgConfirma = "Erro ao transferir horário";
-            return null;
+            GenericaMensagem.error("Erro", "Não foi possível transferir horário, tente novamente!");
+            return;
         }
         sv.comitarTransacao();
-        listaHorarioTransferencia.clear();
-        renderTransfere = false;
-        idHorarioTransferencia = 0;
-        msgConfirma = "Horário transferido com Sucesso!";
-        return null;
-    }
-
-    public void trasfere() {
-        if (renderTransfere) {
-            renderTransfere = false;
-        } else {
-            renderTransfere = true;
-        }
+        GenericaMensagem.info("Sucesso", "Horário transferido!");
+        loadListaHorarios();
+        PF.closeDialog("dlg_transferir_horario");
     }
 
     public String imprimirPlanilha() {
@@ -180,36 +264,36 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
 
         try {
-            Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).find("Registro", 1);
-
+            Dao di = new Dao();
             Pessoa pessoa = new Pessoa();
-            String emailPessoaHistorico = "";
             if (enviarPara.equals("contabilidade")) {
                 if (juridica.getContabilidade() == null) {
-                    msgConfirma = "Empresa sem contabilidade";
+                    GenericaMensagem.warn("Atenção", "Empresa sem Contabilidade!");
                     return null;
                 }
-
-                if (juridica.getContabilidade().getPessoa().getEmail1().isEmpty()) {
-                    if (emailEmpresa.equals("")) {
-                        msgConfirma = "Contabilidade sem Email para envio";
+                
+                pessoa = (Pessoa) di.find(juridica.getContabilidade().getPessoa());
+                if (emailEmpresa.isEmpty()){
+                    if (pessoa.getEmail1().isEmpty()) {
+                        GenericaMensagem.warn("Atenção", "Contabilidade sem Email para envio!");
                         return null;
                     }
+                }else{
+                    pessoa.setEmail1(emailEmpresa);
                 }
-                pessoa = juridica.getContabilidade().getPessoa();
-                pessoa.setEmail1(emailEmpresa);
             } else {
-                if (juridica.getPessoa().getEmail1().isEmpty()) {
-                    if (emailEmpresa.equals("")) {
-                        msgConfirma = "Empresa sem Email para envio";
+                pessoa = (Pessoa) di.find(juridica.getPessoa());
+                if (emailEmpresa.isEmpty()){
+                    if (pessoa.getEmail1().isEmpty()) {
+                        GenericaMensagem.warn("Atenção", "Empresa sem Email para envio!");
                         return null;
                     }
+                }else{
+                    pessoa.setEmail1(emailEmpresa);
                 }
-                pessoa = juridica.getPessoa();
-                pessoa.setEmail1(emailEmpresa);
             }
-
-            String nome = imp.criarLink(pessoa, reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
+            
+            String nome = imp.criarLink(pessoa, registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
             p.add(pessoa);
             Mail mail = new Mail();
@@ -225,7 +309,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     false,
                     false
             );
-            if (!reg.isEnviarEmailAnexo()) {
+            
+            if (!registro.isEnviarEmailAnexo()) {
                 email.setMensagem(""
                         + " <div style='background:#00ccff; padding: 15px; font-size:13pt'>"
                         + " Envio cadastrado para <b>" + pessoa.getNome() + " </b>"
@@ -233,7 +318,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         + " <br />"
                         + " <h5>Visualize sua planilha de débitos clicando no link abaixo</h5>"
                         + " <br /><br />"
-                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />"
+                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />"
                 );
             } else {
                 List<File> fls = new ArrayList<File>();
@@ -259,12 +344,12 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 emailPessoa = new EmailPessoa();
             }
             String[] retorno = mail.send("personalizado");
+            
             if (!retorno[1].isEmpty()) {
-                msgConfirma = retorno[1];
+                GenericaMensagem.error("Erro", retorno[1]);
             } else {
-                msgConfirma = retorno[0];
+                GenericaMensagem.info("OK", retorno[0]);
             }
-            //msgConfirma = "Envio Concluído!";
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
 
@@ -299,24 +384,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public List<SelectItem> getListaHorarioTransferencia() {
-        listaHorarioTransferencia.clear();
-        if (listaHorarioTransferencia.isEmpty()) {
-            HomologacaoDB db = new HomologacaoDBToplink();
-            int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
-            List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
-            int qnt;
-            int j = 0;
-            for (int i = 0; i < select.size(); i++) {
-                qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), select.get(i), getDataTransferencia());
-                if (qnt == -1) {
-                    return new ArrayList();
-                }
-                if (qnt > 0) {
-                    listaHorarioTransferencia.add(new SelectItem(j, select.get(i).getHora() + " (" + qnt + ")", String.valueOf(select.get(i).getId())));
-                    j++;
-                }
-            }
-        }
         return listaHorarioTransferencia;
     }
 
@@ -341,58 +408,58 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     }
 
-    public String agendar(Agendamento a) {
+    public void agendar(Agendamento a) {
+        limpar();
+        loadListaHorariosTransferencia();
+        
         if (getData().getDay() == 6 || getData().getDay() == 0) {
-            msgAgendamento = "Fins de semana não permitido!";
-            return null;
+            GenericaMensagem.warn("Atenção", "Fins de semana não permitido!");
+            return;
         }
+        
         emailEmpresa = "";
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.find("Registro", 1);
-        int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(reg.getAgendamentoRetroativo()));
+        int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(registro.getAgendamentoRetroativo()));
         int nrData = DataHoje.converteDataParaInteger(DataHoje.converteData(getData()));
         int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
         if (nrAgendamentoRetroativo < nrDataHoje) {
             if (nrData < nrDataHoje) {
-                msgAgendamento = "Data anterior ao dia de hoje!";
-                return null;
+                GenericaMensagem.warn("Atenção", "Data anterior ao dia de hoje!");
+                return;
             }
         } else {
-            msgAgendamento = "Agendamento retroativo liberado até dia " + reg.getAgendamentoRetroativoString();
+            GenericaMensagem.info("Informação", "Agendamento retroativo liberado até dia " + registro.getAgendamentoRetroativoString());
         }
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data()))) < nrData) {
-            msgAgendamento = "Data maior que " + reg.getHomolocaoLimiteMeses() + " meses!";
-            return null;
+        
+        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(registro.getHomolocaoLimiteMeses(), DataHoje.data()))) < nrData) {
+            GenericaMensagem.warn("Atenção", "Data maior que " + registro.getHomolocaoLimiteMeses() + " meses!");
+            return;
         }
-
-        renderAgendamento = false;
-        renderConcluir = true;
         protocolo = 0;
         if (profissao.getId() == -1) {
-            profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
+            profissao = (Profissao)  new Dao().find(new Profissao(), 0);
             profissao.setProfissao("");
         }
 
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             case 1: {
                 if (getData() == null) {
-                    msgAgendamento = "Selecione uma data para Agendamento!";
-                    renderAgendamento = true;
-                    renderConcluir = false;
+                    GenericaMensagem.warn("Atenção", "Selecione uma data para Agendamento!");
+                    return;
                 } else {
                     renderCancelarHorario = false;
                     renderCancelar = true;
                     if (pesquisarFeriado()) {
-                        msgAgendamento = "Esta data esta cadastrada como Feriado!";
-                        renderAgendamento = true;
-                        renderConcluir = false;
+                        GenericaMensagem.warn("Atenção", "Esta data esta cadastrada como Feriado!");
+                        return;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
                         Horarios horarios = a.getHorarios();
                         agendamento.setHorarios(horarios);
-                        msgAgendamento = "";
                     }
                 }
+                
+                visibleModal = true;
+                PF.openDialog("dlg_agendamento");
                 break;
             }
             case 2: {
@@ -412,129 +479,135 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     }
                 }
                 tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+
+                visibleModal = true;
+                PF.openDialog("dlg_agendamento");                
                 break;
             }
             case 3: {
-                renderAgendamento = true;
-                renderConcluir = false;
                 break;
             }
             case 4: {
-                renderAgendamento = true;
-                renderConcluir = false;
                 break;
             }
             case 5: {
-                renderAgendamento = true;
-                renderConcluir = false;
                 break;
             }
             case 6: {
                 if (getData() == null) {
-                    msgAgendamento = "Selecione uma data para Agendamento!";
-                    renderAgendamento = true;
-                    renderConcluir = false;
+                    GenericaMensagem.warn("Atenção", "Selecione uma data para Agendamento!");
+                    return;
                 } else {
                     renderCancelarHorario = false;
                     renderCancelar = true;
                     if (pesquisarFeriado()) {
-                        msgAgendamento = "Esta data esta cadastrada como Feriado!";
-                        renderAgendamento = true;
-                        renderConcluir = false;
+                        GenericaMensagem.warn("Atenção", "Esta data esta cadastrada como Feriado!");
+                        return;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
                         agendamento.setHorarios(a.getHorarios());
-                        msgAgendamento = "";
                     }
                 }
+
+                visibleModal = true;
+                PF.openDialog("dlg_agendamento");                
                 break;
             }
         }
-        return "agendamento";
+        
+        if (agendamento.getTelefone().length() > 14){
+            tipoTelefone = "celular";
+        }else{
+            tipoTelefone = "telefone";
+        }
     }
 
     public String save() {
         styleDestaque = "";
-        msgConfirma = "";
         Dao dao = new Dao();
         if (configuracaoHomologacao.isValidaNome()) {
-            if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-                msgConfirma = "Digite o nome do Funcionário!";
+            if (fisica.getPessoa().getNome().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
                 return null;
             }
         }
+        
         if (configuracaoHomologacao.isValidaFuncao()) {
             if (profissao.getId() == -1) {
-                msgConfirma = "Informar a função!";
+                GenericaMensagem.warn("Atenção", "Informar a Função!");
                 return null;
             }
         }
+        
         if (!strContribuinte.isEmpty()) {
-            msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
+            GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return null;
         }
+        
         FisicaDB dbFis = new FisicaDBToplink();
         List listDocumento;
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
         Demissao demissao = (Demissao) dao.find(new Demissao(), Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()));
+        
+        if (!pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getAdmissao() != null) {
+            if (DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao())
+                    > DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())) {
+                GenericaMensagem.warn("Atenção", "Data de Admissão é maior que data de Demissão!");
+                return null;
+            }
+        } else {
+            GenericaMensagem.warn("Atenção", "Data de Admissão é obrigatória!");
+            return null;
+        }        
+        
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!");
                     return null;
                 }
             } else if (demissao.getId() == 2) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!");
                     return null;
                 }
             } else if (demissao.getId() == 3) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
-                    msgConfirma = "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!";
+                    GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!");
                     return null;
                 }
             }
         } else {
-            msgConfirma = "Data de Demissão é obrigatória!";
+            GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
             return null;
         }
 
-        if (!pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getAdmissao() != null) {
-            if (DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao())
-                    > DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())) {
-                msgConfirma = "Data de Admissão é maior que data de Demissão!";
-                return null;
-            }
-        } else {
-            msgConfirma = "Data de Admissão é obrigatória!";
-            return null;
-        }
+
 
         // SALVAR FISICA -----------------------------------------------
-        dao.openTransaction();
         fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-            dao.rollback();
-            msgConfirma = "Documento Inválido!";
+            GenericaMensagem.warn("Atenção", "Documento Inválido!");
             return null;
         }
 
+        dao.openTransaction();
         if (fisica.getId() == -1) {
             if (!dbFis.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
                     fisica.getDtNascimento(),
                     fisica.getRg()).isEmpty()) {
-                msgConfirma = "Esta pessoa já esta cadastrada!";
+                GenericaMensagem.warn("Atenção", "Esta pessoa já esta cadastrada!");
                 dao.rollback();
                 return null;
             }
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
                 dao.rollback();
-                msgConfirma = "Documento já existente!";
+                GenericaMensagem.warn("Atenção", "Documento já existente!");
                 return null;
             }
 
@@ -542,7 +615,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 dao.save(fisica);
             } else {
                 dao.rollback();
-                msgConfirma = "Erro ao Inserir pessoa!";
+                GenericaMensagem.error("Erro", "Erro ao inserir Pessoa!");
                 return null;
             }
         } else {
@@ -550,7 +623,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             for (Object listDocumento1 : listDocumento) {
                 if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
                     dao.rollback();
-                    msgConfirma = "Documento já existente!";
+                    GenericaMensagem.warn("Atenção", "Documento já existente!");
                     return null;
                 }
             }
@@ -561,7 +634,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 for (Fisica fisi1 : fisi) {
                     if (fisi1.getId() != fisica.getId()) {
                         dao.rollback();
-                        msgConfirma = "Esta pessoa já esta cadastrada!";
+                        GenericaMensagem.warn("Atenção", "Esta pessoa já esta cadastrada!");
                         return null;
                     }
                 }
@@ -570,27 +643,26 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 if (dao.update(fisica)) {
                 } else {
                     dao.rollback();
-                    msgConfirma = "Erro ao alterar Física!";
+                    GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Física, tente novamente!");
                     return null;
                 }
             } else {
                 dao.rollback();
-                msgConfirma = "Erro ao alterar Pessoa!";
+                GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa, tente novamente!");
                 return null;
             }
         }
         HomologacaoDB dba = new HomologacaoDBToplink();
-
-        if (dba.pesquisaFisicaAgendada(fisica.getId()) != null && agendamento.getId() == -1) {
+        if (dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId()) != null && agendamento.getId() == -1) {
             dao.rollback();
-            msgConfirma = "Pessoa já foi agendada!";
+            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada!");
             return null;
         }
+        
         boolean isOposicao = false;
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
             isOposicao = true;
-            //return null;
         }
 
         PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
@@ -604,7 +676,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     pesEnd.setTipoEndereco((TipoEndereco) dao.find(new TipoEndereco(), ids[i]));
                     if (!dao.save(pesEnd)) {
                         dao.rollback();
-                        msgConfirma = "Erro ao Inserir endereço da pessoa!";
+                        GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Endereço, tente novamente!");
                         return null;
                     }
                     pesEnd = new PessoaEndereco();
@@ -623,7 +695,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 end.setPessoa(enderecoFisica.getPessoa());
                 if (!dao.update(end)) {
                     dao.rollback();
-                    msgConfirma = "Erro ao atualizar endereço da pessoa!";
+                    GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Endereço, tente novamente!");
                     return null;
                 }
             }
@@ -667,34 +739,34 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         if (pessoaEmpresa.getId() == -1) {
             if (!dao.save(pessoaEmpresa)) {
                 dao.rollback();
-                msgConfirma = "Erro ao inserir Pessoa Empresa!";
+                GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Empresa!");
                 return null;
             }
         } else {
             if (!dao.update(pessoaEmpresa)) {
                 dao.rollback();
-                msgConfirma = "Erro ao alterar Pessoa Empresa!";
+                GenericaMensagem.error("Erro", "Não foi possível alterar Pessoa Empresa!");
                 return null;
             }
         }
         if (configuracaoHomologacao.isValidaContato()) {
             if (agendamento.getContato().isEmpty()) {
                 dao.rollback();
-                msgConfirma = "Informar o nome do contato!";
+                GenericaMensagem.warn("Atenção", "Informar o nome do Contato!");
                 return null;
             }
         }
         if (configuracaoHomologacao.isValidaTelefone()) {
             if (agendamento.getTelefone().isEmpty()) {
                 dao.rollback();
-                msgConfirma = "Informar o telefone!";
+                GenericaMensagem.warn("Atenção", "Informar o telefone para contato!");
                 return null;
             }
         }
         if (configuracaoHomologacao.isValidaEmail()) {
             if (agendamento.getEmail().isEmpty()) {
                 dao.rollback();
-                msgConfirma = "Informar o email!";
+                GenericaMensagem.warn("Atenção", "Informar o email!");
                 return null;
             }
         }
@@ -702,8 +774,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (idStatusI == 1) {
                 if (!dba.existeHorarioDisponivel(agendamento.getDtData(), agendamento.getHorarios())) {
                     dao.rollback();
-                    listaHorarioTransferencia.clear();
-                    msgConfirma = "Não existe mais disponibilidade para o horário agendado!";
+                    loadListaHorariosTransferencia();
+                    GenericaMensagem.fatal("Atenção", "Não existe mais disponibilidade para o horário agendado!");
                     ocultarHorarioAlternativo = false;
                     return null;
                 }
@@ -714,30 +786,32 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             agendamento.setDtEmissao(DataHoje.dataHoje());
             if (dao.save(agendamento)) {
                 dao.commit();
-                msgConfirma = "Para imprimir Protocolo clique aqui! ";
+//                msgConfirma = "Para imprimir Protocolo clique aqui! ";
+                GenericaMensagem.info("Sucesso", "Agendamento Concluído!");
             } else {
-                //agendamento.setId(-1);
-                msgConfirma = "Erro ao realizar este agendamento!";
+                GenericaMensagem.fatal("Atenção", "Erro ao realizar este Agendamento!");
                 dao.rollback();
             }
         } else {
             if (dao.update(agendamento)) {
                 dao.commit();
                 if (isOposicao) {
-                    msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
+                    //msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
                     styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 } else {
-                    msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! ";
+                    //msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! ";
                     styleDestaque = "";
                 }
+                GenericaMensagem.info("Sucesso", "Alteração de Agendamento Concluído!");
             } else {
-                msgConfirma = "Erro ao atualizar agendamento!";
+                GenericaMensagem.fatal("Atenção", "Erro ao atualizar Agendamento!");
                 dao.rollback();
             }
         }
-        strSalvar = "Atualizar";
+        
+        
         renderCancelarHorario = true;
-        listaHorarioTransferencia.clear();
+        loadListaHorariosTransferencia();
         id_protocolo = agendamento.getId();
         ocultarHorarioAlternativo = true;
         imprimirPro = true;
@@ -751,11 +825,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public String cancelar() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
         tipoAviso = "true";
-        msgConfirma = "";
-        msgAgendamento = "";
         fisica = new Fisica();
         cepEndereco = "";
         listaEnderecos.clear();
@@ -766,8 +836,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         listaMovimento.clear();
         enderecoFisica = new PessoaEndereco();
         imprimirPro = false;
-        renderTransfere = false;
-        listaHorarioTransferencia.clear();
+        loadListaHorariosTransferencia();
         emailEmpresa = "";
         return "agendamento";
     }
@@ -779,21 +848,16 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
             salvarAcumuladoDB.comitarTransacao();
-            msgConfirma = "Agendamento cancelado com sucesso";
+            GenericaMensagem.info("Sucesso", "Agendamento Cancelado!");
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            msgConfirma = "";
         }
         pessoaEmpresa.setDtDemissao(null);
         dbPesEmp.update(pessoaEmpresa);
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
         renderCancelarHorario = false;
         renderCancelar = true;
         tipoAviso = "true";
-        msgConfirma = "";
-        msgAgendamento = "";
         fisica = new Fisica();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
@@ -801,15 +865,16 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         juridica = new Juridica();
         listaMovimento.clear();
         enderecoFisica = new PessoaEndereco();
+        
+        setVisibleModal(false);
+        loadListaHorarios();
+        loadListaHorariosTransferencia();
         return "agendamento";
     }
 
     public void limpar() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
         tipoAviso = "true";
-        msgAgendamento = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -822,10 +887,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void limparMais() {
         strEndereco = "";
-        renderAgendamento = true;
-        renderConcluir = false;
         tipoAviso = "true";
-        msgAgendamento = "";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -835,12 +897,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void pesquisarFuncionarioCPF() throws IOException {
-        msgConfirma = "";
         styleDestaque = "";
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
 
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                msgConfirma = "Documento Inválido!";
+                GenericaMensagem.warn("Atenção", "Documento Inválido!");
                 return;
             }
 
@@ -855,11 +916,12 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             List<PessoaEmpresa> listape = db.pesquisaPessoaEmpresaPertencente(documento);
 
             if (!listFisica.isEmpty()) {
-                Agendamento age = db.pesquisaFisicaAgendada(listFisica.get(0).getId());
-                if (age != null) {
-                    msgConfirma = "CPF já foi agendado:" + age.getData() + " às " + age.getHorarios().getHora() + " h(s) ";
-                    return;
-                }
+                // AQUI
+//                Agendamento age = db.pesquisaFisicaAgendada(listFisica.get(0).getId());
+//                if (age != null) {
+//                    msgConfirma = "CPF já foi agendado:" + age.getData() + " às " + age.getHorarios().getHora() + " h(s) ";
+//                    return;
+//                }
 
                 if (!listape.isEmpty() && listape.get(0).getDtDemissao() != null) {
                     listape.clear();
@@ -869,44 +931,45 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             // SEM PESSOA FISICA E SEM OPOSICAO
             if (listFisica.isEmpty() && listao.isEmpty()) {
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-                msgConfirma = "CPF verificado com sucesso";
+                //msgConfirma = "CPF verificado com sucesso";
                 // SEM PESSOA FISICA E COM OPOSICAO    
             } else if (listFisica.isEmpty() && !listao.isEmpty()) {
-                msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
+                
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
                 fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
                 fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
                 fisica.getPessoa().setDocumento(documento);
                 juridica = listao.get(0).getJuridica();
+                
+                PF.openDialog("dlg_oposicao");
                 // COM FISICA, COM PESSOA EMPRESA E SEM OPOSICAO    
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && listao.isEmpty()) {
-                msgConfirma = "CPF verificado com sucesso";
+                //msgConfirma = "CPF verificado com sucesso";
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
                 GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
-                disabledEmpresa = true;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, SEM PESSOA EMPRESA E SEM OPOSICAO    
             } else if (!listFisica.isEmpty() && listape.isEmpty() && listao.isEmpty()) {
-                msgConfirma = "CPF verificado com sucesso";
+                //msgConfirma = "CPF verificado com sucesso";
                 fisica = listFisica.get(0);
                 pessoaEmpresa = new PessoaEmpresa();
                 juridica = new Juridica();
-                disabledEmpresa = false;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, COM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && !listao.isEmpty()) {
-                msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
+                
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
-                disabledEmpresa = true;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
                 // FUNCIONARIO JA FOI AGENDADO
@@ -926,18 +989,19 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 //                    }
                 }
                 GenericaSessao.put("juridicaPesquisa", juridica);
+                PF.openDialog("dlg_oposicao");
                 // COM FISICA, SEM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && listape.isEmpty() && !listao.isEmpty()) {
-                msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
 
                 fisica = listFisica.get(0);
                 juridica = listao.get(0).getJuridica();
-                disabledEmpresa = false;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
+                PF.openDialog("dlg_oposicao");
             }
         } else {
-            msgConfirma = "Informar CPF!";
+            GenericaMensagem.warn("Atenção", "Informar CPF!");
         }
     }
 
@@ -980,8 +1044,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void pesquisaEndereco() {
-        if (!cepEndereco.equals("")) {
-            listaEnderecos.clear();
+        EnderecoDB db = new EnderecoDBToplink();
+        listaEnderecos.clear();
+        if (!cepEndereco.isEmpty()) {
+            listaEnderecos = db.pesquisaEnderecoCep(cepEndereco);
         }
     }
 
@@ -1002,22 +1068,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void refreshForm() {
-    }
-
-    public boolean isRenderAgendamento() {
-        return renderAgendamento;
-    }
-
-    public void setRenderAgendamento(boolean renderAgendamento) {
-        this.renderAgendamento = renderAgendamento;
-    }
-
-    public boolean isRenderConcluir() {
-        return renderConcluir;
-    }
-
-    public void setRenderConcluir(boolean renderConcluir) {
-        this.renderConcluir = renderConcluir;
+        
     }
 
     public Juridica getJuridica() {
@@ -1081,19 +1132,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         this.data = data;
     }
 
-    public String getMsgAgendamento() {
-        if (GenericaSessao.exists("acessoFilial")) {
-            macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
-        } else {
-            msgAgendamento = "Não existe filial definida!";
-        }
-        return msgAgendamento;
-    }
-
-    public void setMsgAgendamento(String msgAgendamento) {
-        this.msgAgendamento = msgAgendamento;
-    }
-
     public Agendamento getAgendamento() {
         return agendamento;
     }
@@ -1126,14 +1164,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         this.tipoAviso = tipoAviso;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
     public PessoaEmpresa getPessoaEmpresa() {
         return pessoaEmpresa;
     }
@@ -1157,23 +1187,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void setRenderCancelar(boolean renderCancelar) {
         this.renderCancelar = renderCancelar;
     }
-
-    public boolean isDisabledEmpresa() {
-        return disabledEmpresa;
-    }
-
-    public void setDisabledEmpresa(boolean disabledEmpresa) {
-        this.disabledEmpresa = disabledEmpresa;
-    }
-
-    public String getStrSalvar() {
-        return strSalvar;
-    }
-
-    public void setStrSalvar(String strSalvar) {
-        this.strSalvar = strSalvar;
-    }
-
+    
     public String getStatusEmpresa() {
         HomologacaoDB db = new HomologacaoDBToplink();
         if (juridica.getId() != -1 && listaMovimento.isEmpty()) {
@@ -1199,14 +1213,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         this.protocolo = protocolo;
     }
 
-    public boolean isDisabledProtocolo() {
-        return disabledProtocolo;
-    }
-
-    public void setDisabledProtocolo(boolean disabledProtocolo) {
-        this.disabledProtocolo = disabledProtocolo;
-    }
-
     public String getCepEndereco() {
         return cepEndereco;
     }
@@ -1215,7 +1221,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         this.cepEndereco = cepEndereco;
     }
 
-    public List getListaEnderecos() {
+    public List<Endereco> getListaEnderecos() {
         if (listaEnderecos.isEmpty()) {
             if (!cepEndereco.equals("")) {
                 EnderecoDB db = new EnderecoDBToplink();
@@ -1280,14 +1286,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         this.strContribuinte = strContribuinte;
     }
 
-    public boolean isRenderTransfere() {
-        return renderTransfere;
-    }
-
-    public void setRenderTransfere(boolean renderTransfere) {
-        this.renderTransfere = renderTransfere;
-    }
-
     public int getIdHorarioTransferencia() {
         return idHorarioTransferencia;
     }
@@ -1341,20 +1339,20 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void mensagemAgendamento() {
-        msgAgendamento = "";
         FeriadosDB feriadosDB = new FeriadosDBToplink();
         if (macFilial.getFilial().getFilial().getId() != -1) {
             List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
             if (!feriados.isEmpty()) {
-                msgAgendamento = "Nesta data existem feriados/agenda: ";
-                GenericaMensagem.warn("Sistema", msgAgendamento);
+                String msg = "";
                 for (int i = 0; i < feriados.size(); i++) {
                     if (i == 0) {
-                        msgAgendamento += feriados.get(i).getNome();
+                        msg += feriados.get(i).getNome();
                     } else {
-                        msgAgendamento += ", " + feriados.get(i).getNome();
+                        msg += ", " + feriados.get(i).getNome();
                     }
                 }
+                if (!msg.isEmpty())
+                    GenericaMensagem.warn("Sistema", "Nesta data existem feriados/agenda: " + msg);
             }
         }
     }
@@ -1370,8 +1368,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void adicionarHorarioAlternativo() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agendamento.setHorarios((Horarios) salvarAcumuladoDB.find("Horarios", Integer.parseInt(listaHorarioTransferencia.get(idHorarioAlternativo).getDescription())));
-        listaHorarioTransferencia.clear();
         setOcultarHorarioAlternativo(true);
+        loadListaHorariosTransferencia();
     }
 
     public boolean isOcultarHorarioAlternativo() {
@@ -1399,63 +1397,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
      * @return
      */
     public List<ListaAgendamento> getListaHorarios() {
-        listaGrid = new ArrayList();
-        listaHorarios.clear();
-        if (macFilial == null) {
-            return new ArrayList();
-        }
-        int idNrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
-        int diaDaSemana = DataHoje.diaDaSemana(data);
-        disabledProtocolo = idNrStatus != 1 && idNrStatus != 6;
-        renderedDisponivel = idNrStatus != 2 && idNrStatus != 3 && idNrStatus != 4 && idNrStatus != 5 && idNrStatus != 6 && idNrStatus != 7;
-        HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
-        List<Agendamento> agendamentos;
-        List<Horarios> horarios;
-        if (idNrStatus == 1 || idNrStatus == 6) {
-            horarios = homologacaoDB.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
-            for (int j = 0; j < horarios.size(); j++) {
-                ListaAgendamento listaAgendamento = new ListaAgendamento();
-                if (idNrStatus == 1) {
-                    int quantidade = homologacaoDB.pesquisaQntdDisponivel(macFilial.getFilial().getId(), horarios.get(j), getData());
-                    if (quantidade == -1) {
-                        msgAgendamento = "Erro ao pesquisar horários disponíveis!";
-                        listaHorarios.clear();
-                        break;
-                    }
-                    if (quantidade > 0) {
-                        listaAgendamento.setQuantidade(quantidade);
-                        listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
-                        listaHorarios.add(listaAgendamento);
-                    }
-                } else {
-                    listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
-                    listaHorarios.add(listaAgendamento);
-                }
-            }
-            strSalvar = "Agendar";
-        } else {
-            agendamentos = homologacaoDB.pesquisaAgendamento(idNrStatus, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-            int i = 0;
-            for (Agendamento agendamento1 : agendamentos) {
-                ListaAgendamento listaAgendamento = new ListaAgendamento();
-                Usuario u = new Usuario();
-                listaAgendamento.setAgendamento(agendamento1);
-
-                if (agendamento1.getAgendador() == null) {
-                    listaAgendamento.setUsuarioAgendador("** Web User **");
-                } else {
-                    listaAgendamento.setUsuarioAgendador(agendamento1.getAgendador().getPessoa().getNome());
-                }
-
-                AtendimentoDB dbat = new AtendimentoDBTopLink();
-                if (dbat.pessoaOposicao(listaAgendamento.getAgendamento().getPessoaEmpresa().getFisica().getPessoa().getDocumento())) {
-                    listaAgendamento.setTblEstilo("tblAgendamentoOposicao");
-                }
-
-                listaHorarios.add(listaAgendamento);
-            }
-            strSalvar = "Atualizar";
-        }
         return listaHorarios;
     }
 
@@ -1500,5 +1441,21 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         if (counter == -1) {
             counter = configuracaoHomologacao.getTempoRefreshAgendamento();
         }
+    }
+
+    public boolean isVisibleModal() {
+        return visibleModal;
+    }
+
+    public void setVisibleModal(boolean visibleModal) {
+        this.visibleModal = visibleModal;
+    }
+
+    public String getTipoTelefone() {
+        return tipoTelefone;
+    }
+
+    public void setTipoTelefone(String tipoTelefone) {
+        this.tipoTelefone = tipoTelefone;
     }
 }

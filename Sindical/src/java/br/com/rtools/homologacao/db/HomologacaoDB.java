@@ -48,7 +48,7 @@ public interface HomologacaoDB {
 
     public Oposicao pesquisaFisicaOposicaoAgendamento(String cpf, int id_juridica, String referencia);
 
-    public Agendamento pesquisaFisicaAgendada(int id_fisica);
+    public Agendamento pesquisaFisicaAgendada(int id_fisica, int id_juridica);
 
     public int pesquisaUltimaSenha(int id_filial);
 

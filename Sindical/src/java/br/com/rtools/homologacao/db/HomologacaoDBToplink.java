@@ -20,9 +20,14 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     public Agendamento pesquisaProtocolo(int id) {
         Agendamento result = null;
         try {
-            Query qry = getEntityManager().createQuery("select a from Agendamento a where a.id = :pid "
-                    + "   and a.agendador is null "
-                    + "   and a.horarios is null ");
+            Query qry = getEntityManager().createQuery(
+                    " SELECT a "
+                    + " FROM Agendamento a "
+                    + "WHERE a.id = :pid "
+                    + "  AND a.agendador is null "
+                    + "  AND a.horarios is null "
+            );
+            
             qry.setParameter("pid", id);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -618,11 +623,17 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
 
     @Override
-    public Agendamento pesquisaFisicaAgendada(int id_fisica) {
+    public Agendamento pesquisaFisicaAgendada(int id_fisica, int id_juridica) {
         Agendamento result = null;
         try {
-            Query qry = getEntityManager().createQuery("select a "
-                    + "  from Agendamento a where a.pessoaEmpresa.fisica.id = " + id_fisica + " and a.dtData >= :data and (a.status.id = 2 or a.status.id = 5)");
+            Query qry = getEntityManager().createQuery(
+                    " SELECT a "
+                    + " FROM Agendamento a "
+                    + "WHERE a.pessoaEmpresa.fisica.id = " + id_fisica + " "
+                    + "  AND a.pessoaEmpresa.juridica.id = " + id_juridica + " "
+                    + "  AND a.dtData >= :data "
+                    + "  AND (a.status.id = 2 OR a.status.id = 5)"
+            );
             qry.setParameter("data", DataHoje.dataHoje());
             if (!qry.getResultList().isEmpty()) {
                 result = (Agendamento) qry.getSingleResult();

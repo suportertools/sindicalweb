@@ -428,10 +428,10 @@ public class ImprimirBoleto {
                     codc = swap[44];
                 }
                 
-                // SE TIPO ACORDO NÃO MOSTRAR REFERÊNCIA 
-                String referencia = "";
-                if (lista.get(i).getTipoServico().getId() != 4){
-                    referencia = lista.get(i).getReferencia();
+                // SE NÃO SINDICAL E FOR ACORDO NÃO MOSTRAR REFERÊNCIA 
+                String referencia = "Ref: " + lista.get(i).getReferencia();
+                if (lista.get(i).getServicos().getId() != 1 && lista.get(i).getTipoServico().getId() == 4){
+                    referencia = "";
                 }
                 vetor.add(new ParametroBoleto(
                         referencia, // ref (referencia)

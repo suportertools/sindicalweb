@@ -50,6 +50,10 @@
         <to>/indexAcessoWeb.jsf</to>
     </rule>
     
+    <rule>
+        <from>^/web/(.*)</from>
+        <to>/indexAcessoWeb.jsf?cliente=$1</to>
+    </rule>
     <!-- REDIRECT CLIENTES -->
     <rule>
         <from>^/ComercioLimeira$</from>

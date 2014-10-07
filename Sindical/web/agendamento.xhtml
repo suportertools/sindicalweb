@@ -2,464 +2,546 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Agendamento</title>
+        <title>Sindical - Agendamento de Homologação</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+            .tblAgendamentoOposicaox{
+                background-color: #ff8282!important;
+                //color: #CCFF66!important;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body styleClass="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <!-- <a4j:region>
-                <h:form id="form_count">
-                    <h:outputText id="txt_count" value="# {agendamentoBean.counter}" />
-                    <a4j:poll interval="1000" action="# {agendamentoBean.increment}" render="form_count" limitRender="false" />
-                </h:form>
-            </a4j:region> -->
-            <h:form id="form_agendamento">
-                <h:outputLink id="i_status_inativo" value=""></h:outputLink>
-                <center>
-                    <rich:panel styleClass="headerPanel">
-                        <h:outputText value="Agendamento" styleClass="fontePanel" style="margin: 0;"/>
-                    </rich:panel>
-                    <br /><br />
-                    <rich:panel id="id_form_agendamento" style="border: 0; margin: 0; background: transparent;">
-                        <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
-                        <rich:panel styleClass="divMae divFundo" style="text-align: left; width: 800px;" rendered="#{agendamentoBean.renderConcluir}">
-                            <h:outputScript library="js" name="jScripts.js" />
-                            <h:panelGrid id="i_panel_horario" columns="10" style="margin-left: 45px;">
-                                <h:outputText value="PROTOCOLO: " styleClass="fontePadraoNegrito"/>
-                                <h:inputText id="iProt" size="10" value="#{agendamentoBean.protocolo}" disabled="#{agendamentoBean.disabledProtocolo}" styleClass="fontePadraoNegrito">
-                                    <a4j:ajax event="blur" listener="#{agendamentoBean.pesquisarProtocolo}" render="i_panel_1" />
-                                </h:inputText>
-                                <h:outputText value="Data: " styleClass="fontePadrao"/>
-                                <h:outputText value="#{agendamentoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" style="margin-left: 5px;"/>
-                                <h:column>
-                                    <h:outputText value="Horário: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value=" Alterar >> " styleClass="fontePadrao" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}"/>
-                                    <h:outputText value="#{agendamentoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" rendered="#{agendamentoBean.ocultarHorarioAlternativo}"/>
-                                    <h:selectOneMenu id="id_horario_alternativo" value="#{agendamentoBean.idHorarioAlternativo}" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
-                                        <a4j:ajax event="change" render="this" status="i_status" />
-                                        <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
-                                    </h:selectOneMenu>
-                                    <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Adicionar horário alternativo" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
-                                        <a4j:ajax event="click" listener="#{agendamentoBean.adicionarHorarioAlternativo}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="i_panel_horario, id_ocultar_horario_alternativo" status="i_status"/> 
-                                    </a4j:commandLink>
-                                </h:column>
-                                <a4j:commandButton image="/Imagens/horario.png" title="Transferir horário" render="i_panel_horario" action="#{agendamentoBean.trasfere()}" rendered="#{agendamentoBean.agendamento.id != -1}" styleClass="margin-left-max" status="i_status"/>
-                                <a4j:outputPanel layout="block" rendered="#{agendamentoBean.renderTransfere}">
-                                    <rich:calendar value="#{agendamentoBean.dataTransferencia}" datePattern="dd/MM/yyyy" style="width:200px">
-                                        <a4j:ajax event="change" render="i_panel_horario" status="i_status"/>
-                                    </rich:calendar>
-                                </a4j:outputPanel>
-                                <h:selectOneMenu id="i_horario_transferencia" value="#{agendamentoBean.idHorarioTransferencia}" rendered="#{agendamentoBean.renderTransfere}">
-                                    <a4j:ajax event="change" render="i_horario_transferencia" status="i_status" />
-                                    <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
-                                </h:selectOneMenu>
-                                <a4j:commandButton action="#{agendamentoBean.salvarTransferencia()}" rendered="#{agendamentoBean.renderTransfere}" value="OK" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" render="i_painel_mensagem"/>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateAcessoFilial.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>                    
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Agendamento de Homologação" styleClass="fonteHeader" />
+                        <h:form id="formAgendamento">
+                            <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" />
+                            <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
+                            <h:panelGrid style="margin: 0 auto; width: 1024px; clear: both">
+                                <p:panel styleClass="fundoCinza">
+                                    <h:panelGrid columns="2">
+                                        <p:calendar size="8" value="#{agendamentoBean.data}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999">
+                                            <p:ajax event="dateSelect" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
+                                            <p:ajax event="change" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
+                                        </p:calendar>
+
+                                        <p:selectOneMenu value="#{agendamentoBean.idStatus}" style="width: 200px">
+                                            <p:ajax event="change" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
+                                            <f:selectItems value="#{agendamentoBean.listaStatus}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>        
+                                </p:panel>
+                            </h:panelGrid>                            
+
+                            <h:panelGrid style="margin: 0 auto; width: 1024px">
+                                <p:messages autoUpdate="true" closable="true" showDetail="true"/>
                             </h:panelGrid>
-                            <h:panelGrid id="i_panel_1" columns="2" columnClasses="coluna1, coluna2" cellspacing="3">
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding margin-top-maior">FUNCIONÁRIO</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>                                
-                                <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadraoVermelho"/>
-                                <h:column>
-                                    <h:selectOneMenu id="idMotivoDemissao" value="#{agendamentoBean.idMotivoDemissao}" >
-                                        <a4j:ajax event="change" render="this"  />
-                                        <f:selectItems value="#{agendamentoBean.listaDemissao}"/>
-                                    </h:selectOneMenu>
-                                    <h:outputText value="TIPO DE AVISO: " styleClass="fontePadraoVermelho margin-left-max"/>
-                                    <h:selectOneMenu id="idTipoAviso" value="#{agendamentoBean.tipoAviso}">
-                                        <a4j:ajax event="change" render="this"  />
-                                        <f:selectItem itemValue="false" itemLabel="Imediato"/>
-                                        <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
-                                    </h:selectOneMenu>
-                                </h:column>                                
-                                <h:outputText value="CPF: " styleClass="fontePadraoVermelho" />
-                                <h:column>
-                                    <h:inputText id="idCPF" value="#{agendamentoBean.fisica.pessoa.documento}" size="14" styleClass="cpf">
-                                        <a4j:ajax event="blur" listener="#{agendamentoBean.pesquisarFuncionarioCPF}" render="i_painel_mensagem id_form_agendamento" oncomplete="#{rich:component('i_painel_mensagem')}.show(); return false;" status="i_status"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:outputText value="NOME: " styleClass="fontePadraoVermelho margin-left-max"/>
-                                <h:column>
-                                    <h:inputText id="iFuncionario" size="50" value="#{agendamentoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
-                                        <f:ajax event="blur" render="@this" />
-                                    </h:inputText>
-                                    <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="iNascimento" size="10" maxlength="10" value="#{agendamentoBean.fisica.nascimento}" styleClass="fontePadraoNegrito data">
-                                        <a4j:ajax event="blur" render="this" />
-                                    </h:inputText>
-                                </h:column>
-                                <a4j:commandLink styleClass="idPesquisar iLink" value="Endereço" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.show(); return false;" title="Pesquisar Endereço" /> 
-                                <h:column id="idOutEndX">
-                                    <h:outputLabel id="idOutEnd" value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao},
-                                                   #{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
-                                    <h:outputText value="Nº: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
-                                    <h:inputText id="iNum" size="5" value="#{agendamentoBean.enderecoFisica.numero}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
-                                        <a4j:ajax event="blur" render="this" />
-                                    </h:inputText>
-                                    <h:outputText value="COMPL.: " styleClass="fontePadrao margin-left-max" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
-                                    <h:inputText id="iCompl" size="15" value="#{agendamentoBean.enderecoFisica.complemento}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
-                                        <a4j:ajax event="blur" render="this" />
-                                    </h:inputText>
-                                    <h:outputText value="Pesquisar Endereço" rendered="#{agendamentoBean.enderecoFisica.endereco.id == -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="CARTEIRA: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaCarteira}" />
-                                    <h:outputLabel value="CARTEIRA: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaCarteira}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:panelGrid columns="8">
-                                        <h:inputText id="iCarteira" size="10" value="#{agendamentoBean.fisica.carteira}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                            <a4j:ajax event="blur" render="this"  />
-                                        </h:inputText>
-                                        <h:column>
-                                            <h:outputText value="SÉRIE: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaSerie}"/>
-                                            <h:outputText value="SÉRIE: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaSerie}"/>                                            
-                                        </h:column>
-                                        <h:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                            <a4j:ajax event="blur" render="this"  />
-                                        </h:inputText>
-                                        <h:outputText value="CÓD. DO FUNCIONÁRIO: " styleClass="fontePadrao margin-left-max"/>
-                                        <h:inputText id="iCodigo" size="8" value="#{agendamentoBean.pessoaEmpresa.codigo}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                            <a4j:ajax event="blur" render="this"  />
-                                        </h:inputText>
-                                    </h:panelGrid>
-                                </h:column>
-                                <h:outputText value="SEXO: " styleClass="fontePadrao"/>
-                                <h:selectOneRadio id="idSexo" value="#{agendamentoBean.fisica.sexo}" styleClass="fontePadrao">
-                                    <a4j:ajax event="change" render="this"  />
-                                    <f:selectItem itemValue="F" itemLabel="Feminino"/>
-                                    <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                </h:selectOneRadio>
-                                <a4j:commandLink id="btnFuncao" value="Função" styleClass="idSalvar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" /> 
-                                <h:column>
-                                    <h:inputText id="idFuncao" size="40" value="#{agendamentoBean.profissao.cbo}  #{agendamentoBean.profissao.profissao}" styleClass="fontePadraoNegrito" readonly="true">
-                                        <a4j:ajax event="click" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" />
-                                    </h:inputText>
-                                    <h:outputText value="SETOR: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="iSetor" size="20" value="#{agendamentoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
-                                </h:column>                                
-                                <h:outputText value="ADMISSÃO: " styleClass="fontePadraoVermelho"/>
-                                <h:column>
-                                    <h:inputText id="iAdmissao" size="10" value="#{agendamentoBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito data">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
-                                    <h:outputText value="DEMISSÃO: " styleClass="fontePadraoVermelho margin-left-max"/>
-                                    <h:inputText id="iDemissao" size="10" value="#{agendamentoBean.pessoaEmpresa.demissao}" styleClass="fontePadraoNegrito data">
-                                        <a4j:ajax event="blur" render="this"  />
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding margin-top-maior">EMPRESA</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>
-                                <h:column>
-                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"  immediate="true" disabled="#{agendamentoBean.disabledEmpresa}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="Pesquisar Empresa" styleClass="font-color-red" rendered="#{agendamentoBean.juridica.pessoa.id == -1}"/>
-                                    <h:outputText id="iEmpresa" value="#{agendamentoBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                                    <h:outputText value="Telefone: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                    <h:outputText id="iEmpTelefone" value="#{agendamentoBean.juridica.pessoa.telefone1} / #{agendamentoBean.juridica.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="STATUS: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText id="iStatus" value="#{agendamentoBean.statusEmpresa}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column></h:column>
-                                <h:column>
-                                    <h:commandLink id="iImprimirPlanilha" value="Imprimir Planilha" title="Imprimir Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.imprimirPlanilha}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" target="_blank"/>
-                                </h:column>
-                                <h:column></h:column>
-                                <h:column>
-                                    <h:panelGrid columns="3">
-                                        <a4j:commandLink id="iEnviarPlanilha" value="Enviar Planilha por Email para" title="Enviar Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.enviarPlanilha}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" render="i_painel_mensagem"/>
-                                        <h:selectOneMenu id="chkEmail" value="#{agendamentoBean.enviarPara}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" styleClass=" margin-left-max">
-                                            <a4j:ajax event="change" render="@this, id_email_empresa" />
-                                            <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
-                                            <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
-                                        </h:selectOneMenu>
-                                        <h:panelGrid id="id_email_empresa" columns="2">
-                                            <h:outputLabel value="E-mail opcional:" />
-                                            <h:inputText value="#{agendamentoBean.emailEmpresa}">
-                                                <a4j:ajax event="blur" render="this" />
-                                            </h:inputText>
-                                        </h:panelGrid>
-                                    </h:panelGrid>
-                                </h:column>
-                                <h:column></h:column>
-                                <h:column>
-                                    <h:outputText id="iContribuinte" value="#{agendamentoBean.strContribuinte}" styleClass="fontePadraoVermelho"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="ENDEREÇO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText id="iEmpEndereco" value="#{agendamentoBean.strEndereco}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>  
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText id="iEscritorio" value="#{agendamentoBean.juridica.contabilidade.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="TELEFONE: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText id="iContTel" value="#{agendamentoBean.juridica.contabilidade.pessoa.telefone1} / #{agendamentoBean.juridica.contabilidade.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
-                                </h:column>
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding margin-top-maior">CONTATO</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="Contato: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaContato}"/>
-                                    <h:outputText value="Contato: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaContato}"/>
-                                </h:column>
-                                <h:column>
-                                    <h:panelGrid columns="10">
-                                        <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="16" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
-                                            <f:ajax event="blur" render="@this"  />
-                                        </h:inputText>
-                                        <h:column>
-                                            <h:outputText value="Email: " styleClass="fontePadrao" rendered="#{!agendamentoBean.configuracaoHomologacao.validaEmail}"/>
-                                            <h:outputText value="Email: " styleClass="fontePadraoVermelho" rendered="#{agendamentoBean.configuracaoHomologacao.validaEmail}"/>
-                                        </h:column>
-                                        <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="40" >
-                                            <f:ajax event="blur" render="@this" />
-                                        </h:inputText>
-                                        <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
-                                            <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
-                                        </a4j:commandLink>
-                                        <h:column>
-                                            <h:outputText value="Tel: " styleClass="fontePadrao" title="Telefone" rendered="#{!agendamentoBean.configuracaoHomologacao.validaTelefone}"/>
-                                            <h:outputText value="Tel: " styleClass="fontePadraoVermelho" title="Telefone" rendered="#{agendamentoBean.configuracaoHomologacao.validaTelefone}"/>
-                                        </h:column>
-                                        <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="12" styleClass="telefone">
-                                            <f:ajax event="change" render="@this"  />
-                                        </h:inputText>
-                                    </h:panelGrid>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="Observação: " styleClass="fontePadrao" />
-                                </h:column>
-                                <h:column>
-                                    <h:inputTextarea cols="70" rows="3" value="#{agendamentoBean.agendamento.observacao}" />
-                                </h:column>                                
-                            </h:panelGrid>
-                            <h:panelGrid columns="5" style="margin-top: 20px;" id="id_menu_acao">
-                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
-                                <a4j:commandLink styleClass="idSalvar iLink"    value="Voltar" action="#{agendamentoBean.cancelar}" render="id_form_agendamento, id_form_agendamento_novo" status="i_status"/>
-                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" status="i_status"/>
-                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                                <h:commandLink id="i_imprime_protocolo_3" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao">
-                                    <p:button icon="ui-icon-print" value="Imprimir Protocolo" />
-                                </h:commandLink>
-                            </h:panelGrid>
-                        </rich:panel>
-                    </rich:panel>
-                    <div class="clear"></div>
-                    <rich:panel id="id_form_agendamento_novo" style="height:600px; border: 0;">
-                        <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}">
-                            <h:panelGrid columns="5">
-                                <h:outputLabel value="Data: " styleClass="fontePadrao"/>
-                                <h:column>
-                                    <a4j:outputPanel id="calendar" layout="block">
-                                        <rich:calendar value="#{agendamentoBean.data}" datePattern="dd/MM/yyyy" style="width:400px">
-                                            <a4j:ajax event="change" render="tbl, idMensagemAgendamento" listener="#{agendamentoBean.mensagemAgendamento}" status="i_status"/>
-                                        </rich:calendar>
-                                    </a4j:outputPanel>
-                                </h:column>
-                                <h:outputLabel value="Status: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="idStatus" value="#{agendamentoBean.idStatus}">
-                                    <a4j:ajax event="change" render="tbl" status="i_status"/>
-                                    <f:selectItems value="#{agendamentoBean.listaStatus}"/>
-                                </h:selectOneMenu>
-                                <h:outputLabel id="idMensagemAgendamento" value="#{agendamentoBean.msgAgendamento}" styleClass="corErro"/>
-                            </h:panelGrid>
-                        </h:panelGrid> 
-                        <div style="overflow:auto; height:600px;">
-                            <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}" style="margin-top: 15px;">                                
-                                <f:facet name="footer">
-                                    <h:panelGrid style="margin-top: 25px;">
-                                        <h:outputLabel value="Esta lista é atualizada a cada #{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento} segundos" />
-                                    </h:panelGrid>
-                                </f:facet>
-                                <a4j:poll id="poolMonitor" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}000" render="tbl, @this" />
-                                <rich:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" style="width: 95%" rowClasses="#{objeto.tblEstilo}">
-                                    <rich:column styleClass="coluna">
+
+                            <h:panelGrid style="margin: 0 auto; width: 1024px">
+                                <p:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" emptyMessage="Nenhum horário para esta data!" rowStyleClass="#{objeto.tblEstilo}">
+                                    <p:column width="15">  
+                                        <p:rowToggler />  
+                                    </p:column> 
+
+                                    <p:column width="30" style="text-align: center">
                                         <f:facet name="header">
-                                            <h:outputText value="Horarios" rendered="false"/>
                                             <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
                                         </f:facet>
-                                        <a4j:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.horarios.hora}" render="id_form_agendamento_novo, id_form_agendamento" status="i_status"/>
-                                    </rich:column>
-                                    <rich:column styleClass="coluna" rendered="#{agendamentoBean.renderedDisponivel}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Disponível"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.quantidade}" rendered="#{agendamentoBean.renderedDisponivel}"/>
-                                    </rich:column>
-                                    <rich:column style="width: 100px">
-                                        <f:facet name="header">
-                                            <h:outputText value="CNPJ"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Empresa"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Escritório"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Funcionário"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Homologador"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.homologador.pessoa.nome}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Contato"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.contato}"/>
-                                    </rich:column>
-                                    <rich:column  style="width: 80px">
-                                        <f:facet name="header">
-                                            <h:outputText value="Telefone"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.agendamento.telefone}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Usuario"/>
-                                        </f:facet>
-                                        <h:outputText value="#{objeto.usuarioAgendador}" />
-                                    </rich:column>
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
-                                        </f:facet>
-                                        <h:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{agendamentoBean.disabledProtocolo}" title="Imprimir Protocolo"/>
-                                    </rich:column>
-                                </rich:dataTable>
+                                        <p:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.horarios.hora}" update=":formConcluirAgendamento:"/>
+                                    </p:column>
+
+                                    <p:column headerText="Quant." width="40" style="text-align: center" rendered="#{agendamentoBean.renderedDisponivel}">
+                                        <h:outputText value="#{objeto.quantidade}" />
+                                    </p:column>
+
+                                    <p:column headerText="CNPJ" width="130" style="text-align: center">
+                                        <p:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.documento}" update=":formConcluirAgendamento:"/>
+                                    </p:column>
+
+                                    <p:column headerText="Empresa" width="250">
+                                        <p:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.nome}" update=":formConcluirAgendamento:" style="font-size: 8pt!important"/>
+                                    </p:column>
+
+                                    <p:column headerText="Escritório" width="150">
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}" style="font-size: 8pt!important"/>
+                                    </p:column>
+
+                                    <p:column headerText="Funcionário" width="100">
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.fisica.pessoa.nome}" style="font-size: 8pt!important"/>
+                                    </p:column>
+
+                                    <p:column headerText="Homologador" width="100">
+                                        <h:outputText value="#{objeto.agendamento.homologador.pessoa.nome}" style="font-size: 8pt!important"/>
+                                    </p:column>
+
+                                    <p:column headerText="Prot." style="text-align: center" width="40" rendered="#{!agendamentoBean.renderedDisponivel}">
+                                        <p:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{objeto.agendamento.status.id != 1 and objeto.agendamento.status.id != 6 and objeto.agendamento.agendador != null}" ajax="false"/>
+                                    </p:column>
+
+                                    <p:rowExpansion>
+                                        <h:panelGrid columns="5" styleClass="sbb">
+                                            <p:column>
+                                                <h:outputLabel value="Contato" style="font-weight: bold"/><br />
+                                                <h:outputText   value="#{objeto.agendamento.contato}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputLabel value="Telefone" style="font-weight: bold"/><br />
+                                                <h:outputText value="#{objeto.agendamento.telefone}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputLabel value="Usuário" style="font-weight: bold"/><br />
+                                                <h:outputText value="#{objeto.usuarioAgendador}"/>di
+                                            </p:column>
+                                        </h:panelGrid>
+                                    </p:rowExpansion>
+                                    <f:facet name="footer">
+                                        <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                            <h:column>
+                                                <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                                <h:outputLabel value="Contém Oposição" />
+                                            </h:column>
+                                            <h:column>
+                                            
+                                            <h:outputLabel value="Esta lista é atualizada a cada #{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento} segundos" />
+                                            </h:column>
+                                            
+                                        </h:panelGrid>
+                                    </f:facet>
+                                </p:dataTable>
+                            </h:panelGrid>                            
+                        </h:form>
+                    </p:panel>
+                    
+                    <h:form id="formConcluirAgendamento">
+                        <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" visible="#{agendamentoBean.visibleModal}">
+                            
+                            <p:ajax event="close" listener="#{agendamentoBean.setVisibleModal(false)}"/>  
+                            <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                            
+                            <h:panelGrid id="i_panel_protocolo" columns="2" style="width: 100%;">
+                                <h:column>
+                                    <h:outputText value="Protocólo"/><br />
+                                    <p:inputText size="10" value="#{agendamentoBean.protocolo}" disabled="#{agendamentoBean.agendamento.id != -1}">
+                                        <p:ajax event="change" listener="#{agendamentoBean.pesquisarProtocolo}" update="formConcluirAgendamento" />
+                                    </p:inputText>
+                                </h:column>
+                                
+                                <h:column>
+                                    <p:commandButton value="Alterar Horário" title="Transferir horário" action="#{agendamentoBean.loadListaHorariosTransferencia()}" oncomplete="PF('dlg_transferir_horario').show()" update="i_panel_transferir_horario" rendered="#{agendamentoBean.agendamento.id != -1}" style="float: right" global="false"/>
+                                </h:column>
                             </h:panelGrid>
-                        </div>
-                    </rich:panel>
-                </center>
-                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400" header="Profissão">
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid columns="7">
-                            <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
-                            <h:inputText id="idProf" size="20" value="#{agendamentoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
-                            <a4j:commandButton value="Inicial" action="#{agendamentoBean.inicial}" render="i_tbl_prof" status="i_status" />
-                            <a4j:commandButton value="Parcial" action="#{agendamentoBean.parcial}" render="i_tbl_prof" status="i_status" />
-                            <h:outputText value="Por: " styleClass="fontePadrao"/>
-                            <h:selectOneMenu id="idPor" value="#{agendamentoBean.combo}" >
-                                <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
-                                <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
-                            </h:selectOneMenu>
-                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.profissao()}" immediate="true" />
-                        </h:panelGrid>
-                        <h:panelGrid columns="1" styleClass="margin-top-maior">
-                            <rich:extendedDataTable var="linha" value="#{agendamentoBean.listaProfissao}" id="i_tbl_prof" frozenColumns="2" style="height:300px; width: 500px" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible">
-                                <f:facet name="header">Lista de profissões</f:facet>
-                                <rich:column width="30">
-                                    <f:facet name="header">Id</f:facet>
-                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
-                                </rich:column>
-                                <rich:column styleClass="text-center">
-                                    <f:facet name="header">Cbo</f:facet>
-                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.cbo}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
-                                </rich:column>
-                                <rich:column styleClass="textoEsquerda" width="350">
-                                    <f:facet name="header">Profissão</f:facet>
-                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.profissao}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
-                                </rich:column>
-                            </rich:extendedDataTable>
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>
-                <rich:popupPanel id="i_painel_endereco" modal="true" resizeable="true" width="600" height="400" domElementAttachment="form" header="Endereço">
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid columns="4">
-                            <h:outputLabel value="Cep: " styleClass="fontePadrao"/>
-                            <h:inputText size="10" id="id_numero_cep" maxlength="8" value="#{agendamentoBean.cepEndereco}" styleClass="fontePadrao" >
-                                <a4j:ajax event="blur" render="@this" listener="#{agendamentoBean.limparPesquisaEndereco}" />
-                            </h:inputText>
-                            <a4j:commandButton value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" render="i_tbl_endereco" status="i_status" />
-                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.endereco()}" immediate="true" />
-                        </h:panelGrid>
-                        <rich:extendedDataTable value="#{agendamentoBean.listaEnderecos}" var="linha" id="i_tbl_endereco" frozenColumns="2" style="height:300px; width: 500px;" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible" styleClass="margin-top-maior">
-                            <rich:column width="50">
-                                <f:facet name="header">ID</f:facet>
-                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
-                            </rich:column>
-                            <rich:column width="450">
-                                <f:facet name="header">Endereço</f:facet>
-                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
-                            </rich:column>
-                        </rich:extendedDataTable>
-                    </center>
-                </rich:popupPanel>
-                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" header="Mensagem">
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;">
-                            <a4j:ajax event="click" render="id_form_agendamento" />
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputText value="#{agendamentoBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!agendamentoBean.imprimirPro}" style="#{agendamentoBean.styleDestaque}" />
-                        <h:commandLink value="#{agendamentoBean.msgConfirma}" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao" style="#{agendamentoBean.styleDestaque}" />
-                        <br /><br />
-                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="id_form_agendamento" action="agendamento" immediate="true" />
-                        <br /><br />
-                    </center>
-                </rich:popupPanel>
-            </h:form>                   
-        </f:view>
+                                
+                            <h:panelGrid id="i_panel_agendamento">
+                                <p:panel styleClass="fundoCinza" style="width: 810px; margin-top: 20px">
+                                    <h:panelGrid columns="4">
+                                        <h:column>
+                                            <h:outputLabel value="Data" /><br />
+                                            <p:inputText value="#{agendamentoBean.agendamento.data}" style="font-weight: bold; font-size: 11pt!important; text-align: center" readonly="true" size="8"/>
+                                        </h:column>
+
+                                        <h:column>
+                                            <h:outputLabel value="Horário" style="margin-left: 20px"/><br />
+                                            <p:inputText value="#{agendamentoBean.agendamento.horarios.hora}" style="font-weight: bold; font-size: 11pt!important; margin-left: 20px; text-align: center" readonly="true" size="8"/>
+                                        </h:column>
+
+                                        <h:column>
+                                            <h:outputLabel value="Motivo Demissão" style="margin-left: 20px;"/><br />
+                                            <p:selectOneMenu value="#{agendamentoBean.idMotivoDemissao}" style="margin-left: 20px; width: 230px">
+                                                <f:selectItems value="#{agendamentoBean.listaDemissao}"/>
+                                            </p:selectOneMenu>
+                                        </h:column>
+
+                                        <h:column>
+                                            <h:outputLabel value="Tipo de Aviso" style="margin-left: 20px;"/><br />
+                                            <p:selectOneMenu value="#{agendamentoBean.pessoaEmpresa.avisoTrabalhado}" style="margin-left: 20px; width: 120px">
+                                                <f:selectItem itemValue="false" itemLabel="Indenizado"/>
+                                                <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
+                                            </p:selectOneMenu>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:panel>                            
+                            </h:panelGrid>
+                            
+                            <h:panelGrid id="i_panel_funcionario" columns="4" style="margin-top: 20px; width: 820px">
+                                <h:column>
+                                    <h:outputLabel value="CPF" style="color: red; font-weight: bold"/><br />
+                                    <p:inputMask value="#{agendamentoBean.fisica.pessoa.documento}" mask="999.999.999-99" size="13" readonly="#{agendamentoBean.fisica.id != -1}">
+                                        <p:ajax event="blur" listener="#{agendamentoBean.pesquisarFuncionarioCPF}" update="formConcluirAgendamento" />
+                                    </p:inputMask>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Funcionário" style="color: red; font-weight: bold"/><br />
+                                    <p:inputText value="#{agendamentoBean.fisica.pessoa.nome}" readonly="#{agendamentoBean.fisica.id != -1}" size="60" converter="#{toUpperCase}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Nascimento" /><br />
+                                    <p:inputMask value="#{agendamentoBean.fisica.nascimento}" readonly="#{agendamentoBean.fisica.id != -1}" size="8" mask="99/99/9999"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="Sexo"/><br />
+                                    <p:selectOneButton value="#{agendamentoBean.fisica.sexo}">
+                                        <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                        <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                    </p:selectOneButton>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid id="i_panel_endereco_func" columns="4" style="margin-top: 10px">
+                                <p:commandButton value="Endereço" onclick="PF('dlg_endereco').show()" global="false"/>
+                                <h:panelGrid rendered="#{agendamentoBean.fisica.id != -1}" columns="4">
+                                    <p:commandLink value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} 
+                                                          #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao}, " onclick="PF('dlg_endereco').show()" global="false"/>
+                                    <p:inplace style="font-size: 11pt!important" emptyLabel="Editar Número">
+                                        <p:inputText value="#{agendamentoBean.enderecoFisica.numero}" size="5">
+                                            <p:ajax event="blur" update="i_panel_endereco_func" global="false"/>
+                                        </p:inputText>
+                                    </p:inplace>
+                                    <p:commandLink value="#{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" onclick="PF('dlg_endereco').show()" global="false"/>
+                                    <p:inplace style="font-size: 11pt!important" emptyLabel="Editar Complemento">
+                                        <p:inputText value="#{agendamentoBean.enderecoFisica.complemento}">
+                                            <p:ajax event="blur" update="i_panel_endereco_func" global="false"/>
+                                        </p:inputText>
+                                    </p:inplace>
+                                </h:panelGrid>
+
+                                <h:panelGrid rendered="#{agendamentoBean.fisica.id == -1}" columns="3">
+                                    <p:commandLink value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} 
+                                                   #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao}, 
+                                                   #{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" 
+                                                   style="font-size: 11pt!important"/>
+
+                                    <p:inputText size="5" value="#{webAgendamentoContribuinteBean.enderecoFisica.numero}" readonly="#{agendamentoBean.fisica.id != -1}" placeholder="Número"/>
+                                    <p:inputText size="40" value="#{webAgendamentoContribuinteBean.enderecoFisica.complemento}" readonly="#{agendamentoBean.fisica.id != -1}" placeholder="Complemento" converter="#{toUpperCase}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText>
+                                </h:panelGrid>
+                            </h:panelGrid>   
+                            
+                            <h:panelGrid columns="4" style="margin-top: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Setor"/><br />
+                                    <p:inputText size="20" value="#{agendamentoBean.pessoaEmpresa.setor}" converter="#{toUpperCase}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Carteira" styleClass="#{agendamentoBean.configuracaoHomologacao.validaCarteira ? 'font-color-red' : ''}"/><br />
+                                    <p:inputText size="10" value="#{agendamentoBean.fisica.carteira}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Série" styleClass="#{agendamentoBean.configuracaoHomologacao.validaSerie ? 'font-color-red' : ''}"/><br />
+                                    <p:inputText size="15" maxlength="15" value="#{webAgendamentoContribuinteBean.fisica.serie}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Código do Funcionário" /><br />
+                                    <p:inputText size="20" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.codigo}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" />
+                                </h:column>
+                            </h:panelGrid>
+
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="4">
+                                    <h:column>
+                                        <h:outputLabel value="Profissão"/><br />
+                                        <p:commandButton value="Função" onclick="PF('dlg_profissao').show()" global="false"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:inputText size="50" value="#{agendamentoBean.profissao.cbo} - #{agendamentoBean.profissao.profissao}" readonly="true" onclick="PF('dlg_profissao').show()" />
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Admissão" style="color: red; font-weight: bold"/><br />
+                                        <p:inputMask size="8" value="#{agendamentoBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Demissão" style="color: red; font-weight: bold"/><br />
+                                        <p:inputMask size="8" value="#{agendamentoBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <h:panelGrid>
+                                <p:commandButton value="#{agendamentoBean.juridica.id == -1 ? 'Pesquisar Empresa' : 'Alterar Empresa'}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"/>
+                            </h:panelGrid>
+                            
+                            <p:panel style="margin-top: 10px" rendered="#{agendamentoBean.juridica.id != -1}">
+                                <h:panelGrid columns="5">
+                                    <h:column>
+                                        <h:outputText value="Empresa" style="font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.juridica.pessoa.nome}" />
+                                    </h:column>
+
+                                    <h:column rendered="#{!agendamentoBean.juridica.pessoa.telefone1.equals('') or !agendamentoBean.juridica.pessoa.telefone2.equals('')}">
+                                        <h:outputText value="Telefone" style="margin-left: 20px; font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.juridica.pessoa.telefone1} / #{agendamentoBean.juridica.pessoa.telefone2}" style="margin-left: 20px;"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputText value="Status" style="margin-left: 20px; font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.statusEmpresa}" style="margin-left: 20px;"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandLink value="Imprimir Planilha" title="Imprimir Planilha de Débitos" style="margin-left: 15px; color: blue; font-weight: bold" action="#{agendamentoBean.imprimirPlanilha}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" target="_blank" ajax="false"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandLink value="Enviar planilha por Email" title="Enviar Planilha de Débitos por email" style="margin-left: 15px; color: blue;" onclick="PF('dlg_enviar_planilha').show()" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" />
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <h:column>
+                                        <h:outputText value="Endereço da Empresa" style="font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.strEndereco}"/>
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2">
+                                    <h:column rendered="#{!agendamentoBean.juridica.contabilidade.pessoa.nome.equals('')}">
+                                        <h:outputText value="Escritório" style="font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.juridica.contabilidade.pessoa.nome}" />
+                                    </h:column>
+
+                                    <h:column rendered="#{!agendamentoBean.juridica.contabilidade.pessoa.telefone1.equals('') or !agendamentoBean.juridica.contabilidade.pessoa.telefone2.equals('')}">
+                                        <h:outputText value="Telefone" style="font-weight: bold; margin-left: 20px;"/><br />
+                                        <h:outputText value="#{agendamentoBean.juridica.contabilidade.pessoa.telefone1} / #{agendamentoBean.juridica.contabilidade.pessoa.telefone2}" style="margin-left: 20px;"/>
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid id="i_panel_contato" columns="5">
+                                    <h:column>
+                                        <h:outputLabel value="Contato" styleClass="#{agendamentoBean.configuracaoHomologacao.validaContato ? 'font-color-red' : ''}"/><br />
+                                        <p:inputText value="#{agendamentoBean.agendamento.contato}" size="20" converter="#{toUpperCase}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Email" styleClass="#{agendamentoBean.configuracaoHomologacao.validaEmail ? 'font-color-red' : ''}"/><br />
+                                        <p:inputText value="#{agendamentoBean.agendamento.email}" size="30" converter="#{toLowerCase}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandLink action="#{agendamentoBean.enviarEmailProtocolo()}" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}">
+                                            <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="40" />
+                                        </p:commandLink>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <h:panelGrid rendered="#{agendamentoBean.tipoTelefone.equals('telefone')}">
+                                            <h:outputLabel value="Telefone" styleClass="#{agendamentoBean.configuracaoHomologacao.validaTelefone ? 'font-color-red' : ''}"/>
+                                            <p:inputMask value="#{agendamentoBean.agendamento.telefone}" style="text-align: center" mask="(99) 9999-9999" size="13">
+                                                <p:ajax event="change" update="@this" global="false"/>
+                                            </p:inputMask>
+                                        </h:panelGrid>
+                                        
+                                        <h:panelGrid rendered="#{agendamentoBean.tipoTelefone.equals('celular')}">
+                                            <h:outputLabel value="Telefone (Celular)"/>
+                                            <p:inputMask value="#{agendamentoBean.agendamento.telefone}" style="text-align: center" mask="(99) 99999-9999" size="14">
+                                                <p:ajax event="change" update="@this" global="false"/>
+                                            </p:inputMask>
+                                        </h:panelGrid>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-help" title="Alterar Máscara do Telefone" action="#{agendamentoBean.alterarTipoMascara()}" update="i_panel_contato" global="false"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <hr />
+                            
+                            <h:panelGrid columns="5">
+                                <p:commandButton value="#{agendamentoBean.agendamento.id == -1 ? 'Agendar' : 'Alterar'}" action="#{agendamentoBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formAgendamento formConcluirAgendamento"/>
+                                <p:commandButton value="Voltar" actionListener="#{agendamentoBean.setVisibleModal(false)}" update=":formAgendamento formConcluirAgendamento" onclick="PF('dlg_agendamento').hide()"/>
+                                <p:commandButton value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" />
+                                <p:commandButton value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formAgendamento formConcluirAgendamento"/>
+                                <p:commandButton value="Imprimir Protocolo" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.agendamento.id != -1}" icon="ui-icon-print" ajax="false"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                        
+                        <p:dialog widgetVar="dlg_transferir_horario" header="Transferir Horário" resizable="false" modal="true">
+                            <h:panelGrid id="i_panel_transferir_horario" columns="2">
+                                <p:calendar size="8" value="#{agendamentoBean.dataTransferencia}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999" >
+                                    <p:ajax event="dateSelect" update="@this i_panel_transferir_horario" listener="#{agendamentoBean.loadListaHorariosTransferencia()}" global="false"/>
+                                    <p:ajax event="change" update="@this i_panel_transferir_horario" listener="#{agendamentoBean.loadListaHorariosTransferencia()}" global="false"/>
+                                </p:calendar>
+
+                                <p:selectOneMenu value="#{agendamentoBean.idHorarioTransferencia}" style="padding-right: 10px">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                    <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <br />
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Alterar" action="#{agendamentoBean.salvarTransferencia()}" update="i_panel_agendamento :formAgendamento:tbl" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" onclick="PF('dlg_transferir_horario').hide()" style="float: left" icon="ui-icon-close"/>    
+                            </h:panelGrid>
+                        </p:dialog>
+                        
+                        <p:dialog widgetVar="dlg_endereco" header="Endereço" resizable="false" modal="true" width="400">
+                            <h:panelGrid id="i_panel_endereco">
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <h:outputLabel value="Cep"/><br />
+                                        <p:inputText size="10" maxlength="8" value="#{agendamentoBean.cepEndereco}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" update="tbl_end" global="false"/>
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid>
+                                    <p:dataTable id="tbl_end" value="#{agendamentoBean.listaEnderecos}" var="linha" emptyMessage="Nenhum endereço pesquisado!">
+                                        <p:column headerText="Descrição do Endereço">
+                                            <p:commandLink value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}" action="#{agendamentoBean.editarEndereco(linha)}" oncomplete="PF('dlg_endereco').hide()" update=":formConcluirAgendamento:"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>   
+                            </h:panelGrid>
+                        </p:dialog>    
+                        
+                        <p:dialog widgetVar="dlg_profissao" header="Pesquisar Profissão" resizable="false" modal="true" width="480">
+                            <h:panelGrid id="i_panel_profissao">
+
+                                <h:panelGrid columns="4">
+                                    <h:column>
+                                        <h:outputLabel value="Profissão" /><br />
+                                        <p:inputText size="20" value="#{agendamentoBean.descricaoProfissao}" onkeypress="return event.keyCode !== 13;">
+                                            <p:ajax event="blur" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </h:column>
+
+
+                                    <h:column>
+                                        <h:outputLabel value="Por"/><br />
+                                        <p:selectOneMenu value="#{agendamentoBean.combo}" style="width: 100px">
+                                            <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                            <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Inicial" action="#{agendamentoBean.inicial}" update="tbl_profissao"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Parcial" action="#{agendamentoBean.parcial}" update="tbl_profissao"/>
+                                    </h:column>
+                                </h:panelGrid>       
+
+                                <h:panelGrid columns="1">
+                                    <p:dataTable id="tbl_profissao" var="linha" value="#{agendamentoBean.listaProfissao}" emptyMessage="Nenhuma profissão pesquisada!">
+                                        <p:column headerText="CBO" width="100">
+                                            <p:commandLink value="#{linha.cbo}" action="#{agendamentoBean.editar(linha)}" oncomplete="PF('dlg_profissao').hide()" update=":formConcluirAgendamento:"/>
+                                        </p:column>
+
+                                        <p:column headerText="Profissão">
+                                            <p:commandLink  value="#{linha.profissao}" action="#{agendamentoBean.editar(linha)}" oncomplete="PF('dlg_profissao').hide()" update=":formConcluirAgendamento:"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:dialog>     
+                        
+                        <p:dialog widgetVar="dlg_oposicao" header="Informação" resizable="false" modal="true" width="500">
+                            <p:messages showDetail="true" />
+                            <br />
+                            <br />
+                            <h:panelGrid columns="2" style="width: 100%; text-align: center">
+                                <p:commandButton value="OK, Continuar Agendamento" onclick="PF('dlg_oposicao').hide()"/>
+                                <p:commandButton value="NÃO QUERO continuar esse Agendamento" onclick="PF('dlg_oposicao').hide(); PF('dlg_agendamento').hide()" action="#{agendamentoBean.setVisibleModal(false)}" update=":formAgendamento formConcluirAgendamento"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                        
+                        <p:dialog widgetVar="dlg_enviar_planilha" header="Enviar Planilha por Email" resizable="false" modal="true" width="450">
+                            <p:messages id="i_msg_envio" showDetail="true" closable="true"/>
+                            <h:panelGrid columns="3">
+                                <h:column>
+                                    <h:outputLabel value="Email da" /><br />
+                                    <p:selectOneMenu value="#{agendamentoBean.enviarPara}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                        <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
+                                        <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
+                                    </p:selectOneMenu>
+                                </h:column>
+                                
+                                <h:column>
+                                    <br />
+                                    <h:outputLabel value=" ou " style="margin: 20px"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="E-mail opcional:" /><br />
+                                    <p:inputText value="#{agendamentoBean.emailEmpresa}" style="width: 100%">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Enviar" action="#{agendamentoBean.enviarPlanilha()}" update="i_msg_envio"/>
+                                <p:commandButton value="Fechar" onclick="PF('dlg_enviar_planilha').hide()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

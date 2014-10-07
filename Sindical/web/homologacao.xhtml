@@ -256,14 +256,15 @@
                                     <h:column>
                                         <h:outputLabel value="Data" /><br />
                                         <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" navigator="true" size="8" mask="99/99/9999">
-                                            <p:ajax event="dateSelect" update="@this, tbl" />
+                                            <p:ajax event="dateSelect" update="@this, tbl" listener="#{homologacaoBean.loadListaHomologacao()}"/>
+                                            <p:ajax event="change" update="@this, tbl" listener="#{homologacaoBean.loadListaHomologacao()}"/>
                                         </p:calendar>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Status"/><br />
                                         <p:selectOneMenu value="#{homologacaoBean.idStatus}">
-                                            <p:ajax event="change" update="tbl" />
+                                            <p:ajax event="change" update="tbl" listener="#{homologacaoBean.loadListaHomologacao()}"/>
                                             <f:selectItems value="#{homologacaoBean.listaStatus}"/>
                                         </p:selectOneMenu>
                                     </h:column>
@@ -346,6 +347,15 @@
                                     </f:facet>
                                     <h:commandLink action="#{protocoloAgendamento.imprimir(linha.agendamento)}" target="_blank" value="#{linha.agendamento.id}" title="Imprimir Protocolo" />
                                 </p:column>
+                                
+                                <f:facet name="footer">
+                                        <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                            <h:column>
+                                                <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                                <h:outputLabel value="Contém Oposição" />
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </f:facet>                                
                             </p:dataTable>                                
                         </h:panelGrid>
                         

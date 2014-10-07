@@ -398,6 +398,13 @@
                                     
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
+                                            <h:outputText value="Valor"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.movimento.valorString}"/>
+                                    </rich:column> 
+                                    
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
                                             <h:outputText value="Usuário"/>
                                         </f:facet>
                                         <h:outputText value="#{linha.usuario.pessoa.nome}"/>

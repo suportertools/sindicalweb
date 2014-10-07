@@ -47,10 +47,9 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private int idStatus = 0;
     private int idMotivoDemissao = 0;
     private int idIndex = -1;
-    //private List listaGrid = new ArrayList();
-    private List<ListaAgendamento> listaHomologacoes = new ArrayList<ListaAgendamento>();
-    private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDemissao = new ArrayList<SelectItem>();
+    private List<ListaAgendamento> listaHomologacoes = new ArrayList();
+    private final List<SelectItem> listaStatus = new ArrayList();
+    private final List<SelectItem> listaDemissao = new ArrayList();
     private Agendamento agendamento = new Agendamento();
     private Juridica juridica = new Juridica();
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
@@ -60,7 +59,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private Registro registro = new Registro();
     private Cancelamento cancelamento = new Cancelamento();
     private Senha senhaAtendimento = new Senha();
-    private List<Senha> listaAtendimentoSimples = new ArrayList<Senha>();
+    private List<Senha> listaAtendimentoSimples = new ArrayList();
 
     public HomologacaoBean(){
         macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
@@ -68,9 +67,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             this.loadListaHomologacao();
             this.loadListaAtendimentoSimples();
         }
+        
+        registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
     }
     
-    public void loadListaHomologacao(){
+    public final void loadListaHomologacao(){
         listaHomologacoes.clear();
         try {
             Polling polling = new Polling();
@@ -86,8 +87,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) > DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
             return;
         }
-//        listaGrid.clear();
-//        listaGrid = new ArrayList();
+        
         HomologacaoDB db = new HomologacaoDBToplink();
         Usuario us = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         int idUsuario;
@@ -101,12 +101,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             idUsuario = us.getId();
         }
         List<Agendamento> agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), data, null, idUsuario, 0, 0);
-        Registro reg = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
+
         for (int i = 0; i < agendamentos.size(); i++) {
             ListaAgendamento listaAgendamento = new ListaAgendamento();
             listaAgendamento.setAgendamento(agendamentos.get(i));
             Usuario u = new Usuario();
-            if (reg.isSenhaHomologacao()) {
+            if (registro.isSenhaHomologacao()) {
                 Senha senha = db.pesquisaSenhaAgendamento(agendamentos.get(i).getId());
                 if (DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData())) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
                     if (agendamentos.get(i).getStatus().getId() == 2) {
@@ -145,7 +145,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
     
-    public void loadListaAtendimentoSimples(){
+    public final void loadListaAtendimentoSimples(){
         listaAtendimentoSimples.clear();
         
         if (macFilial != null){
@@ -343,6 +343,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             
             // SENHA DE HOMOLOGAÇÃO --------------------------------------------------------------------------------------------------------------------------
             if (senhax.getAgendamento() != null){
+                if (senhax.getAgendamento().getStatus().getId() != 2){
+                    continue;
+                }
+                
                 agendamento = senhax.getAgendamento();
                 fisica = senhax.getAgendamento().getPessoaEmpresa().getFisica();
                 juridica = senhax.getAgendamento().getPessoaEmpresa().getJuridica();
@@ -379,7 +383,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                     return null;
                 }
                 di.commit();
-                return null;
+                return "homologacao";
             }
             
             // SENHA DE ATENDIMENTO --------------------------------------------------------------------------------------------------------------------------
@@ -439,7 +443,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 }
             }
         }
-        return null;
+        return "homologacao";
     }
     
     public String atendimento() {
@@ -1241,12 +1245,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public Registro getRegistro() {
-        if (registro == null) {
-            registro = new Registro();
-        }
-        if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
-        }
         return registro;
     }
 
@@ -1277,7 +1275,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public List<Agendamento> listAtendimentoAberto() {
-        List<Agendamento> list = new ArrayList<Agendamento>();
+        List<Agendamento> list = new ArrayList();
         if (GenericaSessao.exists("sessaoUsuario")) {
             HomologacaoDao dao = new HomologacaoDao();
             list = (List<Agendamento>) dao.pesquisaAgendamentoAtendimentoAberto(((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
