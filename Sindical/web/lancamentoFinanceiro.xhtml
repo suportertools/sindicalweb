@@ -222,16 +222,16 @@
                                     <p:messages id="i_msg" showDetail="true" closable="true"/>  
 
                                     <h:panelGrid id="i_panel_pessoa" columns="2">
-                                        <c:if test="#{lancamentoFinanceiroBean.pessoa.id != -1}">
+                                        <h:column rendered="#{lancamentoFinanceiroBean.pessoa.id != -1}">
                                             <h:panelGrid columns="3">
                                                 <h:outputText value="Credor / Devedor:" style="font-weight: bold"/>
                                                 <h:outputText value="#{lancamentoFinanceiroBean.pessoa.nome}"/>
 
                                                 <p:commandLink value="Limpar tudo e começar de Novo" action="#{lancamentoFinanceiroBean.limpar()}" update="formLancamentoFinanceiro" style="margin-left: 150px" oncomplete="PF('i_dlg_novo').show()"/>
                                             </h:panelGrid>
-                                        </c:if>
+                                        </h:column>
 
-                                        <c:if test="#{lancamentoFinanceiroBean.opcaoCadastro != '' and lancamentoFinanceiroBean.opcaoCadastro == 'juridica'}">
+                                        <h:column rendered="#{lancamentoFinanceiroBean.opcaoCadastro != '' and lancamentoFinanceiroBean.opcaoCadastro == 'juridica'}">
                                             <h:panelGrid columns="3">
                                                 <h:outputText value="Cadastro de Empresa" style="font-weight: bold"/>
                                                 <p:commandLink ajax="false" value="Ir para cadastro completo" action="#{chamadaPaginaBean.pessoaJuridica()}" style="margin-left: 20px"/>
@@ -245,9 +245,9 @@
                                                 <p:commandButton value="Salvar" action="#{lancamentoFinanceiroBean.salvarPessoa}" update="i_panel_pessoa i_panel_cadastro i_msg" />
                                                 <p:commandButton action="#{lancamentoFinanceiroBean.cancelarCadastro()}" update="i_panel_pessoa i_panel_cadastro" icon="ui-icon-close" />  
                                             </h:panelGrid>
-                                        </c:if>
+                                        </h:column>
 
-                                        <c:if test="#{lancamentoFinanceiroBean.opcaoCadastro != '' and lancamentoFinanceiroBean.opcaoCadastro == 'fisica'}">
+                                        <h:column rendered="#{lancamentoFinanceiroBean.opcaoCadastro != '' and lancamentoFinanceiroBean.opcaoCadastro == 'fisica'}">
                                             <h:panelGrid columns="3">
                                                 <h:outputText value="Cadastro de Pessoa Física" style="font-weight: bold"/>
                                                 <p:commandLink ajax="false" value="Ir para cadastro completo" action="#{chamadaPaginaBean.pessoaFisica()}" style="margin-left: 20px"/>
@@ -261,7 +261,7 @@
                                                 <p:commandButton value="Salvar" action="#{lancamentoFinanceiroBean.salvarPessoa}" update="i_panel_pessoa i_panel_cadastro i_msg" />
                                                 <p:commandButton action="#{lancamentoFinanceiroBean.cancelarCadastro()}" update="i_panel_pessoa i_panel_cadastro" icon="ui-icon-close" />  
                                             </h:panelGrid>
-                                        </c:if>
+                                        </h:column>
                                     </h:panelGrid>
 
                                     <p:panel styleClass="fundoCinza" style="clear: both; margin-top: 10px; width: 800px">
@@ -277,14 +277,14 @@
                                         <h:panelGrid id="i_valor" columns="9">
                                             <p:column>
                                                 <h:outputText value="Total" style="font-weight: bold"/><br />
-                                                <c:if test="#{lancamentoFinanceiroBean.contaTipoPlano.id == -1}">
+                                                <h:column rendered="#{lancamentoFinanceiroBean.contaTipoPlano.id == -1}">
                                                     <p:inputText value="#{lancamentoFinanceiroBean.total}" size="8" style="text-align: right">
                                                         <p:ajax event="change" update="@this" />
                                                     </p:inputText>
-                                                </c:if>
-                                                <c:if test="#{lancamentoFinanceiroBean.contaTipoPlano.id != -1}">
+                                                </h:column>
+                                                <h:column rendered="#{lancamentoFinanceiroBean.contaTipoPlano.id != -1}">
                                                     <p:commandButton value="R$ #{lancamentoFinanceiroBean.total}" action="#{lancamentoFinanceiroBean.openModalPedido()}" oncomplete="PF('dlg_pedido').show();" style="font-weight: bold" update=":formLancamentoFinanceiro:dlg_pedido"/>
-                                                </c:if>
+                                                </h:column>
                                             </p:column>
 
                                             <p:column>
@@ -522,9 +522,9 @@
                                     <!-- AÇÕES -->
                                     <f:facet name="footer">
                                         <h:panelGrid columns="4">
-                                            <c:if test="#{lancamentoFinanceiroBean.lote.id == -1}">
+                                            <h:column rendered="#{lancamentoFinanceiroBean.lote.id == -1}">
                                                 <p:commandButton value="Novo" action="#{lancamentoFinanceiroBean.novoPedido()}" update="dlg_pedido" />
-                                            </c:if>
+                                            </h:column>
 
                                             <p:commandButton value="Concluir" action="#{lancamentoFinanceiroBean.closeModalPedido()}" onclick="PF('dlg_pedido').close();"/>
                                         </h:panelGrid>
