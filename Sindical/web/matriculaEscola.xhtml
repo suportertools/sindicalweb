@@ -49,13 +49,13 @@
                                             <p:selectOneMenu id="cbDataVencimento" value="#{matriculaEscolaBean.idDiaVencimento}" disabled="true">
                                                 <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
                                             </p:selectOneMenu>
-                                            <c:if test="false">
+                                            <h:column rendered="false">
                                                 <p:outputLabel value="Tipo Cobrança: "/>
                                                 <p:selectOneMenu id="cbTipoCobranca" value="#{matriculaEscolaBean.idFTipoDocumento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
                                                     <p:ajax event="change" listener="#{matriculaEscolaBean.bloqueiaComboDiaVencimento}" update="cbDataVencimento" />
                                                     <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
                                                 </p:selectOneMenu>
-                                            </c:if>
+                                            </h:column>
                                         </h:panelGrid>
                                     </h:column>
                                     <p:commandButton icon="ui-icon-search" value="Aluno" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" />
@@ -107,11 +107,11 @@
                                 </h:panelGrid>
                             </h:column>
                             <h:column>
-                                <c:if test="#{matriculaEscolaBean.alunoFoto}">
+                                <h:column rendered="#{matriculaEscolaBean.alunoFoto}">
                                     <p:panel header="Foto Aluno">
                                         <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaEscolaBean.matriculaEscola.aluno.id}.png" width="130" />
                                     </p:panel>
-                                </c:if>
+                                </h:column>
                             </h:column>
                         </h:panelGrid>
                         <p:messages autoUpdate="true" closable="true" showDetail="true"/>
@@ -362,13 +362,13 @@
                                             <p:outputLabel  value="#{movimento.tipoServico.descricao}"/>
                                         </p:column>
                                         <p:column  styleClass="text-center" style="width: 25px;">
-                                            <c:if test="#{movimento.baixa != null}">
+                                            <h:column rendered="#{movimento.baixa != null}">
                                                 <span style="display: block; width: 15px; height: 15px; background: greenyellow;" title="Baixado"></span>
-                                            </c:if>
+                                            </h:column>
                                         </p:column>
                                     </p:dataTable>
                                 </p:tab> 
-                                <c:if test="#{matriculaEscolaBean.listaOutrosMovimentos.size() > 0}">
+                                <h:column rendered="#{matriculaEscolaBean.listaOutrosMovimentos.size() > 0}">
                                     <p:tab title="Outros movimentos" titletip="Multas por cancelamo e outros">
                                         <p:dataTable value="#{matriculaEscolaBean.listaOutrosMovimentos}" var="movimento" emptyMessage="Nenhum movimento gerado" scrollable="true" scrollHeight="150">
                                             <p:column styleClass="text-center" headerText="Vencimento" style="width: 80px;">
@@ -385,13 +385,13 @@
                                                 <p:outputLabel  value="#{movimento.tipoServico.descricao}"/>
                                             </p:column>
                                             <p:column  styleClass="text-center" style="width: 25px;">
-                                                <c:if test="#{movimento.baixa != null}">
+                                                <h:column rendered="#{movimento.baixa != null}">
                                                     <span style="display: block; width: 15px; height: 15px; background: greenyellow;" title="Baixado"></span>
-                                                </c:if>
+                                                </h:column>
                                             </p:column>                                            
                                         </p:dataTable>                                    
                                     </p:tab>
-                                </c:if>
+                                </h:column>
                             </p:tabView>
                         </p:panel>
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
