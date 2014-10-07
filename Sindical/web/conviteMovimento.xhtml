@@ -158,9 +158,9 @@
                                                 <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" size="70" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
                                                 </p:inputText>
-                                                <c:if test="#{conviteMovimentoBean.idadeConvidado != 0}">
+                                                <h:column rendered="#{conviteMovimentoBean.idadeConvidado != 0}">
                                                     <p:outputLabel value="Idade: #{conviteMovimentoBean.idadeConvidado} ano (s)" />
-                                                </c:if>
+                                                </h:column>
                                             </h:panelGrid>
                                         </h:column>
                                         <p:outputLabel value="Sexo:" />
@@ -211,28 +211,28 @@
                                 <p:commandButton value="Capturar" update="i_panel_adicionar" onclick="PF('dgl_captura').show();"/>
                                 <h:panelGrid columns="1" id="i_panel_imagens" styleClass="margin-top">
                                     <p:panel header="Perfil" id="i_panel_perfil">
-                                        <c:if test="#{!conviteMovimentoBean.fotoTempPerfil.equals('')}" >
+                                        <h:column rendered="#{!conviteMovimentoBean.fotoTempPerfil.equals('')}" >
                                             <p:graphicImage value="#{conviteMovimentoBean.fotoTempPerfil}" id="i_perfil_temp" width="250"/>
                                             <div class="clear"></div>
                                             <p:commandButton icon="ui-icon-trash" title="Remover imagem"  action="#{conviteMovimentoBean.apagarImagem('perfil')}" />
-                                        </c:if>
-                                        <c:if test="#{!conviteMovimentoBean.fotoPerfil.equals('')}" >
+                                        </h:column>
+                                        <h:column rendered="#{!conviteMovimentoBean.fotoPerfil.equals('')}" >
                                             <p:graphicImage value="#{conviteMovimentoBean.fotoPerfil}" id="i_perfil" width="250"/>
                                             <div class="clear"></div>
                                             <p:commandButton icon="ui-icon-trash" title="Remover imagem" action="#{conviteMovimentoBean.apagarImagem('perfil')}" />
-                                        </c:if>                                        
+                                        </h:column>                                        
                                     </p:panel>
                                     <p:panel header="Documento" styleClass="margin-top" id="i_panel_documento">
-                                        <c:if test="#{!conviteMovimentoBean.fotoTempArquivo.equals('')}" >
+                                        <h:column rendered="#{!conviteMovimentoBean.fotoTempArquivo.equals('')}" >
                                             <p:graphicImage value="#{conviteMovimentoBean.fotoTempArquivo}" id="i_documento_temp" width="250"/>
                                             <div class="clear"></div>
                                             <p:commandButton icon="ui-icon-trash" title="Remover documento" action="#{conviteMovimentoBean.apagarImagem('documento')}" />
-                                        </c:if>
-                                        <c:if test="#{!conviteMovimentoBean.fotoArquivo.equals('')}" >
+                                        </h:column>
+                                        <h:column rendered="#{!conviteMovimentoBean.fotoArquivo.equals('')}" >
                                             <p:graphicImage value="#{conviteMovimentoBean.fotoArquivo}" id="i_documento" width="250"/>
                                             <div class="clear"></div>
                                             <p:commandButton icon="ui-icon-trash" title="Remover documento" action="#{conviteMovimentoBean.apagarImagem('documento')}" />
-                                        </c:if>
+                                        </h:column>
                                     </p:panel>
                                 </h:panelGrid>
                             </div>
@@ -241,17 +241,17 @@
                                 <p:commandButton value="Salvar" onclick="PF('dgl_panel_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton value="Novo" action="#{conviteMovimentoBean.novo}" update="out_mensagem i_panel_adicionar id_lista"/>
                                 <p:commandButton value="Excluir" onclick="PF('dgl_panel_excluir').show()"  disabled="#{controleAcessoBean.botaoExcluir}" />
-                                <c:if test="#{conviteMovimentoBean.movimento.id != -1}">
-                                    <c:if test="#{conviteMovimentoBean.desabilitaBaixa}">
+                                <h:column rendered="#{conviteMovimentoBean.movimento.id != -1}">
+                                    <h:column rendered="#{conviteMovimentoBean.desabilitaBaixa}">
                                         <h:commandLink action="#{imprimirConviteClube.imprimir(conviteMovimentoBean.conviteMovimento)}" target="_blank">
                                             <p:button icon="ui-icon-print"  value="Imprimir"></p:button>
                                         </h:commandLink>
-                                    </c:if>
-                                    <c:if test="#{!conviteMovimentoBean.desabilitaBaixa}">
+                                    </h:column>
+                                    <h:column rendered="#{!conviteMovimentoBean.desabilitaBaixa}">
                                         <p:commandButton value="Baixar" action="#{conviteMovimentoBean.baixarMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" style="color: red;" ajax="false"/>
                                         <p:outputLabel value="Movimento não baixado" style="color: red;"/>
-                                    </c:if>
-                                </c:if>
+                                    </h:column>
+                                </h:column>
                                 <p:commandButton value="Sair" action="#{conviteMovimentoBean.close}" update="out_mensagem i_panel_adicionar id_lista"/>
                             </h:panelGrid>
                         </p:panel>
