@@ -183,10 +183,9 @@ public class MovimentosReceberSocialJSFBean {
                         formas[7],
                         formas[8],
                         formas[9],
-                        conveniada
+                        ( conveniada.isEmpty() ) ? "" : "Empresa Conveniada: " + conveniada
                 )
                 );
-
             }
 
             JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
@@ -204,9 +203,7 @@ public class MovimentosReceberSocialJSFBean {
             res.getCharacterEncoding();
 
             FacesContext.getCurrentInstance().responseComplete();
-        } catch (JRException ex) {
-            Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (JRException | IOException ex) {
             Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 

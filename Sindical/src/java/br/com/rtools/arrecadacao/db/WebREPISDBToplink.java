@@ -1,6 +1,7 @@
 package br.com.rtools.arrecadacao.db;
 
 import br.com.rtools.arrecadacao.CertidaoDisponivel;
+import br.com.rtools.arrecadacao.CertidaoMensagem;
 import br.com.rtools.arrecadacao.CertidaoTipo;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Patronal;
@@ -10,7 +11,6 @@ import br.com.rtools.arrecadacao.RepisMovimento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
-import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -379,8 +379,8 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
                     " SELECT cp.* FROM arr_convencao_periodo cp "
                   + "  WHERE cp.id_convencao = "+id_convencao+" "
                   + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = "+id_cidade+")"
-                  + "    AND ( "+referencia+" > CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
-                  + "         AND "+referencia+" < CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
+                  + "    AND ( "+referencia+" >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
+                  + "         AND "+referencia+" <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
                   + "    ) ", ConvencaoPeriodo.class
             );
             return qry.getResultList();
@@ -391,11 +391,29 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     }
     
     @Override
-    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal){
+    public List<ConvencaoPeriodo> listaConvencaoPeriodoData(int id_cidade, int id_convencao, String referencia){
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT cp.* FROM arr_convencao_periodo cp "
+                  + "  WHERE cp.id_convencao = "+id_convencao+" "
+                  + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = "+id_cidade+")"
+                  + "    AND ( "+referencia+" >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
+                  + "         AND "+referencia+" <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
+                  + "    ) ", ConvencaoPeriodo.class
+            );
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal, String quantidade){
         descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
         
-        String inner = "", and = "";
+        String inner = "", and = "", limit = "";
         
         String textQry = 
                 " SELECT rm.* " +
@@ -419,7 +437,8 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
                     break;
                 case "status":
                     inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
-                    and   += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%"+descricao+"%'";
+                    if (!descricao.equals("0"))
+                        and   += "    AND rs.id = "+descricao;
                     break;
                 case "solicitante":
                     and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
@@ -430,7 +449,11 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             }
         }
         
-        textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC";
+        if (!quantidade.equals("tudo")){
+            limit = " LIMIT " + quantidade;
+        }
+        
+        textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC " + limit;
         
         Query qry = getEntityManager().createNativeQuery(
             textQry, RepisMovimento.class
@@ -443,6 +466,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         return new ArrayList();
     }
     
+    @Override
     public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
         descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
@@ -500,4 +524,23 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         return new ArrayList();
     }
     
+    public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo){
+        String textQry = (
+                "  SELECT cm "
+                + "  FROM CertidaoMensagem cm "
+                + " WHERE cm.cidade.id = :pcidade "
+                + "   AND cm.certidaoTipo.id = :ptipo"
+        );
+        
+        try{
+            Query qry = getEntityManager().createQuery(textQry);
+
+            qry.setParameter("pcidade", id_cidade);
+            qry.setParameter("ptipo", id_certidao_tipo);
+            return (CertidaoMensagem) qry.getSingleResult();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return null;
+    }
 }

@@ -274,9 +274,7 @@ public class BaixaGeralBean {
                 res.getCharacterEncoding();
 
                 FacesContext.getCurrentInstance().responseComplete();
-            } catch (JRException ex) {
-                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (JRException | IOException ex) {
                 Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

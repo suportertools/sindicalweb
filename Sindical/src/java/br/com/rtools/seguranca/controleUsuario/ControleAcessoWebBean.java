@@ -646,7 +646,8 @@ public class ControleAcessoWebBean implements Serializable {
         }
         String retorno = "";
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            retorno = "indexAcessoWeb.jsf?cliente=" + (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+            //retorno = "indexAcessoWeb.jsf?cliente=" + (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+            retorno = "web/" + (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
         }
         limparSessaoAcessoWeb();
         FacesContext.getCurrentInstance().getExternalContext().redirect(retorno);

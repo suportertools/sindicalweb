@@ -1,6 +1,7 @@
 package br.com.rtools.arrecadacao.beans;
 
 import br.com.rtools.arrecadacao.CertidaoDisponivel;
+import br.com.rtools.arrecadacao.CertidaoMensagem;
 import br.com.rtools.arrecadacao.CertidaoTipo;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Patronal;
@@ -77,23 +78,23 @@ public class WebREPISBean implements Serializable {
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
-    //private boolean showPessoa = true;
-    //private String message = "";
     private RepisMovimento repisMovimento = new RepisMovimento();
     private String descPesquisa = "";
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
-    private String tipoPesquisa = "";
+    private String tipoPesquisa = "status";
     private String descricao = "";
     private List listArquivosEnviados = new ArrayList();
-
+    private List<SelectItem> listaStatus = new ArrayList();
+    private int indexStatus = 1;
+    private String valueLenght = "15";
+    
     public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
         getPessoa();
         pessoaContribuinte = db.ValidaUsuarioContribuinteWeb(pessoa.getId());
         pessoaContabilidade = db.ValidaUsuarioContabilidadeWeb(pessoa.getId());
         if (pessoaContribuinte != null && pessoaContabilidade != null) {
-            //renderEmpresa = true;
             renderEmpresa = false;
             renderContabil = true;
         } else if (pessoaContribuinte != null) {
@@ -108,6 +109,15 @@ public class WebREPISBean implements Serializable {
         }
     }
 
+    public void alterValueLenght(String value){
+        listRepisMovimentoPatronal.clear();
+        listRepisMovimentoPatronalSelecionado.clear();
+        
+        valueLenght = value;
+        
+        pesquisar();
+    }
+    
     public String refresh() {
         return "webLiberacaoREPIS";
     }
@@ -147,11 +157,12 @@ public class WebREPISBean implements Serializable {
         Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
         
         if (tipoPesquisa.equals("tipo")){
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, listaTipoCertidao.get(indexCertidaoTipo).getDescription(), patro.getId());
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, listaTipoCertidao.get(indexCertidaoTipo).getDescription(), patro.getId(), valueLenght);
+        }else if (tipoPesquisa.equals("status")){
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa,  listaStatus.get(indexStatus).getDescription(), patro.getId(), valueLenght);
         }else{
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId());
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId(), valueLenght);
         }
-        
     }
 
     public String pesquisarPorSolicitante() {
@@ -177,7 +188,6 @@ public class WebREPISBean implements Serializable {
 
     public String limparRepisLiberacao() {
         repisMovimento = new RepisMovimento();
-        //setShowPessoa(true);
         listRepisMovimentoPatronal.clear();
         return "webLiberacaoREPIS";
     }
@@ -192,7 +202,6 @@ public class WebREPISBean implements Serializable {
 
     public List listPessoaRepisAno() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
-        //getPessoa();
         List<RepisMovimento> result = new ArrayList();
         if (renderEmpresa) {
             result = wsrepisdb.pesquisarListaSolicitacao("", "", pessoa.getId(), -1, getAno());
@@ -256,9 +265,6 @@ public class WebREPISBean implements Serializable {
                 return;
             }
 
-            //PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-            //PessoaEndereco pend = dbe.pesquisaEndPorPessoaTipo(pessoaSolicitante.getId(), 5);
-
             if (listComboCertidaoDisponivel.size() == 1) {
                 GenericaMensagem.warn("Atenção", "Nenhuma Certidão disponível!");
                 return;
@@ -269,7 +275,7 @@ public class WebREPISBean implements Serializable {
                 List<ConvencaoPeriodo> result = dbr.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
 
                 if (result.isEmpty()) {
-                    GenericaMensagem.warn("Atenção", "Contribuinte fora do período de Convenção!");
+                    GenericaMensagem.warn("Atenção", "Contribuinte fora do Período de Convenção!");
                     return;
                 }
             }
@@ -317,7 +323,6 @@ public class WebREPISBean implements Serializable {
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Status atualizado com sucesso!");
 
-                //setShowPessoa(true);
                 listRepisMovimento.clear();
                 repisMovimento = new RepisMovimento();
             } else {
@@ -329,21 +334,16 @@ public class WebREPISBean implements Serializable {
 
     public void edit(RepisMovimento rm) {
         repisMovimento = rm;
-        //if (repisMovimento.getId() != -1) {
-            //setShowPessoa(false);
-            for (int i = 0; i < getListComboRepisStatus().size(); i++) {
-                if (Integer.parseInt(listComboRepisStatus.get(i).getDescription()) == repisMovimento.getRepisStatus().getId()) {
-                    setIdRepisStatus(i);
-                }
+        for (int i = 0; i < getListComboRepisStatus().size(); i++) {
+            if (Integer.parseInt(listComboRepisStatus.get(i).getDescription()) == repisMovimento.getRepisStatus().getId()) {
+                setIdRepisStatus(i);
             }
-            WebREPISDB dbw = new WebREPISDBToplink();
-            Juridica jur = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId());
-            if (jur != null) {
-                escritorio = jur.getPessoa();
-            }
-        //}
-//        PF.update("form_libera_repis");
-//        PF.openDialog("dlg_repis");
+        }
+        WebREPISDB dbw = new WebREPISDBToplink();
+        Juridica jur = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId());
+        if (jur != null) {
+            escritorio = jur.getPessoa();
+        }
     }
 
     public String imprimirCertificado(RepisMovimento rm) {
@@ -371,11 +371,20 @@ public class WebREPISBean implements Serializable {
                     List<PisoSalarial> listapiso = dbw.listaPisoSalarialLote(lote.getId());
                     
                     List<List> listax = dbj.listaJuridicaContribuinte(juridica.getId());
-                    if (listax.isEmpty()) return null;
+                    if (listax.isEmpty()){
+                        GenericaMensagem.warn("Atenção", "Empresa não é Contribuinte!");
+                        return null;
+                    }
                     int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
                     
-                    List<ConvencaoPeriodo> result = dbw.listaConvencaoPeriodo(ee.getEndereco().getCidade().getId(), id_convencao);
-                    if (result.isEmpty()) return null;
+                    String referencia = DataHoje.DataToArray(repis.getDataEmissao())[2]+DataHoje.DataToArray(repis.getDataEmissao())[1];
+                    
+                    List<ConvencaoPeriodo> result = dbw.listaConvencaoPeriodoData(ee.getEndereco().getCidade().getId(), id_convencao, referencia);
+                    
+                    if (result.isEmpty()){
+                        GenericaMensagem.warn("Atenção", "Contribuinte fora do período de Convenção!");
+                        return null;
+                    }
                     
                     String ref = result.get(0).getReferenciaInicial().substring(3)+"/"+ result.get(0).getReferenciaFinal().substring(3);
                     
@@ -397,24 +406,27 @@ public class WebREPISBean implements Serializable {
                         logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
                     }
                     
+                    String cep = AnaliseString.mascaraCep(ee.getEndereco().getCep());
                     String ende = (ee.getComplemento().isEmpty()) 
-                            ? ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " - "+ee.getEndereco().getBairro().getDescricao() +" CEP: " + ee.getEndereco().getCep() + " " + ee.getEndereco().getCidade().getCidadeToString()
-                            : ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " ( "+ee.getComplemento()+" ) - "+ee.getEndereco().getBairro().getDescricao() +" CEP: " + ee.getEndereco().getCep() + " " + ee.getEndereco().getCidade().getCidadeToString();
+                            ? ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " - "+ee.getEndereco().getBairro().getDescricao() +" - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString()
+                            : ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " ( "+ee.getComplemento()+" ) "+ee.getEndereco().getBairro().getDescricao() +" - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString();
 
+                    CertidaoMensagem certidaoMensagem = null;
+                    File file = null;
+                    if (repis.getCertidaoTipo().getId() == 1){
+                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
+                    }else if (repis.getCertidaoTipo().getId() == 2){
+                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS.jasper"));
+                    }else if (repis.getCertidaoTipo().getId() == 3){
+                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS.jasper"));
+                        certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
+                    }else if (repis.getCertidaoTipo().getId() == 4){
+                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));
+                    }
+
+                    JasperReport jasper = (JasperReport) JRLoader.loadObject(file);   
+                        
                     for (PisoSalarial piso : listapiso) {
-                        File file = null;
-                        if (repis.getCertidaoTipo().getId() == 1){
-                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
-                        }else if (repis.getCertidaoTipo().getId() == 2){
-                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS.jasper"));
-                        }else if (repis.getCertidaoTipo().getId() == 3){
-                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS.jasper"));
-                        }else if (repis.getCertidaoTipo().getId() == 4){
-                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));
-                        }
-                        
-                        JasperReport jasper = (JasperReport) JRLoader.loadObject(file);                        
-                        
                         BigDecimal valor = new BigDecimal(piso.getValor());
                         if (valor.toString().equals("0")) {
                             valor = null;
@@ -432,14 +444,12 @@ public class WebREPISBean implements Serializable {
                                         juridica.getPorte().getDescricao(),
                                         piso.getDescricao(),
                                         valor,
-                                        piso.getPisoSalarialLote().getMensagem(),
+                                        (certidaoMensagem != null) ? certidaoMensagem.getMensagem() : piso.getPisoSalarialLote().getMensagem(),
                                         piso.getPisoSalarialLote().getDtValidade(),
                                         sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
                                         piso.getPisoSalarialLote().getAno(),
-                                        //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
-                                        //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
                                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
-                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
+                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoFundo.png"),
                                         String.valueOf(repis.getId()),
                                         "0000000000".substring(0, 10 - String.valueOf(repis.getId()).length()) + String.valueOf(repis.getId()),
                                         DataHoje.dataExtenso(repis.getDataEmissaoString(), 3),
@@ -448,10 +458,10 @@ public class WebREPISBean implements Serializable {
                                         imagemFundo
                                 )
                         );
-
-                        JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-                        lista_jasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
                     }
+                    
+                    JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+                    lista_jasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
                 }
             }
             
@@ -549,14 +559,6 @@ public class WebREPISBean implements Serializable {
     public void setIdPessoa(int idPessoa) {
         this.idPessoa = idPessoa;
     }
-//
-//    public String getMessage() {
-//        return message;
-//    }
-//
-//    public void setMessage(String message) {
-//        this.message = message;
-//    }
 
     public int getAno() {
         return Integer.parseInt(DataHoje.livre(DataHoje.dataHoje(), "yyyy"));
@@ -663,9 +665,10 @@ public class WebREPISBean implements Serializable {
         if (listRepisMovimentoPatronal.isEmpty()) {
             WebREPISDB wsrepisdb = new WebREPISDBToplink();
             Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
-//            listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
-            //listRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronal(patro.getId());
-            listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("", "", patro.getId());
+            if (tipoPesquisa.equals("status"))
+                listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("status", listaStatus.get(indexStatus).getDescription(), patro.getId(), valueLenght);
+            else
+                listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("", "", patro.getId(), valueLenght);
         }
         return listRepisMovimentoPatronal;
     }
@@ -701,14 +704,6 @@ public class WebREPISBean implements Serializable {
     public void setPessoaEndereco(PessoaEndereco pessoaEndereco) {
         this.pessoaEndereco = pessoaEndereco;
     }
-
-//    public boolean isShowPessoa() {
-//        return showPessoa;
-//    }
-//
-//    public void setShowPessoa(boolean showPessoa) {
-//        this.showPessoa = showPessoa;
-//    }
 
     public boolean isRenderContabil() {
         return renderContabil;
@@ -820,17 +815,6 @@ public class WebREPISBean implements Serializable {
                 )
                 );
             }
-
-//            
-//            List<CertidaoTipo> result = db.listaCertidaoTipo();
-//            
-//            for (int i = 0; i < result.size(); i++){
-//                listComboCertidaoTipo.add(
-//                        new SelectItem(
-//                            i, result.get(i).getDescricao(), String.valueOf(result.get(i).getId())
-//                        )
-//                );
-//            }
         }
         return listComboCertidaoDisponivel;
     }
@@ -878,5 +862,43 @@ public class WebREPISBean implements Serializable {
 
     public void setIndexCertidaoTipo(int indexCertidaoTipo) {
         this.indexCertidaoTipo = indexCertidaoTipo;
+    }
+
+    public List<SelectItem> getListaStatus() {
+        if (listaStatus.isEmpty()){
+            Dao di = new Dao();
+            
+            List<RepisStatus> result = di.list(new RepisStatus());
+            listaStatus.add(new SelectItem(
+                    0, "Todos", "0")
+            );            
+            
+            for (int i = 0; i < result.size(); i++){
+                listaStatus.add(new SelectItem(
+                        i+1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId()))
+                );
+            }
+        }
+        return listaStatus;
+    }
+
+    public void setListaStatus(List<SelectItem> listaStatus) {
+        this.listaStatus = listaStatus;
+    }
+
+    public int getIndexStatus() {
+        return indexStatus;
+    }
+
+    public void setIndexStatus(int indexStatus) {
+        this.indexStatus = indexStatus;
+    }
+
+    public String getValueLenght() {
+        return valueLenght;
+    }
+
+    public void setValueLenght(String valueLenght) {
+        this.valueLenght = valueLenght;
     }
 }
