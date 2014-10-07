@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.db.MovimentosReceberDB;
 import br.com.rtools.financeiro.db.MovimentosReceberDBToplink;
 import br.com.rtools.financeiro.lista.ListMovimentoReceber;
 import br.com.rtools.movimento.ImprimirBoleto;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
@@ -467,6 +468,8 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         }
         listMovimentoReceber.get(index).setValorMovimento(super.atualizaValor(true, tipo));
         listMovimentoReceber.clear(); // LIMPANDO AQUI PARA ATUALIZAR O VALOR CALCULADO
+        desconto = "0";
+        //calcula();
     }
 
 //    @Override
@@ -493,6 +496,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         for (int i = 0; i < listMovimentoReceber.size(); i++) {
             listMovimentoReceber.get(i).setSelected(marcarTodos);
         }
+        calcula();
     }
 
 //    public void marcar() {
@@ -500,24 +504,69 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //            listaMovimentos.get(i).setArgumento0(marcarTodos);
 //        }
 //    }
-    public String getTotal() {
+    public void calcula() {
         if (!listMovimentoReceber.isEmpty()) {
-            float soma = 0;
-            float somaS = 0;
+            float c = 0; // Correção
+            float j = 0; // Juros
+            float m = 0; // Multa
+            float t = 0; // Total
+            float tss = 0; // Total sem sindical
             for (int i = 0; i < listMovimentoReceber.size(); i++) {
                 if (listMovimentoReceber.get(i).getSelected()) {
                     if (listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL")) {
-                        somaS = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
+                        tss = Moeda.somaValores(t, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
                     }
+                    c = Moeda.somaValores(c, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
+                    j = Moeda.somaValores(j, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
+                    m = Moeda.somaValores(m, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
+                    t = Moeda.somaValores(t, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
 
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
                 }
             }
-            totalSemSindical = Moeda.converteR$Float(Moeda.subtracaoValores(soma, somaS));
-            return total = Moeda.converteR$Float(soma);
+            correcao = correcao = Moeda.converteR$Float(c);
+            totalSemSindical = Moeda.converteR$Float(Moeda.subtracaoValores(t, tss));
+            acrescimoSemSindical = Moeda.converteR$(String.valueOf(Moeda.somaValores(Moeda.somaValores(m, j), c)));
+            total = Moeda.converteR$Float(t);
+            multa = Moeda.converteR$Float(m);
+            juros = Moeda.converteR$Float(j);
+            acrescimo = Moeda.converteR$Float(Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$(juros), Moeda.converteUS$(correcao)), Moeda.converteUS$(multa)));
         } else {
-            return "0";
+            correcao = "0";
+            totalSemSindical = "0";
+            acrescimoSemSindical = "0";
+            total = "0";
+            multa = "0";
+            juros = "0";
+            acrescimo = "0";
+
         }
+    }
+
+//    public String getTotal() {
+//        if (!listMovimentoReceber.isEmpty()) {
+//            float soma = 0;
+//            float somaS = 0;
+//            for (int i = 0; i < listMovimentoReceber.size(); i++) {
+//                if (listMovimentoReceber.get(i).getSelected()) {
+//                    if (listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL")) {
+//                        somaS = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
+//                    }
+//
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal()));
+//                }
+//            }
+//            totalSemSindical = Moeda.converteR$Float(Moeda.subtracaoValores(soma, somaS));
+//            return total = Moeda.converteR$Float(soma);
+//        } else {
+//            return "0";
+//        }
+//    }
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
     }
 
 //    public String getTotal() {
@@ -540,19 +589,26 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //        }
 //    }
     public String getMulta() {
-        if (!listMovimentoReceber.isEmpty()) {
-            float soma = 0;
-            for (int i = 0; i < listMovimentoReceber.size(); i++) {
-                if (listMovimentoReceber.get(i).getSelected()) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
-                }
-            }
-            return multa = Moeda.converteR$Float(soma);
-        } else {
-            return "0";
-        }
+        return multa;
     }
 
+    public void setMulta(String multa) {
+        this.multa = multa;
+    }
+
+//    public String getMulta() {
+//        if (!listMovimentoReceber.isEmpty()) {
+//            float soma = 0;
+//            for (int i = 0; i < listMovimentoReceber.size(); i++) {
+//                if (listMovimentoReceber.get(i).getSelected()) {
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
+//                }
+//            }
+//            return multa = Moeda.converteR$Float(soma);
+//        } else {
+//            return "0";
+//        }
+//    }
 //    public String getMulta() {
 //        if (!listaMovimentos.isEmpty()) {
 //            float soma = 0;
@@ -567,19 +623,26 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //        }
 //    }
     public String getJuros() {
-        if (!listMovimentoReceber.isEmpty()) {
-            float soma = 0;
-            for (int i = 0; i < listMovimentoReceber.size(); i++) {
-                if (listMovimentoReceber.get(i).getSelected()) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
-                }
-            }
-            return juros = Moeda.converteR$Float(soma);
-        } else {
-            return "0";
-        }
+        return juros;
     }
-    
+
+    public void setJuros(String juros) {
+        this.juros = juros;
+    }
+//
+//    public String getJuros() {
+//        if (!listMovimentoReceber.isEmpty()) {
+//            float soma = 0;
+//            for (int i = 0; i < listMovimentoReceber.size(); i++) {
+//                if (listMovimentoReceber.get(i).getSelected()) {
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
+//                }
+//            }
+//            return juros = Moeda.converteR$Float(soma);
+//        } else {
+//            return "0";
+//        }
+//    }
 //    public String getJuros() {
 //        if (!listaMovimentos.isEmpty()) {
 //            float soma = 0;
@@ -593,47 +656,68 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //            return "0";
 //        }
 //    }    
+//    public String getCorrecao() {
+//        if (!listMovimentoReceber.isEmpty()) {
+//            float soma = 0;
+//            for (int i = 0; i < listMovimentoReceber.size(); i++) {
+//                if (listMovimentoReceber.get(i).getSelected()) {
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
+//                }
+//            }
+//            return correcao = Moeda.converteR$Float(soma);
+//        } else {
+//            return "0";
+//        }
+//    }
 
     public String getCorrecao() {
-        if (!listMovimentoReceber.isEmpty()) {
-            float soma = 0;
-            for (int i = 0; i < listMovimentoReceber.size(); i++) {
-                if (listMovimentoReceber.get(i).getSelected()) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
-                }
-            }
-            return correcao = Moeda.converteR$Float(soma);
-        } else {
-            return "0";
-        }
+        return correcao;
     }
 
+    public void setCorrecao(String correcao) {
+        this.correcao = correcao;
+    }
+
+//    public String getAcrescimo() {
+//        if (!listMovimentoReceber.isEmpty()) {
+//            return acrescimo = Moeda.converteR$Float(Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$(juros), Moeda.converteUS$(correcao)), Moeda.converteUS$(multa)));
+//        } else {
+//            return "0";
+//        }
+//    }
     public String getAcrescimo() {
-        if (!listMovimentoReceber.isEmpty()) {
-            return acrescimo = Moeda.converteR$Float(Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$(juros), Moeda.converteUS$(correcao)), Moeda.converteUS$(multa)));
-        } else {
-            return "0";
-        }
+        return acrescimo;
+    }
+
+    public void setAcrescimo(String acrescimo) {
+        this.acrescimo = acrescimo;
     }
 
     public String getAcrescimoSemSindical() {
-        float m = 0;
-        float j = 0;
-        float c = 0;
-        if (!listMovimentoReceber.isEmpty()) {
-            for (int i = 0; i < listMovimentoReceber.size(); i++) {
-                if (!listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL") && listMovimentoReceber.get(i).getSelected()) {
-                    m = Moeda.somaValores(m, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
-                    j = Moeda.somaValores(j, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
-                    c = Moeda.somaValores(c, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
-                }
-            }
-            return acrescimoSemSindical = Moeda.converteR$(String.valueOf(Moeda.somaValores(Moeda.somaValores(m, j), c)));
-        } else {
-            return "0";
-        }
+        return acrescimoSemSindical;
     }
 
+    public void setAcrescimoSemSindical(String acrescimoSemSindical) {
+        this.acrescimoSemSindical = acrescimoSemSindical;
+    }
+
+//    public String getAcrescimoSemSindical() {
+//        float m = 0;
+//        float j = 0;
+//        float c = 0;
+//        if (!listMovimentoReceber.isEmpty()) {
+//            for (int i = 0; i < listMovimentoReceber.size(); i++) {
+//                if (!listMovimentoReceber.get(i).getServico().toUpperCase().equals("SINDICAL") && listMovimentoReceber.get(i).getSelected()) {
+//                    m = Moeda.somaValores(m, Moeda.converteUS$((String) listMovimentoReceber.get(i).getMulta()));
+//                    j = Moeda.somaValores(j, Moeda.converteUS$((String) listMovimentoReceber.get(i).getJuros()));
+//                    c = Moeda.somaValores(c, Moeda.converteUS$((String) listMovimentoReceber.get(i).getCorrecao()));
+//                }
+//            }
+//            return acrescimoSemSindical = Moeda.converteR$(String.valueOf(Moeda.somaValores(Moeda.somaValores(m, j), c)));
+//        } else {
+//            return "0";
+//        }
+//    }
 //    public String getAcrescimoSemSindical() {
 //        float m = 0;
 //        float j = 0;
@@ -653,9 +737,13 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //    }
     public String getTotalPagar() {
         if (!listMovimentoReceber.isEmpty()) {
-            return Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(total), Float.valueOf(desconto)));
+            if(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(total), Float.valueOf(desconto)) >= 0) {
+                return Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(total), Float.valueOf(desconto)));
+            } else {
+                return "0,00";                
+            }
         } else {
-            return "0";
+            return "0,00";
         }
     }
 
@@ -698,6 +786,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
                 listMovimentoReceber.get(i).setValorCalculado(Moeda.converteR$Float(Moeda.converteUS$((String) listMovimentoReceber.get(i).getValorCalculadoOriginal())));
             }
         }
+        // calcula();
     }
 //
 //    public void calculoDesconto() {
@@ -819,8 +908,9 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 //        this.listaMovimentos = listaMovimentos;
 //    }
     public Pessoa getPessoa() {
-        if (GenericaSessao.exists("pessoaPesquisa")) {
-            pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa", true);
+        if (GenericaSessao.exists("pessoaPesquisa") || GenericaSessao.exists("juridicaPesquisa")) {
+            // pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa", true);
+            pessoa = ((Juridica) GenericaSessao.getObject("juridicaPesquisa", true)).getPessoa();
             listaMovimentos.clear();
             listMovimentoReceber.clear();
             desconto = "0";
@@ -832,6 +922,8 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
                     pessoa = new Pessoa();
                 }
             }
+            getListMovimentoReceber();
+            calcula();
         }
         return pessoa;
     }
@@ -853,12 +945,12 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         }
         try {
             float d = Moeda.substituiVirgulaFloat(desconto);
-            if(d < 0) {
-                this.desconto = "0";                
+            if (d < 0) {
+                this.desconto = "0";
             } else {
-                this.desconto = Moeda.substituiVirgula(desconto);                
+                this.desconto = Moeda.substituiVirgula(desconto);
             }
-            
+
         } catch (Exception e) {
             this.desconto = "0";
         }
@@ -956,7 +1048,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
             if (bloqueioRotina.getId() != -1) {
                 Dao dao = new Dao();
                 boolean s = dao.delete(bloqueioRotina, true);
-                if(s) {
+                if (s) {
                     bloqueioRotina = null;
                 }
                 GenericaSessao.remove("bovimentosReceberBean");
