@@ -375,6 +375,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao){
         try {
             String referencia = DataHoje.DataToArray(DataHoje.data())[2]+DataHoje.DataToArray(DataHoje.data())[1];
+            
             Query qry = getEntityManager().createNativeQuery(
                     " SELECT cp.* FROM arr_convencao_periodo cp "
                   + "  WHERE cp.id_convencao = "+id_convencao+" "
@@ -467,7 +468,64 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     }
     
     @Override
-    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
+//    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
+//        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
+//        descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
+//        
+//        String inner = "", and = "";
+//        
+//        String textQry = 
+//                " SELECT rm.* " +
+//                "   FROM arr_repis_movimento rm ";
+//        
+//        if (id_pessoa != -1){
+//            inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
+//                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+//            and   += "  WHERE p.id = "+id_pessoa+" AND rm.nr_ano = " + ano;
+//        }else{
+//            inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
+//                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+//            and   += "  WHERE rm.id_pessoa IN (SELECT j.id_pessoa FROM pes_juridica j" +
+//                     "                          WHERE j.id_contabilidade = " + id_contabilidade
+//                   + "                        )"
+//                   + "   AND rm.nr_ano = " + ano;
+//        }
+//        
+//        if (!descricao.isEmpty()){
+//            switch (por) {
+//                case "nome":
+//                    and   += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao+"%'";
+//                    break;
+//                case "cnpj":
+//                    and   += "    AND p.ds_documento LIKE '%"+descricao+"'";
+//                    break;
+//                case "protocolo":
+//                    and   += "    AND rm.id = "+descricao;
+//                    break;
+//                case "status":
+//                    inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
+//                    and   += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%"+descricao+"%'";
+//                    break;
+//                case "solicitante":
+//                    and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
+//                    break;
+//            }
+//        }
+//        
+//        textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC";
+//        
+//        Query qry = getEntityManager().createNativeQuery(
+//            textQry, RepisMovimento.class
+//        );
+//        try{
+//            return qry.getResultList();
+//        }catch(Exception e){
+//            e.getMessage();
+//        }
+//        return new ArrayList();
+//    }
+    
+    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade){
         descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
         
@@ -480,14 +538,13 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         if (id_pessoa != -1){
             inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
-            and   += "  WHERE p.id = "+id_pessoa+" AND rm.nr_ano = " + ano;
+            and   += "  WHERE p.id = "+id_pessoa;
         }else{
             inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
             and   += "  WHERE rm.id_pessoa IN (SELECT j.id_pessoa FROM pes_juridica j" +
                      "                          WHERE j.id_contabilidade = " + id_contabilidade
-                   + "                        )"
-                   + "   AND rm.nr_ano = " + ano;
+                   + "                        )";
         }
         
         if (!descricao.isEmpty()){
@@ -524,6 +581,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         return new ArrayList();
     }
     
+    @Override
     public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo){
         String textQry = (
                 "  SELECT cm "

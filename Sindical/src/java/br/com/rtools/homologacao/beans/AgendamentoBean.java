@@ -94,10 +94,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         Dao dao = new Dao();
         registro = (Registro) dao.find(new Registro(), 1);
 
-        if (macFilial != null)
+        if (macFilial != null){
             this.loadListaHorarios();
-        
-        this.loadListaHorariosTransferencia();
+            this.loadListaHorariosTransferencia();
+        }
     }    
     
     public void alterarTipoMascara() {

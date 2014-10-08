@@ -192,17 +192,14 @@ public class ChamadaPaginaBean implements Serializable {
         Object object = null;
         try {
             object = this.getClass().getMethod(pagina).invoke(this);
-        } catch (IllegalAccessException e) {
-            //e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            //e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            //e.printStackTrace();
-        } catch (SecurityException e) {
-            //e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             //e.printStackTrace();
         }
+        //e.printStackTrace();
+        //e.printStackTrace();
+        //e.printStackTrace();
+        //e.printStackTrace();
+        
         return object;
     }
 

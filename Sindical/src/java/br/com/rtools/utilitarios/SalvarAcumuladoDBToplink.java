@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
 
@@ -174,7 +175,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         } else {
             try {
                 object = getEntityManager().find(object.getClass(), objectId);
-            } catch (Exception e) {
+            } catch (EJBQLException e) {
                 return null;
             }
         }

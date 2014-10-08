@@ -64,7 +64,8 @@ public interface WebREPISDB {
     public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao);
     public List<ConvencaoPeriodo> listaConvencaoPeriodoData(int id_cidade, int id_convencao, String referencia);
     public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal, String quantidade);
-    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano);
+    //public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano);
+    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade);
     public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo);
     
 }

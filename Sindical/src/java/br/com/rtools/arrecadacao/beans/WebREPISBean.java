@@ -88,6 +88,7 @@ public class WebREPISBean implements Serializable {
     private List<SelectItem> listaStatus = new ArrayList();
     private int indexStatus = 1;
     private String valueLenght = "15";
+    private String contato = "";
     
     public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
@@ -170,9 +171,9 @@ public class WebREPISBean implements Serializable {
         listRepisMovimento.clear();
         Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
         if (renderEmpresa) {
-            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, pessoa.getId(), -1, getAno());
+            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, pessoa.getId(), -1);
         } else {
-            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, -1, pessoa.getId(), getAno());
+            listRepisMovimento = db.pesquisarListaSolicitacao(tipoPesquisa, descricao, -1, pessoa.getId());
         }
 
         return null;
@@ -204,9 +205,9 @@ public class WebREPISBean implements Serializable {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         List<RepisMovimento> result = new ArrayList();
         if (renderEmpresa) {
-            result = wsrepisdb.pesquisarListaSolicitacao("", "", pessoa.getId(), -1, getAno());
+            result = wsrepisdb.pesquisarListaSolicitacao("", "", pessoa.getId(), -1);
         } else if (renderContabil) {
-            result = wsrepisdb.pesquisarListaSolicitacao("", "", -1, pessoa.getId(), getAno());
+            result = wsrepisdb.pesquisarListaSolicitacao("", "", -1, pessoa.getId());
         }
         return result;
     }
@@ -214,7 +215,7 @@ public class WebREPISBean implements Serializable {
     public boolean showAndamentoProtocolo(int idPessoa) {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         CertidaoDisponivel cd = (CertidaoDisponivel) new Dao().find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
-        if (wsrepisdb.validaPessoaRepisAnoTipo(idPessoa, getAno(), cd.getCertidaoTipo().getId()).size() > 0) {
+        if (wsrepisdb.validaPessoaRepisAnoTipo(idPessoa, getAnoConvencao(), cd.getCertidaoTipo().getId()).size() > 0) {
             return true;
         }
         return false;
@@ -242,10 +243,11 @@ public class WebREPISBean implements Serializable {
         if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
             GenericaMensagem.warn("Atenção", "Não foi possível concluir sua solicitação. Consulte o sindícato!");
         } else {
-            if (repisMovimento.getContato().isEmpty()) {
+            if (contato.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Informe o nome do solicitante!");
                 return;
             }
+            
             Patronal patronal = dbr.pesquisaPatronalPorSolicitante(getPessoaSolicitante().getId());
             if (patronal == null) {
                 GenericaMensagem.warn("Atenção", "Nenhuma patronal encontrada!");
@@ -253,7 +255,7 @@ public class WebREPISBean implements Serializable {
             }
             JuridicaDB dbj = new JuridicaDBToplink();
             Juridica juridicax = dbj.pesquisaJuridicaPorPessoa(pessoaSolicitante.getId());
-            PisoSalarialLote lote = dbr.pesquisaPisoSalarial(getAno(), patronal.getId(), juridicax.getPorte().getId());
+            PisoSalarialLote lote = dbr.pesquisaPisoSalarial(getAnoConvencao(), patronal.getId(), juridicax.getPorte().getId());
 
             if (lote.getId() == -1) {
                 GenericaMensagem.warn("Atenção", "Patronal sem Lote, contate seu Sindicato!");
@@ -271,16 +273,24 @@ public class WebREPISBean implements Serializable {
             }
 
             CertidaoDisponivel cd = (CertidaoDisponivel) di.find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
-            if (cd.isPeriodoConvencao()) {
-                List<ConvencaoPeriodo> result = dbr.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
 
+            List<ConvencaoPeriodo> result = dbr.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
+            
+            Integer anoConvencao = null;
+            
+            if (cd.isPeriodoConvencao()) {
                 if (result.isEmpty()) {
                     GenericaMensagem.warn("Atenção", "Contribuinte fora do Período de Convenção!");
                     return;
                 }
+                anoConvencao = Integer.valueOf(result.get(0).getReferenciaFinal().substring(3));
+            }else{
+                anoConvencao = getAnoAtual();
             }
-
-            repisMovimento.setAno(getAno());
+            
+            //repisMovimento.setAno(getAnoConvencao());
+            repisMovimento.setAno(anoConvencao);
+            repisMovimento.setContato(contato);
             repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
             repisMovimento.setDataResposta(null);
@@ -560,8 +570,18 @@ public class WebREPISBean implements Serializable {
         this.idPessoa = idPessoa;
     }
 
-    public int getAno() {
+    public int getAnoAtual() {
         return Integer.parseInt(DataHoje.livre(DataHoje.dataHoje(), "yyyy"));
+    }
+    
+    public int getAnoConvencao() {
+        WebREPISDB wsrepisdb = new WebREPISDBToplink();
+        CertidaoDisponivel cd = (CertidaoDisponivel) new Dao().find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
+        List<ConvencaoPeriodo> result = wsrepisdb.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
+        if (result.isEmpty())
+            return getAnoAtual();
+        else
+            return Integer.parseInt(result.get(0).getReferenciaFinal().substring(3));
     }
 
     public boolean isShowProtocolo() {
@@ -900,5 +920,13 @@ public class WebREPISBean implements Serializable {
 
     public void setValueLenght(String valueLenght) {
         this.valueLenght = valueLenght;
+    }
+
+    public String getContato() {
+        return contato;
+    }
+
+    public void setContato(String contato) {
+        this.contato = contato;
     }
 }
