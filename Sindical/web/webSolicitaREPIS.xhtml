@@ -48,7 +48,7 @@
                 <h:form id="form_sr">
                     <p:panel styleClass="fundoCinza">
                         <p:outputLabel value="Nome do solicitante" /><br />
-                        <p:inputText value="#{webREPISBean.repisMovimento.contato}" size="100" converter="#{toUpperCase}">
+                        <p:inputText value="#{webREPISBean.contato}" size="100" converter="#{toUpperCase}">
                             <p:ajax event="change" update="@this" />
                         </p:inputText>
                     </p:panel>

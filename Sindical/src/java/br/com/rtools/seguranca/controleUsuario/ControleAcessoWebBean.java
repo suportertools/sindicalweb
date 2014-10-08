@@ -279,7 +279,7 @@ public class ControleAcessoWebBean implements Serializable {
 
         GenericaSessao.put("sessaoUsuarioAcessoWeb", pessoaContribuinte);
         GenericaSessao.put("linkClicado", true);
-        GenericaSessao.put("userName", pessoaContribuinte.getLogin());
+        GenericaSessao.put("userName", pessoaContribuinte.getDocumento());
         GenericaSessao.put("indicaAcesso", "web");
         return "menuPrincipalAcessoWeb";
     }
@@ -367,7 +367,7 @@ public class ControleAcessoWebBean implements Serializable {
 
         GenericaSessao.put("sessaoUsuarioAcessoWeb", pessoaContribuinte);
         GenericaSessao.put("linkClicado", true);
-        GenericaSessao.put("userName", pessoaContribuinte.getLogin());
+        GenericaSessao.put("userName", pessoaContribuinte.getDocumento());
         GenericaSessao.put("indicaAcesso", "web");
         return "menuPrincipalAcessoWeb";
     }
@@ -784,7 +784,7 @@ public class ControleAcessoWebBean implements Serializable {
 
     public Registro getRegistro() {
         //if (registro.getId() == -1) {
-        registro = registro.getRegistroEmpresarial();
+        registro = (Registro) new Dao().liveSingle("SELECT r FROM Registro r WHERE r.id = 1");
         //}
         return registro;
     }
