@@ -297,20 +297,37 @@
                                         <p:outputLabel value="Horarios" rendered="false"/>
                                         <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
                                     </f:facet>
-                                    <p:commandLink id="linkHorario" action="#{homologacaoBean.agendar(linha.agendamento)}" value="#{linha.agendamento.horarios.hora}" rendered="#{!linha.habilitaAlteracao}" />
-                                    <h:outputLabel value="#{linha.agendamento.horarios.hora}" rendered="#{linha.habilitaAlteracao}" />
+                                    <p:commandLink action="#{homologacaoBean.agendar(linha.agendamento)}" value="#{linha.agendamento.horarios.hora}" disabled="#{linha.habilitaAlteracao}" update=":form_cancelar_data_table:i_msg" style="background: transparent; opacity: 100; font-size: 8pt!important"/>
                                 </p:column>
                                 <p:column headerText="CNPJ" styleClass="text-center" width="120">
-                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
+                                    <p:commandLink action="#{homologacaoBean.agendar(linha.agendamento)}" value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.documento}" disabled="#{linha.habilitaAlteracao}" update=":form_cancelar_data_table:i_msg" style="background: transparent; opacity: 100; font-size: 8pt!important"/>
                                 </p:column>
                                 <p:column headerText="Empresa">
-                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
+                                    <p:commandLink action="#{homologacaoBean.agendar(linha.agendamento)}" value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.nome}" disabled="#{linha.habilitaAlteracao}" update=":form_cancelar_data_table:i_msg" style="background: transparent; opacity: 100; font-size: 8pt!important"/>
                                 </p:column>
                                 <p:column headerText="Escritório">
-                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}"/>
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.contabilidade.pessoa.nome}" style="font-size: 8pt!important"/>
                                 </p:column>
                                 <p:column headerText="Funcionário" width="150">
-                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.fisica.pessoa.nome}" style="font-size: 8pt!important"/>
+                                </p:column>
+                                
+                                <p:column headerText="Homologador">
+                                    <p:outputLabel value="#{linha.agendamento.homologador.pessoa.nome}" style="font-size: 8pt!important"/>
+                                </p:column>
+                                
+                                <p:column styleClass="text-center" width="25">
+                                    <f:facet name="header">
+                                        <h:graphicImage value="/Imagens/icon-password.png" alt="Senha" title="Senha" width="20" />                                        
+                                    </f:facet>
+                                    <p:outputLabel value="#{linha.senha.senha}" rendered="#{linha.senha.senha != 0}"/>
+                                </p:column>  
+                                
+                                <p:column styleClass="text-center" width="40">
+                                    <f:facet name="header">
+                                        <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{protocoloAgendamento.imprimir(linha.agendamento)}" target="_blank" value="#{linha.agendamento.id}" title="Imprimir Protocolo" style="font-size: 8pt!important"/>
                                 </p:column>
                                 
                                 <p:rowExpansion>
@@ -324,29 +341,11 @@
                                             <p:outputLabel value="#{linha.agendamento.telefone}"/>
                                         </p:column>
                                         <p:column>
-                                            <p:outputLabel value="Homologador" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.agendamento.homologador.pessoa.nome}"/>
-                                        </p:column>                                    
-                                        <p:column>
                                             <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.usuarioAgendador}"/>
                                         </p:column>                                    
                                     </h:panelGrid>
                                 </p:rowExpansion>
-                                
-                                <p:column styleClass="text-center" width="25">
-                                    <f:facet name="header">
-                                        <h:graphicImage value="/Imagens/icon-password.png" alt="Senha" title="Senha" width="20" />                                        
-                                    </f:facet>
-                                    <p:outputLabel value="#{linha.senha.senha}" rendered="#{linha.senha.senha != 0}"/>
-                                </p:column>  
-                                
-                                <p:column styleClass="text-center" width="40">
-                                    <f:facet name="header">
-                                        <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
-                                    </f:facet>
-                                    <h:commandLink action="#{protocoloAgendamento.imprimir(linha.agendamento)}" target="_blank" value="#{linha.agendamento.id}" title="Imprimir Protocolo" />
-                                </p:column>
                                 
                                 <f:facet name="footer">
                                         <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">

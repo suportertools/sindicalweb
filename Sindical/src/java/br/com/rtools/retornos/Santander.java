@@ -120,7 +120,7 @@ public class Santander extends ArquivoRetorno {
 
     @Override
     public String darBaixaSicob(String caminho, Usuario usuario) {
-        String mensagem = super.baixarArquivo(this.sicob(true, ""), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
         return mensagem;
     }
 
