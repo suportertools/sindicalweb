@@ -161,7 +161,7 @@
                                                 <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcesso}" update="idRenderTabela tblUsuarioAcesso" />
                                                 <f:selectItems value="#{usuarioBean.listaModulos}" />
                                             </p:selectOneMenu>
-                                            <p:selectOneMenu value="#{usuarioBean.idRotina}" id="idRotina">
+                                            <p:selectOneMenu value="#{usuarioBean.idRotina}" id="idRotina" filter="true">
                                                 <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
                                                 <f:selectItems value="#{usuarioBean.listaRotinas}"/>
                                             </p:selectOneMenu>
