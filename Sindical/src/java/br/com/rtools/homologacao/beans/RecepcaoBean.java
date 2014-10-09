@@ -106,6 +106,7 @@ public class RecepcaoBean implements Serializable {
     private List<SelectItem> listaMotivoDemissao;
     private int progressUpdate;
     private int progressLabel;
+    private boolean startPooling;
 
     @PostConstruct
     public void init() {
@@ -160,6 +161,7 @@ public class RecepcaoBean implements Serializable {
         loadListaAtendimentoSimples();
         progressUpdate = 100;
         progressLabel = 10;
+        startPooling = true;
     }
 
     @PreDestroy
@@ -169,6 +171,13 @@ public class RecepcaoBean implements Serializable {
         GenericaSessao.remove("fisicaPesquisa");
     }
 
+    public void startStopPolling(){
+//        if (startPooling)
+//            setStartPooling(false);
+//        else
+//            setStartPooling(true);
+    }
+    
     public void progress() {
         progressUpdate = progressUpdate - 10;
         progressLabel--;
@@ -176,12 +185,14 @@ public class RecepcaoBean implements Serializable {
             progressUpdate = 100;
             progressLabel = 10;
             loadListHorarios();
-            //PF.update(":formRecepcao:i_tabview:i_status; :formRecepcao:i_tabview:i_panel_tbl");
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("");
-            } catch (IOException ex) {
-                Logger.getLogger(RecepcaoBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            //PF.update(":formRecepcao:i_tabview:i_status");
+            //PF.update(":formRecepcao:i_tabview:i_panel_tbl");
+            PF.update("formRecepcao:i_tabview:i_panel_tbl");
+//            try {
+//                FacesContext.getCurrentInstance().getExternalContext().redirect("");
+//            } catch (IOException ex) {
+//                Logger.getLogger(RecepcaoBean.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
     }
 
@@ -1084,6 +1095,14 @@ public class RecepcaoBean implements Serializable {
 
     public void setProgressLabel(int progressLabel) {
         this.progressLabel = progressLabel;
+    }
+
+    public boolean isStartPooling() {
+        return startPooling;
+    }
+
+    public void setStartPooling(boolean startPooling) {
+        this.startPooling = startPooling;
     }
 }
 

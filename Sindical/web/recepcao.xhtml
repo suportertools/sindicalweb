@@ -43,8 +43,10 @@
                         <h:panelGrid style="clear: both;">
                             <h:form id="formRecepcao" >
                                 <c:set scope="request" var="object" value="${recepcaoBean.agendamento}"/>
-                                <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl" rendered="false"/>
-                                <p:poll global="false" interval="1" update=":formRecepcao:i_tabview:i_progress_update" listener="#{recepcaoBean.progress()}" />
+                                <!-- <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl" autoStart="# {recepcaoBean.startPooling}"/> -->
+                                <h:panelGrid id="i_polling">
+                                    <p:poll global="false" interval="1" update=":formRecepcao:i_tabview:i_progress_update" listener="#{recepcaoBean.progress()}" autoStart="#{recepcaoBean.startPooling}" />
+                                </h:panelGrid>
                                 
                                 <p:tabView id="i_tabview" style="width: 1000px" >
                                     <p:tab title="Homologações">
@@ -122,8 +124,20 @@
                                         </p:panel>
 
                                         <h:panelGrid id="i_panel_tbl">
-                                            <h:outputLabel value="Atualizar Lista em" style="float: right"/>
-                                            <p:progressBar id="i_progress_update" value="#{recepcaoBean.progressUpdate}" labelTemplate="#{recepcaoBean.progressLabel}" style="width: 100px; float: right"/>
+                                            <h:panelGrid columns="3" style="float: right">
+                                                <h:column>
+                                                    <br /><br />
+                                                    <p:progressBar id="i_progress_update" value="#{recepcaoBean.progressUpdate}" labelTemplate="#{recepcaoBean.progressLabel}" style="width: 100px;"/>
+                                                </h:column>
+                                                
+                                                <h:column>
+                                                    <h:outputLabel value="Atualizar Lista" /><br />
+                                                    <p:selectBooleanButton value="#{recepcaoBean.startPooling}" onLabel="Ligado" offLabel="Desligado" onIcon="ui-icon-check" offIcon="ui-icon-close">
+                                                        <p:ajax listener="#{recepcaoBean.startStopPolling()}" update=":formRecepcao:i_polling" global="false"/>
+                                                    </p:selectBooleanButton>
+                                                </h:column>
+                                            </h:panelGrid>
+                                            
                                             <p:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 100%;" id="tbl" rowStyleClass="#{linha.argumento8}" emptyMessage="Nenhuma Homologação Encontrada">
                                                 <p:column width="15">  
                                                     <p:rowToggler />  
@@ -160,6 +174,10 @@
                                                 <p:column headerText="Preposto">
                                                     <h:outputLabel value="#{linha.argumento9.recepcao.preposto} - #{linha.argumento9.recepcao.horaInicialPreposto}" style="font-size: 8pt!important"/>
                                                 </p:column>
+                                                
+                                                <p:column headerText="Escritório">
+                                                    <h:outputLabel value="#{linha.argumento14}" style="font-size: 8pt!important"/>
+                                                </p:column>
 
                                                 <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50">
                                                     <center>
@@ -185,7 +203,7 @@
 
                                                 <p:rowExpansion>
                                                     <h:panelGrid columns="5" styleClass="sbb">
-                                                        <p:column>
+                                                        <p:column rendered="false">
                                                             <h:outputLabel value="Escritório" style="font-weight: bold"/><br />
                                                             <h:outputLabel value="#{linha.argumento14}" style="font-size: 8pt!important"/>
                                                         </p:column>

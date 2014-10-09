@@ -63,12 +63,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public HomologacaoBean(){
         macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+        registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
+        
         if (macFilial != null){
             this.loadListaHomologacao();
             this.loadListaAtendimentoSimples();
         }
-        
-        registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
     }
     
     public final void loadListaHomologacao(){
@@ -725,9 +725,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         if (nrStatus == 4) {
             if (!desabilitaEdicao(agendamento.getDtData(), 30)) {
-                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
-                PF.update("form_homologacao:i_painel_mensagem");
-                PF.openDialog("dgl_painel_mensagem");
+                GenericaMensagem.warn("Atenção", "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!");
+                PF.update("form_homologacao:i_msg");                                
+//                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
+//                PF.update("form_homologacao:i_painel_mensagem");
+//                PF.openDialog("dgl_painel_mensagem");
                 return null;
             }
         } else if (nrStatus == 3 || nrStatus == 5) {
@@ -736,9 +738,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 hc = true;
             }
             if (!desabilitaEdicao(agendamento.getDtData(), 30) && !hc) {
-                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
-                PF.update("form_homologacao:i_painel_mensagem");
-                PF.openDialog("dgl_painel_mensagem");
+                GenericaMensagem.warn("Atenção", "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!");
+                PF.update("form_homologacao:i_msg");                
+//                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
+//                PF.update("form_homologacao:i_painel_mensagem");
+//                PF.openDialog("dgl_painel_mensagem");
                 return null;
             }
         } else {
@@ -746,10 +750,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 if (registro.isSenhaHomologacao()) {
                     Senha senha = db.pesquisaSenhaAgendamento(agendamento.getId());
                     if (senha.getId() == -1) {
-                        msgConfirma = "Não há senha definida!";
-                        PF.update("form_homologacao:i_painel_mensagem");
-                        PF.openDialog("dgl_painel_mensagem");
-                        return "homologacao";
+//                        msgConfirma = "Não há senha definida!";
+                        GenericaMensagem.warn("Atenção", "Não existe uma senha para essa Homologação!");
+                        PF.update("form_homologacao:i_msg");
+                        //PF.openDialog("dgl_painel_mensagem");
+                        return null;
                     }
                 }
             }
