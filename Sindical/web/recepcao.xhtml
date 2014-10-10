@@ -171,14 +171,18 @@
                                                     <h:outputLabel value="#{linha.argumento7.fisica.pessoa.nome} - #{linha.argumento9.recepcao.horaInicialFuncionario}" style="font-size: 8pt!important"/>
                                                 </p:column>
 
-                                                <p:column headerText="Preposto">
-                                                    <h:outputLabel value="#{linha.argumento9.recepcao.preposto} - #{linha.argumento9.recepcao.horaInicialPreposto}" style="font-size: 8pt!important"/>
-                                                </p:column>
-                                                
                                                 <p:column headerText="Escritório">
                                                     <h:outputLabel value="#{linha.argumento14}" style="font-size: 8pt!important"/>
                                                 </p:column>
-
+                                                
+                                                <p:column headerText="Preposto" rendered="#{recepcaoBean.idStatus != 3}">
+                                                    <h:outputLabel value="#{linha.argumento9.recepcao.preposto} - #{linha.argumento9.recepcao.horaInicialPreposto}" style="font-size: 8pt!important"/>
+                                                </p:column>
+                                                
+                                                <p:column headerText="Homologador" rendered="#{recepcaoBean.idStatus == 3}">
+                                                    <h:outputLabel value="#{linha.argumento3}" style="font-size: 8pt!important"/>
+                                                </p:column>
+                                                
                                                 <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50">
                                                     <center>
                                                         <h:column rendered="#{!linha.argumento10.equals('')}">

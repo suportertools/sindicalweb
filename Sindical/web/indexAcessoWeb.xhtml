@@ -145,28 +145,65 @@
             </h:form>
             
             <h:form id="i_form_empregado">
-                <p:dialog id="i_d" widgetVar="dlg_empregados" modal="true" header="Quantidade de Empregados" resizable="false" style="width: 460px">
-                    <p:outputLabel value="Informe a quantidade de empregados para este mês" />
+                <p:dialog id="i_d" widgetVar="dlg_empregados" modal="true" header="Dados da Empresa" resizable="false" style="width: 460px">
+                    <h:outputScript name="script_primefaces.js" library="js" />
+                    <h:panelGrid style="width: 100%">
+                        <p:messages id="i_msg_empregados" showDetail="true"/>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid style="width: 100%">
+                        <p:outputLabel value="Quantidade de empregados para este mês" />
+                        <p:inputMask id="i_quantidade" value="#{controleAcessoWebBean.empregados.quantidade}" style="text-align: right; width: 100%" mask="9?9999999999999" placeHolder="">
+                            <p:ajax event="change" update="@this i_panel_quantidade" global="false"/>
+                        </p:inputMask>
+                    </h:panelGrid>
+                        
                     <br />
+                    <h:panelGrid style="width: 100%">
+                        <p:outputLabel value="Email da Empresa" />
+                        <p:inputText value="#{controleAcessoWebBean.pessoaContribuinte.email1}" style="width: 100%">
+                            <p:ajax event="change" update="@this i_panel_quantidade" global="false"/>
+                        </p:inputText>
+                    </h:panelGrid>
+                    
                     <br />
-                    <p:inputText value="#{controleAcessoWebBean.empregados.quantidade}" style="text-align: right">
-                        <p:ajax event="change" update="@this i_panel_quantidade" global="false"/>
-                    </p:inputText>
-                    <p:commandButton value="Salvar" oncomplete="PF('dlg_empregados_confirma').show()" update="i_panel_quantidade"/>
+                    <h:panelGrid style="width: 100%">
+                        <p:outputLabel value="Telefone da Empresa" />
+                        <p:inputText value="#{controleAcessoWebBean.pessoaContribuinte.telefone1}" style="width: 100%" styleClass="ddd_telefone">
+                            <p:ajax event="change" update="@this i_panel_quantidade" global="false"/>
+                        </p:inputText>
+                    </h:panelGrid>
+                    <br />
+                    <p:commandButton value="Salvar" update="i_msg_empregados" action="#{controleAcessoWebBean.validaEmpregados()}"/>
                     <p:commandButton value="Cancelar" onclick="PF('dlg_empregados').hide()"/>
                 </p:dialog>
                 
-                <p:dialog widgetVar="dlg_empregados_confirma" modal="true" header="Salvar Quantidade" resizable="false" style="width: 200px">
-                    <h:panelGrid id="i_panel_quantidade" columns="3">
-                        <p:outputLabel value="Empresa possui " />
-                        <p:outputLabel value=" #{controleAcessoWebBean.empregados.quantidade} " style="font-weight: bold; color: red"/>
-                        <p:outputLabel value=" empregados" />
+                <p:dialog widgetVar="dlg_empregados_confirma" modal="true" header="Confirmação de Dados" resizable="false" style="width: 200px">
+                    <h:panelGrid id="i_panel_quantidade">
+                        <h:panelGrid  columns="3">
+                            <p:outputLabel value="Empresa possui " />
+                            <p:outputLabel value=" #{controleAcessoWebBean.empregados.quantidade} " style="font-weight: bold; color: red"/>
+                            <p:outputLabel value=" empregados" />
+                        </h:panelGrid>
+                        <br />
+
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Email: " />
+                            <p:outputLabel value="#{controleAcessoWebBean.pessoaContribuinte.email1}" style="font-weight: bold"/>
+                        </h:panelGrid>
+                        <br />
+
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Telefone: " />
+                            <p:outputLabel value="#{controleAcessoWebBean.pessoaContribuinte.telefone1}" style="font-weight: bold"/>
+                        </h:panelGrid>
                     </h:panelGrid>
                     <br />
                     <p:commandButton value="Confirmar e Entrar" action="#{controleAcessoWebBean.salvarEmpregados()}" oncomplete="PF('dlg_empregados_confirma').hide(); PF('dlg_empregados').hide()"/>
-                    <p:commandButton value="Não, alterar quantidade" onclick="PF('dlg_empregados_confirma').hide()"/>
+                    <p:commandButton value="Não, alterar dados" onclick="PF('dlg_empregados_confirma').hide()"/>
                 </p:dialog>
             </h:form>
+            
             <h:form id="i_form_login_patronal">
                 <p:dialog id="i_d" widgetVar="dlg_patronal" modal="true" header="" resizable="false" style="width: 460px">
                     <p:panel header="FAÇA O LOGIN NO SISTEMA" style="width: 350px; margin: 0 auto; margin-top: 10px">
