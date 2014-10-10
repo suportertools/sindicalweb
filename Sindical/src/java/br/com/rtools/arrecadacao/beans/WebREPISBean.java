@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -397,6 +398,7 @@ public class WebREPISBean implements Serializable {
                     }
                     
                     String ref = result.get(0).getReferenciaInicial().substring(3)+"/"+ result.get(0).getReferenciaFinal().substring(3);
+                    Date data_validade = DataHoje.converte(DataHoje.qtdeDiasDoMes(Integer.valueOf(result.get(0).getReferenciaFinal().substring(0, 2)), Integer.valueOf(result.get(0).getReferenciaFinal().substring(3))) +"/"+ result.get(0).getReferenciaFinal());
                     
                     Collection<ParametroCertificado> vetor = new ArrayList();
                     String logoPatronal = "", 
@@ -436,6 +438,7 @@ public class WebREPISBean implements Serializable {
 
                     JasperReport jasper = (JasperReport) JRLoader.loadObject(file);   
                         
+                    
                     for (PisoSalarial piso : listapiso) {
                         BigDecimal valor = new BigDecimal(piso.getValor());
                         if (valor.toString().equals("0")) {
@@ -455,7 +458,7 @@ public class WebREPISBean implements Serializable {
                                         piso.getDescricao(),
                                         valor,
                                         (certidaoMensagem != null) ? certidaoMensagem.getMensagem() : piso.getPisoSalarialLote().getMensagem(),
-                                        piso.getPisoSalarialLote().getDtValidade(),
+                                        data_validade,//piso.getPisoSalarialLote().getDtValidade(),
                                         sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
                                         piso.getPisoSalarialLote().getAno(),
                                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),

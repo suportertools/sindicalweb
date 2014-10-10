@@ -105,10 +105,18 @@
                             </p:commandButton> 
                         </p:column>                        
                         <p:rowExpansion>
-                            <h:panelGrid columns="5" styleClass="sbb">
+                            <h:panelGrid columns="3" styleClass="sbb">
                                 <p:column>
                                     <h:outputLabel value="Procolo" style="font-weight: bold"/><br />
                                     <h:outputText value="#{repisMovimento.id}" style="margin-left: 20px"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Email" style="font-weight: bold"/><br />
+                                    <h:outputText value="#{repisMovimento.pessoa.email1}" />
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Telefone" style="font-weight: bold"/><br />
+                                    <h:outputText value="#{repisMovimento.pessoa.telefone1}" />
                                 </p:column>
                             </h:panelGrid>
                         </p:rowExpansion>

@@ -83,6 +83,22 @@ public class ControleAcessoWebBean implements Serializable {
     private String documento = "";
     private Empregados empregados = new Empregados();
 
+    
+    public void validaEmpregados(){
+        if (pessoaContribuinte.getEmail1().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Informe o EMAIL da Empresa para entrar no Sistema!");
+            return;
+        }
+        
+        if (pessoaContribuinte.getTelefone1().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Informe o TELEFONE da Empresa para entrar no Sistema!");
+            return;
+        }
+        
+        PF.openDialog("dlg_empregados_confirma");
+        PF.update("i_panel_quantidade");
+    }
+    
     public Pessoa getPessoaContribuinte() {
         return pessoaContribuinte;
     }
@@ -258,12 +274,11 @@ public class ControleAcessoWebBean implements Serializable {
     }
 
     public String salvarEmpregados() {
-
         Dao di = new Dao();
 
         di.openTransaction();
         JuridicaDB db = new JuridicaDBToplink();
-
+        
         empregados.setJuridica(db.pesquisaJuridicaPorPessoa(pessoaContribuinte.getId()));
         empregados.setReferencia(DataHoje.data().substring(3));
 
@@ -272,6 +287,13 @@ public class ControleAcessoWebBean implements Serializable {
             di.rollback();
             return null;
         }
+        
+        if (!di.update(pessoaContribuinte)) {
+            GenericaMensagem.error("Erro", "Não foi possível alterar cadastro, tente novamente!");
+            di.rollback();
+            return null;
+        }
+        
         di.commit();
 
         status = "Contribuinte";
