@@ -812,6 +812,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         
         renderCancelarHorario = true;
         loadListaHorariosTransferencia();
+        loadListaHorarios();
         id_protocolo = agendamento.getId();
         ocultarHorarioAlternativo = true;
         imprimirPro = true;

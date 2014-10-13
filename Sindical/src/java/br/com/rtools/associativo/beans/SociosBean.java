@@ -488,20 +488,20 @@ public class SociosBean implements Serializable {
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), 170);
         
+//        if (modeloc == null){
+//            sv.desfazerTransacao();
+//            GenericaMensagem.warn("Erro", "Modelo para categoria não encontrado!");
+//            return null;
+//        }
         if (modeloc == null){
+            GenericaMensagem.error("Erro", "Não existe modelo de carteirinha para esta categoria " +listaCategoria.get(idCategoria).getLabel()+" do sócio!");
             sv.desfazerTransacao();
-            GenericaMensagem.warn("Erro", "Modelo para categoria não encontrado!");
             return null;
         }
         
         List<SocioCarteirinha> list_carteirinha_socio = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
         // VERIFICA SE SÓCIO TEM CARTEIRINHA -- SE TIVER NÃO ADICIONAR --
         if (list_carteirinha_socio.isEmpty()){
-            if (modeloc == null){
-                GenericaMensagem.error("Erro", "Não existe modelo de carteirinha para esta categoria " +listaCategoria.get(idCategoria).getLabel()+" do sócio!");
-                sv.desfazerTransacao();
-                return null;
-            }
             //Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data()));
             String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
 
