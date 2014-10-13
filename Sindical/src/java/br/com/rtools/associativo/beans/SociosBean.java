@@ -1460,6 +1460,7 @@ public class SociosBean implements Serializable {
             ImpressaoParaSocios.imprimirCarteirinha(listaAux);
         } else {
             msgConfirma = "Socio não tem carteirinha";
+            GenericaMensagem.warn("Sistema", "Socio não tem carteirinha!");
         }
 
 //        if (!comita) {
