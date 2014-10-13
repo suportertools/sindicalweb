@@ -126,14 +126,14 @@
                                                 <h:panelGrid columns="2" style="margin-top: 10px">
                                                     <p:column>
                                                         <p:outputLabel value="Nome do Pai"/><br />
-                                                        <p:inputText size="51" maxlength="100" value="#{fisicaBean.fisica.pai}" converter="#{toUpperCase}">
+                                                        <p:inputText size="46" maxlength="100" value="#{fisicaBean.fisica.pai}" converter="#{toUpperCase}">
                                                             <p:ajax event="blur" update="@this" />
                                                         </p:inputText>
                                                     </p:column>
 
                                                     <p:column>
                                                         <p:outputLabel value="Nome da Mãe"/>
-                                                        <p:inputText size="51" maxlength="100" value="#{fisicaBean.fisica.mae}" converter="#{toUpperCase}">
+                                                        <p:inputText size="45" maxlength="100" value="#{fisicaBean.fisica.mae}" converter="#{toUpperCase}">
                                                             <p:ajax event="blur" update="@this" />
                                                         </p:inputText>
                                                     </p:column>
@@ -225,7 +225,7 @@
                                             </p:column>
 
                                             <p:column>
-                                                <p:panel header="Foto do Perfil" id="i_panel_imagens" style="width: 330px; height: 428px; text-align: center">
+                                                <p:panel header="Foto do Perfil" id="i_panel_imagens" style="width: 290px; height: 428px; text-align: center">
                                                     <h:column rendered="#{fisicaBean.fotoTempPerfil.equals('') and fisicaBean.fotoPerfil.equals('')}" >
                                                         <p:graphicImage value="/Imagens/user_female.png" rendered="#{fisicaBean.fisica.sexo.equals('F')}"/>
                                                         <p:graphicImage value="/Imagens/user_male.png" rendered="#{fisicaBean.fisica.sexo.equals('M')}"/>

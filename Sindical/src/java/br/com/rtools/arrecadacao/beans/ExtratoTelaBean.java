@@ -11,6 +11,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
@@ -79,6 +80,8 @@ public class ExtratoTelaBean implements Serializable {
     
     public ExtratoTelaBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
+        controx.setModulo((Modulo)new Dao().find(new Modulo(), 3));
+        
         if (!controx.getListaExtratoTela()) {
             porPesquisa = "naoRecebidas";
         } else {

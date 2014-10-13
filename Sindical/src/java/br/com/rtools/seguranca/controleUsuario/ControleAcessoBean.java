@@ -897,4 +897,8 @@ public class ControleAcessoBean implements Serializable {
     public void setIdIndexPermissao(int idIndexPermissao) {
         this.idIndexPermissao = idIndexPermissao;
     }
+    
+    public void setModulo(Modulo modulo){
+        this.modulo = modulo;
+    }
 }

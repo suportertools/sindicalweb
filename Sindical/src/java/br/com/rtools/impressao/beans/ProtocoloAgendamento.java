@@ -147,7 +147,7 @@ public class ProtocoloAgendamento implements Serializable {
             }
             String[] retorno = mail.send("personalizado");
             if (!retorno[1].isEmpty()) {
-                GenericaMensagem.info("E-mail", retorno[1]);
+                GenericaMensagem.warn("E-mail", retorno[1]);
             } else {
                 GenericaMensagem.info("E-mail", retorno[0]);
             }

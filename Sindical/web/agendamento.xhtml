@@ -143,7 +143,7 @@
                     <h:form id="formConcluirAgendamento">
                         <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" visible="#{agendamentoBean.visibleModal}" height="550" width="900">
                             <p:ajax event="close" listener="#{agendamentoBean.setVisibleModal(false)}"/>  
-                            <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                            <p:messages id="msg_dialog1" showDetail="true" closable="true"/>
                             <!-- <p:scrollPanel style="height:500px"> -->
                                 <h:panelGrid id="i_panel_protocolo" columns="1" style="width: 100%;">
                                     <h:column>
@@ -305,7 +305,7 @@
                                 <h:panelGrid>
                                     <p:commandButton value="#{agendamentoBean.juridica.id == -1 ? 'Pesquisar Empresa' : 'Alterar Empresa'}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"/>
                                 </h:panelGrid>
-
+                                <p:messages id="msg_dialog2" showDetail="true" closable="true"/>
                                 <p:panel style="margin-top: 10px" rendered="#{agendamentoBean.juridica.id != -1}">
                                     <h:panelGrid columns="5">
                                         <h:column>
@@ -370,7 +370,7 @@
 
                                         <h:column>
                                             <br />
-                                            <p:commandLink action="#{agendamentoBean.enviarEmailProtocolo()}" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}">
+                                            <p:commandLink action="#{agendamentoBean.enviarEmailProtocolo()}" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" update="formConcluirAgendamento">
                                                 <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="40" />
                                             </p:commandLink>
                                         </h:column>
