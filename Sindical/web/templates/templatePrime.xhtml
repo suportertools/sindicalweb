@@ -21,6 +21,7 @@
     <h:body onload="#{controleAcessoBean.validacao}"></h:body>
     <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
     <f:view>
+        <h:outputScript name="tradutor_primefaces.js" library="js" /> 
         <h:form id="form_logo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
             <p:dialog id="i_dlg_logo" widgetVar="dlg_logo" modal="true"  header="Anexar logo" closable="true">
                 <p:fileUpload label="Procurar"

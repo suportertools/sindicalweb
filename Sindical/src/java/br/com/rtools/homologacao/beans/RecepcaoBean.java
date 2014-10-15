@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.atendimento.AteStatus;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.homologacao.Agendamento;
@@ -35,22 +36,20 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import org.primefaces.context.RequestContext;
+import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.ScheduleEvent;
 
@@ -108,6 +107,13 @@ public class RecepcaoBean implements Serializable {
     private int progressLabel;
     private boolean startPooling;
 
+    private int idStatusAtendimento;
+    private List<SelectItem> listaStatusAtendimento;
+    private String dataPesquisaAtendimento;
+    private String dataInicialAtendimento;
+    private String dataFinalAtendimento;
+    private int indexTab = 0;
+    
     @PostConstruct
     public void init() {
         agendamento = new Agendamento();
@@ -148,7 +154,7 @@ public class RecepcaoBean implements Serializable {
         cancelamento = new Cancelamento();
         id_protocolo = -1;
         numeroProtocolo = "";
-        listaRecepcaos = new ArrayList<ListaAgendamento>();
+        listaRecepcaos = new ArrayList();
         macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
         dataInicialString = DataHoje.data();
         dataFinalString = DataHoje.data();
@@ -157,11 +163,21 @@ public class RecepcaoBean implements Serializable {
         listaStatus = new ArrayList();
         listaMotivoDemissao = new ArrayList();
         listaHorarios = new ArrayList();
-        loadListHorarios();
-        loadListaAtendimentoSimples();
         progressUpdate = 100;
         progressLabel = 10;
         startPooling = true;
+        
+        idStatusAtendimento = 0;
+        listaStatus = new ArrayList();
+        dataPesquisaAtendimento = "hoje";
+        listaStatusAtendimento = new ArrayList();
+        
+        getListaStatusAtendimento();
+        loadListHorarios();
+        loadListaAtendimentoSimples();
+        
+        dataInicialAtendimento = DataHoje.data();
+        dataFinalAtendimento = DataHoje.data();
     }
 
     @PreDestroy
@@ -171,6 +187,10 @@ public class RecepcaoBean implements Serializable {
         GenericaSessao.remove("fisicaPesquisa");
     }
 
+    public void alterTab(TabChangeEvent event) {
+        indexTab = ((TabView) event.getComponent()).getActiveIndex();
+    }
+    
     public void startStopPolling(){
 //        if (startPooling)
 //            setStartPooling(false);
@@ -511,8 +531,12 @@ public class RecepcaoBean implements Serializable {
             isPesquisarPessoaJuridicaFiltro = true;
             juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
             GenericaSessao.remove("fisicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
             dataPesquisaTodas = true;
-            loadListHorarios();
+            if (indexTab == 0)
+                loadListHorarios();
+            else
+                loadListaAtendimentoSimples();
         }
         return juridica;
     }
@@ -1041,11 +1065,20 @@ public class RecepcaoBean implements Serializable {
     }
 
     public void loadListaAtendimentoSimples() {
-        if (listaAtendimentoSimples.isEmpty() && macFilial != null) {
+        listaAtendimentoSimples.clear();
+        if (macFilial != null) {
             HomologacaoDB db = new HomologacaoDBToplink();
             SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
 
-            listaAtendimentoSimples = db.listaAtendimentoIniciadoSimples(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
+            listaAtendimentoSimples = db.listaAtendimentoIniciadoSimplesPesquisa(
+                    macFilial.getFilial().getId(), 
+                    su.getSessaoUsuario().getId(), 
+                    Integer.valueOf(listaStatusAtendimento.get(idStatusAtendimento).getDescription()), 
+                    dataPesquisaAtendimento, 
+                    dataInicialAtendimento, 
+                    dataFinalAtendimento,
+                    juridica.getId()
+            );
         }
     }
 
@@ -1103,6 +1136,61 @@ public class RecepcaoBean implements Serializable {
 
     public void setStartPooling(boolean startPooling) {
         this.startPooling = startPooling;
+    }
+
+    public int getIdStatusAtendimento() {
+        return idStatusAtendimento;
+    }
+
+    public void setIdStatusAtendimento(int idStatusAtendimento) {
+        this.idStatusAtendimento = idStatusAtendimento;
+    }
+
+    public List<SelectItem> getListaStatusAtendimento() {
+        if (listaStatusAtendimento.isEmpty()){
+            List<AteStatus> result = new Dao().list("AteStatus");
+            listaStatusAtendimento.add(new SelectItem(0, "Todos", "0"));
+            for (int i = 0; i < result.size(); i++){
+                listaStatusAtendimento.add(new SelectItem(i+1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId())));
+            }
+        }
+        return listaStatusAtendimento;
+    }
+
+    public void setListaStatusAtendimento(List<SelectItem> listaStatusAtendimento) {
+        this.listaStatusAtendimento = listaStatusAtendimento;
+    }
+
+    public String getDataPesquisaAtendimento() {
+        return dataPesquisaAtendimento;
+    }
+
+    public void setDataPesquisaAtendimento(String dataPesquisaAtendimento) {
+        this.dataPesquisaAtendimento = dataPesquisaAtendimento;
+    }
+
+    public String getDataInicialAtendimento() {
+        return dataInicialAtendimento;
+    }
+
+    public void setDataInicialAtendimento(String dataInicialAtendimento) {
+        this.dataInicialAtendimento = dataInicialAtendimento;
+    }
+
+    public String getDataFinalAtendimento() {
+        return dataFinalAtendimento;
+    }
+
+    public void setDataFinalAtendimento(String dataFinalAtendimento) {
+        this.dataFinalAtendimento = dataFinalAtendimento;
+    }
+
+    public int getIndexTab() {
+        return indexTab;
+    }
+
+    public void setIndexTab(int indexTab) {
+        this.indexTab = indexTab;
     }
 }
 
