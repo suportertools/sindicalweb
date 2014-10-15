@@ -33,7 +33,7 @@
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                                 <h:panelGrid columns="5">
                                     <p:selectOneMenu id="i_pesquisa_por" value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
-                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl, i_por" listener="#{fisicaBean.listaPessoaFisica.clear()}" global="false"/>
+                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl, i_panel_pesquisa" listener="#{fisicaBean.listaPessoaFisica.clear()}" global="false"/>
                                         <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
                                         <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
                                         <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>

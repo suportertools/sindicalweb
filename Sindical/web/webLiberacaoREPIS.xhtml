@@ -15,6 +15,10 @@
             //.ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
             //    background: #ECF3FE;
             //}
+            
+            .tblColorx{
+                background-color: #9ccaaa!important;
+            }
         </style>        
     </h:head>
     <h:body>
@@ -25,7 +29,7 @@
 
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
-                <h:outputText value="Liberação de REPIS" styleClass="fonteHeader" />
+                <h:outputText value="Liberação de Certidões" styleClass="fonteHeader" />
                 <div class="clear"></div>
                 <h:form id="form_libera_repis">
                     <p:ajaxStatus></p:ajaxStatus>
@@ -35,11 +39,11 @@
                                 <h:panelGrid columns="4">
                                     <p:inputMask size="30" value="#{webREPISBean.descricao}" mask="#{webREPISBean.tipoPesquisa.equals('cnpj') ? '99?.999.999/9999-99' : ''}" rendered="#{!webREPISBean.tipoPesquisa.equals('tipo') and !webREPISBean.tipoPesquisa.equals('status')}" />
                                     <p:selectOneMenu value="#{webREPISBean.indexCertidaoTipo}" rendered="#{webREPISBean.tipoPesquisa.equals('tipo')}" style="padding-right: 15px;">
-                                        <p:ajax update="@this" event="change" />
+                                        <p:ajax update="@this tbl" event="change" listener="#{webREPISBean.pesquisar()}"/>
                                         <f:selectItems value="#{webREPISBean.listaTipoCertidao}" />
                                     </p:selectOneMenu>
                                     <p:selectOneMenu value="#{webREPISBean.indexStatus}" rendered="#{webREPISBean.tipoPesquisa.equals('status')}" style="padding-right: 15px;">
-                                        <p:ajax update="@this" event="change" />
+                                        <p:ajax update="@this tbl" event="change" listener="#{webREPISBean.pesquisar()}"/>
                                         <f:selectItems value="#{webREPISBean.listaStatus}" />
                                     </p:selectOneMenu>                                    
                                     <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 15px;">
@@ -51,7 +55,7 @@
                                         <f:selectItem itemLabel="Solicitante" itemValue="solicitante"/>
                                         <f:selectItem itemLabel="Tipo" itemValue="tipo"/>
                                     </p:selectOneMenu>
-                                    <p:commandButton id="i_pesquisar" value="Pesquisar" action="#{webREPISBean.pesquisar()}" style="margin-left: 15px;" update="tbl"/>
+                                    <p:commandButton id="i_pesquisar" value="Pesquisar na Lista" action="#{webREPISBean.pesquisar()}" style="margin-left: 15px;" update="tbl"/>
                                 </h:panelGrid>
                             </h:column>
                             <h:column>
@@ -67,7 +71,7 @@
                         </h:panelGrid>
                     </p:panel>
                     <p:messages id="i_msg" showDetail="true" closable="true" />
-                    <p:dataTable id="tbl" styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" selection="#{webREPISBean.listRepisMovimentoPatronalSelecionado}" rowKey="#{repisMovimento.id}" var="repisMovimento" style="width: 100%" emptyMessage="Nenhum registro encontrado." scrollable="true" scrollHeight="450"> 
+                    <p:dataTable id="tbl" styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" selection="#{webREPISBean.listRepisMovimentoPatronalSelecionado}" rowKey="#{repisMovimento.id}" var="repisMovimento" style="width: 100%" emptyMessage="Nenhum registro encontrado." scrollable="true" scrollHeight="450" rowStyleClass="#{webREPISBean.retornaCor(repisMovimento)}"> 
                         <p:ajax event="rowSelect" update=":form_libera_repis:i_panel_alterar" global="false"/>
                         <p:ajax event="rowSelectCheckbox" update=":form_libera_repis:i_panel_alterar" global="false"/>
                         <p:ajax event="rowUnselect"  update=":form_libera_repis:i_panel_alterar" global="false"/>
