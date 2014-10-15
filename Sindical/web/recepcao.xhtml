@@ -48,7 +48,8 @@
                                     <p:poll global="false" interval="1" update=":formRecepcao:i_tabview:i_progress_update" listener="#{recepcaoBean.progress()}" autoStart="#{recepcaoBean.startPooling}" />
                                 </h:panelGrid>
                                 
-                                <p:tabView id="i_tabview" style="width: 1000px" >
+                                <p:tabView id="i_tabview" style="width: 1000px" activeIndex="#{recepcaoBean.indexTab}">
+                                    <p:ajax event="tabChange" update=":formRecepcao" global="false"/>
                                     <p:tab title="Homologações">
                                         <p:panel styleClass="fundoCinza">
                                             <h:panelGrid id="i_panel_pesquisa" columns="6">
@@ -252,6 +253,63 @@
                                     </p:tab>
 
                                     <p:tab title="Atendimento">
+                                        <p:panel styleClass="fundoCinza">
+                                            <h:panelGrid id="i_panel_pesquisa_atendimento" columns="6">
+                                                <p:column>
+                                                    <h:outputLabel value="Status" /><br />
+                                                    <p:selectOneMenu value="#{recepcaoBean.idStatusAtendimento}" >
+                                                        <p:ajax event="change" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" update=":formRecepcao"/>
+                                                        <f:selectItems value="#{recepcaoBean.listaStatusAtendimento}"/>
+                                                    </p:selectOneMenu>
+                                                </p:column>
+
+                                                <h:column>
+                                                    <h:outputLabel value="Data"/><br />
+                                                    <p:selectOneMenu value="#{recepcaoBean.dataPesquisaAtendimento}">
+                                                        <p:ajax event="change" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" update=":formRecepcao" />
+                                                        <f:selectItem itemValue="hoje" itemLabel="Hoje" />
+                                                        <f:selectItem itemValue="periodo"   itemLabel="Período"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
+
+                                                <h:column>
+                                                    <br />
+                                                    <p:inputMask value="#{recepcaoBean.dataInicialAtendimento}" rendered="#{!recepcaoBean.dataPesquisaAtendimento.equals('hoje')}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
+                                                        <p:ajax event="blur" update="@this tbl_at" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" global="false"/>
+                                                    </p:inputMask>
+                                                    
+                                                    <h:outputLabel value=" até " rendered="#{!recepcaoBean.dataPesquisaAtendimento.equals('hoje')}" />
+                                                    <p:inputMask value="#{recepcaoBean.dataFinalAtendimento}" rendered="#{!recepcaoBean.dataPesquisaAtendimento.equals('hoje')}" style="font-weight: bold; text-align: center" size="7" mask="99/99/9999" converter="#{isDateString}">
+                                                        <p:ajax event="blur" update="@this tbl_at" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" global="false"/>
+                                                    </p:inputMask>
+                                                </h:column>
+
+                                                <h:column>
+                                                    <br />
+                                                    <p:commandButton value="Pesquisar Pessoa" action="#{recepcaoBean.pesquisar()}" title="Escolha a opção do tipo de pesquisa para pessoa" />
+                                                </h:column>
+                                                <h:column>
+                                                    <br />
+                                                    <p:selectOneMenu value="#{recepcaoBean.tipoPesquisa}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="juridica" itemLabel="Juridica"/>
+                                                        <f:selectItem itemValue="fisica"   itemLabel="Fisica" rendered="false"/>                                                  
+                                                    </p:selectOneMenu>
+                                                </h:column>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid id="i_panel_pessoa_atendimento" columns="3">
+                                                <h:column>
+                                                    <h:outputLabel value="#{recepcaoBean.juridica.pessoa.nome} - CNPJ: #{recepcaoBean.juridica.pessoa.documento}" rendered="#{recepcaoBean.juridica.id != -1}" style="font-size: 11pt!important"/>
+                                                    <h:outputLabel value="#{recepcaoBean.fisica.pessoa.nome}" rendered="#{recepcaoBean.fisica.id != -1}" style="font-size: 11pt!important"/>
+                                                </h:column>
+
+                                                <h:column>
+                                                    <p:commandButton icon="ui-icon-close" rendered="#{recepcaoBean.juridica.id != -1 or recepcaoBean.fisica.id != -1}" action="#{recepcaoBean.limparPesquisa}" update=":formRecepcao" />
+                                                </h:column>
+                                            </h:panelGrid>
+                                        </p:panel>
+                                        
                                         <p:dataTable value="#{recepcaoBean.listaAtendimentoSimples}" var="linha" style="width: 100%; " id="tbl_at" emptyMessage="Nenhum atendimento encontrado!">
                                             <p:column headerText="Nome">
                                                 <h:outputLabel value="#{linha.ateMovimento.pessoa.nome}"/>

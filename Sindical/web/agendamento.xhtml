@@ -20,7 +20,7 @@
         </style>
 
         <script type="text/javascript">
-
+            
         </script>
     </h:head>
     <h:body>
@@ -37,12 +37,13 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Agendamento de Homologação" styleClass="fonteHeader" />
                         <h:form id="formAgendamento">
+                            <h:outputScript name="locale-primefaces.js" library="js" /> 
                             <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" />
                             <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
                             <h:panelGrid style="margin: 0 auto; width: 1024px; clear: both">
                                 <p:panel styleClass="fundoCinza">
                                     <h:panelGrid columns="2">
-                                        <p:calendar size="8" value="#{agendamentoBean.data}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999">
+                                        <p:calendar size="8" value="#{agendamentoBean.data}" pattern="dd/MM/yyyy" navigator="true" yearRange="c-1:c+1" mask="99/99/9999" locale="pt_BR">
                                             <p:ajax event="dateSelect" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
                                             <p:ajax event="change" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
                                         </p:calendar>

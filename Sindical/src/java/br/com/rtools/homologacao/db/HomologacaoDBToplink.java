@@ -885,6 +885,47 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
     
     @Override
+    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa) {
+        List<Senha> result = new ArrayList();
+        try {
+            
+
+            String inner = "", and = "", order = " ORDER BY s.nr_senha, s.dt_data ";
+            
+            if (id_status != 0){
+                and += " AND a.id_status = "+ id_status;
+            }
+            
+            if (tipoData.equals("hoje")){
+                and += " AND a.dt_emissao = '" +DataHoje.dataHoje()+"'";
+            }else{
+                and += " AND a.dt_emissao BETWEEN '" +dataInicial+"' AND '"+ dataFinal +"'";
+            }
+            
+            if (id_pessoa != -1){
+                inner = " INNER JOIN pes_juridica j ON j.id = a.id_juridica ";
+                and +=  " AND j.id_pessoa = " + id_pessoa;
+            }
+            
+            String textQry = "SELECT s.* FROM ate_movimento a "
+                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                  + inner 
+                  + " WHERE s.id_filial = " + id_filial
+                  + and
+                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +") "
+                  + order;
+            
+            Query qry = getEntityManager().createNativeQuery(textQry,Senha.class);
+            if (!qry.getResultList().isEmpty()) {
+                result = qry.getResultList();
+            }
+        } catch (Exception e) {
+             //e.printStackTrace();
+        }
+        return result;
+    }
+    
+    @Override
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario) {
         List<Senha> result = new ArrayList();
         try {
