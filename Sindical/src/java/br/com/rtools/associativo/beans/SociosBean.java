@@ -90,6 +90,10 @@ public class SociosBean implements Serializable {
     
     private boolean modelVisible = false;
     
+    private final Registro registro;
+    
+    private String novaValidadeCartao = "";
+    
     public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
@@ -121,7 +125,10 @@ public class SociosBean implements Serializable {
         lblSocioPergunta = "";
         tipoDestinario = "socio";
         statusSocio = "NOVO";
-        listaMotivoInativacao = new ArrayList<SelectItem>();
+        listaMotivoInativacao = new ArrayList();
+        
+        registro = (Registro) new Dao().find(new Registro(), 1);
+        
     }
     
     public void upload(FileUploadEvent event) {
@@ -488,11 +495,6 @@ public class SociosBean implements Serializable {
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), 170);
         
-//        if (modeloc == null){
-//            sv.desfazerTransacao();
-//            GenericaMensagem.warn("Erro", "Modelo para categoria não encontrado!");
-//            return null;
-//        }
         if (modeloc == null){
             GenericaMensagem.error("Erro", "Não existe modelo de carteirinha para esta categoria " +listaCategoria.get(idCategoria).getLabel()+" do sócio!");
             sv.desfazerTransacao();
@@ -560,7 +562,6 @@ public class SociosBean implements Serializable {
                     
                     List<SocioCarteirinha> list_carteirinha_dep = db.pesquisaCarteirinhasPorPessoa(socioDependente.getServicoPessoa().getPessoa().getId(), modeloc.getId());
                     // VERIFICA SE SÓCIO DEPENDENTE TEM CARTEIRINHA -- SE TIVER NÃO ADICIONAR --
-                    Registro registro = (Registro)sv.pesquisaCodigo(1, "Registro");
                     
                     if (list_carteirinha_dep.isEmpty() && registro.isCarteirinhaDependente()){
                         
@@ -1353,68 +1354,30 @@ public class SociosBean implements Serializable {
         ((DataObject) listaDependentes.get(index)).setArgumento4(atualizaValidade(par, fisica));
     }
 
-    public String visualizarCarteirinha() {
+    
+    public void confirmaImprimirCartao(){
         if (socios.getId() == -1) {
-            return null;
+            return;
         }
         
+        if (DataHoje.menorData(socios.getValidadeCarteirinha(), DataHoje.data())){
+            DataHoje dh = new DataHoje();
+            CategoriaDB db = new CategoriaDBToplink();
+            GrupoCategoria gpCat = db.pesquisaGrupoPorCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
+            Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
+        
+            novaValidadeCartao = DataHoje.converteData(validadeCarteirinha);
+            PF.openDialog("dlg_validade_carteirinha");
+        }else{
+            PF.openDialog("dlg_imprimir_carteirinha");
+        }
+    }
+    
+    public String visualizarCarteirinha(boolean alterarValidade) {
         /*
             COMENTEI TODO ESSE CÓDIGO PORQUE A PRINCIPIO NA MUDANÇA QUANDO SALVAR O SÓCIO ELE SEMPRE TERÁ CARTEIRINHA
             EM FASE DE TESTES 22/05/2014 QUINTA-FEIRA -- COMÉRCIO RP -- DEPOIS EXCLUIR COMENTÁRIO
         */
-        
-
-//        boolean comita = false;
-//        SociosDB db = new SociosDBToplink();
-//
-//        String data = DataHoje.data();
-//        SocioCarteirinha carteirinha = new SocioCarteirinha();
-//
-//        
-//        CategoriaDB dbCat = new CategoriaDBToplink();
-//        GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-        
-//        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinhaCategoria(socios.getMatriculaSocios().getCategoria().getId());
-        
-//        List<SocioCarteirinha> list_carteirinha_socio = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
-        
-        //boolean isSocioCarteirinhaPessoa = dbc.pesquisaSocioCarteirinhaSocio(socios.getServicoPessoa().getPessoa().getId()).isEmpty();
-//        boolean isSocioCarteirinhaPessoa = list_carteirinha_socio.isEmpty();
-
-//        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//        sv.abrirTransacao();
-//        if (isSocioCarteirinhaPessoa) {
-//            carteirinha.setEmissao(data);
-//            carteirinha.setPessoa(socios.getServicoPessoa().getPessoa());
-//            if (!sv.inserirObjeto(carteirinha)) {
-//                sv.desfazerTransacao();
-//                return null;
-//            }
-//            DataHoje dh = new DataHoje();
-//
-//            socios.setNrViaCarteirinha(1);
-//
-//
-//            socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-//            
-//            if (!sv.alterarObjeto(socios)) {
-//                sv.desfazerTransacao();
-//                return null;
-//            }
-//            sv.comitarTransacao();
-//            comita = true;
-//        } else {
-//            carteirinha.setEmissao(data);
-//            carteirinha.setPessoa(socios.getServicoPessoa().getPessoa());
-//            if (!dbc.verificaSocioCarteirinhaExiste(socios.getServicoPessoa().getPessoa().getId())) {
-//                if (!sv.inserirObjeto(carteirinha)) {
-//                    sv.desfazerTransacao();
-//                    return null;
-//                }
-//                sv.comitarTransacao();
-//                comita = true;
-//            }
-//        }
         
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
@@ -1425,15 +1388,34 @@ public class SociosBean implements Serializable {
             sv.abrirTransacao();
             sc.setDtEmissao(DataHoje.dataHoje());
             if(!sv.alterarObjeto(sc)){
-                GenericaMensagem.warn("Erro", "Não foi possivel alterar data de emissão");
+                GenericaMensagem.error("Erro", "Não foi possivel alterar data de emissão!");
                 sv.desfazerTransacao();
                 return null;
             }
             sv.comitarTransacao();
         }
+        
+        if (alterarValidade){
+            sv.abrirTransacao();
+            socios.setDtValidadeCarteirinha(DataHoje.converte(novaValidadeCartao));
+            sc.setDtValidadeCarteirinha(DataHoje.converte(novaValidadeCartao));
+            socios.setNrViaCarteirinha(socios.getNrViaCarteirinha() + 1);
+            
+            HistoricoCarteirinha hc = new HistoricoCarteirinha();
+            hc.setCarteirinha(sc);
+            hc.setDescricao("Reimpressão de Carteirinha 2º Via");
+            
+            if (!sv.inserirObjeto(hc) || !sv.alterarObjeto(sc)){
+                GenericaMensagem.error("Erro", "Não foi possivel salvar histórico!");
+                sv.desfazerTransacao();
+                return null;
+            }
+            
+            sv.comitarTransacao();
+        }
+        
         List listaAux = dbc.filtroCartao(socios.getServicoPessoa().getPessoa().getId());
         
-        Registro registro = (Registro) sv.pesquisaCodigo(1, "Registro");
         SociosDB db = new SociosDBToplink();
         if (registro.isCarteirinhaDependente() && !listaDependentes.isEmpty()){
             sv.abrirTransacao();
@@ -2040,5 +2022,13 @@ public class SociosBean implements Serializable {
 
     public void setModelVisible(boolean modelVisible) {
         this.modelVisible = modelVisible;
+    }
+
+    public String getNovaValidadeCartao() {
+        return novaValidadeCartao;
+    }
+
+    public void setNovaValidadeCartao(String novaValidadeCartao) {
+        this.novaValidadeCartao = novaValidadeCartao;
     }
 }

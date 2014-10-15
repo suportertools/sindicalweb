@@ -162,7 +162,7 @@
                                 </center>
                             </p:dialog>
 
-                            <h:panelGrid columns="5" style="margin-top: 5px">
+                            <h:panelGrid columns="6" style="margin-top: 5px">
                                 <p:column>
                                     <h:outputLabel value="Data Filiação"/><br />
                                     <p:inputMask value="#{sociosBean.matriculaSocios.emissao}" size="8" mask="99/99/9999" />
@@ -176,6 +176,11 @@
                                 <p:column>
                                     <h:outputLabel value="Ref. Validade" rendered="#{sociosBean.renderServicos}" style="margin-left: 20px"/><br />
                                     <p:inputMask value="#{sociosBean.servicoPessoa.referenciaValidade}" size="5" rendered="#{servicoPessoaBean.renderServicos}" mask="99/9999" style="margin-left: 20px"/>
+                                </p:column>
+                                
+                                <p:column>
+                                    <h:outputLabel value="Validade Carteirinha" style="margin-left: 20px"/><br />
+                                    <p:inputMask value="#{sociosBean.socios.validadeCarteirinha}" size="13" mask="99/99/9999" style="margin-left: 20px; text-align: center" readonly="true"/>
                                 </p:column>
 
                                 <p:column>
@@ -321,8 +326,8 @@
                                     <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
                                 </p:selectOneMenu>
 
-                                <p:commandButton ajax="false" value="Visualizar Carteirinha" action="#{sociosBean.visualizarCarteirinha}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;"/>
-                                <p:commandButton ajax="false" value="Imprimir Ficha"         action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
+                                <p:commandButton value="Visualizar Carteirinha" action="#{sociosBean.confirmaImprimirCartao()}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;"/>
+                                <p:commandButton ajax="false" value="Imprimir Ficha" action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja #{sociosBean.lblSocio} este Sócio" resizable="false" width="400" modal="true">
@@ -357,6 +362,25 @@
 
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.reativarSocio()}" update="formSocios" onclick="PF('i_dlg_re').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_re').hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_validade_carteirinha_vencida" header="Carteirinha Vencida" resizable="false" width="400" modal="true">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Esta carteirinha esta vencida! Alterar para nova validade?" /><br />
+                                    <p:inputMask value="#{sociosBean.novaValidadeCartao}" size="8" maxlength="10" mask="99/99/9999"/>
+                                </h:panelGrid>
+
+                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.visualizarCarteirinha(true)}" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_validade_carteirinha').hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_imprimir_carteirinha" header="Imprimir Carteirinha" resizable="false" width="400" modal="true">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Deseja realmente imprimir essa carteirinha?" /><br />
+                                </h:panelGrid>
+
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.visualizarCarteirinha(false)}" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_imprimir_carteirinha').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="800" visible="#{sociosBean.modelVisible}">

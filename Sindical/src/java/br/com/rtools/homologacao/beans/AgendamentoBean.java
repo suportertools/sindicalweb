@@ -653,9 +653,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
         HomologacaoDB dba = new HomologacaoDBToplink();
-        if (dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId()) != null && agendamento.getId() == -1) {
+        Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId());
+        if (age != null && agendamento.getId() == -1) {
             dao.rollback();
-            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada!");
+            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada, na data "+age.getData());
             return null;
         }
         

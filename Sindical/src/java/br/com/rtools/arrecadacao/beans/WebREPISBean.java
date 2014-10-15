@@ -91,6 +91,7 @@ public class WebREPISBean implements Serializable {
     private String valueLenght = "15";
     private String contato = "";
     
+    
     public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
         getPessoa();
@@ -109,6 +110,13 @@ public class WebREPISBean implements Serializable {
             renderEmpresa = false;
             renderContabil = false;
         }
+    }
+    
+    public String retornaCor(RepisMovimento rm){
+        if (DataHoje.igualdadeData(rm.getPessoa().getCriacao(), rm.getDataEmissaoString()) && rm.getRepisStatus().getId() == 1){
+            return "tblColorx";    
+        }
+        return "";
     }
 
     public void alterValueLenght(String value){
