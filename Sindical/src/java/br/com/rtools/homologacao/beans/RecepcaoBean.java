@@ -113,6 +113,7 @@ public class RecepcaoBean implements Serializable {
     private String dataInicialAtendimento;
     private String dataFinalAtendimento;
     private int indexTab = 0;
+    private String nomePessoaAtendimento;
     
     @PostConstruct
     public void init() {
@@ -178,6 +179,8 @@ public class RecepcaoBean implements Serializable {
         
         dataInicialAtendimento = DataHoje.data();
         dataFinalAtendimento = DataHoje.data();
+        
+        nomePessoaAtendimento = "";
     }
 
     @PreDestroy
@@ -333,7 +336,11 @@ public class RecepcaoBean implements Serializable {
         isPesquisarPessoaFisicaFiltro = false;
         isPesquisarPessoaJuridicaFiltro = false;
         desabilitaPesquisaProtocolo = false;
-        loadListHorarios();
+        if (indexTab == 0){
+            loadListHorarios();
+        }else{
+            loadListaAtendimentoSimples();
+        }
         return null;
     }
 
@@ -1077,7 +1084,8 @@ public class RecepcaoBean implements Serializable {
                     dataPesquisaAtendimento, 
                     dataInicialAtendimento, 
                     dataFinalAtendimento,
-                    juridica.getId()
+                    juridica.getId(),
+                    (tipoPesquisa.equals("fisica")) ? nomePessoaAtendimento : ""
             );
         }
     }
@@ -1191,6 +1199,14 @@ public class RecepcaoBean implements Serializable {
 
     public void setIndexTab(int indexTab) {
         this.indexTab = indexTab;
+    }
+
+    public String getNomePessoaAtendimento() {
+        return nomePessoaAtendimento;
+    }
+
+    public void setNomePessoaAtendimento(String nomePessoaAtendimento) {
+        this.nomePessoaAtendimento = nomePessoaAtendimento;
     }
 }
 

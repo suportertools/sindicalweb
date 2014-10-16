@@ -7,9 +7,11 @@ import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -885,7 +887,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
     
     @Override
-    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa) {
+    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String nomePessoaAtendimento) {
         List<Senha> result = new ArrayList();
         try {
             
@@ -903,8 +905,15 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             }
             
             if (id_pessoa != -1){
-                inner = " INNER JOIN pes_juridica j ON j.id = a.id_juridica ";
+                inner += " INNER JOIN pes_juridica j ON j.id = a.id_juridica ";
                 and +=  " AND j.id_pessoa = " + id_pessoa;
+            }
+            
+            if (!nomePessoaAtendimento.isEmpty()){
+                nomePessoaAtendimento = AnaliseString.normalizeLower(nomePessoaAtendimento);
+                
+                inner += " INNER JOIN sis_pessoa p ON p.id = a.id_sis_pessoa ";
+                and += " AND TRANSLATE(LOWER(p.ds_nome)) like '%"+nomePessoaAtendimento+"%'";
             }
             
             String textQry = "SELECT s.* FROM ate_movimento a "
