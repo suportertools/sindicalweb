@@ -254,7 +254,7 @@
 
                                     <p:tab title="Atendimento">
                                         <p:panel styleClass="fundoCinza">
-                                            <h:panelGrid id="i_panel_pesquisa_atendimento" columns="6">
+                                            <h:panelGrid id="i_panel_pesquisa_atendimento" columns="7">
                                                 <p:column>
                                                     <h:outputLabel value="Status" /><br />
                                                     <p:selectOneMenu value="#{recepcaoBean.idStatusAtendimento}" >
@@ -286,22 +286,33 @@
 
                                                 <h:column>
                                                     <br />
-                                                    <p:commandButton value="Pesquisar Pessoa" action="#{recepcaoBean.pesquisar()}" title="Escolha a opção do tipo de pesquisa para pessoa" />
+                                                    <p:commandButton value="Pesquisar Pessoa" action="#{recepcaoBean.pesquisar()}" title="Escolha a opção do tipo de pesquisa para pessoa" rendered="#{!recepcaoBean.tipoPesquisa.equals('fisica')}"/>
                                                 </h:column>
                                                 <h:column>
                                                     <br />
                                                     <p:selectOneMenu value="#{recepcaoBean.tipoPesquisa}">
-                                                        <p:ajax event="change" update="@this" />
+                                                        <p:ajax event="change" update="@this i_panel_pesquisa_atendimento" />
                                                         <f:selectItem itemValue="juridica" itemLabel="Juridica"/>
-                                                        <f:selectItem itemValue="fisica"   itemLabel="Fisica" rendered="false"/>                                                  
+                                                        <f:selectItem itemValue="fisica"   itemLabel="Fisica" />
                                                     </p:selectOneMenu>
+                                                </h:column>
+                                                
+                                                <h:column>
+                                                    <br />
+                                                    <p:inputText value="#{recepcaoBean.nomePessoaAtendimento}" rendered="#{recepcaoBean.tipoPesquisa.equals('fisica')}" placeholder="Digite o nome da Pessoa" size="40" onkeypress="return event.keyCode !== 13;">
+                                                        <p:ajax event="blur" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" update="tbl_at"/>
+                                                    </p:inputText>
+                                                </h:column>
+                                                
+                                                <h:column>
+                                                    <br />
+                                                    <p:commandButton icon="ui-icon-search" rendered="#{recepcaoBean.tipoPesquisa.equals('fisica')}"/>
                                                 </h:column>
                                             </h:panelGrid>
 
                                             <h:panelGrid id="i_panel_pessoa_atendimento" columns="3">
                                                 <h:column>
                                                     <h:outputLabel value="#{recepcaoBean.juridica.pessoa.nome} - CNPJ: #{recepcaoBean.juridica.pessoa.documento}" rendered="#{recepcaoBean.juridica.id != -1}" style="font-size: 11pt!important"/>
-                                                    <h:outputLabel value="#{recepcaoBean.fisica.pessoa.nome}" rendered="#{recepcaoBean.fisica.id != -1}" style="font-size: 11pt!important"/>
                                                 </h:column>
 
                                                 <h:column>

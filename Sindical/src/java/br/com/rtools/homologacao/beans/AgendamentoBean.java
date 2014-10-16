@@ -48,7 +48,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private int idMotivoDemissao = 0;
     private int idHorarioTransferencia = 0;
     private int idHorarioAlternativo = 0;
-    private String tipoAviso = "true";
+    //private String tipoAviso = "true";
     private String strEndereco = "";
     private String statusEmpresa = "REGULAR";
     private String cepEndereco = "";
@@ -418,6 +418,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
         
         emailEmpresa = "";
+        idMotivoDemissao = 0;
         int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(registro.getAgendamentoRetroativo()));
         int nrData = DataHoje.converteDataParaInteger(DataHoje.converteData(getData()));
         int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
@@ -478,7 +479,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         break;
                     }
                 }
-                tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+                //tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
 
                 visibleModal = true;
                 PF.openDialog("dlg_agendamento");                
@@ -522,26 +523,26 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
 
-    public String save() {
+    public void save() {
         styleDestaque = "";
         Dao dao = new Dao();
         if (configuracaoHomologacao.isValidaNome()) {
             if (fisica.getPessoa().getNome().isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
-                return null;
+                return;
             }
         }
         
         if (configuracaoHomologacao.isValidaFuncao()) {
             if (profissao.getId() == -1) {
                 GenericaMensagem.warn("Atenção", "Informar a Função!");
-                return null;
+                return;
             }
         }
         
         if (!strContribuinte.isEmpty()) {
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
-            return null;
+            return;
         }
         
         FisicaDB dbFis = new FisicaDBToplink();
@@ -554,11 +555,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao())
                     > DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())) {
                 GenericaMensagem.warn("Atenção", "Data de Admissão é maior que data de Demissão!");
-                return null;
+                return;
             }
         } else {
             GenericaMensagem.warn("Atenção", "Data de Admissão é obrigatória!");
-            return null;
+            return;
         }        
         
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
@@ -566,24 +567,24 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(1, DataHoje.data()))) {
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 30 dias!");
-                    return null;
+                    return;
                 }
             } else if (demissao.getId() == 2) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarMeses(3, DataHoje.data()))) {
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 90 dias!");
-                    return null;
+                    return;
                 }
             } else if (demissao.getId() == 3) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(dataH.incrementarDias(10, DataHoje.data()))) {
                     GenericaMensagem.warn("Atenção", "Por " + demissao.getDescricao() + " data de Demissão não pode ser maior que 10 dias!");
-                    return null;
+                    return;
                 }
             }
         } else {
             GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
-            return null;
+            return;
         }
 
 
@@ -592,7 +593,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             GenericaMensagem.warn("Atenção", "Documento Inválido!");
-            return null;
+            return;
         }
 
         dao.openTransaction();
@@ -602,13 +603,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     fisica.getRg()).isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Esta pessoa já esta cadastrada!");
                 dao.rollback();
-                return null;
+                return;
             }
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
                 dao.rollback();
                 GenericaMensagem.warn("Atenção", "Documento já existente!");
-                return null;
+                return;
             }
 
             if (dao.save(fisica.getPessoa())) {
@@ -616,7 +617,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             } else {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Erro ao inserir Pessoa!");
-                return null;
+                return;
             }
         } else {
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
@@ -624,7 +625,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
                     dao.rollback();
                     GenericaMensagem.warn("Atenção", "Documento já existente!");
-                    return null;
+                    return;
                 }
             }
             List<Fisica> fisi = dbFis.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
@@ -635,7 +636,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     if (fisi1.getId() != fisica.getId()) {
                         dao.rollback();
                         GenericaMensagem.warn("Atenção", "Esta pessoa já esta cadastrada!");
-                        return null;
+                        return;
                     }
                 }
             }
@@ -644,12 +645,12 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 } else {
                     dao.rollback();
                     GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Física, tente novamente!");
-                    return null;
+                    return;
                 }
             } else {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa, tente novamente!");
-                return null;
+                return;
             }
         }
         HomologacaoDB dba = new HomologacaoDBToplink();
@@ -657,7 +658,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         if (age != null && agendamento.getId() == -1) {
             dao.rollback();
             GenericaMensagem.warn("Atenção", "Pessoa já foi agendada, na data "+age.getData());
-            return null;
+            return;
         }
         
         boolean isOposicao = false;
@@ -678,7 +679,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     if (!dao.save(pesEnd)) {
                         dao.rollback();
                         GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Endereço, tente novamente!");
-                        return null;
+                        return;
                     }
                     pesEnd = new PessoaEndereco();
                     pesEnd.setComplemento(enderecoFisica.getComplemento());
@@ -697,7 +698,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 if (!dao.update(end)) {
                     dao.rollback();
                     GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Endereço, tente novamente!");
-                    return null;
+                    return;
                 }
             }
         }
@@ -708,7 +709,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 pessoaEmpresa.setFisica(fisica);
                 pessoaEmpresa.setJuridica(juridica);
                 pessoaEmpresa.setFuncao(profissao);
-                pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+                //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
@@ -718,7 +719,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             case 2: {
                 pessoaEmpresa.setFisica(fisica);
                 pessoaEmpresa.setJuridica(juridica);
-                pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+                //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
                 pessoaEmpresa.setFuncao(profissao);
                 agendamento.setDemissao(demissao);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
@@ -728,7 +729,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 pessoaEmpresa.setFisica(fisica);
                 pessoaEmpresa.setJuridica(juridica);
                 pessoaEmpresa.setFuncao(profissao);
-                pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
+                //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
@@ -741,34 +742,34 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (!dao.save(pessoaEmpresa)) {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível inserir Pessoa Empresa!");
-                return null;
+                return;
             }
         } else {
             if (!dao.update(pessoaEmpresa)) {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível alterar Pessoa Empresa!");
-                return null;
+                return;
             }
         }
         if (configuracaoHomologacao.isValidaContato()) {
             if (agendamento.getContato().isEmpty()) {
                 dao.rollback();
                 GenericaMensagem.warn("Atenção", "Informar o nome do Contato!");
-                return null;
+                return;
             }
         }
         if (configuracaoHomologacao.isValidaTelefone()) {
             if (agendamento.getTelefone().isEmpty()) {
                 dao.rollback();
                 GenericaMensagem.warn("Atenção", "Informar o telefone para contato!");
-                return null;
+                return;
             }
         }
         if (configuracaoHomologacao.isValidaEmail()) {
             if (agendamento.getEmail().isEmpty()) {
                 dao.rollback();
                 GenericaMensagem.warn("Atenção", "Informar o email!");
-                return null;
+                return;
             }
         }
         if (agendamento.getId() == -1) {
@@ -778,7 +779,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     loadListaHorariosTransferencia();
                     GenericaMensagem.fatal("Atenção", "Não existe mais disponibilidade para o horário agendado!");
                     ocultarHorarioAlternativo = false;
-                    return null;
+                    return;
                 }
             }
             agendamento.setFilial(macFilial.getFilial());
@@ -817,7 +818,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         id_protocolo = agendamento.getId();
         ocultarHorarioAlternativo = true;
         imprimirPro = true;
-        return null;
     }
 
     public String salvarMais() {
@@ -827,7 +827,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public String cancelar() {
         strEndereco = "";
-        tipoAviso = "true";
+        //tipoAviso = "true";
         fisica = new Fisica();
         cepEndereco = "";
         listaEnderecos.clear();
@@ -859,7 +859,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         strEndereco = "";
         renderCancelarHorario = false;
         renderCancelar = true;
-        tipoAviso = "true";
+        //tipoAviso = "true";
         fisica = new Fisica();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
@@ -876,7 +876,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void limpar() {
         strEndereco = "";
-        tipoAviso = "true";
+        //tipoAviso = "true";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -889,7 +889,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void limparMais() {
         strEndereco = "";
-        tipoAviso = "true";
+        //tipoAviso = "true";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
@@ -1157,14 +1157,14 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void setIdMotivoDemissao(int idMotivoDemissao) {
         this.idMotivoDemissao = idMotivoDemissao;
     }
-
-    public String getTipoAviso() {
-        return tipoAviso;
-    }
-
-    public void setTipoAviso(String tipoAviso) {
-        this.tipoAviso = tipoAviso;
-    }
+//
+//    public String getTipoAviso() {
+//        return tipoAviso;
+//    }
+//
+//    public void setTipoAviso(String tipoAviso) {
+//        this.tipoAviso = tipoAviso;
+//    }
 
     public PessoaEmpresa getPessoaEmpresa() {
         return pessoaEmpresa;

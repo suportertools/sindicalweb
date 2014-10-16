@@ -37,7 +37,6 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Agendamento de Homologação" styleClass="fonteHeader" />
                         <h:form id="formAgendamento">
-                            <h:outputScript name="locale-primefaces.js" library="js" /> 
                             <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" />
                             <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
                             <h:panelGrid style="margin: 0 auto; width: 1024px; clear: both">
@@ -49,7 +48,7 @@
                                         </p:calendar>
 
                                         <p:selectOneMenu value="#{agendamentoBean.idStatus}" style="width: 200px">
-                                            <p:ajax event="change" update="tbl" listener="#{agendamentoBean.loadListaHorarios()}"/>
+                                            <p:ajax event="change" update="@this tbl" listener="#{agendamentoBean.loadListaHorarios()}" />
                                             <f:selectItems value="#{agendamentoBean.listaStatus}"/>
                                         </p:selectOneMenu>
                                     </h:panelGrid>        
@@ -143,7 +142,7 @@
 
                     <h:form id="formConcluirAgendamento">
                         <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" visible="#{agendamentoBean.visibleModal}" height="550" width="900">
-                            <p:ajax event="close" listener="#{agendamentoBean.setVisibleModal(false)}"/>  
+                            <p:ajax event="close" listener="#{agendamentoBean.setVisibleModal(false)}" update=":formAgendamento"/>  
                             <p:messages id="msg_dialog1" showDetail="true" closable="true"/>
                             <!-- <p:scrollPanel style="height:500px"> -->
                                 <h:panelGrid id="i_panel_protocolo" columns="1" style="width: 100%;">
@@ -175,6 +174,7 @@
                                             <h:column>
                                                 <h:outputLabel value="Motivo Demissão" style="margin-left: 20px;"/><br />
                                                 <p:selectOneMenu value="#{agendamentoBean.idMotivoDemissao}" style="margin-left: 20px; width: 230px">
+                                                    <p:ajax event="change" update="@this" global="false"/>
                                                     <f:selectItems value="#{agendamentoBean.listaDemissao}"/>
                                                 </p:selectOneMenu>
                                             </h:column>
@@ -182,6 +182,7 @@
                                             <h:column>
                                                 <h:outputLabel value="Tipo de Aviso" style="margin-left: 20px;"/><br />
                                                 <p:selectOneMenu value="#{agendamentoBean.pessoaEmpresa.avisoTrabalhado}" style="margin-left: 20px; width: 120px">
+                                                    <p:ajax event="change" update="@this" global="false"/>
                                                     <f:selectItem itemValue="false" itemLabel="Indenizado"/>
                                                     <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
                                                 </p:selectOneMenu>
@@ -200,14 +201,14 @@
 
                                     <h:column>
                                         <h:outputLabel value="Funcionário" style="color: red; font-weight: bold"/><br />
-                                        <p:inputText value="#{agendamentoBean.fisica.pessoa.nome}" readonly="#{agendamentoBean.fisica.id != -1}" size="60" converter="#{toUpperCase}">
+                                        <p:inputText value="#{agendamentoBean.fisica.pessoa.nome}" size="60" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputText>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Nascimento" /><br />
-                                        <p:inputMask value="#{agendamentoBean.fisica.nascimento}" readonly="#{agendamentoBean.fisica.id != -1}" size="8" mask="99/99/9999"/>
+                                        <p:inputMask value="#{agendamentoBean.fisica.nascimento}" size="8" mask="99/99/9999"/>
                                     </h:column>
 
                                     <h:column>
@@ -260,17 +261,17 @@
 
                                     <h:column>
                                         <h:outputLabel value="Carteira" styleClass="#{agendamentoBean.configuracaoHomologacao.validaCarteira ? 'font-color-red' : ''}"/><br />
-                                        <p:inputText size="10" value="#{agendamentoBean.fisica.carteira}" readonly="#{agendamentoBean.fisica.id != -1}" />
+                                        <p:inputText size="10" value="#{agendamentoBean.fisica.carteira}" />
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Série" styleClass="#{agendamentoBean.configuracaoHomologacao.validaSerie ? 'font-color-red' : ''}"/><br />
-                                        <p:inputText size="15" maxlength="15" value="#{agendamentoBean.fisica.serie}" readonly="#{agendamentoBean.fisica.id != -1}" />
+                                        <p:inputText size="15" maxlength="15" value="#{agendamentoBean.fisica.serie}" />
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Código do Funcionário" /><br />
-                                        <p:inputText size="20" value="#{agendamentoBean.pessoaEmpresa.codigo}" readonly="#{agendamentoBean.fisica.id != -1}" />
+                                        <p:inputText size="20" value="#{agendamentoBean.pessoaEmpresa.codigo}" />
                                     </h:column>
                                 </h:panelGrid>
 
@@ -402,10 +403,10 @@
                                 <hr />
 
                                 <h:panelGrid columns="5">
-                                    <p:commandButton value="#{agendamentoBean.agendamento.id == -1 ? 'Agendar' : 'Alterar'}" action="#{agendamentoBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formAgendamento formConcluirAgendamento"/>
-                                    <p:commandButton value="Voltar" actionListener="#{agendamentoBean.setVisibleModal(false)}" update=":formAgendamento formConcluirAgendamento" onclick="PF('dlg_agendamento').hide()"/>
+                                    <p:commandButton value="#{agendamentoBean.agendamento.id == -1 ? 'Agendar' : 'Alterar'}" action="#{agendamentoBean.save()}" disabled="#{controleAcessoBean.botaoSalvar}" update="formConcluirAgendamento" />
+                                    <p:commandButton value="Voltar" actionListener="#{agendamentoBean.setVisibleModal(false)}" update="formConcluirAgendamento" onclick="PF('dlg_agendamento').hide()"/>
                                     <p:commandButton value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" />
-                                    <p:commandButton value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formAgendamento formConcluirAgendamento"/>
+                                    <p:commandButton value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" update="formConcluirAgendamento"/>
                                     <p:commandButton value="Imprimir Protocolo" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.agendamento.id != -1}" icon="ui-icon-print" ajax="false"/>
                                 </h:panelGrid>
                             <!-- </p:scrollPanel> -->
