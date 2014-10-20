@@ -1,7 +1,11 @@
 package br.com.rtools.relatorios.beans;
 
+import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoCidade;
+import br.com.rtools.arrecadacao.GrupoCidade;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.arrecadacao.db.GrupoCidadeDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadeDBToplink;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
@@ -12,6 +16,7 @@ import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.ServicoRotinaDB;
 import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.impressao.ParametroMovimentos;
+import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
@@ -19,6 +24,8 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
+import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDB;
@@ -62,16 +69,19 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class RelatorioMovimentoBean implements Serializable {
+
     private int idRelatorios = 0;
     private int idServicos = 0;
     private int idTipoServico = 0;
     private int idConvencao = 0;
+    private int idCnae = 0;
     private int idGrupoCidade = 0;
     private List<SelectItem> listaTipoRelatorio = new ArrayList<SelectItem>();
     private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<SelectItem> listaTipoServico = new ArrayList<SelectItem>();
     private List<SelectItem> listaConvencao = new ArrayList<SelectItem>();
     private List<SelectItem> listaGrupoCidade = new ArrayList<SelectItem>();
+    private List<SelectItem> listaCnaes = new ArrayList<SelectItem>();
     private String condicao = "todos";
     private String geradosPelaCaixa = "naoverificar";
     private String filtrar = "todas";
@@ -79,7 +89,7 @@ public class RelatorioMovimentoBean implements Serializable {
     private String dataInicial = "";
     private String dataFinal = "";
     private String dataRefInicial = "";
-    private String dataRefFinal = "";    
+    private String dataRefFinal = "";
     private boolean chkEmpresa = false;
     private boolean chkContabilidade = false;
     private boolean chkConvencao = false;
@@ -88,6 +98,7 @@ public class RelatorioMovimentoBean implements Serializable {
     private boolean chkCidadeBase = false;
     private boolean chkData = false;
     private boolean chkOrdemEmpresa = false;
+    private boolean chkCnae = false;
     private boolean totaliza = false;
     private Juridica juridica = new Juridica();
     private List<Juridica> listaContabilidade = new ArrayList();
@@ -98,6 +109,8 @@ public class RelatorioMovimentoBean implements Serializable {
     private String radioOrdem = "vencimento";
     private List<Cidade> listaCidadesBase = new ArrayList();
     private List<Cidade> listaCidadesBaseSelecionado = new ArrayList();
+    private CnaeConvencao[] cnaeConvencaoSelecionado = null;
+    private List<CnaeConvencao> listaCnaeConvencaos = new ArrayList<CnaeConvencao>();
 
     public void porEmpresa() {
         chkEmpresa = (chkEmpresa == true) ? false : true;
@@ -111,24 +124,30 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public void porConvencao() {
+        cnaeConvencaoSelecionado = null;
+        chkCnae = false;
         chkConvencao = (chkConvencao == true) ? false : true;
     }
 
     public void porServicos() {
         chkServicos = (chkServicos == true) ? false : true;
     }
-    
+
     public void porTipoServico() {
         chkTipoServico = (chkTipoServico == true) ? false : true;
     }
-    
+
     public void porCidadeBase() {
         chkCidadeBase = (chkCidadeBase == true) ? false : true;
         listaCidadesBaseSelecionado.clear();
     }
-    
+
     public void porData() {
         chkData = (chkData == true) ? false : true;
+    }
+
+    public void porCnae() {
+        chkCnae = (chkCnae != true);
     }
 
     public void acaoPesquisaContabil() {
@@ -162,27 +181,27 @@ public class RelatorioMovimentoBean implements Serializable {
 
     }
 
-    public boolean validaLista(){
-        if (!chkCidadeBase && !chkContabilidade && !chkConvencao && !chkData && !chkEmpresa && !chkServicos && !chkTipoServico){
+    public boolean validaLista() {
+        if (!chkCidadeBase && !chkContabilidade && !chkConvencao && !chkData && !chkEmpresa && !chkServicos && !chkTipoServico) {
             return false;
         }
-        
-        if (chkEmpresa && juridica.getId() == -1){
+
+        if (chkEmpresa && juridica.getId() == -1) {
             return false;
         }
-        
-        if (chkContabilidade && listaContabilidadeSelecionada.isEmpty()){
+
+        if (chkContabilidade && listaContabilidadeSelecionada.isEmpty()) {
             return false;
         }
-        
-        if (chkCidadeBase && listaCidadesBaseSelecionado.isEmpty()){
+
+        if (chkCidadeBase && listaCidadesBaseSelecionado.isEmpty()) {
             return false;
         }
         return true;
     }
-    
+
     public Collection listaPesquisa() {
-        
+
         RelatorioMovimentosDB db_rel = new RelatorioMovimentosDBToplink();
 
         Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
@@ -201,29 +220,29 @@ public class RelatorioMovimentoBean implements Serializable {
         } else {
             idsEcs = radioContabil;
         }
-        
+
         int id_convencao = 0, id_grupo = 0;
-        if (chkConvencao){
+        if (chkConvencao) {
             id_convencao = Integer.valueOf(listaConvencao.get(idConvencao).getDescription());
             id_grupo = Integer.valueOf(listaGrupoCidade.get(idGrupoCidade).getDescription());
         }
-        
+
         int id_servico = 0;
-        if (chkServicos){
+        if (chkServicos) {
             id_servico = Integer.valueOf(listaServicos.get(idServicos).getDescription());
         }
-        
+
         int id_tipo_servico = 0;
-        if (chkTipoServico){
+        if (chkTipoServico) {
             id_tipo_servico = Integer.valueOf(listaTipoServico.get(idTipoServico).getDescription());
         }
-        
+
         String cidade_base = "";
         for (int i = 0; i < listaCidadesBaseSelecionado.size(); i++) {
             if (cidade_base.length() > 0 && i != listaCidadesBaseSelecionado.size()) {
                 cidade_base += ",";
             }
-            cidade_base +=  listaCidadesBaseSelecionado.get(i).getId();
+            cidade_base += listaCidadesBaseSelecionado.get(i).getId();
             if (cidade_base.length() == 1) {
                 cidade_base = "0" + cidade_base;
             }
@@ -242,7 +261,18 @@ public class RelatorioMovimentoBean implements Serializable {
             if (!dataRefInicial.equals("") && !dataRefFinal.equals("")) {
             }
         }
-        
+
+        String inCnaes = "";
+        if(cnaeConvencaoSelecionado != null) {
+            for (int i = 0; i < cnaeConvencaoSelecionado.length; i++) {
+                if (i == 0) {
+                    inCnaes += "" + cnaeConvencaoSelecionado[i].getCnae().getId();
+                } else {
+                    inCnaes += ", " + cnaeConvencaoSelecionado[i].getCnae().getId();
+                }
+            }
+        }
+
         List<Vector> result = db_rel.listaMovimentos(
                 relatorio,
                 condicao, // CONDIÇÃO -- todos -- ativos -- naoativos
@@ -262,14 +292,15 @@ public class RelatorioMovimentoBean implements Serializable {
                 id_convencao, // ID CONVENCAO
                 id_grupo, // ID GRUPO CIDADE
                 cidade_base, // IDS DAS CIDADES DA BASE SELECIONADAS
-                idsEcs // IDS DAS CONTABILIDADES SELECIONADAS
+                idsEcs, // IDS DAS CONTABILIDADES SELECIONADAS
+                inCnaes // CNAES
         );
 
         Collection listaParametro = new ArrayList<ParametroMovimentos>();
         for (int i = 0; i < result.size(); i++) {
-            
+
             float valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL     
-            
+
             String quitacao = "", importacao = "", usuario = "";
 
             if (((Vector) result.get(i)).get(38) != null) {
@@ -358,13 +389,15 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public void visualizar() {
-        if (!validaLista()){return;}
+        if (!validaLista()) {
+            return;
+        }
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaPesquisa());
         Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 
         try {
             JasperPrint print = JasperFillManager.fillReport(
-                    (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorio.getJasper())),
+                    (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorio.getJasper()))),
                     null,
                     dtSource
             );
@@ -386,24 +419,26 @@ public class RelatorioMovimentoBean implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public void enviarEmail() {
-        if (!validaLista()){return;}
-        
+        if (!validaLista()) {
+            return;
+        }
+
         Collection collection = listaPesquisa();
-        
-        if (collection.isEmpty()){
+
+        if (collection.isEmpty()) {
             GenericaMensagem.warn("Erro", "Nenhum movimento foi encontrado nesses valores");
             return;
         }
-        
+
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(collection);
         Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 
         String nomeDownload = "", pathPasta = "";
         try {
             JasperPrint print = JasperFillManager.fillReport(
-                    (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorio.getJasper())),
+                    (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorio.getJasper()))),
                     null,
                     dtSource
             );
@@ -418,10 +453,10 @@ public class RelatorioMovimentoBean implements Serializable {
         } catch (Exception e) {
 
         }
-        
-        Registro registro = (Registro)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
+
+        Registro registro = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
         // ENVIO DE EMAIL PARA EMPRESA SELECIONADA
-        if (chkEmpresa && juridica.getId() != -1){
+        if (chkEmpresa && juridica.getId() != -1) {
             try {
                 List<Pessoa> pessoas = new ArrayList();
                 pessoas.add(juridica.getPessoa());
@@ -430,7 +465,7 @@ public class RelatorioMovimentoBean implements Serializable {
                 List<File> fls = new ArrayList<File>();
                 if (!registro.isEnviarEmailAnexo()) {
                     mensagem = " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
-                             + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
+                            + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
 //                    
 //                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
 //                            p,
@@ -439,7 +474,7 @@ public class RelatorioMovimentoBean implements Serializable {
 //                            new ArrayList(),
 //                            "Envio de Relatório");
                 } else {
-                    
+
                     fls.add(new File(pathPasta + "/" + nomeDownload));
                     mensagem = "<h5>Baixe seu relatório Anexado neste email</5><br /><br />";
 //                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
@@ -448,7 +483,7 @@ public class RelatorioMovimentoBean implements Serializable {
 //                            fls,
 //                            "Envio de Relatório");
                 }
-                
+
                 DaoInterface di = new Dao();
                 Mail mail = new Mail();
                 mail.setFiles(fls);
@@ -490,9 +525,9 @@ public class RelatorioMovimentoBean implements Serializable {
             }
         }
         // ENVIO DE EMAIL PARA CONTABILIDADE SELECIONADA
-        
-        if (chkContabilidade && !listaContabilidadeSelecionada.isEmpty()){
-            for (int i = 0; i < listaContabilidadeSelecionada.size(); i++){
+
+        if (chkContabilidade && !listaContabilidadeSelecionada.isEmpty()) {
+            for (int i = 0; i < listaContabilidadeSelecionada.size(); i++) {
                 try {
                     List<Pessoa> pessoas = new ArrayList();
                     pessoas.add(listaContabilidadeSelecionada.get(i).getPessoa());
@@ -501,7 +536,7 @@ public class RelatorioMovimentoBean implements Serializable {
                     List<File> fls = new ArrayList<File>();
                     if (!registro.isEnviarEmailAnexo()) {
                         mensagem = " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
-                                 + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
+                                + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
 //                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
 //                                p,
 //                                " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
@@ -511,14 +546,14 @@ public class RelatorioMovimentoBean implements Serializable {
                     } else {
                         fls.add(new File(pathPasta + "/" + nomeDownload));
                         mensagem = "<h5>Baixe seu relatório Anexado neste email</5><br /><br />";
-                        
+
 //                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
 //                                p,
 //                                " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
 //                                fls,
 //                                "Envio de Relatório");
                     }
-                    
+
                     DaoInterface di = new Dao();
                     Mail mail = new Mail();
                     mail.setFiles(fls);
@@ -718,7 +753,7 @@ public class RelatorioMovimentoBean implements Serializable {
             List<Servicos> select = srdb.pesquisaTodosServicosComRotinas(4);
             for (int i = 0; i < select.size(); i++) {
                 listaServicos.add(
-                        new SelectItem( 
+                        new SelectItem(
                                 i,
                                 select.get(i).getDescricao(),
                                 Integer.toString(select.get(i).getId())
@@ -735,7 +770,7 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public List<SelectItem> getListaConvencao() {
-        if (listaConvencao.isEmpty()){
+        if (listaConvencao.isEmpty()) {
             List<Convencao> select = (new SalvarAcumuladoDBToplink()).listaObjeto("Convencao");
             for (int i = 0; i < select.size(); i++) {
                 listaConvencao.add(new SelectItem(
@@ -785,7 +820,7 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public List<SelectItem> getListaTipoServico() {
-        if (listaTipoServico.isEmpty()){
+        if (listaTipoServico.isEmpty()) {
             List<TipoServico> select = (new SalvarAcumuladoDBToplink()).listaObjeto("TipoServico");
             for (int i = 0; i < select.size(); i++) {
                 listaTipoServico.add(new SelectItem(
@@ -803,7 +838,7 @@ public class RelatorioMovimentoBean implements Serializable {
     }
 
     public List<SelectItem> getListaGrupoCidade() {
-        if (!listaConvencao.isEmpty()){
+        if (!listaConvencao.isEmpty()) {
             listaGrupoCidade.clear();
             GrupoCidadeDB db = new GrupoCidadeDBToplink();
             List<ConvencaoCidade> select = db.pesquisaGrupoPorConvencao(Integer.parseInt(getListaConvencao().get(idConvencao).getDescription()));
@@ -928,5 +963,63 @@ public class RelatorioMovimentoBean implements Serializable {
 
     public void setChkOrdemEmpresa(boolean chkOrdemEmpresa) {
         this.chkOrdemEmpresa = chkOrdemEmpresa;
+    }
+
+    public boolean isChkCnae() {
+        return chkCnae;
+    }
+
+    public void setChkCnae(boolean chkCnae) {
+        this.chkCnae = chkCnae;
+    }
+
+    public int getIdCnae() {
+        return idCnae;
+    }
+
+    public void setIdCnae(int idCnae) {
+        this.idCnae = idCnae;
+    }
+
+    public List<SelectItem> getListaCnaes() {
+        listaCnaes.clear();
+        CnaeConvencaoDB ccdb = new CnaeConvencaoDBToplink();
+        Dao dao = new Dao();
+        List<Cnae> select = ccdb.listaCnaePorConvencao(Integer.parseInt(listaConvencao.get(idConvencao).getDescription()));
+        for (int i = 0; i < select.size(); i++) {
+            listaCnaes.add(new SelectItem(
+                    new Integer(i),
+                    select.get(i).getCnae() + " - " + select.get(i).getCnae(),
+                    Integer.toString(select.get(i).getId()))
+            );
+        }
+        return listaCnaes;
+    }
+
+    public void setListaCnaes(List<SelectItem> listaCnaes) {
+        this.listaCnaes = listaCnaes;
+    }
+
+    public CnaeConvencao[] getCnaeConvencaoSelecionado() {
+        return cnaeConvencaoSelecionado;
+    }
+
+    public void setCnaeConvencaoSelecionado(CnaeConvencao[] cnaeConvencaoSelecionado) {
+        this.cnaeConvencaoSelecionado = cnaeConvencaoSelecionado;
+    }
+
+    public List<CnaeConvencao> getListaCnaeConvencaos() {
+        if (!listaConvencao.isEmpty()) {
+            listaCnaeConvencaos.clear();
+            int i = 0;
+            String ids = "";
+            RelatorioContribuintesDB db = new RelatorioContribuintesDBToplink();
+            listaCnaeConvencaos = db.pesquisarCnaeConvencaoPorConvencao(listaConvencao.get(idConvencao).getDescription());
+        }
+        return listaCnaeConvencaos;
+    }
+
+    public void setListaCnaeConvencaos(List<CnaeConvencao> listaCnaeConvencaos) {
+        this.listaCnaeConvencaos = listaCnaeConvencaos;
     }
 }
