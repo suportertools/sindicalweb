@@ -475,6 +475,7 @@ public class RelatorioSociosBean implements Serializable {
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
+            download.remover();
         } catch (Exception e) {
             System.err.println(e);
         }
