@@ -18,7 +18,8 @@
                 <div style="clear: both;"></div>
                 <h:form id="formFeriadoNovo">                                                             
                     <c:set scope="request" var="object" value="${feriadosBean.feriados}"/>
-                    <p:schedule id="schedule" value="#{feriadosBean.eventModel}" widgetVar="myschedule" rightHeaderTemplate="month" locale="pt_BR">
+                    <h:outputScript name="tradutor_primefaces.js" library="js" />
+                    <p:schedule id="schedule" value="#{feriadosBean.eventModel}" widgetVar="myschedule" rightHeaderTemplate="month" locale="pt">
                         <p:ajax event="dateSelect" listener="#{feriadosBean.selectedData}" update="i_panel_grid_fer" oncomplete="PF('eventDialog').show()" />  
                         <p:ajax event="eventSelect" listener="#{feriadosBean.edit}" update="i_panel_grid_fer" oncomplete="PF('eventDialog').show()" />  
                     </p:schedule>
@@ -36,7 +37,7 @@
                             </p:panel>
                             <p:panelGrid style="margin-top: 10px!important;" columns="6" styleClass="sbb">
                                 <p:outputLabel value="Data:"  />
-                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR">
+                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt">
                                     <p:ajax event="dateSelect" update="@this" listener="#{feriadosBean.dataListener}" />
                                 </p:calendar>
                                 <p:outputLabel value="Nome:" for="idNome"/>
