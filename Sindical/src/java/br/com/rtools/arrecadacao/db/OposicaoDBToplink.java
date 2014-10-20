@@ -321,13 +321,14 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
 
     @Override
     public boolean existPessoaDocumentoPeriodo(String cpf) {
-        String dataReferencia = DataHoje.dataReferencia(DataHoje.data());
+        String dataReferencia = DataHoje.DataToArray(DataHoje.dataHoje())[2] + DataHoje.DataToArray(DataHoje.dataHoje())[1];
         String queryString = ""
                 + "     SELECT O.*                                                                                  "
                 + "       FROM arr_oposicao AS O                                                                    "
                 + " INNER JOIN arr_convencao_periodo AS CP ON CP.id = O.id_convencao_periodo                        "
                 + " INNER JOIN arr_oposicao_pessoa AS OP ON OP.id = O.id_oposicao_pessoa                            "
-                + "      WHERE '" + dataReferencia + "' BETWEEN CP.ds_referencia_inicial AND CP.ds_referencia_final "
+                + "      WHERE ('" + dataReferencia + "' >= CAST(SUBSTRING(CP.ds_referencia_inicial,4,4) || SUBSTRING(CP.ds_referencia_inicial,1,2)  AS int)    "
+                +"         AND '" + dataReferencia +"' <= CAST(SUBSTRING(CP.ds_referencia_final,4,4) || SUBSTRING(CP.ds_referencia_final  ,1,2) AS int))        "       
                 + "        AND OP.ds_cpf = '" + cpf + "'                                                            "
                 + "      LIMIT 1                                                                                    ";
         Query query = getEntityManager().createNativeQuery(queryString);
