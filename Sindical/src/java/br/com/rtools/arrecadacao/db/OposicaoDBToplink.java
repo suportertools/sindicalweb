@@ -168,6 +168,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                     qry.setParameter("descricaoPesquisa", "%" + descricaoPesquisa.toUpperCase() + "%");
                 }
             }
+            qry.setMaxResults(100);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -316,5 +317,21 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
 
         }
         return new ArrayList();
+    }
+
+    @Override
+    public boolean existPessoaDocumentoPeriodo(String cpf) {
+        String dataReferencia = DataHoje.dataReferencia(DataHoje.data());
+        String queryString = ""
+                + "     SELECT O.*                                                                                  "
+                + "       FROM arr_oposicao AS O                                                                    "
+                + " INNER JOIN arr_convencao_periodo AS CP ON CP.id = O.id_convencao_periodo                        "
+                + " INNER JOIN arr_oposicao_pessoa AS OP ON OP.id = O.id_oposicao_pessoa                            "
+                + "      WHERE '" + dataReferencia + "' BETWEEN CP.ds_referencia_inicial AND CP.ds_referencia_final "
+                + "        AND OP.ds_cpf = '" + cpf + "'                                                            "
+                + "      LIMIT 1                                                                                    ";
+        Query query = getEntityManager().createNativeQuery(queryString);
+        List list = query.getResultList();
+        return !list.isEmpty();
     }
 }
