@@ -114,13 +114,13 @@ public class DB {
             configuracao.setSenha("989899");
         } else {
             if (cliente.equals("Sindical")) {
-                cliente = "c_itapetininga";
-                configuracao.setHost("localhost");
-                configuracao.setSenha("989899");
+//                cliente = "c_itapetininga";
+//                configuracao.setHost("localhost");
+//                configuracao.setSenha("989899");
                 // -- ATUAL
-//                cliente = "ComercioRP";
-//                configuracao.setHost("192.168.1.102");
-//                configuracao.setSenha("r#@tools");
+                cliente = "ComercioRP";
+                configuracao.setHost("192.168.1.102");
+                configuracao.setSenha("r#@tools");
             }
 //            } else {
 //                if (cliente.equals("ServidoresRP")) {
