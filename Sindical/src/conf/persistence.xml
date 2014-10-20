@@ -144,7 +144,7 @@
         <properties>
         </properties>
     </persistence-unit>
-    <persistence-unit name="comercio_itapetininga">
+    <persistence-unit name="c_itapetininga">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

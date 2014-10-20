@@ -35,9 +35,6 @@ public class Socios implements java.io.Serializable {
     private Parentesco parentesco;
     @Column(name = "nr_via_carteirinha", length = 10, nullable = true)
     private int nrViaCarteirinha;
-    @Temporal(TemporalType.DATE)
-    @Column(name = "dt_validade_carteirinha")
-    private Date dtValidadeCarteirinha;
 
     public Socios() {
         this.id = -1;
@@ -45,16 +42,14 @@ public class Socios implements java.io.Serializable {
         this.servicoPessoa = new ServicoPessoa();
         this.parentesco = new Parentesco();
         this.nrViaCarteirinha = 0;
-        this.dtValidadeCarteirinha = null;
     }
 
-    public Socios(int id, MatriculaSocios matriculaSocios, ServicoPessoa servicoPessoa, Parentesco parentesco, int nrViaCarteirinha, Date dtValidadeCarteirinha) {
+    public Socios(int id, MatriculaSocios matriculaSocios, ServicoPessoa servicoPessoa, Parentesco parentesco, int nrViaCarteirinha) {
         this.id = id;
         this.matriculaSocios = matriculaSocios;
         this.servicoPessoa = servicoPessoa;
         this.parentesco = parentesco;
         this.nrViaCarteirinha = nrViaCarteirinha;
-        this.dtValidadeCarteirinha = dtValidadeCarteirinha;
     }
 
     public int getId() {
@@ -95,27 +90,5 @@ public class Socios implements java.io.Serializable {
 
     public void setNrViaCarteirinha(int nrViaCarteirinha) {
         this.nrViaCarteirinha = nrViaCarteirinha;
-    }
-
-    public Date getDtValidadeCarteirinha() {
-        return dtValidadeCarteirinha;
-    }
-
-    public void setDtValidadeCarteirinha(Date dtValidadeCarteirinha) {
-        this.dtValidadeCarteirinha = dtValidadeCarteirinha;
-    }
-
-    public String getValidadeCarteirinha() {
-        if (dtValidadeCarteirinha != null) {
-            return DataHoje.converteData(dtValidadeCarteirinha);
-        } else {
-            return "";
-        }
-    }
-
-    public void setValidadeCarteirinha(String validadeCarteirinha) {
-        if (!(validadeCarteirinha.isEmpty())) {
-            this.dtValidadeCarteirinha = DataHoje.converte(validadeCarteirinha);
-        }
     }
 }

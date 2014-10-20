@@ -180,7 +180,7 @@
                                 
                                 <p:column>
                                     <h:outputLabel value="Validade Carteirinha" style="margin-left: 20px"/><br />
-                                    <p:inputMask value="#{sociosBean.socios.validadeCarteirinha}" size="13" mask="99/99/9999" style="margin-left: 20px; text-align: center" readonly="true"/>
+                                    <p:inputMask value="#{sociosBean.socCarteirinha.validadeCarteirinha}" size="13" mask="99/99/9999" style="margin-left: 20px; text-align: center" readonly="true"/>
                                 </p:column>
 
                                 <p:column>
@@ -284,7 +284,7 @@
                                     </p:column>
 
                                     <p:column headerText="Validade Carteirinha" style="text-align: center">
-                                        <p:inputMask value="#{linha.argumento3}" size="8" mask="99/99/9999"/>
+                                        <p:inputMask value="#{linha.argumento3}" size="8" mask="99/99/9999" readonly="true"/>
                                     </p:column>
 
                                     <p:column headerText="Val. Dependente" style="text-align: center">
@@ -326,7 +326,7 @@
                                     <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
                                 </p:selectOneMenu>
 
-                                <p:commandButton value="Visualizar Carteirinha" action="#{sociosBean.confirmaImprimirCartao()}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;"/>
+                                <p:commandButton value="Visualizar Carteirinha" action="#{sociosBean.confirmaImprimirCartao()}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;" rendered="#{!sociosBean.registro.cobrancaCarteirinha}"/>
                                 <p:commandButton ajax="false" value="Imprimir Ficha" action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
                             </h:panelGrid>
 

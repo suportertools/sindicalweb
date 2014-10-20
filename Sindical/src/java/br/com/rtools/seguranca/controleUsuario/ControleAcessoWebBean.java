@@ -3,7 +3,11 @@ package br.com.rtools.seguranca.controleUsuario;
 import br.com.rtools.arrecadacao.Empregados;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
+import br.com.rtools.endereco.Bairro;
+import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.endereco.db.EnderecoDB;
+import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.JuridicaReceita;
@@ -39,6 +43,7 @@ import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.SelectTranslate;
 import br.com.rtools.utilitarios.ValidaDocumentos;
 import java.io.IOException;
 import java.io.Serializable;
@@ -236,6 +241,51 @@ public class ControleAcessoWebBean implements Serializable {
 
         Endereco endereco = dbe.enderecoReceita(cep, descricao, bairros);
         List<PessoaEndereco> listape = new ArrayList();
+        
+        if (endereco == null){
+            SelectTranslate st = new SelectTranslate();
+            
+            List<Bairro> lbairro = st.select(new Bairro()).where("ds_descricao", jr.getBairro()).find();
+            Bairro bx;
+            
+            if (lbairro.isEmpty()){
+                bx = new Bairro(-1, jr.getBairro(), false);
+                
+                if (!di.save(bx)){
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Não foi possível salvar o Bairro, tente novamente!");
+                    return null;
+                }
+            }else{
+                bx = lbairro.get(0);
+            }
+            
+            List<DescricaoEndereco> ldescricao = st.select(new DescricaoEndereco()).where("ds_descricao", jr.getDescricaoEndereco()).find();
+            DescricaoEndereco dex;
+            
+            if (ldescricao.isEmpty()){
+                dex = new DescricaoEndereco(-1, jr.getDescricaoEndereco(), false);
+                
+                if (!di.save(dex)){
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Não foi possível salvar o Descrição, tente novamente!");
+                    return null;
+                }
+            }else{
+                dex = ldescricao.get(0);
+            }
+            EnderecoDB dbx = new EnderecoDBToplink();
+            List<Endereco> le = dbx.pesquisaEnderecoCep(cep);
+
+            Endereco ex = new Endereco(-1, le.get(0).getCidade(), bx, le.get(0).getLogradouro(), dex, cep, "", false);   
+
+            if (!di.save(ex)){
+                di.rollback();
+                GenericaMensagem.error("Erro", "Não foi possível salvar o Endereço, tente novamente!");
+                return null;
+            }
+        }
+        
         if (endereco != null) {
             TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
             List tiposE = dbt.listaTipoEnderecoParaJuridica();
@@ -252,6 +302,7 @@ public class ControleAcessoWebBean implements Serializable {
         } else {
             String msg = "Endereço não encontrado no Sistema - CEP: " + jr.getCep() + " DESC: " + jr.getDescricaoEndereco() + " BAIRRO: " + jr.getBairro();
             GenericaMensagem.warn("Erro", msg);
+            
         }
 
         juridica.setPorte((Porte) di.find(new Porte(), 1));
