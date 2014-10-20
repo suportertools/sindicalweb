@@ -109,6 +109,10 @@
                                             <h:outputText value="Local de trabalho" style="font-weight: bold"/><br />
                                             <h:outputText value="#{fisicaBean.pessoaEmpresaString(fisica)}"/>
                                         </p:column>
+                                        
+                                        <p:column>
+                                            <h:outputText value="Pessoa cadastrada em oposição!" style="font-weight: bold; color: red;" rendered="#{fisicaBean.existePessoaOposicaoPorDocumento(fisica.pessoa.documento)}"/>
+                                        </p:column>
                                    </h:panelGrid>
                                 </p:rowExpansion>
                                 

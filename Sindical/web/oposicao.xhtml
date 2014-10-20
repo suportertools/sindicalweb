@@ -32,8 +32,8 @@
                         <h:panelGrid columns="2">
                             <p:outputLabel value="CPF: " />
                             <h:column>
-                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" readonly="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf" placeholder="999.999.999-99">
-                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update="form_oposicao i_panel_oposicao" />
+                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}" size="15" readonly="#{oposicaoBean.desabilitaPessoa}" placeholder="999.999.999-99">
+                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update="form_oposicao i_panel_oposicao messages" />
                                 </p:inputMask>
                             </h:column>                                
                             <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" title="Pesquisa Pessoa Jurídica" disabled="#{oposicaoBean.desabilitaPessoa}" id="idPesquisaJuridica"/>

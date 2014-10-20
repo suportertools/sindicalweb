@@ -120,6 +120,9 @@
                         <p:column rendered="#{oposicaoBean.porPesquisa.equals('observacao')}" headerText="Observação">
                             <h:outputText value="#{oposicao.observacao}" />
                         </p:column>
+                        <p:column headerText="Sócio">
+                            <h:outputText value="#{oposicaoBean.pessoaSocio(oposicao.oposicaoPessoa.cpf)}" />
+                        </p:column>
                     </p:dataTable>
                 </p:panel>
 
