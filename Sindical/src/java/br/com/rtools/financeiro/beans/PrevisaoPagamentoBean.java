@@ -261,21 +261,6 @@ public class PrevisaoPagamentoBean implements Serializable {
     }
 
     public List<PrevisaoPagamento> getListPrevisaoPagamentos() {
-        if (listPrevisaoPagamentos.isEmpty()) {
-            PrevisaoPagamentoDao ppd = new PrevisaoPagamentoDao();
-            if (dataIncial.isEmpty()) {
-                listPrevisaoPagamentos.clear();
-                return listPrevisaoPagamentos;
-            }
-            if (dataIncial.isEmpty() && dataFinal.isEmpty()) {
-                listPrevisaoPagamentos.clear();
-                return listPrevisaoPagamentos;
-            }
-            if (dataFinal.isEmpty()) {
-                dataFinal = dataIncial;
-            }
-            listPrevisaoPagamentos = ppd.listaPrevisaoPagamento(dataIncial, dataFinal);
-        }
         return listPrevisaoPagamentos;
     }
 
@@ -504,6 +489,21 @@ public class PrevisaoPagamentoBean implements Serializable {
         } catch (JRException e) {
             System.err.println("Erro: " + e.getMessage());
         }
+    }
+    
+    public void process() {
+        listPrevisaoPagamentos.clear();
+        PrevisaoPagamentoDao ppd = new PrevisaoPagamentoDao();
+        if (dataIncial.isEmpty()) {
+            listPrevisaoPagamentos.clear();
+        }
+        if (dataIncial.isEmpty() && dataFinal.isEmpty()) {
+            listPrevisaoPagamentos.clear();
+        }
+        if (dataFinal.isEmpty()) {
+            dataFinal = dataIncial;
+        }
+        listPrevisaoPagamentos = ppd.listaPrevisaoPagamento(dataIncial, dataFinal);
     }
 
 }

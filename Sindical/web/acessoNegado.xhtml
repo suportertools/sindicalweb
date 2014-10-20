@@ -31,7 +31,7 @@
                     <br /><br />
                     <p:outputLabel value="#{controleUsuarioBean.filial}" style="color: #bc4763; font-size: 10pt;  margin-left: 50px; "/>
                 </p:panel>
-                <c:if test="true">
+                <h:column rendered="true">
                     <div class="clear"></div>
                     <p:breadCrumb style="background: #dbeaeb; border: none; margin-top: 15px">
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" title="Ir ao Menu Principal" immediate="true" />
@@ -49,8 +49,8 @@
                     <a href="http://www.rtools.com.br/helpdesk/ticket.php?cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Acompanhar seu Chamado Técnico">Acompanhar</a>
                     <a href="http://www.rtools.com.br/helpdesk/index.php?a=add&amp;cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Faça Seu Chamado Técnico">Suporte Técnico</a>
                     <h:commandLink value="Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
-                </c:if>
-                <c:if test="false">
+                </h:column>
+                <h:column rendered="false">
                     <div class="clear"></div>
                     <div style="background: red; height: 15px; width: 100%; display: block">
                         <p:dataList var="menuLinks" value="#{chamadaPaginaBean.menuLinks}" rowIndexVar="it" type="definition" >
@@ -60,7 +60,7 @@
                             </h:column>
                         </p:dataList>
                     </div>
-                </c:if>
+                </h:column>
             </p:panel>
         </h:form>        
         <!-- INICIA DIV wrap e main -->

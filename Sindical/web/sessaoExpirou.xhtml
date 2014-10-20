@@ -35,7 +35,7 @@
                 <p:breadCrumb style="background: #dbeaeb; border: none; margin-top: 15px">                        
                 </p:breadCrumb>
                 <a href="http://www.rtools.com.br/helpdesk/index.php?a=add&amp;cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Faça Seu Chamado Técnico">Suporte Técnico</a>
-                <c:if test="false">
+                <h:column rendered="false">
                     <div class="clear"></div>
                     <div style="background: red; height: 15px; width: 100%; display: block">
                         <p:dataList var="menuLinks" value="#{chamadaPaginaBean.menuLinks}" rowIndexVar="it" type="definition" >
@@ -45,7 +45,7 @@
                             </h:column>
                         </p:dataList>
                     </div>
-                </c:if>
+                </h:column>
             </p:panel>
         </h:form>        
         <!-- INICIA DIV wrap e main -->

@@ -214,9 +214,9 @@
                                     <!-- AÇÕES -->
                                     <f:facet name="footer">
                                         <h:panelGrid columns="4">
-                                            <c:if test="#{emissaoGuiasBean.lote.id == -1}">
+                                            <h:column rendered="#{emissaoGuiasBean.lote.id == -1}">
                                                 <p:commandButton value="Novo" action="#{emissaoGuiasBean.novoPedido()}" update="dlg_pedido" />
-                                            </c:if>
+                                            </h:column>
 
                                             <p:commandButton value="Concluir" action="#{emissaoGuiasBean.closeModalPedido()}" onclick="PF('dlg_pedido').close();"/>
                                         </h:panelGrid>

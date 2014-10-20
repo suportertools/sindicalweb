@@ -46,7 +46,7 @@
                         </h:column>
                         <h:column>
                             <p:panel id="id_panel_logs" style="width: 800px;" header="Aplicar os filtros">
-                                <c:if test="#{pesquisaLogBean.filtro[0]}">
+                                <h:column rendered="#{pesquisaLogBean.filtro[0]}">
                                     <h:panelGrid columns="2">
                                         <p:outputLabel value="Período " styleClass="bold" />
                                         <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('periodo')}" title="Remover filtro"/>
@@ -70,8 +70,8 @@
                                         </h:column>
                                     </h:panelGrid>
                                     <hr />
-                                </c:if>
-                                <c:if test="#{pesquisaLogBean.filtro[1]}">
+                                </h:column>
+                                <h:column rendered="#{pesquisaLogBean.filtro[1]}">
                                     <h:column>
                                         <h:panelGrid columns="2" styleClass="margin-top-max">
                                             <p:commandButton  icon="ui-icon-search" value="Pesquisar usuário" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}"/>
@@ -83,8 +83,8 @@
                                         </h:panelGrid>
                                     </h:column>
                                     <hr />
-                                </c:if>                                 
-                                <c:if test="#{pesquisaLogBean.filtro[2]}">
+                                </h:column>                                 
+                                <h:column rendered="#{pesquisaLogBean.filtro[2]}">
                                     <h:panelGrid columns="3">
                                         <p:outputLabel value="Rotinas:" styleClass="bold"/>
                                         <p:selectOneMenu value="#{pesquisaLogBean.index[0]}" filter="true" filterMatchMode="startsWith">
@@ -95,8 +95,8 @@
                                         <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('rotina')}" title="Remover filtro"/>
                                     </h:panelGrid>
                                     <hr />
-                                </c:if>                                   
-                                <c:if test="#{pesquisaLogBean.filtro[3]}">
+                                </h:column>                                   
+                                <h:column rendered="#{pesquisaLogBean.filtro[3]}">
                                     <h:column>
                                         <h:panelGrid columns="6" cellpadding="5">
                                             <p:outputLabel value="Eventos:" styleClass="bold"/>
@@ -108,8 +108,8 @@
                                         </h:panelGrid>
                                     </h:column>
                                     <hr />
-                                </c:if>
-                                <c:if test="#{pesquisaLogBean.filtro[4]}">
+                                </h:column>
+                                <h:column rendered="#{pesquisaLogBean.filtro[4]}">
                                     <h:column>
                                         <h:panelGrid columns="3">
                                             <p:outputLabel value="Descrição:" styleClass="bold"/>
@@ -117,7 +117,7 @@
                                             <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('descricao')}" title="Remover filtro"/>
                                         </h:panelGrid>
                                     </h:column>
-                                </c:if>                                    
+                                </h:column>                                    
                             </p:panel>
                         </h:column>
                     </h:panelGrid>                    

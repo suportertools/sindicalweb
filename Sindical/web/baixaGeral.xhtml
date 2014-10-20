@@ -166,7 +166,7 @@
 
                             <p:dialog widgetVar="i_dlg_cheque" header="Dados do Cheque" resizable="false" width="400" modal="true">
                                 <h:panelGrid id="i_cheque" style="width: 100%">
-                                    <c:if test="#{baixaGeralBean.es != 'S'}">
+                                    <h:column rendered="#{baixaGeralBean.es != 'S'}">
                                         <h:panelGrid columns="4">
                                             <p:column>
                                                 <h:outputText value="Agência" /><br />
@@ -183,9 +183,9 @@
                                                 <p:inputText value="#{baixaGeralBean.chequeRec.banco}" size="10" />
                                             </p:column>
                                         </h:panelGrid>
-                                    </c:if>
+                                    </h:column>
 
-                                    <c:if test="#{baixaGeralBean.es == 'S'}">
+                                    <h:column rendered="#{baixaGeralBean.es == 'S'}">
                                         <h:panelGrid id="i_x">
                                             <h:outputLabel value="Para a Conta" style="font-weight: bold"/>
                                             <p:selectOneMenu style="padding-right: 15px; width: 335px" value="#{baixaGeralBean.idBancoSaida}">
@@ -203,7 +203,7 @@
 
                                             <p:messages id="i_msg_ch" showDetail="true" closable="true" />
                                         </h:panelGrid>
-                                    </c:if>
+                                    </h:column>
 
                                     <p:column>
                                         <br />
@@ -218,11 +218,11 @@
                                     <h:panelGrid columns="2">
                                         <p:column>
                                             <br />
-                                            <c:if test="#{baixaGeralBean.listaCartao.size() > 0}">
+                                            <h:column rendered="#{baixaGeralBean.listaCartao.size() > 0}">
                                                 <p:selectOneMenu style="margin-right: 15px; padding-right: 15px" value="#{baixaGeralBean.idCartao}">
                                                     <f:selectItems value="#{baixaGeralBean.listaCartao}"/>
                                                 </p:selectOneMenu>
-                                            </c:if>
+                                            </h:column>
                                         </p:column>
 
                                         <p:column>
@@ -239,11 +239,11 @@
                                     <h:panelGrid columns="2">
                                         <p:column>
                                             <br />
-                                            <!-- <c:if test="# {baixaGeralBean.listaCartao.size() > 0}"> -->
+                                            <!-- <h:column test="# {baixaGeralBean.listaCartao.size() > 0}"> -->
                                             <p:selectOneMenu style="padding-right: 15px; width: 250px" value="#{baixaGeralBean.idBanco}">
                                                 <f:selectItems value="#{baixaGeralBean.listaBanco}"/>
                                             </p:selectOneMenu>
-                                            <!-- </c:if> -->
+                                            <!-- </h:column> -->
                                         </p:column>
 
                                         <p:column>

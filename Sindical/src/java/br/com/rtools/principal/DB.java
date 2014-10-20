@@ -29,35 +29,35 @@ public class DB {
 //    } 
     public EntityManager getEntityManager() {
         if (entidade == null) {
-            if (!GenericaSessao.exists("conexao")) {
-                String cliente = (String) GenericaSessao.getString("sessaoCliente");
-                Configuracao configuracao = servidor(cliente);
-                try {
-                    Map properties = new HashMap();
-                    properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.Full);
-                    properties.put(TopLinkProperties.JDBC_USER, "postgres");
-                    properties.put(TopLinkProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
-                    properties.put(TopLinkProperties.JDBC_DRIVER, "org.postgresql.Driver");
-                    properties.put(TopLinkProperties.JDBC_PASSWORD, configuracao.getSenha());
-                    properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + configuracao.getHost() + ":5432/" + configuracao.getPersistence());
-                    EntityManagerFactory emf = Persistence.createEntityManagerFactory(configuracao.getPersistence(), properties);
-                    String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
-                    if (createTable.equals("criar")) {
-                        properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
-                    }
-                    entidade = emf.createEntityManager();
-                    GenericaSessao.put("conexao", emf);
-                } catch (Exception e) {
-                    return null;
+            String cliente = (String) GenericaSessao.getString("sessaoCliente");
+            Configuracao configuracao = servidor(cliente);
+            try {
+                Map properties = new HashMap();
+                properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.Full);
+                properties.put(TopLinkProperties.JDBC_USER, "postgres");
+                properties.put(TopLinkProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+                properties.put(TopLinkProperties.JDBC_DRIVER, "org.postgresql.Driver");
+                properties.put(TopLinkProperties.JDBC_PASSWORD, configuracao.getSenha());
+                properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + configuracao.getHost() + ":5432/" + configuracao.getPersistence());
+                EntityManagerFactory emf = Persistence.createEntityManagerFactory(configuracao.getPersistence(), properties);
+                String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
+                if (createTable.equals("criar")) {
+                    properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
                 }
-            } else {
-                try {
-                    EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
-                    entidade = emf.createEntityManager();
-                } catch (Exception e) {
-                    return null;
-                }
+                entidade = emf.createEntityManager();
+                GenericaSessao.put("conexao", emf);
+            } catch (Exception e) {
+                return null;
             }
+//            if (!GenericaSessao.exists("conexao")) {
+//            } else {
+//                try {
+//                    EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
+//                    entidade = emf.createEntityManager();
+//                } catch (Exception e) {
+//                    return null;
+//                }
+//            }
         }
         return entidade;
     }
@@ -100,9 +100,9 @@ public class DB {
             configuracao.setSenha("989899");
         } else if (cliente.equals("ComercioRP")) {
             configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence("Sindical");
+        configuracao.setPersistence("Sindical");
             configuracao.setHost("200.152.187.241");
-            configuracao.setSenha("989899");
+        configuracao.setSenha("989899");        
         } else {
             if (cliente.equals("Sindical")) {
                 //cliente = "c_limeira_base";

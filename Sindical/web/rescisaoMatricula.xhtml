@@ -23,11 +23,11 @@
                         <h:form id="form_rescisao" onsubmit="#{rescisaoContratoBean.load}">
                             <c:set scope="request" var="object" value="${conclusaoMatriculaBean.matriculaEscola}"/>
                             <p:panel id="i_panel_rescisao">
-                                <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
+                                <h:column rendered="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
                                     <h:panelGrid columns="1">
                                         <p:commandButton icon="ui-icon-search" value="Pesquisar Matricula" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}" immediate="true"/>
                                     </h:panelGrid>
-                                </c:if>
+                                </h:column>
                                 <div class="clear"></div>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <h:outputLabel value="Detalhes: "/>
@@ -63,12 +63,12 @@
                                     </p:dataTable>
                                 </p:panel>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
-                                    <c:if test="#{!rescisaoContratoBean.rescindido}">
+                                    <h:column rendered="#{!rescisaoContratoBean.rescindido}">
                                         <p:commandButton value="Salvar" onclick="PF('dlg_salvar').show();" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                    </c:if>
-                                    <c:if test="#{rescisaoContratoBean.rescindido}">
+                                    </h:column>
+                                    <h:column rendered="#{rescisaoContratoBean.rescindido}">
                                         <p:commandButton value="Contrato já rescindido" disabled="true" styleClass="font-color-red"/>
-                                    </c:if>
+                                    </h:column>
                                     <p:commandButton value="Novo" action="#{rescisaoContratoBean.novo}" update=":form_rescisao:" />
                                 </h:panelGrid>
                                 <p:dialog widgetVar="dlg_salvar" width="400" header="Deseja realmente rescindir este contrato?" modal="true">
@@ -90,9 +90,9 @@
                                         <h:outputLabel value="#{rescisaoContratoBean.valorTotal}" id="i_total_multa" styleClass="font-color-red"/>
                                     </h:panelGrid>
                                     <h:panelGrid columns="2" styleClass="margin-top-max">
-                                        <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
+                                        <h:column rendered="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
                                             <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_rescisao:" action="#{rescisaoContratoBean.rescindirMatriculaEscola}" />
-                                        </c:if>
+                                        </h:column>
                                         <p:commandButton value="Não" onclick="PF('dlg_salvar').hide();"/>
                                     </h:panelGrid>
                                 </p:dialog>

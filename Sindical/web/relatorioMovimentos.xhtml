@@ -74,6 +74,7 @@
                                     <p:menuitem value="Empresa" action="#{relatorioMovimentoBean.porEmpresa()}" update="i_opcoes i_panel i_email_para_e i_email_para_c i_panel_b" style="#{relatorioMovimentoBean.chkEmpresa == true ? 'background: #dbeaeb; font-weight: bold' : ''}" />  
                                     <p:menuitem value="Contabilidade" action="#{relatorioMovimentoBean.porContabilidade()}" update="i_opcoes i_panel i_email_para_c i_email_para_e i_panel_b" style="#{relatorioMovimentoBean.chkContabilidade == true ? 'background: #dbeaeb; font-weight: bold' : ''}"/>  
                                     <p:menuitem value="Convenção" action="#{relatorioMovimentoBean.porConvencao()}" update="i_opcoes i_panel" style="#{relatorioMovimentoBean.chkConvencao == true ? 'background: #dbeaeb; font-weight: bold' : ''}"/>  
+                                    <p:menuitem value="- Cnae" action="#{relatorioMovimentoBean.porCnae}" update="i_opcoes i_panel" style="#{relatorioMovimentoBean.chkCnae == true ? 'background: #dbeaeb; font-weight: bold' : ''}; margin-left: 10px" rendered="#{relatorioMovimentoBean.chkConvencao}"/>
                                     <p:menuitem value="Serviços" action="#{relatorioMovimentoBean.porServicos()}" update="i_opcoes i_panel" style="#{relatorioMovimentoBean.chkServicos == true ? 'background: #dbeaeb; font-weight: bold' : ''}"/>  
                                     <p:menuitem value="Tipo Serviço" action="#{relatorioMovimentoBean.porTipoServico()}" update="i_opcoes i_panel" style="#{relatorioMovimentoBean.chkTipoServico == true ? 'background: #dbeaeb; font-weight: bold' : ''}"/>  
                                     <p:menuitem value="Cidades Base" action="#{relatorioMovimentoBean.porCidadeBase()}" update="i_opcoes i_panel" style="#{relatorioMovimentoBean.chkCidadeBase == true ? 'background: #dbeaeb; font-weight: bold' : ''}"/>  
@@ -109,7 +110,7 @@
                                     <p:column>
                                         <h:panelGrid rendered="#{relatorioMovimentoBean.chkConvencao}" columns="2" style="float: left">
                                             <p:selectOneMenu value="#{relatorioMovimentoBean.idConvencao}" style="padding-right: 20px; margin-right: 10px">
-                                                <p:ajax event="change" update="i_grupo" />
+                                                <p:ajax event="change" update="i_grupo tbl_cnae_convencaos" />
                                                 <f:selectItems value="#{relatorioMovimentoBean.listaConvencao}"/>
                                             </p:selectOneMenu>
                                             
@@ -117,7 +118,20 @@
                                                 <f:selectItems value="#{relatorioMovimentoBean.listaGrupoCidade}"/>
                                             </p:selectOneMenu>
                                         </h:panelGrid>
-                                        
+                                        <div class="clear"></div>
+                                        <p:panel header="Cnaes Convenção" styleClass="margin-top-max" rendered="#{relatorioMovimentoBean.chkCnae}">
+                                            <h:panelGrid columns="1" id="tbl_cnae_convencaos" style="height: 150px;">
+                                                <p:dataTable value="#{relatorioMovimentoBean.listaCnaeConvencaos}" var="cnaeConvencao" scrollHeight="150" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioMovimentoBean.cnaeConvencaoSelecionado}" rowKey="#{cnaeConvencao.id}">
+                                                    <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                                    <p:column headerText="Nº" width="80" styleClass="text-center">
+                                                        <p:outputLabel value="#{cnaeConvencao.cnae.numero}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Cnae">
+                                                        <p:outputLabel value="#{cnaeConvencao.cnae.cnae}"/>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </h:panelGrid>
+                                        </p:panel>                                        
                                     </p:column>
                                     
                                     <p:column>

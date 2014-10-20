@@ -78,8 +78,8 @@ public class MensagemConvencaoDBToplink extends DB implements MensagemConvencaoD
     public List pesquisaTodosOrdenados(String referencia, int idServicos, int idTipoServico) {
         List vetor;
         List<MensagemConvencao> listMen = new ArrayList();
-        String textQuery =
-                "select m.id                                                                                                                                    "
+        String textQuery
+                = "select m.id                                                                                                                                    "
                 + "  from arr_mensagem_convencao m                                                                                                                "
                 + " inner join  fin_servicos s on (s.id = m.id_servicos)                                                                                          "
                 + " inner join  fin_tipo_servico t on (t.id = m.id_tipo_servico)                                                                                  "
@@ -178,49 +178,40 @@ public class MensagemConvencaoDBToplink extends DB implements MensagemConvencaoD
 
     @Override
     public MensagemConvencao retornaDiaString(int idJuridica, String ref, int idTipoServico, int idServicos) {
-        MensagemConvencao result = new MensagemConvencao();
+        // Modificado: 15/10/2014 - Query objeto deixava a rotina lenta;
         JuridicaDB db = new JuridicaDBToplink();
-        Query qry = null;
-//        List<Vector> listax = db.listaJuridicaContribuinteID();
-//        String in = "";
-//        for (int i = 0; i < listax.size(); i++){
-//            if (in.length() > 0 && i != listax.size())
-//                in += ",";
-//            in += String.valueOf(listax.get(i).get(0));
-//        }
-
-        String textQuery = " select m                                    "
-                + "   from Juridica j,                          "
-                + "        PessoaEndereco pe,                   "
-                + "        CnaeConvencao cc,                    "
-                + "        GrupoCidades gc,                     "
-                + "        MensagemConvencao m,"
-                + "        ConvencaoCidade coc               "
-                + //"  where j.id in (" + in + ")                 "+
-                "    where cc.cnae.id = j.cnae.id               "
-                + "    and cc.cnae.id = j.cnae.id               "
-                + "    and pe.pessoa.id = j.pessoa.id           "
-                + "    and pe.tipoEndereco.id = 5               "
-                + "    and pe.endereco.cidade.id = gc.cidade.id "
-                + "    and coc.grupoCidade.id = gc.grupoCidade.id "
-                + "    and coc.convencao.id = cc.convencao.id "
-                + "    and m.grupoCidade.id =gc.grupoCidade.id "
-                + "    and m.convencao.id =cc.convencao.id    "
-                + "    and m.referencia = :referencia           "
-                + "    and m.tipoServico.id = :idTipo           "
-                + "    and m.servicos.id = :idServicos          "
-                + "    and j.id = :idJur                        ";
+        String textQuery = ""
+                + " SELECT m.*                                                  "
+                + "   FROM pes_juridica           j,                            "
+                + "        pes_pessoa_endereco   pe,                            "
+                + "        arr_cnae_convencao    cc,                            "
+                + "        arr_grupo_cidades     gc,                            "
+                + "        arr_mensagem_convencao m,                            "
+                + "        arr_convencao_cidade coc,                            "
+                + "        end_endereco         e                               "
+                + "  WHERE cc.id_cnae = j.id_cnae                               "
+                + "    AND pe.id_pessoa = j.id_pessoa                           "
+                + "    AND pe.id_tipo_Endereco = 5                              "
+                + "    AND pe.id_endereco=e.id                                  "
+                + "    AND e.id_cidade            = gc.id_cidade                "
+                + "    AND coc.id_grupo_Cidade    = gc.id_grupo_Cidade          "
+                + "    AND coc.id_convencao       = cc.id_convencao             "
+                + "    AND m.id_grupo_Cidade      = gc.id_grupo_Cidade          "
+                + "    AND m.id_convencao         = cc.id_convencao             "
+                + "    AND m.ds_referencia     = '" + ref + "'                  "
+                + "    AND m.id_tipo_Servico   =  " + idTipoServico + "         "
+                + "    AND m.id_servicos       =  " + idServicos + "            "
+                + "    AND j.id = " + idJuridica + ";                           ";
         try {
-            qry = getEntityManager().createQuery(textQuery);
-            qry.setParameter("idJur", idJuridica);
-            qry.setParameter("idTipo", idTipoServico);
-            qry.setParameter("idServicos", idServicos);
-            qry.setParameter("referencia", ref);
-            result = ((MensagemConvencao) qry.getSingleResult());
-        } catch (Exception e) {
-            result = null;
+            Query query = getEntityManager().createNativeQuery(textQuery, MensagemConvencao.class); 
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (MensagemConvencao) query.getSingleResult();
+            }            
+        } catch(Exception e) {
+            return null;
         }
-        return result;
+        return null;
     }
 
     @Override
