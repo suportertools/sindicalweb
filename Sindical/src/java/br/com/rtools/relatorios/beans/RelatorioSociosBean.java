@@ -28,6 +28,7 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -460,7 +461,7 @@ public class RelatorioSociosBean implements Serializable {
         try {
 
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
 
             byte[] arquivo = new byte[0];
