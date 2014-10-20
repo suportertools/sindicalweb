@@ -36,7 +36,7 @@
                                             <p:ajax event="change" update="@this" />
                                         </p:inputMask>
                                         <p:commandButton icon="ui-icon-circle-minus" action="#{previsaoPagamentoBean.clear('dataFinal')}" update="i_dt_f" title="Limpar vecto. final"/>
-                                        <p:commandButton value="Filtrar" action="#{previsaoPagamentoBean.listPrevisaoPagamentos.clear()}" update=":form_pp:"/>
+                                        <p:commandButton value="Filtrar" action="#{previsaoPagamentoBean.process}" update=":form_pp:"/>
                                     </h:panelGrid>
                                     <p:panelGrid id="i_grid_totais" styleClass="margin-top-max">
                                         <f:facet name="header">
@@ -116,27 +116,27 @@
                                         <f:selectItems value="#{previsaoPagamentoBean.listTiposPagamento}" />
                                     </p:selectOneMenu>
                                     <h:column>
-                                        <c:if test="#{previsaoPagamentoBean.hidden[0]}">
+                                        <h:column rendered="#{previsaoPagamentoBean.hidden[0]}">
                                             <p:outputLabel value="Conta:" />
-                                        </c:if>
+                                        </h:column>
                                     </h:column>
                                     <h:column>
-                                        <c:if test="#{previsaoPagamentoBean.hidden[0]}">
+                                        <h:column rendered="#{previsaoPagamentoBean.hidden[0]}">
                                             <p:selectOneMenu value="#{previsaoPagamentoBean.index[1]}">
                                                 <p:ajax event="change" update="@this" />
                                                 <f:selectItems value="#{previsaoPagamentoBean.listContasBancos}" />
                                             </p:selectOneMenu>
-                                        </c:if>
+                                        </h:column>
                                     </h:column>
                                     <h:column>
-                                        <c:if test="#{previsaoPagamentoBean.hidden[1]}">
+                                        <h:column rendered="#{previsaoPagamentoBean.hidden[1]}">
                                             <p:outputLabel value="Cheque:" />
-                                        </c:if>
+                                        </h:column>
                                     </h:column>
                                     <h:column>
-                                        <c:if test="#{previsaoPagamentoBean.hidden[1]}">
+                                        <h:column rendered="#{previsaoPagamentoBean.hidden[1]}">
                                             <p:inputText value="#{previsaoPagamentoBean.previsaoPagamento.cheque}" size="50" maxlength="50" />                                        
-                                        </c:if>
+                                        </h:column>
                                     </h:column>
                                 </h:panelGrid>
                                 <f:facet name="footer">

@@ -44,24 +44,24 @@
                                 </h:column>
                                 <h:column>
                                     <h:panelGrid columns="7" id="i_panel_grid_1">
-                                        <c:if test="#{produtoBean.listaGrupos.size() > 0}">
+                                        <h:column rendered="#{produtoBean.listaGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[0]}" >
                                                 <p:ajax event="change" update="i_panel_grid_1" listener="#{produtoBean.listaSubGrupos.clear()}" />
                                                 <f:selectItems value="#{produtoBean.listaGrupos}" />
                                             </p:selectOneMenu>
-                                        </c:if>
+                                        </h:column>
                                         <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_grupo').show();" type="button" disabled="true"/>
                                         <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('ProdutoGrupo', 'Produto Grupo')}" actionListener="#{produtoBean.listaGrupos.clear()}" title="Cadastrar Grupos" />
                                         <p:outputLabel value="SubGrupo:" />
-                                        <c:if test="#{produtoBean.listaSubGrupos.size() > 0}">
+                                        <h:column rendered="#{produtoBean.listaSubGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[1]}">
                                                 <f:selectItems value="#{produtoBean.listaSubGrupos}" />
                                             </p:selectOneMenu>
-                                        </c:if>
-                                        <c:if test="#{produtoBean.listaGrupos.size() > 0}">
+                                        </h:column>
+                                        <h:column rendered="#{produtoBean.listaGrupos.size() > 0}">
                                             <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_subgrupo').show();" type="button" disabled="true"/>
                                             <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.pagina('produtoSubGrupo')}" title="Cadastrar SubGrupos" actionListener="#{produtoBean.listaSubGrupos.clear()}"/>
-                                        </c:if>
+                                        </h:column>
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
@@ -71,19 +71,19 @@
                                 </h:column>
                                 <h:column>
                                     <h:panelGrid columns="7" id="i_panel_grid_2">
-                                        <c:if test="#{produtoBean.listaUnidades.size() > 0}">
+                                        <h:column rendered="#{produtoBean.listaUnidades.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[2]}">
                                                 <f:selectItems value="#{produtoBean.listaUnidades}" />
                                             </p:selectOneMenu>
-                                        </c:if>
+                                        </h:column>
                                         <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_unidade').show();" type="button" disabled="true"/>
                                         <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('ProdutoUnidade', 'Unidade')}" title="Cadastrar Unidades" actionListener="#{produtoBean.listaUnidades.clear()}"/>
                                         <p:outputLabel value="Cor:" />
-                                        <c:if test="#{produtoBean.listaCores.size() > 0}">
+                                        <h:column rendered="#{produtoBean.listaCores.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[3]}" >
                                                 <f:selectItems value="#{produtoBean.listaCores}" />
                                             </p:selectOneMenu>
-                                        </c:if>
+                                        </h:column>
                                         <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_nova_cor').show();" type="button" disabled="true"/>
                                         <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('Cor', 'Cor')}" title="Cadastrar Cores" actionListener="#{produtoBean.listaCores.clear()}"/>
                                     </h:panelGrid>
@@ -134,7 +134,7 @@
 
                             <!-- TELA ESTOQUE -->
 
-                            <c:if test="#{produtoBean.produto.id != -1}">
+                            <h:column rendered="#{produtoBean.produto.id != -1}">
                                 <p:panel header="Estoque por Filial" id="i_tela_estoque" styleClass="margin-top-max">
                                     <p:messages  autoUpdate="true" showDetail="true" />
                                     <p:panelGrid styleClass="margin-top-max">
@@ -143,21 +143,21 @@
                                                 <p:outputLabel value="Filial:" />
                                             </p:column>
                                             <p:column>
-                                                <c:if test="#{produtoBean.listaFilial.size() > 0}">
+                                                <h:column rendered="#{produtoBean.listaFilial.size() > 0}">
                                                     <p:selectOneMenu value="#{produtoBean.indices[5]}" disabled="#{produtoBean.estoque.id != -1}">
                                                         <f:selectItems value="#{produtoBean.listaFilial}" />
                                                     </p:selectOneMenu>
-                                                </c:if>                                                        
+                                                </h:column>                                                        
                                             </p:column>
                                             <p:column>
                                                 <p:outputLabel value="Tipo: " />
                                             </p:column>
                                             <p:column>
-                                                <c:if test="#{produtoBean.listaTipo.size() > 0}">
+                                                <h:column rendered="#{produtoBean.listaTipo.size() > 0}">
                                                     <p:selectOneMenu value="#{produtoBean.indices[4]}" disabled="#{produtoBean.estoque.id != -1}">
                                                         <f:selectItems value="#{produtoBean.listaTipo}" />
                                                     </p:selectOneMenu>
-                                                </c:if>                                                        
+                                                </h:column>                                                        
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
@@ -185,12 +185,12 @@
                                                 <p:selectBooleanCheckbox value="#{produtoBean.estoque.ativo}" itemLabel="Ativo"/>
                                             </p:column>
                                             <p:column>
-                                                <c:if test="#{produtoBean.estoque.id == -1}">
+                                                <h:column rendered="#{produtoBean.estoque.id == -1}">
                                                     <p:commandButton value="Adicionar" action="#{produtoBean.addProdutoEstoque()}" update="i_tela_estoque" title="Adicionar/Atualizar"/>
-                                                </c:if>
-                                                <c:if test="#{produtoBean.estoque.id != -1}">
+                                                </h:column>
+                                                <h:column rendered="#{produtoBean.estoque.id != -1}">
                                                     <p:commandButton value="Atualizar" action="#{produtoBean.addProdutoEstoque()}" update="i_tela_estoque" title="Adicionar/Atualizar"/>
-                                                </c:if>
+                                                </h:column>
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
@@ -224,7 +224,7 @@
                                         </f:facet>
                                     </p:dataTable>
                                 </p:panel>                                        
-                            </c:if>
+                            </h:column>
 
                             <!-- // TELA ESTOQUE -->                            
 

@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
@@ -1757,5 +1758,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setMask(String mask) {
         this.mask = mask;
+    }
+    
+    public boolean isOposicao() {
+//        OposicaoDBToplink odbt = new OposicaoDBToplink();
+//        odbt.pesquisaOposicao(idPais, idIndexFisica)
+        return false;
     }
 }

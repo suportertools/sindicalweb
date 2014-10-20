@@ -22,16 +22,16 @@
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                         <h:panelGrid columns="8">
                             <p:outputLabel value="Pesquisar: "/>
-                            <c:if test="#{!raisBean.removeFiltro}">
+                            <h:column rendered="#{!raisBean.removeFiltro}">
                                 <p:inputMask mask="#{raisBean.mascara}" value="#{raisBean.descricaoPesquisa}" disabled="#{raisBean.porPesquisa == 'todos'}">
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputMask>
-                            </c:if>
-                            <c:if test="#{raisBean.removeFiltro}">
+                            </h:column>
+                            <h:column rendered="#{raisBean.removeFiltro}">
                                 <p:inputMask mask="#{oposicaoBean.mascara}" value="#{raisBean.descricaoPesquisa}" >
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputMask>
-                            </c:if>
+                            </h:column>
                             <h:outputLabel value="Por: "/>
                             <p:selectOneMenu id="idTipoClasse" value="#{raisBean.porPesquisa}">
                                 <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{raisBean.listRais.clear()}" global="false"/>
@@ -43,29 +43,29 @@
                                 <f:selectItem itemValue="cpf"           itemLabel="CPF" />
                                 <f:selectItem itemValue="profissao"     itemLabel="Profissão" />
                             </p:selectOneMenu>
-                            <c:if test="#{!raisBean.removeFiltro}">
-                                <c:if test="#{raisBean.porPesquisa != 'todos'}">
-                                    <p:commandButton id="idInicial" value="Inicial">
+                            <h:column rendered="#{!raisBean.removeFiltro}">
+                                <h:column rendered="#{raisBean.porPesquisa != 'todos'}">
+                                    <p:commandButton value="Inicial">
                                         <p:ajax listener="#{raisBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                    <p:commandButton id="idParcial" value="Parcial">
+                                    <p:commandButton value="Parcial">
                                         <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                </c:if> 
-                                <c:if test="#{raisBean.porPesquisa == 'todos'}">
+                                </h:column> 
+                                <h:column rendered="#{raisBean.porPesquisa == 'todos'}">
                                     <p:commandButton value="Atualizar">
                                         <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                </c:if>
-                            </c:if>
-                            <c:if test="#{raisBean.removeFiltro}">
-                                <p:commandButton id="idInicial" value="Inicial">
+                                </h:column>
+                            </h:column>
+                            <h:column rendered="#{raisBean.removeFiltro}">
+                                <p:commandButton value="Inicial">
                                     <p:ajax listener="#{raisBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
                                 </p:commandButton>
-                                <p:commandButton id="idParcial" value="Parcial">
+                                <p:commandButton value="Parcial">
                                     <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                 </p:commandButton>                                
-                            </c:if>
+                            </h:column>
                         </h:panelGrid>   
                     </p:panel>
                 </p:panel>

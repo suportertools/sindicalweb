@@ -15,7 +15,7 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
     public List listaMovimentos(Relatorios relatorios, String condicao, int idServico, int idTipoServico, int idJuridica, boolean data,
             String tipoData, Date dtInicial, Date dtFinal, String dtRefInicial, String dtRefFinal,
             String ordem, boolean chkPesEmpresa, String porPesquisa, String filtroEmpresa,
-            int idConvencao, int idGrupoCidade, String idsCidades, String idsEsc) {
+            int idConvencao, int idGrupoCidade, String idsCidades, String idsEsc, String inCnaes) {
         List result = new ArrayList();
         String textQuery = "SELECT mov.id                       AS idMov,"
                 + "       mov.ds_documento             AS numeroDocumento,"
@@ -130,9 +130,9 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         if (!idsEsc.isEmpty()) {
             if (idsEsc.equals("sem")) {
                 textQuery = textQuery + " AND jur.id_contabilidade IS NULL";
-            } else if (idsEsc.equals("com")){
+            } else if (idsEsc.equals("com")) {
                 textQuery = textQuery + " AND jur.id_contabilidade IS NOT NULL";
-            }else{
+            } else {
                 textQuery = textQuery + " AND esc.id IN ( " + idsEsc + " )";
             }
         }
@@ -173,8 +173,12 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         }
 
         // CONVENCAO DO RELATORIO ------------------------------------------------------------------------------------
-        if (idConvencao != 0) {
-            textQuery = textQuery + " AND jur.id_cnae in (SELECT id_cnae from arr_cnae_convencao WHERE id_convencao = " + idConvencao + ")";
+        if (inCnaes.isEmpty()) {
+            if (idConvencao != 0) {
+                textQuery = textQuery + " AND jur.id_cnae in (SELECT id_cnae from arr_cnae_convencao WHERE id_convencao = " + idConvencao + ")";
+            }
+        } else {
+            textQuery = textQuery + " AND jur.id_cnae in (" + inCnaes + ")";
         }
 
         // GRUPO CIDADE DO RELATORIO -----------------------------------------------------------------------------------

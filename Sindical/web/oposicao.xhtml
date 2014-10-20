@@ -71,7 +71,7 @@
                             <p:outputLabel value="Observação: " />
                             <p:inputTextarea value="#{oposicaoBean.oposicao.observacao}" cols="80" rows="5" placeholder="Digite aqui as observações"></p:inputTextarea>
                         </h:panelGrid>
-                        <c:if test="#{oposicaoBean.oposicao.convencaoPeriodo.convencao.id != -1}">
+                        <h:column rendered="#{oposicaoBean.oposicao.convencaoPeriodo.convencao.id != -1}">
                             <p:panel header="Convenção Período" styleClass="margin-top-max">
                                 <p:panelGrid>
                                     <f:facet name="header">
@@ -110,7 +110,7 @@
                                     </p:row>
                                 </p:panelGrid>
                             </p:panel>
-                        </c:if>
+                        </h:column>
                     </p:panel>
                     <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
                         <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();"  />

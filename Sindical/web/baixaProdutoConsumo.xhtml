@@ -24,11 +24,11 @@
                             <h:outputText value="Baixa de Produtos (Consumo)" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${baixaProdutoConsumoBean.estoqueSaidaConsumo}"/>
-                            <c:if test="#{baixaProdutoConsumoBean.filial.id == -1}">
+                            <h:column rendered="#{baixaProdutoConsumoBean.filial.id == -1}">
                                 <h:outputText value="- Informação: Realizar acesso com filial!" styleClass="fonteHeader" />
                                 <h:outputText value="- Dúvidas contate o administrador do sistema." styleClass="fonteHeader" />
-                            </c:if>
-                            <c:if test="#{baixaProdutoConsumoBean.filial.id != -1}">
+                            </h:column>
+                            <h:column rendered="#{baixaProdutoConsumoBean.filial.id != -1}">
                                 <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true"/>
                                 <p:panel styleClass="fundoCinza margin-top-max">
                                     <f:facet name="header">
@@ -212,7 +212,7 @@
                                         </h:panelGrid>
                                     </f:facet>
                                 </p:dialog>
-                            </c:if>
+                            </h:column>
                             <p:dialog widgetVar="dlg_block" modal="true" resizable="false" header="Importante!" width="400" draggable="false" closable="false" visible="#{baixaProdutoConsumoBean.filial.id == -1}">
                                 <p:outputLabel value="- Realizar acesso com filial!" styleClass="font-color-red font-size-14" /><br /><br />
                                 <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>

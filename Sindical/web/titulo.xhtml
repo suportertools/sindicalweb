@@ -77,15 +77,15 @@
                                     <h:column>
                                         <p:panel style="width: 200px; margin-left: 15px" header="Imagem" id="i_panel_imagens">
                                             <h:panelGrid>
-                                                <c:if test="#{!tituloBean.fotoTempPerfil.equals('')}" >
+                                                <h:column rendered="#{!tituloBean.fotoTempPerfil.equals('')}" >
                                                     <p:graphicImage value="#{tituloBean.fotoTempPerfil}" id="i_perfil_temp" width="140"/>
                                                     <div class="clear"></div>
-                                                </c:if>
+                                                </h:column>
 
-                                                <c:if test="#{!tituloBean.fotoPerfil.equals('')}" >
+                                                <h:column rendered="#{!tituloBean.fotoPerfil.equals('')}" >
                                                     <p:graphicImage value="#{tituloBean.fotoPerfil}" id="i_perfil" width="140"/>
                                                     <div class="clear"></div>
-                                                </c:if>
+                                                </h:column>
                                             </h:panelGrid>
                                             <f:facet name="footer">
                                                 <h:panelGrid columns="2">

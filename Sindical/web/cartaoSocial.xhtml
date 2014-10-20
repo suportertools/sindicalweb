@@ -160,9 +160,9 @@
                     
                     <p:dialog id="i_panel_dlgx" widgetVar="i_dlg" header="Lista de Impressões" modal="true">
                         <h:panelGrid id="i_panel_dlg">
-                            <c:if test="#{cartaoSocialBean.listaSelecionado.size() == 0}">
+                            <h:column rendered="#{cartaoSocialBean.listaSelecionado.size() == 0}">
                                 <h:outputLabel value="Nenhuma carteirinha foi selecionada!" />  
-                            </c:if>
+                            </h:column>
 
                             <h:column rendered="#{cartaoSocialBean.listaSelecionado.size() != 0}">
                                 <p:dataTable id="i_tbl_dlg" var="linha" value="#{cartaoSocialBean.listaHistorico}" emptyMessage="Nenhum histórico foi encontrado!">  
