@@ -64,6 +64,8 @@
                                     <p:menuitem value="50" actionListener="#{webREPISBean.alterValueLenght('50')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="100" actionListener="#{webREPISBean.alterValueLenght('100')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="200" actionListener="#{webREPISBean.alterValueLenght('200')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="300" actionListener="#{webREPISBean.alterValueLenght('300')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="500" actionListener="#{webREPISBean.alterValueLenght('500')}" update="@this i_panel tbl" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:separator />
                                     <p:menuitem value="Tudo (não recomendado)" actionListener="#{webREPISBean.alterValueLenght('tudo')}" update="@this i_panel tbl" />
                                 </p:menuButton>
@@ -100,8 +102,8 @@
                         <p:column headerText="Solicitante">
                             <p:outputLabel value="#{repisMovimento.contato}" style="font-size: 8pt!important"/>
                         </p:column>
-                        <p:column headerText="Resposta" width="70" style="text-align: center" sortBy="#{repisMovimento.dataResposta}">
-                            <p:outputLabel value="#{repisMovimento.dataRespostaString}"/>
+                        <p:column headerText="Cidade" width="70" style="" sortBy="#{webREPISBean.enderecoPessoa(repisMovimento.pessoa.id).endereco.cidade.cidadeToString}">
+                            <p:outputLabel value="#{webREPISBean.enderecoPessoa(repisMovimento.pessoa.id).endereco.cidade.cidadeToString}"/>
                         </p:column>
                         <p:column headerText="..." width="25" styleClass="text-center">
                             <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3 or repisMovimento.repisStatus.id == 4 or repisMovimento.repisStatus.id == 5}" ajax="false">
@@ -109,7 +111,11 @@
                             </p:commandButton> 
                         </p:column>                        
                         <p:rowExpansion>
-                            <h:panelGrid columns="3" styleClass="sbb">
+                            <h:panelGrid columns="4" styleClass="sbb">
+                                <p:column>
+                                    <h:outputLabel value="Resposta" style="font-weight: bold"/><br />
+                                    <h:outputText value="#{repisMovimento.dataRespostaString}"/>
+                                </p:column>
                                 <p:column>
                                     <h:outputLabel value="Procolo" style="font-weight: bold"/><br />
                                     <h:outputText value="#{repisMovimento.id}" style="margin-left: 20px"/>

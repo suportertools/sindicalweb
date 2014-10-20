@@ -115,6 +115,68 @@ public final class ArquivoBancoBean implements Serializable {
         }
     }
     
+//    public void loadListaDocumentos(){
+//        listaDocumentos.clear();
+//        DataObject dtObject = null;
+//        String documento = "", digito = "";
+//        boolean encontrado = false;
+//        
+//        DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
+//        List<DocumentoInvalido> listaDoc = new ArrayList<DocumentoInvalido>();
+//        List<DocumentoInvalido> listaDocCadastrado = new ArrayList<DocumentoInvalido>();
+//        
+//        listaDoc = dbDocInv.pesquisaTodos();
+//
+//        if (listaDoc == null) {
+//            return;
+//        }
+//        
+//        listaDocCadastrado = dbDocInv.pesquisaNumeroBoletoPessoa();
+//        for (int i = 0; i < listaDoc.size(); i++) {
+//            encontrado = false;
+//            for (int w = 0; w < listaDocCadastrado.size(); w++) {
+//                if (listaDoc.get(i).getId() == listaDocCadastrado.get(w).getId()) {
+//                    documento = listaDoc.get(i).getDocumentoInvalido().substring(
+//                            listaDoc.get(i).getDocumentoInvalido().length() - 12,
+//                            listaDoc.get(i).getDocumentoInvalido().length());
+//                    digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
+//                    dtObject = new DataObject(false,
+//                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
+//                            "** CADASTRADO **",// -- STATUS
+//                            listaDoc.get(i),
+//                            false,
+//                            listaDoc.get(i).getDtImportacao());
+//
+//                    listaDocumentos.add(dtObject);
+//
+//                    encontrado = true;
+//                }
+//            }
+//            if (!encontrado) {
+//                documento = listaDoc.get(i).getDocumentoInvalido().substring(
+//                        listaDoc.get(i).getDocumentoInvalido().length() - 12,
+//                        listaDoc.get(i).getDocumentoInvalido().length());
+//                digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
+//                if (ValidaDocumentos.isValidoCNPJ(documento + digito)) {
+//                    dtObject = new DataObject(false,
+//                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
+//                            "** VERIFICAR **",// -- STATUS
+//                            listaDoc.get(i),
+//                            true,
+//                            listaDoc.get(i).getDtImportacao());
+//                    listaDocumentos.add(dtObject);
+//                } else {
+//                    dtObject = new DataObject(false,
+//                            documento,// -- DOCUMENTO
+//                            "** INVALIDO **",// -- STATUS
+//                            listaDoc.get(i),
+//                            true,
+//                            listaDoc.get(i).getDtImportacao());
+//                    listaDocumentos.add(dtObject);
+//                }
+//            }
+//        }
+//    }
     public void loadListaDocumentos(){
         listaDocumentos.clear();
         DataObject dtObject = null;
@@ -122,14 +184,15 @@ public final class ArquivoBancoBean implements Serializable {
         boolean encontrado = false;
         
         DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
-        List<DocumentoInvalido> listaDoc = new ArrayList<DocumentoInvalido>();
-        List<DocumentoInvalido> listaDocCadastrado = new ArrayList<DocumentoInvalido>();
+        List<DocumentoInvalido> listaDoc = new ArrayList();
+        List<DocumentoInvalido> listaDocCadastrado = new ArrayList();
         
         listaDoc = dbDocInv.pesquisaTodos();
-
-        if (listaDoc == null) {
+        
+        if (listaDoc.isEmpty()){
             return;
         }
+        
         
         listaDocCadastrado = dbDocInv.pesquisaNumeroBoletoPessoa();
         for (int i = 0; i < listaDoc.size(); i++) {
@@ -1233,7 +1296,7 @@ public final class ArquivoBancoBean implements Serializable {
                     }
                     sv.comitarTransacao();
 
-                    GenericaMensagem.info("OK", "Lista Atualizada!");
+                    GenericaMensagem.info("OK", "Documento "+listaDocumento.getArgumento1()+" atualizado!");
                 }
             } else if ((Boolean) listaDocumento.getArgumento0()) {
                 sv.abrirTransacao();
@@ -1248,7 +1311,7 @@ public final class ArquivoBancoBean implements Serializable {
 
                 sv.comitarTransacao();
                 
-                GenericaMensagem.info("OK", "Lista Atualizada!");
+                GenericaMensagem.info("OK", "Documento "+listaDocumento.getArgumento1()+" atualizado!");
             }
         }
         

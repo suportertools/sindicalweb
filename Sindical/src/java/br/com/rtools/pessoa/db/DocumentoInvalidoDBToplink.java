@@ -8,62 +8,13 @@ import java.util.Vector;
 import javax.persistence.Query;
 
 public class DocumentoInvalidoDBToplink extends DB implements DocumentoInvalidoDB {
-
     @Override
-    public boolean insert(DocumentoInvalido documentoInvalido) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(documentoInvalido);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(DocumentoInvalido documentoInvalido) {
-        try {
-            getEntityManager().merge(documentoInvalido);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(DocumentoInvalido documentoInvalido) {
-        try {
-            getEntityManager().remove(documentoInvalido);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public DocumentoInvalido pesquisaCodigo(int id) {
-        DocumentoInvalido result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("DocumentoInvalido.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (DocumentoInvalido) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
+    public List<DocumentoInvalido> pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("select docs from DocumentoInvalido docs where docs.checado = false");
             return (qry.getResultList());
         } catch (Exception e) {
-            return null;
+            return new ArrayList();
         }
     }
 
@@ -86,29 +37,26 @@ public class DocumentoInvalidoDBToplink extends DB implements DocumentoInvalidoD
     public List<DocumentoInvalido> pesquisaNumeroBoletoPessoa() {
         List vetor;
         List<DocumentoInvalido> result = new ArrayList();
-        String textQuery = "";
-        try {
+        String textQuery = 
+                "SELECT di.* " +
+                "  FROM pes_documento_invalido di " +
+                " WHERE ('000'||di.ds_documento_invalido " +
+                "	IN ( " +
+                "            SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(p.ds_documento,'/',''),'-',''),'.',''),1,12) " +
+                "              FROM pes_pessoa p ORDER BY p.ds_documento " +
+                "        ) " +
+                "        OR di.ds_documento_invalido IN ( " +
+                "			SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(p.ds_documento,'/',''),'-',''),'.',''),1,12) " +
+                "                               FROM pes_pessoa p ORDER BY p.ds_documento " +
+                "        ) " +
+                " ) " +
+                " AND di.checado = false ";
 //            textQuery = "select doc.id as idi, doc.ds_documento_invalido,pes.id "
 //                    + "  from pes_documento_invalido doc, pes_pessoa pes "
 //                    + " where '000'||substring(replace(replace(replace(pes.ds_documento,'/',''),'-',''),'.',''),1,12) = doc.ds_documento_invalido";
-            textQuery = "SELECT * "
-                      + "  FROM pes_documento_invalido "
-                      + " WHERE '000'||ds_documento_invalido IN ( "
-                      + "       SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(ds_documento,'/',''),'-',''),'.',''),1,12) "
-                      + "         FROM pes_pessoa ORDER BY ds_documento "
-                      + ")"
-                      + "    OR ds_documento_invalido IN ( "
-                      + "       SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(ds_documento,'/',''),'-',''),'.',''),1,12) "
-                      + "         FROM pes_pessoa ORDER BY ds_documento "
-                      + ")";
-            Query qry = getEntityManager().createNativeQuery(textQuery);
-            vetor = qry.getResultList();
-            if (!vetor.isEmpty()) {
-                for (int i = 0; i < vetor.size(); i++) {
-                    result.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
-                }
-            }
-            return result;
+        try {
+            Query qry = getEntityManager().createNativeQuery(textQuery, DocumentoInvalido.class);
+            return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
         }

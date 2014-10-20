@@ -322,14 +322,14 @@
                                         </p:panel>
                                         
                                         <p:dataTable value="#{recepcaoBean.listaAtendimentoSimples}" var="linha" style="width: 100%; " id="tbl_at" emptyMessage="Nenhum atendimento encontrado!">
+                                            <p:column width="15">  
+                                                <p:rowToggler />  
+                                            </p:column>  
+                                            
                                             <p:column headerText="Nome">
                                                 <h:outputLabel value="#{linha.ateMovimento.pessoa.nome}"/>
                                             </p:column>
-                                            
-                                            <p:column headerText="CPF" width="100">
-                                                <h:outputLabel value="#{linha.ateMovimento.pessoa.documento}"/>
-                                            </p:column>
-                                            
+                                                
                                             <p:column headerText="Operação" style="text-align: center" width="120">
                                                 <h:outputLabel value="#{linha.ateMovimento.operacao.descricao}"/>
                                             </p:column>
@@ -337,6 +337,33 @@
                                             <p:column headerText="Empresa">
                                                 <h:outputLabel value="#{linha.ateMovimento.juridica.pessoa.nome}"/>
                                             </p:column>
+                                            
+                                            <p:column headerText="Status" width="90" style="text-align: center">
+                                                <h:outputLabel value="#{linha.ateMovimento.status.descricao}"/>
+                                            </p:column>
+                                            
+                                            <p:column headerText="Senha" width="40" style="text-align: center">
+                                                <h:outputLabel value="#{linha.senha}"/>
+                                            </p:column>
+                                                             
+                                            <p:rowExpansion>
+                                                <h:panelGrid columns="3" styleClass="sbb">
+                                                    <h:column>
+                                                        <h:outputLabel value="CPF" style="font-weight: bold"/><br />
+                                                        <p:outputLabel value="#{linha.ateMovimento.pessoa.documento}" />
+                                                    </h:column>
+                                                    
+                                                    <h:column>
+                                                        <h:outputLabel value="Data de Emissão" style="font-weight: bold"/><br />
+                                                        <p:outputLabel value="#{linha.ateMovimento.dataEmissaoString}" />
+                                                    </h:column>
+                                                    
+                                                    <h:column>
+                                                        <h:outputLabel value="Horário" style="font-weight: bold"/><br />
+                                                        <p:outputLabel value="#{linha.ateMovimento.horaEmissao}" />
+                                                    </h:column>
+                                                </h:panelGrid>
+                                            </p:rowExpansion>
                                         </p:dataTable>
                                     </p:tab>
                                 </p:tabView>

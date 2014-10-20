@@ -51,7 +51,7 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
 
         try {
-            String text_qry = "select * from end_endereco e "
+            String text_qry = "select e.* from end_endereco e "
                     + " inner join end_descricao_endereco de on (de.id = e.id_descricao_endereco) "
                     + " inner join end_bairro ba on (ba.id = e.id_bairro) "
                     + " where ds_cep = '" + cep + "'";
@@ -81,16 +81,12 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
                 text_qry += " and ( upper(translate(ba.ds_descricao)) like upper('%" + bairro[0] + "%') " + or_bairro + ") ";
             }
 
-            Query qry = getEntityManager().createNativeQuery(text_qry);
+            Query qry = getEntityManager().createNativeQuery(text_qry, Endereco.class);
             qry.setMaxResults(1);
-            vetor = qry.getResultList();
-            if (!vetor.isEmpty()) {
-                endereco = (Endereco) dB.pesquisaObjeto((Integer) ((Vector) vetor.get(0)).get(0), "Endereco");
-                return endereco;
-            } else {
-                return null;
-            }
+            
+            return (Endereco) qry.getSingleResult();
         } catch (Exception e) {
+            e.getMessage();
             return null;
         }
     }

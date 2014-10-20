@@ -482,11 +482,12 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 + "            c.id,                                                      "
                 + "            mc.ds_descricao                                            "
                 + "       FROM pes_pessoa_vw AS p                                         "
-                + "    INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo             "
-                + "    INNER JOIN soc_carteirinha as c on c.id_pessoa = s.codsocio        "
-                + "    INNER JOIN soc_modelo_carteirinha mc on mc.id = c.id_modelo_carteirinha "
-                + "     LEFT JOIN fin_movimento m on m.id_pessoa = c.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 120) "
-                + "    WHERE s.codsocio = " + id_pessoa;
+                + "      INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo           "
+                + "      INNER JOIN soc_carteirinha as c on c.id_pessoa = s.codsocio      "
+                + "      INNER JOIN soc_modelo_carteirinha_categoria as cc on s.id_categoria = cc.id_categoria "
+                + "      INNER JOIN soc_modelo_carteirinha as mc on mc.id = cc.id_modelo_carteirinha"
+                + "       LEFT JOIN fin_movimento m on m.id_pessoa = c.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 120) "
+                + "      WHERE s.codsocio = " + id_pessoa;
 //                "      AND c.id in (                                                    " +
 //                "                      SELECT MAX(id) from soc_carteirinha              " +
 //                "                       WHERE id_pessoa = " + id_pessoa + "             " +

@@ -112,6 +112,12 @@ public class WebREPISBean implements Serializable {
         }
     }
     
+    public PessoaEndereco enderecoPessoa(int id_pessoa){
+        PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+        PessoaEndereco endereco_pessoa = dbe.pesquisaEndPorPessoaTipo(id_pessoa, 5);
+        return endereco_pessoa;
+    }
+    
     public String retornaCor(RepisMovimento rm){
         if (DataHoje.igualdadeData(rm.getPessoa().getCriacao(), rm.getDataEmissaoString()) && rm.getRepisStatus().getId() == 1){
             return "tblColorx";    

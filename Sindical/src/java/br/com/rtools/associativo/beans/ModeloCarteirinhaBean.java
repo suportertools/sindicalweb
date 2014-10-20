@@ -123,10 +123,12 @@ public class ModeloCarteirinhaBean {
         modeloCategoria = linha;
         modelo = modeloCategoria.getModeloCarteirinha();
         boolean cat = false;
-        for (int i = 0; i < listaCategoria.size(); i++){
-            if (Integer.valueOf(listaCategoria.get(i).getDescription()) == modeloCategoria.getCategoria().getId() ){
-                idCategoria = i;
-                cat = true;
+        if (modeloCategoria.getCategoria() != null){
+            for (int i = 0; i < listaCategoria.size(); i++){
+                if (Integer.valueOf(listaCategoria.get(i).getDescription()) == modeloCategoria.getCategoria().getId() ){
+                    idCategoria = i;
+                    cat = true;
+                }
             }
         }
         
