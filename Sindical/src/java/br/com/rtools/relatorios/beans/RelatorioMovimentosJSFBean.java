@@ -170,7 +170,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
 
         List result = dbMov.listaMovimentos(relatorios, condicao, idServ, idTipoServ, idJuridica, chkData, tipoDataPesquisa, dtInicial, dtFinal,
-                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs);
+                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs, "");
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
@@ -466,7 +466,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
 
         List result = dbMov.listaMovimentos(relatorios, condicao, idServ, idTipoServ, idJuridica, chkData, tipoDataPesquisa, dtInicial, dtFinal,
-                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs);
+                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs, "");
         FacesContext faces = FacesContext.getCurrentInstance();
         int qnt = 0;
         String nomeDownload = "";
