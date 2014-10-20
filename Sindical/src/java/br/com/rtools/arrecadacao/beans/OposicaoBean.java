@@ -12,9 +12,12 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -103,16 +106,16 @@ public class OposicaoBean implements Serializable {
         }
         JuridicaDB db = new JuridicaDBToplink();
         List<List> lista_inativa = db.listaJuridicaContribuinte(oposicao.getJuridica().getId());
-        
+
         if (lista_inativa.isEmpty()) {
             message = "Empresa não é contribuinte!";
             return;
         }
-        
+
         if (lista_inativa.get(0).get(11) != null) {
             message = "Empresa Inativa!";
             return;
-        } 
+        }
         if (oposicao.getConvencaoPeriodo().getId() == -1) {
             message = "Empresa fora do período de Convenção!";
             return;
@@ -349,13 +352,14 @@ public class OposicaoBean implements Serializable {
         listaConvencaoPeriodos.clear();
         convencaoPeriodoConvencaoGrupoCidade();
         SociosDB db = new SociosDBToplink();
-        socios = db.pesquisaSocioPorId(pessoaEmpresa.getFisica().getPessoa().getId());
+        socios = db.pesquisaSocioPorPessoa(pessoaEmpresa.getFisica().getPessoa().getId());
 
         if (socios.getId() != -1) {
             if (socios.getServicoPessoa().isAtivo()) {
                 GenericaMensagem.warn("Validação", "CPF cadastrado como sócio, inative para salvar oposição!");
             }
         }
+        db.getEntityManager().close();
     }
 
     public void convencaoPeriodoConvencaoGrupoCidade() {
@@ -525,5 +529,20 @@ public class OposicaoBean implements Serializable {
 
     public void setRemoveFiltro(boolean removeFiltro) {
         this.removeFiltro = removeFiltro;
+    }
+
+    public String pessoaSocio(String cpf) {
+        PessoaDB pessoaDB = new PessoaDBToplink();
+        Pessoa p = pessoaDB.pessoaDocumento(cpf);
+        if (p != null) {
+            SociosDB sociosDB = new SociosDBToplink();
+            Socios s = sociosDB.pesquisaSocioPorPessoa(p.getId());
+            if (s.getId() != -1) {
+                if (s.getServicoPessoa().isAtivo()) {
+                    return "Sócio";
+                }
+            }
+        }
+        return "";
     }
 }

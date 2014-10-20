@@ -108,6 +108,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean visibleEditarEndereco = false;
     private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
     private boolean chkDependente = false;
+    private boolean pessoaOposicao = false;
 
     private int indexEndereco = 0;
     private String strEndereco = "";
@@ -474,7 +475,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         editarFisicaSocio(fisica);
         showImagemFisica();
         GenericaSessao.put("linkClicado", true);
-
+        existePessoaOposicaoPorPessoa();
         return url;
     }
 
@@ -499,7 +500,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 mensagem = "Documento Invalido!";
                 GenericaMensagem.warn("Validação", "Documento (CPF) inválido! " + fisica.getPessoa().getDocumento());
-                PF.update("form:pessoa_fisica:i_tabview_fisica:id_valida_documento: " + fisica.getPessoa().getDocumento());
+                PF.update("form:pessoa_fisica:i_tabview_fisica:id_valida_documento:" + fisica.getPessoa().getDocumento());
                 fisica.getPessoa().setDocumento("");
                 return;
             }
@@ -509,6 +510,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 String x = editarFisicaParametro((Fisica) lista.get(0));
                 pessoaUpper();
                 RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
+                existePessoaOposicaoPorPessoa();
+                RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_p_o");
                 RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_end_rendered");
                 getListaPessoaEndereco();
                 showImagemFisica();
@@ -1759,10 +1762,27 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setMask(String mask) {
         this.mask = mask;
     }
-    
-    public boolean isOposicao() {
-//        OposicaoDBToplink odbt = new OposicaoDBToplink();
-//        odbt.pesquisaOposicao(idPais, idIndexFisica)
+
+    public void existePessoaOposicaoPorPessoa() {
+        if (!fisica.getPessoa().getDocumento().isEmpty()) {
+            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            pessoaOposicao = odbt.existPessoaDocumentoPeriodo(fisica.getPessoa().getDocumento());
+        }
+    }
+
+    public boolean existePessoaOposicaoPorDocumento(String documento) {
+        if (!documento.isEmpty()) {
+            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            return odbt.existPessoaDocumentoPeriodo(documento);
+        }
         return false;
+    }
+
+    public boolean isPessoaOposicao() {
+        return pessoaOposicao;
+    }
+
+    public void setPessoaOposicao(boolean pessoaOposicao) {
+        this.pessoaOposicao = pessoaOposicao;
     }
 }

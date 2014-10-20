@@ -32,10 +32,7 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public Socios pesquisaSocioPorId(int idServicoPessoa) {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select s"
-                    + " from Socios s"
-                    + " where s.servicoPessoa.id = :pid");
+            Query qry = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.id = :pid");
             qry.setParameter("pid", idServicoPessoa);
             return (Socios) qry.getSingleResult();
         } catch (Exception e) {
