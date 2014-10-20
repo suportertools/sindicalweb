@@ -6,9 +6,9 @@
                 xmlns:f="http://java.sun.com/jsf/core">
     <f:view>
         <center>
-            <c:if test="#{!pessoaCardBean.getImagemFisica('Imagens/Fotos').equals('')}">
+            <h:column rendered="#{!pessoaCardBean.getImagemFisica('Imagens/Fotos').equals('')}">
                 <p:graphicImage value="#{pessoaCardBean.getImagemFisica('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
-            </c:if>
+            </h:column>
         </center>
         <f:facet name="header">
             <h:outputLabel value="#{pessoaCardBean.fisica.pessoa.nome}"  />
@@ -33,8 +33,8 @@
             <h:outputLabel value="Email:"  />
             <h:commandLink value="#{pessoaCardBean.fisica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.fisica.pessoa.id)}" />
         </h:panelGrid>
-        <c:if test="#{!sociosCardBean.setIdPessoa(pessoaCardBean.fisica.pessoa.id)}"></c:if>
-        <c:if test="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></c:if>
+        <h:column rendered="#{!sociosCardBean.setIdPessoa(pessoaCardBean.fisica.pessoa.id)}"></h:column>
+        <h:column rendered="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></h:column>
         <p:panel header="Associado" style="background: #ccffcc;" styleClass="no-border margin-top-max" rendered="#{sociosCardBean.socios.id != -1}">
             <ui:include src="templateSociosCard.xhtml" />
         </p:panel>

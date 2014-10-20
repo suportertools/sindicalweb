@@ -6,9 +6,9 @@
                 xmlns:f="http://java.sun.com/jsf/core">
     <f:view>
         <center>
-            <c:if test="#{!pessoaCardBean.getImagemJuridica('Imagens/Fotos').equals('')}">
+            <h:column rendered="#{!pessoaCardBean.getImagemJuridica('Imagens/Fotos').equals('')}">
                 <p:graphicImage value="#{pessoaCardBean.getImagemJuridica('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray;" width="150"/>
-            </c:if>
+            </h:column>
         </center>
         <f:facet name="header">
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.nome}"  />
