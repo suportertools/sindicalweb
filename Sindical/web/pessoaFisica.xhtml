@@ -32,14 +32,18 @@
                         <h:form id="form_pessoa_fisica">
                             <p:outputLabel value="Cadastro Física" styleClass="fonteHeader"/>
                             <c:set scope="request" var="object" value="${fisicaBean.fisica}"/>
-
+                            <div class="clear"></div>
+                            <h:panelGrid id="i_p_o" >
+                                <p:panel style="border: 1px dashed red;" rendered="#{fisicaBean.pessoaOposicao}">
+                                    <h:outputLabel value="Pessoa cadastrada em oposição!" styleClass="bold"/>
+                                </p:panel>
+                            </h:panelGrid>
                             <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both">
                                 <p:tabView id="i_tabview_fisica" activeIndex="#{fisicaBean.indexPessoaFisica}" style="width: 990px">
                                     <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered"/> 
                                     <p:tab title="Cadastro Pessoal">                            
                                         <h:outputScript name="script_primefaces.js" library="js" />
-                                        <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true" />
-
+                                        <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true"  />
                                         <h:panelGrid id="i_panel_dados" columns="2" style="width: 600px; height: 400px">
                                             <p:column>
                                                 <p:panel styleClass="fundoCinza">
@@ -54,7 +58,7 @@
                                                         <p:column>
                                                             <p:outputLabel value="CPF" /><br />
                                                             <p:inputMask size="13" value="#{fisicaBean.fisica.pessoa.documento}" mask="999.999.999-99">
-                                                                <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}" />
+                                                                <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}"  />
                                                             </p:inputMask>                                        
                                                         </p:column>
 
