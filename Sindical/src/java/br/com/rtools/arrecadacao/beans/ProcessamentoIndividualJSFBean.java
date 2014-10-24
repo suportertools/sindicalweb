@@ -969,8 +969,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
         JuridicaDB db = new JuridicaDBToplink();
         Juridica jur = new Juridica();
         jur = db.pesquisaJuridicaPorPessoa(((Movimento) linha.getArgumento1()).getPessoa().getId());
-        ((JuridicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
-        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
+        JuridicaBean juridicaBean = new JuridicaBean();
+        juridicaBean.editar(jur);
+        GenericaSessao.put("juridicaBean", juridicaBean);
+        // ((JuridicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisa("pessoaJuridica");
     }
 
     public List<SelectItem> getListaServico() {

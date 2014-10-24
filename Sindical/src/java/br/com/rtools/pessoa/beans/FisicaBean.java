@@ -510,12 +510,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 String x = editarFisicaParametro((Fisica) lista.get(0));
                 pessoaUpper();
                 RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
-                existePessoaOposicaoPorPessoa();
-                RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_p_o");
                 RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_end_rendered");
                 getListaPessoaEndereco();
                 showImagemFisica();
             }
+            existePessoaOposicaoPorPessoa();
+            RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_p_o");
         }
     }
 
