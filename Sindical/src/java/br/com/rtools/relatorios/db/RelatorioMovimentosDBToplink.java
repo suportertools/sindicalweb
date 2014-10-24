@@ -226,6 +226,7 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
             Query qry = getEntityManager().createNativeQuery(textQuery);
             result = qry.getResultList();
         } catch (EJBQLException e) {
+            result = new ArrayList();
         }
         return result;
     }
