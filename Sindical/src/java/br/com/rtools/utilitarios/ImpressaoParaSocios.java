@@ -48,7 +48,7 @@ public class ImpressaoParaSocios {
         File listFile[] = files.listFiles();
         List<ModeloCarteirinha> listaModelo = new SalvarAcumuladoDBToplink().listaObjeto("ModeloCarteirinha");
         Map<Integer, List> hash = new HashMap<Integer, List>();
-        
+
         for (int i = 0; i < listaCartao.size(); i++) {
             String imagem = "semFoto.jpg";
             for (int j = 0; j < listFile.length; j++) {
@@ -80,13 +80,13 @@ public class ImpressaoParaSocios {
 
             if (reg.isValidadeBarras() && ((List) (listaCartao.get(i))).get(6) != null) {
                 Date vencto = DataHoje.converte(((List) (listaCartao.get(i))).get(6).toString());
-                if (vencto != null){
+                if (vencto != null) {
                     Date dataModel = DataHoje.converte("07/10/1997");
                     long dias = vencto.getTime() - dataModel.getTime();
                     long total = dias / 86400000;
-                
+
                     bc += "0000".substring(0, 4 - Long.toString(total).length()) + Long.toString(total);
-                }else{
+                } else {
                     bc += "0000";
                 }
                 barras = "00000000000000".substring(0, 14 - bc.length()) + bc;
@@ -97,52 +97,47 @@ public class ImpressaoParaSocios {
 
             SocioCarteirinha carteirinha = new SocioCarteirinha();
             carteirinha = (SocioCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaCartao.get(i)).get(19), "SocioCarteirinha");
-            
-            
-            
+
             ModeloCarteirinha[] mod_obj = new ModeloCarteirinha[listaModelo.size()];
-            File file_img = new File( ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg") );
-            
+            File file_img = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg"));
+
             String caminho_img = "";
-            
-            if (file_img.exists())
+
+            if (file_img.exists()) {
                 caminho_img = file_img.getPath();
-            
+            }
+
             listax.add(
-                new CartaoSocial(
-                        matr, // CODIGO
-                        barras, // BARRAS 
-                        getConverteNullString(((List) (listaCartao.get(i))).get(1)), // NOME
-                        getConverteNullString(((List) (listaCartao.get(i))).get(3)), // EMPRESA
-                        getConverteNullString(((List) (listaCartao.get(i))).get(2)), // CNPJ
-                        getConverteNullString(((List) (listaCartao.get(i))).get(8)), // DATA ADMISSAO
-                        getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
-                        getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
-                        getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
-                        caminho_img, // CAMINHO FUNDO
-                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
-                        getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
-                        getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
-                        getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
-                        getConverteNullString(((List) (listaCartao.get(i))).get(16)), // RG
-                        Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()) // ID_PESSOA
-                )
+                    new CartaoSocial(
+                            matr, // CODIGO
+                            barras, // BARRAS 
+                            getConverteNullString(((List) (listaCartao.get(i))).get(1)), // NOME
+                            getConverteNullString(((List) (listaCartao.get(i))).get(3)), // EMPRESA
+                            getConverteNullString(((List) (listaCartao.get(i))).get(2)), // CNPJ
+                            getConverteNullString(((List) (listaCartao.get(i))).get(8)), // DATA ADMISSAO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
+                            caminho_img, // CAMINHO FUNDO
+                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
+                            getConverteNullString(((List) (listaCartao.get(i))).get(16)), // RG
+                            Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()) // ID_PESSOA
+                    )
             );
-            
+
             for (ModeloCarteirinha modelo : listaModelo) {
-                if (carteirinha.getModeloCarteirinha().getId() == modelo.getId()){
+                if (carteirinha.getModeloCarteirinha().getId() == modelo.getId()) {
                     hash.put(modelo.getId(), listax);
-                } 
+                }
             }
         }
 
         if (listax.isEmpty()) {
             return false;
         }
-
-        
-        
-
 
         try {
             String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
@@ -154,30 +149,30 @@ public class ImpressaoParaSocios {
             if (!fileB.exists()) {
                 fileB.mkdir();
             }
-            
+
             ModeloCarteirinha modelo = new ModeloCarteirinha();
             List ljasper = new ArrayList();
             JasperReport jasper;
-            
-            for (Entry<Integer, List> entry : hash.entrySet()){
+
+            for (Entry<Integer, List> entry : hash.entrySet()) {
                 modelo = (ModeloCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo(entry.getKey(), "ModeloCarteirinha");
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
-                
-                if (caminho == null){
-                    GenericaMensagem.error("Erro jasper: "+modelo.getJasper(), "Modelo não encontrado na pasta Relatório!");
+
+                if (caminho == null) {
+                    GenericaMensagem.error("Erro jasper: " + modelo.getJasper(), "Modelo não encontrado na pasta Relatório!");
                     continue;
                 }
-                
+
                 File file = new File(
                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper())
                 );
                 //* ADD LISTA DE JASPERS *//
                 jasper = (JasperReport) JRLoader.loadObject(file);
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(entry.getValue());
-                
+
                 ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             }
-            
+
             JRPdfExporter exporter = new JRPdfExporter();
             ByteArrayOutputStream retorno = new ByteArrayOutputStream();
 
@@ -185,7 +180,7 @@ public class ImpressaoParaSocios {
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
             exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
             exporter.exportReport();
-            
+
             String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(retorno.toByteArray(), nomeDownload, false);
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carteirinhas");
@@ -193,9 +188,8 @@ public class ImpressaoParaSocios {
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
             download.remover();
-            
+
             //JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            
             //JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
 //            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
 //            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
@@ -226,8 +220,8 @@ public class ImpressaoParaSocios {
         //PessoaEmpresa pesEmpresa = new PessoaEmpresa();
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
         SociosDB dbSoc = new SociosDBToplink();
+        FacesContext faces = FacesContext.getCurrentInstance();
         try {
-            FacesContext faces = FacesContext.getCurrentInstance();
             //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
@@ -324,7 +318,11 @@ public class ImpressaoParaSocios {
                 dados[30] = "";
                 dados[31] = "";
             }
-
+            String assinatura = "";
+            File f = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/assinatura.jpg"));
+            if (f.exists()) {
+                assinatura = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/assinatura.jpg");
+            }
             try {
                 listaSocios.add(new FichaSocial(0,
                         matriculaSocios.getTitular().getId(),
@@ -402,7 +400,7 @@ public class ImpressaoParaSocios {
                         fisica.getDtRecadastro(),
                         dados[30],
                         pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                        dados[31]));
+                        dados[31], assinatura));
 
                 List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(matriculaSocios.getId());
                 for (int n = 0; n < deps.size(); n++) {
@@ -482,7 +480,9 @@ public class ImpressaoParaSocios {
                             null,
                             "",
                             "",
-                            ""));
+                            "",
+                            assinatura)
+                    );
                 }
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
                 JasperPrint print = JasperFillManager.fillReport(
@@ -507,6 +507,7 @@ public class ImpressaoParaSocios {
                         "application/pdf",
                         FacesContext.getCurrentInstance());
                 download.baixar();
+                download.remover();
             } catch (JRException erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
@@ -702,7 +703,7 @@ public class ImpressaoParaSocios {
                             fisica.getDtRecadastro(),
                             dados[30],
                             pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                            dados[31]));
+                            dados[31], ""));
                 } catch (Exception erro) {
                     System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                     continue;
@@ -825,7 +826,7 @@ public class ImpressaoParaSocios {
                         new Date(),
                         "",
                         pessoaEndereco.getEndereco().getLogradouro().getDescricao(),
-                        ""));
+                        "", ""));
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }

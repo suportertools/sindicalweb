@@ -211,12 +211,12 @@ public class ChamadaPaginaBean implements Serializable {
         carregaPg = true;
         tipoPagina = tipo;
         atualizaAcessos('"' + "/Sindical/" + pagina + ".jsf" + '"');
-        String cliente = GenericaSessao.getString("sessaoCliente");
+        // String cliente = GenericaSessao.getString("sessaoCliente");
         String userName = "";
         if (GenericaSessao.exists("userName")) {
             userName = (String) GenericaSessao.getString("userName");
-            String logaccess = " Cliente: " + cliente + " - Usuário: " + userName + " - Página: " + pagina;
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, logaccess);
+            // String logaccess = " Cliente: " + cliente + " - Usuário: " + userName + " - Página: " + pagina;
+            // Logger.getLogger(this.getClass().getName()).log(Level.INFO, logaccess);
         }
         return pagina;
     }

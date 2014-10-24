@@ -420,7 +420,7 @@ public class SocioCarteirinhaJSFBean {
                                 fisica.getDtRecadastro(),
                                 dados[30],
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                                dados[31]));
+                                dados[31], ""));
 
                         //List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(fisica.getPessoa().getId());
                         List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(0); // ID DA MATRICULA NAO DA PESSOA
@@ -498,7 +498,7 @@ public class SocioCarteirinhaJSFBean {
                                     "",
                                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
                                     "",
-                                    null, "", "", ""));
+                                    null, "", "", "", ""));
                         }
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -714,7 +714,7 @@ public class SocioCarteirinhaJSFBean {
                                 fisica.getDtRecadastro(),
                                 dados[30],
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                                dados[31]));
+                                dados[31], ""));
 
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());

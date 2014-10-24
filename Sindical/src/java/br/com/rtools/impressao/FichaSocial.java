@@ -81,6 +81,7 @@ public class FichaSocial {
     private String fantasia;
     private String logrent;
     private String e_logradouro;
+    private String assinatura;
 
     public FichaSocial(int ordem, int codsocio, int matricula, Date datacadastro, Date recadastro, String grupo, String categoria, String nome, String sexo, Date datanascimento,
             String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String seriectps, String estadocivil, String pai, String mae, String telefone,
@@ -89,7 +90,8 @@ public class FichaSocial {
             String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String e_nome, String e_telefone, String e_fax, Date e_admissao, String e_cargo,
             String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String imagem, String obs, String grau,
             String entidade, String endent, String nument, String compent, String baient, String cident, String estent, String cepent, String cgcent, String texto,
-            String imagem2, String foto, String emailent, String siteent, String telent, String caminhoverso, String cgc, Date datarecadastro, String fantasia, String logrent, String e_logradouro) {
+            String imagem2, String foto, String emailent, String siteent, String telent, String caminhoverso, String cgc, Date datarecadastro, String fantasia, String logrent, String e_logradouro,
+            String assinatura) {
         this.ordem = ordem;
         this.codsocio = codsocio;
         this.matricula = matricula;
@@ -167,6 +169,7 @@ public class FichaSocial {
         this.fantasia = fantasia;
         this.logrent = logrent;
         this.e_logradouro = e_logradouro;
+        this.assinatura = assinatura;
     }
 
     public FichaSocial() {
@@ -247,6 +250,7 @@ public class FichaSocial {
         this.fantasia = "";
         this.logrent = "";
         this.e_logradouro = "";
+        this.assinatura = "";
     }
 
     public int getOrdem() {
@@ -863,5 +867,13 @@ public class FichaSocial {
 
     public void setE_logradouro(String e_logradouro) {
         this.e_logradouro = e_logradouro;
+    }
+
+    public String getAssinatura() {
+        return assinatura;
+    }
+
+    public void setAssinatura(String assinatura) {
+        this.assinatura = assinatura;
     }
 }
