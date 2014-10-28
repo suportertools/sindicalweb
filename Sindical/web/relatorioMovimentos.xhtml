@@ -194,23 +194,24 @@
                                                 <h:outputText value="#{linha.pessoa.documento}"/>
                                             </p:column>
 
-                                            <p:column headerText="Nome">
+                                            <p:column headerText="Nome" filterBy="#{linha.pessoa.nome}">
                                                 <h:outputText value="#{linha.pessoa.nome}"/>
                                             </p:column>
                                         </p:dataTable>
                                     </h:panelGrid>
                                     
+                                    <div class="clear"></div>
                                     <h:panelGrid rendered="#{relatorioMovimentoBean.chkCidadeBase}">
                                         <br /><br /><br />
                                         <h:outputLabel value="Cidades da Base" style="font-size: 12pt!important"/>
                                         <p:dataTable id="tbl_cidade" value="#{relatorioMovimentoBean.listaCidadesBase}" var="linha" selection="#{relatorioMovimentoBean.listaCidadesBaseSelecionado}" rowKey="#{linha.id}" emptyMessage="Nenhuma Cidade foi encontrada!" scrollable="true" scrollHeight="300">
                                             <p:column selectionMode="multiple" style="width: 20px" />  
 
-                                            <p:column headerText="Cidade">
+                                            <p:column headerText="Cidade" filterBy="#{linha.cidade}">
                                                 <h:outputText value="#{linha.cidade}"/>
                                             </p:column>
 
-                                            <p:column headerText="UF" width="15">
+                                            <p:column headerText="UF" width="15"  filterBy="#{linha.uf}">
                                                 <h:outputText value="#{linha.uf}"/>
                                             </p:column>
                                         </p:dataTable>
