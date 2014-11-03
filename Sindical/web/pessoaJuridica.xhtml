@@ -73,7 +73,7 @@
                                             </p:column>
                                         </h:panelGrid>
 
-                                        <h:panelGrid columns="2" id="i_panel_convencao">
+                                        <h:panelGrid columns="3" id="i_panel_convencao">
                                             <p:column rendered="#{juridicaBean.strCnaeConvencao != ''}">
                                                 <h:outputLabel value="Convenção" style="font-weight: bold"/><br />
                                                 <h:outputLabel value="#{juridicaBean.strCnaeConvencao}" style="font-size: 12pt!important; margin-right: 20px"/>
@@ -82,6 +82,11 @@
                                             <p:column rendered="#{juridicaBean.strGrupoCidade != ''}">
                                                 <h:outputLabel value="Grupo Cidade"  style="font-weight: bold"/><br />
                                                 <h:outputLabel id="idStrGrupoCidade" value="#{juridicaBean.strGrupoCidade}" style="font-size: 12pt!important"/>
+                                            </p:column>
+                                            
+                                            <p:column rendered="#{juridicaBean.pessoaOposicao}">
+                                                <br />
+                                                <h:commandLink action="#{chamadaPaginaBean.pesquisa('pesquisaOposicao')}" value="Empresa com carta de oposição cadastrada" actionListener="#{juridicaBean.listenerPessoaJuridia}" style="margin-left: 100px;" styleClass="font-color-red bold"/>
                                             </p:column>
 
                                             <p:column rendered="#{juridicaBean.strArquivo != ''}">
@@ -357,7 +362,7 @@
                                 <h:panelGrid id="idPGEndereco" rendered="#{juridicaBean.renEndereco}" style="width:100%; text-align: right">
                                     <p:dataTable id="i_tbl_endereco" value="#{juridicaBean.listaEnderecos}" var="linha" rowIndexVar="index">
                                         <p:column headerText="Tipo">
-                                            <p:commandLink action="#{juridicaBean.RetornarObjetoDaGrid(linha, index)}" value="#{linha.tipoEndereco.descricao}" update="">
+                                            <p:commandLink action="#{juridicaBean.RetornarObjetoDaGrid(linha, index)}" value="#{linha.tipoEndereco.descricao}" update="" title="Editar registro nº#{linha.id}">
 
                                             </p:commandLink>
                                         </p:column>
