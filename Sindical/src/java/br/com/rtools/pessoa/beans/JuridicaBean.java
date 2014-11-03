@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.arrecadacao.*;
+import br.com.rtools.arrecadacao.beans.OposicaoBean;
 import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.db.EnderecoDB;
@@ -102,6 +103,7 @@ public class JuridicaBean implements Serializable {
     private boolean habServContabil = true;
     private boolean carregaEnvios = false;
     private boolean renderAtivoInativo = false;
+    private boolean pessoaOposicao = false;
 //    private boolean chkEndContabilidade = true;
     private List listaEnd = new ArrayList();
     private List listEn = new ArrayList();
@@ -326,9 +328,9 @@ public class JuridicaBean implements Serializable {
             GenericaMensagem.warn("Erro", "Pessoa já cadastrada no Sistema!");
             return;
         }
-        
+
         if (juridicaReceita.getId() == -1) {
-            try{
+            try {
                 //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=17564575000130&dias=10&usuario=claudemir.rtools@hotmail.com&senha=989899");
                 URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -338,11 +340,11 @@ public class JuridicaBean implements Serializable {
                     JSONObject obj = new JSONObject(str);
                     int status = obj.getInt("status");
                     String error = obj.getString("msg");
-                    
-                    if (status == 6){
+
+                    if (status == 6) {
                         GenericaMensagem.warn("Atenção", "Limite de acessos excedido!");
                     }
-                    
+
                     juridicaReceita.setNome(obj.getString("natureza_juridica"));
                     juridicaReceita.setFantasia(obj.getString("nome_empresarial"));
                     juridicaReceita.setDocumento(documento);
@@ -357,11 +359,11 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
                     //System.out.println(in.readLine());
                 }
-            }catch(IOException | JSONException e){
-                
+            } catch (IOException | JSONException e) {
+
             }
-        }            
-            
+        }
+
 //            try {
 //                SSLUtil.acceptSSL();
 //                URL url = new URL("https://c.knu.com.br/webservice");
@@ -398,8 +400,6 @@ public class JuridicaBean implements Serializable {
 //            } catch (Exception ex) {
 //                ex.printStackTrace();
 //            }
-        
-
     }
 
     public void accordion(TabChangeEvent event) {
@@ -919,6 +919,7 @@ public class JuridicaBean implements Serializable {
 //                    }
             }
         }
+        existeOposicaoEmpresa();
         return "pessoaJuridica";
     }
 
@@ -2380,5 +2381,33 @@ public class JuridicaBean implements Serializable {
 
     public String getMascaraPesquisaJuridica() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
+    }
+
+    public void existeOposicaoEmpresa() {
+        if (juridica.getId() != -1) {
+            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            pessoaOposicao = odbt.existOposicaoEmpresa(juridica.getId());
+        } else {
+            pessoaOposicao = false;
+        }
+    }
+
+    public boolean isPessoaOposicao() {
+        return pessoaOposicao;
+    }
+
+    public void setPessoaOposicao(boolean pessoaOposicao) {
+        this.pessoaOposicao = pessoaOposicao;
+    }
+
+    public void listenerPessoaJuridia() {
+        GenericaSessao.remove("oposicaoPesquisa");
+        OposicaoBean oposicaoBean = new OposicaoBean();
+        oposicaoBean.setPorPesquisa("cnpj");
+        oposicaoBean.setComoPesquisa("Inicial");
+        oposicaoBean.setDescricaoPesquisa(juridica.getPessoa().getDocumento());
+        oposicaoBean.setListaOposicaos(new ArrayList());
+        oposicaoBean.getListaOposicaos();
+        GenericaSessao.put("oposicaoBean", oposicaoBean);
     }
 }
