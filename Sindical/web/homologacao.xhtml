@@ -425,8 +425,8 @@
                         <h:panelGrid columns="4">
                             <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
                             <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" />
-                            <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" />
-                            <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()"/>
+                            <p:commandButton value="Cancelar" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" />
+                            <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()" rendered="false"/>
                         </h:panelGrid>
                     </p:dialog> 
                     

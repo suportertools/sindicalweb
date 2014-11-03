@@ -187,8 +187,9 @@ public class MovimentosReceberSocialJSFBean {
                 )
                 );
             }
-
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+            
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);

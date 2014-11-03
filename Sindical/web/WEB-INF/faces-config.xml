@@ -1583,6 +1583,12 @@
             <to-view-id>/configuracaoHomologacao.jsf</to-view-id>
             <redirect/>
         </navigation-case>          
+        
+        <navigation-case>
+            <from-outcome>relatorioSociosInativos</from-outcome>
+            <to-view-id>/relatorioSociosInativos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

@@ -404,7 +404,8 @@ public class NotificacaoBean implements Serializable {
                 //string_jasper = "/Relatorios/ETESCRITORIO6181.jasper";
             }
             
-            JasperReport jasperx = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(string_jasper));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(string_jasper));
+            JasperReport jasperx = (JasperReport) JRLoader.loadObject(fl);
             JasperPrint print = JasperFillManager.fillReport(jasperx, null, dtSource);
             byte[] arquivo = new byte[0];
             
@@ -631,7 +632,9 @@ public class NotificacaoBean implements Serializable {
 
                             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
                             JasperReport jasperx = null;
-                            jasperx = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/" + jasper));
+                            
+                            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/" + jasper));
+                            jasperx = (JasperReport) JRLoader.loadObject(fl);
                             String nomeArq = "notificacao_";
 
                             JasperPrint print = JasperFillManager.fillReport(jasperx, null, dtSource);
@@ -736,20 +739,24 @@ public class NotificacaoBean implements Serializable {
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
                 String nomeArq = "notificacao_";
                 try {
+                    File fl = null;
                     if (ct.getId() == 1) {
                         id_compara = getConverteNullInt(result.get(i).get(38)); // ID_JURIDICA
-                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_ESCRITORIO.jasper"));
+                        fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_ESCRITORIO.jasper"));
+                        jasper = (JasperReport) JRLoader.loadObject(fl);
                         if (id_compara != getConverteNullInt(result.get(i + 1).get(38)) && !imprimir) {
                             imprimir = true;
                         }
                     } else if (ct.getId() == 2) {
                         id_compara = getConverteNullInt(result.get(i).get(39)); // ID_PESSOA
-                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
+                        fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
+                        jasper = (JasperReport) JRLoader.loadObject(fl);
                         if (id_compara != getConverteNullInt(result.get(i + 1).get(39)) && !imprimir) {
                             imprimir = true;
                         }
                     } else if (ct.getId() == 3) {
-                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
+                        fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
+                        jasper = (JasperReport) JRLoader.loadObject(fl);
                         id_compara = getConverteNullInt(result.get(i).get(39)); // ID_PESSOA
                         if (id_compara != getConverteNullInt(result.get(i + 1).get(39)) && !imprimir) {
                             imprimir = true;
@@ -877,7 +884,8 @@ public class NotificacaoBean implements Serializable {
         JasperReport jasper = null;
         String nomeArq = "notificacao_";
         try {
-            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/" + nomeJasper));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/" + nomeJasper));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
 
             byte[] arquivo = new byte[0];

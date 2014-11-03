@@ -482,6 +482,21 @@ public class AtendimentoBean implements Serializable {
         getListaAteMovimento().clear();
     }
 
+    public void cancelar(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        sv.abrirTransacao();
+        
+        //AteMovimento ateMov = (AteMovimento) sv.pesquisaObjeto(ateMovimento.getId(), "AteMovimento");
+          
+        // status 3 Atendimento Cancelado
+        ateMovimento.setStatus((AteStatus)sv.pesquisaCodigo(3, "AteStatus"));
+        
+        if (!sv.alterarObjeto(ateMovimento)){
+            sv.desfazerTransacao();
+        }else{
+            sv.comitarTransacao();
+        }
+    }
     public void verificaPessoaOposicao() {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         if (atendimentoDB.pessoaOposicao(sisPessoa.getDocumento())) {

@@ -47,7 +47,8 @@ public class ImprimirConviteClube implements Serializable {
     public void imprimir(ConviteMovimento cm) {
         try {
             Collection lista = parametroConvite(cm);
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CONVITE_CLUBE.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CONVITE_CLUBE.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
             Diretorio.criar("Arquivos/downloads/convite");
@@ -71,7 +72,8 @@ public class ImprimirConviteClube implements Serializable {
         }
         try {
             Collection lista = parametroConvite(cm);
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CONVITE_CLUBE.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CONVITE_CLUBE.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);

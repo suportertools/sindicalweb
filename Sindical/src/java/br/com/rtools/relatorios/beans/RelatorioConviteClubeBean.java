@@ -21,6 +21,7 @@ import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -182,7 +183,7 @@ public class RelatorioConviteClubeBean implements Serializable {
         }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             try {
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroConviteClubes);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);

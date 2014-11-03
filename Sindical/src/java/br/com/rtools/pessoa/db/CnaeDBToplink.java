@@ -154,4 +154,18 @@ public class CnaeDBToplink extends DB implements CnaeDB {
         }
         return result;
     }
+    
+    @Override
+    public Cnae pesquisaCnaeDaReceita(String cnae) {
+        Cnae result = null;
+        try {
+            Query qry = getEntityManager().createNativeQuery("");
+            result = (Cnae) qry.getSingleResult();
+        } catch (Exception e) {
+        }
+        return result;
+    }
+    
+    
+    
 }

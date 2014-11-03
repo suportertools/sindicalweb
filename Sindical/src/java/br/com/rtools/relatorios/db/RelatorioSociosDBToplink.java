@@ -4,6 +4,7 @@ import br.com.rtools.principal.DB;
 import br.com.rtools.relatorios.Relatorios;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
@@ -417,5 +418,85 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         } catch (Exception e) {
             return new ArrayList();
         }
+    }
+    
+    @Override
+    public List<Vector> listaSociosInativos(boolean comDependentes, boolean chkInativacao, boolean chkFiliacao, String dt_inativacao_i, String dt_inativacao_f, String dt_filiacao_i, String dt_filiacao_f, int categoria, int grupoCategoria, String ordernarPor){
+        
+        String select = "", innerjoin = "", textQry = "", and = "", orderby = "", ordem = "";
+        
+        
+        if (comDependentes){
+            select = "SELECT p.ds_nome as titular, s.titular as codtitular, s.codsocio, s.nome, s.parentesco, s.matricula, s.categoria, s.filiacao, s.inativacao, s.motivo_inativacao, s.id_categoria, s.id_grupo_categoria ";
+            innerjoin = " INNER JOIN pes_pessoa as p on p.id = s.titular ";
+            orderby = " p.ds_nome, s.titular, s.categoria, s.matricula, s.id_parentesco, s.nome, s.parentesco ";
+            
+            if (ordernarPor.equals("matricula"))
+                ordem = "  s.matricula, ";
+            else if (ordernarPor.equals("categoria"))
+                ordem = "  s.categoria, ";
+            else if (ordernarPor.equals("inativacao"))
+                ordem = "  s.inativacao DESC, ";
+            else if (ordernarPor.equals("filiacao"))
+                ordem = "  s.filiacao DESC, ";
+            
+        }else{
+            select = "SELECT s.nome as titular, s.codsocio as codtitular, s.codsocio, s.nome, s.parentesco, s.matricula, s.categoria, s.filiacao, s.inativacao, s.motivo_inativacao, s.id_categoria, s.id_grupo_categoria ";
+            and = " WHERE s.parentesco = 'TITULAR' ";
+            orderby = " s.inativacao DESC ";
+            
+            if (ordernarPor.equals("filiacao"))
+                ordem = " s.filiacao DESC, ";
+            else if (ordernarPor.equals("nome"))
+                ordem = " s.nome, ";
+            else if (ordernarPor.equals("matricula"))
+                ordem = "  s.matricula, ";
+            else if (ordernarPor.equals("categoria"))
+                ordem = "  s.categoria, ";
+        }
+        
+        orderby = " ORDER BY "+ ordem + orderby;
+               
+        if (chkInativacao){
+            if (!dt_inativacao_i.isEmpty() && dt_inativacao_f.isEmpty()){
+                and += " AND s.inativacao >= '"+dt_inativacao_i+"'";
+            }else if (dt_inativacao_i.isEmpty() && !dt_inativacao_f.isEmpty()){
+                and += " AND s.inativacao <= '"+dt_inativacao_f+"'";
+            }else if (!dt_inativacao_i.isEmpty() && !dt_inativacao_f.isEmpty()){
+                and += " AND s.inativacao >= '"+dt_inativacao_i+"' AND s.inativacao <= '"+dt_inativacao_f+"'";
+            }
+        }
+        
+        if (chkFiliacao){
+            if (!dt_filiacao_i.isEmpty() && dt_filiacao_f.isEmpty()){
+                and += " AND s.filiacao >= '"+dt_filiacao_i+"'";
+            }else if (dt_filiacao_i.isEmpty() && !dt_filiacao_f.isEmpty()){
+                and += " AND s.filiacao <= '"+dt_filiacao_f+"'";
+            }else if (!dt_filiacao_i.isEmpty() && !dt_filiacao_f.isEmpty()){
+                and += " AND s.filiacao >= '"+dt_filiacao_i+"' AND s.filiacao <= '"+dt_filiacao_f+"'";
+            }
+        }
+        
+        if (categoria != -1){
+            and += " AND s.id_categoria = "+categoria;
+        }
+        
+        if (grupoCategoria != -1){
+            and += " AND s.id_grupo_categoria = "+grupoCategoria;
+        }
+        
+        textQry = select + 
+                "  FROM soc_socios_inativos_vw s" +
+                innerjoin +
+                and + 
+                orderby;
+        
+        try{
+            Query qry = getEntityManager().createNativeQuery(textQry);
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 }

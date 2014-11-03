@@ -20,6 +20,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,7 +108,7 @@ public class RelatorioContabilidadesBean implements Serializable {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection listaEscritorios = new ArrayList<ParametroEscritorios>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             try {
                 String dados[] = new String[8];
                 for (int i = 0; i < list.size(); i++) {

@@ -30,6 +30,7 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -199,7 +200,7 @@ public class RelatorioEscolaBean implements Serializable {
         }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             try {
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) null);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);

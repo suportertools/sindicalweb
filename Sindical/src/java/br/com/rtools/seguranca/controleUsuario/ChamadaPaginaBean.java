@@ -1449,6 +1449,11 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("relatorioChequesRecebidosBean");
         return metodoGenerico(2, "relatorioChequesRecebidos");
     }
+    
+    public synchronized String relatorioSociosInativos() {
+        GenericaSessao.remove("relatorioSociosInativosBean");
+        return metodoGenerico(3, "relatorioSociosInativos");
+    }
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------

@@ -153,7 +153,7 @@
                                 </h:column>
                             </h:panelGrid>
 
-                            <h:panelGrid columns="4" style="margin-top: 10px">
+                            <h:panelGrid columns="5" style="margin-top: 10px">
                                 <p:column>
                                     <p:commandButton value="Salvar" title="Salvar Atendimento" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{atendimentoBean.ateMovimento.id == -1}"/>
                                     <p:commandButton value="Alterar" title="Alterar Atendimento" onclick="PF('dlg_alterar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{atendimentoBean.ateMovimento.id != -1}"/>
@@ -164,6 +164,10 @@
                                 
                                 <h:column>
                                     <p:commandButton value="Excluir " title="Excluir Atendimento" onclick="PF('dlg_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" rendered="#{atendimentoBean.ateMovimento.id != -1}"/>
+                                </h:column>
+                                    
+                                <h:column>
+                                    <p:commandButton value="Cancelar " title="Cancelar Atendimento" onclick="PF('dlg_cancelar').show()" disabled="#{controleAcessoBean.botaoExcluir}" rendered="#{atendimentoBean.ateMovimento.id != -1}"/>
                                 </h:column>
                                     
                                 <h:column>
@@ -195,7 +199,7 @@
                                         <p:outputLabel value="#{linha.horaEmissao}"/>
                                     </p:column>
                                     
-                                    <p:column headerText="Nome" width="250">
+                                    <p:column headerText="Nome" width="200">
                                         <p:commandLink action="#{atendimentoBean.editar(linha)}" value="#{linha.pessoa.nome}" update=":formAtendimentoPessoa"/>
                                     </p:column>
                                     
@@ -209,6 +213,14 @@
 
                                     <p:column style="text-align: center">
                                         <p:outputLabel value="#{linha.status.descricao}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Homologador">
+                                        <p:outputLabel value="#{linha.atendente.pessoa.nome}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Reserva">
+                                        <p:outputLabel value="#{linha.reserva.pessoa.nome}" />
                                     </p:column>
                                     
                                     <p:column headerText="Senha" style="text-align: center">
@@ -275,6 +287,13 @@
                                 <br /><br />
                                 <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{atendimentoBean.excluir()}" update="formAtendimentoPessoa" oncomplete="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>    
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_cancelar" modal="true" header="Cancelar este Atendimento" width="400" resizable="false">
+                                <h:outputLabel value="Deseja realmente CANCELAR esse Atendimento?" />
+                                <br /><br />
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{atendimentoBean.cancelar()}" update="formAtendimentoPessoa" oncomplete="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_cancelar').hide()" style="float: left" icon="ui-icon-close"/>    
                             </p:dialog>
 
                             <p:dialog widgetVar="dlg_alterar_pessoa" modal="true" header="Alterar essa Pessoa" width="420" resizable="false">

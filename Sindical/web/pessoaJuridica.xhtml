@@ -47,7 +47,7 @@
                             <p:growl id="i_msg" autoUpdate="true" showDetail="true"/>
                             <c:set scope="request" var="object" value="${juridicaBean.juridica}"/> 
                             <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both">
-                                <p:messages id="i_msg_m" autoUpdate="true" showDetail="true"/>
+                                <p:messages id="i_msg_m" autoUpdate="true" showDetail="true" closable="true"/>
                                 <p:tabView id="i_tabview_juridica" style="width: 990px" activeIndex="#{juridicaBean.indicaTab}">
                                     <p:ajax event="tabChange" listener="#{juridicaBean.accordion}" /> 
                                     <p:tab title="Dados Gerais">
@@ -125,7 +125,8 @@
 
                                                 <p:column>
                                                     <br />
-                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpj()}"/>
+                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpjXML()}"/>
+                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpj()}" rendered="false"/>
                                                 </p:column>
 
                                                 <p:column>
@@ -408,14 +409,14 @@
                             <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Jurídica" width="400" resizable="false">
                                 <h:outputLabel value="Deseja realmente SALVAR essa Pessoa Jurídica?" />
                                 <br /><br />
-                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.salvar()}" update="formPessoaJuridica" oncomplete="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.salvar()}" ajax="false" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>    
                             </p:dialog>
 
                             <p:dialog widgetVar="dlg_excluir" modal="true" header="Excluir Jurídica" width="400" resizable="false">
                                 <h:outputLabel value="Deseja realmente EXCLUIR essa Pessoa Jurídica?" />
                                 <br /><br />
-                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.excluir()}" update="formPessoaJuridica" oncomplete="PF('dlg_excluir').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.excluir()}" ajax="false" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>    
                             </p:dialog>
 

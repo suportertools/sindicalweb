@@ -1210,8 +1210,8 @@ public final class ArquivoBancoBean implements Serializable {
                     JasperReport jasper = null;
                     Collection listaComp = new ArrayList<ComparaMovimentos>();
 
-                    jasper = (JasperReport) JRLoader.loadObject(
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/COMPARATIVO_MOVIMENTO.jasper"));
+                    File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/COMPARATIVO_MOVIMENTO.jasper"));
+                    jasper = (JasperReport) JRLoader.loadObject(fl);
 
                     JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaComparas);
                     JasperPrint print = JasperFillManager.fillReport(
@@ -1630,8 +1630,8 @@ public final class ArquivoBancoBean implements Serializable {
             JasperReport jasper = null;
             Collection listaDocs = new ArrayList<DocumentoInvalido>();
 
-            jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DOCUMENTOINVALIDO.jasper"));
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DOCUMENTOINVALIDO.jasper"));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
 
             try {
                 for (int i = 0; i < listaDocumentos.size(); i++) {

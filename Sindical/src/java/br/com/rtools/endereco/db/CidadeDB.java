@@ -20,5 +20,7 @@ public interface CidadeDB {
     public List pesquisaCidadePorCidade(String cidade, String como);
 
     public Cidade pesquisaCidadePorEstadoCidade(String uf, String cidade);
+    
+    public List<Cidade> listaCidadeParaREPIS();
 
 }

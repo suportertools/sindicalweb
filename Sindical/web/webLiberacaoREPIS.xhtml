@@ -19,7 +19,14 @@
             .tblColorx{
                 background-color: #9ccaaa!important;
             }
-        </style>        
+        </style>      
+        
+        <script type="text/javascript">
+            function refresh (timeoutPeriod){
+                //alert('oi');
+                refresh = setTimeout(function(){window.location.reload(true);},timeoutPeriod);
+            }
+        </script> 
     </h:head>
     <h:body>
         <f:subview id="header">
@@ -34,17 +41,21 @@
                 <h:form id="form_libera_repis">
                     <p:ajaxStatus></p:ajaxStatus>
                     <p:panel styleClass="fundoCinza">
-                        <h:panelGrid id="i_panel" columns="2" style="width: 100%">
+                        <h:panelGrid id="i_panel" columns="3" style="width: 100%">
                             <h:column>
                                 <h:panelGrid columns="4">
-                                    <p:inputMask size="30" value="#{webREPISBean.descricao}" mask="#{webREPISBean.tipoPesquisa.equals('cnpj') ? '99?.999.999/9999-99' : ''}" rendered="#{!webREPISBean.tipoPesquisa.equals('tipo') and !webREPISBean.tipoPesquisa.equals('status')}" />
+                                    <p:inputMask size="30" value="#{webREPISBean.descricao}" mask="#{webREPISBean.tipoPesquisa.equals('cnpj') ? '99?.999.999/9999-99' : ''}" rendered="#{!webREPISBean.tipoPesquisa.equals('tipo') and !webREPISBean.tipoPesquisa.equals('status') and !webREPISBean.tipoPesquisa.equals('cidade')}" />
                                     <p:selectOneMenu value="#{webREPISBean.indexCertidaoTipo}" rendered="#{webREPISBean.tipoPesquisa.equals('tipo')}" style="padding-right: 15px;">
-                                        <p:ajax update="@this tbl" event="change" listener="#{webREPISBean.pesquisar()}"/>
+                                        <p:ajax update="@this tbl i_panel" event="change" listener="#{webREPISBean.pesquisar()}"/>
                                         <f:selectItems value="#{webREPISBean.listaTipoCertidao}" />
                                     </p:selectOneMenu>
                                     <p:selectOneMenu value="#{webREPISBean.indexStatus}" rendered="#{webREPISBean.tipoPesquisa.equals('status')}" style="padding-right: 15px;">
-                                        <p:ajax update="@this tbl" event="change" listener="#{webREPISBean.pesquisar()}"/>
+                                        <p:ajax update="@this tbl i_panel" event="change" listener="#{webREPISBean.pesquisar()}"/>
                                         <f:selectItems value="#{webREPISBean.listaStatus}" />
+                                    </p:selectOneMenu>                                    
+                                    <p:selectOneMenu value="#{webREPISBean.indexCidade}" rendered="#{webREPISBean.tipoPesquisa.equals('cidade')}" style="padding-right: 15px;">
+                                        <p:ajax update="@this tbl i_panel" event="change" listener="#{webREPISBean.pesquisar()}"/>
+                                        <f:selectItems value="#{webREPISBean.listaCidade}" />
                                     </p:selectOneMenu>                                    
                                     <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 15px;">
                                         <p:ajax event="change" update="@this, :form_libera_repis:" />
@@ -54,9 +65,14 @@
                                         <f:selectItem itemLabel="Status" itemValue="status"/>
                                         <f:selectItem itemLabel="Solicitante" itemValue="solicitante"/>
                                         <f:selectItem itemLabel="Tipo" itemValue="tipo"/>
+                                        <f:selectItem itemLabel="Cidade" itemValue="cidade"/>
                                     </p:selectOneMenu>
                                     <p:commandButton id="i_pesquisar" value="Pesquisar na Lista" action="#{webREPISBean.pesquisar()}" style="margin-left: 15px;" update="tbl"/>
                                 </h:panelGrid>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="#{webREPISBean.listRepisMovimentoPatronal.size()} registros na lista" style="font-weight: bold" rendered="#{webREPISBean.listRepisMovimentoPatronal.size() gt 1}"/>
+                                <h:outputLabel value="#{webREPISBean.listRepisMovimentoPatronal.size()} registro na lista" style="font-weight: bold" rendered="#{webREPISBean.listRepisMovimentoPatronal.size() le 1}"/>
                             </h:column>
                             <h:column>
                                 <p:menuButton value="#{webREPISBean.valueLenght}" style="float: right">
@@ -73,6 +89,7 @@
                         </h:panelGrid>
                     </p:panel>
                     <p:messages id="i_msg" showDetail="true" closable="true" />
+                    <p:poll global="false" update="tbl" rendered="false"/>
                     <p:dataTable id="tbl" styleClass="margin-top-max" value="#{webREPISBean.listRepisMovimentoPatronal}" selection="#{webREPISBean.listRepisMovimentoPatronalSelecionado}" rowKey="#{repisMovimento.id}" var="repisMovimento" style="width: 100%" emptyMessage="Nenhum registro encontrado." scrollable="true" scrollHeight="450" rowStyleClass="#{webREPISBean.retornaCor(repisMovimento)}"> 
                         <p:ajax event="rowSelect" update=":form_libera_repis:i_panel_alterar" global="false"/>
                         <p:ajax event="rowSelectCheckbox" update=":form_libera_repis:i_panel_alterar" global="false"/>
@@ -105,10 +122,11 @@
                         <p:column headerText="Cidade" width="70" style="" sortBy="#{webREPISBean.enderecoPessoa(repisMovimento.pessoa.id).endereco.cidade.cidadeToString}">
                             <p:outputLabel value="#{webREPISBean.enderecoPessoa(repisMovimento.pessoa.id).endereco.cidade.cidadeToString}"/>
                         </p:column>
-                        <p:column headerText="..." width="25" styleClass="text-center">
-                            <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3 or repisMovimento.repisStatus.id == 4 or repisMovimento.repisStatus.id == 5}" ajax="false">
-                               
-                            </p:commandButton> 
+                        <p:column headerText="..." width="30" styleClass="">
+                            <div style="#{(repisMovimento.dataImpressao != null) ? 'background: green; width: 35px; float: right; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;' : ''}">
+                                <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3 or repisMovimento.repisStatus.id == 4 or repisMovimento.repisStatus.id == 5}" ajax="false" title="#{repisMovimento.dataImpressaoString}" onclick="refresh(2000)"/>
+                                
+                            </div>
                         </p:column>                        
                         <p:rowExpansion>
                             <h:panelGrid columns="4" styleClass="sbb">
@@ -144,7 +162,7 @@
                         </h:column>
                         
                         <h:column>
-                            <p:commandButton value="Imprimir certificados selecionados" action="#{webREPISBean.imprimirCertificado(webREPISBean.listRepisMovimentoPatronalSelecionado)}" rendered="#{webREPISBean.listRepisMovimentoPatronalSelecionado.size() > 0}" style="float: right" ajax="false"/>
+                            <p:commandButton value="Imprimir certificados selecionados" action="#{webREPISBean.imprimirCertificado(webREPISBean.listRepisMovimentoPatronalSelecionado)}" rendered="#{webREPISBean.listRepisMovimentoPatronalSelecionado.size() > 0}" style="float: right" ajax="false" onclick="refresh(2000)"/>
                         </h:column>
                     </h:panelGrid>
                     

@@ -52,7 +52,8 @@ public class ProtocoloAgendamento implements Serializable {
     public void imprimir(Agendamento a) {
         try {
             Collection lista = parametroProtocolos(a);
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);
@@ -78,7 +79,8 @@ public class ProtocoloAgendamento implements Serializable {
         }
         try {
             Collection lista = parametroProtocolos(a);
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);

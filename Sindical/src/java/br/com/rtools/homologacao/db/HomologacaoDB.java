@@ -70,7 +70,7 @@ public interface HomologacaoDB {
     
     public List<Senha> listaAtendimentoIniciadoSimples(int id_filial, int id_usuario);
     
-    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String nomePessoaAtendimento);
+    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String descricaoFisica, String tipoPesquisaFisica);
     
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario);
     

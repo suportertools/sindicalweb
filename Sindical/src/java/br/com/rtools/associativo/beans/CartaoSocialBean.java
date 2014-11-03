@@ -22,6 +22,7 @@ import br.com.rtools.utilitarios.ImpressaoParaSocios;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -412,7 +413,8 @@ public class CartaoSocialBean implements Serializable {
             JasperReport jasper;
             String nomeArq;
            
-            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_SOCIO.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_SOCIO.jasper"));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
             nomeArq = "etiqueta_coluna_";
            
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
@@ -460,7 +462,8 @@ public class CartaoSocialBean implements Serializable {
             JasperReport jasper;
             String nomeArq;
             
-            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_TERMICA_SOCIAL_RETRATO.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_TERMICA_SOCIAL_RETRATO.jasper"));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
             nomeArq = "etiqueta_termica_";
             
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);

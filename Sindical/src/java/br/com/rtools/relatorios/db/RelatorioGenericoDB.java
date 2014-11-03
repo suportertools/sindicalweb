@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface RelatorioGenericoDB {
 
-    public List pesquisaTipoRelatorio(int idRotina);
+    public List<Relatorios> pesquisaTipoRelatorio(int idRotina);
 
     public List pesquisaCidadesRelatorio();
 

@@ -981,19 +981,33 @@ public class SociosBean implements Serializable {
             return null;
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        //SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         SociosDB db = new SociosDBToplink();
 
+        Dao di = new Dao();
         // DELETAR DEPENDENTES -----
-        sv.abrirTransacao();
-        for (int i = 0; i < listaDependentes.size(); i++) {
-            Socios soc = db.pesquisaSocioPorPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
+        di.openTransaction();
+        
+        for (DataObject listaDependente : listaDependentes) {
+            Socios soc = db.pesquisaSocioPorPessoa(((Fisica) ((DataObject) listaDependente).getArgumento0()).getPessoa().getId());
             if (soc.getId() == -1) {
                 //listaDependentes.remove(idIndexDep);
-            } else if (!excluirDependentes(sv, (Socios) sv.pesquisaCodigo(soc.getId(), "Socios"))) {
-                sv.desfazerTransacao();
+            } else if (!excluirDependentes(di, (Socios) di.find(soc))) {
+                di.rollback();
                 GenericaMensagem.error("Erro", "Erro ao Excluir Dependentes!");
-                RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
+                PF.openDialog("i_dlg_c");
+                return null;
+            }
+        }
+        
+        for (DataObject listaDependentesInativo : listaDependentesInativos) {
+            Socios soc = db.pesquisaSocioPorPessoa(((Fisica) ((DataObject) listaDependentesInativo).getArgumento0()).getPessoa().getId());
+            if (soc.getId() == -1) {
+                //listaDependentes.remove(idIndexDep);
+            } else if (!excluirDependentes(di, (Socios) di.find(soc))) {
+                di.rollback();
+                GenericaMensagem.error("Erro", "Erro ao Excluir Dependentes!");
+                PF.openDialog("i_dlg_c");
                 return null;
             }
         }
@@ -1008,38 +1022,38 @@ public class SociosBean implements Serializable {
 
         if (!list.isEmpty()) {
             for (SocioCarteirinha socioCarteirinha : list) {
-                if (!sv.deletarObjeto(sv.pesquisaCodigo(socioCarteirinha.getId(), "SocioCarteirinha"))) {
+                if (!di.delete(di.find(socioCarteirinha))) {
                     GenericaMensagem.error("Erro", "Erro ao Excluir carteirinha do Dependente!");
-                    RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
+                    PF.openDialog("i_dlg_c");
                     return null;
                 }
             }
         }
 
         // DELETAR SOCIOS ------
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(socios.getId(), "Socios"))) {
+        if (!di.delete(di.find(socios))) {
             GenericaMensagem.error("Erro", "Erro ao Deletar Sócio!");
-            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
-            sv.desfazerTransacao();
+            PF.openDialog("i_dlg_c");
+            di.rollback();
             return null;
         }
 
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(matriculaSocios.getId(), "MatriculaSocios"))) {
-            GenericaMensagem.error("Erro", "Erro ao Deletar Matricula!");
-            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
-            sv.desfazerTransacao();
+        if (!di.delete(di.find(matriculaSocios))) {
+            GenericaMensagem.error("Erro", "Erro ao Deletar Matricula, existem movimentos para essa Pessoa!");
+            PF.openDialog("i_dlg_c");
+            di.rollback();
             return null;
         }
 
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa"))) {
+        if (!di.delete(di.find(servicoPessoa))) {
             GenericaMensagem.error("Erro", "Erro ao Deletar Servico Pessoa!");
-            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
-            sv.desfazerTransacao();
+            PF.openDialog("i_dlg_c");
+            di.rollback();
             return null;
         }
 
         GenericaMensagem.info("Sucesso", "Cadastro Deletado!");
-        sv.comitarTransacao();
+        di.commit();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 
         // FUNCIONANDO --
@@ -1061,22 +1075,23 @@ public class SociosBean implements Serializable {
     public String excluirDependente(DataObject linha, int index) {
         Fisica fi = (Fisica) linha.getArgumento0();
         if (fi.getId() != -1) {
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            //SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             SociosDB db = new SociosDBToplink();
             Socios soc = db.pesquisaSocioPorPessoa(fi.getPessoa().getId());
 
-            sv.abrirTransacao();
+            Dao di = new Dao();
+            di.openTransaction();
             if (soc.getId() == -1) {
                 listaDependentes.remove(index);
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
-                sv.desfazerTransacao();
-            } else if (!excluirDependentes(sv, soc)) {
-                sv.desfazerTransacao();
+                di.rollback();
+            } else if (!excluirDependentes(di, soc)) {
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao excluir Dependente!");
             } else {
                 listaDependentes.remove(index);
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
-                sv.comitarTransacao();
+                di.commit();
             }
         } else {
             listaDependentes.remove(index);
@@ -1085,7 +1100,7 @@ public class SociosBean implements Serializable {
         return null;
     }
 
-    public boolean excluirDependentes(SalvarAcumuladoDB sv, Socios soc) {
+    public boolean excluirDependentes(Dao di, Socios soc) {
         SociosDB db = new SociosDBToplink();
         ServicoPessoaDB dbS = new ServicoPessoaDBToplink();
 
@@ -1104,20 +1119,21 @@ public class SociosBean implements Serializable {
 
         if (!list.isEmpty()) {
             for (SocioCarteirinha socioCarteirinha : list) {
-                if (!sv.deletarObjeto(sv.pesquisaCodigo(socioCarteirinha.getId(), "SocioCarteirinha"))) {
+                if (!di.delete(di.find(socioCarteirinha))) {
                     msgConfirma = "Erro ao excluir carteirinha do Dependente!";
                     return false;
                 }
             }
         }
 
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(soc.getId(), "Socios"))) {
+        if (!di.delete(di.find(soc))) {
             msgConfirma = "Erro ao excluir Dependente!";
             return false;
         }
 
-        ServicoPessoa serPessoa = dbS.pesquisaServicoPessoaPorPessoa(soc.getServicoPessoa().getPessoa().getId());
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(serPessoa.getId(), "ServicoPessoa"))) {
+        //ServicoPessoa serPessoa = dbS.pesquisaServicoPessoaPorPessoa(soc.getServicoPessoa().getPessoa().getId());
+        ServicoPessoa serPessoa = (ServicoPessoa) di.find(soc.getServicoPessoa());
+        if (!di.delete(di.find(serPessoa))) {
             msgConfirma = "Erro ao excluir serviço pessoa dependente!";
             return false;
         }

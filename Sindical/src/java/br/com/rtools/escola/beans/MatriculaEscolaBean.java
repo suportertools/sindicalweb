@@ -644,7 +644,9 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 if (!list.isEmpty()) {
                     JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(list);
-                    JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
+                    
+                    File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
+                    JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
                     JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                     byte[] arquivo = JasperExportManager.exportReportToPdf(print);
                     String nomeDownload = "carne_escola" + DataHoje.horaMinuto().replace(":", "") + ".pdf";

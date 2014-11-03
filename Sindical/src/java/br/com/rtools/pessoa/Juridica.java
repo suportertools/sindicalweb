@@ -61,7 +61,7 @@ public class Juridica implements Serializable {
         setAbertura("");
         setFechamento("");
         this.emailEscritorio = false;
-        this.cobrancaEscritorio = false;
+        this.cobrancaEscritorio = true;
     }
 
     public Juridica(int id, Pessoa pessoa, String fantasia, Cnae cnae, Juridica contabilidade, String inscricaoEstadual, String inscricaoMunicipal, String contato, String responsavel, Porte porte, String abertura, String fechamento, boolean emailEscritorio, boolean cobrancaEscritorio) {

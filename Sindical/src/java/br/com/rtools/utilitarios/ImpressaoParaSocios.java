@@ -225,7 +225,8 @@ public class ImpressaoParaSocios {
             //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(path))
+            );
 
             fisica = db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId());
             pesEndereco = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
@@ -533,7 +534,8 @@ public class ImpressaoParaSocios {
             //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(path))
+            );
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
 
@@ -745,7 +747,7 @@ public class ImpressaoParaSocios {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROBRANCO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROBRANCO.jasper")));
             Juridica sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             PessoaEndereco pessoaEndereco = enderecoDB.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
             Registro registro = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
