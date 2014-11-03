@@ -447,6 +447,12 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
                 case "tipo":
                     and   += "    AND rm.id_certidao_tipo = " + descricao;
                     break;
+                case "cidade":
+                    inner += " INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 3 " +
+                             " INNER JOIN end_endereco e ON e.id = pe.id_endereco " +
+                             " INNER JOIN end_cidade c ON c.id = e.id_cidade";
+                    and   += "   AND c.id = " + descricao;
+                    break;
             }
         }
         

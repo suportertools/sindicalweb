@@ -230,7 +230,7 @@
                                     <h:outputLabel value="Carteira" rendered="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaCarteira}" styleClass="font-color-red"/>
                                     <h:outputLabel value="Carteira" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaCarteira}"/><br />
                                 </h:column>
-                                <p:inputText size="10" value="#{webAgendamentoContabilidadeBean.fisica.carteira}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
+                                <p:inputText size="10" value="#{webAgendamentoContabilidadeBean.fisica.carteira}">
 
                                 </p:inputText>
                             </h:column>
@@ -241,14 +241,14 @@
                                     <h:outputLabel value="Série" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaSerie}" />
                                     <br />
                                 </h:column>
-                                <p:inputText size="15" maxlength="15" value="#{webAgendamentoContabilidadeBean.fisica.serie}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
+                                <p:inputText size="15" maxlength="15" value="#{webAgendamentoContabilidadeBean.fisica.serie}">
 
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
                                 <h:outputLabel value="Código do Funcionário" /><br />
-                                <p:inputText size="20" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.codigo}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
+                                <p:inputText size="20" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.codigo}">
 
                                 </p:inputText>
                             </h:column>

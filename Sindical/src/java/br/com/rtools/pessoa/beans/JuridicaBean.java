@@ -131,14 +131,14 @@ public class JuridicaBean implements Serializable {
 
         if (!validaTipoDocumento(2, documento)) {
             msgDocumento = "Documento inválido!";
-            GenericaMensagem.warn("Erro", "Documento Inválido!");
+            GenericaMensagem.warn("Atenção", "Documento Inválido!");
             return;
         }
         JuridicaDB dbj = new JuridicaDBToplink();
         List listDocumento = dbj.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
         for (int i = 0; i < listDocumento.size(); i++) {
             if (!listDocumento.isEmpty()) {
-                GenericaMensagem.warn("Erro", "Empresa já esta cadastrada no Sistema!");
+                GenericaMensagem.warn("Atenção", "Empresa já esta cadastrada no Sistema!");
                 return;
             }
         }
@@ -279,14 +279,13 @@ public class JuridicaBean implements Serializable {
             if (endereco != null) {
                 TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
                 List tiposE = dbt.listaTipoEnderecoParaJuridica();
-                for (int i = 0; i < tiposE.size(); i++) {
+                for (Object tiposE1 : tiposE) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE1);
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(juridicaReceita.getNumero());
                     pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
                     listaEnd.add(pessoaEndereco);
-
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
@@ -309,14 +308,14 @@ public class JuridicaBean implements Serializable {
 
         if (!validaTipoDocumento(2, documento)) {
             msgDocumento = "Documento inválido!";
-            GenericaMensagem.warn("Erro", "Documento Inválido!");
+            GenericaMensagem.warn("Atenção", "Documento Inválido!");
             return;
         }
         JuridicaDB dbj = new JuridicaDBToplink();
         List listDocumento = dbj.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
         for (int i = 0; i < listDocumento.size(); i++) {
             if (!listDocumento.isEmpty()) {
-                GenericaMensagem.warn("Erro", "Empresa já esta cadastrada no Sistema!");
+                GenericaMensagem.warn("Atenção", "Empresa já esta cadastrada no Sistema!");
                 return;
             }
         }
@@ -325,14 +324,14 @@ public class JuridicaBean implements Serializable {
 
         juridicaReceita = db.pesquisaJuridicaReceita(documento);
         if (juridicaReceita.getPessoa() != null && juridicaReceita.getPessoa().getId() != -1) {
-            GenericaMensagem.warn("Erro", "Pessoa já cadastrada no Sistema!");
+            GenericaMensagem.warn("Atenção", "Pessoa já cadastrada no Sistema!");
             return;
         }
 
         if (juridicaReceita.getId() == -1) {
             try {
-                //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=17564575000130&dias=10&usuario=claudemir.rtools@hotmail.com&senha=989899");
-                URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
+                URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero="+documento+"&usuario=rogerio@rtools.com.br&senha=989899");
+                //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -343,10 +342,21 @@ public class JuridicaBean implements Serializable {
 
                     if (status == 6) {
                         GenericaMensagem.warn("Atenção", "Limite de acessos excedido!");
+                        return;
+                    }
+                    
+                    if (status == 1){
+                        GenericaMensagem.info("Atenção", "Atualizando esse CNPJ na receita, pesquise novamente em 30 segundos!");
+                        return;
+                    }
+                    
+                    if (status != 0){
+                        GenericaMensagem.error("Erro", error);
+                        return;
                     }
 
-                    juridicaReceita.setNome(obj.getString("natureza_juridica"));
-                    juridicaReceita.setFantasia(obj.getString("nome_empresarial"));
+                    juridicaReceita.setNome(obj.getString("nome_empresarial"));
+                    juridicaReceita.setFantasia(obj.getString("titulo_estabelecimento"));
                     juridicaReceita.setDocumento(documento);
                     juridicaReceita.setCep(AnaliseString.mascaraCep(obj.getString("cep")));
                     juridicaReceita.setDescricaoEndereco(obj.getString("logradouro"));
@@ -357,49 +367,65 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setPessoa(null);
                     juridicaReceita.setStatus(obj.getString("situacao_cadastral"));
                     juridicaReceita.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
-                    //System.out.println(in.readLine());
+                    
+                    SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+                    sv.abrirTransacao();
+
+                    if (!sv.inserirObjeto(juridicaReceita)) {
+                        GenericaMensagem.warn("Erro", "Erro ao Salvar pesquisa!");
+                        sv.desfazerTransacao();
+                        return;
+                    }
+
+                    sv.comitarTransacao();
+                    
                 }
             } catch (IOException | JSONException e) {
 
             }
         }
+        
+        juridica.getPessoa().setNome(juridicaReceita.getNome());
+        juridica.setFantasia(juridicaReceita.getFantasia());
 
-//            try {
-//                SSLUtil.acceptSSL();
-//                URL url = new URL("https://c.knu.com.br/webservice");
-//                URLConnection conn = url.openConnection();
-//                conn.setDoOutput(true);
-//                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//                wr.write(
-//                        "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
-//                        + "<dados>\n"
-//                        + "    <usuario>lucasprogramatecno@gmail.com</usuario>\n"
-//                        + "    <senha>lucasjava13</senha>\n"
-//                        + "    <funcao>receitaCNPJ</funcao>\n"
-//                        + "    <param>" + AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento()) + "</param>\n"
-//                        + "    <retorno>1</retorno>\n"
-//                        + "</dados>"
-//                );
-//
-//                wr.flush();
-//                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//                String line;
-//                while ((line = rd.readLine()) != null) {
-//                    if (line.contains("<atividade_principal>")) {
-//                        //juridica.getPessoa().setNome(line.substring(22, line.indexOf("</atividade_principal>")));
-//                        //juridica.setFantasia(juridica.getPessoa().getNome());
-//                    }
-//                    if (line.contains("<nome_empresarial>")) {
-//                        juridica.getPessoa().setNome(line.substring(20, line.indexOf("</nome_empresarial>")));
-//                        juridica.setFantasia(juridica.getPessoa().getNome());
-//                    }
-//                }
-//
-//                wr.close();
-//                rd.close();
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
+        String result[] = juridicaReceita.getCnae().split(" ");
+        CnaeDB dbc = new CnaeDBToplink();
+        String cnaex = result[result.length-1].replace("(", "").replace(")", "");
+        List<Cnae> listac = dbc.pesquisaCnae(cnaex, "cnae", "I");
+
+        if (listac.isEmpty()) {
+            GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
+            return;
+        }
+        retornaCnaeReceita(listac.get(0));
+
+        PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
+
+        String cep = juridicaReceita.getCep();
+        cep = cep.replace(".", "").replace("-", "");
+
+        String descricao[] = AnaliseString.removerAcentos(juridicaReceita.getDescricaoEndereco()).split(" ");
+        String bairros[] = AnaliseString.removerAcentos(juridicaReceita.getBairro()).split(" ");
+
+        endereco = dbe.enderecoReceita(cep, descricao, bairros);
+
+        if (endereco != null) {
+            TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
+            List tiposE = dbt.listaTipoEnderecoParaJuridica();
+            for (Object tiposE1 : tiposE) {
+                pessoaEndereco.setEndereco(endereco);
+                pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE1);
+                pessoaEndereco.setPessoa(juridica.getPessoa());
+                pessoaEndereco.setNumero(juridicaReceita.getNumero());
+                pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
+                listaEnd.add(pessoaEndereco);
+                pessoaEndereco = new PessoaEndereco();
+            }
+        } else {
+            String msg = "Endereço não encontrado no Sistema - CEP: " + juridicaReceita.getCep() + " DESC: " + juridicaReceita.getDescricaoEndereco() + " BAIRRO: " + juridicaReceita.getBairro();
+            GenericaMensagem.warn("Atenção", msg);
+        }
     }
 
     public void accordion(TabChangeEvent event) {
@@ -704,12 +730,17 @@ public class JuridicaBean implements Serializable {
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
 
-                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1 && juridica.getContabilidade().getId() != juridica.getId()) {
-                    dbSalvar.alterarObjeto(juridica.getContabilidade());
-                }
 
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
                 dbSalvar.comitarTransacao();
+                
+                // ATUALIZA CONTABILIDADE SE FOR ELA MESMA A PESSOA JURIDICA ---
+                if ((juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1) && (juridica.getContabilidade().getId() == juridica.getId())) {
+                    juridica = (Juridica) new Dao().find(new Juridica(), juridica.getId());
+                    //juridica.setContabilidade(juridica);
+                    //dbSalvar.alterarObjeto(juridica.getContabilidade());
+                }
+                
                 NovoLog novoLog = new NovoLog();
                 novoLog.update(beforeUpdate, "ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
@@ -1059,6 +1090,7 @@ public class JuridicaBean implements Serializable {
         contabilidade = j; //(Juridica) listaContabilidade.get(idIndexContabilidade);
         juridica.setContabilidade(contabilidade);
         juridica.setEmailEscritorio(true);
+        juridica.setCobrancaEscritorio(true);
         renChkEndereco = "true";
         //chkEndContabilidade = true; // ROGÉRINHO PEDIU PRA VOLTAR TRUE NA DATA -- 30/07/2013 -- POR CAUSA DO CARLOS DE LIMEIRA
         return "pessoaJuridica";
@@ -1254,14 +1286,16 @@ public class JuridicaBean implements Serializable {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
             if (juridica.isCobrancaEscritorio() && (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)) {
-                PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
-                if ((!listaEnd.isEmpty()) && pesEndCon != null) {
-                    pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
-                    pessoaEndereco.setComplemento(pesEndCon.getComplemento());
-                    pessoaEndereco.setNumero(pesEndCon.getNumero());
-                    endereco = pesEndCon.getEndereco();
-                    pessoaEndereco.setEndereco(endereco);
-                    listaEnd.set(1, pessoaEndereco);
+                if (juridica.getId() != juridica.getContabilidade().getId()){
+                    PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
+                    if ((!listaEnd.isEmpty()) && pesEndCon != null) {
+                        pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
+                        pessoaEndereco.setComplemento(pesEndCon.getComplemento());
+                        pessoaEndereco.setNumero(pesEndCon.getNumero());
+                        endereco = pesEndCon.getEndereco();
+                        pessoaEndereco.setEndereco(endereco);
+                        listaEnd.set(1, pessoaEndereco);
+                    }
                 }
             } else if (juridica != null) {
                 if (juridica.getContabilidade() != null) {
@@ -2411,3 +2445,43 @@ public class JuridicaBean implements Serializable {
         GenericaSessao.put("oposicaoBean", oposicaoBean);
     }
 }
+
+// ANTIGA PESQUISA POR WEBSERVICE KNU -- depois da data 01/12/2014 excluir esse comentário
+
+//            try {
+//                SSLUtil.acceptSSL();
+//                URL url = new URL("https://c.knu.com.br/webservice");
+//                URLConnection conn = url.openConnection();
+//                conn.setDoOutput(true);
+//                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+//                wr.write(
+//                        "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+//                        + "<dados>\n"
+//                        + "    <usuario>lucasprogramatecno@gmail.com</usuario>\n"
+//                        + "    <senha>lucasjava13</senha>\n"
+//                        + "    <funcao>receitaCNPJ</funcao>\n"
+//                        + "    <param>" + AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento()) + "</param>\n"
+//                        + "    <retorno>1</retorno>\n"
+//                        + "</dados>"
+//                );
+//
+//                wr.flush();
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//                String line;
+//                while ((line = rd.readLine()) != null) {
+//                    if (line.contains("<atividade_principal>")) {
+//                        //juridica.getPessoa().setNome(line.substring(22, line.indexOf("</atividade_principal>")));
+//                        //juridica.setFantasia(juridica.getPessoa().getNome());
+//                    }
+//                    if (line.contains("<nome_empresarial>")) {
+//                        juridica.getPessoa().setNome(line.substring(20, line.indexOf("</nome_empresarial>")));
+//                        juridica.setFantasia(juridica.getPessoa().getNome());
+//                    }
+//                }
+//
+//                wr.close();
+//                rd.close();
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+        

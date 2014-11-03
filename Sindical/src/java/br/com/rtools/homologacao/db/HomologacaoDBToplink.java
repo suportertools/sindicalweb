@@ -887,7 +887,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
     
     @Override
-    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String nomePessoaAtendimento) {
+    public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String descricaoFisica, String tipoPesquisaFisica) {
         List<Senha> result = new ArrayList();
         try {
             
@@ -909,11 +909,19 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 and +=  " AND j.id_pessoa = " + id_pessoa;
             }
             
-            if (!nomePessoaAtendimento.isEmpty()){
-                nomePessoaAtendimento = AnaliseString.normalizeLower(nomePessoaAtendimento);
-                
-                inner += " INNER JOIN sis_pessoa p ON p.id = a.id_sis_pessoa ";
-                and += " AND TRANSLATE(LOWER(p.ds_nome)) like '%"+nomePessoaAtendimento+"%'";
+            
+            if (!tipoPesquisaFisica.isEmpty()){
+                if (!descricaoFisica.isEmpty() && !descricaoFisica.equals("___.___.___-__")){
+                    inner += " INNER JOIN sis_pessoa p ON p.id = a.id_sis_pessoa ";
+                    if (tipoPesquisaFisica.equals("nome")){
+                        descricaoFisica = AnaliseString.normalizeLower(descricaoFisica);
+                        and += " AND TRANSLATE(LOWER(p.ds_nome)) like '%"+descricaoFisica+"%' ";
+                    }else if (tipoPesquisaFisica.equals("cpf")){
+                        and += " AND p.ds_documento = '"+descricaoFisica+"' ";
+                    }else{
+                        and += " AND p.ds_rg = '"+descricaoFisica+"' ";
+                    }
+                }
             }
             
             String textQry = "SELECT s.* FROM ate_movimento a "
@@ -921,7 +929,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                   + inner 
                   + " WHERE s.id_filial = " + id_filial
                   + and
-                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +") "
+                  // ANTES ESTAVA VISUALIZANDO AS RESERVAS SOMENTES PARA QUEM FOSSE O DONO--- TAREFA: 250 runrun.it
+                  //+ "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +") "
                   + order;
             
             Query qry = getEntityManager().createNativeQuery(textQry,Senha.class);
@@ -929,7 +938,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
-             //e.printStackTrace();
+            e.getMessage();
         }
         return result;
     }

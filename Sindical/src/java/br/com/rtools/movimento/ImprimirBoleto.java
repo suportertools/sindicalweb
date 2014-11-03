@@ -96,7 +96,8 @@ public class ImprimirBoleto {
 
             scc = db.pesquisaServPorIdServIdTipoServIdContCobranca(lista.get(i).getServicos().getId(), lista.get(i).getTipoServico().getId(), bol.getContaCobranca().getId());
             if (scc == null) {
-                return lista;
+                //return lista; // ALTEREI PORQUE NÃO ESTAVA ATUALIZANDO A LISTA DE MOVIMENTOS A RECEBER (VESTUARIO LIMEIRA) -- EXCLUIR DEPOIS DE 01/12/2014
+                continue;
             }
 
             Movimento mov = new Movimento();
@@ -694,7 +695,7 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper")
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"))
             );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
@@ -859,7 +860,8 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PROMISSORIA.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PROMISSORIA.jasper"))
+            );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
@@ -1086,7 +1088,8 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"))
+            );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
@@ -1369,13 +1372,15 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"))
+            );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor1);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
 
             //* JASPER 2 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"))
+            );
             dtSource = new JRBeanCollectionDataSource(vetor2);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
@@ -1677,14 +1682,16 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"))
+            );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor1);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
 
             //* JASPER 2 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PLANILHA_DE_DEBITO.jasper"))
+            );
             dtSource = new JRBeanCollectionDataSource(vetor2);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
@@ -1692,7 +1699,8 @@ public class ImprimirBoleto {
             if (imprimir_pro) {
                 //* JASPER 3 *//
                 jasper = (JasperReport) JRLoader.loadObject(
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PROMISSORIA.jasper"));
+                        new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/PROMISSORIA.jasper"))
+                );
                 dtSource = new JRBeanCollectionDataSource(vetor3);
                 ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
                 //* ------------- *//

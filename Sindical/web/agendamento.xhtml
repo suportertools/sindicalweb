@@ -73,7 +73,7 @@
                                     </p:column>
 
                                     <p:column headerText="Quant." width="40" style="text-align: center" rendered="#{agendamentoBean.renderedDisponivel}">
-                                        <h:outputText value="#{objeto.quantidade}" />
+                                        <h:outputText value="#{objeto.quantidade}" escape="false"/>
                                     </p:column>
 
                                     <p:column headerText="CNPJ" width="105" style="text-align: center">

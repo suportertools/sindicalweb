@@ -178,7 +178,8 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
             JasperReport jasper = null;
             Collection listaMovs = new ArrayList<ParametroMovimentos>();
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()))
+            );
             String quitacao, importacao, usuario;
             float valor = 0, repasse = 0, valorLiquido = 0;
 
@@ -475,7 +476,8 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
             JasperReport jasper = null;
             Collection listaMovs = new ArrayList<ParametroMovimentos>();
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+                    new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()))
+            );
             String quitacao, importacao, usuario;
             float valor = 0, repasse = 0, valorLiquido = 0;
             try {

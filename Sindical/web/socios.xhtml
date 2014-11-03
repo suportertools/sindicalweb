@@ -42,7 +42,7 @@
                         <h:form id="formSocios">
                             <c:set scope="request" var="object" value="${sociosBean.socios}"/>
 
-                            <p:dialog widgetVar="i_dlg_c" header="Salvo" resizable="false" modal="true">
+                            <p:dialog widgetVar="i_dlg_c" header="Mensagem" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
                                     <p:commandButton value="OK" onclick="PF('i_dlg_c').hide()" style="float: left" icon="ui-icon-check"/>  

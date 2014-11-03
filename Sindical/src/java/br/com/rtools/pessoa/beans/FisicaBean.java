@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -448,7 +449,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         msgSocio = "";
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
-            profissao = pessoaEmpresa.getFuncao();
+            if (pessoaEmpresa.getFuncao() != null)
+                profissao = pessoaEmpresa.getFuncao();
+            else
+                profissao = new Profissao();
             //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
@@ -460,7 +464,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaProfissao = dbp.pesquisaProfPorFisica(fisica.getId());
         if (pessoaProfissao.getId() != -1) {
             for (int i = 0; i < listaProfissoes.size(); i++) {
-                if (Integer.valueOf(listaProfissoes.get(i).getDescription()) == pessoaProfissao.getProfissao().getId()) {
+                if (Objects.equals(Integer.valueOf(listaProfissoes.get(i).getDescription()), pessoaProfissao.getProfissao().getId())){
                     idProfissao = i;
                     break;
                 }
@@ -545,7 +549,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         alterarEnd = true;
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
-            profissao = pessoaEmpresa.getFuncao();
+            if (pessoaEmpresa.getFuncao() != null)
+                profissao = pessoaEmpresa.getFuncao();
+            else
+                profissao = new Profissao();
             //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
@@ -725,11 +732,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 mensagem = "Informar data de admissão!";
                 return;
             }
+            
             if (profissao.getProfissao().equals("") || profissao.getProfissao() == null) {
-                mensagem = "Pesquise uma função!";
-                return;
-            }
-            pessoaEmpresa.setFuncao(profissao);
+//                mensagem = "Pesquise uma função!";
+//                return;
+                pessoaEmpresa.setFuncao(null);
+            }else
+                pessoaEmpresa.setFuncao(profissao);
             if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().equals("")) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(DataHoje.data())) {

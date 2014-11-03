@@ -251,7 +251,9 @@ public class SocioCarteirinhaJSFBean {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject( ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
@@ -545,7 +547,9 @@ public class SocioCarteirinhaJSFBean {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject( ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);

@@ -36,7 +36,10 @@ public class RepisMovimento implements Serializable {
     @JoinColumn(name = "id_certidao_tipo", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private CertidaoTipo certidaoTipo;
-
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_impressao")
+    private Date dataImpressao;
+    
     public RepisMovimento() {
         this.id = -1;
         this.dataEmissao = DataHoje.dataHoje();
@@ -47,9 +50,10 @@ public class RepisMovimento implements Serializable {
         this.repisStatus = new RepisStatus();
         this.patronal = new Patronal();
         this.certidaoTipo = new CertidaoTipo();
+        this.dataImpressao = null;
     }
 
-    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus, Patronal patronal, CertidaoTipo certidaoTipo) {
+    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus, Patronal patronal, CertidaoTipo certidaoTipo, String dataImpressaoString) {
         this.id = id;
         setDataEmissaoString(dataEmissaoString);
         this.contato = contato;
@@ -59,6 +63,7 @@ public class RepisMovimento implements Serializable {
         this.repisStatus = repisStatus;
         this.patronal = patronal;
         this.certidaoTipo = certidaoTipo;
+        setDataImpressaoString(dataRespostaString);
     }
 
     public int getId() {
@@ -147,5 +152,21 @@ public class RepisMovimento implements Serializable {
 
     public void setCertidaoTipo(CertidaoTipo certidaoTipo) {
         this.certidaoTipo = certidaoTipo;
+    }
+
+    public Date getDataImpressao() {
+        return dataImpressao;
+    }
+
+    public void setDataImpressao(Date dataImpressao) {
+        this.dataImpressao = dataImpressao;
+    }
+    
+    public String getDataImpressaoString() {
+        return DataHoje.converteData(dataImpressao);
+    }
+
+    public void setDataImpressaoString(String dataImpressaoString) {
+        this.dataImpressao = DataHoje.converte(dataImpressaoString);
     }
 }

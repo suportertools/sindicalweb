@@ -703,7 +703,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public String getStatusEmpresa() {
-        if (statusEmpresa.isEmpty()) {
+        //if (statusEmpresa.isEmpty()) {
             HomologacaoDB db = new HomologacaoDBToplink();
             if (juridica.getId() != -1) {
                 listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
@@ -713,7 +713,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             } else {
                 statusEmpresa = "REGULAR";
             }
-        }
+        //}
         return statusEmpresa;
     }
 

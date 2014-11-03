@@ -698,8 +698,9 @@ public class ImpressaoBoletosBean implements Serializable {
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaContrs = new ArrayList<ParametroContribuintes>();
-            jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
             try {
                 String dados[] = new String[21];
                 for (int i = 0; i < result.size(); i++) {
@@ -940,8 +941,9 @@ public class ImpressaoBoletosBean implements Serializable {
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaContrs = new ArrayList<ParametroContribuintes>();
-            jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            jasper = (JasperReport) JRLoader.loadObject(fl);
             try {
                 String dados[] = new String[21];
                 for (int i = 0; i < result.size(); i++) {

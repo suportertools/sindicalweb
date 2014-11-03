@@ -27,4 +27,6 @@ public interface CnaeDB {
     public List pesquisaCnaeSemConvencao(String desc);
 
     public Cnae pesquisaNumeroCnae(String nr_cnae);
+    
+    public Cnae pesquisaCnaeDaReceita(String cnae);
 }

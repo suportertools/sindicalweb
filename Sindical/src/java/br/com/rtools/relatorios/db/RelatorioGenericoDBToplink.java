@@ -10,8 +10,8 @@ import javax.persistence.Query;
 public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoDB {
 
     @Override
-    public List pesquisaTipoRelatorio(int idRotina) {
-        List result = new ArrayList();
+    public List<Relatorios> pesquisaTipoRelatorio(int idRotina) {
+        List<Relatorios> result = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery("select rel "
                     + "  from Relatorios rel"

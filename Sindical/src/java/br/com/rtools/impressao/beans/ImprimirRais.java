@@ -34,7 +34,8 @@ public class ImprimirRais implements Serializable {
     public void imprimir(Rais r) {
         try {
             Collection lista = parametro(r);
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RAIS.jasper"));
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RAIS.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);

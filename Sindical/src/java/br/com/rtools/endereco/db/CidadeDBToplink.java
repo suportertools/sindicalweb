@@ -156,4 +156,23 @@ public class CidadeDBToplink extends DB implements CidadeDB {
         }
         return null;
     }
+    
+    @Override
+    public List<Cidade> listaCidadeParaREPIS(){
+        try{
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT c.id id, c.ds_cidade ds_cidade, c.ds_uf ds_uf FROM arr_repis_movimento rm " +
+                    " INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa " +
+                    " INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 3 " +
+                    " INNER JOIN end_endereco e ON e.id = pe.id_endereco " +
+                    " INNER JOIN end_cidade c ON c.id = e.id_cidade " +
+                    "GROUP BY c.id, c.ds_cidade, c.ds_uf " +
+                    "ORDER BY c.ds_cidade ", Cidade.class);
+            
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
 }

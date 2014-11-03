@@ -11,7 +11,10 @@ import br.com.rtools.arrecadacao.RepisMovimento;
 import br.com.rtools.arrecadacao.RepisStatus;
 import br.com.rtools.arrecadacao.db.WebREPISDB;
 import br.com.rtools.arrecadacao.db.WebREPISDBToplink;
+import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.endereco.db.CidadeDB;
+import br.com.rtools.endereco.db.CidadeDBToplink;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.impressao.ParametroCertificado;
@@ -46,6 +49,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperReport;
@@ -69,6 +73,7 @@ public class WebREPISBean implements Serializable {
     private List<SelectItem> listComboRepisStatus = new ArrayList();
     private List<SelectItem> listComboCertidaoDisponivel = new ArrayList();
     private List<SelectItem> listaTipoCertidao = new ArrayList();
+    private List<SelectItem> listaCidade = new ArrayList();
     private List<RepisMovimento> listRepisMovimento = new ArrayList();
     private List<RepisMovimento> listRepisMovimentoPatronal = new ArrayList();
     private List<RepisMovimento> listRepisMovimentoPatronalSelecionado = new ArrayList();
@@ -76,6 +81,7 @@ public class WebREPISBean implements Serializable {
     private int idRepisStatus = 0;
     private int indexCertidaoDisponivel = 0;
     private int indexCertidaoTipo = 0;
+    private int indexCidade = 0;
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
@@ -176,6 +182,8 @@ public class WebREPISBean implements Serializable {
             listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, listaTipoCertidao.get(indexCertidaoTipo).getDescription(), patro.getId(), valueLenght);
         }else if (tipoPesquisa.equals("status")){
             listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa,  listaStatus.get(indexStatus).getDescription(), patro.getId(), valueLenght);
+        }else if (tipoPesquisa.equals("cidade")){
+            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa,  listaCidade.get(indexCidade).getDescription(), patro.getId(), valueLenght);
         }else{
             listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId(), valueLenght);
         }
@@ -382,12 +390,18 @@ public class WebREPISBean implements Serializable {
         JuridicaDB dbj = new JuridicaDBToplink();
         WebREPISDB dbw = new WebREPISDBToplink();
         List lista_jasper = new ArrayList();
+        
+        if (listam.isEmpty()){
+            return null;
+        }
+        Dao di = new Dao();
         try {
             Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
 
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
             PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
-
+            
+            di.openTransaction();
             for (RepisMovimento repis : listam) {
                 if (repis.getRepisStatus().getId() == 3 || repis.getRepisStatus().getId() == 4 || repis.getRepisStatus().getId() == 5){
                     Juridica juridica = dbj.pesquisaJuridicaPorPessoa(repis.getPessoa().getId());
@@ -398,6 +412,7 @@ public class WebREPISBean implements Serializable {
                     List<List> listax = dbj.listaJuridicaContribuinte(juridica.getId());
                     if (listax.isEmpty()){
                         GenericaMensagem.warn("Atenção", "Empresa não é Contribuinte!");
+                        di.rollback();
                         return null;
                     }
                     int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
@@ -408,6 +423,7 @@ public class WebREPISBean implements Serializable {
                     
                     if (result.isEmpty()){
                         GenericaMensagem.warn("Atenção", "Contribuinte fora do período de Convenção!");
+                        di.rollback();
                         return null;
                     }
                     
@@ -489,7 +505,20 @@ public class WebREPISBean implements Serializable {
                     
                     JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
                     lista_jasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
+                    
+                    if (repis.getDataImpressao() == null){
+                        RepisMovimento repisx = (RepisMovimento)di.find(new RepisMovimento(), repis.getId());
+                        repisx.setDataImpressao(DataHoje.dataHoje());
+
+                        di.save(repisx);
+                    }
                 }
+            }
+            
+            if (!lista_jasper.isEmpty()){
+                di.commit();
+            }else{
+                di.rollback();
             }
             
             JRPdfExporter exporter = new JRPdfExporter();
@@ -512,10 +541,14 @@ public class WebREPISBean implements Serializable {
             Download download = new Download(nomeDownload,
                     pathPasta,
                     "application/pdf",
-                    FacesContext.getCurrentInstance());
+                    FacesContext.getCurrentInstance()
+            );
             download.baixar();
             download.remover();
-        } catch (Exception e) {
+            
+            listRepisMovimentoPatronal.clear();
+        } catch (NumberFormatException | JRException e) {
+            di.rollback();
             e.getMessage();
             GenericaMensagem.error("Erro", "Arquivo de Certidão não encontrado! "+e.getMessage());
         }
@@ -945,5 +978,37 @@ public class WebREPISBean implements Serializable {
 
     public void setContato(String contato) {
         this.contato = contato;
+    }
+
+    public List<SelectItem> getListaCidade() {
+        if (listaCidade.isEmpty()){
+            CidadeDB db = new CidadeDBToplink();
+            
+            List<Cidade> result = db.listaCidadeParaREPIS();
+            
+            if (result.isEmpty()){
+                listaCidade.add(new SelectItem(0, "Nenhuma Cidade encontrada", "0"));
+                return listaCidade;
+            }
+            
+            for(int i = 0; i < result.size(); i++){
+                listaCidade.add(
+                        new SelectItem(i, result.get(i).getCidadeToString(), Integer.toString(result.get(i).getId()))
+                );
+            }
+        }
+        return listaCidade;
+    }
+
+    public void setListaCidade(List<SelectItem> listaCidade) {
+        this.listaCidade = listaCidade;
+    }
+
+    public int getIndexCidade() {
+        return indexCidade;
+    }
+
+    public void setIndexCidade(int indexCidade) {
+        this.indexCidade = indexCidade;
     }
 }
