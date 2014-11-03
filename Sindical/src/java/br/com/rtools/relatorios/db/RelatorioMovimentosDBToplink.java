@@ -103,7 +103,8 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                     + "   AND jur.id IN (select c.id_juridica FROM arr_contribuintes_vw c WHERE c.id_motivo IS NULL) ";
         } else if (condicao.equals("inativos")) {
             textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) "
-                    + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw c) "
+                    // 03/11/2014 - Chamado 234 - RUNRUN + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw c) "
+                    + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw C WHERE dt_inativacao IS NOT NULL) "
                     + "   AND jur.id IN (SELECT ci.id_juridica FROM arr_contribuintes_inativos ci GROUP BY ci.id_juridica) ";
         }
 
