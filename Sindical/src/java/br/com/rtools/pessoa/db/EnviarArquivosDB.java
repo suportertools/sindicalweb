@@ -11,10 +11,14 @@ public interface EnviarArquivosDB {
     public Juridica pesquisaCodigo(int id);
 
     public List pesquisaContabilidades();
+    
+    public List pesquisaContabilidades(String inConvencao, String inGrupoCidade);
 
     public List pesquisaContribuintes(String listaConvencao, String listaGrupoCidade, String listaCnae);
 
     public List<Convencao> listaConvencao();
+    
+    public List<Convencao> listaConvencao(boolean isContabilidade);
 
     public List<GrupoCidade> listaGrupoCidadePorConvencao(String listaConvencao);
 

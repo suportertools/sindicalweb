@@ -53,6 +53,44 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
     }
 
     @Override
+    public List pesquisaContabilidades(String inConvencao, String inGrupoCidade) {
+        String textQuery = "";
+        try {
+            textQuery = "     SELECT jc.id,                                           "
+                    + "            p.ds_nome as nome,                               "
+                    + "            p.ds_telefone1 as telefone,                      "
+                    + "            count(*) qtde,                                   "
+                    + "            p.ds_email1 as email                             "
+                    + "       FROM arr_contribuintes_vw as c                        "
+                    + " INNER JOIN pes_juridica as jc on jc.id = c.id_contabilidade "
+                    + " INNER JOIN pes_pessoa as p on p.id = jc.id_pessoa           ";
+
+            if (!inConvencao.isEmpty()) {
+                textQuery += " AND c.id_convencao IN (" + inConvencao + ") ";
+            }
+
+            if (!inGrupoCidade.isEmpty()) {
+                textQuery += " AND c.id_grupo_cidade IN (" + inGrupoCidade + ") ";
+            }
+
+            textQuery += ""
+                    + "      WHERE c.dt_inativacao is null                          "
+                    + "        AND length(rtrim(p.ds_email1)) > 0                   "
+                    + "   GROUP BY jc.id,                                           "
+                    + "            p.ds_nome,                                       "
+                    + "            p.ds_telefone1,                                  "
+                    + "            ds_email1                                        "
+                    + "   ORDER BY p.ds_nome                                        ";
+
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
+
+        } catch (EJBQLException e) {
+            return new ArrayList();
+        }
+    }
+
+    @Override
     public List pesquisaContribuintes(String listaConvencao, String listaGrupoCidade, String listaCnae) {
 
         String caso = "";
@@ -109,11 +147,22 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
 
     @Override
     public List<Convencao> listaConvencao() {
+        return listaConvencao(false);
+    }
+
+    @Override
+    public List<Convencao> listaConvencao(boolean isContabilidade) {
         String textQuery;
         try {
 
-            textQuery = "   SELECT c.id_convencao                 "
-                    + "     FROM arr_contribuintes_vw AS c      "
+            textQuery = "   SELECT c.id_convencao               "
+                    + "     FROM arr_contribuintes_vw AS c      ";
+
+            if (isContabilidade) {
+                textQuery += " WHERE id_contabilidade IS NOT NULL ";
+            }
+
+            textQuery += ""
                     + " GROUP BY c.id_convencao                 "
                     + " ORDER BY c.id_convencao                 ";
             Query qry = getEntityManager().createNativeQuery(textQuery);

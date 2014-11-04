@@ -8,7 +8,6 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.EnviarArquivosDB;
 import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
-import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -21,12 +20,9 @@ import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mail;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.Upload;
 import java.io.File;
 import java.io.Serializable;
@@ -72,14 +68,15 @@ public class EnviarArquivosBean implements Serializable {
     private String msgConfirma = "";
     private String conteudoHTML = "";
     private int quantidadeAnexo = 0;
+    private String tipo = "";
 
     private String descricao = "";
 
     /* EMPRESA */
-    public void limparEmpresa(){
+    public void limparEmpresa() {
         listaContribuintes.clear();
     }
-    
+
     public void todasEmpresa() {
         listaContribuintes.clear();
         adicionar = false;
@@ -285,7 +282,7 @@ public class EnviarArquivosBean implements Serializable {
     public List<ListaRelatorioContabilidade> getListaContabilidade() {
         if (listaContabilidades.isEmpty() && !adicionar) {
             EnviarArquivosDB db = new EnviarArquivosDBToplink();
-            List lista = db.pesquisaContabilidades();
+            List lista = db.pesquisaContabilidades(convencoesSelecionadasId(), gruposCidadeSelecionadosId());
             for (int i = 0; i < lista.size(); i++) {
                 ListaRelatorioContabilidade listaRelatorioContabilidade = new ListaRelatorioContabilidade();
                 listaRelatorioContabilidade.setJuridica(db.pesquisaCodigo((Integer) ((List) lista.get(i)).get(0)));
@@ -448,9 +445,14 @@ public class EnviarArquivosBean implements Serializable {
 
     public Map<String, Integer> getConvencaos() {
         if (convencaos == null) {
+            List<Convencao> list = new ArrayList<>();
             convencaos = new HashMap<String, Integer>();
             EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
-            List<Convencao> list = enviarArquivosDB.listaConvencao();
+            if (getTipo().equals("contabilidade")) {
+                list = enviarArquivosDB.listaConvencao(true);
+            } else {
+                list = enviarArquivosDB.listaConvencao();
+            }
             for (int i = 0; i < list.size(); i++) {
                 convencaos.put(list.get(i).getDescricao(), list.get(i).getId());
             }
@@ -625,5 +627,20 @@ public class EnviarArquivosBean implements Serializable {
 
     public void setAdicionar(boolean adicionar) {
         this.adicionar = adicionar;
+    }
+
+    public void defineIipoEnvio(String tipo) {
+        GenericaSessao.put("enviarArquivosTipo", tipo);
+    }
+
+    public String getTipo() {
+        if (GenericaSessao.exists("enviarArquivosTipo")) {
+            this.tipo = GenericaSessao.getString("enviarArquivosTipo", true);
+        }
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }
