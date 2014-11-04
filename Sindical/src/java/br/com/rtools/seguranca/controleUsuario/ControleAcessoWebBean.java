@@ -198,7 +198,7 @@ public class ControleAcessoWebBean implements Serializable {
         di.openTransaction();
         if (jr.getPessoa() == null) {
             Pessoa pessoax = new Pessoa(
-                    -1, jr.getNome(), (TipoDocumento) di.find(new TipoDocumento(), 2), "", "", DataHoje.data(), "", "", "", "", "", "", documento, "", ""
+                    -1, jr.getNome(), (TipoDocumento) di.find(new TipoDocumento(), 2), "", "", DataHoje.data(), "", "", "", "", "", "", AnaliseString.mascaraCnpj(documento), "", ""
             );
 
             if (!di.save(pessoax)) {
