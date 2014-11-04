@@ -59,6 +59,30 @@
                             <div class="clear"></div>
 
                             <h:panelGrid id="id_panel_grid">
+                                
+                                <p:panel header="Filtro">
+                                    <h:panelGrid id="i_panel_filtro" columns="3" cellpadding="5">
+                                        <h:panelGrid>
+                                            <p:outputLabel value="Convenção: " />
+                                            <p:selectCheckboxMenu label="Selecionar Convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
+                                                <p:ajax event="toggleSelect" update="i_c1 i_panel" listener="#{enviarArquivosBean.listaContabilidade.clear()}" />
+                                                <p:ajax event="change" update="i_c1 i_panel" listener="#{enviarArquivosBean.listaContabilidade.clear()}" />
+                                                <f:selectItems value="#{enviarArquivosBean.convencaos}" />
+                                            </p:selectCheckboxMenu>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid id="i_c1">
+                                            <p:outputLabel value="Grupo cidade:"/>
+                                            <p:selectCheckboxMenu label="Selecionar Grupo Cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
+                                                <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContabilidade.clear()}"/>
+                                                <p:ajax event="change" update="i_panel"  listener="#{enviarArquivosBean.listaContabilidade.clear()}"/>
+                                                <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
+                                            </p:selectCheckboxMenu>
+                                        </h:panelGrid>
+                                        
+                                    </h:panelGrid>
+                                </p:panel>                                
+                                
                                 <p:panel styleClass="margin-top-max">
                                     <h:panelGrid columns="5" cellpadding="5">
                                         <p:outputLabel value="Assunto: " for="id_email_assunto" />
