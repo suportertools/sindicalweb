@@ -32,10 +32,12 @@ public class GerarMovimento extends DB {
         try {
             /* INSERÇÃO DE LOTE ***/
             textQry = "insert into fin_lote (dt_emissao, ds_pag_rec, nr_valor, dt_lancamento, id_filial, id_pessoa, id_tipo_documento, id_rotina, is_avencer_contabil) "
-                    + "(select '" + DataHoje.data() + "' as dt_emissao, 'R' as ds_pag_rec, 0 as nr_valor, '" + DataHoje.data() + "' as dt_lancamento, 1 as id_filial, id_pessoa, 2 as id_tipo_documento, 4 as id_rotina, false as is_avencer_contabil "
-                    + "   from arr_contribuintes_vw where dt_inativacao is null and id_grupo_cidade = " + id_grupo_cidade + " and id_convencao = " + id_convencao + " and id_pessoa not in "
+                    + "(select '" + DataHoje.data() + "' as dt_emissao, 'R' as ds_pag_rec, 0 as nr_valor, '" + DataHoje.data() + "' as dt_lancamento, 1 as id_filial, cv.id_pessoa, 2 as id_tipo_documento, 4 as id_rotina, false as is_avencer_contabil "
+                    + "   from arr_contribuintes_vw cv "
+                    + "   left join fin_bloqueia_servico_pessoa as sp on sp.id_pessoa = cv.id_pessoa and sp.id_servicos = 3 and '04/11/2014' >= sp.dt_inicio and '04/11/2014' <= sp.dt_fim   "
+                    + "  where cv.dt_inativacao is null and cv.id_grupo_cidade = " + id_grupo_cidade + " and cv.id_convencao = " + id_convencao + " and cv.id_pessoa not in "
                     + "       (select id_pessoa from fin_movimento where ds_referencia='" + referencia + "' and id_servicos = " + id_servico + " and id_tipo_servico = " + id_tipo_servico + " and is_ativo = true) "
-                    + ");";
+                    + " and (sp.is_geracao is true or sp.is_geracao is null));";
             qry = getEntityManager().createNativeQuery(textQry);
             if (qry.executeUpdate() <= 0) {
                 getEntityManager().getTransaction().rollback();

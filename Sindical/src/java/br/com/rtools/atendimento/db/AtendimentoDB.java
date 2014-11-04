@@ -16,7 +16,7 @@ public interface AtendimentoDB {
 
     public List<AteMovimento> listaAteMovimento(String cpf, String por);
 
-    public List listaAteMovimentos(String cpf, String por);
+    public List listaAteMovimentos(String cpf, String por, int id_filial);
 
     public boolean existeAtendimento(AteMovimento ateMovimento);
     

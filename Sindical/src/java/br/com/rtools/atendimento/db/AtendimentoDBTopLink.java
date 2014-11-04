@@ -120,7 +120,7 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
     }
 
     @Override
-    public List listaAteMovimentos(String cpf, String por) {
+    public List listaAteMovimentos(String cpf, String por, int id_filial) {
         String porStr = "";
         String innerPes = "";
         List<AteMovimento> result = new ArrayList();
@@ -150,8 +150,10 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
             }
             innerPes = " inner join sis_pessoa pes on(pes.id = mov.id_sis_pessoa)";
             porStr += " pes.ds_documento = '" + cpf + "'";
-
         }
+        
+        porStr += " and mov.id_filial = " + id_filial + " ";
+        
         String text = " select mov.id from ate_movimento mov " + innerPes + porStr;
         List list;
         try {
