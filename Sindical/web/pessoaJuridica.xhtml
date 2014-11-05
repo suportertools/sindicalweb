@@ -136,17 +136,17 @@
                                                     </h:outputLink>
                                                 </p:column>
                                             </h:panelGrid>                                            
-                                            <h:panelGrid id="i_panel_razao" columns="2" style="width: 100%">
+                                            <h:panelGrid columns="2" style="width: 100%">
                                                 <p:column>
                                                     <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="change" update="i_panel_razao" global="false"/>
+                                                        <p:ajax event="blur" update="@this i_fantasia" global="false"/>
                                                     </p:inputText>
                                                 </p:column>                                                
                                                 <p:column>
                                                     <h:outputLabel value="Nome Fantasia" /><br />
-                                                    <p:inputText value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="change" update="i_panel_razao" global="false"/>
+                                                    <p:inputText id="i_fantasia" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
+                                                        <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>
@@ -189,7 +189,7 @@
 
                                                     <h:outputText value="SERVIÇO CONTÁBIL: " rendered="#{(juridicaBean.juridica.contabilidade != null)}"/>
 
-                                                    <p:commandLink value="#{juridicaBean.juridica.contabilidade.pessoa.nome}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold; margin-right: 15px"/>
+                                                    <p:commandLink value="#{juridicaBean.nomeContabilidade}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold; margin-right: 15px"/>
                                                     <p:commandButton icon="ui-icon-close" rendered="#{juridicaBean.juridica.contabilidade != null}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" update="i_contabilidade :formPessoaJuridica:i_endereco"/>
                                                 </p:column>
 
@@ -409,7 +409,7 @@
                             <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Jurídica" width="400" resizable="false">
                                 <h:outputLabel value="Deseja realmente SALVAR essa Pessoa Jurídica?" />
                                 <br /><br />
-                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.salvar()}" ajax="false" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{juridicaBean.salvar()}" update=":formPessoaJuridica:" oncomplete="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>    
                             </p:dialog>
 
@@ -499,7 +499,7 @@
                                 <h:panelGrid columns="3">
                                     <p:column>
                                         <h:outputLabel value="Nome"/><br />
-                                        <p:inputText value="#{juridicaBean.contabilidade.pessoa.nome}"/>
+                                        <p:inputText value="#{juridicaBean.nomePesquisaContabilidade}"/>
                                     </p:column>
 
                                     <p:column>

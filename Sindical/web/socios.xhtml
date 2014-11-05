@@ -60,6 +60,31 @@
                                 </h:panelGrid>
                             </p:panel>
 
+                            <h:panelGrid id="i_panel_tipo" columns="4" style="margin-top: 10px">
+                                <p:column>
+                                    <h:outputLabel value="Grupo Categoria"/><br />
+                                    <p:selectOneMenu value="#{sociosBean.idGrupoCategoria}" style="width: 380px" disabled="#{sociosBean.socios.id != -1}">
+                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarCategoria()}"/>
+                                        <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
+                                    <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.listaServicos.clear()}" disabled="#{sociosBean.socios.id != -1}">
+                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" /> 
+                                        <f:selectItems value="#{sociosBean.listaCategoria}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputLabel value="NÚMERO DA MATRÍCULA" style="margin-left: 30px"/><br />
+                                    <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" onclick="PF('i_dlg_matricula').show()" size="17" readonly="true" style="margin-left: 30px; font-weight: bold; font-size: 10pt!important; cursor: pointer; background: #9ccaaa; text-align: center"/>
+                                </p:column>
+                            </h:panelGrid>
+                            
+                            <hr />
+                            
                             <h:panelGrid id="i_panel_servicos" columns="4" style="margin-top: 5px">
                                 <p:column>
                                     <h:outputLabel value="Desconto" /><br />
@@ -197,31 +222,6 @@
                                     <br />
                                     <h:outputLabel value="SÓCIO ATIVO" style="font-size: 10pt; font-weight: bold"/>
                                 </p:panel>
-                            </h:panelGrid>
-
-                            <hr />
-
-                            <h:panelGrid id="i_panel_tipo" columns="4" style="margin-top: 10px">
-                                <p:column>
-                                    <h:outputLabel value="Grupo Categoria"/><br />
-                                    <p:selectOneMenu value="#{sociosBean.idGrupoCategoria}" style="width: 380px" disabled="#{sociosBean.socios.id != -1}">
-                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarCategoria()}"/>
-                                        <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
-                                    </p:selectOneMenu>
-                                </p:column>
-
-                                <p:column>
-                                    <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
-                                    <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.listaServicos.clear()}" disabled="#{sociosBean.socios.id != -1}">
-                                        <!-- <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="# {sociosBean.listaParentesco.clear()}" /> -->
-                                        <f:selectItems value="#{sociosBean.listaCategoria}"/>
-                                    </p:selectOneMenu>
-                                </p:column>
-
-                                <p:column>
-                                    <h:outputLabel value="NÚMERO DA MATRÍCULA" style="margin-left: 30px"/><br />
-                                    <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" onclick="PF('i_dlg_matricula').show()" size="17" readonly="true" style="margin-left: 30px; font-weight: bold; font-size: 10pt!important; cursor: pointer; background: #9ccaaa; text-align: center"/>
-                                </p:column>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_matricula" header="Editar Matrícula" resizable="false" width="400" modal="true">

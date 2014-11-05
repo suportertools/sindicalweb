@@ -41,7 +41,7 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Recepção" styleClass="fonteHeader" />
                         <h:panelGrid style="clear: both;">
-                            <h:form id="formRecepcao" >
+                            <h:form id="formRecepcao">
                                 <c:set scope="request" var="object" value="${recepcaoBean.agendamento}"/>
                                 <!-- <p:poll global="false" interval="10" update=":formRecepcao:i_tabview:i_status :formRecepcao:i_tabview:i_panel_tbl" autoStart="# {recepcaoBean.startPooling}"/> -->
                                 <h:panelGrid id="i_polling">
@@ -253,6 +253,7 @@
                                     </p:tab>
 
                                     <p:tab title="Atendimento">
+                                        <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="tbl_at" listener="#{recepcaoBean.loadListaAtendimentoSimples()}" global="false" />
                                         <p:panel styleClass="fundoCinza">
                                             <h:panelGrid id="i_panel_pesquisa_atendimento" columns="7">
                                                 <p:column>

@@ -657,8 +657,8 @@ public class AtendimentoBean implements Serializable {
     }
 
     public List<AteMovimento> getListaAteMovimento() {
-        listaAteMovimento.clear();
-        if (listaAteMovimento.isEmpty()) {
+        if (!sisPessoa.getDocumento().equals("___.___.___-__")) {
+            listaAteMovimento.clear();
             AtendimentoDB db = new AtendimentoDBTopLink();
             if (!sisPessoa.getDocumento().isEmpty()) {
                 listaAteMovimento = db.listaAteMovimentos(sisPessoa.getDocumento(), porPesquisa, filial.getId());

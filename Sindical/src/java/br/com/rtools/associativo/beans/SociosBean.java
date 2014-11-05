@@ -72,12 +72,12 @@ public class SociosBean implements Serializable {
     private String dataReativacao;
     private String statusSocio;
 
-    List<SelectItem> listaGrupoCategoria = new ArrayList<SelectItem>();
-    List<SelectItem> listaCategoria = new ArrayList<SelectItem>();
-    private List<Fisica> listaFisica = new ArrayList<Fisica>();
+    List<SelectItem> listaGrupoCategoria = new ArrayList();
+    List<SelectItem> listaCategoria = new ArrayList();
+    private List<Fisica> listaFisica = new ArrayList();
     private Fisica fisicaPesquisa = new Fisica();
     private Pessoa pessoaPesquisa = new Pessoa();
-    private List<SelectItem> listaSelectFisica = new ArrayList<SelectItem>();
+    private List<SelectItem> listaSelectFisica = new ArrayList();
 
     private Fisica novoDependente = new Fisica();
     private int index_dependente = 0;

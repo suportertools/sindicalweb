@@ -49,7 +49,6 @@ import org.primefaces.json.JSONObject;
 public class JuridicaBean implements Serializable {
 
     private Juridica juridica = new Juridica();
-    private Juridica contabilidade = new Juridica();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private Filial filial = new Filial();
     private Filial filialSwap = new Filial();
@@ -88,6 +87,8 @@ public class JuridicaBean implements Serializable {
     private String colorContri = "red";
     private String numDocumento = "";
     private String strArquivo = "";
+    private String nomeContabilidade = "";
+    private String nomePesquisaContabilidade = "";
     private int idTipoDocumento = 1;
     private int idPorte = 0;
     private int idMotivoInativacao = 0;
@@ -736,7 +737,8 @@ public class JuridicaBean implements Serializable {
                 
                 // ATUALIZA CONTABILIDADE SE FOR ELA MESMA A PESSOA JURIDICA ---
                 if ((juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1) && (juridica.getContabilidade().getId() == juridica.getId())) {
-                    juridica = (Juridica) new Dao().find(new Juridica(), juridica.getId());
+                    nomeContabilidade = juridica.getPessoa().getNome();
+                    //juridica = (Juridica) new Dao().find(new Juridica(), juridica.getId());
                     //juridica.setContabilidade(juridica);
                     //dbSalvar.alterarObjeto(juridica.getContabilidade());
                 }
@@ -784,7 +786,7 @@ public class JuridicaBean implements Serializable {
 
     public void novoGenerico() {
         juridica = new Juridica();
-        contabilidade = new Juridica();
+        nomeContabilidade = "";
         pessoaEndereco = new PessoaEndereco();
         convencao = new Convencao();
         marcar = false;
@@ -900,10 +902,8 @@ public class JuridicaBean implements Serializable {
         listaContribuintesInativos.clear();
         listaEmpresasPertencentes.clear();
         contribuintesInativos = new ContribuintesInativos();
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
+        if (juridica.getContabilidade() != null) {
+            nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
         }
         descPesquisa = "";
         porPesquisa = "nome";
@@ -937,19 +937,19 @@ public class JuridicaBean implements Serializable {
         enderecoCobranca = "NENHUM";
         getListaEnderecos();
 
-        if (contabilidade != null) {
-            if (contabilidade.getId() != -1) {
-                PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
-//                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
-//                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
-//                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
-//                        chkEndContabilidade = true;
-//                    } else {
-//                        chkEndContabilidade = false;
-//                    }
-            }
-        }
+//        if (contabilidade != null) {
+//            if (contabilidade.getId() != -1) {
+//                PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+//                // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
+////                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
+////                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
+////                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
+////                        chkEndContabilidade = true;
+////                    } else {
+////                        chkEndContabilidade = false;
+////                    }
+//            }
+//        }
         existeOposicaoEmpresa();
         return "pessoaJuridica";
     }
@@ -1001,12 +1001,11 @@ public class JuridicaBean implements Serializable {
 //    }
     public String editarEmpresaPertencente(DataObject linha) {
         juridica = (Juridica) linha.getArgumento0();// (Juridica) listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
+        if (juridica.getContabilidade() != null) {
+            nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
         }
-        contabilidade = juridica.getContabilidade();
+        
+        //contabilidade = juridica.getContabilidade();
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisa = "";
@@ -1051,10 +1050,8 @@ public class JuridicaBean implements Serializable {
         //juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         juridica = (Juridica) salvarAcumuladoDB.pesquisaObjeto(juridica.getContabilidade().getId(), "Juridica");
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
+        if (juridica.getContabilidade() != null) {
+            nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
         }
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
@@ -1087,11 +1084,12 @@ public class JuridicaBean implements Serializable {
     }
 
     public String editarContabilidade(Juridica j) {
-        contabilidade = j; //(Juridica) listaContabilidade.get(idIndexContabilidade);
+        Juridica contabilidade = j; //(Juridica) listaContabilidade.get(idIndexContabilidade);
         juridica.setContabilidade(contabilidade);
         juridica.setEmailEscritorio(true);
         juridica.setCobrancaEscritorio(true);
         renChkEndereco = "true";
+        nomeContabilidade = contabilidade.getPessoa().getNome();
         //chkEndContabilidade = true; // ROGÉRINHO PEDIU PRA VOLTAR TRUE NA DATA -- 30/07/2013 -- POR CAUSA DO CARLOS DE LIMEIRA
         return "pessoaJuridica";
     }
@@ -1317,20 +1315,20 @@ public class JuridicaBean implements Serializable {
     }
 
     public void pesquisaContabilidadeI() {
-        if (!contabilidade.getPessoa().getNome().isEmpty()) {
+        if (!nomePesquisaContabilidade.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
-            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "I");
+            listaContabilidade = db.pesquisaPessoa(nomePesquisaContabilidade, "nome", "I");
         } else {
-            listaContabilidade = new ArrayList<Juridica>();
+            listaContabilidade = new ArrayList();
         }
     }
 
     public void pesquisaContabilidadeP() {
-        if (!contabilidade.getPessoa().getNome().isEmpty()) {
+        if (!nomePesquisaContabilidade.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
-            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "P");
+            listaContabilidade = db.pesquisaPessoa(nomePesquisaContabilidade, "nome", "P");
         } else {
-            listaContabilidade = new ArrayList<Juridica>();
+            listaContabilidade = new ArrayList();
         }
     }
 
@@ -2298,13 +2296,13 @@ public class JuridicaBean implements Serializable {
         this.renderAtivoInativo = renderAtivoInativo;
     }
 
-    public Juridica getContabilidade() {
-        return contabilidade;
-    }
-
-    public void setContabilidade(Juridica contabilidade) {
-        this.contabilidade = contabilidade;
-    }
+//    public Juridica getContabilidade() {
+//        return contabilidade;
+//    }
+//
+//    public void setContabilidade(Juridica contabilidade) {
+//        this.contabilidade = contabilidade;
+//    }
 
     public int getIdIndexContabilidade() {
         return idIndexContabilidade;
@@ -2443,6 +2441,22 @@ public class JuridicaBean implements Serializable {
         oposicaoBean.setListaOposicaos(new ArrayList());
         oposicaoBean.getListaOposicaos();
         GenericaSessao.put("oposicaoBean", oposicaoBean);
+    }
+
+    public String getNomeContabilidade() {
+        return nomeContabilidade;
+    }
+
+    public void setNomeContabilidade(String nomeContabilidade) {
+        this.nomeContabilidade = nomeContabilidade;
+    }
+
+    public String getNomePesquisaContabilidade() {
+        return nomePesquisaContabilidade;
+    }
+
+    public void setNomePesquisaContabilidade(String nomePesquisaContabilidade) {
+        this.nomePesquisaContabilidade = nomePesquisaContabilidade;
     }
 }
 
