@@ -116,6 +116,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB db = new HomologacaoDBToplink();
         int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
         List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
+        if (select.isEmpty()){
+            listaHorarioTransferencia.add(new SelectItem(0, "Nenhum horário encontrado", "0"));
+            return;
+        }
+        
         int qnt;
         int j = 0;
         for (Horarios listh : select) {
@@ -128,6 +133,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 listaHorarioTransferencia.add(new SelectItem(j, listh.getHora() + " (" + qnt + ")", String.valueOf(listh.getId())));
                 j++;
             }
+        }
+        
+        if (listaHorarioTransferencia.isEmpty()){
+            listaHorarioTransferencia.add(new SelectItem(0, "Nenhum horário encontrado", "0"));
         }
     }
     

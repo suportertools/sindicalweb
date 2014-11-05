@@ -55,6 +55,7 @@
                         <h:outputText value="Atendimento Pessoa" styleClass="fonteHeader" />
                         <h:form id="formAtendimentoPessoa">
                             <c:set scope="request" var="object" value="${atendimentoBean.ateMovimento}"/>
+                            <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="i_panel_lista" global="false" />
                             <p:panel style="clear: both">
                                 <h:panelGrid>
                                     <h:column>
@@ -90,7 +91,7 @@
                                     <h:column>
                                         <p:outputLabel value="CPF" style="font-weight: bold"/><br />
                                         <p:inputMask value="#{atendimentoBean.sisPessoa.documento}" mask="999.999.999-99" size="12" style="margin-right: 20px;" readonly="#{atendimentoBean.sisPessoa.id != -1}">
-                                            <p:ajax event="change" update="i_panel_dados" listener="#{atendimentoBean.pesquisaCPFeOPOSICAO()}"/>
+                                            <p:ajax event="blur" update="i_panel_dados" listener="#{atendimentoBean.pesquisaCPFeOPOSICAO()}"/>
                                         </p:inputMask>
                                     </h:column>
                                     <h:column>
@@ -183,7 +184,7 @@
 
                             <h:panelGrid id="i_panel_lista">
                                 <p:dataTable value="#{atendimentoBean.listaAteMovimento}" var="linha" style="width:100%" emptyMessage="Nenhum Atendimento encontrado!">
-                                    <p:column style="width:5%">  
+                                    <p:column style="width:15px">  
                                         <p:rowToggler />  
                                     </p:column>  
                                     
