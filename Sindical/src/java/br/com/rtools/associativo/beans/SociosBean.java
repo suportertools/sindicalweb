@@ -887,17 +887,19 @@ public class SociosBean implements Serializable {
     }
 
     public void pesquisaCPF() {
-        if (!novoDependente.getPessoa().getDocumento().isEmpty() && !novoDependente.getPessoa().getDocumento().equals("___.___.___-__")) {
-            FisicaDB db = new FisicaDBToplink();
-            List<Fisica> listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
-            if (!listDocumento.isEmpty()) {
-                novoDependente = listDocumento.get(0);
-            } else if (novoDependente.getId() != -1) {
-                String doc = novoDependente.getPessoa().getDocumento();
+        if(novoDependente.getId() == -1) {
+            if (!novoDependente.getPessoa().getDocumento().isEmpty() && !novoDependente.getPessoa().getDocumento().equals("___.___.___-__")) {
+                FisicaDB db = new FisicaDBToplink();
+                List<Fisica> listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
+                if (!listDocumento.isEmpty()) {
+                    novoDependente = listDocumento.get(0);
+                } else if (novoDependente.getId() != -1) {
+                    String doc = novoDependente.getPessoa().getDocumento();
 
-                novoDependente = new Fisica();
+                    novoDependente = new Fisica();
 
-                novoDependente.getPessoa().setDocumento(doc);
+                    novoDependente.getPessoa().setDocumento(doc);
+                }
             }
         }
     }
