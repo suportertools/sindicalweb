@@ -17,7 +17,7 @@ public class Diretorio {
             boolean err = false;
             String caminhoContac = "";
             int b = 0;
-            String caminho = "";
+            String caminho = "";                     
             for (String item : s) {
                 if (!item.equals("")) {
                     if (b == 0) {
