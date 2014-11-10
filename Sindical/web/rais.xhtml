@@ -48,6 +48,8 @@
                                                     <p:inputMask value="#{raisBean.rais.emissaoString}"  mask="99/99/9999" converter="#{isDateString}" size="8" styleClass="bg-yellow-ligth">
                                                         <p:ajax event="change" update="@this :form_rais:" global="false"/>
                                                     </p:inputMask>
+                                                    <p:outputLabel value="Ano base:"  styleClass="margin-left-max"/>
+                                                    <p:inputMask value="#{raisBean.rais.anoBase}" mask="9999" />
                                                     <p:outputLabel value="CPF:"  styleClass="margin-left-max"/>
                                                     <p:inputMask value="#{raisBean.rais.sisPessoa.documento}" mask="999.999.999-99" size="12" disabled="#{raisBean.rais.id != -1}">
                                                         <p:ajax event="change" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
