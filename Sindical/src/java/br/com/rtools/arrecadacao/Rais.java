@@ -29,6 +29,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "arr_rais")
 public class Rais implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -95,7 +96,7 @@ public class Rais implements Serializable {
     @Column(name = "nr_ctps", columnDefinition = "integer default 0")
     private int ctps;
     @Column(name = "nr_ano_base", columnDefinition = "integer default 0")
-    private int anoChegada;
+    private int anoBase;
     @Column(name = "is_alvara", columnDefinition = "boolean default false")
     private boolean alvara;
     @Column(name = "is_empregado_filiado", columnDefinition = "boolean default false")
@@ -128,13 +129,13 @@ public class Rais implements Serializable {
         this.carteira = "";
         this.serie = "";
         this.ctps = 0;
-        this.anoChegada = 0;
+        this.anoBase = 0;
         this.alvara = false;
         this.empregadoFiliado = false;
         this.pis = "";
     }
 
-    public Rais(int id, Date emissao, Nacionalidade nacionalidade, Raca raca, Juridica empresa, Escolaridade escolaridade, SisPessoa sisPessoa, ClassificacaoEconomica classificacaoEconomica, Profissao profissao, TipoRemuneracao tipoRemuneracao, Pessoa responsavelCadastro, TipoDeficiencia tipoDeficiencia, IndicadorAlvara indicadorAlvara, Date admissao, Date demissao, Date afastamento, String motivoAfastamento, String observacao, int cargaHoraria, float salario, String funcao, String carteira, String serie, int ctps, int anoChegada, boolean alvara, boolean empregadoFiliado, String pis) {
+    public Rais(int id, Date emissao, Nacionalidade nacionalidade, Raca raca, Juridica empresa, Escolaridade escolaridade, SisPessoa sisPessoa, ClassificacaoEconomica classificacaoEconomica, Profissao profissao, TipoRemuneracao tipoRemuneracao, Pessoa responsavelCadastro, TipoDeficiencia tipoDeficiencia, IndicadorAlvara indicadorAlvara, Date admissao, Date demissao, Date afastamento, String motivoAfastamento, String observacao, int cargaHoraria, float salario, String funcao, String carteira, String serie, int ctps, int anoBase, boolean alvara, boolean empregadoFiliado, String pis) {
         this.id = id;
         this.emissao = emissao;
         this.nacionalidade = nacionalidade;
@@ -158,7 +159,7 @@ public class Rais implements Serializable {
         this.carteira = carteira;
         this.serie = serie;
         this.ctps = ctps;
-        this.anoChegada = anoChegada;
+        this.anoBase = anoBase;
         this.alvara = alvara;
         this.empregadoFiliado = empregadoFiliado;
         this.pis = pis;
@@ -337,8 +338,8 @@ public class Rais implements Serializable {
     }
 
     public void setCargaHorariaString(String cargaHorariaString) {
-        if(!cargaHorariaString.isEmpty()) {
-            this.cargaHoraria = Integer.parseInt(cargaHorariaString);            
+        if (!cargaHorariaString.isEmpty()) {
+            this.cargaHoraria = Integer.parseInt(cargaHorariaString);
         }
     }
 
@@ -355,9 +356,9 @@ public class Rais implements Serializable {
     }
 
     public void setSalarioString(String salarioString) {
-        if(!salarioString.isEmpty()) {
+        if (!salarioString.isEmpty()) {
             this.salario = Moeda.converteUS$(salarioString);
-            if(this.salario < 0) {
+            if (this.salario < 0) {
                 this.salario = 0;
             }
         }
@@ -395,12 +396,12 @@ public class Rais implements Serializable {
         this.ctps = ctps;
     }
 
-    public int getAnoChegada() {
-        return anoChegada;
+    public int getAnoBase() {
+        return anoBase;
     }
 
-    public void setAnoChegada(int anoChegada) {
-        this.anoChegada = anoChegada;
+    public void setAnoBase(int anoBase) {
+        this.anoBase = anoBase;
     }
 
     public boolean isAlvara() {
