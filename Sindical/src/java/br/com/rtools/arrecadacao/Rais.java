@@ -94,7 +94,7 @@ public class Rais implements Serializable {
     private String serie;
     @Column(name = "nr_ctps", columnDefinition = "integer default 0")
     private int ctps;
-    @Column(name = "nr_ano_chegada", columnDefinition = "integer default 0")
+    @Column(name = "nr_ano_base", columnDefinition = "integer default 0")
     private int anoChegada;
     @Column(name = "is_alvara", columnDefinition = "boolean default false")
     private boolean alvara;
