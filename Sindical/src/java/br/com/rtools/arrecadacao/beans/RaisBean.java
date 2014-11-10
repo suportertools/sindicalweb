@@ -33,7 +33,6 @@ import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.ValidaDocumentos;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -126,6 +125,10 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void save() {
+        if (rais.getAnoBase() <= 0) {
+            GenericaMensagem.warn("Validação", "Informar o ano base!");
+            return;
+        }
         if (rais.getSisPessoa().getNome().equals("")) {
             GenericaMensagem.warn("Validação", "Informar nome!");
             return;
