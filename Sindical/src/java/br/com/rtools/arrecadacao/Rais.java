@@ -444,4 +444,12 @@ public class Rais implements Serializable {
         this.pis = pis;
     }
 
+    public String getAnoBaseString() {
+        return Integer.toString(anoBase);
+    }
+
+    public void setAnoBaseString(String anoBase) {
+        this.anoBase = Integer.parseInt(anoBase);
+    }
+
 }
