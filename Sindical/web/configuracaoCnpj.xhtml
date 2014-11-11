@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Configuração WebService - CNPJ</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />    
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <f:metadata>  
+                <f:event type="preRenderView" listener="${configuracaoCnpjBean.load()}"/>  
+            </f:metadata>            
+            <p:panel styleClass="wrapper no-border">
+                <h:outputText value="Você não possui permissões para efetuar operações nesta rotina!" styleClass="fonteHeader" rendered="#{controleAcessoBean.botaoSalvar}" title="salvar / alterar / excluir"/>
+                <h:form id="form_cnpj" rendered="#{!controleAcessoBean.botaoSalvar}">
+                    <h:outputText value="Configuração Web Service - CNPJ" styleClass="fonteHeader" />
+                    <c:set scope="request" var="object" value="${configuracaoCnpjBean.configuracaoCnpj}"/>
+                    <div style="clear: both;"></div>
+                    <p:messages id="id_messages" showDetail="true" closable="true" />
+                    <p:growl id="id_messages_growl" showDetail="true"  />
+                    <div style="clear: both;"></div>
+                    <p:panel styleClass="margin-top-max">
+                        <p:tabView>
+                            <p:tab title="Geral">
+                                <h:panelGrid cellpadding="5" columns="2">
+                                    <p:outputLabel value="Email" />
+                                    <p:inputText value="#{configuracaoCnpjBean.configuracaoCnpj.email}" maxlength="200"/>
+                                    <p:outputLabel value="Senha" />
+                                    <p:inputText value="#{configuracaoCnpjBean.configuracaoCnpj.senha}" maxlength="10"/>
+                                    <h:outputLabel value="Dias" />
+                                    <p:column>
+                                        <p:spinner value="#{configuracaoCnpjBean.configuracaoCnpj.dias}" max="120" min="0" size="5" stepFactor="0">
+                                            <p:ajax event="change" listener="#{configuracaoCnpjBean.update}" update=":form_cnpj:"/>
+                                        </p:spinner>
+                                    </p:column>                                        
+                                </h:panelGrid>                                
+                            </p:tab>                            
+                        </p:tabView>
+                        <f:facet name="footer">
+                            <p:commandButton value="Atualizar" action="#{configuracaoCnpjBean.update()}" update=":form_cnpj:"/>
+                        </f:facet>
+                    </p:panel>
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
