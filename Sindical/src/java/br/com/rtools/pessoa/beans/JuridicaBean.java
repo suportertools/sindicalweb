@@ -14,6 +14,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.ConfiguracaoCnpj;
 import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.*;
@@ -330,8 +331,15 @@ public class JuridicaBean implements Serializable {
         }
 
         if (juridicaReceita.getId() == -1) {
+            Dao dao = new Dao();
+            URL url;
             try {
-                URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero="+documento+"&usuario=rogerio@rtools.com.br&senha=989899");
+                ConfiguracaoCnpj configuracaoCnpj = (ConfiguracaoCnpj) dao.find(new ConfiguracaoCnpj(), 1);
+                if (configuracaoCnpj == null) {
+                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=rogerio@rtools.com.br&senha=989899");
+                } else {
+                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
+                }
                 //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
@@ -345,13 +353,13 @@ public class JuridicaBean implements Serializable {
                         GenericaMensagem.warn("Atenção", "Limite de acessos excedido!");
                         return;
                     }
-                    
-                    if (status == 1){
+
+                    if (status == 1) {
                         GenericaMensagem.info("Atenção", "Atualizando esse CNPJ na receita, pesquise novamente em 30 segundos!");
                         return;
                     }
-                    
-                    if (status != 0){
+
+                    if (status != 0) {
                         GenericaMensagem.error("Erro", error);
                         return;
                     }
@@ -368,7 +376,7 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setPessoa(null);
                     juridicaReceita.setStatus(obj.getString("situacao_cadastral"));
                     juridicaReceita.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
-                    
+
                     SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
                     sv.abrirTransacao();
@@ -380,19 +388,19 @@ public class JuridicaBean implements Serializable {
                     }
 
                     sv.comitarTransacao();
-                    
+
                 }
             } catch (IOException | JSONException e) {
 
             }
         }
-        
+
         juridica.getPessoa().setNome(juridicaReceita.getNome());
         juridica.setFantasia(juridicaReceita.getFantasia());
 
         String result[] = juridicaReceita.getCnae().split(" ");
         CnaeDB dbc = new CnaeDBToplink();
-        String cnaex = result[result.length-1].replace("(", "").replace(")", "");
+        String cnaex = result[result.length - 1].replace("(", "").replace(")", "");
         List<Cnae> listac = dbc.pesquisaCnae(cnaex, "cnae", "I");
 
         if (listac.isEmpty()) {
@@ -731,10 +739,9 @@ public class JuridicaBean implements Serializable {
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
 
-
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
                 dbSalvar.comitarTransacao();
-                
+
                 // ATUALIZA CONTABILIDADE SE FOR ELA MESMA A PESSOA JURIDICA ---
                 if ((juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1) && (juridica.getContabilidade().getId() == juridica.getId())) {
                     nomeContabilidade = juridica.getPessoa().getNome();
@@ -742,7 +749,7 @@ public class JuridicaBean implements Serializable {
                     //juridica.setContabilidade(juridica);
                     //dbSalvar.alterarObjeto(juridica.getContabilidade());
                 }
-                
+
                 NovoLog novoLog = new NovoLog();
                 novoLog.update(beforeUpdate, "ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
@@ -1004,7 +1011,7 @@ public class JuridicaBean implements Serializable {
         if (juridica.getContabilidade() != null) {
             nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
         }
-        
+
         //contabilidade = juridica.getContabilidade();
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
@@ -1284,7 +1291,7 @@ public class JuridicaBean implements Serializable {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
             if (juridica.isCobrancaEscritorio() && (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)) {
-                if (juridica.getId() != juridica.getContabilidade().getId()){
+                if (juridica.getId() != juridica.getContabilidade().getId()) {
                     PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
                     if ((!listaEnd.isEmpty()) && pesEndCon != null) {
                         pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
@@ -2303,7 +2310,6 @@ public class JuridicaBean implements Serializable {
 //    public void setContabilidade(Juridica contabilidade) {
 //        this.contabilidade = contabilidade;
 //    }
-
     public int getIdIndexContabilidade() {
         return idIndexContabilidade;
     }
@@ -2461,7 +2467,6 @@ public class JuridicaBean implements Serializable {
 }
 
 // ANTIGA PESQUISA POR WEBSERVICE KNU -- depois da data 01/12/2014 excluir esse comentário
-
 //            try {
 //                SSLUtil.acceptSSL();
 //                URL url = new URL("https://c.knu.com.br/webservice");
@@ -2498,4 +2503,4 @@ public class JuridicaBean implements Serializable {
 //            } catch (Exception ex) {
 //                ex.printStackTrace();
 //            }
-        
+
