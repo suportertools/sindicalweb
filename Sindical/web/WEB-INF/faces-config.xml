@@ -1595,6 +1595,12 @@
             <to-view-id>/relatorioRais.jsf</to-view-id>
             <redirect/>
         </navigation-case>          
+        
+        <navigation-case>
+            <from-outcome>configuracaoCnpj</from-outcome>
+            <to-view-id>/configuracaoCnpj.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
