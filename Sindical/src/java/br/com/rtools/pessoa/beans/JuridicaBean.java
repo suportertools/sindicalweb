@@ -338,7 +338,11 @@ public class JuridicaBean implements Serializable {
                 if (configuracaoCnpj == null) {
                     url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=rogerio@rtools.com.br&senha=989899");
                 } else {
-                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
+                    if(configuracaoCnpj.getEmail().isEmpty() || configuracaoCnpj.getEmail().isEmpty()) {
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=rogerio@rtools.com.br&senha=989899");
+                    } else {
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
+                    }
                 }
                 //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
