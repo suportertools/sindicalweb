@@ -3,17 +3,13 @@ package br.com.rtools.utilitarios;
 import br.com.rtools.principal.DB;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.FlushModeType;
-import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.DatabaseException;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 import oracle.toplink.essentials.exceptions.TopLinkException;
 
 public class Dao extends DB implements DaoInterface {
