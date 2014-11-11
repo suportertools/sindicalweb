@@ -445,11 +445,19 @@ public class Rais implements Serializable {
     }
 
     public String getAnoBaseString() {
-        return Integer.toString(anoBase);
+        try {
+            return Integer.toString(anoBase);
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     public void setAnoBaseString(String anoBase) {
-        this.anoBase = Integer.parseInt(anoBase);
+        try {
+            this.anoBase = Integer.parseInt(anoBase);
+        } catch (Exception e) {
+            this.anoBase = 0;
+        }
     }
 
 }
