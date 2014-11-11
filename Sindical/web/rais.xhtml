@@ -33,7 +33,7 @@
                         <h:form id="form_rais">
                             <h:outputScript name="script_primefaces.js" library="js" /> 
                             <h:panelGrid columns="2">
-                                <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
+                                <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.rais.anoBase}" styleClass="fonteHeader" />
                             </h:panelGrid>
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${raisBean.rais}"/>
