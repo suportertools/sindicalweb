@@ -338,7 +338,7 @@ public class JuridicaBean implements Serializable {
                 if (configuracaoCnpj == null) {
                     url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=rogerio@rtools.com.br&senha=989899");
                 } else {
-                    if(configuracaoCnpj.getEmail().isEmpty() || configuracaoCnpj.getEmail().isEmpty()) {
+                    if (configuracaoCnpj.getEmail().isEmpty() || configuracaoCnpj.getEmail().isEmpty()) {
                         url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=rogerio@rtools.com.br&senha=989899");
                     } else {
                         url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documento + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
@@ -381,17 +381,15 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setStatus(obj.getString("situacao_cadastral"));
                     juridicaReceita.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
 
-                    SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                    dao.openTransaction();
 
-                    sv.abrirTransacao();
-
-                    if (!sv.inserirObjeto(juridicaReceita)) {
+                    if (!dao.save(juridicaReceita)) {
                         GenericaMensagem.warn("Erro", "Erro ao Salvar pesquisa!");
-                        sv.desfazerTransacao();
+                        dao.rollback();
                         return;
                     }
 
-                    sv.comitarTransacao();
+                    dao.commit();
 
                 }
             } catch (IOException | JSONException e) {
