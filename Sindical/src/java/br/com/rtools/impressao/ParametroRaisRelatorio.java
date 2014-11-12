@@ -33,6 +33,7 @@ public class ParametroRaisRelatorio {
     private String cidade;
     private String sexo;
     private String nascimento;
+    private String idade;
 
     public ParametroRaisRelatorio() {
         this.detalhes_relatorio = "";
@@ -66,9 +67,10 @@ public class ParametroRaisRelatorio {
         this.cidade = "";
         this.sexo = "";
         this.nascimento = "";
+        this.idade = "";
     }
 
-    public ParametroRaisRelatorio(String detalhes_relatorio, String ano_base, String alvara, String emissao, String is_empregado_filiado, String pis, String motivo_afastamento, String carteira, String serie, String ctps, String salario, String admissao, String funcao, String afastamento, String carga_horaria, String observacao, String raca, String indicador_alvara, String empregado, String deficiencia, String cnpj, String empresa, String escolaridade, String responsavel, String nacionalidade, String profissao, String tipo_remuneracao, String classificacao_economica, String cidade, String sexo, String nascimento) {
+    public ParametroRaisRelatorio(String detalhes_relatorio, String ano_base, String alvara, String emissao, String is_empregado_filiado, String pis, String motivo_afastamento, String carteira, String serie, String ctps, String salario, String admissao, String funcao, String afastamento, String carga_horaria, String observacao, String raca, String indicador_alvara, String empregado, String deficiencia, String cnpj, String empresa, String escolaridade, String responsavel, String nacionalidade, String profissao, String tipo_remuneracao, String classificacao_economica, String cidade, String sexo, String nascimento, String idade) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.ano_base = ano_base;
         this.alvara = alvara;
@@ -100,6 +102,7 @@ public class ParametroRaisRelatorio {
         this.cidade = cidade;
         this.sexo = sexo;
         this.nascimento = nascimento;
+        this.idade = idade;
     }
 
     public String getAno_base() {
@@ -350,4 +353,11 @@ public class ParametroRaisRelatorio {
         this.detalhes_relatorio = detalhes_relatorio;
     }
 
+    public String getIdade() {
+        return idade;
+    }
+
+    public void setIdade(String idade) {
+        this.idade = idade;
+    }
 }
