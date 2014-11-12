@@ -130,7 +130,6 @@ public class RelatorioRaisBean implements Serializable {
         GenericaSessao.remove("relatorioRaisBean");
         GenericaSessao.remove("sisPessoaPesquisa");
         GenericaSessao.remove("juridicaPesquisa");
-        GenericaSessao.remove("removeFiltro");
     }
 
     public void visualizar() {
@@ -176,16 +175,16 @@ public class RelatorioRaisBean implements Serializable {
                 listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + ". CNPJ: " + empresa.getPessoa().getDocumento() + " - " + empresa.getPessoa().getNome());
             }
             String orderString = "";
-            if(order != null) {
-                if(order.equals("0")) {             
+            if (order != null) {
+                if (order.equals("0")) {
                     orderString = "SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                } else if(orderString.equals("1")) {
+                } else if (orderString.equals("1")) {
                     orderString = " PJ.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                } else if(orderString.equals("2")) {
+                } else if (orderString.equals("2")) {
                     orderString = " R.dt_emissao ASC, SP.ds_nome ASC ";
-                } else if(orderString.equals("3")) {                
+                } else if (orderString.equals("3")) {
                     orderString = " R.dt_emissao ASC, PJ.ds_nome ASC ";
-                }                
+                }
             } else {
                 orderString = "";
             }
@@ -465,10 +464,6 @@ public class RelatorioRaisBean implements Serializable {
 
     public void setIndex(Integer[] index) {
         this.index = index;
-   }
-
-    public void removeFiltro() {
-        GenericaSessao.put("removeFiltro", true);
     }
 
     /**
@@ -582,7 +577,7 @@ public class RelatorioRaisBean implements Serializable {
             listCidades = new HashMap<>();
             RaisDao raisDao = new RaisDao();
             List<Cidade> list = (List<Cidade>) raisDao.pesquisaTodasCidades();
-            if(list != null) {
+            if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
                     listCidades.put(list.get(i).getCidade(), list.get(i).getId());
                 }
@@ -600,7 +595,7 @@ public class RelatorioRaisBean implements Serializable {
             listProfissoes = new HashMap<>();
             RaisDao raisDao = new RaisDao();
             List<Profissao> list = (List<Profissao>) raisDao.pesquisaTodasProfissoes();
-            if(list != null) {
+            if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
                     listProfissoes.put(list.get(i).getProfissao(), list.get(i).getId());
                 }
@@ -709,7 +704,7 @@ public class RelatorioRaisBean implements Serializable {
         this.sexo = sexo;
     }
 
-    public String[] getFaixaSalarial() {       
+    public String[] getFaixaSalarial() {
         return faixaSalarial;
     }
 
