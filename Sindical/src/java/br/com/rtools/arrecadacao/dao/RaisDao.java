@@ -99,7 +99,8 @@ public class RaisDao extends DB {
                 + "              cl.ds_descricao  AS classificacao_economica,             " // 27
                 + "              cid.ds_cidade    AS cidade,                              " // 28
                 + "              sp.ds_sexo,                                              " // 29
-                + "              sp.dt_nascimento as nascimento                           " // 30
+                + "              sp.dt_nascimento as nascimento,                          " // 30
+                + "              func_idade(dt_nascimento, current_date) as idade         " // 31
                 + "         FROM arr_rais AS r                                            "
                 + "    LEFT JOIN pes_raca             AS rc          ON rc.id            = r.id_raca                            "
                 + "   INNER JOIN sis_pessoa           AS sp          ON sp.id            = r.id_sis_pessoa                      "
