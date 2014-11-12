@@ -189,6 +189,11 @@ public class RelatorioRaisBean implements Serializable {
                 orderString = "";
             }
             List list = raisDao.filtroRelatorio(relatorios, anoBase, pIStringI, pFStringI, idEmpresa, idSisPessoa, inIdProfissoes, faixaSalarial[0], faixaSalarial[1], inIdRaca, inIdClassificaoEconomica, inIdCidades, sexo, orderString);
+            if (list.isEmpty()) {
+                GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
+                return;
+            }
+
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -202,49 +207,66 @@ public class RelatorioRaisBean implements Serializable {
                 }
             }
             String dt = "";
+            String dte = "";
+            String dtd = "";
+            String dta = "";
+            String alvara = "";
+            String filiado = "";
             for (Object list1 : list) {
-                dt = GenericaString.converterNullToString(((List) list1).get(0));
+                dt = GenericaString.converterNullToString(((List) list1).get(30));
+                dte = GenericaString.converterNullToString(((List) list1).get(4));
+                dta = GenericaString.converterNullToString(((List) list1).get(13));
+                dtd = GenericaString.converterNullToString(((List) list1).get(11));
+                if (!dt.isEmpty()) {
+                    dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
+                }
+                if (!dte.isEmpty()) {
+                    dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
+                }
+                if (!dta.isEmpty()) {
+                    dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
+                }
+                if (!dtd.isEmpty()) {
+                    dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
+                }
                 ParametroRaisRelatorio pr
                         = new ParametroRaisRelatorio(
-                                "",
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString(""),
-                                AnaliseString.converteNullString("")
+                                detalheRelatorio,
+                                AnaliseString.converteNullString(((List) list1).get(0)),
+                                AnaliseString.converteNullString(((List) list1).get(1)),
+                                dte,
+                                AnaliseString.converteNullString(((List) list1).get(3)),
+                                AnaliseString.converteNullString(((List) list1).get(5)),
+                                AnaliseString.converteNullString(((List) list1).get(6)),
+                                AnaliseString.converteNullString(((List) list1).get(7)),
+                                AnaliseString.converteNullString(((List) list1).get(8)),
+                                AnaliseString.converteNullString(((List) list1).get(9)),
+                                AnaliseString.converteNullString(((List) list1).get(10)),
+                                dtd,
+                                AnaliseString.converteNullString(((List) list1).get(12)),
+                                dta,
+                                AnaliseString.converteNullString(((List) list1).get(14)),
+                                AnaliseString.converteNullString(((List) list1).get(15)),
+                                AnaliseString.converteNullString(((List) list1).get(16)),
+                                AnaliseString.converteNullString(((List) list1).get(17)),
+                                AnaliseString.converteNullString(((List) list1).get(18)),
+                                AnaliseString.converteNullString(((List) list1).get(19)),
+                                AnaliseString.converteNullString(((List) list1).get(20)),
+                                AnaliseString.converteNullString(((List) list1).get(21)),
+                                AnaliseString.converteNullString(((List) list1).get(22)),
+                                AnaliseString.converteNullString(((List) list1).get(23)),
+                                AnaliseString.converteNullString(((List) list1).get(24)),
+                                AnaliseString.converteNullString(((List) list1).get(25)),
+                                AnaliseString.converteNullString(((List) list1).get(26)),
+                                AnaliseString.converteNullString(((List) list1).get(27)),
+                                AnaliseString.converteNullString(((List) list1).get(28)),
+                                AnaliseString.converteNullString(((List) list1).get(29)),
+                                AnaliseString.converteNullString(dt),
+                                AnaliseString.converteNullString(((List) list1).get(31))
                         );
                 parametroRaisRelatorio.add(pr);
             }
 
-        }
-        if (parametroRaisRelatorio.isEmpty()) {
-            GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
-            return;
         }
         if (!Diretorio.criar("Arquivos/downloads/relatorios/rais")) {
             GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
@@ -262,9 +284,9 @@ public class RelatorioRaisBean implements Serializable {
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroRaisRelatorio);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_oposicao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                String nomeDownload = "relatorio_rais_sintetico_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
                 SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/oposicao/");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/rais/");
                 salvaArquivos.salvaNaPasta(pathPasta);
                 Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
                 download.baixar();
