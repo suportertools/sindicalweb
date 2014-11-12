@@ -48,7 +48,7 @@ public class DataHoje {
 
     public static String converteData(String data) {
         if (!data.isEmpty()) {
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return dateFormat.format(data);
         } else {
             return "";
@@ -74,6 +74,22 @@ public class DataHoje {
             try {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 return dateFormat.parse(data);
+            } catch (ParseException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static Date converteDateSqlToDate(String date) {
+        if (date != null) {
+            String dia = date.substring(8, 10);
+            String mes = date.substring(5, 7);
+            String ano = date.substring(0, 4);
+            try {
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                return dateFormat.parse(dia + "/" + mes + "/" + ano);
             } catch (ParseException e) {
                 return null;
             }
@@ -732,7 +748,8 @@ public class DataHoje {
      * Tipo
      *
      * @param data
-     * @param tipo 0 = dia extenso/mes extenso/ano extenso/ ; 1 = mes/ano ; 2 - ano; 3 - dia/mes extenso/ano extenso/
+     * @param tipo 0 = dia extenso/mes extenso/ano extenso/ ; 1 = mes/ano ; 2 -
+     * ano; 3 - dia/mes extenso/ano extenso/
      * @return
      */
     public static String dataExtenso(String data, int tipo) {
@@ -744,7 +761,7 @@ public class DataHoje {
             String dia = data.substring(0, 2);
             String mes = data.substring(3, 5);
             String ano = data.substring(6, 10);
-            if(tipo != 3) {                
+            if (tipo != 3) {
                 switch (Integer.parseInt(dia)) {
                     case 1:
                         dia = "Primeiro";
