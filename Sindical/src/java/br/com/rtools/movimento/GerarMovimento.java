@@ -267,110 +267,7 @@ public class GerarMovimento extends DB {
         }
         return "";
     }
-//    
-//    public static boolean salvarUmMovimentoBaixa(Lote lote, Movimento movimento){
-//        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//        CnaeConvencaoDB dbco = new CnaeConvencaoDBToplink(); 
-//        GrupoCidadesDB dbgc = new GrupoCidadesDBToplink();        
-//        ContaCobrancaDB dbc = new ContaCobrancaDBToplink();
-//        NovoLog log = new NovoLog();
-//        MensagemConvencao mc = new MensagemConvencao();
-//        MensagemConvencaoDB dbm = new MensagemConvencaoDBToplink();
-//       
-//        MovimentoDB db = new MovimentoDBToplink();
-//
-//        if (movimento.getPessoa().getId() != 0){
-//            Convencao convencao = dbco.pesquisarCnaeConvencaoPorPessoa(movimento.getPessoa().getId());
-//            if (convencao == null){
-//                return false;
-//            }
-//
-//            mc = dbm.verificaMensagem(convencao.getId(),
-//                                    movimento.getServicos().getId(),
-//                                    movimento.getTipoServico().getId(),
-//                                    dbgc.grupoCidadesPorPessoa(movimento.getPessoa().getId(), 
-//                                    convencao.getId()).getId(),
-//                                    movimento.getReferencia()
-//                    );
-//            if (mc == null){
-//                return false;
-//            }        
-//        }
-//        ContaCobranca cc = dbc.pesquisaServicoCobranca(movimento.getServicos().getId(), movimento.getTipoServico().getId());
-//            
-//            sv.abrirTransacao();
-//            if (movimento.getId() == -1){
-//                // LOTE ---
-//                lote.setDepartamento(null);
-//                lote.setDocumento(movimento.getDocumento());
-//                lote.setStatus((FStatus)sv.pesquisaCodigo(1, "FStatus"));
-//                lote.setLancamento(DataHoje.data());
-//                lote.setAvencerContabil(false);
-//                lote.setEmissao(DataHoje.data());
-//                lote.setFTipoDocumento((FTipoDocumento) sv.pesquisaCodigo(2, "FTipoDocumento"));
-//                lote.setValor(movimento.getValor());
-//                lote.setRotina((Rotina)sv.pesquisaCodigo(4, "Rotina"));
-//                lote.setPessoa(movimento.getPessoa());
-//                lote.setCondicaoPagamento((CondicaoPagamento) sv.pesquisaCodigo(1, "CondicaoPagamento"));
-//                lote.setFilial((Filial)sv.pesquisaCodigo(1, "Filial"));
-//                lote.setPessoaSemCadastro(null);
-//                lote.setEvt(null);
-//                lote.setPlano5(null);
-//                lote.setNrSequenciaBaixa(0);
-//
-//                if (cc == null){
-//                    sv.desfazerTransacao();
-//                    return false;
-//                }
-//                if (sv.inserirObjeto(lote)){
-//                    log.novo("Salvar Lote", "ID: "+lote.getId()+" Pessoa: "+lote.getPessoa().getNome()+" Data: "+lote.getEmissao());
-//                }else{
-//                    sv.desfazerTransacao();
-//                    return false;
-//                }
-//
-//                // MOVIMENTO ----
-//                movimento.setLote(lote);
-//                if (sv.inserirObjeto(movimento)){
-//                    // BOLETO ---
-//
-//
-//                    // SE AGRUPA FOR TRUE** NR_CTR_BOLETO = ID_PESSOA + FATOR DE VENCIMENTO
-//                    if (movimento.getServicos().isAgrupaBoleto()){
-//
-//                    }else{
-//                        // SE AGRUPA FOR FALSE** NR_CTR_BOLETO = ID_MOVIMENTO
-//                        Boleto boleto = new Boleto();
-//                        boleto.setBoletoComposto(movimento.getDocumento());
-//                        boleto.setAtivo(true);
-//                        boleto.setContaCobranca( cc );
-//                        boleto.setNrCtrBoleto(String.valueOf(movimento.getId()));
-//
-//                        movimento.setNrCtrBoleto(boleto.getNrCtrBoleto());
-//                        sv.alterarObjeto(movimento);
-//                        sv.inserirObjeto(boleto);
-//
-//                        if (movimento.getPessoa().getId() != 0){
-//                            if (!sv.inserirObjeto(new MensagemCobranca(-1, movimento, mc))){
-//                                sv.desfazerTransacao();
-//                                return false;
-//                            }
-//                        }
-//                    }                    
-//
-//                    log.novo("Salvar Movimento", "ID: "+movimento.getId()+" Pessoa: "+movimento.getPessoa().getNome()+" Valor: "+movimento.getValor());
-//                }else{
-//                    sv.desfazerTransacao();
-//                    return false;
-//                }
-//            }else{
-//                sv.desfazerTransacao();
-//                return false;
-//            }
-//            sv.comitarTransacao();
-//        return true;
-//    }
-
+    
     public static boolean salvarUmMovimentoBaixa(Lote lote, Movimento movimento) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         ContaCobrancaDB dbc = new ContaCobrancaDBToplink();
@@ -528,18 +425,6 @@ public class GerarMovimento extends DB {
                         // SE AGRUPA FOR FALSE** NR_CTR_BOLETO = ID_MOVIMENTO
                         //boleto.setNrBoleto(boleto.getContaCobranca().getId());
                         boleto.setNrCtrBoleto(String.valueOf(movimento.getId()));
-
-//                        boleto.setBoletoComposto(
-//                                    boleto.getContaCobranca().getBoletoInicial().substring(0, boleto.getContaCobranca().getBoletoInicial().length() - String.valueOf(boleto.getNrBoleto()).length())
-//                                    + boleto.getNrBoleto()
-//                                );
-
-                        //                    if (sv.alterarObjeto(boleto)){
-                        //                        log.novo("Salvar Boleto", "ID: "+boleto.getId()+" Numero: "+boleto.getNrBoleto());
-                        //                    }else{
-                        //                        sv.desfazerTransacao();
-                        //                        return false;
-                        //                    }                     
 
                         movimento.setDocumento(boleto.getBoletoComposto());
                         movimento.setNrCtrBoleto(boleto.getNrCtrBoleto());
@@ -981,4 +866,134 @@ public class GerarMovimento extends DB {
         }
         return true;
     }
+    
+    public static Object[] baixarMovimentoSocial(List<Movimento> lista_movimento, Usuario usuario, String data_pagamento, float valor_baixa, float valor_taxa) {
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Object[] lista_log = new Object[3];
+        Baixa baixa = new Baixa();
+        baixa.setUsuario(usuario);
+        baixa.setFechamentoCaixa(null);
+        baixa.setBaixa(data_pagamento);
+        baixa.setImportacao(DataHoje.data());
+        baixa.setCaixa(null);
+
+        sv.abrirTransacao();
+        if (!sv.inserirObjeto(baixa)) {
+            sv.desfazerTransacao();
+            lista_log[0] = 0; // 0 - ERRO AO INSERIR BAIXA
+            lista_log[1] = baixa;
+            lista_log[2] = "Erro ao inserir Baixa";
+            return lista_log; 
+        }
+
+        FormaPagamento fp = new FormaPagamento(
+                -1, 
+                baixa, 
+                null, 
+                null, 
+                100, 
+                valor_baixa, 
+                lista_movimento.get(0).getLote().getFilial(), 
+                lista_movimento.get(0).getPlano5(), 
+                null, 
+                null, 
+                (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"), 
+                valor_baixa, 
+                null, 
+                0
+        );
+        
+        if (!sv.inserirObjeto(fp)) {
+            sv.desfazerTransacao();
+            lista_log[0] = 1; // 1 - ERRO AO INSERIR FORMA DE PAGAMENTO
+            lista_log[1] = fp;
+            lista_log[2] = "Erro ao inserir Forma de Pagamento";
+            return lista_log; 
+        }
+        
+        float soma = 0;
+        for (Movimento movimento : lista_movimento) {
+            soma = Moeda.somaValores(soma, movimento.getValor());
+            
+            
+            movimento.setBaixa(baixa);
+            if (!sv.alterarObjeto(movimento)) {
+                sv.desfazerTransacao();
+                lista_log[0] = 2; // 2 - ERRO AO ALTERAR MOVIMENTO COM A BAIXA
+                lista_log[1] = movimento;
+                lista_log[2] = "Erro ao alterar Movimento";
+                return lista_log; 
+            }
+        }
+                
+        if (valor_baixa == soma){
+            // valor baixado corretamente
+            // sv.comitarTransacao();
+            for (Movimento movimento : lista_movimento) {
+                movimento.setValorBaixa(movimento.getValor());
+                if (!sv.alterarObjeto(movimento)) {
+                    sv.desfazerTransacao();
+                    lista_log[0] = 9; // 9 - ERRO AO ALTERAR MOVIMENTO VALOR BAIXA CORRETO
+                    lista_log[1] = movimento;
+                    lista_log[2] = "Erro ao alterar Movimento com Desconto e Valor Baixa";
+                } 
+            }
+        }else if (valor_baixa < soma){
+            float acrescimo = Moeda.subtracaoValores(soma, valor_baixa);
+            // valor da baixa é menor que os boletos ( O CLIENTE PAGOU MENOS )
+            for (Movimento movimento : lista_movimento) {
+                float valor = 0, percentual = 0;
+                percentual = Moeda.multiplicarValores(Moeda.divisaoValores(movimento.getValor(), soma), 100);
+                valor = Moeda.divisaoValores(Moeda.multiplicarValores(acrescimo, percentual), 100);
+
+                movimento.setDesconto(valor);
+                movimento.setValorBaixa(Moeda.subtracaoValores(movimento.getValor(), valor));
+                
+                if (!sv.alterarObjeto(movimento)) {
+                    sv.desfazerTransacao();
+                    lista_log[0] = 3; // 3 - ERRO AO ALTERAR MOVIMENTO COM DESCONTO E VALOR BAIXA
+                    lista_log[1] = movimento;
+                    lista_log[2] = "Erro ao alterar Movimento com Desconto e Valor Baixa";
+                    return lista_log; 
+                }
+            }
+            sv.comitarTransacao();
+            //sv.desfazerTransacao();
+            lista_log[0] = 6; // 6 - VALOR DO ARQUIVO MENOR
+            lista_log[1] = lista_movimento;
+            lista_log[2] = "Valor do Boleto "+lista_movimento.get(0).getDocumento()+" - vencto. "+lista_movimento.get(0).getVencimento()+" - pag. "+data_pagamento+" MENOR com défit de "+Moeda.converteR$Float(acrescimo);
+            return lista_log; 
+        }else if (valor_baixa > soma){
+            float acrescimo = Moeda.subtracaoValores(valor_baixa, soma);
+            // valor da baixa é maior que os boletos ( O CLIENTE PAGOU MAIS ) 
+            for (Movimento movimento : lista_movimento) {
+                float valor = 0, percentual = 0;
+                percentual = Moeda.multiplicarValores(Moeda.divisaoValores(movimento.getValor(), soma), 100);
+                valor = Moeda.divisaoValores(Moeda.multiplicarValores(acrescimo, percentual), 100);
+
+                movimento.setCorrecao(valor);
+                movimento.setValorBaixa(Moeda.somaValores(valor, movimento.getValor()));
+                
+                if (!sv.alterarObjeto(movimento)) {
+                    sv.desfazerTransacao();
+                    lista_log[0] = 4; // 4 - ERRO AO ALTERAR MOVIMENTO COM CORREÇÃO E VALOR BAIXA
+                    lista_log[1] = movimento;
+                    lista_log[2] = "Erro ao alterar Movimento com Correção e Valor Baixa";
+                    return lista_log; 
+                }
+            }
+            sv.comitarTransacao();
+            //sv.desfazerTransacao();
+            lista_log[0] = 7; // 7 - VALOR DO ARQUIVO MAIOR
+            lista_log[1] = lista_movimento;
+            lista_log[2] = "Valor do Boleto "+lista_movimento.get(0).getDocumento()+" - vencto. "+lista_movimento.get(0).getVencimento()+" - pag. "+data_pagamento +" MAIOR com acréscimo de "+Moeda.converteR$Float(acrescimo);
+            return lista_log; 
+        }
+        sv.comitarTransacao();
+        //sv.desfazerTransacao();
+        lista_log[0] = 5; // 5 - BAIXA CONCLUÍDA COM SUCESSO
+        lista_log[1] = lista_movimento;
+        lista_log[2] = "Baixa concluída com Sucesso!";
+        return lista_log; 
+    }    
 }

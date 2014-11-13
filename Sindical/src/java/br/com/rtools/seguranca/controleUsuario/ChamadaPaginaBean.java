@@ -986,6 +986,11 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("cobrancaMensalBean");
         return metodoGenerico(2, "cobrancaMensal");
     }
+
+    public synchronized String retornoSocial() {
+        GenericaSessao.remove("retornoSocialBean");
+        return metodoGenerico(2, "retornoSocial");
+    }
     
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

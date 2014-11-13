@@ -23,8 +23,7 @@
         
         <script type="text/javascript">
             function refresh (timeoutPeriod){
-                //alert('oi');
-                refresh = setTimeout(function(){window.location.reload(true);},timeoutPeriod);
+                refresh = setTimeout(function(){ window.location.reload(true); },timeoutPeriod);
             }
         </script> 
     </h:head>
@@ -124,7 +123,7 @@
                         </p:column>
                         <p:column headerText="..." width="30" styleClass="">
                             <div style="#{(repisMovimento.dataImpressao != null) ? 'background: green; width: 35px; float: right; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;' : ''}">
-                                <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3 or repisMovimento.repisStatus.id == 4 or repisMovimento.repisStatus.id == 5}" ajax="false" title="#{repisMovimento.dataImpressaoString}" onclick="refresh(2000)"/>
+                                <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3 or repisMovimento.repisStatus.id == 4 or repisMovimento.repisStatus.id == 5}" ajax="false" title="#{repisMovimento.dataImpressaoString}" />
                                 
                             </div>
                         </p:column>                        
@@ -162,7 +161,7 @@
                         </h:column>
                         
                         <h:column>
-                            <p:commandButton value="Imprimir certificados selecionados" action="#{webREPISBean.imprimirCertificado(webREPISBean.listRepisMovimentoPatronalSelecionado)}" rendered="#{webREPISBean.listRepisMovimentoPatronalSelecionado.size() > 0}" style="float: right" ajax="false" onclick="refresh(2000)"/>
+                            <p:commandButton value="Imprimir certificados selecionados" action="#{webREPISBean.imprimirCertificado(webREPISBean.listRepisMovimentoPatronalSelecionado)}" rendered="#{webREPISBean.listRepisMovimentoPatronalSelecionado.size() > 0}" style="float: right" ajax="false"/>
                         </h:column>
                     </h:panelGrid>
                     

@@ -47,17 +47,13 @@ import org.primefaces.event.FileUploadEvent;
 public final class ArquivoBancoBean implements Serializable {
     private int indexArquivos = -1;
     private FileOutputStream file = null;
-    //private FileReader reader = null;
-    //private BufferedReader buffReader = null;
     private FileWriter writer = null;
     private BufferedWriter buffWriter = null;
     private Juridica juridica = new Juridica();
     private Object retornoBanco = new Object();
-    //private ServicoContaCobranca servContaCobranca = new ServicoContaCobranca();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private Movimento movimento = new Movimento();
     private ContaCobranca contaCobranca = new ContaCobranca();
-    //private String linha = null;
     private String conteudoRemessa = null;
     private String jur = null;
     private String pesEnd = null;
@@ -80,9 +76,8 @@ public final class ArquivoBancoBean implements Serializable {
     private String lblPendente = "";
     private List listaJuridica = new Vector();
     private List listaMovimentos = new Vector();
-    private List listaArquivoRemessa = new Vector<GenericaQuery>();
-    private List listaArquivoRetorno = new Vector<GenericaQuery>();
-    //private List listaPendencias = new Vector<GenericaQuery>();
+    private List listaArquivoRemessa = new Vector();
+    private List listaArquivoRetorno = new Vector();
     private List listaRetorno = new Vector<GenericaQuery>();
     private List<DataObject> listaDocumentos = new ArrayList();
     private List listaPasta = new ArrayList();
@@ -115,68 +110,6 @@ public final class ArquivoBancoBean implements Serializable {
         }
     }
     
-//    public void loadListaDocumentos(){
-//        listaDocumentos.clear();
-//        DataObject dtObject = null;
-//        String documento = "", digito = "";
-//        boolean encontrado = false;
-//        
-//        DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
-//        List<DocumentoInvalido> listaDoc = new ArrayList<DocumentoInvalido>();
-//        List<DocumentoInvalido> listaDocCadastrado = new ArrayList<DocumentoInvalido>();
-//        
-//        listaDoc = dbDocInv.pesquisaTodos();
-//
-//        if (listaDoc == null) {
-//            return;
-//        }
-//        
-//        listaDocCadastrado = dbDocInv.pesquisaNumeroBoletoPessoa();
-//        for (int i = 0; i < listaDoc.size(); i++) {
-//            encontrado = false;
-//            for (int w = 0; w < listaDocCadastrado.size(); w++) {
-//                if (listaDoc.get(i).getId() == listaDocCadastrado.get(w).getId()) {
-//                    documento = listaDoc.get(i).getDocumentoInvalido().substring(
-//                            listaDoc.get(i).getDocumentoInvalido().length() - 12,
-//                            listaDoc.get(i).getDocumentoInvalido().length());
-//                    digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
-//                    dtObject = new DataObject(false,
-//                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
-//                            "** CADASTRADO **",// -- STATUS
-//                            listaDoc.get(i),
-//                            false,
-//                            listaDoc.get(i).getDtImportacao());
-//
-//                    listaDocumentos.add(dtObject);
-//
-//                    encontrado = true;
-//                }
-//            }
-//            if (!encontrado) {
-//                documento = listaDoc.get(i).getDocumentoInvalido().substring(
-//                        listaDoc.get(i).getDocumentoInvalido().length() - 12,
-//                        listaDoc.get(i).getDocumentoInvalido().length());
-//                digito = ValidaDocumentos.retonarDigitoCNPJ(documento);
-//                if (ValidaDocumentos.isValidoCNPJ(documento + digito)) {
-//                    dtObject = new DataObject(false,
-//                            AnaliseString.mascaraCnpj(documento + digito),// -- DOCUMENTO
-//                            "** VERIFICAR **",// -- STATUS
-//                            listaDoc.get(i),
-//                            true,
-//                            listaDoc.get(i).getDtImportacao());
-//                    listaDocumentos.add(dtObject);
-//                } else {
-//                    dtObject = new DataObject(false,
-//                            documento,// -- DOCUMENTO
-//                            "** INVALIDO **",// -- STATUS
-//                            listaDoc.get(i),
-//                            true,
-//                            listaDoc.get(i).getDtImportacao());
-//                    listaDocumentos.add(dtObject);
-//                }
-//            }
-//        }
-//    }
     public void loadListaDocumentos(){
         listaDocumentos.clear();
         DataObject dtObject = null;
