@@ -16,8 +16,6 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 
 public abstract class ArquivoRetorno {
 
@@ -46,7 +44,11 @@ public abstract class ArquivoRetorno {
     public abstract String darBaixaSindical(String caminho, Usuario usuario);
 
     public abstract String darBaixaPadrao(Usuario usuario);
+    
+    public abstract String darBaixaSicobSocial(String caminho, Usuario usuario);
 
+    public abstract String darBaixaSigCBSocial(String caminho, Usuario usuario);
+    
     protected ArquivoRetorno(ContaCobranca contaCobranca) {
         this.contaCobranca = contaCobranca;
 //        this.pendentes = pendentes;
@@ -419,6 +421,96 @@ public abstract class ArquivoRetorno {
 
     protected String baixarArquivoPadrao(List<GenericaRetorno> listaParametros, Usuario usuario) {
         return "Processo Concluido []";
+    }
+    
+    protected String baixarArquivoSocial(List<GenericaRetorno> listaParametros, String caminho, Usuario usuario) {
+        String cnpj = "";
+        String result = "";
+        String destino = caminho + "/" + DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1] + "-" + DataHoje.ArrayDataHoje()[0];
+
+        boolean moverArquivo = true;
+        List<String> errors = new ArrayList();
+
+        MovimentoDB db = new MovimentoDBToplink();
+        JuridicaDB dbJur = new JuridicaDBToplink();
+        List<Movimento> lista_movimento = new ArrayList();
+        File fl = new File(caminho + "/pendentes/");
+        File listFls[] = fl.listFiles();
+        File flDes = new File(destino); // 0 DIA, 1 MES, 2 ANO
+        flDes.mkdir();
+
+        List<Object[]> lista_logs = new ArrayList();
+        // LAYOUT 2 = SINDICAL
+        if (this.getContaCobranca().getLayout().getId() != 2) {
+            for (int u = 0; u < listaParametros.size(); u++) {
+                if (cnpj.equals("")) {
+                    cnpj = AnaliseString.mascaraCnpj(listaParametros.get(0).getCnpj());
+                    if (dbJur.pesquisaJuridicaPorDoc(cnpj).isEmpty()) {
+                        errors.add(" Documento não Existe no Sistema! " + listaParametros.get(u).getCnpj());
+                    }
+                }
+                
+                lista_movimento = db.pesquisaMovPorNumDocumentoListBaixado(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
+                if (lista_movimento.isEmpty()){
+                    lista_movimento = db.pesquisaMovPorNumDocumentoList(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
+                    if (!lista_movimento.isEmpty()) {
+                        //movimento.get(0).setValorBaixa(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())), 100));
+                        //movimento.get(0).setTaxa(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())), 100));
+
+
+                        // logs de mensagens ---
+                        // 0 - ERRO AO INSERIR BAIXA - [1] obj Baixa
+                        // 1 - ERRO AO INSERIR FORMA DE PAGAMENTO - [1] obj FormaPagamento
+                        // 2 - ERRO AO ALTERAR MOVIMENTO COM A BAIXA - [1] obj Movimento
+                        // 3 - ERRO AO ALTERAR MOVIMENTO COM DESCONTO E VALOR BAIXA - [1] obj Movimento
+                        // 4 - ERRO AO ALTERAR MOVIMENTO COM CORREÇÃO E VALOR BAIXA - [1] obj Movimento
+                        // 5 - BAIXA CONCLUÍDA COM SUCESSO
+                        // 6 - VALOR DA BAIXA MENOR - [1] obj Lista Movimento
+                        // 7 - VALOR DA BAIXA MAIOR - [1] obj Lista Movimento
+                        // 8 - BOLETO NÃO ENCONTRADO - [1] string Número do Boleto
+                        // 9 - ERRO AO ALTERAR MOVIMENTO COM VALOR BAIXA CORRETO- [1] obj Movimento
+
+                        Object[] log = GerarMovimento.baixarMovimentoSocial(
+                                lista_movimento, // lista de movimentos
+                                usuario, // usuario que esta baixando
+                                DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento()),  // data do pagamento
+                                Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())), 100), // valor liquido ( total pago )
+                                Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())), 100) // valor taxa
+                        );
+
+                        lista_logs.add(log);
+                    }else{
+                        Object[] log = new Object[3];
+
+                        log[0] = 8;
+                        log[1] = listaParametros.get(u).getNossoNumero();
+                        log[2] = "Boleto não Encontrado - "+ listaParametros.get(u).getNossoNumero();
+                        lista_logs.add(log);
+                    }
+                }
+                lista_movimento.clear();
+            }
+        }
+        
+        GenericaSessao.put("logsRetornoSocial", lista_logs);
+        
+        if (listFls != null) {
+            if (moverArquivo) {
+                for (int i = 0; i < listFls.length; i++) {
+                    flDes = new File(caminho + "/pendentes/" + listFls[i].getName());
+
+                    fl = new File(destino + "/" + listFls[i].getName());
+                    if (fl.exists()) {
+                        fl.delete();
+                    }
+
+                    if (!flDes.renameTo(fl)) {
+                        result = " Erro ao mover arquivo!";
+                    }
+                }
+            } 
+        }
+        return result;
     }
 
     public ContaCobranca getContaCobranca() {

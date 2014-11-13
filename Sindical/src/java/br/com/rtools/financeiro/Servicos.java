@@ -55,6 +55,8 @@ public class Servicos implements java.io.Serializable {
     private Periodo periodo;
     @Column(name = "nr_qtde_periodo")
     private int quantidadePeriodo;
+    @Column(name = "is_familiar_periodo", nullable = false, columnDefinition = "boolean default false")
+    private boolean familiarPeriodo;
 
     public Servicos() {
         this.id = -1;
@@ -76,6 +78,7 @@ public class Servicos implements java.io.Serializable {
         this.valorFixo = false;
         this.periodo = new Periodo();
         this.quantidadePeriodo = 0;
+        this.familiarPeriodo = false;
     }
 
     public Servicos(int id,
@@ -96,7 +99,8 @@ public class Servicos implements java.io.Serializable {
             boolean produto,
             boolean valorFixo,
             Periodo periodo,
-            int quantidadePeriodo) {
+            int quantidadePeriodo,
+            boolean familiarPeriodo) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -116,6 +120,7 @@ public class Servicos implements java.io.Serializable {
         this.valorFixo = valorFixo;
         this.periodo = periodo;
         this.quantidadePeriodo = quantidadePeriodo;
+        this.familiarPeriodo = familiarPeriodo;
     }
 
     public int getId() {
@@ -273,5 +278,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setQuantidadePeriodo(int quantidadePeriodo) {
         this.quantidadePeriodo = quantidadePeriodo;
+    }
+
+    public boolean isFamiliarPeriodo() {
+        return familiarPeriodo;
+    }
+
+    public void setFamiliarPeriodo(boolean familiarPeriodo) {
+        this.familiarPeriodo = familiarPeriodo;
     }
 }

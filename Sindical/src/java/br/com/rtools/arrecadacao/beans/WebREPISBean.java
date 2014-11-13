@@ -38,25 +38,34 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 @ManagedBean
 @SessionScoped
@@ -389,7 +398,7 @@ public class WebREPISBean implements Serializable {
     public String imprimirCertificado(List<RepisMovimento> listam) {
         JuridicaDB dbj = new JuridicaDBToplink();
         WebREPISDB dbw = new WebREPISDBToplink();
-        List lista_jasper = new ArrayList();
+        List<JasperPrint> lista_jasper = new ArrayList();
         
         if (listam.isEmpty()){
             return null;
@@ -523,35 +532,56 @@ public class WebREPISBean implements Serializable {
             
             JRPdfExporter exporter = new JRPdfExporter();
             ByteArrayOutputStream retorno = new ByteArrayOutputStream();
-
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, lista_jasper);
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
-            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
-            exporter.exportReport();
-
-            byte[] arquivo = retorno.toByteArray();
-
             String nomeDownload = "certificado_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
-            SalvaArquivos sa = new SalvaArquivos(arquivo,
-                    nomeDownload,
-                    false);
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance()
-            );
-            download.baixar();
-            download.remover();
+            
+            exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
+            
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            
+            configuration.setCreatingBatchModeBookmarks(true);
+            
+            exporter.setConfiguration(configuration);
+//            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, lista_jasper);
+//            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
+            //exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
+            exporter.exportReport();
+            
+            File fl = new File(pathPasta);
+            
+            if (fl.exists()){
+                Download download = new Download(
+                        nomeDownload,
+                        pathPasta,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance()
+                );
+                download.baixar();
+                download.remover();
+            }
+//            byte[] arquivo = retorno.toByteArray();
+//
+//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
+//            SalvaArquivos sa = new SalvaArquivos(arquivo,
+//                    nomeDownload,
+//                    false);
+//            sa.salvaNaPasta(pathPasta);
+//
+//            Download download = new Download(nomeDownload,
+//                    pathPasta,
+//                    "application/pdf",
+//                    FacesContext.getCurrentInstance()
+//            );
+//            download.baixar();
+//            download.remover();
             
             listRepisMovimentoPatronal.clear();
         } catch (NumberFormatException | JRException e) {
             di.rollback();
             e.getMessage();
             GenericaMensagem.error("Erro", "Arquivo de Certidão não encontrado! "+e.getMessage());
-        }
+        } 
         return null;
     }
 

@@ -123,9 +123,21 @@ public class Santander extends ArquivoRetorno {
         String mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
         return mensagem;
     }
+    
+    @Override
+    public String darBaixaSicobSocial(String caminho, Usuario usuario) {
+        String mensagem = super.baixarArquivoSocial(this.sicob(true, caminho), caminho, usuario);
+        return mensagem;
+    }
 
     @Override
     public String darBaixaSigCB(String caminho, Usuario usuario) {
+        String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
+        return mensagem;
+    }
+    
+    @Override
+    public String darBaixaSigCBSocial(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }

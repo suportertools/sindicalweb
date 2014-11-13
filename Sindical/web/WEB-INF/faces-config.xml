@@ -1591,6 +1591,12 @@
         </navigation-case>          
         
         <navigation-case>
+            <from-outcome>retornoSocial</from-outcome>
+            <to-view-id>/retornoSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>    
+              
+        <navigation-case>
             <from-outcome>relatorioRais</from-outcome>
             <to-view-id>/relatorioRais.jsf</to-view-id>
             <redirect/>

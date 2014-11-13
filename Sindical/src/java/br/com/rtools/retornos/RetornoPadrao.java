@@ -155,13 +155,26 @@ public class RetornoPadrao extends ArquivoRetorno {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
+    
+    @Override
+    public String darBaixaSigCBSocial(String caminho, Usuario usuario) {
+        String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
+        return mensagem;
+    }
 
     @Override
     public String darBaixaSicob(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
+    
+    @Override
+    public String darBaixaSicobSocial(String caminho, Usuario usuario) {
+        String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
+        return mensagem;
+    }
 
+    @Override
     public String darBaixaPadrao(Usuario usuario) {
         String mensagem = "";
         mensagem = super.baixarArquivoPadrao(this.sicob(true, ""), usuario);

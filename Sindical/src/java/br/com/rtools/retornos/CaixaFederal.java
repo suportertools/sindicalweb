@@ -258,22 +258,31 @@ public class CaixaFederal extends ArquivoRetorno {
 
     @Override
     public String darBaixaSindical(String caminho, Usuario usuario) {
-        String mensagem = "";
-        mensagem = super.baixarArquivo(this.sindical(true, caminho), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sindical(true, caminho), caminho, usuario);
         return mensagem;
     }
 
     @Override
     public String darBaixaSigCB(String caminho, Usuario usuario) {
-        String mensagem = "";
-        mensagem = super.baixarArquivo(this.sigCB(true, caminho), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sigCB(true, caminho), caminho, usuario);
+        return mensagem;
+    }
+    
+    @Override
+    public String darBaixaSigCBSocial(String caminho, Usuario usuario) {
+        String mensagem = super.baixarArquivoSocial(this.sigCB(true, caminho), caminho, usuario);
         return mensagem;
     }
 
     @Override
     public String darBaixaSicob(String caminho, Usuario usuario) {
-        String mensagem = "";
-        mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
+        String mensagem = super.baixarArquivo(this.sicob(true, caminho), caminho, usuario);
+        return mensagem;
+    }
+    
+    @Override
+    public String darBaixaSicobSocial(String caminho, Usuario usuario) {
+        String mensagem = super.baixarArquivoSocial(this.sicob(true, caminho), caminho, usuario);
         return mensagem;
     }
 

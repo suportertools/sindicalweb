@@ -316,7 +316,7 @@ public class PlanoDBToplink extends DB implements PlanoDB {
         List result = null;
 
         String textQuery = null;
-        textQuery = "select p from " + plano + " p " + " order by p.numero";
+        textQuery = "select p from " + plano + " p " + " order by p.classificador, p.numero";
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             result = qry.getResultList();

@@ -36,46 +36,79 @@
                                         <p:tab id="servico" title="Serviços">
                                             <p:panelGrid columns="2" styleClass="sbb">
                                                 <p:outputLabel value="Serviço: " for="idDSServicos"/>
-                                                <p:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" size="130"/>                                        
+                                                <p:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" size="100"/>                       
+                                            </p:panelGrid>
+
+                                            <h:panelGrid columns="2">
                                                 <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPlano}" value="Conta Contábil" id="id_pesquisa_plano"/>
                                                 <p:column>
                                                     <p:outputLabel value="Pesquisar conta contábil" for="id_pesquisa_plano" rendered="#{servicosBean.servicos.plano5.id == -1}" style="border-bottom: 1px dashed #888"/>
                                                     <p:outputLabel value="Conta Contábil: #{servicosBean.servicos.plano5.numero} - #{servicosBean.servicos.plano5.conta}" title="#{servicosBean.servicos.plano5.conta}" rendered="#{servicosBean.servicos.plano5.id != -1}"/><br />
                                                 </p:column>
+                                            </h:panelGrid>
 
-                                                <p:outputLabel value="Grupo Financeiro:" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
-                                                <p:selectOneMenu value="#{servicosBean.idGrupo}" style="margin-right: 10px; width: 480px" rendered="#{servicosBean.servicos.plano5.id != -1}">
-                                                    <p:ajax event="change" listener="#{servicosBean.listSubGrupo.clear()}" update="i_subgrupo"/>
-                                                    <f:selectItems value="#{servicosBean.listGrupo}"/>
-                                                </p:selectOneMenu>
+                                            <h:panelGrid columns="2">
+                                                <h:column>
+                                                    <p:outputLabel value="Grupo Financeiro " rendered="#{servicosBean.servicos.plano5.id != -1}"/><br />
+                                                    <p:selectOneMenu value="#{servicosBean.idGrupo}" style="margin-right: 10px; width: 450px" rendered="#{servicosBean.servicos.plano5.id != -1}">
+                                                        <p:ajax event="change" listener="#{servicosBean.listSubGrupo.clear()}" update="i_subgrupo"/>
+                                                        <f:selectItems value="#{servicosBean.listGrupo}"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
 
-                                                <p:outputLabel value="Sub Grupo Financeiro:" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
-                                                <p:selectOneMenu id="i_subgrupo" value="#{servicosBean.idSubGrupo}" style="margin-right: 10px; width: 480px" rendered="#{servicosBean.servicos.plano5.id != -1}">
-                                                    <f:selectItems value="#{servicosBean.listSubGrupo}"/>
-                                                </p:selectOneMenu>
+                                                <h:column>
+                                                    <p:outputLabel value="Sub Grupo Financeiro " rendered="#{servicosBean.servicos.plano5.id != -1}"/><br />
+                                                    <p:selectOneMenu id="i_subgrupo" value="#{servicosBean.idSubGrupo}" style="margin-right: 10px; width: 450px" rendered="#{servicosBean.servicos.plano5.id != -1}">
+                                                        <f:selectItems value="#{servicosBean.listSubGrupo}"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
+                                            </h:panelGrid>
+                                            
+                                            <h:panelGrid columns="3">
+
+                                                <h:column>
+                                                    <p:outputLabel value="Periodo de fornecimento gratuito "/><br />
+                                                    <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
+                                                        <f:selectItems value="#{servicosBean.listPeriodo}"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
                                                 
-                                                <p:outputLabel value="Periodo de fornecimento gratuito:"/>
-                                                <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
-                                                    <f:selectItems value="#{servicosBean.listPeriodo}"/>
-                                                </p:selectOneMenu>
+                                                <h:column>
+                                                    <p:outputLabel value="Quantidade por Periodo"/><br />
+                                                    <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="5"/>                                        
+                                                </h:column>
                                                 
-                                                <p:outputLabel value="Quantidade por Periodo:"/>
-                                                <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="5"/>                                        
-
-                                                <p:outputLabel value="Dias validos da guia:" for="idDiaValido"/>
-                                                <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90" />
-                                                <p:outputLabel value="Código: " for="idCodigo"/>
-                                                <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}" />
-                                                <p:outputLabel value="Situação: " />
+                                                <h:column>
+                                                    <br />
+                                                    <p:selectBooleanCheckbox value="#{servicosBean.servicos.familiarPeriodo}" itemLabel="Controle Familiar" style="margin-left: 20px"/>
+                                                </h:column>
+                                            </h:panelGrid>
+                                            
+                                            <p:separator />
+                                            
+                                            <h:panelGrid columns="4">
+                                                <h:column>
+                                                    <p:outputLabel value="Dias validos da guia" for="idDiaValido" /><br />
+                                                    <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
+                                                </h:column>
+                                                
+                                                <h:column>
+                                                    <p:outputLabel value="Código" for="idCodigo" style="margin-left: 20px!important"/><br />
+                                                    <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}" style="margin-left: 20px"/>
+                                                </h:column>
+                                            
                                                 <p:column>
-                                                    <p:selectOneMenu value="#{servicosBean.servicos.situacao}">
+                                                    <p:outputLabel value="Situação" /><br />
+                                                    <p:selectOneMenu value="#{servicosBean.servicos.situacao}" style="width: 50px">
                                                         <f:selectItem itemValue="A" itemLabel="A" />
                                                         <f:selectItem itemValue="I" itemLabel="I" />
                                                     </p:selectOneMenu>
                                                 </p:column>
-                                            </p:panelGrid>
-                                            <br />
-                                            <p:panelGrid columns="30" styleClass="sbb">
+                                            </h:panelGrid>
+                                            
+                                            <p:separator />
+                                            
+                                            <p:panelGrid columns="8" styleClass="sbb">
                                                 <p:selectBooleanCheckbox id="idServDebito" value="#{servicosBean.servicos.debito}" itemLabel="Débito"/>
                                                 <p:selectBooleanCheckbox id="idServValor" value="#{servicosBean.servicos.alterarValor}" itemLabel="Alterar valor"/>
                                                 <p:selectBooleanCheckbox id="idServAdmin" value="#{servicosBean.servicos.adm}" itemLabel="ADM"/>
@@ -222,7 +255,7 @@
                                 <h:outputLabel value="R$ #{servicosBean.servicoValorDetalhe.valorString}" style="font-size: 12pt!important"/>
                                 <h:panelGrid id="i_desconto_dependente" style="margin-top: 10px">
                                     <p:messages autoUpdate="true" showDetail="true"/>
-                                    
+
                                     <h:panelGrid columns="1" style="width: 100%">
                                         <h:column>
                                             <h:outputLabel value="Parentesco" /><br />
@@ -232,7 +265,7 @@
                                             </p:selectOneMenu>
                                         </h:column>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid columns="4">
                                         <h:column>
                                             <h:outputLabel value="Valor R$" style="font-weight: bold"/><br />
@@ -256,21 +289,21 @@
                                             <p:commandButton value="Adicionar Todos Parentescos" action="#{servicosBean.adicionarDescontoDependenteTodosParentesco()}" update="i_desconto_dependente"/>
                                         </h:column>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid>
                                         <p:dataTable value="#{servicosBean.listaDescontoDependente}" var="linha" emptyMessage="Nenhum desconto dependente adicionado para essa categoria!" scrollable="true" scrollHeight="250">
                                             <p:column headerText="Parentesco">
                                                 <h:outputLabel value="#{linha.parentesco.parentesco}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Valor" style="text-align: center">
                                                 <h:outputLabel value="R$ #{servicosBean.linhaDescontoCategoriaDependentePercentual(linha.desconto)}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Desconto" style="text-align: center">
                                                 <h:outputLabel value="#{linha.desconto}" />
                                             </p:column>
-                                            
+
                                             <p:column width="30">
                                                 <p:commandButton icon="ui-icon-close" action="#{servicosBean.deletarDescontoDependente(linha)}" update=":form_servicos:i_desconto_dependente"/>
                                             </p:column>
