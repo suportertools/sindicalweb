@@ -304,7 +304,7 @@ public class RelatorioRaisBean implements Serializable {
     public List<SelectItem> getListaTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(271);
+            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(273);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
             }
