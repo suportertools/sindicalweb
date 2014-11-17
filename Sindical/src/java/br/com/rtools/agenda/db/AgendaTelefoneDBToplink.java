@@ -415,9 +415,13 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                     + "             FROM age_telefone AS AGT                        "
                     + "        LEFT JOIN age_agenda AS AG ON AG.id = AGT.id_agenda  ";
             if (indice == 0) {
-                queryString += " WHERE AGT.id_agenda IN (" + inArray + ") ";
+                if (!inArray.isEmpty()) {
+                    queryString += " WHERE AGT.id_agenda IN (" + inArray + ") ";
+                }
             } else if (indice == 2) {
-                queryString += " WHERE AGT.id IN (" + inArray + ") ";
+                if (!inArray.isEmpty()) {
+                    queryString += " WHERE AGT.id IN (" + inArray + ") ";
+                }
             }
             queryString += " ORDER BY AGT.id_agenda DESC ";
             Query q = getEntityManager().createNativeQuery(queryString, AgendaTelefone.class);
@@ -426,7 +430,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                 return l;
             }
         } catch (Exception e) {
-
+            e.getMessage();
         }
 
         // Se nenhum resultado for encotrado (quando não houver vínculo entre agenda e agenda telefone) tenta uma ultima vez realizando uma pesquisa somente na tabela da agenda
