@@ -166,19 +166,20 @@ public class ChamadaPaginaBean implements Serializable {
         if (GenericaSessao.exists("sessaoUsuario")) {
             usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         }
-        if (rotina != null) {
-            ContadorAcessos cont = dba.pesquisaContadorAcessos(usuario.getId(), rotina.getId());
-            if (cont == null) {
-                cont = new ContadorAcessos();
-                cont.setRotina(rotina);
-                cont.setUsuario(usuario);
-                cont.setAcessos(cont.getAcessos() + 1);
-                dao.save(cont, true);
-            } else {
-                cont.setAcessos(cont.getAcessos() + 1);
-                dao.update(cont, true);
+        if (usuario != null && usuario.getId() != -1) {
+            if (rotina != null) {
+                ContadorAcessos cont = dba.pesquisaContadorAcessos(usuario.getId(), rotina.getId());
+                if (cont == null) {
+                    cont = new ContadorAcessos();
+                    cont.setRotina(rotina);
+                    cont.setUsuario(usuario);
+                    cont.setAcessos(cont.getAcessos() + 1);
+                    dao.save(cont, true);
+                } else {
+                    cont.setAcessos(cont.getAcessos() + 1);
+                    dao.update(cont, true);
+                }
             }
-
         }
     }
 
@@ -197,7 +198,7 @@ public class ChamadaPaginaBean implements Serializable {
         //e.printStackTrace();
         //e.printStackTrace();
         //e.printStackTrace();
-        
+
         return object;
     }
 
@@ -991,7 +992,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("retornoSocialBean");
         return metodoGenerico(2, "retornoSocial");
     }
-    
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1452,7 +1453,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("relatorioChequesRecebidosBean");
         return metodoGenerico(2, "relatorioChequesRecebidos");
     }
-    
+
     public synchronized String relatorioSociosInativos() {
         GenericaSessao.remove("relatorioSociosInativosBean");
         return metodoGenerico(3, "relatorioSociosInativos");
