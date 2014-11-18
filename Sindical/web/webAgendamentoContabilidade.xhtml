@@ -181,7 +181,7 @@
                             </h:column>
 
                             <h:column>
-                                <h:outputLabel value="Nascimento" /><br />
+                                <h:outputLabel value="Nascimento"  styleClass="#{agendamentoBean.configuracaoHomologacao.webValidaDataNascimento ? 'font-color-red' : ''}"/><br />
                                 <p:inputMask value="#{webAgendamentoContabilidadeBean.fisica.nascimento}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" size="8" mask="99/99/9999"/>
                             </h:column>
 
