@@ -374,11 +374,13 @@ public class AtendimentoBean implements Serializable {
         sv.abrirTransacao();
         if (ateMovimento.getId() == -1) {
             ateMovimento.setHoraEmissao(getHoraEmissaoString());
-            if (atendimentoDB.existeAtendimento(ateMovimento)) {
-                GenericaMensagem.error("Atenção", "Atendimento já cadastrado!");
-                sv.desfazerTransacao();
-                return;
-            }
+            
+            // PERMITIR QUE CRIE UM ATENDIMENTO REPETIDO PARA MESMA PESSOA -- chamado 287 --
+//            if (atendimentoDB.existeAtendimento(ateMovimento)) {
+//                GenericaMensagem.error("Atenção", "Atendimento já cadastrado!");
+//                sv.desfazerTransacao();
+//                return;
+//            }
             
             if (!sv.inserirObjeto(ateMovimento)) {
                 GenericaMensagem.error("Erro", "Não foi possivel salvar Atendimento!");

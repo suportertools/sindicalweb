@@ -285,7 +285,7 @@ public class RetornoSocialBean {
         listaContas.clear();
         
         ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-        List<ContaCobranca> result = servDB.listaContaCobrancaAtivo();
+        List<ContaCobranca> result = servDB.listaContaCobrancaAtivoAssociativo();
         if (result.isEmpty()) {
             listaContas.add(new SelectItem(0, "Nenhuma Conta Encontrada", "0"));
             return;

@@ -234,7 +234,7 @@ public class ImpressaoBoletoSocialBean {
             FinanceiroDB db = new FinanceiroDBToplink();
             List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData);
             for (int i = 0; i < lista_agrupado.size(); i++){
-                listaGrid.add(new DataObject(i+1, true, lista_agrupado.get(i)));
+                listaGrid.add(new DataObject(i+1, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString())));
             }
         }
         return listaGrid;

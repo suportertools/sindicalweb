@@ -194,9 +194,19 @@ public class ServicoContaCobrancaDBToplink extends DB implements ServicoContaCob
     }
 
     @Override
-    public List listaContaCobrancaAtivo() {
+    public List listaContaCobrancaAtivoArrecadacao() {
         try {
-            Query qry = getEntityManager().createQuery("select co from ContaCobranca co where co.ativo = true");
+            Query qry = getEntityManager().createQuery("select co from ContaCobranca co where co.ativo = true and co.arrecadacao = true and co.associativo = false");
+            return (qry.getResultList());
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List listaContaCobrancaAtivoAssociativo() {
+        try {
+            Query qry = getEntityManager().createQuery("select co from ContaCobranca co where co.ativo = true and co.associativo = true and co.arrecadacao = false");
             return (qry.getResultList());
         } catch (Exception e) {
             return new ArrayList();

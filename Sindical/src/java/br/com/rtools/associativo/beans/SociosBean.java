@@ -851,7 +851,12 @@ public class SociosBean implements Serializable {
                 }
             }
         }
-
+            
+        if (novoDependente.getPessoa().getCriacao().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Data de Cadastro inválida!");
+            return false;
+        }
+        
         if (novoDependente.getNascimento().isEmpty() || novoDependente.getNascimento().length() < 10) {
             GenericaMensagem.fatal("Erro", "Data de Nascimento inválida!");
             return false;

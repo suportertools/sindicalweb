@@ -16,11 +16,26 @@
             .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
                 background: #ECF3FE;
             }
-            
+            .tblListaBoleto{
+                background-color: #39ff9c!important;
+                //color: #CCFF66!important;
+            }
         </style>
         
         <script type="text/javascript">
-            
+            // BLOQUEIA ENTER
+            // DESABILITA ENTER
+            // DISABLED ENTER
+            // VERIFICA SE OQ ESTOU DIGITANDO É STRING
+//            function stopRKey(evt) {
+//                var evt = (evt) ? evt : ((event) ? event : null);
+//                //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+//                if (evt.keyCode === 13) {
+//                    return false;
+//                }
+//            }
+//
+//            document.onkeypress = stopRKey;
         </script>
     </h:head>
     <h:body>
@@ -30,13 +45,35 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateAcessoFilial.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Movimentos a Receber" styleClass="fonteHeader" />
+                        <h:form id="formMovimentosReceberPesquisa">
+                            <h:panelGrid columns="3" style="clear: both; float: right">
+                                <p:column>
+                                    <p:outputLabel value="Pesquisa por Boleto" style="font-size: 10pt!important; font-weight: bold"/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneMenu value="#{movimentosSocialBean.indexConta}" style="width: 300px">
+                                        <p:ajax event="change" global="false" update=":formMovimentosReceber"/>
+                                        <f:selectItems value="#{movimentosSocialBean.listaContas}" />
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <p:inputText placeholder="Número do Boleto" value="#{movimentosSocialBean.descPesquisaBoleto}" size="20">
+                                        <p:ajax event="blur" update="@this" global="false"/>
+                                    </p:inputText>
+
+                                    <p:commandButton icon="ui-icon-search" action="#{movimentosSocialBean.pesquisaBoleto()}" update=":formMovimentosReceber" title="Pesquisar pelo número do Boleto"/>
+                                </p:column>
+                            </h:panelGrid>
+                        </h:form>
+                        
                         <h:form id="formMovimentosReceber">
                             <p:panel styleClass="fundoCinza" style="clear: both">
-                                <h:panelGrid columns="2" style="width: 100%">
+                                <h:panelGrid columns="3" style="width: 100%">
                                     <p:column>
                                         <p:commandButton value="Adicionar uma Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosSocialBean.pessoa.id == -1}"/>
                                         <p:commandButton value="Pesquisar outra Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosSocialBean.pessoa.id != -1}"/>
@@ -109,7 +146,7 @@
                                 <p:messages id="i_msg" showDetail="true" closable="true" />  
                             </h:panelGrid>
                             
-                            <p:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!">
+                            <p:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!" rowStyleClass="#{linha.argumento28}">
                                 <p:column style="text-align: center; width: 15px">
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosSocialBean.calculoDesconto()}"/>

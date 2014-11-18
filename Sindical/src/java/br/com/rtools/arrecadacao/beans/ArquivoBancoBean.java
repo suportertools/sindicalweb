@@ -222,7 +222,7 @@ public final class ArquivoBancoBean implements Serializable {
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-            List<ContaCobranca> result = servDB.listaContaCobrancaAtivo();
+            List<ContaCobranca> result = servDB.listaContaCobrancaAtivoArrecadacao();
             if (result.isEmpty()) {
                 listaServicos.add(new SelectItem(0, "Nenhuma Contribuição Encontrada", "0"));
                 return listaServicos;
@@ -1064,7 +1064,7 @@ public final class ArquivoBancoBean implements Serializable {
 
             if (!genericaRetorno.isEmpty()) {
                 for (int i = 0; i < genericaRetorno.size(); i++) {
-                    movs = db.pesquisaMovPorNumDocumentoListBaixado(genericaRetorno.get(i).getNossoNumero(), scc.getId());
+                    movs = db.pesquisaMovPorNumDocumentoListBaixadoArr(genericaRetorno.get(i).getNossoNumero(), scc.getId());
                     if (!movs.isEmpty()) {
                         boleto = db.pesquisaBoletos(movs.get(0).getNrCtrBoleto());
                         arqNumero = genericaRetorno.get(i).getNossoNumero();

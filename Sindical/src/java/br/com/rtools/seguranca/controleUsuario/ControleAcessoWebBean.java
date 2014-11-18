@@ -60,6 +60,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
+import org.primefaces.json.JSONException;
 import org.primefaces.json.JSONObject;
 
 @ManagedBean
@@ -216,9 +217,10 @@ public class ControleAcessoWebBean implements Serializable {
 
         String result[] = jr.getCnae().split(" ");
         CnaeDB dbc = new CnaeDBToplink();
-
-        List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
-
+        String cnaex = result[result.length - 1].replace("(", "").replace(")", "");
+        //List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
+        List<Cnae> listac = dbc.pesquisaCnae(cnaex, "cnae", "I");
+        
         if (listac.isEmpty()) {
             GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
             di.rollback();
@@ -382,7 +384,7 @@ public class ControleAcessoWebBean implements Serializable {
                     }
                     di.commit();
                 }
-            } catch (Exception e) {
+            } catch (IOException | JSONException e) {
                 GenericaMensagem.warn("Erro", e.getMessage());
                 return null;
             }
@@ -410,13 +412,17 @@ public class ControleAcessoWebBean implements Serializable {
 
         String result[] = jr.getCnae().split(" ");
         CnaeDB dbc = new CnaeDBToplink();
-
-        List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
+        String cnaex = result[result.length - 1].replace("(", "").replace(")", "");
+        //List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
+        List<Cnae> listac = dbc.pesquisaCnae(cnaex, "cnae", "I");
 
         if (listac.isEmpty()) {
-            GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
-            di.rollback();
-            return null;
+            listac = dbc.pesquisaCnae(result[0], "cnae", "I");
+            if (listac.isEmpty()){
+                GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
+                di.rollback();
+                return null;
+            }
         }
 
         CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();

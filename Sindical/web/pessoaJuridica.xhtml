@@ -136,17 +136,17 @@
                                                     </h:outputLink>
                                                 </p:column>
                                             </h:panelGrid>                                            
-                                            <h:panelGrid columns="2" style="width: 100%">
+                                            <h:panelGrid id="i_panel_fantasia" columns="2" style="width: 100%">
                                                 <p:column>
                                                     <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="@this i_fantasia" global="false"/>
+                                                        <p:ajax event="change" update="@this i_fantasia" global="true"/>
                                                     </p:inputText>
                                                 </p:column>                                                
                                                 <p:column>
                                                     <h:outputLabel value="Nome Fantasia" /><br />
                                                     <p:inputText id="i_fantasia" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="@this" global="false"/>
+                                                        <p:ajax event="change" update="@this" global="true"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>

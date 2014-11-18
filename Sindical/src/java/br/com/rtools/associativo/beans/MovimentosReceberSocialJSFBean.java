@@ -5,11 +5,14 @@ import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Baixa;
+import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
+import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
+import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.impressao.ParametroRecibo;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.Juridica;
@@ -20,10 +23,12 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
@@ -38,6 +43,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
@@ -74,7 +80,71 @@ public class MovimentosReceberSocialJSFBean {
     private String categoria = "";
     private String grupo = "";
     private String status = "";
-
+    
+    private String descPesquisaBoleto = "";
+    private List<SelectItem> listaContas = new ArrayList();
+    private int indexConta = 0;
+    
+    public List<SelectItem> getListaContas(){
+        if (listaContas.isEmpty()){
+            ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
+            List<ContaCobranca> result = servDB.listaContaCobrancaAtivoAssociativo();
+            if (result.isEmpty()) {
+                listaContas.add(new SelectItem(0, "Nenhuma Conta Encontrada", "0"));
+                return listaContas;
+            }
+            int contador = 0;
+            for (int i = 0; i < result.size(); i++) {
+                // LAYOUT 2 = SINDICAL
+                if (result.get(i).getLayout().getId() != 2) {
+                    listaContas.add(
+                            new SelectItem(
+                                    contador,
+                                    result.get(i).getApelido() + " - " + result.get(i).getCodCedente(), // CODCEDENTE NO CASO DE OUTRAS
+                                    Integer.toString(result.get(i).getId())
+                            )
+                    );
+                    contador++;
+                }
+            }
+//            if (!listaContas.isEmpty()) {
+//                contaCobranca = (ContaCobranca) new Dao().find(new ContaCobranca(), Integer.parseInt(((SelectItem) listaContas.get(indexConta)).getDescription()));
+//            }
+        }
+        return listaContas;
+    }
+    
+    public void pesquisaBoleto(){
+        if (descPesquisaBoleto.isEmpty()){
+            if (pessoa.getId() != -1){
+                porPesquisa = "todos";
+                listaMovimento.clear();
+                getListaMovimento();
+            }
+            return;
+        }
+        
+        try{
+            //int numerox = Integer.valueOf(descPesquisaBoleto);
+            MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+            ContaCobranca contaCobranca = (ContaCobranca) new Dao().find(new ContaCobranca(), Integer.parseInt(((SelectItem) listaContas.get(indexConta)).getDescription()));
+            Pessoa p = db.pesquisaPessoaPorBoleto(descPesquisaBoleto, contaCobranca.getId());
+            listaPessoa.clear();
+            pessoa = new Pessoa();
+            
+            if (p != null){
+                pessoa = p;
+                listaPessoa.add(p);
+            }
+            porPesquisa = "todos";
+            listaMovimento.clear();
+            getListaMovimento();
+        }catch(Exception e){
+            descPesquisaBoleto = "";
+            GenericaMensagem.fatal("Atenção", "Digite um número de Boleto válido!");
+        }
+    }
+    
     public void salvarRecibo(byte[] arquivo, Baixa baixa) {
         //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
         if (baixa.getCaixa() == null) {
@@ -659,7 +729,9 @@ public class MovimentosReceberSocialJSFBean {
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 24 VALOR CALCULADO ORIGINAL
                         disabled,
                         lista.get(i).get(18), // ARG 26 ID_BAIXA
-                        lista.get(i).get(15) // ARG 27 ID_LOTE
+                        lista.get(i).get(15), // ARG 27 ID_LOTE
+                        (!descPesquisaBoleto.isEmpty() && descPesquisaBoleto.equals(lista.get(i).get(17))) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28
+                        //(!descPesquisaBoleto.isEmpty() && descPesquisaBoleto == lista.get(i).get(17)) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28
                 )
                 );
             }
@@ -881,5 +953,28 @@ public class MovimentosReceberSocialJSFBean {
 
     public void setId_baixa(String id_baixa) {
         this.id_baixa = id_baixa;
+    }
+
+    public String getDescPesquisaBoleto() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            descPesquisaBoleto = "";
+        }
+        return descPesquisaBoleto;
+    }
+
+    public void setDescPesquisaBoleto(String descPesquisaBoleto) {
+        this.descPesquisaBoleto = descPesquisaBoleto;
+    }
+
+    public void setListaContas(List<SelectItem> listaContas) {
+        this.listaContas = listaContas;
+    }
+
+    public int getIndexConta() {
+        return indexConta;
+    }
+
+    public void setIndexConta(int indexConta) {
+        this.indexConta = indexConta;
     }
 }

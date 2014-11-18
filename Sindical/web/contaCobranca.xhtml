@@ -110,12 +110,25 @@
                                     </p:column>
                                 </h:panelGrid>
                                 
-                                <h:panelGrid style="margin-top: 10px" columns="2">
-                                    <h:outputLabel value="Layout:" />
-                                    <p:selectOneMenu value="#{contaCobrancaBean.idLayout}" style="width: 150px;">
-                                        <p:ajax event="change" update="@this" />
-                                        <f:selectItems value="#{contaCobrancaBean.listaLayout}" />
-                                    </p:selectOneMenu>
+                                <h:panelGrid style="margin-top: 10px" columns="4">
+                                    <p:column>
+                                        <h:outputLabel value="Layout:" />
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:selectOneMenu value="#{contaCobrancaBean.idLayout}" style="width: 150px;">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{contaCobrancaBean.listaLayout}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{contaCobrancaBean.contaCobranca.arrecadacao}" itemLabel="Baixa Arrecadação" style="margin-left: 20px"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{contaCobrancaBean.contaCobranca.associativo}" itemLabel="Baixa Associativo" style="margin-left: 20px"/>
+                                    </p:column>
                                 </h:panelGrid>
                                 
                             </p:panel>

@@ -518,7 +518,7 @@ public class ImprimirBoleto {
     
     
 
-    public byte[] imprimirAcordo(List<Movimento> lista, Acordo acordo, Historico historico, boolean imprimir_pro) {
+    public byte[] imprimirAcordo(List<Movimento> lista, Acordo acordo, Historico historico, String emailContato, boolean imprimir_pro) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -688,7 +688,9 @@ public class ImprimirBoleto {
                         lista.get(i).getTipoServico().getDescricao(),
                         lista.get(i).getReferencia(),
                         "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
-                        acordo.getUsuario().getPessoa().getNome()));
+                        acordo.getUsuario().getPessoa().getNome(),
+                        emailContato
+                ));
                 i++;
             }
 
@@ -1081,6 +1083,7 @@ public class ImprimirBoleto {
                         lista.get(i).getTipoServico().getDescricao(),
                         lista.get(i).getReferencia(),
                         "Planilha de Débito",
+                        "",
                         ""));
                 i++;
             }
@@ -1111,7 +1114,7 @@ public class ImprimirBoleto {
         return arquivo;
     }
 
-    public byte[] imprimirAcordoAcordado(List<Movimento> lista, Acordo acordo, String historico, boolean imprimirVerso) {
+    public byte[] imprimirAcordoAcordado(List<Movimento> lista, Acordo acordo, String historico, String emailContato, boolean imprimirVerso) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -1308,7 +1311,9 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
-                            acordo.getUsuario().getPessoa().getNome()));
+                            acordo.getUsuario().getPessoa().getNome(),
+                            emailContato
+                    ));
                 } else if (!lista.get(i).isAtivo()){
                     vetor2.add(new DemonstrativoAcordo(
                             acordo.getId(), // codacordo
@@ -1364,7 +1369,9 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
-                            acordo.getUsuario().getPessoa().getNome()));
+                            acordo.getUsuario().getPessoa().getNome(),
+                            emailContato
+                    ));
                 }
                 i++;
             }
@@ -1404,7 +1411,7 @@ public class ImprimirBoleto {
         return arquivo;
     }
 
-    public byte[] imprimirAcordoPromissoria(List<Movimento> lista, Acordo acordo, Historico historico, boolean imprimir_pro) {
+    public byte[] imprimirAcordoPromissoria(List<Movimento> lista, Acordo acordo, Historico historico, String emailContato, boolean imprimir_pro) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -1593,7 +1600,9 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
-                            acordo.getUsuario().getPessoa().getNome()));
+                            acordo.getUsuario().getPessoa().getNome(),
+                            emailContato
+                    ));
 
                     ValorExtenso ve = new ValorExtenso(new BigDecimal(lista.get(i).getValor()));
                     vetor3.add(new Promissoria(
@@ -1673,7 +1682,9 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
-                            acordo.getUsuario().getPessoa().getNome()));
+                            acordo.getUsuario().getPessoa().getNome(),
+                            emailContato
+                    ));
                 }
                 i++;
 

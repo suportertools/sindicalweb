@@ -76,7 +76,9 @@ public class AcordoBean {
     private Pessoa pessoa = new Pessoa();
     private Pessoa pessoaEnvio = new Pessoa();
     private String emailPara = "contabilidade";
-
+    
+    private String emailContato = "";
+    
     public void verificaEmail() {
         Juridica jur = new Juridica();
         JuridicaDB db = new JuridicaDBToplink();
@@ -245,13 +247,15 @@ public class AcordoBean {
         int i = 0;
         DataHoje data = new DataHoje();
         vencto.add(new SelectItem(
-                new Integer(i),
-                vencimento));
+                i,
+                vencimento)
+        );
         i++;
         while (i < 31) {
             vencto.add(new SelectItem(
-                    new Integer(i),
-                    data.incrementarDias(i, vencimento)));
+                    i,
+                    data.incrementarDias(i, vencimento))
+            );
             i++;
         }
         return vencto;
@@ -445,8 +449,8 @@ public class AcordoBean {
             servico = movimento.getServicos();
             if (servico.getId() == 1) {
                 if (frequenciaSind == 30) {
-                    if ((data.menorData(data.decrementarMeses(1, date), vencimentoSind))
-                            && (!data.igualdadeData(data.decrementarMeses(1, date), vencimentoSind))) {
+                    if ((DataHoje.menorData(data.decrementarMeses(1, date), vencimentoSind))
+                            && (!DataHoje.igualdadeData(data.decrementarMeses(1, date), vencimentoSind))) {
                         i++;
                         continue;
                     }
@@ -454,8 +458,8 @@ public class AcordoBean {
                     dataPrincipal = data.decrementarMeses(1, dataPrincipal);
                     referencia = data.decrementarMeses(1, dataPrincipal);// AQUI
                 } else if (frequenciaSind == 7) {
-                    if ((data.menorData(data.decrementarSemanas(1, date), vencimentoSind))
-                            && (!data.igualdadeData(data.decrementarSemanas(1, date), vencimentoSind))) {
+                    if ((DataHoje.menorData(data.decrementarSemanas(1, date), vencimentoSind))
+                            && (!DataHoje.igualdadeData(data.decrementarSemanas(1, date), vencimentoSind))) {
                         i++;
                         continue;
                     }
@@ -465,8 +469,8 @@ public class AcordoBean {
                 }
             } else {
                 if (frequencia == 30) {
-                    if ((data.menorData(data.decrementarMeses(1, date), vencimentoOut))
-                            && (!data.igualdadeData(data.decrementarMeses(1, date), vencimentoOut))) {
+                    if ((DataHoje.menorData(data.decrementarMeses(1, date), vencimentoOut))
+                            && (!DataHoje.igualdadeData(data.decrementarMeses(1, date), vencimentoOut))) {
                         i++;
                         continue;
                     }
@@ -474,8 +478,8 @@ public class AcordoBean {
                     dataPrincipal = data.decrementarMeses(1, dataPrincipal);
                     referencia = data.decrementarMeses(1, dataPrincipal);
                 } else if (frequencia == 7) {
-                    if ((data.menorData(data.decrementarSemanas(1, date), vencimentoOut))
-                            && (!data.igualdadeData(data.decrementarSemanas(1, date), vencimentoOut))) {
+                    if ((DataHoje.menorData(data.decrementarSemanas(1, date), vencimentoOut))
+                            && (!DataHoje.igualdadeData(data.decrementarSemanas(1, date), vencimentoOut))) {
                         i++;
                         continue;
                     }
@@ -511,7 +515,7 @@ public class AcordoBean {
         int i = 0;
         int j = 0;
         List listas = new ArrayList();
-        List<Integer> subLista = new ArrayList<Integer>();
+        List<Integer> subLista = new ArrayList();
         DataHoje data = new DataHoje();
         String dataPrincipal = "";
         String referencia = "";
@@ -521,7 +525,7 @@ public class AcordoBean {
             } else {
                 if (!(subLista.isEmpty())) {
                     listas.add(subLista);
-                    subLista = new ArrayList<Integer>();
+                    subLista = new ArrayList();
                 }
                 while (i < listaOperado.size()) {
                     if (listaOperado.size() > (i + 1)) {
@@ -536,7 +540,7 @@ public class AcordoBean {
         }
         if (!(subLista.isEmpty())) {
             listas.add(subLista);
-            subLista = new ArrayList<Integer>();
+            subLista = new ArrayList();
         }
         i = 0;
         j = 0;
@@ -550,14 +554,14 @@ public class AcordoBean {
 
             if (servico.getId() == 1) {
                 if (frequenciaSind == 30) {
-                    if (data.maiorData(data.incrementarMeses(1, date), ultimaData)) {
+                    if (DataHoje.maiorData(data.incrementarMeses(1, date), ultimaData)) {
                         i++;
                         continue;
                     }
                     referencia = movimento.getVencimento(); // AQUI
                     dataPrincipal = data.incrementarMeses(1, referencia);
                 } else if (frequenciaSind == 7) {
-                    if (data.maiorData(data.incrementarSemanas(1, date), ultimaData)) {
+                    if (DataHoje.maiorData(data.incrementarSemanas(1, date), ultimaData)) {
                         i++;
                         continue;
                     }
@@ -566,14 +570,14 @@ public class AcordoBean {
                 }
             } else {
                 if (frequencia == 30) {
-                    if (data.maiorData(data.incrementarMeses(1, date), ultimaData)) {
+                    if (DataHoje.maiorData(data.incrementarMeses(1, date), ultimaData)) {
                         i++;
                         continue;
                     }
                     referencia = movimento.getVencimento();
                     dataPrincipal = data.incrementarMeses(1, referencia);
                 } else if (frequencia == 7) {
-                    if (data.maiorData(data.incrementarSemanas(1, date), ultimaData)) {
+                    if (DataHoje.maiorData(data.incrementarSemanas(1, date), ultimaData)) {
                         i++;
                         continue;
                     }
@@ -767,7 +771,7 @@ public class AcordoBean {
         listaImp.addAll(db.pesquisaAcordoTodos(acordo.getId()));
 
         if (!listaImp.isEmpty()) {
-            imp.imprimirAcordoPromissoria(listaImp, acordo, historico, imprimir_pro);
+            imp.imprimirAcordoPromissoria(listaImp, acordo, historico, emailContato, imprimir_pro);
             imp.visualizar(null);
         }
 
@@ -1112,5 +1116,13 @@ public class AcordoBean {
 
     public void setImprimir_pro(boolean imprimir_pro) {
         this.imprimir_pro = imprimir_pro;
+    }
+
+    public String getEmailContato() {
+        return emailContato;
+    }
+
+    public void setEmailContato(String emailContato) {
+        this.emailContato = emailContato;
     }
 }

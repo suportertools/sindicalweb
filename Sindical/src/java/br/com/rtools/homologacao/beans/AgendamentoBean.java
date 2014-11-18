@@ -556,6 +556,20 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
 
+        if (configuracaoHomologacao.isValidaCarteira()) {
+            if (fisica.getCarteira().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Informar a Carteira!");
+                return;
+            }
+        }
+        
+        if (configuracaoHomologacao.isValidaSerie()) {
+            if (fisica.getSerie().isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Informar a Série!");
+                return;
+            }
+        }
+        
         if (!strContribuinte.isEmpty()) {
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
