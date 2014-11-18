@@ -391,6 +391,12 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
     public void salvar() {
         Dao dao = new Dao();
+        if (configuracaoHomologacao.isWebValidaDataNascimento()) {
+            if (fisica.getNascimento().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar data de nascimento!");
+                return;
+            }
+        }
         if (configuracaoHomologacao.isWebValidaFuncao()) {
             if (profissao.getId() == -1) {
                 GenericaMensagem.warn("Validação", "Informar a função/profissão!");

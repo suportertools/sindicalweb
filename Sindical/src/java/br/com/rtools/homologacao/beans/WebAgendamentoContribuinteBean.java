@@ -203,6 +203,12 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     public void salvar() {
         Dao dao = new Dao();
         configuracaoHomologacao = (ConfiguracaoHomologacao) dao.find(new ConfiguracaoHomologacao(), 1);
+        if (configuracaoHomologacao.isWebValidaDataNascimento()) {
+            if (fisica.getNascimento().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar data de nascimento!");
+                return;
+            }
+        }
         if (configuracaoHomologacao.isValidaFuncao()) {
             if (profissao.getId() == -1) {
                 GenericaMensagem.warn("Validação", "Informar a função/profissão!");
@@ -346,7 +352,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         if (pessoaEmpresa.getId() == -1) {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(juridica);
-            if(profissao.getId() == -1) {
+            if (profissao.getId() == -1) {
                 profissao = null;
             }
             pessoaEmpresa.setFuncao(profissao);
@@ -356,7 +362,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         } else {
-            if(profissao.getId() == -1) {
+            if (profissao.getId() == -1) {
                 profissao = null;
             }
             if (!dao.update(pessoaEmpresa)) {
@@ -466,10 +472,10 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 juridica = ((PessoaEmpresa) datao.getArgumento7()).getJuridica();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
                 PessoaEmpresa pe = ((PessoaEmpresa) datao.getArgumento7());
-                if(pe.getFuncao() == null) {
+                if (pe.getFuncao() == null) {
                     profissao = new Profissao();
                 } else {
-                    profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();                    
+                    profissao = ((PessoaEmpresa) datao.getArgumento7()).getFuncao();
                 }
                 for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                     if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
@@ -704,15 +710,15 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public String getStatusEmpresa() {
         //if (statusEmpresa.isEmpty()) {
-            HomologacaoDB db = new HomologacaoDBToplink();
-            if (juridica.getId() != -1) {
-                listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
-            }
-            if (!listaEmDebito.isEmpty()) {
-                statusEmpresa = "EM DÉBITO";
-            } else {
-                statusEmpresa = "REGULAR";
-            }
+        HomologacaoDB db = new HomologacaoDBToplink();
+        if (juridica.getId() != -1) {
+            listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
+        }
+        if (!listaEmDebito.isEmpty()) {
+            statusEmpresa = "EM DÉBITO";
+        } else {
+            statusEmpresa = "REGULAR";
+        }
         //}
         return statusEmpresa;
     }
