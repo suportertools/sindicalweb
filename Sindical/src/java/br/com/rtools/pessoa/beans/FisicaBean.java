@@ -32,6 +32,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
@@ -1590,12 +1591,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void upload(FileUploadEvent event) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));       
         if (f.exists()) {
             boolean delete = f.delete();
         } else {
             fotoTempPerfil = "";
         }
+        // Diretorio.criar("temp/foto/" + getUsuario().getId(), true);
         ConfiguracaoUpload cu = new ConfiguracaoUpload();
         cu.setArquivo(event.getFile().getFileName());
         cu.setDiretorio("temp/foto/" + getUsuario().getId());
