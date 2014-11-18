@@ -83,23 +83,23 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private boolean imprimirPro = false;
     private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
     private int counter = 0;
-    
+
     private Registro registro = new Registro();
     private boolean visibleModal = false;
     private String tipoTelefone = "telefone";
-    
+
     public AgendamentoBean() {
         macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
-            
+
         Dao dao = new Dao();
         registro = (Registro) dao.find(new Registro(), 1);
 
-        if (macFilial != null){
+        if (macFilial != null) {
             this.loadListaHorarios();
             this.loadListaHorariosTransferencia();
         }
-    }    
-    
+    }
+
     public void alterarTipoMascara() {
         if (tipoTelefone.equals("telefone")) {
             tipoTelefone = "celular";
@@ -108,19 +108,19 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
         agendamento.setTelefone("");
     }
-    
-    public final void loadListaHorariosTransferencia(){
+
+    public final void loadListaHorariosTransferencia() {
         listaHorarioTransferencia.clear();
         idHorarioTransferencia = 0;
-        
+
         HomologacaoDB db = new HomologacaoDBToplink();
         int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
         List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
-        if (select.isEmpty()){
+        if (select.isEmpty()) {
             listaHorarioTransferencia.add(new SelectItem(0, "Nenhum horário encontrado", "0"));
             return;
         }
-        
+
         int qnt;
         int j = 0;
         for (Horarios listh : select) {
@@ -134,18 +134,18 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 j++;
             }
         }
-        
-        if (listaHorarioTransferencia.isEmpty()){
+
+        if (listaHorarioTransferencia.isEmpty()) {
             listaHorarioTransferencia.add(new SelectItem(0, "Nenhum horário encontrado", "0"));
         }
     }
-    
-    public final void loadListaHorarios(){
+
+    public final void loadListaHorarios() {
         listaHorarios.clear();
         if (macFilial == null) {
             return;
         }
-        
+
         int idNrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         int diaDaSemana = DataHoje.diaDaSemana(data);
         renderedDisponivel = idNrStatus != 2 && idNrStatus != 3 && idNrStatus != 4 && idNrStatus != 5 && idNrStatus != 6 && idNrStatus != 7;
@@ -194,7 +194,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
     }
-    
+
     public void salvarTransferencia() {
         if (getDataTransferencia().getDay() == 6 || getDataTransferencia().getDay() == 0) {
             GenericaMensagem.warn("Atenção", "Fins de semana não permitido!");
@@ -205,7 +205,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             GenericaMensagem.warn("Atenção", "Data anterior ao dia de hoje!");
             return;
         }
-        
+
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(registro.getHomolocaoLimiteMeses(), DataHoje.data())))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(getDataTransferencia()))) {
             GenericaMensagem.warn("Atenção", "Data maior que " + registro.getHomolocaoLimiteMeses() + " meses!");
@@ -218,7 +218,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             GenericaMensagem.warn("Atenção", "Não existem horários para esse dia da semana!");
             return;
         }
-        
+
         Horarios h = (Horarios) sv.find("Horarios", Integer.valueOf(listaHorarioTransferencia.get(idHorarioTransferencia).getDescription()));
         agendamento.setHorarios(h);
 
@@ -280,28 +280,28 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     GenericaMensagem.warn("Atenção", "Empresa sem Contabilidade!");
                     return null;
                 }
-                
+
                 pessoa = (Pessoa) di.find(juridica.getContabilidade().getPessoa());
-                if (emailEmpresa.isEmpty()){
+                if (emailEmpresa.isEmpty()) {
                     if (pessoa.getEmail1().isEmpty()) {
                         GenericaMensagem.warn("Atenção", "Contabilidade sem Email para envio!");
                         return null;
                     }
-                }else{
+                } else {
                     pessoa.setEmail1(emailEmpresa);
                 }
             } else {
                 pessoa = (Pessoa) di.find(juridica.getPessoa());
-                if (emailEmpresa.isEmpty()){
+                if (emailEmpresa.isEmpty()) {
                     if (pessoa.getEmail1().isEmpty()) {
                         GenericaMensagem.warn("Atenção", "Empresa sem Email para envio!");
                         return null;
                     }
-                }else{
+                } else {
                     pessoa.setEmail1(emailEmpresa);
                 }
             }
-            
+
             String nome = imp.criarLink(pessoa, registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
             p.add(pessoa);
@@ -318,7 +318,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     false,
                     false
             );
-            
+
             if (!registro.isEnviarEmailAnexo()) {
                 email.setMensagem(""
                         + " <div style='background:#00ccff; padding: 15px; font-size:13pt'>"
@@ -353,7 +353,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 emailPessoa = new EmailPessoa();
             }
             String[] retorno = mail.send("personalizado");
-            
+
             if (!retorno[1].isEmpty()) {
                 GenericaMensagem.error("Erro", retorno[1]);
             } else {
@@ -420,12 +420,12 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void agendar(Agendamento a) {
         limpar();
         loadListaHorariosTransferencia();
-        
+
         if (getData().getDay() == 6 || getData().getDay() == 0) {
             GenericaMensagem.warn("Atenção", "Fins de semana não permitido!");
             return;
         }
-        
+
         emailEmpresa = "";
         idMotivoDemissao = 0;
         int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(registro.getAgendamentoRetroativo()));
@@ -439,14 +439,14 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         } else {
             GenericaMensagem.info("Informação", "Agendamento retroativo liberado até dia " + registro.getAgendamentoRetroativoString());
         }
-        
+
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(registro.getHomolocaoLimiteMeses(), DataHoje.data()))) < nrData) {
             GenericaMensagem.warn("Atenção", "Data maior que " + registro.getHomolocaoLimiteMeses() + " meses!");
             return;
         }
         protocolo = 0;
         if (profissao.getId() == -1) {
-            profissao = (Profissao)  new Dao().find(new Profissao(), 0);
+            profissao = (Profissao) new Dao().find(new Profissao(), 0);
             profissao.setProfissao("");
         }
 
@@ -467,7 +467,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         agendamento.setHorarios(horarios);
                     }
                 }
-                
+
                 visibleModal = true;
                 PF.openDialog("dlg_agendamento");
                 break;
@@ -491,7 +491,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 //tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
 
                 visibleModal = true;
-                PF.openDialog("dlg_agendamento");                
+                PF.openDialog("dlg_agendamento");
                 break;
             }
             case 3: {
@@ -520,14 +520,14 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 }
 
                 visibleModal = true;
-                PF.openDialog("dlg_agendamento");                
+                PF.openDialog("dlg_agendamento");
                 break;
             }
         }
-        
-        if (agendamento.getTelefone().length() > 14){
+
+        if (agendamento.getTelefone().length() > 14) {
             tipoTelefone = "celular";
-        }else{
+        } else {
             tipoTelefone = "telefone";
         }
     }
@@ -541,25 +541,32 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 return;
             }
         }
-        
+
+        if (configuracaoHomologacao.isValidaDataNascimento()) {
+            if (fisica.getNascimento().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar data de nascimento!");
+                return;
+            }
+        }
+
         if (configuracaoHomologacao.isValidaFuncao()) {
             if (profissao.getId() == -1) {
                 GenericaMensagem.warn("Atenção", "Informar a Função!");
                 return;
             }
         }
-        
+
         if (!strContribuinte.isEmpty()) {
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
         }
-        
+
         FisicaDB dbFis = new FisicaDBToplink();
         List listDocumento;
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
         Demissao demissao = (Demissao) dao.find(new Demissao(), Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()));
-        
+
         if (!pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getAdmissao() != null) {
             if (DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao())
                     > DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())) {
@@ -569,8 +576,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         } else {
             GenericaMensagem.warn("Atenção", "Data de Admissão é obrigatória!");
             return;
-        }        
-        
+        }
+
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -595,8 +602,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             GenericaMensagem.warn("Atenção", "Data de Demissão é obrigatória!");
             return;
         }
-
-
 
         // SALVAR FISICA -----------------------------------------------
         fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
@@ -666,10 +671,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId());
         if (age != null && agendamento.getId() == -1) {
             dao.rollback();
-            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada, na data "+age.getData());
+            GenericaMensagem.warn("Atenção", "Pessoa já foi agendada, na data " + age.getData());
             return;
         }
-        
+
         boolean isOposicao = false;
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
@@ -819,8 +824,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 dao.rollback();
             }
         }
-        
-        
+
         renderCancelarHorario = true;
         loadListaHorariosTransferencia();
         loadListaHorarios();
@@ -876,7 +880,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         juridica = new Juridica();
         listaMovimento.clear();
         enderecoFisica = new PessoaEndereco();
-        
+
         setVisibleModal(false);
         loadListaHorarios();
         loadListaHorariosTransferencia();
@@ -946,14 +950,14 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 // SEM PESSOA FISICA E COM OPOSICAO    
             } else if (listFisica.isEmpty() && !listao.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
-                
+
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
                 fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
                 fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
                 fisica.getPessoa().setDocumento(documento);
                 juridica = listao.get(0).getJuridica();
-                
+
                 PF.openDialog("dlg_oposicao");
                 // COM FISICA, COM PESSOA EMPRESA E SEM OPOSICAO    
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && listao.isEmpty()) {
@@ -976,7 +980,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 // COM FISICA, COM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && !listao.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
-                
+
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
@@ -1079,7 +1083,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void refreshForm() {
-        
+
     }
 
     public Juridica getJuridica() {
@@ -1198,7 +1202,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void setRenderCancelar(boolean renderCancelar) {
         this.renderCancelar = renderCancelar;
     }
-    
+
     public String getStatusEmpresa() {
         HomologacaoDB db = new HomologacaoDBToplink();
         if (juridica.getId() != -1 && listaMovimento.isEmpty()) {
@@ -1362,8 +1366,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         msg += ", " + feriados.get(i).getNome();
                     }
                 }
-                if (!msg.isEmpty())
+                if (!msg.isEmpty()) {
                     GenericaMensagem.warn("Sistema", "Nesta data existem feriados/agenda: " + msg);
+                }
             }
         }
     }
