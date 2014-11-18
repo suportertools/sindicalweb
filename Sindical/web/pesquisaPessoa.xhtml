@@ -32,7 +32,7 @@
                                     <p:column>
                                         <p:inputText value="#{pessoaBean.descPesquisa}" size="50" rendered="#{pessoaBean.porPesquisa.equals('nome')}"/>
                                         <p:inputMask value="#{pessoaBean.descPesquisa}" size="50" mask="#{pessoaBean.mascaraPesquisa}" rendered="#{!pessoaBean.porPesquisa.equals('nome')}">
-                                            <p:ajax event="blur" update="@this" global="false" />
+                                            <p:ajax event="change" update="@this" global="false" />
                                         </p:inputMask>
                                     </p:column>
 
