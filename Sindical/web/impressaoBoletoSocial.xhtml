@@ -54,17 +54,17 @@
 
                                     <p:column>
                                         <h:outputLabel value="Responsável" style="margin-left: 20px"/><br />
-                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="70" style="margin-left: 20px"/>
+                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="60" style="margin-left: 20px"/>
                                     </p:column>
 
                                     <p:column>
                                         <h:outputLabel value="Lote" /><br />
-                                        <p:inputText value="#{impressaoBoletoSocialBean.strLote}"/>
+                                        <p:inputText value="#{impressaoBoletoSocialBean.strLote}" size="10"/>
                                     </p:column>
 
                                     <p:column>
                                         <h:outputLabel value="Data Proc." /><br />
-                                        <p:inputMask value="#{impressaoBoletoSocialBean.strData}" mask="99/99/9999" size="7" style="background: #ffc8c8; font-weight: bold"/>
+                                        <p:inputMask value="#{impressaoBoletoSocialBean.strData}" mask="99/99/9999" size="8" style="background: #ffc8c8; font-weight: bold"/>
                                     </p:column>
 
                                     <p:column>
@@ -75,15 +75,15 @@
                             </p:panel>
                             
                             <p:dataTable var="linha" id="tbl" value="#{impressaoBoletoSocialBean.listaGrid}" rowKey="#{linha.argumento0}" emptyMessage="Nenhum Boleto Encontrado!" paginator="true" rows="10">
-                                <p:column headerText="">
-                                    <p:commandLink value="#{linha.argumento0}"/>
+                                <p:column headerText="" width="10" style="text-align: center">
+                                    <p:commandLink value="#{linha.argumento0}" />
                                 </p:column>
                                 
-                                <p:column headerText="" style="text-align: center">
+                                <p:column headerText=""  width="15" style="text-align: center">
                                     <p:selectBooleanCheckbox value="#{linha.argumento1}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Lote" style="text-align: center">
+                                <p:column headerText="Lote" style="text-align: center" width="30">
                                     <p:commandLink value="#{linha.argumento2[1]}"/>
                                 </p:column>
                                 
@@ -91,20 +91,20 @@
                                     <p:commandLink value="#{linha.argumento2[2]}"/>
                                 </p:column>
                                 
-                                <p:column headerText="N Boleto">
+                                <p:column headerText="N Boleto" style="text-align: center" width="120">
                                     <p:commandLink value="#{linha.argumento2[3]}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Proc." style="text-align: center">
+                                <p:column headerText="Proc." style="text-align: center" width="65">
                                     <p:commandLink value="#{linha.argumento2[5]}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Vencto" style="text-align: center">
+                                <p:column headerText="Vencto" style="text-align: center" width="65">
                                     <p:commandLink value="#{linha.argumento2[4]}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Valor Total">
-                                    <p:commandLink value="#{linha.argumento2[6]}"/>
+                                <p:column headerText="Valor Total" width="65" >
+                                    <p:commandLink value="#{linha.argumento3}" style="float: right"/>
                                 </p:column>
                             </p:dataTable>
                             

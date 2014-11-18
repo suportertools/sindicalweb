@@ -86,11 +86,16 @@ public interface MovimentoDB {
 
     public List<Movimento> pesquisaMovPorNumDocumentoList(String numero, Date vencimento, int idContaCobranca);
 
-    public List<Movimento> pesquisaMovPorNumDocumentoListBaixado(String numero, int idContaCobranca);
+    public List<Movimento> pesquisaMovPorNumDocumentoListBaixadoArr(String numero, int idContaCobranca);
 
+    public List<Movimento> pesquisaMovPorNumDocumentoListArr(String numero, int idContaCobranca);
+
+    public List<Movimento> pesquisaMovPorNumDocumentoListBaixadoAss(String numero, int idContaCobranca);
+
+    public List<Movimento> pesquisaMovPorNumDocumentoListAss(String numero, int idContaCobranca);
+    
     public List<Movimento> pesquisaMovPorNumPessoaListBaixado(String numero, int idContaCobranca);
 
-    public List<Movimento> pesquisaMovPorNumDocumentoList(String numero, int idContaCobranca);
     //public List<Movimento> movimentosDoLote(int idLote);
 
     public int movimentosDoLote(int idLote);

@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +113,27 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
             e.getMessage();
         }
         return new ArrayList();
+    }
+    
+    @Override
+    public Pessoa pesquisaPessoaPorBoleto(String boleto, int id_conta_cobranca){
+        Pessoa pessoa = null;
+         String textqry = 
+                 " SELECT pes.* " +
+                 "   FROM pes_pessoa pes " + 
+                 "  INNER JOIN fin_movimento mov ON pes.id = mov.id_pessoa " +
+                 "  INNER JOIN fin_boleto bol ON mov.nr_ctr_boleto = bol.nr_ctr_boleto " +
+                 "    AND mov.is_ativo is true " +
+                 "    AND bol.id_conta_cobranca = " + id_conta_cobranca +
+                 "    AND mov.ds_documento = '"+boleto+"'";
+         try{
+             Query qry = getEntityManager().createNativeQuery(textqry, Pessoa.class);
+             qry.setMaxResults(1);
+             pessoa = (Pessoa) qry.getSingleResult();
+         }catch(Exception e){
+             e.getMessage();
+         }
+        return pessoa;
     }
     
 }

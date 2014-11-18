@@ -299,7 +299,7 @@ public class WebREPISBean implements Serializable {
                 return;
             }
 
-            if (listComboCertidaoDisponivel.size() == 1) {
+            if (listComboCertidaoDisponivel.size() == 1 && listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription().equals("0")) {
                 GenericaMensagem.warn("Atenção", "Nenhuma Certidão disponível!");
                 return;
             }

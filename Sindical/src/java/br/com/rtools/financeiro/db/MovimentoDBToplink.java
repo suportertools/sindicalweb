@@ -1346,7 +1346,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     }
 
     @Override
-    public List<Movimento> pesquisaMovPorNumDocumentoListBaixado(String numero, int idContaCobranca) {
+    public List<Movimento> pesquisaMovPorNumDocumentoListBaixadoArr(String numero, int idContaCobranca) {
         List vetor;
         List<Movimento> listMov = new ArrayList();
         String textQuery = "";
@@ -1362,6 +1362,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + "                  length('000000000000000'||bol.ds_boleto))"
                     + "    and mov.is_ativo is true "
                     + "    and mov.id_baixa is not null "
+                    + "    and mov.id_servicos IN (select id_servicos from fin_servico_rotina where id_rotina = 4) "
                     + "    and bol.id_conta_cobranca = " + idContaCobranca;
             Query qry = getEntityManager().createNativeQuery(textQuery);
             vetor = qry.getResultList();
@@ -1376,6 +1377,105 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
     }
 
+    @Override
+    public List<Movimento> pesquisaMovPorNumDocumentoListArr(String numero, int idContaCobranca) {
+        List vetor;
+        List<Movimento> listMov = new ArrayList();
+        String textQuery = "";
+        try {
+            textQuery = "select mov.id ids "
+                    + "  from fin_movimento mov, fin_boleto bol "
+                    + "  where mov.nr_ctr_boleto = bol.nr_ctr_boleto "
+                    + "    and substring('000000000000000'||'" + numero + "', "
+                    + "                  length('000000000000000'||'" + numero + "') - 16, "
+                    + "                  length('000000000000000'||'" + numero + "')) = "
+                    + "        substring('000000000000000'||bol.ds_boleto, "
+                    + "                  length('000000000000000'||bol.ds_boleto) - 16, "
+                    + "                  length('000000000000000'||bol.ds_boleto))"
+                    + "    and mov.is_ativo is true "
+                    + "    and mov.id_baixa is null "
+                    + "    and mov.id_servicos IN (select id_servicos from fin_servico_rotina where id_rotina = 4) "
+                    + "    and bol.id_conta_cobranca = " + idContaCobranca;
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            vetor = qry.getResultList();
+            if (!vetor.isEmpty()) {
+                for (int i = 0; i < vetor.size(); i++) {
+                    listMov.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
+                }
+            }
+            return listMov;
+        } catch (EJBQLException e) {
+
+            return listMov;
+        }
+    }
+    
+
+    @Override
+    public List<Movimento> pesquisaMovPorNumDocumentoListBaixadoAss(String numero, int idContaCobranca) {
+        List vetor;
+        List<Movimento> listMov = new ArrayList();
+        String textQuery = "";
+        try {
+            textQuery = "select mov.id ids "
+                    + "  from fin_movimento mov, fin_boleto bol "
+                    + "  where mov.nr_ctr_boleto = bol.nr_ctr_boleto "
+                    + "    and substring('000000000000000'||'" + numero + "', "
+                    + "                  length('000000000000000'||'" + numero + "') - 16, "
+                    + "                  length('000000000000000'||'" + numero + "')) = "
+                    + "        substring('000000000000000'||bol.ds_boleto, "
+                    + "                  length('000000000000000'||bol.ds_boleto) - 16, "
+                    + "                  length('000000000000000'||bol.ds_boleto))"
+                    + "    and mov.is_ativo is true "
+                    + "    and mov.id_baixa is not null "
+                    + "    and mov.id_servicos NOT IN (select id_servicos from fin_servico_rotina where id_rotina = 4) "
+                    + "    and bol.id_conta_cobranca = " + idContaCobranca;
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            vetor = qry.getResultList();
+            if (!vetor.isEmpty()) {
+                for (int i = 0; i < vetor.size(); i++) {
+                    listMov.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
+                }
+            }
+            return listMov;
+        } catch (EJBQLException e) {
+            return listMov;
+        }
+    }
+
+    @Override
+    public List<Movimento> pesquisaMovPorNumDocumentoListAss(String numero, int idContaCobranca) {
+        List vetor;
+        List<Movimento> listMov = new ArrayList();
+        String textQuery = "";
+        try {
+            textQuery = "select mov.id ids "
+                    + "  from fin_movimento mov, fin_boleto bol "
+                    + "  where mov.nr_ctr_boleto = bol.nr_ctr_boleto "
+                    + "    and substring('000000000000000'||'" + numero + "', "
+                    + "                  length('000000000000000'||'" + numero + "') - 16, "
+                    + "                  length('000000000000000'||'" + numero + "')) = "
+                    + "        substring('000000000000000'||bol.ds_boleto, "
+                    + "                  length('000000000000000'||bol.ds_boleto) - 16, "
+                    + "                  length('000000000000000'||bol.ds_boleto))"
+                    + "    and mov.is_ativo is true "
+                    + "    and mov.id_baixa is null "
+                    + "    and mov.id_servicos NOT IN (select id_servicos from fin_servico_rotina where id_rotina = 4) "
+                    + "    and bol.id_conta_cobranca = " + idContaCobranca;
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            vetor = qry.getResultList();
+            if (!vetor.isEmpty()) {
+                for (int i = 0; i < vetor.size(); i++) {
+                    listMov.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
+                }
+            }
+            return listMov;
+        } catch (EJBQLException e) {
+
+            return listMov;
+        }
+    }
+    
     @Override
     public List<Movimento> pesquisaMovPorNumPessoaListBaixado(String numero, int idContaCobranca) {
         List vetor;
@@ -1401,39 +1501,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return listMov;
         }
     }
-
-    @Override
-    public List<Movimento> pesquisaMovPorNumDocumentoList(String numero, int idContaCobranca) {
-        List vetor;
-        List<Movimento> listMov = new ArrayList();
-        String textQuery = "";
-        try {
-            textQuery = "select mov.id ids "
-                    + "  from fin_movimento mov, fin_boleto bol "
-                    + "  where mov.nr_ctr_boleto = bol.nr_ctr_boleto "
-                    + "    and substring('000000000000000'||'" + numero + "', "
-                    + "                  length('000000000000000'||'" + numero + "') - 16, "
-                    + "                  length('000000000000000'||'" + numero + "')) = "
-                    + "        substring('000000000000000'||bol.ds_boleto, "
-                    + "                  length('000000000000000'||bol.ds_boleto) - 16, "
-                    + "                  length('000000000000000'||bol.ds_boleto))"
-                    + "    and mov.is_ativo is true "
-                    + "    and mov.id_baixa is null "
-                    + "    and bol.id_conta_cobranca = " + idContaCobranca;
-            Query qry = getEntityManager().createNativeQuery(textQuery);
-            vetor = qry.getResultList();
-            if (!vetor.isEmpty()) {
-                for (int i = 0; i < vetor.size(); i++) {
-                    listMov.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
-                }
-            }
-            return listMov;
-        } catch (EJBQLException e) {
-
-            return listMov;
-        }
-    }
-
 // NOVA PESQUISA POR NUM BOLETO ----------------------------
 //    
 //    @Override

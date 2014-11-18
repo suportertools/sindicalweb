@@ -57,6 +57,7 @@ public class DemonstrativoAcordo {
     private String referencia;
     private String titulo;
     private String usuario;
+    private String emailContato;
 
     public DemonstrativoAcordo(
             int codacordo,
@@ -111,7 +112,8 @@ public class DemonstrativoAcordo {
             String tipo,
             String referencia,
             String titulo,
-            String usuario) {
+            String usuario,
+            String emailContato) {
         this.codacordo = codacordo;
         this.data = data;
         this.contato = contato;
@@ -165,6 +167,7 @@ public class DemonstrativoAcordo {
         this.referencia = referencia;
         this.titulo = titulo;
         this.usuario = usuario;
+        this.emailContato = emailContato;
     }
 
     public DemonstrativoAcordo() {
@@ -221,6 +224,7 @@ public class DemonstrativoAcordo {
         this.referencia = "";
         this.titulo = "";
         this.usuario = "";
+        this.emailContato = "";
     }
 
     public int getCodacordo() {
@@ -645,5 +649,13 @@ public class DemonstrativoAcordo {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+
+    public String getEmailContato() {
+        return emailContato;
+    }
+
+    public void setEmailContato(String emailContato) {
+        this.emailContato = emailContato;
     }
 }

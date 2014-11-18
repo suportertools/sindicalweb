@@ -11,6 +11,7 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.ConfiguracaoHomologacao;
 import br.com.rtools.homologacao.Demissao;
+import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.homologacao.db.*;
@@ -62,6 +63,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     private final List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
     private String tipoTelefone = "telefone";
     private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
+    
+    private String tipoAviso = null;
 
     public WebAgendamentoContribuinteBean() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb") != null) {
@@ -106,8 +109,9 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         if (listaMotivoDemissao.isEmpty()) {
             Dao dao = new Dao();
             List<Demissao> select = dao.list(new Demissao());
+            listaMotivoDemissao.add(new SelectItem(0, "", "0"));
             for (int i = 0; i < select.size(); i++) {
-                listaMotivoDemissao.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+                listaMotivoDemissao.add(new SelectItem(i+1, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
             }
         }
         return listaMotivoDemissao;
@@ -202,6 +206,18 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public void salvar() {
         Dao dao = new Dao();
+        
+        if (listaMotivoDemissao.get(idMotivoDemissao).getDescription().equals("0")){
+            GenericaMensagem.warn("Validação", "Selecione um Motivo de Demissão!");
+            return;
+        }
+        
+        if (tipoAviso == null || tipoAviso.isEmpty()){
+            GenericaMensagem.warn("Validação", "Selecione um Tipo de Aviso!");
+            return;
+        }
+        pessoaEmpresa.setAvisoTrabalhado(tipoAviso.equals("true"));
+        
         configuracaoHomologacao = (ConfiguracaoHomologacao) dao.find(new ConfiguracaoHomologacao(), 1);
         if (configuracaoHomologacao.isWebValidaDataNascimento()) {
             if (fisica.getNascimento().isEmpty()) {
@@ -245,6 +261,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         }
+        
+        if (configuracaoHomologacao.isWebValidaAdmissao()) {
+            if (pessoaEmpresa.getAdmissao().isEmpty()) {
+                GenericaMensagem.warn("Validação", "Informar data de admissão!");
+                return;
+            }
+        }        
         if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
@@ -419,7 +442,9 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         enderecoFisica = new PessoaEndereco();
         profissao = new Profissao();
         pessoaEmpresa = new PessoaEmpresa();
-
+        idMotivoDemissao = 0;
+        tipoAviso = null;
+        
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             // STATUS DISPONÍVEL
             case 1: {
@@ -484,7 +509,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                     }
                 }
                 setAgendamentoProtocolo(agendamento);
-                //tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
+                tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
                 break;
             }
         }
@@ -511,9 +536,14 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public boolean pesquisarFeriado() {
         FeriadosDB db = new FeriadosDBToplink();
-        List listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
+        List<Feriados> listFeriados = db.pesquisarPorDataFilialEData(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
         if (!listFeriados.isEmpty()) {
             return true;
+        }else{
+            listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
+            if (!listFeriados.isEmpty()){
+                return true;
+            }
         }
         return false;
 
@@ -847,5 +877,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public void setConfiguracaoHomologacao(ConfiguracaoHomologacao configuracaoHomologacao) {
         this.configuracaoHomologacao = configuracaoHomologacao;
+    }
+
+    public String getTipoAviso() {
+        return tipoAviso;
+    }
+
+    public void setTipoAviso(String tipoAviso) {
+        this.tipoAviso = tipoAviso;
     }
 }

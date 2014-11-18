@@ -134,15 +134,18 @@
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Motivo Demissão" style="margin-left: 20px;"/><br />
+                                    <h:outputLabel value="Motivo Demissão" style="margin-left: 20px; color: red; font-weight: bold"/><br />
                                     <p:selectOneMenu value="#{webAgendamentoContribuinteBean.idMotivoDemissao}" style="margin-left: 20px; width: 230px">
+                                        <p:ajax event="change" update="@this" global="false"/>
                                         <f:selectItems value="#{webAgendamentoContribuinteBean.listaMotivoDemissao}"/>
                                     </p:selectOneMenu>
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Tipo de Aviso" style="margin-left: 20px;"/><br />
-                                    <p:selectOneMenu value="#{webAgendamentoContribuinteBean.pessoaEmpresa.avisoTrabalhado}" style="margin-left: 20px; width: 120px">
+                                    <h:outputLabel value="Tipo de Aviso" style="margin-left: 20px; color: red; font-weight: bold"/><br />
+                                    <p:selectOneMenu value="#{webAgendamentoContribuinteBean.tipoAviso}" style="margin-left: 20px; width: 120px">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                        <f:selectItem itemValue="" itemLabel=""/>
                                         <f:selectItem itemValue="false" itemLabel="Indenizado"/>
                                         <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
                                     </p:selectOneMenu>
@@ -252,7 +255,7 @@
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Admissão" styleClass="font-color-red"/><br />
+                                    <h:outputLabel value="Admissão" style="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaAdmissao == true ? 'color: red; font-weight: bold' : ''}"/><br />
                                     <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
                                 </h:column>
 

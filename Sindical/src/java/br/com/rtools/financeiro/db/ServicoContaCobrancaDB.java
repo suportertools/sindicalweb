@@ -30,5 +30,7 @@ public interface ServicoContaCobrancaDB {
 
     public List pesquisaServPorIdServ(int servico);
 
-    public List listaContaCobrancaAtivo();
+    public List listaContaCobrancaAtivoArrecadacao();
+    
+    public List listaContaCobrancaAtivoAssociativo();
 }

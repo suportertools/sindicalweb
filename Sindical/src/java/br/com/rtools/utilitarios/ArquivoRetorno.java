@@ -132,7 +132,7 @@ public abstract class ArquivoRetorno {
                         + listaParametros.get(u).getValorPago().substring(5, listaParametros.get(u).getValorPago().length());
                 int nrSequencia = Integer.valueOf(listaParametros.get(u).getSequencialArquivo());
 
-                movimento = db.pesquisaMovPorNumDocumentoListBaixado(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
+                movimento = db.pesquisaMovPorNumDocumentoListBaixadoArr(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
                 if (!movimento.isEmpty()) {
                     // EXISTE O BOLETO  MAS CONTEM VALORES DIFERENTES --------------
                     Movimento mov2 = movimento.get(0);
@@ -450,9 +450,9 @@ public abstract class ArquivoRetorno {
                     }
                 }
                 
-                lista_movimento = db.pesquisaMovPorNumDocumentoListBaixado(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
+                lista_movimento = db.pesquisaMovPorNumDocumentoListBaixadoAss(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
                 if (lista_movimento.isEmpty()){
-                    lista_movimento = db.pesquisaMovPorNumDocumentoList(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
+                    lista_movimento = db.pesquisaMovPorNumDocumentoListAss(listaParametros.get(u).getNossoNumero(), this.getContaCobranca().getId());
                     if (!lista_movimento.isEmpty()) {
                         //movimento.get(0).setValorBaixa(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())), 100));
                         //movimento.get(0).setTaxa(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())), 100));
@@ -484,7 +484,10 @@ public abstract class ArquivoRetorno {
 
                         log[0] = 8;
                         log[1] = listaParametros.get(u).getNossoNumero();
-                        log[2] = "Boleto não Encontrado - "+ listaParametros.get(u).getNossoNumero();
+                        log[2] = "Boleto não Encontrado - "+ listaParametros.get(u).getNossoNumero() + 
+                                 " - Data de Vencimento: "+DataHoje.colocarBarras(listaParametros.get(u).getDataVencimento())+
+                                 " - Data de Pagamento: "+DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento())+
+                                 " - Valor Pago: "+Moeda.converteR$(listaParametros.get(u).getValorPago());
                         lista_logs.add(log);
                     }
                 }

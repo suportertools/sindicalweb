@@ -188,7 +188,7 @@ public class RetornoPadraoJSFBean {
     public ArrayList<DataObject> getListaCaminho() {
         if (listaCaminho.isEmpty()) {
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-            List<ContaCobranca> select = servDB.listaContaCobrancaAtivo();
+            List<ContaCobranca> select = servDB.listaContaCobrancaAtivoArrecadacao();
             if (!select.isEmpty()) {
                 List<DataObject> listax = new ArrayList<DataObject>();
                 for (int i = 0; i < select.size(); i++) {

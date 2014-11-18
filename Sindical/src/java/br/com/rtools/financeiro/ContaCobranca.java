@@ -55,7 +55,12 @@ public class ContaCobranca implements java.io.Serializable {
     private boolean ativo;
     @Column(name = "ds_apelido", length = 50)
     private String apelido;
-
+    @Column(name = "is_arrecadacao", nullable = false, columnDefinition = "boolean default false")
+    private boolean arrecadacao;
+    @Column(name = "is_associativo", nullable = false, columnDefinition = "boolean default false")
+    private boolean associativo;
+    
+    
     public ContaCobranca() {
         this.id = -1;
         this.contaBanco = new ContaBanco();
@@ -79,9 +84,11 @@ public class ContaCobranca implements java.io.Serializable {
         this.caminhoRetorno = "";
         this.ativo = true;
         this.apelido = "";
+        this.arrecadacao = false;
+        this.associativo = false;
     }
 
-    public ContaCobranca(int id, ContaBanco contaBanco, String codCedente, String localPagamento, float repasse, String boletoInicial, String categoriaSindical, String arrecadacaoSindical, String febranSindical, String segmentoSindical, String sicasSindical, String codigoSindical, String moeda, String especieMoeda, String especieDoc, String carteira, String aceite, String cedente, Layout layout, String caminhoRetorno, boolean ativo, String apelido) {
+    public ContaCobranca(int id, ContaBanco contaBanco, String codCedente, String localPagamento, float repasse, String boletoInicial, String categoriaSindical, String arrecadacaoSindical, String febranSindical, String segmentoSindical, String sicasSindical, String codigoSindical, String moeda, String especieMoeda, String especieDoc, String carteira, String aceite, String cedente, Layout layout, String caminhoRetorno, boolean ativo, String apelido, boolean arrecadacao, boolean associativo) {
         this.id = id;
         this.contaBanco = contaBanco;
         this.codCedente = codCedente;
@@ -104,6 +111,8 @@ public class ContaCobranca implements java.io.Serializable {
         this.caminhoRetorno = caminhoRetorno;
         this.ativo = ativo;
         this.apelido = apelido;
+        this.arrecadacao = arrecadacao;
+        this.associativo = associativo;
     }
 
     public int getId() {
@@ -280,5 +289,21 @@ public class ContaCobranca implements java.io.Serializable {
 
     public void setApelido(String apelido) {
         this.apelido = apelido;
+    }
+
+    public boolean isArrecadacao() {
+        return arrecadacao;
+    }
+
+    public void setArrecadacao(boolean arrecadacao) {
+        this.arrecadacao = arrecadacao;
+    }
+
+    public boolean isAssociativo() {
+        return associativo;
+    }
+
+    public void setAssociativo(boolean associativo) {
+        this.associativo = associativo;
     }
 }
