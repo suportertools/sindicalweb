@@ -31,7 +31,7 @@ public class PlanoBean {
     private List<ListPlanoConta> listaPlanoContas;
     private boolean limpar;
     private int idPlanoConta;
-    private List<SelectItem> listaContaBanco;
+    private List<SelectItem> listaContaBanco; 
     private List<Plano5> listaPlanoContasPorPesquisa;
     private String descPesquisa;
     private String porPesquisa;
