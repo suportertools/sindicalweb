@@ -17,15 +17,52 @@ public class Diretorio {
             boolean err = false;
             String caminhoContac = "";
             int b = 0;
-            String caminho = "";                     
+            String caminho = "";
             for (String item : s) {
                 if (!item.equals("")) {
                     if (b == 0) {
                         caminhoContac = item;
-                        caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/"+caminhoContac);
+                        caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/" + caminhoContac);
                     } else {
                         caminhoContac = "/" + caminhoContac + "/" + item;
                         caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoContac);
+                    }
+                    if (!new File(caminho).exists()) {
+                        File file = new File(caminho);
+                        if (!file.mkdir()) {
+                            err = false;
+                            break;
+                        }
+                    }
+                    b++;
+                }
+            }
+            if (!err) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean criar(String diretorio, boolean externo) {
+        diretorio = "D:/Cliente/" + getCliente() + "/" + diretorio;
+        try {
+            diretorio = diretorio.replaceAll("[\\\\]","/");
+            String s[] = diretorio.split("/");
+            boolean err = false;
+            String caminhoContac = "";
+            int b = 0;
+            String caminho = "";
+            for (String item : s) {
+                if (!item.equals("")) {
+                    if (b == 0) {
+                        caminhoContac = item;
+                        caminho = "/" + caminhoContac;
+                    } else {
+                        caminhoContac = "/" + caminhoContac + "/" + item;
+                        caminho = caminhoContac;
                     }
                     if (!new File(caminho).exists()) {
                         File file = new File(caminho);
@@ -81,7 +118,7 @@ public class Diretorio {
         if (arquivo.isEmpty()) {
             return null;
         }
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio +"/"+ arquivo);
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio + "/" + arquivo);
         try {
             File files = new File(caminho);
             if (!files.exists()) {
