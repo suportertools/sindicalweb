@@ -96,6 +96,11 @@
                                                 <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
                                             </p:selectBooleanCheckbox>
                                         </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.validaDataNascimento}" itemLabel="Valida nascimento">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
                                     </h:panelGrid>
                                 </p:panel>
                             </p:tab>
@@ -162,6 +167,11 @@
                                         </p:column> 
                                         <p:column>
                                             <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.webValidaTelefone}" itemLabel="Valida telefone">
+                                                <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{configuracaoHomologacaoBean.configuracaoHomologacao.webValidaDataNascimento}" itemLabel="Valida nascimento">
                                                 <p:ajax event="change" listener="#{configuracaoHomologacaoBean.update}" update=":form_ch:"/>
                                             </p:selectBooleanCheckbox>
                                         </p:column>
