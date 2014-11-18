@@ -67,6 +67,8 @@ public class ConfiguracaoHomologacao implements Serializable {
     private boolean validaEmail;
     @Column(name = "is_valida_telefone", columnDefinition = "boolean default false")
     private boolean validaTelefone;
+    @Column(name = "is_data_nascimento", columnDefinition = "boolean default false")
+    private boolean validaDataNascimento;
 
 // CAMPOS OBRIGATÓRIOS WEB AGENDAMENTO
     @Column(name = "is_web_valida_cpf", columnDefinition = "boolean default true")
@@ -91,6 +93,8 @@ public class ConfiguracaoHomologacao implements Serializable {
     private boolean webValidaEmail;
     @Column(name = "is_web_valida_telefone", columnDefinition = "boolean default false")
     private boolean webValidaTelefone;
+    @Column(name = "is_web_data_nascimento", columnDefinition = "boolean default false")
+    private boolean webValidaDataNascimento;
 
     public ConfiguracaoHomologacao() {
         this.id = -1;
@@ -114,6 +118,7 @@ public class ConfiguracaoHomologacao implements Serializable {
         this.validaContato = false;
         this.validaEmail = false;
         this.validaTelefone = false;
+        this.validaDataNascimento = false;
         this.webValidaCpf = false;
         this.webValidaNome = false;
         this.webValidaEndereco = false;
@@ -125,9 +130,10 @@ public class ConfiguracaoHomologacao implements Serializable {
         this.webValidaContato = false;
         this.webValidaEmail = false;
         this.webValidaTelefone = false;
+        this.webValidaDataNascimento = false;
     }
 
-    public ConfiguracaoHomologacao(int id, Date homolocaoHabilitaCorrecao, int tempoRefreshAgendamento, int tempoRefreshWebAgendamento, int tempoRefreshRecepcao, int tempoRefreshHomologacao, int tempoRefreshAtendimento, int limiteMeses, Date limiteAgendamentoRetroativo, Date dataAtualizaHomologacao, boolean validaCpf, boolean validaNome, boolean validaEndereco, boolean validaCarteira, boolean validaSerie, boolean validaFuncao, boolean validaAdmissao, boolean validaDemissao, boolean validaContato, boolean validaEmail, boolean validaTelefone, boolean webValidaCpf, boolean webValidaNome, boolean webValidaEndereco, boolean webValidaCarteira, boolean webValidaSerie, boolean webValidaFuncao, boolean webValidaAdmissao, boolean webValidaDemissao, boolean webValidaContato, boolean webValidaEmail, boolean webValidaTelefone) {
+    public ConfiguracaoHomologacao(int id, Date homolocaoHabilitaCorrecao, int tempoRefreshAgendamento, int tempoRefreshWebAgendamento, int tempoRefreshRecepcao, int tempoRefreshHomologacao, int tempoRefreshAtendimento, int limiteMeses, Date limiteAgendamentoRetroativo, Date dataAtualizaHomologacao, boolean validaCpf, boolean validaNome, boolean validaEndereco, boolean validaCarteira, boolean validaSerie, boolean validaFuncao, boolean validaAdmissao, boolean validaDemissao, boolean validaContato, boolean validaEmail, boolean validaTelefone, boolean validaDataNascimento, boolean webValidaCpf, boolean webValidaNome, boolean webValidaEndereco, boolean webValidaCarteira, boolean webValidaSerie, boolean webValidaFuncao, boolean webValidaAdmissao, boolean webValidaDemissao, boolean webValidaContato, boolean webValidaEmail, boolean webValidaTelefone, boolean webValidaDataNascimento) {
         this.id = id;
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
         this.tempoRefreshAgendamento = tempoRefreshAgendamento;
@@ -149,6 +155,7 @@ public class ConfiguracaoHomologacao implements Serializable {
         this.validaContato = validaContato;
         this.validaEmail = validaEmail;
         this.validaTelefone = validaTelefone;
+        this.validaDataNascimento = validaDataNascimento;
         this.webValidaCpf = webValidaCpf;
         this.webValidaNome = webValidaNome;
         this.webValidaEndereco = webValidaEndereco;
@@ -160,6 +167,7 @@ public class ConfiguracaoHomologacao implements Serializable {
         this.webValidaContato = webValidaContato;
         this.webValidaEmail = webValidaEmail;
         this.webValidaTelefone = webValidaTelefone;
+        this.webValidaDataNascimento = webValidaDataNascimento;
     }
 
     public int getId() {
@@ -416,6 +424,22 @@ public class ConfiguracaoHomologacao implements Serializable {
 
     public void setWebValidaTelefone(boolean webValidaTelefone) {
         this.webValidaTelefone = webValidaTelefone;
+    }
+
+    public boolean isWebValidaDataNascimento() {
+        return webValidaDataNascimento;
+    }
+
+    public void setWebValidaDataNascimento(boolean webValidaDataNascimento) {
+        this.webValidaDataNascimento = webValidaDataNascimento;
+    }
+
+    public boolean isValidaDataNascimento() {
+        return validaDataNascimento;
+    }
+
+    public void setValidaDataNascimento(boolean validaDataNascimento) {
+        this.validaDataNascimento = validaDataNascimento;
     }
 
 }
