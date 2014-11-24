@@ -270,7 +270,7 @@
                             <p:commandButton value="Pessoa física" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaAcademiaBean.aluno.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" >
                                 <p:ajax event="click" listener="#{matriculaAcademiaBean.pesquisaFisica('responsavel')}" />
                             </p:commandButton>
-                            <p:commandButton value="Pessoa jurídica" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}"/>
+                            <p:commandButton value="Pessoa jurídica" icon="ui-icon-search" action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
                         </h:panelGrid>
                     </p:dialog>
                     <p:dialog widgetVar="dlg_inative" modal="true" header="Deseja inativar esta matrícula?" resizable="true" width="400">
