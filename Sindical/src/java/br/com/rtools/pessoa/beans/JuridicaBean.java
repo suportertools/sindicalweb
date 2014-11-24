@@ -31,6 +31,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 //import java.util.Vector;
@@ -106,6 +108,8 @@ public class JuridicaBean implements Serializable {
     private boolean carregaEnvios = false;
     private boolean renderAtivoInativo = false;
     private boolean pessoaOposicao = false;
+    private boolean somenteAtivas = false;
+    private boolean somenteContabilidades = false;
 //    private boolean chkEndContabilidade = true;
     private List listaEnd = new ArrayList();
     private List listEn = new ArrayList();
@@ -118,7 +122,29 @@ public class JuridicaBean implements Serializable {
     private List<ContribuintesInativos> listaContribuintesInativos = new ArrayList();
     private List<SelectItem> listaMotivoInativacao = new ArrayList<SelectItem>();
     private String atualiza = "";
+    private String tipoFiltro = "todas";
     private JuridicaReceita juridicaReceita = new JuridicaReceita();
+    // [0] Contribuintes
+    // [1] Contabilidades
+    // [2] Todas
+    private Boolean[] disabled;
+
+    @PostConstruct
+    public void init() {
+        disabled = new Boolean[3];
+        disabled[0] = false;
+        disabled[1] = false;
+        disabled[2] = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("juridicaBean");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("todosecontribuintes");
+        GenericaSessao.remove("contribuintes");
+        GenericaSessao.remove("escritorios");
+    }
 
     public void pesquisaCnpj() {
         if (juridica.getId() != -1) {
@@ -2244,7 +2270,17 @@ public class JuridicaBean implements Serializable {
     public List<Juridica> getListaJuridica() {
         if (listaJuridica.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
-            listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
+            boolean somenteContabilidadesx = false;
+            boolean somenteContribuintesAtivos = false;
+            switch (tipoFiltro) {
+                case "escritorios":
+                    somenteContabilidadesx = true;
+                    break;
+                case "contribuintes_ativos":
+                    somenteContribuintesAtivos = true;
+                    break;
+            }
+            listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa, somenteContabilidadesx, somenteContribuintesAtivos);
         }
         return listaJuridica;
     }
@@ -2465,6 +2501,84 @@ public class JuridicaBean implements Serializable {
 
     public void setNomePesquisaContabilidade(String nomePesquisaContabilidade) {
         this.nomePesquisaContabilidade = nomePesquisaContabilidade;
+    }
+
+    public boolean isSomenteAtivas() {
+        return somenteAtivas;
+    }
+
+    public void setSomenteAtivas(boolean somenteAtivas) {
+        this.somenteAtivas = somenteAtivas;
+    }
+
+    public boolean isSomenteContabilidades() {
+        return somenteContabilidades;
+    }
+
+    public void setSomenteContabilidades(boolean somenteContabilidades) {
+        this.somenteContabilidades = somenteContabilidades;
+    }
+
+    public void pesquisaTodosEAtivos() {
+        GenericaSessao.remove("juridicaBean");
+        JuridicaBean juridicaBean = new JuridicaBean();
+        juridicaBean.setSomenteAtivas(true);
+        juridicaBean.getDisabled();
+        Boolean[] bs = new Boolean[3];
+        bs[0] = false;
+        bs[1] = true;
+        bs[2] = false;
+        juridicaBean.setDisabled(bs);
+        juridicaBean.setTipoFiltro("contribuintes_ativos");
+        juridicaBean.getListaJuridica();
+        GenericaSessao.put("juridicaBean", juridicaBean);
+        GenericaSessao.put("tipoPesquisaPessoaJuridica", "todosecontribuintes");
+    }
+
+    public void pesquisaSomenteAtivos() {
+        GenericaSessao.remove("juridicaBean");
+        JuridicaBean juridicaBean = new JuridicaBean();
+        juridicaBean.setSomenteAtivas(true);
+        Boolean[] bs = new Boolean[3];
+        bs[0] = true;
+        bs[1] = false;
+        bs[2] = true;
+        juridicaBean.setDisabled(bs);
+        juridicaBean.setTipoFiltro("contribuintes_ativos");
+        juridicaBean.getListaJuridica();
+        GenericaSessao.put("juridicaBean", juridicaBean);
+        GenericaSessao.put("tipoPesquisaPessoaJuridica", "contribuintes");
+    }
+
+    public void pesquisaSomenteContabilidades() {
+        GenericaSessao.remove("juridicaBean");
+        JuridicaBean juridicaBean = new JuridicaBean();
+        juridicaBean.setSomenteAtivas(true);
+        Boolean[] bs = new Boolean[3];
+        bs[0] = true;
+        bs[1] = false;
+        bs[2] = true;
+        juridicaBean.setDisabled(bs);
+        juridicaBean.setTipoFiltro("escritorios");
+        juridicaBean.getListaJuridica();
+        GenericaSessao.put("juridicaBean", juridicaBean);
+        GenericaSessao.put("tipoPesquisaPessoaJuridica", "escritorios");
+    }
+
+    public String getTipoFiltro() {
+        return tipoFiltro;
+    }
+
+    public void setTipoFiltro(String tipoFiltro) {
+        this.tipoFiltro = tipoFiltro;
+    }
+
+    public Boolean[] getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean[] disabled) {
+        this.disabled = disabled;
     }
 }
 
