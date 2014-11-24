@@ -186,6 +186,161 @@ public class RaisDao extends DB {
         return new ArrayList<>();
     }
 
+    public List filtroRelatorioNaoEnviadas(Relatorios r, String ano, Integer idEmpresa, Integer idEscritorio, String inCidades, String order, String tipo, boolean escritorios) {
+        List listWhere = new ArrayList();
+        String queryGroup = "";
+        String queryString = "SELECT ";
+        if (idEscritorio != null && idEscritorio != -1 && escritorios) {
+            queryString += ""
+                    + "                  C_pessoa.ds_nome        AS escritorio,     " // 0
+                    + "                  C_pessoa.ds_telefone1   AS esc_telefone,   " // 1
+                    + "                  C_pessoa.ds_email1      AS esc_email,      " // 2
+                    + "                  C.id,                                      " // 3
+                    + "                  COUNT(*)                                   ";// 4
+            queryGroup = " GROUP BY C_pessoa.ds_nome, C_pessoa.ds_telefone1, C_pessoa.ds_email1, C.id ";
+        } else {
+            queryString += ""
+                    + "                  P.ds_documento                     AS cnpj,                " // 0
+                    + "                  P.ds_nome                          AS empresa,             " // 1
+                    + "                  CO.ds_descricao                    AS convencao,           " // 2
+                    + "                  GC.ds_descricao                    AS grupo,               " // 3
+                    + "                  P.ds_telefone1                     AS telefone,            " // 4
+                    + "                  J_logradouro.ds_descricao          AS logradouro,          " // 5
+                    + "                  J_descricao_endereco.ds_descricao  AS endereco,            " // 6
+                    + "                  PE.ds_complemento                  AS complemento,         " // 7
+                    + "                  J_bairro.ds_descricao              AS bairro,              " // 8
+                    + "                  J_cidade.ds_cidade                 AS cidade,              " // 9
+                    + "                  J_cidade.ds_uf                     AS uf,                  " // 10
+                    + "                  E.ds_cep                           AS cep,                 " // 11
+                    + "                  P.ds_email1                        AS email,               " // 12
+                    + "                  C_pessoa.ds_nome                   AS escritorio,          " // 13
+                    + "                  C_pessoa.ds_telefone1              AS esc_telefone,        " // 14
+                    + "                  C_pessoa.ds_email1                 AS esc_email,           " // 15
+                    + "                  C_logradouro.ds_descricao          AS esc_logradouro,      " // 16
+                    + "                  C_descricao_endereco.ds_descricao  AS esc_endereco,        " // 17
+                    + "                  PEC.ds_complemento                 AS esc_complemento,     " // 18
+                    + "                  C_bairro.ds_descricao              AS esc_bairro,          " // 19
+                    + "                  C_cidade.ds_cidade                 AS esc_cidade,          " // 20
+                    + "                  C_cidade.ds_uf                     AS esc_uf,              " // 21
+                    + "                  C_endereco.ds_cep                  AS esc_cep,             " // 22
+                    + "                  J.id,                                                      " // 23
+                    + "                  C.id                               AS esc_id               ";// 24
+        }
+        queryString += ""
+                + "         FROM pes_juridica           AS J                                                                                    "
+                + "   INNER JOIN pes_pessoa_endereco    AS PE                   ON PE.id_pessoa     = J.id_pessoa AND PE.id_tipo_endereco = 5   "
+                + "   INNER JOIN end_endereco           AS E                    ON E.id             = PE.id_endereco                            "
+                + "   INNER JOIN pes_pessoa             AS P                    ON P.id             = J.id_pessoa                               "
+                + "   INNER JOIN end_cidade             AS J_cidade             ON J_cidade.id      = E.id_cidade                               "
+                + "   INNER JOIN end_logradouro         AS J_logradouro         ON J_logradouro.id  = E.id_logradouro                           "
+                + "   INNER JOIN end_descricao_endereco AS J_descricao_endereco ON J_descricao_endereco.id = E.id_descricao_endereco            "
+                + "   INNER JOIN end_bairro             AS J_bairro             ON J_bairro.id      = E.id_bairro                               "
+                + "   INNER JOIN pes_tipo_documento     AS T                    ON T.id             = P.id_tipo_documento                       "
+                + "   INNER JOIN arr_cnae_convencao     AS CCON                 ON CCON.id_cnae     = J.id_cnae                                 "
+                + "   INNER JOIN arr_grupo_cidades      AS GCS                  ON GCS.id_cidade    = E.id_cidade                               "
+                + "   INNER JOIN arr_convencao_cidade   AS CC                   ON CC.id_grupo_cidade    = gcs.id_grupo_cidade                  "
+                + "                                                                AND CC.id_convencao   = CCON.id_convencao                    "
+                + "   INNER JOIN arr_convencao          AS CO                   ON CO.id            = CC.id_convencao                           "
+                + "   INNER JOIN arr_grupo_cidade       AS GC                   ON GC.id            = CC.id_grupo_cidade                        "
+                + "    LEFT JOIN pes_juridica           AS C                    ON C.id             = J.id_contabilidade                        "
+                + "    LEFT JOIN pes_pessoa             AS C_pessoa             ON C_pessoa.id      = C.id_pessoa                               "
+                + "    LEFT JOIN pes_pessoa_endereco    AS PEC                  ON PEC.id_pessoa    = C.id_pessoa AND PEC.id_tipo_endereco = 2  "
+                + "    LEFT JOIN end_endereco           AS C_endereco           ON C_endereco.id    = PEC.id_endereco                           "
+                + "    LEFT JOIN end_cidade             AS C_cidade             ON C_cidade.id      = C_endereco.id_cidade                      "
+                + "    LEFT JOIN end_logradouro         AS C_logradouro         ON C_logradouro.id  = C_endereco.id_logradouro                  "
+                + "    LEFT JOIN end_descricao_endereco AS C_descricao_endereco ON C_descricao_endereco.id = C_endereco.id_descricao_endereco   "
+                + "    LEFT JOIN end_bairro             AS C_bairro             ON C_bairro.id      = C_endereco.id_bairro                      "
+                + "    LEFT JOIN arr_rais               AS R                    ON R.id_empresa     = J.id                                      ";
+        if (!ano.isEmpty()) {
+            // Filtro por Ano Base
+            queryString += " AND R.nr_ano_base = " + ano;
+        }
+        if (idEmpresa != null && idEmpresa != -1) {
+            listWhere.add(" J.id = " + idEmpresa);
+            switch (tipo) {
+                case "yes_email":
+                    listWhere.add(" P.ds_email1 IS NOT NULL ");
+                    listWhere.add(" P.ds_email1 <> '' ");
+                    break;
+                case "no_email":
+                    listWhere.add(" P.ds_email1 IS NULL ");
+                    listWhere.add(" P.ds_email1 = '' ");
+                    break;
+            }
+        } else if (idEmpresa != null && idEmpresa == -1) {
+            switch (tipo) {
+                case "yes_email":
+                    listWhere.add(" P.ds_email1 IS NOT NULL ");
+                    listWhere.add(" P.ds_email1 <> '' ");
+                    break;
+                case "no_email":
+                    listWhere.add(" P.ds_email1 IS NULL ");
+                    listWhere.add(" P.ds_email1 = '' ");
+                    break;
+            }
+
+        }
+        if (idEscritorio != null && idEscritorio != -1) {
+            listWhere.add(" C.id = " + idEscritorio);
+            switch (tipo) {
+                case "yes_email":
+                    listWhere.add(" C_pessoa.ds_email1 IS NOT NULL ");
+                    listWhere.add(" C_pessoa.ds_email1 <> ''");
+                    break;
+                case "no_email":
+                    listWhere.add(" C_pessoa.ds_email1 IS NULL ");
+                    listWhere.add(" C_pessoa.ds_email1 = '' ");
+                    break;
+            }
+        } else if (idEscritorio != null && idEscritorio == -1) {
+            switch (tipo) {
+                case "yes_email":
+                    listWhere.add(" C_pessoa.ds_email1 IS NOT NULL ");
+                    listWhere.add(" C_pessoa.ds_email1 <> '' ");
+                    break;
+                case "no_email":
+                    listWhere.add(" C_pessoa.ds_email1 IS NULL ");
+                    listWhere.add(" C_pessoa.ds_email1 = '' ");
+                    break;
+            }
+
+        }
+        if (inCidades != null) {
+            listWhere.add(" J_cidade.id IN(" + inCidades + ") ");
+        }
+        listWhere.add(" R.id IS NULL ");
+        listWhere.add(" J.id NOT IN (SELECT id_juridica FROM arr_contribuintes_inativos) ");
+        if (!listWhere.isEmpty()) {
+            queryString += " WHERE ";
+            for (int i = 0; i < listWhere.size(); i++) {
+                if (i > 0) {
+                    queryString += " AND ";
+                }
+                queryString += listWhere.get(i).toString();
+            }
+        }
+        if (!queryGroup.isEmpty()) {
+            queryString += queryGroup + " ORDER BY C_pessoa.ds_nome, count(*) ";
+        }
+        if (r != null && order.isEmpty()) {
+            if (!r.getQryOrdem().isEmpty()) {
+                queryString += " ORDER BY " + r.getQryOrdem();
+            }
+        } else if (!order.isEmpty()) {
+            queryString += " ORDER BY " + order;
+        }
+        try {
+            Query query = getEntityManager().createNativeQuery(queryString);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
+    }
+
     public List<Cidade> pesquisaTodasCidades() {
         String queryString = ""
                 + "       SELECT C.*                                                                                            "
