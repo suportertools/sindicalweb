@@ -64,16 +64,16 @@ public class UploadFilesBean implements Serializable {
         if (!path.isEmpty()) {
             long countSize = 0;
             long countFiles = 0;
-            if (maxSize != null) {
+            if (maxSize != null || maxFiles != null) {
                 for (int i = 0; i < listFiles.size(); i++) {
                     countSize += listFiles.get(i).getFile().length();
                     countFiles++;
                 }
-                if (countSize >= maxSize) {
+                if (maxSize != null && countSize >= maxSize) {
                     GenericaMensagem.warn("Sistema", "Tamanho máximo de arquivos permitido");
                     return;
                 }
-                if (countFiles >= maxFiles) {
+                if (maxFiles != null && countFiles >= maxFiles) {
                     GenericaMensagem.warn("Sistema", "Limite de arquivos excedido. Máximo " + countFiles + " arquivos.");
                     return;
                 }
