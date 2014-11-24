@@ -98,6 +98,16 @@ public class UploadFilesBean implements Serializable {
         return listFiles;
     }
 
+    public List<MemoryFile> listFilesByPath(String path) {
+        if (listFiles == null) {
+            listFiles = new ArrayList<>();
+        }
+        if (!path.isEmpty() && listFiles.isEmpty()) {
+            listFiles = Diretorio.listMemoryFiles(path);
+        }
+        return listFiles;
+    }
+
     public void setListFiles(List<MemoryFile> listFiles) {
         this.listFiles = listFiles;
     }
