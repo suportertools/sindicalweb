@@ -10,7 +10,7 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="templates/templatePrime.xhtml"/>
+            <ui:include src="templates/templatePrime.xhtml"/>            
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -260,7 +260,7 @@
                         </h:column>
                     </h:panelGrid>
                     <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioRaisBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" rendered="#{relatorioRaisBean.raisEnviadas}" />
-                    <p:commandButton value="Gerar" title="Gerar" action="#{relatorioRaisBean.visualizar()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
+                    <p:commandButton value="Filtrar" title="Filtrar" action="#{relatorioRaisBean.visualizar()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
                     <p:panel rendered="#{!relatorioRaisBean.raisEnviadas}" styleClass="margin-top-max" header="Ações" id="i_acoes">
                         <p:outputLabel value="Assunto: "  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/>
                         <p:inputText value="#{relatorioRaisBean.assunto}"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" size="100"/>
@@ -294,13 +294,43 @@
                         <p:outputLabel value="Mensagem:"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/> <br />
                         <p:inputTextarea value="#{relatorioRaisBean.mensagem}" cols="150" rows="5" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max"></p:inputTextarea>
                         <f:facet name="footer">
-                            <h:panelGrid columns="3" rendered="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.size() > 0}">
-                                <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/>
+                            <h:panelGrid columns="5" rendered="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.size() > 0}">
+                                <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" update="id_messages_growl"/>
+                                <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
+                                <p:commandButton value="Anexos (#{uploadFilesBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
                                 <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.imprimir()}" ajax="false" update="id_messages_growl"  />
+                                <h:column>
+                                    <ui:include src="templates/templateStatusLoader.xhtml"/>
+                                </h:column>
                             </h:panelGrid>
                         </f:facet>
                     </p:panel>
+                    <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true">
+                        <h:panelGrid id="id_grid_uploads" style="width: 350px">
+                            <p:dataTable value="#{uploadFilesBean.listFiles}" var="lista" emptyMessage="Nenhum arquivo encontrado">
+                                <f:facet name="header">Arquivos anexados (#{uploadFilesBean.listFiles.size()})</f:facet>
+                                <p:column headerText="Nome arquivo" width="300">
+                                    #{lista.name}
+                                </p:column>
+                                <p:column width="25">
+                                    <p:commandButton action="#{uploadFilesBean.remove(lista.index)}" icon="ui-icon-trash" update=":form_relatorio:id_grid_uploads, :form_relatorio:id_btn_anexo"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                    </p:dialog>                    
                 </h:form>
+                <h:form id="form_relatorio_arquivos" enctype="multipart/form-data" acceptcharset="UTF-8">
+                    <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true" width="500" height="400" header="Anexar arquivos" closable="true">
+                        <p:fileUpload label="Procurar"
+                                      cancelLabel="Cancelar"
+                                      uploadLabel="Anexar"
+                                      mode="advanced"                                          
+                                      dragDropSupport="true"
+                                      multiple="false"
+                                      fileUploadListener="#{uploadFilesBean.upload}" update=":form_relatorio:"
+                                      oncomplete="PF('dgl_upload').hide()" />
+                    </p:dialog>
+                </h:form>                
             </p:panel>
         </f:view>
     </h:body>
