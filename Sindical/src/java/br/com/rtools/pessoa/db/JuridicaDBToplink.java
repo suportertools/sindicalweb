@@ -6,10 +6,12 @@ import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.beans.JuridicaBean;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -17,6 +19,7 @@ import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class JuridicaDBToplink extends DB implements JuridicaDB {
+
     @Override
     public Juridica pesquisaCodigo(int id) {
         Juridica result = null;
@@ -47,22 +50,37 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
 
     @Override
     public List pesquisaPessoa(String desc, String por, String como) {
-        if (desc.isEmpty()){
+        return pesquisaPessoa(desc, por, como, false, false);
+    }
+
+    @Override
+    public List pesquisaPessoa(String desc, String por, String como, boolean isContabilidades, boolean isAtivas) {
+        if (desc.isEmpty()) {
             return new ArrayList();
         }
         String textQuery = "";
-                
+
         desc = AnaliseString.normalizeLower(desc).replace("'", "");
-        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
-        
+        desc = (como.equals("I") ? desc + "%" : "%" + desc + "%");
+
         String field = "";
-                
-        if (por.equals("nome")) field = "p.ds_nome";  
-        if (por.equals("fantasia")) field = "j.ds_fantasia";  
-        if (por.equals("email1")) field = "p.ds_email1";
-        if (por.equals("email2")) field = "p.ds_email2";
-        if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) field = "p.ds_documento";
-        
+
+        if (por.equals("nome")) {
+            field = "p.ds_nome";
+        }
+        if (por.equals("fantasia")) {
+            field = "j.ds_fantasia";
+        }
+        if (por.equals("email1")) {
+            field = "p.ds_email1";
+        }
+        if (por.equals("email2")) {
+            field = "p.ds_email2";
+        }
+        if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) {
+            field = "p.ds_documento";
+        }
+
         int maxResults = 300;
         if (desc.length() == 1) {
             maxResults = 50;
@@ -70,16 +88,25 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             maxResults = 150;
         } else if (desc.length() == 3) {
             maxResults = 200;
-        }        
-        
-        textQuery = " SELECT j.* FROM pes_juridica j " +
-            "  INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
-            "  WHERE LOWER(TRANSLATE("+field+")) LIKE ('" + desc + "')" +
-            "  ORDER BY p.ds_nome LIMIT " + maxResults;
-        
+        }
+
+        textQuery = "   SELECT j.* "
+                + "       FROM pes_juridica j "
+                + " INNER JOIN pes_pessoa p ON p.id = j.id_pessoa "
+                + "       WHERE LOWER(TRANSLATE(" + field + ")) LIKE ('" + desc + "')";
+
+        if (isAtivas) {
+            textQuery += " AND j.id IN (SELECT id_juridica FROM arr_contribuintes_vw WHERE dt_inativacao IS NULL) ";
+            // textQuery += " AND j.id != id_contabilidade ";
+        }
+        if (isContabilidades) {
+            textQuery += " AND j.id IN (SELECT id_contabilidade FROM pes_juridica WHERE id_contabilidade IS NOT NULL) ";
+        }
+        textQuery += "  ORDER BY p.ds_nome LIMIT " + maxResults;
+
         if (por.equals("endereco")) {
-            textQuery =
-                      "       SELECT jur.* "
+            textQuery
+                    = "       SELECT jur.* "
                     + "        FROM pes_pessoa_endereco pesend                                                                                                                               "
                     + "  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
                     + "  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
@@ -87,8 +114,8 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                     + "  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
                     + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                     + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
-                    + "  INNER JOIN pes_juridica jur ON (jur.id_pessoa = pes.id)                                                                                                               "
-                    + "  WHERE LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || pesend.ds_numero || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf )) LIKE '%" + desc + "%' "
+                    + "  INNER JOIN pes_juridica jur ON (jur.id_pessoa = pes.id)                                                                                                             "
+                    + "  WHERE (LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || pesend.ds_numero || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf )) LIKE '%" + desc + "%' "
                     + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf )) LIKE '%" + desc + "%' "
                     + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf )) LIKE '%" + desc + "%'                               "
                     + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                                    "
@@ -96,17 +123,24 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                     + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                               "
                     + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                           "
                     + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                                 "
-                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "'"
-                    + "  ORDER BY pes.ds_nome LIMIT " + maxResults;
+                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "') ";
+            if (isAtivas) {
+                textQuery += " AND jur.id IN (SELECT id_juridica FROM arr_contribuintes_vw WHERE dt_inativacao IS NULL) ";
+                // textQuery += " AND j.id != id_contabilidade ";
+            }
+            if (isContabilidades) {
+                textQuery += " AND jur.id IN (SELECT id_contabilidade FROM pes_juridica WHERE id_contabilidade IS NOT NULL) ";
+            }
+            textQuery += " ORDER BY pes.ds_nome LIMIT " + maxResults;
         }
-        
+
         Query query = getEntityManager().createNativeQuery(textQuery, Juridica.class);
-        try{
-        List list = query.getResultList();
-        if(!list.isEmpty()) {
-            return list;
-        }
-        }catch(EJBQLException e){
+        try {
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (EJBQLException e) {
             e.getMessage();
         }
         return new ArrayList();
@@ -232,7 +266,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    listJur.add((Juridica)new Dao().find(new Juridica(), (Integer) ((Vector) vetor.get(i)).get(0)));
+                    listJur.add((Juridica) new Dao().find(new Juridica(), (Integer) ((Vector) vetor.get(i)).get(0)));
                 }
             }
             return listJur;
@@ -312,7 +346,6 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         List vetor;
         int[] result = new int[2];
 
-
         try {
             // QUERY QUANTIDADE DE MESES INADIMPLENTES -------------------
             String textQry = "select extract(month from  dt_vencimento),extract(year from  dt_vencimento) from fin_movimento where is_ativo=true and id_baixa is null and id_pessoa=" + id_juridica + " and dt_vencimento < '" + DataHoje.data() + "'"
@@ -345,37 +378,39 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             return result;
         }
     }
-    
+
     @Override
     public boolean empresaInativa(Pessoa pessoa, String motivo) {
         String stringMotivo = "";
         if (!motivo.equals("")) {
-            stringMotivo = " AND motivo = '"+motivo+"' ";
+            stringMotivo = " AND motivo = '" + motivo + "' ";
         }
         Query query = getEntityManager().createNativeQuery(" SELECT id_pessoa FROM arr_contribuintes_vw WHERE dt_inativacao IS NOT NULL AND id_pessoa = " + pessoa.getId() + stringMotivo);
         try {
-            List list =  query.getResultList();
+            List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;
             }
-        } catch (EJBQLException e) {}
+        } catch (EJBQLException e) {
+        }
         return false;
     }
-    
+
     @Override
-    public Empregados pesquisaEmpregados(int id_juridica){
+    public Empregados pesquisaEmpregados(int id_juridica) {
         Query qry = getEntityManager().createQuery(
                 " SELECT em FROM Empregados em"
-              + "  WHERE em.referencia = :p_referencia "
-              + "   AND em.juridica.id = :p_juridica"
+                + "  WHERE em.referencia = :p_referencia "
+                + "   AND em.juridica.id = :p_juridica"
         );
-        
-        try{
+
+        try {
             qry.setParameter("p_referencia", DataHoje.data().substring(3));
             qry.setParameter("p_juridica", id_juridica);
-            
+
             return (Empregados) qry.getSingleResult();
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         return null;
     }
 }
