@@ -9,15 +9,14 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.sistema.ConfiguracaoUpload;
+import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Diretorio;
+//import br.com.rtools.utilitarios.DataObject;
+//import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.Upload;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
-import org.primefaces.event.FileUploadEvent;
+//import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
 @SessionScoped
@@ -41,7 +40,7 @@ public class ModeloContratoBean implements Serializable {
     private List<SelectItem> listServicos;
     private List<SelectItem> listModulos;
     private List<SelectItem> listModulos2;
-    private List listaArquivos;
+//    private List listaArquivos;
     private int idIndexServicos;
     private int idIndex;
     private Modulo modulo;
@@ -66,7 +65,7 @@ public class ModeloContratoBean implements Serializable {
         listServicos = new ArrayList<SelectItem>();
         listModulos = new ArrayList<SelectItem>();
         listModulos2 = new ArrayList<SelectItem>();
-        listaArquivos = new ArrayList();
+//        listaArquivos = new ArrayList();
         idIndexServicos = -1;
         idIndex = -1;
         modulo = new Modulo();
@@ -79,12 +78,15 @@ public class ModeloContratoBean implements Serializable {
         descricaoPesquisa = "";
         msgServico = "";
         desabilitaObservacao = false;
+        UploadFilesBean uploadFilesBean = new UploadFilesBean();
+        GenericaSessao.put("uploadFilesBean", uploadFilesBean);
     }
 
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("modeloContratoBean");
         GenericaSessao.remove("matriculaContratoPesquisa");
+        GenericaSessao.remove("uploadFilesBean");
 
     }
 
@@ -133,7 +135,7 @@ public class ModeloContratoBean implements Serializable {
             di.openTransaction();
             if (di.save(matriculaContrato)) {
                 di.commit();
-                novoLog.save("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
+                novoLog.save("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
                 mensagem = "Registro inserido com sucesso.";
             } else {
@@ -142,11 +144,11 @@ public class ModeloContratoBean implements Serializable {
             }
         } else {
             MatriculaContrato mc = (MatriculaContrato) di.find(matriculaContrato);
-            String beforeUpdate = "ID: " + mc.getId() + " - Título: " + mc.getTitulo() + " - Módulo: ("+mc.getModulo().getId()+") " + mc.getModulo().getDescricao();
+            String beforeUpdate = "ID: " + mc.getId() + " - Título: " + mc.getTitulo() + " - Módulo: (" + mc.getModulo().getId() + ") " + mc.getModulo().getDescricao();
             matriculaContrato.setDataAtualizado(DataHoje.data());
             di.openTransaction();
             if (di.update(matriculaContrato)) {
-                novoLog.update(beforeUpdate, "ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
+                novoLog.update(beforeUpdate, "ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
                 di.commit();
                 matriculaContratos.clear();
                 mensagem = "Registro atualizado com sucesso.";
@@ -171,7 +173,7 @@ public class ModeloContratoBean implements Serializable {
             }
             if (di.delete(matriculaContrato)) {
                 di.commit();
-                novoLog.delete("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
+                novoLog.delete("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
                 clear();
                 mensagem = "Registro excluído com sucesso";
@@ -184,6 +186,10 @@ public class ModeloContratoBean implements Serializable {
 
     public String edit(MatriculaContrato mc) {
         DaoInterface di = new Dao();
+        UploadFilesBean uploadFilesBean = new UploadFilesBean();
+        uploadFilesBean.setPath("Arquivos/contrato/" + mc.getId());
+        uploadFilesBean.getListFiles();
+        GenericaSessao.put("uploadFilesBean", uploadFilesBean);
         setMatriculaContrato((MatriculaContrato) di.find(new MatriculaContrato(), mc.getId()));
         GenericaSessao.put("matriculaContratoPesquisa", matriculaContrato);
         GenericaSessao.put("linkClicado", true);
@@ -537,49 +543,54 @@ public class ModeloContratoBean implements Serializable {
         this.descricaoPesquisa = descricaoPesquisa;
     }
 
-    public void upload(FileUploadEvent event) {
-        if (matriculaContrato.getId() != -1) {
-            ConfiguracaoUpload cu = new ConfiguracaoUpload();
-            cu.setArquivo(event.getFile().getFileName());
-            cu.setDiretorio("Arquivos/contrato/" + matriculaContrato.getId());
-            cu.setEvent(event);
-            if (Upload.enviar(cu, true)) {
-                listaArquivos.clear();
-            }
-        }
-    }
-
-    public void excluirArquivo(int index) {
-        if (Diretorio.remover("Arquivos/contrato/" + matriculaContrato.getId() + "/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1())) {
-            listaArquivos.remove(index);
-            listaArquivos.clear();
-            getListaArquivos();
-        }
-    }
-
-    public List getListaArquivos() {
-        if (matriculaContrato.getId() != -1) {
-            if (listaArquivos.isEmpty()) {
-                listaArquivos = Diretorio.listaArquivos("Arquivos/contrato/" + matriculaContrato.getId());
-                if (listaArquivos.size() > 0) {
-                    setQuantidadeAnexo(listaArquivos.size());
-                } else {
-                    setQuantidadeAnexo(0);
-                }
-            }
-        }
-        return listaArquivos;
-    }
-
-    public void setListaArquivos(List listaArquivos) {
-        this.listaArquivos = listaArquivos;
-    }
-
-    public int getQuantidadeAnexo() {
-        return quantidadeAnexo;
-    }
-
-    public void setQuantidadeAnexo(int quantidadeAnexo) {
-        this.quantidadeAnexo = quantidadeAnexo;
+//    public void upload(FileUploadEvent event) {
+//        UploadFilesBean uploadFilesBean = new UploadFilesBean();
+//        uploadFilesBean.setPath("Arquivos/contrato/" + matriculaContrato.getId());
+//        uploadFilesBean.upload(event);
+////        if (matriculaContrato.getId() != -1) {
+////            ConfiguracaoUpload cu = new ConfiguracaoUpload();
+////            cu.setArquivo(event.getFile().getFileName());
+////            cu.setDiretorio("Arquivos/contrato/" + matriculaContrato.getId());
+////            cu.setEvent(event);
+////            if (Upload.enviar(cu, true)) {
+////                listaArquivos.clear();
+////            }
+////        }
+//    }
+//
+//    public void excluirArquivo(int index) {
+//        if (Diretorio.remover("Arquivos/contrato/" + matriculaContrato.getId() + "/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1())) {
+//            listaArquivos.remove(index);
+//            listaArquivos.clear();
+//            getListaArquivos();
+//        }
+//    }
+//
+//    public List getListaArquivos() {
+//        if (matriculaContrato.getId() != -1) {
+//            if (listaArquivos.isEmpty()) {
+//                listaArquivos = Diretorio.listaArquivos("Arquivos/contrato/" + matriculaContrato.getId());
+//                if (listaArquivos.size() > 0) {
+//                    setQuantidadeAnexo(listaArquivos.size());
+//                } else {
+//                    setQuantidadeAnexo(0);
+//                }
+//            }
+//        }
+//        return listaArquivos;
+//    }
+//    public void setListaArquivos(List listaArquivos) {
+//        this.listaArquivos = listaArquivos;
+//    }
+//
+//    public int getQuantidadeAnexo() {
+//        return quantidadeAnexo;
+//    }
+//
+//    public void setQuantidadeAnexo(int quantidadeAnexo) {
+//        this.quantidadeAnexo = quantidadeAnexo;
+//    }
+    public String getPath() {
+        return "Arquivos/contrato/" + matriculaContrato.getId();
     }
 }
