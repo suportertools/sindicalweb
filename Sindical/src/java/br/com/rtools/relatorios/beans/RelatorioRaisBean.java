@@ -2,6 +2,7 @@ package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.arrecadacao.dao.RaisDao;
 import br.com.rtools.endereco.Cidade;
+import br.com.rtools.impressao.ParametroRaisNaoEnviadasRelatorio;
 import br.com.rtools.impressao.ParametroRaisRelatorio;
 import br.com.rtools.pessoa.ClassificacaoEconomica;
 import br.com.rtools.pessoa.Juridica;
@@ -10,7 +11,10 @@ import br.com.rtools.pessoa.Raca;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
@@ -20,6 +24,7 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
@@ -55,6 +60,7 @@ public class RelatorioRaisBean implements Serializable {
 
     private SisPessoa sisPessoa;
     private Juridica empresa;
+    private Juridica escritorio;
     private List selectedCidades;
     private List selectedProfissoes;
     private List selectedFaixaSalarial;
@@ -62,6 +68,7 @@ public class RelatorioRaisBean implements Serializable {
     private List selectedClassificaoEconomica;
     private List<SelectItem>[] listSelectItem;
     private List<ParametroRaisRelatorio> parametroRaisRelatorio;
+    private List<ParametroRaisNaoEnviadasRelatorio> parametroRaisNaoEnviadasRelatorio;
     private Map<String, Integer> listCidades;
     private Map<String, Integer> listProfissoes;
     private Map<String, Integer> listRaca;
@@ -72,17 +79,22 @@ public class RelatorioRaisBean implements Serializable {
     private Date dataFinal;
     private Integer[] index;
     private String tipoRelatorio;
+    private String tipo;
     private String indexAccordion;
     private String porPesquisa;
     private String descPorPesquisa;
     private String order;
     private String anoBase;
     private String sexo;
+    private String assunto;
+    private String mensagem;
+    private Boolean raisEnviadas;
+    private ParametroRaisNaoEnviadasRelatorio[] selected;
 
     @PostConstruct
     public void init() {
         anoBase = "";
-        filtro = new Boolean[11];
+        filtro = new Boolean[14];
         filtro[0] = false; // ANO BASE
         filtro[1] = false; // PERÍODO EMISSÃO
         filtro[2] = false; // EMPRESA
@@ -94,6 +106,9 @@ public class RelatorioRaisBean implements Serializable {
         filtro[8] = false; // CIDADE (EMPRESA)
         filtro[9] = false; // SEXO
         filtro[10] = false; // ORDENAÇÃO
+        filtro[11] = false; // ESCRITÓRIO
+        filtro[12] = false; // --
+        filtro[13] = false; // COM EMAILS
         listCidades = null;
         listProfissoes = null;
         faixaSalarial = new String[2];
@@ -122,7 +137,14 @@ public class RelatorioRaisBean implements Serializable {
         order = "";
         sisPessoa = new SisPessoa();
         empresa = new Juridica();
+        escritorio = new Juridica();
         sexo = "";
+        raisEnviadas = false;
+        parametroRaisNaoEnviadasRelatorio = new ArrayList<>();
+        selected = null;
+        tipo = "todos";
+        assunto = "RAIS";
+        mensagem = "";
     }
 
     @PreDestroy
@@ -130,6 +152,7 @@ public class RelatorioRaisBean implements Serializable {
         GenericaSessao.remove("relatorioRaisBean");
         GenericaSessao.remove("sisPessoaPesquisa");
         GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("tipoPesquisaPessoaJuridica");
     }
 
     public void visualizar() {
@@ -146,6 +169,7 @@ public class RelatorioRaisBean implements Serializable {
             RaisDao raisDao = new RaisDao();
             Integer idEmpresa = null;
             Integer idSisPessoa = null;
+            Integer idEscritorio = null;
             String pIStringI = "";
             String pFStringI = "";
             String referencia = "";
@@ -157,6 +181,16 @@ public class RelatorioRaisBean implements Serializable {
             List listDetalhePesquisa = new ArrayList();
             if (filtro[0]) {
                 listDetalhePesquisa.add(" Ano Base: " + anoBase);
+                if (anoBase.isEmpty()) {
+                    GenericaMensagem.warn("Validação", "Informar o ano base");
+                    return;
+                }
+            }
+            if (filtro[8]) {
+                if (inIdCidades.isEmpty()) {
+                    GenericaMensagem.warn("Validação", "Selecionar pelo menos uma cidade!");
+                    return;
+                }
             }
             if (filtro[1]) {
                 pIStringI = DataHoje.converteData(dataInicial);
@@ -173,11 +207,28 @@ public class RelatorioRaisBean implements Serializable {
             if (empresa.getId() != -1) {
                 idEmpresa = empresa.getId();
                 listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + ". CNPJ: " + empresa.getPessoa().getDocumento() + " - " + empresa.getPessoa().getNome());
+            } else {
+                if (filtro[2]) {
+                    idEmpresa = -1;
+                    listDetalhePesquisa.add(" Pessoa Empresa por " + porPesquisa + ". Todas.");
+                }
+            }
+            boolean escritorios = false;
+            if (escritorio.getId() != -1) {
+                idEscritorio = escritorio.getId();
+                escritorios = true;
+                listDetalhePesquisa.add(" Pessoa Escritório por " + porPesquisa + ". CNPJ: " + escritorio.getPessoa().getDocumento() + " - " + escritorio.getPessoa().getNome());
+            } else {
+                if (filtro[11]) {
+                    escritorios = true;
+                    idEscritorio = -1;
+                    listDetalhePesquisa.add(" Pessoa Escritório por " + porPesquisa + ". Todos.");
+                }
             }
             String orderString = "";
             if (order != null) {
                 if (order.equals("0")) {
-                    orderString = "SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
+                    orderString = " SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
                 } else if (orderString.equals("1")) {
                     orderString = " PJ.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
                 } else if (orderString.equals("2")) {
@@ -188,7 +239,12 @@ public class RelatorioRaisBean implements Serializable {
             } else {
                 orderString = "";
             }
-            List list = raisDao.filtroRelatorio(relatorios, anoBase, pIStringI, pFStringI, idEmpresa, idSisPessoa, inIdProfissoes, faixaSalarial[0], faixaSalarial[1], inIdRaca, inIdClassificaoEconomica, inIdCidades, sexo, orderString);
+            List list;
+            if (raisEnviadas) {
+                list = raisDao.filtroRelatorio(relatorios, anoBase, pIStringI, pFStringI, idEmpresa, idSisPessoa, inIdProfissoes, faixaSalarial[0], faixaSalarial[1], inIdRaca, inIdClassificaoEconomica, inIdCidades, sexo, orderString);
+            } else {
+                list = raisDao.filtroRelatorioNaoEnviadas(relatorios, anoBase, idEmpresa, idEscritorio, inIdCidades, "", tipo, escritorios);
+            }
             if (list.isEmpty()) {
                 GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
                 return;
@@ -212,39 +268,94 @@ public class RelatorioRaisBean implements Serializable {
             String dta = "";
             String alvara = "";
             String filiado = "";
+            ParametroRaisRelatorio pr;
+            ParametroRaisNaoEnviadasRelatorio prne;
             for (Object list1 : list) {
-                dt = GenericaString.converterNullToString(((List) list1).get(30));
-                dte = GenericaString.converterNullToString(((List) list1).get(4));
-                dta = GenericaString.converterNullToString(((List) list1).get(13));
-                dtd = GenericaString.converterNullToString(((List) list1).get(11));
-                if (!dt.isEmpty()) {
-                    dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
-                }
-                if (!dte.isEmpty()) {
-                    dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
-                }
-                if (!dta.isEmpty()) {
-                    dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
-                }
-                if (!dtd.isEmpty()) {
-                    dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
-                }
-                ParametroRaisRelatorio pr
-                        = new ParametroRaisRelatorio(
+                if (raisEnviadas) {
+                    dt = GenericaString.converterNullToString(((List) list1).get(30));
+                    dte = GenericaString.converterNullToString(((List) list1).get(4));
+                    dta = GenericaString.converterNullToString(((List) list1).get(13));
+                    dtd = GenericaString.converterNullToString(((List) list1).get(11));
+                    if (!dt.isEmpty()) {
+                        dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
+                    }
+                    if (!dte.isEmpty()) {
+                        dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
+                    }
+                    if (!dta.isEmpty()) {
+                        dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
+                    }
+                    if (!dtd.isEmpty()) {
+                        dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
+                    }
+                    pr = new ParametroRaisRelatorio(
+                            detalheRelatorio,
+                            AnaliseString.converteNullString(((List) list1).get(0)),
+                            AnaliseString.converteNullString(((List) list1).get(1)),
+                            dte,
+                            AnaliseString.converteNullString(((List) list1).get(3)),
+                            AnaliseString.converteNullString(((List) list1).get(5)),
+                            AnaliseString.converteNullString(((List) list1).get(6)),
+                            AnaliseString.converteNullString(((List) list1).get(7)),
+                            AnaliseString.converteNullString(((List) list1).get(8)),
+                            AnaliseString.converteNullString(((List) list1).get(9)),
+                            AnaliseString.converteNullString(((List) list1).get(10)),
+                            dtd,
+                            AnaliseString.converteNullString(((List) list1).get(12)),
+                            dta,
+                            AnaliseString.converteNullString(((List) list1).get(14)),
+                            AnaliseString.converteNullString(((List) list1).get(15)),
+                            AnaliseString.converteNullString(((List) list1).get(16)),
+                            AnaliseString.converteNullString(((List) list1).get(17)),
+                            AnaliseString.converteNullString(((List) list1).get(18)),
+                            AnaliseString.converteNullString(((List) list1).get(19)),
+                            AnaliseString.converteNullString(((List) list1).get(20)),
+                            AnaliseString.converteNullString(((List) list1).get(21)),
+                            AnaliseString.converteNullString(((List) list1).get(22)),
+                            AnaliseString.converteNullString(((List) list1).get(23)),
+                            AnaliseString.converteNullString(((List) list1).get(24)),
+                            AnaliseString.converteNullString(((List) list1).get(25)),
+                            AnaliseString.converteNullString(((List) list1).get(26)),
+                            AnaliseString.converteNullString(((List) list1).get(27)),
+                            AnaliseString.converteNullString(((List) list1).get(28)),
+                            AnaliseString.converteNullString(((List) list1).get(29)),
+                            AnaliseString.converteNullString(dt),
+                            AnaliseString.converteNullString(((List) list1).get(31))
+                    );
+                    parametroRaisRelatorio.add(pr);
+                } else {
+                    if (filtro[11] && idEscritorio != -1) {
+                        Integer quantidade = 0;
+                        try {
+                            quantidade = Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4)));
+                        } catch (Exception e) {
+                            quantidade = 0;
+                        }
+                        prne = new ParametroRaisNaoEnviadasRelatorio(
+                                AnaliseString.converteNullString(((List) list1).get(0)),
+                                AnaliseString.converteNullString(((List) list1).get(1)),
+                                AnaliseString.converteNullString(((List) list1).get(2)),
+                                AnaliseString.converteNullString(((List) list1).get(3)),
+                                quantidade
+                        );
+
+                    } else {
+                        prne = new ParametroRaisNaoEnviadasRelatorio(
                                 detalheRelatorio,
                                 AnaliseString.converteNullString(((List) list1).get(0)),
                                 AnaliseString.converteNullString(((List) list1).get(1)),
-                                dte,
+                                AnaliseString.converteNullString(((List) list1).get(2)),
                                 AnaliseString.converteNullString(((List) list1).get(3)),
+                                AnaliseString.converteNullString(((List) list1).get(4)),
                                 AnaliseString.converteNullString(((List) list1).get(5)),
                                 AnaliseString.converteNullString(((List) list1).get(6)),
                                 AnaliseString.converteNullString(((List) list1).get(7)),
                                 AnaliseString.converteNullString(((List) list1).get(8)),
                                 AnaliseString.converteNullString(((List) list1).get(9)),
                                 AnaliseString.converteNullString(((List) list1).get(10)),
-                                dtd,
+                                AnaliseString.converteNullString(((List) list1).get(11)),
                                 AnaliseString.converteNullString(((List) list1).get(12)),
-                                dta,
+                                AnaliseString.converteNullString(((List) list1).get(13)),
                                 AnaliseString.converteNullString(((List) list1).get(14)),
                                 AnaliseString.converteNullString(((List) list1).get(15)),
                                 AnaliseString.converteNullString(((List) list1).get(16)),
@@ -256,35 +367,55 @@ public class RelatorioRaisBean implements Serializable {
                                 AnaliseString.converteNullString(((List) list1).get(22)),
                                 AnaliseString.converteNullString(((List) list1).get(23)),
                                 AnaliseString.converteNullString(((List) list1).get(24)),
-                                AnaliseString.converteNullString(((List) list1).get(25)),
-                                AnaliseString.converteNullString(((List) list1).get(26)),
-                                AnaliseString.converteNullString(((List) list1).get(27)),
-                                AnaliseString.converteNullString(((List) list1).get(28)),
-                                AnaliseString.converteNullString(((List) list1).get(29)),
-                                AnaliseString.converteNullString(dt),
-                                AnaliseString.converteNullString(((List) list1).get(31))
+                                0
                         );
-                parametroRaisRelatorio.add(pr);
+                    }
+                    parametroRaisNaoEnviadasRelatorio.add(prne);
+                }
             }
-
+            if (raisEnviadas) {
+                imprimir((Collection) parametroRaisRelatorio, relatorios);
+            }
         }
+    }
+
+    public void imprimir() {
+        if (!parametroRaisNaoEnviadasRelatorio.isEmpty()) {
+            Relatorios r = null;
+            if (!getListaTipoRelatorios().isEmpty()) {
+                RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+                r = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
+            }
+            if (r == null) {
+                return;
+            }
+            imprimir((Collection) parametroRaisNaoEnviadasRelatorio, r);
+            // parametroRaisNaoEnviadasRelatorio.clear();
+        }
+    }
+
+    public void imprimir(Collection c, Relatorios r) {
         if (!Diretorio.criar("Arquivos/downloads/relatorios/rais")) {
             GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-            return;
         }
         try {
             JasperReport jasper;
             FacesContext faces = FacesContext.getCurrentInstance();
-            if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + relatorios.getJasper())).exists()) {
-                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + relatorios.getJasper())));
+            if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + r.getJasper())).exists()) {
+                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + r.getJasper())));
             } else {
-                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
+                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(r.getJasper())));
             }
             try {
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroRaisRelatorio);
+                JRBeanCollectionDataSource dtSource = null;
+                if (raisEnviadas) {
+                    dtSource = new JRBeanCollectionDataSource(c);
+                } else {
+                    dtSource = new JRBeanCollectionDataSource(c);
+                }
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_rais_sintetico_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                String nomeDownload = "relatorio_rais_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
                 SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/rais/");
                 salvaArquivos.salvaNaPasta(pathPasta);
@@ -304,7 +435,12 @@ public class RelatorioRaisBean implements Serializable {
     public List<SelectItem> getListaTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(273);
+            List<Relatorios> list;
+            if (getRaisEnviadas()) {
+                list = (List<Relatorios>) db.pesquisaTipoRelatorio(273);
+            } else {
+                list = (List<Relatorios>) db.pesquisaTipoRelatorio(274);
+            }
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
             }
@@ -327,7 +463,7 @@ public class RelatorioRaisBean implements Serializable {
         tipoRelatorio = event.getTab().getTitle();
         indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
         if (tipoRelatorio.equals("Simples")) {
-            limpar();
+            clear();
             filtro[2] = false;
             filtro[0] = false;
         }
@@ -343,7 +479,20 @@ public class RelatorioRaisBean implements Serializable {
         this.dataFinal = DataHoje.converte(format.format(event.getObject()));
     }
 
-    public void limpar() {
+    public void switchFilter() {
+        if (this.filtro[2]) {
+            this.filtro[11] = false;
+            escritorio = new Juridica();
+        } else if (this.filtro[11]) {
+            this.filtro[2] = false;
+            empresa = new Juridica();
+        }
+        clear();
+    }
+
+    public void clear() {
+        parametroRaisNaoEnviadasRelatorio.clear();
+        selected = null;
         if (!filtro[0]) {
             anoBase = "";
         }
@@ -353,6 +502,8 @@ public class RelatorioRaisBean implements Serializable {
         }
         if (!filtro[2]) {
             empresa = new Juridica();
+            filtro[13] = false;
+            tipo = "todos";
         }
         if (!filtro[3]) {
             sisPessoa = new SisPessoa();
@@ -380,6 +531,11 @@ public class RelatorioRaisBean implements Serializable {
         if (!filtro[10]) {
             order = "";
         }
+        if (!filtro[11]) {
+            filtro[13] = false;
+            escritorio = new Juridica();
+            tipo = "todos";
+        }
     }
 
     public void close(String close) {
@@ -396,8 +552,16 @@ public class RelatorioRaisBean implements Serializable {
             case "empresa":
                 empresa = new Juridica();
                 filtro[2] = false;
+                tipo = "todos";
+                break;
+            case "escritorio":
+                escritorio = new Juridica();
+                filtro[11] = false;
+                filtro[13] = false;
+                tipo = "todos";
                 break;
             case "empregado":
+                filtro[13] = false;
                 sisPessoa = new SisPessoa();
                 filtro[3] = false;
                 break;
@@ -535,9 +699,12 @@ public class RelatorioRaisBean implements Serializable {
     }
 
     public Juridica getEmpresa() {
-        if (GenericaSessao.exists("juridicaPesquisa")) {
-            GenericaSessao.remove("juridicaBean");
-            empresa = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+        if (GenericaSessao.exists("juridicaPesquisa") && GenericaSessao.exists("tipoPesquisaPessoaJuridica")) {
+            if (GenericaSessao.getString("tipoPesquisaPessoaJuridica").equals("contribuintes")) {
+                GenericaSessao.remove("juridicaBean");
+                GenericaSessao.remove("tipoPesquisaPessoaJuridica");
+                empresa = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+            }
         }
         return empresa;
     }
@@ -740,5 +907,140 @@ public class RelatorioRaisBean implements Serializable {
 
     public void setAnoBase(String anoBase) {
         this.anoBase = anoBase;
+    }
+
+    public void defineTCase(Boolean raisEnviadas) {
+        GenericaSessao.put("raisEnviadas", raisEnviadas);
+    }
+
+    public Boolean getRaisEnviadas() {
+        if (GenericaSessao.exists("raisEnviadas")) {
+            raisEnviadas = GenericaSessao.getBoolean("raisEnviadas", true);
+        }
+        return raisEnviadas;
+    }
+
+    public void setRaisEnviadas(Boolean raisEnviadas) {
+        this.raisEnviadas = raisEnviadas;
+    }
+
+    public Juridica getEscritorio() {
+        if (GenericaSessao.exists("juridicaPesquisa") && GenericaSessao.exists("tipoPesquisaPessoaJuridica")) {
+            if (GenericaSessao.getString("tipoPesquisaPessoaJuridica").equals("escritorios")) {
+                GenericaSessao.remove("juridicaBean");
+                GenericaSessao.remove("tipoPesquisaPessoaJuridica");
+                escritorio = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+            }
+        }
+        return escritorio;
+    }
+
+    public void setEscritorio(Juridica escritorio) {
+        this.escritorio = escritorio;
+    }
+
+    public List<ParametroRaisNaoEnviadasRelatorio> getParametroRaisNaoEnviadasRelatorio() {
+        return parametroRaisNaoEnviadasRelatorio;
+    }
+
+    public void setParametroRaisNaoEnviadasRelatorio(List<ParametroRaisNaoEnviadasRelatorio> parametroRaisNaoEnviadasRelatorio) {
+        this.parametroRaisNaoEnviadasRelatorio = parametroRaisNaoEnviadasRelatorio;
+    }
+
+    public ParametroRaisNaoEnviadasRelatorio[] getSelected() {
+        return selected;
+    }
+
+    public void setSelected(ParametroRaisNaoEnviadasRelatorio[] selected) {
+        this.selected = selected;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public void send() {
+        Mail mail = new Mail();
+        if (filtro[11]) {
+            RaisDao raisDao = new RaisDao();
+            String empresasString = "";
+            List<EmailPessoa> listEmailPessoa = new ArrayList<>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+            Email email = new Email();
+            email.setAssunto("Empresas sem RAIS");
+            Dao dao = new Dao();
+            email.setRotina((Rotina) dao.find(new Rotina(), 274));
+            mail.setEmail(email);
+            Juridica juridica = new Juridica();
+            String telefoneString = "";
+            String emailString = "";
+            for (int i = 0; i < selected.length; i++) {
+                List listEmpresas = raisDao.filtroRelatorioNaoEnviadas(new Relatorios(), anoBase, null, Integer.parseInt(selected[i].getEscritorio_id()), null, "", "", false);
+                for (int j = 0; j < listEmpresas.size(); j++) {
+                    telefoneString = AnaliseString.converteNullString(((List) listEmpresas.get(j)).get(4));
+                    emailString = AnaliseString.converteNullString(((List) listEmpresas.get(j)).get(12));
+                    empresasString += " - " + ((List) listEmpresas.get(j)).get(0).toString() + " - " + ((List) listEmpresas.get(j)).get(1).toString() + " - Telefone: " + telefoneString + " - Email: " + emailString + ";<br />";
+                }
+                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt(selected[i].getEscritorio_id()));
+                emailPessoa = new EmailPessoa();
+                emailPessoa.setPessoa(juridica.getPessoa());
+                listEmailPessoa.add(emailPessoa);
+                juridica = new Juridica();
+            }
+            email.setMensagem(mensagem + "<br /><br />" + empresasString);
+            mail.setEmailPessoas(listEmailPessoa);
+            String[] err = mail.send();
+            if (!err[0].isEmpty()) {
+
+            } else if (!err[1].isEmpty()) {
+
+            }
+        } else if (filtro[2]) {
+            RaisDao raisDao = new RaisDao();
+            String empresasString = "";
+            List<EmailPessoa> listEmailPessoa = new ArrayList<>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+            Email email = new Email();
+            email.setAssunto(assunto);
+            Dao dao = new Dao();
+            email.setRotina((Rotina) dao.find(new Rotina(), 274));
+            email.setMensagem(mensagem);
+            mail.setEmail(email);
+            Juridica juridica = new Juridica();
+            for (int i = 0; i < selected.length; i++) {
+                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt(selected[i].getId()));
+                emailPessoa = new EmailPessoa();
+                emailPessoa.setPessoa(juridica.getPessoa());
+                listEmailPessoa.add(emailPessoa);
+                juridica = new Juridica();
+            }
+            mail.setEmailPessoas(listEmailPessoa);
+            String[] err = mail.send();
+            if (!err[0].isEmpty()) {
+
+            } else if (!err[1].isEmpty()) {
+
+            }
+        }
+    }
+
+    public String getAssunto() {
+        return assunto;
+    }
+
+    public void setAssunto(String assunto) {
+        this.assunto = assunto;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 }
