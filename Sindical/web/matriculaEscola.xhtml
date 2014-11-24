@@ -397,7 +397,7 @@
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{juridicaBean.pesquisaSomenteAtivos}" />
+                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
                             </h:panelGrid>
                         </p:dialog>                        
                         <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
