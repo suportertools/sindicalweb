@@ -114,7 +114,7 @@ public class Diretorio {
         return listaArquivos;
     }
 
-    public static List<MemoryFile> showFiles(String path) {
+    public static List<MemoryFile> listMemoryFiles(String path) {
         List<MemoryFile> listaArquivos = new ArrayList<>();
         String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + path);
         try {
