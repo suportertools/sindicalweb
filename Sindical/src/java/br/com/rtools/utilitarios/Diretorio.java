@@ -49,7 +49,7 @@ public class Diretorio {
     public static boolean criar(String diretorio, boolean externo) {
         diretorio = "D:/Cliente/" + getCliente() + "/" + diretorio;
         try {
-            diretorio = diretorio.replaceAll("[\\\\]","/");
+            diretorio = diretorio.replaceAll("[\\\\]", "/");
             String s[] = diretorio.split("/");
             boolean err = false;
             String caminhoContac = "";
@@ -110,6 +110,27 @@ public class Diretorio {
             }
         } catch (Exception e) {
             return new ArrayList();
+        }
+        return listaArquivos;
+    }
+
+    public static List<MemoryFile> showFiles(String path) {
+        List<MemoryFile> listaArquivos = new ArrayList<>();
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + path);
+        try {
+            File files = new File(caminho);
+            if (!files.exists()) {
+                return new ArrayList<>();
+            }
+            File listFile[] = files.listFiles();
+            int numArq = listFile.length;
+            int i = 0;
+            while (i < numArq) {
+                listaArquivos.add(new MemoryFile(listFile[i].getName(), listFile[i], i));
+                i++;
+            }
+        } catch (Exception e) {
+            return new ArrayList<>();
         }
         return listaArquivos;
     }
