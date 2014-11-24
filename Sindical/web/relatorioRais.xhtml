@@ -17,7 +17,8 @@
                 <h:outputScript name="tradutor_primefaces.js" library="js" />
                 <h:form id="form_relatorio">            
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
-                    <h:outputText value="Relatório RAIS" styleClass="fonteHeader"/>
+                    <h:outputText value="Relatório RAIS" styleClass="fonteHeader" rendered="#{relatorioRaisBean.raisEnviadas}"/>
+                    <h:outputText value="Relatório RAIS - Não enviadas" styleClass="fonteHeader" rendered="#{!relatorioRaisBean.raisEnviadas}"/>
                     <div class="clear"></div>
                     <p:panel styleClass="fundoCinza">
                         <h:panelGrid  cellpadding="5" columns="2">
@@ -38,37 +39,40 @@
                                 <p:tab title="Avançado">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
                                         <p:selectBooleanButton value="#{relatorioRaisBean.filtro[0]}" onLabel="Ano Base - Edição" offLabel="Ano Base - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[1]}" onLabel="P. de Emissão - Edição" offLabel="P. de Emissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[1]}" onLabel="P. de Emissão - Edição" offLabel="P. de Emissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{relatorioRaisBean.filtro[2]}" onLabel="Empresa - Edição" offLabel="Empresa - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                            <p:ajax event="change" update="@this :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:i_acoes :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.switchFilter}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[3]}" onLabel="Empregado - Edição" offLabel="Empregado - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[11]}" onLabel="Escritório - Edição" offLabel="Escritório - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{!relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:i_acoes :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.switchFilter}" />
+                                        </p:selectBooleanButton>                                       
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[3]}" onLabel="Empregado - Edição" offLabel="Empregado - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[4]}" onLabel="Profissão - Edição" offLabel="Profissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[4]}" onLabel="Profissão - Edição" offLabel="Profissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[5]}" onLabel="Faixa Salarial - Edição" offLabel="Faixa Salarial - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[5]}" onLabel="Faixa Salarial - Edição" offLabel="Faixa Salarial - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[6]}" onLabel="Raça - Edição" offLabel="Raça - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[6]}" onLabel="Raça - Edição" offLabel="Raça - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[7]}" onLabel="C. Econônica - Edição" offLabel="C. Econônica - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[7]}" onLabel="C. Econônica - Edição" offLabel="C. Econônica - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{relatorioRaisBean.filtro[8]}" onLabel="Cidade (da Empresa)" offLabel="Cidade (da Empresa)" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[9]}" onLabel="Sexo - Edição" offLabel="Sexo - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[9]}" onLabel="Sexo - Edição" offLabel="Sexo - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[10]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioRaisBean.limpar}" />
+                                        <p:selectBooleanButton value="#{relatorioRaisBean.filtro[10]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" rendered="#{relatorioRaisBean.raisEnviadas}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                         </p:selectBooleanButton>
                                     </h:panelGrid>
                                 </p:tab>
@@ -106,7 +110,7 @@
                                 </p:column>
                                 <p:column rendered="#{relatorioRaisBean.filtro[2]}">
                                     <h:panelGrid columns="2">
-                                        <p:commandButton action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}"  icon="ui-icon-search" value="Pesquisar Empresa" />
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search" value="Pesquisar Empresa" actionListener="#{juridicaBean.pesquisaTodosEAtivos()}" />
                                         <h:column>
                                             <h:panelGrid columns="2">
                                                 <p:outputLabel value="#{relatorioRaisBean.empresa.pessoa.nome}" />
@@ -114,6 +118,29 @@
                                             </h:panelGrid>
                                         </h:column>
                                     </h:panelGrid>
+                                    <p:selectOneRadio value="#{relatorioRaisBean.tipo}">
+                                        <p:ajax event="change" update="@this" listener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}"/>
+                                        <f:selectItem itemValue="todos" itemLabel="Todos" />
+                                        <f:selectItem itemValue="no_email" itemLabel="Sem e-mail" />
+                                        <f:selectItem itemValue="yes_email" itemLabel="Com e-mail" />
+                                    </p:selectOneRadio>
+                                </p:column>
+                                <p:column rendered="#{relatorioRaisBean.filtro[11]}">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search" value="Pesquisar Escritório" actionListener="#{juridicaBean.pesquisaSomenteContabilidades()}" />
+                                        <h:column>
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel value="#{relatorioRaisBean.escritorio.pessoa.nome}" />
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioRaisBean.close('escritorio')}" title="Remover filtro"/>
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </h:panelGrid>
+                                    <p:selectOneRadio value="#{relatorioRaisBean.tipo}">
+                                        <p:ajax event="change" update="@this i_acoes" listener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}"/>
+                                        <f:selectItem itemValue="todos" itemLabel="Todos" />
+                                        <f:selectItem itemValue="no_email" itemLabel="Sem e-mail" />
+                                        <f:selectItem itemValue="yes_email" itemLabel="Com e-mail" />
+                                    </p:selectOneRadio>
                                 </p:column>
                                 <p:column rendered="#{relatorioRaisBean.filtro[3]}">
                                     <h:panelGrid columns="2">
@@ -232,7 +259,47 @@
                             </p:panel>
                         </h:column>
                     </h:panelGrid>
-                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioRaisBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" />
+                    <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioRaisBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" rendered="#{relatorioRaisBean.raisEnviadas}" />
+                    <p:commandButton value="Gerar" title="Gerar" action="#{relatorioRaisBean.visualizar()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
+                    <p:panel rendered="#{!relatorioRaisBean.raisEnviadas}" styleClass="margin-top-max" header="Ações" id="i_acoes">
+                        <p:outputLabel value="Assunto: "  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/>
+                        <p:inputText value="#{relatorioRaisBean.assunto}"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" size="100"/>
+                        <p:dataTable value="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio}" var="rais" emptyMessage="Nenhum registro encontrado!" rows="150" paginator="true" rowIndexVar="index" selection="#{relatorioRaisBean.selected}" rowKey="#{rais.escritorio}" scrollHeight="200" scrollable="true" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max">
+                            <p:ajax event="rowSelect" update=":form_relatorio:i_acoes"/>
+                            <p:ajax event="rowSelectCheckbox" update=":form_relatorio:i_acoes"/>
+                            <p:ajax event="rowUnselect" update=":form_relatorio:i_acoes"/>
+                            <p:ajax event="rowUnselectCheckbox" update=":form_relatorio:i_acoes"/>
+                            <p:ajax event="toggleSelect" update=":form_relatorio:i_acoes"/>
+                            <p:column headerText="" width="25" styleClass="text-center">#{index+1}</p:column>
+                            <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
+                            <p:column headerText="Empresa" rendered="#{relatorioRaisBean.filtro[2]}">
+                                #{rais.empresa}
+                            </p:column>
+                            <p:column headerText="Email" rendered="#{relatorioRaisBean.filtro[2]}">
+                                #{rais.email}
+                            </p:column>
+                            <p:column headerText="Escritório" rendered="#{relatorioRaisBean.filtro[11]}">
+                                #{rais.escritorio}
+                            </p:column>
+                            <p:column headerText="Email" rendered="#{relatorioRaisBean.filtro[11]}">
+                                #{rais.escritorio_email}
+                            </p:column>
+                            <p:column headerText="Telefone" rendered="#{relatorioRaisBean.filtro[11]}">
+                                #{rais.escritorio_telefone}
+                            </p:column>
+                            <p:column headerText="Qtde empresas" rendered="#{relatorioRaisBean.filtro[11]}" width="80" styleClass="text-center">
+                                #{rais.quantidade}
+                            </p:column>
+                        </p:dataTable>
+                        <p:outputLabel value="Mensagem:"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/> <br />
+                        <p:inputTextarea value="#{relatorioRaisBean.mensagem}" cols="150" rows="5" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max"></p:inputTextarea>
+                        <f:facet name="footer">
+                            <h:panelGrid columns="3" rendered="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.size() > 0}">
+                                <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/>
+                                <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.imprimir()}" ajax="false" update="id_messages_growl"  />
+                            </h:panelGrid>
+                        </f:facet>
+                    </p:panel>
                 </h:form>
             </p:panel>
         </f:view>
