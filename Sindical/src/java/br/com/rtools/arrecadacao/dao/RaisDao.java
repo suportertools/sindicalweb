@@ -190,7 +190,7 @@ public class RaisDao extends DB {
         List listWhere = new ArrayList();
         String queryGroup = "";
         String queryString = "SELECT ";
-        if (idEscritorio != null && idEscritorio != -1 && escritorios) {
+        if (escritorios) {
             queryString += ""
                     + "                  C_pessoa.ds_nome        AS escritorio,     " // 0
                     + "                  C_pessoa.ds_telefone1   AS esc_telefone,   " // 1
