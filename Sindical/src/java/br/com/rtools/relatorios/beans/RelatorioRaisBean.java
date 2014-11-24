@@ -14,11 +14,14 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailArquivo;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.sistema.SisPessoa;
+import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -145,6 +148,9 @@ public class RelatorioRaisBean implements Serializable {
         tipo = "todos";
         assunto = "RAIS";
         mensagem = "";
+        UploadFilesBean uploadFilesBean = new UploadFilesBean();
+        uploadFilesBean.setPath("Arquivos/anexos/pendentes/rais");
+        GenericaSessao.put("uploadFilesBean", uploadFilesBean);
     }
 
     @PreDestroy
@@ -153,6 +159,7 @@ public class RelatorioRaisBean implements Serializable {
         GenericaSessao.remove("sisPessoaPesquisa");
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("tipoPesquisaPessoaJuridica");
+        GenericaSessao.remove("uploadFilesBean");
     }
 
     public void visualizar() {
@@ -965,6 +972,14 @@ public class RelatorioRaisBean implements Serializable {
 
     public void send() {
         Mail mail = new Mail();
+        List<DataObject> listFiles;
+        List<File> files = new ArrayList<>();
+        if (GenericaSessao.exists("uploadFilesBean")) {
+            listFiles = ((UploadFilesBean) GenericaSessao.getObject("uploadFilesBean")).getListFiles();
+            for (int i = 0; i < listFiles.size(); i++) {
+                files.add((File) listFiles.get(i).getArgumento0());
+            }
+        }
         if (filtro[11]) {
             RaisDao raisDao = new RaisDao();
             String empresasString = "";
@@ -993,12 +1008,6 @@ public class RelatorioRaisBean implements Serializable {
             }
             email.setMensagem(mensagem + "<br /><br />" + empresasString);
             mail.setEmailPessoas(listEmailPessoa);
-            String[] err = mail.send();
-            if (!err[0].isEmpty()) {
-
-            } else if (!err[1].isEmpty()) {
-
-            }
         } else if (filtro[2]) {
             RaisDao raisDao = new RaisDao();
             String empresasString = "";
@@ -1025,6 +1034,16 @@ public class RelatorioRaisBean implements Serializable {
             } else if (!err[1].isEmpty()) {
 
             }
+        }
+        if (!files.isEmpty()) {
+            mail.setFiles(files);
+        }
+        String[] err = mail.send();
+        if (!err[0].isEmpty()) {
+            GenericaMensagem.info("Sucesso", "Mensagem enviada com sucesso!");
+        } else if (!err[1].isEmpty()) {
+            GenericaMensagem.warn("Erro", "Ao enviar mensagem.");
+
         }
     }
 
