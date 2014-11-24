@@ -54,6 +54,7 @@ public class ParametroRaisNaoEnviadasRelatorio {
     private String escritorio_cep;
     private String id;
     private String escritorio_id;
+    private Integer quantidade;
 
     public ParametroRaisNaoEnviadasRelatorio() {
         this.detalhes_relatorio = "";
@@ -82,9 +83,18 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.escritorio_cep = "";
         this.id = "";
         this.escritorio_id = "";
+        this.quantidade = 0;
     }
 
-    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String cnpj, String empresa, String convencao, String grupo, String telefone, String logradouro, String endereco, String complemento, String bairro, String cidade, String uf, String cep, String email, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String id, String escritorio_id) {
+    public ParametroRaisNaoEnviadasRelatorio(String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_id, Integer quantidade) {
+        this.escritorio = escritorio;
+        this.escritorio_telefone = escritorio_telefone;
+        this.escritorio_email = escritorio_email;
+        this.escritorio_id = escritorio_id;
+        this.quantidade = quantidade;
+    }
+
+    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String cnpj, String empresa, String convencao, String grupo, String telefone, String logradouro, String endereco, String complemento, String bairro, String cidade, String uf, String cep, String email, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String id, String escritorio_id, Integer quantidade) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.cnpj = cnpj;
         this.empresa = empresa;
@@ -111,6 +121,7 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.escritorio_cep = escritorio_cep;
         this.id = id;
         this.escritorio_id = escritorio_id;
+        this.quantidade = quantidade;
     }
 
     public String getDetalhes_relatorio() {
@@ -319,6 +330,14 @@ public class ParametroRaisNaoEnviadasRelatorio {
 
     public void setEscritorio_complemento(String escritorio_complemento) {
         this.escritorio_complemento = escritorio_complemento;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
     }
 
 }
