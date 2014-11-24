@@ -1042,7 +1042,7 @@ public class RelatorioRaisBean implements Serializable {
         if (!err[0].isEmpty()) {
             GenericaMensagem.info("Sucesso", "Mensagem enviada com sucesso!");
         } else if (!err[1].isEmpty()) {
-            GenericaMensagem.warn("Erro", "Ao enviar mensagem.");
+            GenericaMensagem.warn("Erro", "Ao enviar mensagem." + err[1]);
 
         }
     }
