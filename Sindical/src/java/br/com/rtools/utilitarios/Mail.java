@@ -9,6 +9,7 @@ import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailArquivo;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.sistema.EmailPrioridade;
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
