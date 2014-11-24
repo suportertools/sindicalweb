@@ -48,22 +48,29 @@
                                     </p:selectOneMenu>                        
                                     <p:commandButton value="Inicial" action="#{juridicaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
                                     <p:commandButton value="Parcial" action="#{juridicaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
+                                    <h:column>
+                                        <p:selectOneRadio value="#{juridicaBean.tipoFiltro}">
+                                            <f:selectItem itemValue="todas" itemLabel="Todas" itemDisabled="#{juridicaBean.disabled[2]}"/>
+                                            <f:selectItem itemValue="contribuintes_ativos" itemLabel="Contribuintes ativos" itemDisabled="#{juridicaBean.disabled[0]}"/>
+                                            <f:selectItem itemValue="escritorios" itemLabel="Contabilidades" itemDisabled="#{juridicaBean.disabled[1]}"/>
+                                        </p:selectOneRadio>
+                                    </h:column>
                                 </h:panelGrid>
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
                         </h:form>
-                        
+
                         <h:form id="formGridPesquisaPessoaJuridica">
                             <h:panelGrid id="i_panel_grid" style="width: 100%">
                                 <p:dataTable value="#{juridicaBean.listaJuridica}" var="juridica" id="tbl" emptyMessage="Nenhuma empresa encontrada" scrollHeight="400" scrollable="true">
                                     <p:column style="width:5%">  
                                         <p:rowToggler />  
                                     </p:column>  
-                                    
+
                                     <p:column headerText="ID" styleClass="text-center" width="50">
                                         <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.id}" ajax="false"/>
                                     </p:column>
-                                    
+
                                     <p:column headerText="Nome">
                                         <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.nome}" ajax="false"/>
                                     </p:column>
@@ -104,7 +111,7 @@
                             </h:panelGrid>
                         </h:form>                        
                     </p:panel>
-                    
+
                     <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
