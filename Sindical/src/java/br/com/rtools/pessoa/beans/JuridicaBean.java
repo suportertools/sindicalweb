@@ -2540,8 +2540,8 @@ public class JuridicaBean implements Serializable {
         JuridicaBean juridicaBean = new JuridicaBean();
         juridicaBean.setSomenteAtivas(true);
         Boolean[] bs = new Boolean[3];
-        bs[0] = true;
-        bs[1] = false;
+        bs[0] = false;
+        bs[1] = true;
         bs[2] = true;
         juridicaBean.setDisabled(bs);
         juridicaBean.setTipoFiltro("contribuintes_ativos");
