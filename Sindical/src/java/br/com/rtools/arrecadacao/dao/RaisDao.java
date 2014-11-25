@@ -192,39 +192,60 @@ public class RaisDao extends DB {
         String queryString = "SELECT ";
         if (escritorios) {
             queryString += ""
-                    + "                  C_pessoa.ds_nome        AS escritorio,     " // 0
-                    + "                  C_pessoa.ds_telefone1   AS esc_telefone,   " // 1
-                    + "                  C_pessoa.ds_email1      AS esc_email,      " // 2
-                    + "                  C.id,                                      " // 3
-                    + "                  COUNT(*)                                   ";// 4
-            queryGroup = " GROUP BY C_pessoa.ds_nome, C_pessoa.ds_telefone1, C_pessoa.ds_email1, C.id ";
+                    + " C_pessoa.ds_nome                    AS escritorio,              " // 0
+                    + " C_pessoa.ds_telefone1               AS esc_telefone,            " // 1
+                    + " C_pessoa.ds_email1                  AS esc_email,               " // 2
+                    + " C.id,                                                           " // 3
+                    + " COUNT(*),                                                       " // 4
+                    + " C_logradouro.ds_descricao           AS escritorio_logradouro,   " // 5
+                    + " C_descricao_endereco.ds_descricao   AS escritorio_endereco,     " // 6
+                    + " PEC.ds_complemento                  AS escritorio_complemento,  " // 7
+                    + " C_bairro.ds_descricao               AS escritorio_bairro,       " // 8
+                    + " C_cidade.ds_cidade                  AS escritorio_cidade,       " // 9
+                    + " C_cidade.ds_uf                      AS escritorio_uf,           " // 10
+                    + " C_endereco.ds_cep                   AS escritorio_cep           ";// 11
+
+            queryGroup = " GROUP BY C_pessoa.ds_nome,                   "
+                    + "             C_pessoa.ds_telefone1,              "
+                    + "             C_pessoa.ds_email1,                 "
+                    + "             C.id,                               "
+                    + "             C_logradouro.ds_descricao,          "
+                    + "             C_descricao_endereco.ds_descricao,  "
+                    + "             PEC.ds_complemento,                 "
+                    + "             C_bairro.ds_descricao,              "
+                    + "             C_cidade.ds_cidade,                 "
+                    + "             C_cidade.ds_uf,                     "
+                    + "             C_endereco.ds_cep                   ";
+
         } else {
             queryString += ""
-                    + "                  P.ds_documento                     AS cnpj,                " // 0
-                    + "                  P.ds_nome                          AS empresa,             " // 1
-                    + "                  CO.ds_descricao                    AS convencao,           " // 2
-                    + "                  GC.ds_descricao                    AS grupo,               " // 3
-                    + "                  P.ds_telefone1                     AS telefone,            " // 4
-                    + "                  J_logradouro.ds_descricao          AS logradouro,          " // 5
-                    + "                  J_descricao_endereco.ds_descricao  AS endereco,            " // 6
-                    + "                  PE.ds_complemento                  AS complemento,         " // 7
-                    + "                  J_bairro.ds_descricao              AS bairro,              " // 8
-                    + "                  J_cidade.ds_cidade                 AS cidade,              " // 9
-                    + "                  J_cidade.ds_uf                     AS uf,                  " // 10
-                    + "                  E.ds_cep                           AS cep,                 " // 11
-                    + "                  P.ds_email1                        AS email,               " // 12
-                    + "                  C_pessoa.ds_nome                   AS escritorio,          " // 13
-                    + "                  C_pessoa.ds_telefone1              AS esc_telefone,        " // 14
-                    + "                  C_pessoa.ds_email1                 AS esc_email,           " // 15
-                    + "                  C_logradouro.ds_descricao          AS esc_logradouro,      " // 16
-                    + "                  C_descricao_endereco.ds_descricao  AS esc_endereco,        " // 17
-                    + "                  PEC.ds_complemento                 AS esc_complemento,     " // 18
-                    + "                  C_bairro.ds_descricao              AS esc_bairro,          " // 19
-                    + "                  C_cidade.ds_cidade                 AS esc_cidade,          " // 20
-                    + "                  C_cidade.ds_uf                     AS esc_uf,              " // 21
-                    + "                  C_endereco.ds_cep                  AS esc_cep,             " // 22
-                    + "                  J.id,                                                      " // 23
-                    + "                  C.id                               AS esc_id               ";// 24
+                    + "                  P.ds_documento                     AS cnpj,                    " // 0
+                    + "                  P.ds_nome                          AS empresa,                 " // 1
+                    + "                  CO.ds_descricao                    AS convencao,               " // 2
+                    + "                  GC.ds_descricao                    AS grupo,                   " // 3
+                    + "                  P.ds_telefone1                     AS telefone,                " // 4
+                    + "                  J_logradouro.ds_descricao          AS logradouro,              " // 5
+                    + "                  J_descricao_endereco.ds_descricao  AS endereco,                " // 6
+                    + "                  PE.ds_complemento                  AS complemento,             " // 7
+                    + "                  J_bairro.ds_descricao              AS bairro,                  " // 8
+                    + "                  J_cidade.ds_cidade                 AS cidade,                  " // 9
+                    + "                  J_cidade.ds_uf                     AS uf,                      " // 10
+                    + "                  E.ds_cep                           AS cep,                     " // 11
+                    + "                  P.ds_email1                        AS email,                   " // 12
+                    + "                  C_pessoa.ds_nome                   AS escritorio,              " // 13
+                    + "                  C_pessoa.ds_telefone1              AS escritorio_telefone,     " // 14
+                    + "                  C_pessoa.ds_email1                 AS escritorio_email,        " // 15
+                    + "                  C_logradouro.ds_descricao          AS escritorio_logradouro,   " // 16
+                    + "                  C_descricao_endereco.ds_descricao  AS escritorio_endereco,     " // 17
+                    + "                  PEC.ds_complemento                 AS escritorio_complemento,  " // 18
+                    + "                  C_bairro.ds_descricao              AS escritorio_bairro,       " // 19
+                    + "                  C_cidade.ds_cidade                 AS escritorio_cidade,       " // 20
+                    + "                  C_cidade.ds_uf                     AS escritorio_uf,           " // 21
+                    + "                  C_endereco.ds_cep                  AS escritorio_cep,          " // 22
+                    + "                  J.id,                                                          " // 23
+                    + "                  C.id                               AS esc_id,                  " // 24
+                    + "                  PE.ds_numero                       AS numero,                  " // 25
+                    + "                  PEC.ds_numero                      AS escritorio_numero        ";// 26
         }
         queryString += ""
                 + "         FROM pes_juridica           AS J                                                                                    "
@@ -259,22 +280,18 @@ public class RaisDao extends DB {
             listWhere.add(" J.id = " + idEmpresa);
             switch (tipo) {
                 case "yes_email":
-                    listWhere.add(" P.ds_email1 IS NOT NULL ");
-                    listWhere.add(" P.ds_email1 <> '' ");
+                    listWhere.add(" (P.ds_email1 IS NOT NULL AND P.ds_email1 <> '') ");
                     break;
                 case "no_email":
-                    listWhere.add(" P.ds_email1 IS NULL ");
                     listWhere.add(" P.ds_email1 = '' ");
                     break;
             }
         } else if (idEmpresa != null && idEmpresa == -1) {
             switch (tipo) {
                 case "yes_email":
-                    listWhere.add(" P.ds_email1 IS NOT NULL ");
-                    listWhere.add(" P.ds_email1 <> '' ");
+                    listWhere.add(" (P.ds_email1 IS NOT NULL AND P.ds_email1 <> '') ");
                     break;
                 case "no_email":
-                    listWhere.add(" P.ds_email1 IS NULL ");
                     listWhere.add(" P.ds_email1 = '' ");
                     break;
             }
@@ -284,22 +301,18 @@ public class RaisDao extends DB {
             listWhere.add(" C.id = " + idEscritorio);
             switch (tipo) {
                 case "yes_email":
-                    listWhere.add(" C_pessoa.ds_email1 IS NOT NULL ");
-                    listWhere.add(" C_pessoa.ds_email1 <> ''");
+                    listWhere.add(" (C_pessoa.ds_email1 IS NOT NULL AND C_pessoa.ds_email1 <> '') ");
                     break;
                 case "no_email":
-                    listWhere.add(" C_pessoa.ds_email1 IS NULL ");
                     listWhere.add(" C_pessoa.ds_email1 = '' ");
                     break;
             }
         } else if (idEscritorio != null && idEscritorio == -1) {
             switch (tipo) {
                 case "yes_email":
-                    listWhere.add(" C_pessoa.ds_email1 IS NOT NULL ");
-                    listWhere.add(" C_pessoa.ds_email1 <> '' ");
+                    listWhere.add(" (C_pessoa.ds_email1 IS NOT NULL AND C_pessoa.ds_email1 <> '') ");
                     break;
                 case "no_email":
-                    listWhere.add(" C_pessoa.ds_email1 IS NULL ");
                     listWhere.add(" C_pessoa.ds_email1 = '' ");
                     break;
             }
