@@ -17,15 +17,15 @@
             <p:panel styleClass="wrapper no-border">                
                 <h:form id="form_contrato">                    
                     <c:set scope="request" var="object" value="${modeloContratoBean.matriculaContrato}"/>
-                    <p:dialog  widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true">
+                    <p:dialog  widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true" closeOnEscape="true">
                         <h:panelGrid id="id_grid_uploads" style="width: 350px">
-                            <p:dataTable value="#{modeloContratoBean.listaArquivos}" var="lista" emptyMessage="Nenhum arquivo encontrado">
-                                <f:facet name="header">Arquivos anexados (#{modeloContratoBean.listaArquivos.size()})</f:facet>
+                            <p:dataTable value="#{uploadFilesBean.listFilesByPath(modeloContratoBean.path)}" var="lista" emptyMessage="Nenhum arquivo encontrado">
+                                <f:facet name="header">Arquivos anexados (#{uploadFilesBean.listFilesByPath(modeloContratoBean.path).size()})</f:facet>
                                 <p:column headerText="Nome arquivo" >
-                                    <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Arquivos/contrato/#{modeloContratoBean.matriculaContrato.id}/#{lista.argumento1}" title="#{lista.argumento1}" width="50" />
+                                    <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Arquivos/contrato/#{modeloContratoBean.matriculaContrato.id}/#{lista.name}" title="#{lista.name}" width="50" />
                                 </p:column>
                                 <p:column width="25">
-                                    <p:commandButton action="#{modeloContratoBean.excluirArquivo(lista.argumento2)}" icon="ui-icon-trash" update=":form_contrato:id_grid_uploads, :form_contrato:id_btn_anexo"/>
+                                    <p:commandButton action="#{uploadFilesBean.remove(index)}" icon="ui-icon-trash" update=":form_contrato:id_grid_uploads, :form_contrato:id_btn_anexo"/>
                                 </p:column>
                             </p:dataTable>
                         </h:panelGrid>
@@ -90,7 +90,7 @@
                             <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" type="button"/>
                             <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaModeloContrato}" title="Pesquisar Contrato" />
                             <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
-                            <p:commandButton value="Anexos (#{modeloContratoBean.listaArquivos.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
+                            <p:commandButton value="Anexos (#{uploadFilesBean.listFilesByPath(modeloContratoBean.path).size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
                         </h:panelGrid>
                     </p:panel>
                     <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
@@ -110,7 +110,7 @@
                     </p:dialog>                     
                 </h:form>
                 <h:form id="form_modelo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
-                    <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar arquivos" closable="true">
+                    <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar arquivos" closable="true" closeOnEscape="true">
                         <p:fileUpload label="Procurar"
                                       cancelLabel="Cancelar"
                                       uploadLabel="Anexar"
@@ -118,7 +118,7 @@
                                       dragDropSupport="true"
                                       multiple="false"
                                       update=":form_contrato:id_form_contrato, :form_contrato:id_grid_uploads, :form_contrato:id_btn_anexo"
-                                      fileUploadListener="#{modeloContratoBean.upload}"
+                                      fileUploadListener="#{uploadFilesBean.upload}"
                                       oncomplete="PF('dgl_upload').hide()" />
                     </p:dialog>
                 </h:form>                
