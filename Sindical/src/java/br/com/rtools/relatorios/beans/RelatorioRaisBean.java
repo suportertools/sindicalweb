@@ -163,14 +163,19 @@ public class RelatorioRaisBean implements Serializable {
     }
 
     public void visualizar() {
+        visualizar(0);
+    }
+
+    public void visualizar(int tcase) {
         Relatorios relatorios = null;
         if (!getListaTipoRelatorios().isEmpty()) {
             RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
-            relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
+            relatorios = rgdb.pesquisaRelatorios(index[0]);
         }
         if (relatorios == null) {
             return;
         }
+        String order = "";
         String detalheRelatorio = "";
         if (parametroRaisRelatorio.isEmpty()) {
             RaisDao raisDao = new RaisDao();
@@ -233,24 +238,28 @@ public class RelatorioRaisBean implements Serializable {
                 }
             }
             String orderString = "";
-            if (order != null) {
-                if (order.equals("0")) {
-                    orderString = " SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                } else if (orderString.equals("1")) {
-                    orderString = " PJ.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                } else if (orderString.equals("2")) {
-                    orderString = " R.dt_emissao ASC, SP.ds_nome ASC ";
-                } else if (orderString.equals("3")) {
-                    orderString = " R.dt_emissao ASC, PJ.ds_nome ASC ";
-                }
-            } else {
-                orderString = "";
-            }
             List list;
             if (raisEnviadas) {
+                if (!order.isEmpty()) {
+                    if (order.equals("0")) {
+                        orderString = " SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
+                    } else if (orderString.equals("1")) {
+                        orderString = " PJ.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
+                    } else if (orderString.equals("2")) {
+                        orderString = " R.dt_emissao ASC, SP.ds_nome ASC ";
+                    } else if (orderString.equals("3")) {
+                        orderString = " R.dt_emissao ASC, PJ.ds_nome ASC ";
+                    }
+                } else {
+                    orderString = "";
+                }
                 list = raisDao.filtroRelatorio(relatorios, anoBase, pIStringI, pFStringI, idEmpresa, idSisPessoa, inIdProfissoes, faixaSalarial[0], faixaSalarial[1], inIdRaca, inIdClassificaoEconomica, inIdCidades, sexo, orderString);
             } else {
-                list = raisDao.filtroRelatorioNaoEnviadas(relatorios, anoBase, idEmpresa, idEscritorio, inIdCidades, "", tipo, escritorios);
+//              RAIS NÃO ENTREGUES
+                if (!escritorios) {
+                    orderString = " P.ds_nome ";
+                }
+                list = raisDao.filtroRelatorioNaoEnviadas(relatorios, anoBase, idEmpresa, idEscritorio, inIdCidades, orderString, tipo, escritorios);
             }
             if (list.isEmpty()) {
                 GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
@@ -332,18 +341,26 @@ public class RelatorioRaisBean implements Serializable {
                     parametroRaisRelatorio.add(pr);
                 } else {
                     if (escritorios) {
-                        Integer quantidade = 0;
+                        String quantidade = "0";
                         try {
-                            quantidade = Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4)));
+                            quantidade = "" + Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4)));
                         } catch (Exception e) {
-                            quantidade = 0;
+                            quantidade = "" + 0;
                         }
                         prne = new ParametroRaisNaoEnviadasRelatorio(
+                                detalheRelatorio,
                                 AnaliseString.converteNullString(((List) list1).get(0)),
                                 AnaliseString.converteNullString(((List) list1).get(1)),
                                 AnaliseString.converteNullString(((List) list1).get(2)),
                                 AnaliseString.converteNullString(((List) list1).get(3)),
-                                quantidade
+                                quantidade,
+                                AnaliseString.converteNullString(((List) list1).get(5)),
+                                AnaliseString.converteNullString(((List) list1).get(6)),
+                                AnaliseString.converteNullString(((List) list1).get(7)),
+                                AnaliseString.converteNullString(((List) list1).get(8)),
+                                AnaliseString.converteNullString(((List) list1).get(9)),
+                                AnaliseString.converteNullString(((List) list1).get(10)),
+                                AnaliseString.converteNullString(((List) list1).get(11))
                         );
 
                     } else {
@@ -374,7 +391,9 @@ public class RelatorioRaisBean implements Serializable {
                                 AnaliseString.converteNullString(((List) list1).get(22)),
                                 AnaliseString.converteNullString(((List) list1).get(23)),
                                 AnaliseString.converteNullString(((List) list1).get(24)),
-                                0
+                                "0",
+                                AnaliseString.converteNullString(((List) list1).get(25)),
+                                AnaliseString.converteNullString(((List) list1).get(26))
                         );
                     }
                     parametroRaisNaoEnviadasRelatorio.add(prne);
@@ -382,6 +401,10 @@ public class RelatorioRaisBean implements Serializable {
             }
             if (raisEnviadas) {
                 imprimir((Collection) parametroRaisRelatorio, relatorios);
+            } else {
+                if (tcase == 0) {
+                    imprimir((Collection) parametroRaisNaoEnviadasRelatorio, relatorios);
+                }
             }
         }
     }
@@ -391,7 +414,7 @@ public class RelatorioRaisBean implements Serializable {
             Relatorios r = null;
             if (!getListaTipoRelatorios().isEmpty()) {
                 RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
-                r = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
+                r = rgdb.pesquisaRelatorios(index[0]);
             }
             if (r == null) {
                 return;
@@ -414,7 +437,7 @@ public class RelatorioRaisBean implements Serializable {
                 jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(r.getJasper())));
             }
             try {
-                JRBeanCollectionDataSource dtSource = null;
+                JRBeanCollectionDataSource dtSource;
                 if (raisEnviadas) {
                     dtSource = new JRBeanCollectionDataSource(c);
                 } else {
@@ -449,7 +472,23 @@ public class RelatorioRaisBean implements Serializable {
                 list = (List<Relatorios>) db.pesquisaTipoRelatorio(274);
             }
             for (int i = 0; i < list.size(); i++) {
-                listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
+                if (filtro[2]) {
+                    if (list.get(i).getNome().contains("Empresa") && !raisEnviadas) {
+                        listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+                    }
+                } else if (filtro[11]) {
+                    if (list.get(i).getNome().contains("Escritório")) {
+                        listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+                    }
+                } else {
+                    if (raisEnviadas) {
+                        listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+                    } else {
+                        if (list.get(i).getNome().contains("Empresa") && !raisEnviadas) {
+                            listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+                        }
+                    }
+                }
             }
             if (listSelectItem[0].isEmpty()) {
                 listSelectItem[0] = new ArrayList<>();
@@ -508,6 +547,9 @@ public class RelatorioRaisBean implements Serializable {
             dataFinal = DataHoje.dataHoje();
         }
         if (!filtro[2]) {
+            if (!raisEnviadas) {
+                listSelectItem[0].clear();
+            }
             empresa = new Juridica();
             filtro[13] = false;
             tipo = "todos";
@@ -539,6 +581,7 @@ public class RelatorioRaisBean implements Serializable {
             order = "";
         }
         if (!filtro[11]) {
+            listSelectItem[0].clear();
             filtro[13] = false;
             escritorio = new Juridica();
             tipo = "todos";
@@ -560,12 +603,16 @@ public class RelatorioRaisBean implements Serializable {
                 empresa = new Juridica();
                 filtro[2] = false;
                 tipo = "todos";
+                if (!raisEnviadas) {
+                    listSelectItem[0].clear();
+                }
                 break;
             case "escritorio":
                 escritorio = new Juridica();
                 filtro[11] = false;
                 filtro[13] = false;
                 tipo = "todos";
+                listSelectItem[0].clear();
                 break;
             case "empregado":
                 filtro[13] = false;
