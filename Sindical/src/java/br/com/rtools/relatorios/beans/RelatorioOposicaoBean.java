@@ -212,7 +212,15 @@ public class RelatorioOposicaoBean implements Serializable {
                                 GenericaString.converterNullToString(((List) list1).get(6)), // CPF
                                 GenericaString.converterNullToString(((List) list1).get(7)), // RG
                                 GenericaString.converterNullToString(((List) list1).get(8)), // Referência Inicial
-                                GenericaString.converterNullToString(((List) list1).get(9)) // Referência Final
+                                GenericaString.converterNullToString(((List) list1).get(9)),  // Referência Final
+                                GenericaString.converterNullToString(((List) list1).get(10)),  // Logradouro
+                                GenericaString.converterNullToString(((List) list1).get(11)),  // Endereço
+                                GenericaString.converterNullToString(((List) list1).get(12)),  // Número
+                                GenericaString.converterNullToString(((List) list1).get(13)),  // Complemento
+                                GenericaString.converterNullToString(((List) list1).get(14)),  // Bairro
+                                GenericaString.converterNullToString(((List) list1).get(15)),  // Cidade
+                                GenericaString.converterNullToString(((List) list1).get(16)),  // UF
+                                GenericaString.converterNullToString(((List) list1).get(17))   // CEP
                         );
                 parametroOposicao.add(po);
             }
