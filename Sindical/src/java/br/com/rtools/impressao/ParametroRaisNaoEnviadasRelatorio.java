@@ -89,7 +89,7 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.quantidade = "0";
     }
 
-    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_id, String quantidade, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep) {
+    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_id, String quantidade, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String escritorio_numero) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.escritorio = escritorio;
         this.escritorio_telefone = escritorio_telefone;
@@ -103,6 +103,7 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.escritorio_cidade = escritorio_cidade;
         this.escritorio_uf = escritorio_uf;
         this.escritorio_cep = escritorio_cep;
+        this.escritorio_numero = escritorio_numero;
     }
 
     public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String cnpj, String empresa, String convencao, String grupo, String telefone, String logradouro, String endereco, String complemento, String bairro, String cidade, String uf, String cep, String email, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String id, String escritorio_id, String quantidade, String numero, String escritorio_numero) {
