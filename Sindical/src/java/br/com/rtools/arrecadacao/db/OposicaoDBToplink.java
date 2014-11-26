@@ -215,22 +215,36 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             String queryEmissao = "";
             String queryReferencia = "";
             String queryString = ""
-                    + "    SELECT TO_CHAR(O.dt_emissao, 'DD/MM/YYYY') AS emissao,"
-                    + "           T.ds_descricao              AS tipo,           "
-                    + "           PES.ds_documento            AS documento,      "
-                    + "           UPPER(PES.ds_nome)          AS empresa,        "
-                    + "           UPPER(P.ds_nome)            AS funcionario,    "
-                    + "           P.ds_sexo                   AS sexo,           "
-                    + "           P.ds_cpf                    AS cpf,            "
-                    + "           P.ds_rg                     AS rg,             "
-                    + "           PC.ds_referencia_inicial    AS ref_i,          "
-                    + "           PC.ds_referencia_final      AS ref_f           "
-                    + "      FROM arr_oposicao                AS O               "
-                    + "INNER JOIN arr_oposicao_pessoa         AS P      ON O.id_oposicao_pessoa = P.id          "
-                    + "INNER JOIN arr_convencao_periodo       AS PC     ON PC.id    =   O.id_convencao_periodo  "
-                    + "INNER JOIN pes_juridica                AS J      ON J.id     =   O.id_juridica           "
-                    + "INNER JOIN pes_pessoa                  AS PES    ON PES.id   =   J.id_pessoa             "
-                    + "INNER JOIN pes_tipo_documento          AS T      ON T.id     =   PES.id_tipo_documento   ";
+                    + "     SELECT TO_CHAR(O.dt_emissao, 'DD/MM/YYYY') AS emissao,  " // 0
+                    + "            T.ds_descricao            AS tipo,               " // 1
+                    + "            PES.ds_documento          AS documento,          " // 2
+                    + "            UPPER(PES.ds_nome)        AS empresa,            " // 3
+                    + "            UPPER(P.ds_nome)          AS funcionario,        " // 4
+                    + "            P.ds_sexo                 AS sexo,               " // 5
+                    + "            P.ds_cpf                  AS cpf,                " // 6
+                    + "            P.ds_rg                   AS rg,                 " // 7
+                    + "            PC.ds_referencia_inicial  AS ref_i,              " // 8
+                    + "            PC.ds_referencia_final    AS ref_f,              " // 9
+                    + "            L.ds_descricao            AS logradouro,         " // 10
+                    + "            DE.ds_descricao           AS endereco,           " // 11
+                    + "            PE.ds_numero              AS numero,             " // 12
+                    + "            PE.ds_complemento         AS complemento,        " // 13
+                    + "            B.ds_descricao            AS bairro,             " // 14
+                    + "            C.ds_cidade               AS cidae,              " // 15
+                    + "            C.ds_uf                   AS uf,                 " // 16
+                    + "            E.ds_cep                  AS cep                 " // 17
+                    + "       FROM arr_oposicao              AS O                   "
+                    + " INNER JOIN arr_oposicao_pessoa       AS P      ON O.id_oposicao_pessoa = P.id                                   "
+                    + " INNER JOIN arr_convencao_periodo     AS PC     ON PC.id         =   O.id_convencao_periodo                      "
+                    + " INNER JOIN pes_juridica              AS J      ON J.id          =   O.id_juridica                               "
+                    + " INNER JOIN pes_pessoa                AS PES    ON PES.id        =   J.id_pessoa                                 "
+                    + " INNER JOIN pes_pessoa_endereco       AS PE     ON PE.id_pessoa  =   J.id_pessoa                                 "
+                    + " INNER JOIN end_endereco              AS E      ON E.id          =   PE.id_endereco AND PE.id_tipo_endereco = 4  "
+                    + " INNER JOIN end_logradouro            AS L      ON L.id          =   E.id_logradouro                             "
+                    + " INNER JOIN end_descricao_endereco    AS DE     ON DE.id         =   E.id_descricao_endereco                     "
+                    + " INNER JOIN end_cidade                AS C      ON C.id          =   E.id_cidade                                 "
+                    + " INNER JOIN end_bairro                AS B      ON B.id          =   E.id_bairro                                 "
+                    + " INNER JOIN pes_tipo_documento        AS T      ON T.id          =   PES.id_tipo_documento                       ";
 
             if (inCnaes != null) {
                 listQuery.add(" J.id_cnae IN(" + inCnaes + ") ");
