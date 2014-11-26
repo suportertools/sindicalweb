@@ -184,7 +184,7 @@
                                                     <h:outputLabel value="#{linha.argumento3}" style="font-size: 8pt!important"/>
                                                 </p:column>
                                                 
-                                                <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50">
+                                                <p:column headerText="Senha" rendered="#{!recepcaoBean.ocultaSenha}" width="50" sortBy="#{linha.argumento10}">
                                                     <center>
                                                         <h:column rendered="#{!linha.argumento10.equals('')}">
                                                             <p:commandLink ajax="false" action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha" style="font-size: 8pt!important" />
@@ -372,7 +372,7 @@
                                             </p:column>
                                             
                                             <p:column headerText="Senha" width="40" style="text-align: center">
-                                                <h:outputLabel value="#{linha.senha}"/>
+                                                <h:outputLabel value="#{(linha.senha ge 10) ? linha.senha : ('0').concat(linha.senha)}"/>
                                             </p:column>
                                                              
                                             <p:rowExpansion>

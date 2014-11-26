@@ -19,7 +19,7 @@
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
-                <f:view>
+                <f:view>    
                     <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
                     <p:panel styleClass="wrapper no-border">
                         <h:form id="form_servicos">
@@ -64,37 +64,12 @@
                                                 </h:column>
                                             </h:panelGrid>
                                             
-                                            <h:panelGrid columns="3">
-
-                                                <h:column>
-                                                    <p:outputLabel value="Periodo de fornecimento gratuito "/><br />
-                                                    <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
-                                                        <f:selectItems value="#{servicosBean.listPeriodo}"/>
-                                                    </p:selectOneMenu>
-                                                </h:column>
-                                                
-                                                <h:column>
-                                                    <p:outputLabel value="Quantidade por Periodo"/><br />
-                                                    <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="5"/>                                        
-                                                </h:column>
-                                                
-                                                <h:column>
-                                                    <br />
-                                                    <p:selectBooleanCheckbox value="#{servicosBean.servicos.familiarPeriodo}" itemLabel="Controle Familiar" style="margin-left: 20px"/>
-                                                </h:column>
-                                            </h:panelGrid>
-                                            
                                             <p:separator />
                                             
                                             <h:panelGrid columns="4">
                                                 <h:column>
-                                                    <p:outputLabel value="Dias validos da guia" for="idDiaValido" /><br />
-                                                    <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
-                                                </h:column>
-                                                
-                                                <h:column>
-                                                    <p:outputLabel value="Código" for="idCodigo" style="margin-left: 20px!important"/><br />
-                                                    <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}" style="margin-left: 20px"/>
+                                                    <p:outputLabel value="Código" for="idCodigo"/><br />
+                                                    <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}"/>
                                                 </h:column>
                                             
                                                 <p:column>
@@ -106,9 +81,7 @@
                                                 </p:column>
                                             </h:panelGrid>
                                             
-                                            <p:separator />
-                                            
-                                            <p:panelGrid columns="8" styleClass="sbb">
+                                            <p:panelGrid columns="9" styleClass="sbb">
                                                 <p:selectBooleanCheckbox id="idServDebito" value="#{servicosBean.servicos.debito}" itemLabel="Débito"/>
                                                 <p:selectBooleanCheckbox id="idServValor" value="#{servicosBean.servicos.alterarValor}" itemLabel="Alterar valor"/>
                                                 <p:selectBooleanCheckbox id="idServAdmin" value="#{servicosBean.servicos.adm}" itemLabel="ADM"/>
@@ -118,6 +91,39 @@
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.produto}" itemLabel="Produto" />
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorFixo}" itemLabel="Valor Fixo" />
                                             </p:panelGrid>
+                                            
+                                            <p:separator />
+                                            <br />
+                                            <p:fieldset legend="Opções da GUIA" toggleable="true" collapsed="true" toggleSpeed="500">
+                                                <h:panelGrid columns="5">
+                                                    <h:column>
+                                                        <p:outputLabel value="Periodo de fornecimento gratuito "/><br />
+                                                        <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
+                                                            <f:selectItems value="#{servicosBean.listPeriodo}"/>
+                                                        </p:selectOneMenu>
+                                                    </h:column>
+
+                                                    <h:column>
+                                                        <p:outputLabel value="Quantidade por Periodo"/><br />
+                                                        <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="18"/>                                        
+                                                    </h:column>
+
+                                                    <h:column>
+                                                        <br />
+                                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.familiarPeriodo}" itemLabel="Controle Familiar" style="margin-left: 20px; margin-right: 20px"/>
+                                                    </h:column>
+
+                                                    <h:column>
+                                                        <p:outputLabel value="Dias validos da guia" for="idDiaValido" /><br />
+                                                        <p:spinner id="idDiaValido" size="14" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
+                                                    </h:column>
+
+                                                    <h:column>
+                                                        <br />
+                                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorZerado}" itemLabel="Valor zerado Guias" style="margin-left: 20px"/>
+                                                    </h:column>
+                                                </h:panelGrid>
+                                            </p:fieldset>
                                         </p:tab>
                                         <p:tab id="valor" disabled="#{servicosBean.desabilitaValor}" title="Serviço Valor">                                    
                                             <p:messages id="id_messages_growl" showDetail="true" autoUpdate="true" closable="true" />

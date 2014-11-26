@@ -28,17 +28,21 @@ public class SubGrupoConvenio implements java.io.Serializable {
     @JoinColumn(name = "id_grupo_convenio", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private GrupoConvenio grupoConvenio;
+    @Column(name = "ds_obs_guias", length = 1000, nullable = true)
+    private String observacao;
 
     public SubGrupoConvenio() {
         this.id = -1;
         this.descricao = "";
         this.grupoConvenio = new GrupoConvenio();
+        this.observacao = "";
     }
 
-    public SubGrupoConvenio(int id, String descricao, GrupoConvenio grupoConvenio) {
+    public SubGrupoConvenio(int id, String descricao, GrupoConvenio grupoConvenio, String observacao) {
         this.id = id;
         this.descricao = descricao;
         this.grupoConvenio = grupoConvenio;
+        this.observacao = observacao;
     }
 
     public int getId() {
@@ -63,5 +67,13 @@ public class SubGrupoConvenio implements java.io.Serializable {
 
     public void setGrupoConvenio(GrupoConvenio grupoConvenio) {
         this.grupoConvenio = grupoConvenio;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }

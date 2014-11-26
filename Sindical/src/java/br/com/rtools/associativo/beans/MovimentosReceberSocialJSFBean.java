@@ -1,9 +1,12 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.FormaPagamento;
@@ -13,6 +16,7 @@ import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
+import br.com.rtools.impressao.ParametroEncaminhamento;
 import br.com.rtools.impressao.ParametroRecibo;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.Juridica;
@@ -27,18 +31,22 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +60,11 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 public class MovimentosReceberSocialJSFBean {
 
@@ -84,6 +96,20 @@ public class MovimentosReceberSocialJSFBean {
     private String descPesquisaBoleto = "";
     private List<SelectItem> listaContas = new ArrayList();
     private int indexConta = 0;
+    
+    public Guia pesquisaGuia(int id_lote){
+        MovimentoDB db = new MovimentoDBToplink();
+        Guia gu = db.pesquisaGuias(id_lote);
+        if (gu.getId() != -1) {
+            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+            List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
+            String conveniada = "";
+            if (!list.isEmpty()) {
+                conveniada = list.get(0).getFantasia();
+            }
+        }
+        return gu;
+    }
     
     public List<SelectItem> getListaContas(){
         if (listaContas.isEmpty()){
@@ -279,6 +305,160 @@ public class MovimentosReceberSocialJSFBean {
         }
 
         return null;
+    }
+    
+    public void encaminhamento(int id_lote){
+        Juridica sindicato = (Juridica) (new Dao()).find(new Juridica(), 1);
+        PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+        PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+        MovimentoDB db = new MovimentoDBToplink();
+        
+        Collection vetor = new ArrayList();
+        
+        Guia guia = pesquisaGuia(id_lote);
+        
+        if (guia.getId() == -1){
+            return;
+        }
+        
+        SociosDB dbs = new SociosDBToplink();
+        
+        
+        List<Movimento> list_movimentos = db.pesquisaGuia(guia);
+        //List<Movimento> list_test = db.pesquisaGuia((Guia)new Dao().find(new Guia(), 3));
+
+        //list_movimentos.addAll(list_test);
+        
+        Socios socios = dbs.pesquisaSocioPorPessoaAtivo(list_movimentos.get(0).getBeneficiario().getId());
+        
+        String str_servicos = "", str_usuario = "", str_nome = "", str_validade = "";
+        
+                
+        PessoaEndereco pe_empresa = dbp.pesquisaEndPorPessoaTipo(guia.getPessoa().getId(), 5);
+        String complemento = (pe_empresa.getComplemento().isEmpty()) ? "" : " ( "+pe_empresa.getComplemento()+" ) ";
+        String endereco = pe_empresa.getEndereco().getLogradouro().getDescricao() + " "
+                        + pe_empresa.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pe_empresa.getNumero() + " - " + complemento
+                        + pe_empresa.getEndereco().getBairro().getDescricao() + ", "
+                        + pe_empresa.getEndereco().getCidade().getCidade() + "  -  "
+                        + pe_empresa.getEndereco().getCidade().getUf();
+        
+        str_usuario = list_movimentos.get(0).getBaixa().getUsuario().getPessoa().getNome();
+
+        str_nome = list_movimentos.get(0).getBeneficiario().getNome();
+        
+        List<JasperPrint> list_jasper = new ArrayList();
+        Map<String, String> hash = new HashMap();
+        try{
+            String path = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads");  
+            String nameFile = "encaminhamento_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ENCAMINHAMENTO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
+
+            for (Movimento movs : list_movimentos){
+//                if (!str_servicos.isEmpty())
+//                    str_servicos += ", "+movs.getServicos().getDescricao();
+//                else
+//                    str_servicos = movs.getServicos().getDescricao();
+
+                DataHoje dh = new DataHoje();
+                str_validade = dh.incrementarDias(movs.getServicos().getValidade(), guia.getLote().getEmissao());
+
+                if (hash.containsKey(str_validade)){
+                    //str_servicos += ", "+movs.getServicos().getDescricao();
+                    hash.put(str_validade, hash.get(str_validade)+", "+movs.getServicos().getDescricao());
+                }else{
+                    //str_servicos = movs.getServicos().getDescricao();
+                    hash.put(str_validade, movs.getServicos().getDescricao());
+                }
+                
+                //if (!compara_validade.equals(str_validade)){
+
+                //}
+                //compara_validade = str_validade;
+                
+                //vetor.clear();
+            }
+
+            for (Map.Entry<String, String> entry : hash.entrySet()) {
+                
+                vetor.add(new ParametroEncaminhamento(
+                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        sindicato.getPessoa().getNome(),
+                        pe.getEndereco().getDescricaoEndereco().getDescricao(),
+                        pe.getEndereco().getLogradouro().getDescricao(),
+                        pe.getNumero(),
+                        pe.getComplemento(),
+                        pe.getEndereco().getBairro().getDescricao(),
+                        pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
+                        pe.getEndereco().getCidade().getCidade(),
+                        pe.getEndereco().getCidade().getUf(),
+                        sindicato.getPessoa().getTelefone1(),
+                        sindicato.getPessoa().getEmail1(),
+                        sindicato.getPessoa().getSite(),
+                        sindicato.getPessoa().getDocumento(),
+                        String.valueOf(guia.getId()), // GUIA
+                        String.valueOf(guia.getPessoa().getId()), // CODIGO
+                        guia.getSubGrupoConvenio().getGrupoConvenio().getDescricao(), // GRUPO
+                        guia.getSubGrupoConvenio().getDescricao(), // SUB GRUPO
+                        pe_empresa.getPessoa().getNome(), // EMPRESA CONVENIADA
+                        endereco, // EMPRESA ENDERECO
+                        pe_empresa.getPessoa().getTelefone1(), // EMPRESA TELEFONE
+                        entry.getValue(),//str_servicos, // SERVICOS
+                        guia.getLote().getEmissao(), // EMISSAO
+                        entry.getKey(),//str_validade, // VALIDADE
+                        str_usuario, // USUARIO
+                        str_nome,
+                        socios.getParentesco().getParentesco(),
+                        (socios.getMatriculaSocios().getId() == -1) ? "" : String.valueOf(socios.getMatriculaSocios().getId()),
+                        socios.getMatriculaSocios().getCategoria().getCategoria()
+                ));
+                
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                list_jasper.add(print);
+                
+                vetor.clear();
+            }
+                
+                    
+            JRPdfExporter exporter = new JRPdfExporter();
+            //ByteArrayOutputStream output = new ByteArrayOutputStream();
+            
+            exporter.setExporterInput(SimpleExporterInput.getInstance(list_jasper));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path+"/"+nameFile));
+            
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            
+            configuration.setCreatingBatchModeBookmarks(true);
+            
+            exporter.setConfiguration(configuration);
+            exporter.exportReport();
+
+            File flx = new File(path);
+            
+            if (flx.exists()){
+                Download download = new Download(
+                        nameFile,
+                        path,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance()
+                );
+                
+                download.baixar();
+                download.remover();
+            }            
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//
+//            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//            res.setContentType("application/pdf");
+//            res.setHeader("Content-disposition", "inline; filename=\"" + "Impressão de Encaminhamento" + ".pdf\"");
+//            res.getOutputStream().write(arquivo);
+//            res.getCharacterEncoding();
+//
+//            FacesContext.getCurrentInstance().responseComplete();
+        }catch(JRException e){
+            e.getMessage();
+        }
     }
 
     public String removerPesquisa() {
@@ -728,7 +908,8 @@ public class MovimentosReceberSocialJSFBean {
                         lista.get(i).get(24), // ARG 23 DOCUMENTO
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 24 VALOR CALCULADO ORIGINAL
                         disabled,
-                        lista.get(i).get(18), // ARG 26 ID_BAIXA
+                        //lista.get(i).get(18), // ARG 26 ID_BAIXA
+                        lista.get(i).get(23), // ARG 26 ID_BAIXA
                         lista.get(i).get(15), // ARG 27 ID_LOTE
                         (!descPesquisaBoleto.isEmpty() && descPesquisaBoleto.equals(lista.get(i).get(17))) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28
                         //(!descPesquisaBoleto.isEmpty() && descPesquisaBoleto == lista.get(i).get(17)) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28

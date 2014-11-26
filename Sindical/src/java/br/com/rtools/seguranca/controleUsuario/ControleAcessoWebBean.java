@@ -31,6 +31,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
+import br.com.rtools.sistema.ConfiguracaoCnpj;
 import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.AnaliseString;
@@ -334,10 +335,22 @@ public class ControleAcessoWebBean implements Serializable {
     public JuridicaReceita pesquisaNaReceitaWeb(String documentox) {
         PessoaDB db = new PessoaDBToplink();
         JuridicaReceita jr = db.pesquisaJuridicaReceita(documentox);
-
+        Dao dao = new Dao();
         if (jr.getId() == -1) {
             try {
-                URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero="+documentox+"&usuario=rogerio@rtools.com.br&senha=989899");
+                ConfiguracaoCnpj configuracaoCnpj = (ConfiguracaoCnpj) dao.find(new ConfiguracaoCnpj(), 1);
+                URL url = null;
+                if (configuracaoCnpj == null) {
+                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=rogerio@rtools.com.br&senha=989899");
+                } else {
+                    if (configuracaoCnpj.getEmail().isEmpty() || configuracaoCnpj.getSenha().isEmpty()) {
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=rogerio@rtools.com.br&senha=989899");
+                    } else {
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
+                    }
+                }                
+                
+                //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero="+documentox+"&usuario=rogerio@rtools.com.br&senha=989899");
                 //URL url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=00000000000191&usuario=teste@wooki.com.br&senha=teste");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");

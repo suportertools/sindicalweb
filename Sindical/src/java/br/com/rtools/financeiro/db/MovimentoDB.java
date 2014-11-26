@@ -118,7 +118,7 @@ public interface MovimentoDB {
 
     public List pesquisaGuia(String campo, String valor);
 
-    public List pesquisaGuia(Guia guia);
+    public List<Movimento> pesquisaGuia(Guia guia);
 
     public List<Movimento> pesquisaAcordoAberto(int idAcordo);
 
@@ -177,4 +177,6 @@ public interface MovimentoDB {
     public List<Movimento> pesquisaMovimentoCadastrado(String documento);
     
     public List<Impressao> listaImpressao(int id_movimento);
+    
+    public List<Movimento> listaMovimentoBeneficiarioServicoPeriodoAtivo(int id_beneficiario, int id_servico, int periodo_dias, boolean socio);
 }

@@ -36,4 +36,6 @@ public interface OposicaoDB {
     public List<Cnae> listaCnaesPorOposicaoJuridica(String inIdsCnaeConvencao);
 
     public boolean existPessoaDocumentoPeriodo(String cpf);
+    
+    public List<Oposicao> listaOposicaoEmpresaID(int id_juridica);
 }

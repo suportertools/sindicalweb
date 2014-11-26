@@ -207,6 +207,12 @@
                                         <p:commandButton icon="ui-icon-print"  title="Imprimir este Recibo"/>
                                     </h:commandLink>
                                 </p:column>
+                                
+                                <p:column style="text-align: center;" headerText="Enc.">
+                                    <h:commandLink target="_blank" action="#{movimentosSocialBean.encaminhamento(linha.argumento27)}" rendered="#{movimentosSocialBean.pesquisaGuia(linha.argumento27).encaminhamento == true}" title="Imprimir este Encaminhamento">
+                                        <p:commandButton icon="ui-icon-print"  title="Imprimir este Encaminhamento"/>
+                                    </h:commandLink>
+                                </p:column>
                             </p:dataTable>      
                             
                             <p:dialog widgetVar="i_dlg_estorno" header="Deseja estornar este Movimento" resizable="false" width="400" modal="true">

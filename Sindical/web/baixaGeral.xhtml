@@ -147,7 +147,7 @@
                                 <p:commandButton value="Salvar Baixa" title="Baixar todos os valores da grid" action="#{baixaGeralBean.baixar}" oncomplete="PF('i_dlg_s').show()" update="i_mensagem"/>
                             </h:panelGrid>
 
-                            <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true">
+                            <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true" closable="false">
                                 <h:panelGrid id="i_mensagem" style="width: 100%">
                                     <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
 

@@ -35,27 +35,19 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -187,14 +179,19 @@ public class WebREPISBean implements Serializable {
         listRepisMovimentoPatronalSelecionado.clear();
         Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
         
-        if (tipoPesquisa.equals("tipo")){
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, listaTipoCertidao.get(indexCertidaoTipo).getDescription(), patro.getId(), valueLenght);
-        }else if (tipoPesquisa.equals("status")){
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa,  listaStatus.get(indexStatus).getDescription(), patro.getId(), valueLenght);
-        }else if (tipoPesquisa.equals("cidade")){
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa,  listaCidade.get(indexCidade).getDescription(), patro.getId(), valueLenght);
-        }else{
-            listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId(), valueLenght);
+        switch (tipoPesquisa) {
+            case "tipo":
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("tipo", getListaTipoCertidao().get(indexCertidaoTipo).getDescription(), patro.getId(), valueLenght);
+                break;
+            case "status":
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("status",  getListaStatus().get(indexStatus).getDescription(), patro.getId(), valueLenght);
+                break;
+            case "cidade":
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("cidade",  getListaCidade().get(indexCidade).getDescription(), patro.getId(), valueLenght);
+                break;
+            default:
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId(), valueLenght);
+                break;
         }
     }
 
@@ -486,7 +483,7 @@ public class WebREPISBean implements Serializable {
 
                         vetor.add(
                                 new ParametroCertificado(
-                                        repis.getPessoa().getNome(),
+                                        repis.getPatronal().getPessoa().getNome(),
                                         logoCaminho,
                                         repis.getPatronal().getBaseTerritorial(),
                                         sindicato.getPessoa().getNome(),
@@ -497,7 +494,7 @@ public class WebREPISBean implements Serializable {
                                         piso.getDescricao(),
                                         valor,
                                         (certidaoMensagem != null) ? certidaoMensagem.getMensagem() : piso.getPisoSalarialLote().getMensagem(),
-                                        data_validade,//piso.getPisoSalarialLote().getDtValidade(),
+                                        DataHoje.dataExtenso(DataHoje.converteData(data_validade), 3),//piso.getPisoSalarialLote().getDtValidade(),
                                         sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
                                         piso.getPisoSalarialLote().getAno(),
                                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
@@ -531,7 +528,7 @@ public class WebREPISBean implements Serializable {
             }
             
             JRPdfExporter exporter = new JRPdfExporter();
-            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+            //ByteArrayOutputStream retorno = new ByteArrayOutputStream();
             String nomeDownload = "certificado_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
             

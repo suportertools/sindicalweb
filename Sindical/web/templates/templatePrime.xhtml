@@ -22,7 +22,7 @@
     <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
     <f:view>
         <h:outputScript name="tradutor_primefaces.js" library="js" /> 
-        <h:form id="form_logo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
+        <h:form id="form_logo_upload" enctype="multipart/form-data" acceptcharset="UTF-8" style="">
             <p:dialog id="i_dlg_logo" widgetVar="dlg_logo" modal="true"  header="Anexar logo" closable="true">
                 <p:fileUpload label="Procurar"
                               cancelLabel="Cancelar"
@@ -41,7 +41,7 @@
             <p:panel style="border: 0; width: 1024px">                
                 <h:graphicImage id="i_logo_update" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left; cursor: pointer; border: 2px dashed gray;" onclick="PF('dlg_logo').show();" title="Alterar imagem" alt="Pesquisar uma imagem" rendered="#{configuracaoBean.usuario.id == 1}"/>
                 <h:graphicImage id="i_logo" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left" rendered="#{configuracaoBean.usuario.id != 1}"/>
-                <br /><br />
+                
                 <p:panel style="float: right; border: 0px; top:0px">
                     <h:outputLabel value="Bem vindo " style="float: left; font-size: 10pt; margin-left: 50px"/>
                     <h:outputLabel value="#{controleUsuarioBean.login}" style="float: left; margin-left: 5px; font-size: 10pt; font-weight: bold;"/>
@@ -51,7 +51,7 @@
                 </p:panel>
                 <h:column rendered="true">
                     <div class="clear"></div>
-                    <p:breadCrumb style="background: #dbeaeb; border: none; margin-top: 15px">
+                    <p:breadCrumb style="background: #dbeaeb; margin-top: 0px">
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" title="Ir ao Menu Principal" immediate="true" ajax="false"/>
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" style="font-weight: bold;" title="Ir ao Menu Principal" immediate="true" ajax="false"/>
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render1}" ajax="false"/>
@@ -64,13 +64,7 @@
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render8}" ajax="false"/>
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render9}" ajax="false"/>
                     </p:breadCrumb>
-                    <h:column rendered="#{controleUsuarioBean.usuarioSuporteTecnico != null}">
-                        <a href="http://www.rtools.com.br/helpdesk/ticket.php?cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Acompanhar seu Chamado Técnico">Acompanhar</a>
-                    </h:column>
-                    <h:column rendered="#{controleUsuarioBean.usuarioSuporteTecnico != null}">
-                        <a href="http://www.rtools.com.br/helpdesk/index.php?a=add&amp;cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Faça Seu Chamado Técnico">Suporte Técnico</a>
-                    </h:column>
-                    <h:commandLink value="Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
+                    <h:commandLink value="Ver meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
                 </h:column>
                 <h:column rendered="false">
                     <div class="clear"></div>

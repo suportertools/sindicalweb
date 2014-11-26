@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.beans;
 
+import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.db.AcordoComissaoDB;
 import br.com.rtools.arrecadacao.db.AcordoComissaoDBToplink;
 import br.com.rtools.impressao.ParametroAcordoAnalitico;
@@ -35,12 +36,13 @@ public class FechamentoComissaoAcordoBean {
 
     private List<SelectItem> listaData;
     private int idDataFechamento;
-    //private String mensagem;
-
+    private Acordo acordo;
+    
     @PostConstruct
     public void init() {
-        listaData = new ArrayList<SelectItem>();
+        listaData = new ArrayList();
         idDataFechamento = 0;
+        acordo = new Acordo();
         // mensagem = "";
     }
 
@@ -189,4 +191,12 @@ public class FechamentoComissaoAcordoBean {
 //    public void setMensagem(String mensagem) {
 //        this.mensagem = mensagem;
 //    }
+
+    public Acordo getAcordo() {
+        return acordo;
+    }
+
+    public void setAcordo(Acordo acordo) {
+        this.acordo = acordo;
+    }
 }

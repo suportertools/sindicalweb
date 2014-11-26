@@ -57,6 +57,8 @@ public class Servicos implements java.io.Serializable {
     private int quantidadePeriodo;
     @Column(name = "is_familiar_periodo", nullable = false, columnDefinition = "boolean default false")
     private boolean familiarPeriodo;
+    @Column(name = "is_valor_zerado", nullable = false, columnDefinition = "boolean default false")
+    private boolean valorZerado;
 
     public Servicos() {
         this.id = -1;
@@ -79,6 +81,7 @@ public class Servicos implements java.io.Serializable {
         this.periodo = new Periodo();
         this.quantidadePeriodo = 0;
         this.familiarPeriodo = false;
+        this.valorZerado = false;
     }
 
     public Servicos(int id,
@@ -100,7 +103,8 @@ public class Servicos implements java.io.Serializable {
             boolean valorFixo,
             Periodo periodo,
             int quantidadePeriodo,
-            boolean familiarPeriodo) {
+            boolean familiarPeriodo,
+            boolean valorZerado) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -121,6 +125,7 @@ public class Servicos implements java.io.Serializable {
         this.periodo = periodo;
         this.quantidadePeriodo = quantidadePeriodo;
         this.familiarPeriodo = familiarPeriodo;
+        this.valorZerado = valorZerado;
     }
 
     public int getId() {
@@ -286,5 +291,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setFamiliarPeriodo(boolean familiarPeriodo) {
         this.familiarPeriodo = familiarPeriodo;
+    }
+
+    public boolean isValorZerado() {
+        return valorZerado;
+    }
+
+    public void setValorZerado(boolean valorZerado) {
+        this.valorZerado = valorZerado;
     }
 }

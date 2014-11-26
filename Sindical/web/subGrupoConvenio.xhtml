@@ -21,19 +21,28 @@
                     <p:growl id="growl" showDetail="true"/> 
                     <c:set scope="request" var="object" value="${subGrupoConvenioBean.subGrupoConvenio}"/>  
                     <p:panel>
-                        <p:panelGrid id="id_panel_grid_novo" columns="6" styleClass="margin-top sbb">
-                            <p:outputLabel value="Grupo: " for="idSGrupo"/>
-                            <h:selectOneMenu id="idSGrupo" value="#{subGrupoConvenioBean.idGrupoConvenio}">
-                                <p:ajax event="change" update="@this" />
-                                <f:selectItem itemValue="" itemLabel="Selecionar" itemDisabled="true" />
-                                <f:selectItems value="#{subGrupoConvenioBean.listGrupoConvenio}" />
-                            </h:selectOneMenu>
-                            <p:outputLabel value="Descrição: " for="idSubgrupo"/>
-                            <p:inputText id="idSubgrupo" value="#{subGrupoConvenioBean.subGrupoConvenio.descricao}" size="50" maxlength="50" placeholder="Descrição"/>
-                            <h:column>
-                                <p:commandButton value="Salvar" action="#{subGrupoConvenioBean.add()}" update="growl id_subgrupos :form_subgrupo_convenio:id_subgrupos_filtro" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                                <p:commandButton value="Novo" action="#{subGrupoConvenioBean.novo()}" update="id_panel_grid_novo"  styleClass="margin-left-max"/>                        
-                            </h:column>
+                        <p:panelGrid id="id_panel_grid_novo" columns="1" styleClass="margin-top sbb">
+                            <h:panelGrid columns="6">
+                                <p:outputLabel value="Grupo: " for="idSGrupo"/>
+                                <h:selectOneMenu id="idSGrupo" value="#{subGrupoConvenioBean.idGrupoConvenio}">
+                                    <p:ajax event="change" update="@this" />
+                                    <f:selectItem itemValue="" itemLabel="Selecionar" itemDisabled="true" />
+                                    <f:selectItems value="#{subGrupoConvenioBean.listGrupoConvenio}" />
+                                </h:selectOneMenu>
+                                <p:outputLabel value="Descrição: " for="idSubgrupo"/>
+                                <p:inputText id="idSubgrupo" value="#{subGrupoConvenioBean.subGrupoConvenio.descricao}" size="50" maxlength="50" placeholder="Descrição"/>
+                                <h:column>
+                                    <p:commandButton value="Salvar" action="#{subGrupoConvenioBean.add()}" update="growl id_subgrupos :form_subgrupo_convenio:id_subgrupos_filtro" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton value="Novo" action="#{subGrupoConvenioBean.novo()}" update="id_panel_grid_novo"  styleClass="margin-left-max"/>                        
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1" style="width: 100%">
+                                <p:outputLabel value="Observação: " style="clear: both"/>
+                                <p:inputTextarea style="width: 100%" rows="2" value="#{subGrupoConvenioBean.subGrupoConvenio.observacao}">
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputTextarea>
+                            </h:panelGrid>
                         </p:panelGrid>
                     </p:panel>
                     <p:panel id="id_subgrupos" style="margin-top: 15px;">

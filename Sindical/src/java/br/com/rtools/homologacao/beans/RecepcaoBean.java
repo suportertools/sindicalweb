@@ -1124,6 +1124,7 @@ public class RecepcaoBean implements Serializable {
             
             if (senha != null && senha.getId() != -1){
                 senhaString = ((Integer) senha.getSenha()).toString();
+                senhaString = (senhaString.length() == 1) ? "0"+senhaString : senhaString;
             }
             
             if (!isOposicao) {

@@ -276,7 +276,7 @@ public class BaixaGeralBean {
                 Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return null;
+        return retorno();
     }
 
     public String retorno() {
@@ -284,7 +284,9 @@ public class BaixaGeralBean {
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
                 GenericaSessao.put("linkClicado", true);
-                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
+                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
+                //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
+                return "baixaBoleto";
             } else if (url.equals("movimentosReceberSocial")) {
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
                 GenericaSessao.put("linkClicado", true);

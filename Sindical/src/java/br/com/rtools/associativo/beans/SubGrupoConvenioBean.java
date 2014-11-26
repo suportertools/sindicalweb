@@ -296,7 +296,7 @@ public class SubGrupoConvenioBean implements Serializable {
     }
 
     public List<SelectItem> getListSubGrupoConvenio() {
-        if (listSubGrupoConvenio.isEmpty()) {
+        if (listSubGrupoConvenio.isEmpty() && !listGrupoConvenio.isEmpty()) {
             SubGrupoConvenioDB subGrupoConvenioDB = new SubGrupoConvenioDBToplink();
             List<SubGrupoConvenio> list = subGrupoConvenioDB.listaSubGrupoConvenioPorGrupo(Integer.parseInt(listGrupoConvenio.get(idGrupoConvenioFiltro).getDescription()));
             for (int i = 0; i < list.size(); i++) {
