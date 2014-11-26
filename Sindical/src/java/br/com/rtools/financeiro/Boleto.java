@@ -18,7 +18,7 @@ public class Boleto implements java.io.Serializable {
     private long nrBoleto;
     @Column(name = "ds_boleto", length = 50)
     private String boletoComposto;
-    @Column(name = "nr_ctr_boleto", length = 20)
+    @Column(name = "nr_ctr_boleto", length = 30)
     private String nrCtrBoleto;
     @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
