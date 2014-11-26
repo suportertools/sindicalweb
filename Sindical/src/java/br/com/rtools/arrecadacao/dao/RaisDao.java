@@ -203,7 +203,8 @@ public class RaisDao extends DB {
                     + " C_bairro.ds_descricao               AS escritorio_bairro,       " // 8
                     + " C_cidade.ds_cidade                  AS escritorio_cidade,       " // 9
                     + " C_cidade.ds_uf                      AS escritorio_uf,           " // 10
-                    + " C_endereco.ds_cep                   AS escritorio_cep           ";// 11
+                    + " C_endereco.ds_cep                   AS escritorio_cep           " // 11
+                    + " PEC.ds_numero                       AS escritorio_numero        "; //12
 
             queryGroup = " GROUP BY C_pessoa.ds_nome,                   "
                     + "             C_pessoa.ds_telefone1,              "
