@@ -214,27 +214,27 @@ public class RelatorioRaisBean implements Serializable {
             }
             if (sisPessoa.getId() != -1) {
                 idSisPessoa = sisPessoa.getId();
-                listDetalhePesquisa.add(" Pessoa CPF: " + sisPessoa.getDocumento() + " - " + sisPessoa.getNome());
+                listDetalhePesquisa.add(" CPF: " + sisPessoa.getDocumento() + " - " + sisPessoa.getNome());
             }
             if (empresa.getId() != -1) {
                 idEmpresa = empresa.getId();
-                listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + ". CNPJ: " + empresa.getPessoa().getDocumento() + " - " + empresa.getPessoa().getNome());
+                listDetalhePesquisa.add(" Empresa por " + porPesquisa + ". CNPJ: " + empresa.getPessoa().getDocumento() + " - " + empresa.getPessoa().getNome());
             } else {
                 if (filtro[2]) {
                     idEmpresa = -1;
-                    listDetalhePesquisa.add(" Pessoa Empresa por " + porPesquisa + ". Todas.");
+                    listDetalhePesquisa.add(" Empresa por " + porPesquisa + ". Todas.");
                 }
             }
             boolean escritorios = false;
             if (escritorio.getId() != -1) {
                 idEscritorio = escritorio.getId();
                 escritorios = true;
-                listDetalhePesquisa.add(" Pessoa Escritório por " + porPesquisa + ". CNPJ: " + escritorio.getPessoa().getDocumento() + " - " + escritorio.getPessoa().getNome());
+                listDetalhePesquisa.add(" Escritório por " + porPesquisa + ". CNPJ: " + escritorio.getPessoa().getDocumento() + " - " + escritorio.getPessoa().getNome());
             } else {
                 if (filtro[11]) {
                     escritorios = true;
                     idEscritorio = -1;
-                    listDetalhePesquisa.add(" Pessoa Escritório por " + porPesquisa + ". Todos.");
+                    listDetalhePesquisa.add(" Escritório por " + porPesquisa + ". Todos.");
                 }
             }
             String orderString = "";
