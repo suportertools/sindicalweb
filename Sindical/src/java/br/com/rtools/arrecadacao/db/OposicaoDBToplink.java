@@ -365,4 +365,24 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         List list = query.getResultList();
         return !list.isEmpty();
     }
+    
+    public List<Oposicao> listaOposicaoEmpresaID(int id_juridica) {
+        String dataReferencia = DataHoje.DataToArray(DataHoje.dataHoje())[2] + DataHoje.DataToArray(DataHoje.dataHoje())[1];
+        String queryString = ""
+                + "     SELECT O.*                                                                                  "
+                + "       FROM arr_oposicao AS O                                                                    "
+                + " INNER JOIN arr_convencao_periodo AS CP ON CP.id = O.id_convencao_periodo                        "
+                + " INNER JOIN arr_oposicao_pessoa AS OP ON OP.id = O.id_oposicao_pessoa                            "
+                + "      WHERE ('" + dataReferencia + "' >= CAST(SUBSTRING(CP.ds_referencia_inicial,4,4) || SUBSTRING(CP.ds_referencia_inicial,1,2)  AS int) "
+                + "        AND '" + dataReferencia + "' <= CAST(SUBSTRING(CP.ds_referencia_final,4,4) || SUBSTRING(CP.ds_referencia_final  ,1,2) AS int))    "
+                + "        AND O.id_juridica = " + id_juridica;
+        List<Oposicao> list = new ArrayList();
+        try{
+            Query query = getEntityManager().createNativeQuery(queryString, Oposicao.class);
+            list = query.getResultList();
+            return list;
+        }catch(Exception w){
+            return list;
+        }
+    }
 }

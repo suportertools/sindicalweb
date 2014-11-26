@@ -47,7 +47,7 @@ public class ImpressaoParaSocios {
         File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
         File listFile[] = files.listFiles();
         List<ModeloCarteirinha> listaModelo = new SalvarAcumuladoDBToplink().listaObjeto("ModeloCarteirinha");
-        Map<Integer, List> hash = new HashMap<Integer, List>();
+        Map<Integer, List> hash = new HashMap();
 
         for (int i = 0; i < listaCartao.size(); i++) {
             String imagem = "semFoto.jpg";

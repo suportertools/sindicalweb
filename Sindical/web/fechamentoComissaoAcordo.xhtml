@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Fechamento Comissão</title>
+        <title>Sindical - Fechamento Comissão</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
@@ -28,24 +28,24 @@
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Fechamento Comissão" styleClass="fonteHeader" />
-                        <div class="clear"></div>
                         <h:form id="form_fechamento_acordo">
+                            <c:set scope="request" var="object" value="${fechamentoComissaoAcordoBean.acordo}"/>
                             <ui:include src="templates/templateStatus.xhtml"/>
                             <p:messages showDetail="true" showSummary="true" autoUpdate="true" />
-                            <p:panel styleClass="fundoCinza margin-top-max">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
                                 <f:facet name="header">
                                     <p:outputLabel value="Selecione a data de fechamento"/>
                                 </f:facet>
-                                <p:selectOneMenu  id="cbDataFechamento" value="#{fechamentoComissaoAcordoBean.idDataFechamento}" style="width: 150px">
+                                <p:selectOneMenu value="#{fechamentoComissaoAcordoBean.idDataFechamento}" style="width: 150px">
                                     <f:selectItems value="#{fechamentoComissaoAcordoBean.listaData}" />
                                 </p:selectOneMenu>                          
                                 <f:facet name="footer">
                                     <h:panelGrid columns="3">
-                                        <p:commandButton value="Processar" action="#{fechamentoComissaoAcordoBean.processar}" update=":form_fechamento_acordo:" oncomplete="PF('dlg_message').show()" />
+                                        <p:commandButton value="Processar" action="#{fechamentoComissaoAcordoBean.processar}" update=":form_fechamento_acordo:" oncomplete="PF('dlg_message').show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                         <h:commandLink action="#{fechamentoComissaoAcordoBean.visualizar}">
                                             <p:button value="Visualizar" icon="ui-icon-print"/>
                                         </h:commandLink>
-                                        <p:commandButton value="Estornar" action="#{fechamentoComissaoAcordoBean.estornar}" update=":form_fechamento_acordo:" oncomplete="PF('dlg_message').show()" />
+                                        <p:commandButton value="Estornar" action="#{fechamentoComissaoAcordoBean.estornar}" update=":form_fechamento_acordo:" oncomplete="PF('dlg_message').show()" disabled="#{controleAcessoBean.botaoExcluir}"/>
                                     </h:panelGrid>
                                 </f:facet>
                             </p:panel>

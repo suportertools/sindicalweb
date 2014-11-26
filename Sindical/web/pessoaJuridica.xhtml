@@ -13,6 +13,10 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
+            
+            .class_tbl_contabil:hover {
+                background: #9eb4cf!important;
+            }
         </style>
 
         <script type="text/javascript">
@@ -84,9 +88,10 @@
                                                 <h:outputLabel id="idStrGrupoCidade" value="#{juridicaBean.strGrupoCidade}" style="font-size: 12pt!important"/>
                                             </p:column>
                                             
-                                            <p:column rendered="#{juridicaBean.pessoaOposicao}">
+                                            <p:column rendered="#{juridicaBean.listaOposicao.size() > 0}">
                                                 <br />
-                                                <h:commandLink action="#{chamadaPaginaBean.pesquisa('pesquisaOposicao')}" value="Empresa com carta de oposição cadastrada" actionListener="#{juridicaBean.listenerPessoaJuridia}" style="margin-left: 100px;" styleClass="font-color-red bold"/>
+                                                <p:commandLink action="#{chamadaPaginaBean.pesquisa('pesquisaOposicao')}" value="Empresa com #{juridicaBean.listaOposicao.size()} carta de oposição cadastrada" actionListener="#{juridicaBean.listenerPessoaJuridia}" style="margin-left: 100px;" styleClass="font-color-red bold" rendered="#{juridicaBean.listaOposicao.size() == 1}"/>
+                                                <p:commandLink action="#{chamadaPaginaBean.pesquisa('pesquisaOposicao')}" value="Empresa com #{juridicaBean.listaOposicao.size()} cartas de oposição cadastrada" actionListener="#{juridicaBean.listenerPessoaJuridia}" style="margin-left: 100px;" styleClass="font-color-red bold" rendered="#{juridicaBean.listaOposicao.size() > 1}"/>
                                             </p:column>
 
                                             <p:column rendered="#{juridicaBean.strArquivo != ''}">
@@ -275,15 +280,19 @@
                                     </p:tab>
 
                                     <p:tab title="Serviço Contabil" disabled="#{juridicaBean.listaEmpresasPertencentes.size() == 0}">
-                                        <p:dataTable value="#{juridicaBean.listaEmpresasPertencentes}" var="linha" emptyMessage="Nenhum serviço contábil encontrado.">
+                                        <p:dataTable value="#{juridicaBean.listaEmpresasPertencentes}" var="linha" emptyMessage="Nenhum serviço contábil encontrado." rowStyleClass="class_tbl_contabil">
                                             <p:column headerText="CNPJ - Nome">
                                                 <h:commandLink value="#{linha.argumento0.pessoa.documento} - #{linha.argumento0.pessoa.nome}" action="#{juridicaBean.editarEmpresaPertencente(linha)}">
 
                                                 </h:commandLink>
                                             </p:column>
 
-                                            <p:column headerText="Cidade / UF">
+                                            <p:column headerText="Cidade / UF" width="250" style="text-align: center">
                                                 <h:outputText value="#{linha.argumento1.endereco.cidade.cidade} - #{linha.argumento1.endereco.cidade.uf}"/>
+                                            </p:column>
+                                            
+                                            <p:column headerText="" width="100" style="text-align: center">
+                                                <p:commandLink value="Ver Extrato" action="#{juridicaBean.extratoTelaListaContabil(linha.argumento0)}" style="color: red"/>
                                             </p:column>
                                         </p:dataTable>
                                     </p:tab>

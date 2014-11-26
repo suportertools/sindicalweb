@@ -1663,14 +1663,14 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     }
 
     @Override
-    public List pesquisaGuia(Guia guia) {
-        List result = null;
+    public List<Movimento> pesquisaGuia(Guia guia) {
+        List<Movimento> result;
         try {
             String textoQuery
                     = "  select m"
                     + "  from Movimento m"
                     + " where m.lote.id = :pid"
-                    + "   and m.ativo = 1";
+                    + "   and m.ativo = 1 order by m.servicos.validade";
             Query qry = getEntityManager().createQuery(textoQuery);
             qry.setParameter("pid", guia.getLote().getId());
             result = qry.getResultList();
@@ -2233,6 +2233,34 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 " ORDER BY i.dtImpressao, i.dtVencimento DESC";
         try {
             Query qry = getEntityManager().createQuery(text_qry);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Movimento> listaMovimentoBeneficiarioServicoPeriodoAtivo(int id_beneficiario, int id_servico, int periodo_dias, boolean socio) {
+        // LISTA TODOS MOVIMENTOS ATIVOS EM QUE O BENEFICIÁRIO id_beneficiario E A DATA ESTEJA ENTRE OS ULTIMOS periodo_dias
+        String where = "";
+        
+        if (socio)
+            where = " WHERE m.id_matricula_socios = " + id_beneficiario;
+        else
+            where = " WHERE m.id_beneficiario = " + id_beneficiario;
+        
+        String text_qry = 
+                "SELECT m.* " +
+                "  FROM fin_movimento m " +
+                " INNER JOIN fin_lote l ON l.id = m.id_lote " +
+                where +
+                "   AND m.is_ativo = true " +
+                "   AND m.id_servicos = " + id_servico +
+                "   AND (l.dt_emissao >= current_date - "+periodo_dias+" AND l.dt_emissao <= current_date) " +
+                "   ";
+        try {
+            Query qry = getEntityManager().createNativeQuery(text_qry, Movimento.class);
             
             return qry.getResultList();
         } catch (Exception e) {

@@ -152,6 +152,7 @@ public class BaixaBoletoBean {
             msgConfirma = "Lista vazia";
             return null;
         }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
     }
 

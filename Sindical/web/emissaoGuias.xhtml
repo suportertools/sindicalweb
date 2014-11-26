@@ -28,7 +28,7 @@
                             <p:panel header="Beneficiário" styleClass="margin-top-max">
                                 <h:panelGrid columns="4">
                                     <p:outputLabel value="Nome: " />
-                                    <p:inputText id="nomeBene" size="100" value="#{emissaoGuiasBean.pessoa.nome}" readonly="true" />
+                                    <p:inputText id="nomeBene" size="80" value="#{emissaoGuiasBean.pessoa.nome}" readonly="true" />
                                     <p:commandButton value="Pesquisar" onclick="PF('dlg_tipo_pessoa').show()" icon="ui-icon-search" rendered="#{emissaoGuiasBean.lote.id == -1}" />
                                     <p:commandButton value="Nova Pessoa - Cadastrar" actionListener="#{emissaoGuiasBean.clear(3)}" oncomplete="PF('dlg_cadastro').show()" rendered="#{emissaoGuiasBean.pessoa.id == -1}" icon="ui-icon-circle-plus" style="margin-left: 70px!important"/>
                                 </h:panelGrid>
@@ -75,7 +75,9 @@
                                 </h:panelGrid>
                                 <h:panelGrid columns="1">
                                     <h:outputText value="Observação" />
-                                    <p:inputTextarea value="#{emissaoGuiasBean.lote.historico}" cols="120"/>
+                                    <p:inputTextarea value="#{emissaoGuiasBean.lote.historico}" cols="120">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputTextarea>
                                 </h:panelGrid>
                                 <h:panelGrid id="i_tbl_eg" styleClass="margin-top-max">
                                     <p:dataTable var="listMovimentoEmissaoGuias" value="#{emissaoGuiasBean.listaMovimento}" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="150">
@@ -98,7 +100,7 @@
                                             #{listMovimentoEmissaoGuias.total}
                                         </p:column>
                                         <p:column width="25" styleClass="text-center">
-                                            <p:commandButton icon="ui-icon-close" action="#{emissaoGuiasBean.removeServico(listMovimentoEmissaoGuias)}"/>
+                                            <p:commandButton icon="ui-icon-close" action="#{emissaoGuiasBean.removeServico(listMovimentoEmissaoGuias)}" rendered="#{emissaoGuiasBean.lote.id == -1}"/>
                                         </p:column>                                    
                                         <f:facet name="footer">
                                             <p:outputLabel value="Total (R$): " />

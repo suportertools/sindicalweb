@@ -57,7 +57,7 @@
                                         <f:selectItems value="#{webREPISBean.listaCidade}" />
                                     </p:selectOneMenu>                                    
                                     <p:selectOneMenu value="#{webREPISBean.tipoPesquisa}" style="padding-right: 15px;">
-                                        <p:ajax event="change" update="@this, :form_libera_repis:" />
+                                        <p:ajax event="change" update="@this :form_libera_repis:" listener="#{webREPISBean.pesquisar()}"/>
                                         <f:selectItem itemLabel="Nome" itemValue="nome"/>
                                         <f:selectItem itemLabel="CNPJ" itemValue="cnpj"/>
                                         <f:selectItem itemLabel="Protocolo" itemValue="protocolo"/>

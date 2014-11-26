@@ -417,9 +417,9 @@ public class ChamadaPaginaBean implements Serializable {
         //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("baixaGeralBean")){
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("baixaGeralBean");
         //}
-        if (urlAtual.equals("baixaBoleto")) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", true);
-        }
+//        if (urlAtual.equals("baixaBoleto")) {
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", true);
+//        }
         return metodoGenerico(2, "baixaGeral");
     }
 

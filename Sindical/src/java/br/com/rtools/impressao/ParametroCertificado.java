@@ -16,7 +16,7 @@ public class ParametroCertificado {
     private String descPisoSal;
     private BigDecimal valorPisoSal;
     private String mensagem;
-    private Date validade;
+    private String validade;
     private String sinCidade;
     private int ano;
     private String patLogoSelo;
@@ -29,7 +29,7 @@ public class ParametroCertificado {
     private String imagemFundo;
 
     public ParametroCertificado(String patNome, String patLogo, String patBaseTerr, String sinNome, String sinLogo, String empNome, String empDoc, String empPorte, String descPisoSal, BigDecimal valorPisoSal, String mensagem,
-            Date validade, String sinCidade, int ano, String patLogoSelo, String patLogoFundo, String certificado, String barras, String emissao, String empEndereco, String periodoConvencao, String imagemFundo) {
+            String validade, String sinCidade, int ano, String patLogoSelo, String patLogoFundo, String certificado, String barras, String emissao, String empEndereco, String periodoConvencao, String imagemFundo) {
         this.patNome = patNome;
         this.patLogo = patLogo;
         this.patBaseTerr = patBaseTerr;
@@ -143,11 +143,11 @@ public class ParametroCertificado {
         this.mensagem = mensagem;
     }
 
-    public Date getValidade() {
+    public String getValidade() {
         return validade;
     }
 
-    public void setValidade(Date validade) {
+    public void setValidade(String validade) {
         this.validade = validade;
     }
 

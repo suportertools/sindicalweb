@@ -892,7 +892,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         try {
             
 
-            String inner = "", and = "", order = " ORDER BY s.nr_senha, s.dt_data ";
+            String inner = "", and = "", order = " ORDER BY s.nr_senha desc, s.dt_data ";
             
             if (id_status != 0){
                 and += " AND a.id_status = "+ id_status;

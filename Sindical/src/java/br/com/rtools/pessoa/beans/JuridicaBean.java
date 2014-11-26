@@ -107,7 +107,7 @@ public class JuridicaBean implements Serializable {
     private boolean habServContabil = true;
     private boolean carregaEnvios = false;
     private boolean renderAtivoInativo = false;
-    private boolean pessoaOposicao = false;
+    private List<Oposicao> listaOposicao = new ArrayList();
     private boolean somenteAtivas = false;
     private boolean somenteContabilidades = false;
 //    private boolean chkEndContabilidade = true;
@@ -937,9 +937,13 @@ public class JuridicaBean implements Serializable {
         listaContribuintesInativos.clear();
         listaEmpresasPertencentes.clear();
         contribuintesInativos = new ContribuintesInativos();
+        
         if (juridica.getContabilidade() != null) {
             nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
+        }else{
+            nomeContabilidade = "";
         }
+        
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -1901,6 +1905,11 @@ public class JuridicaBean implements Serializable {
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
     }
 
+    public String extratoTelaListaContabil(Juridica j) {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", j.getPessoa());
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
+    }
+
     public String retornaDaInativacao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return "pessoaJuridica";
@@ -2462,18 +2471,10 @@ public class JuridicaBean implements Serializable {
     public void existeOposicaoEmpresa() {
         if (juridica.getId() != -1) {
             OposicaoDBToplink odbt = new OposicaoDBToplink();
-            pessoaOposicao = odbt.existOposicaoEmpresa(juridica.getId());
+            listaOposicao = odbt.listaOposicaoEmpresaID(juridica.getId());
         } else {
-            pessoaOposicao = false;
+            listaOposicao = new ArrayList();
         }
-    }
-
-    public boolean isPessoaOposicao() {
-        return pessoaOposicao;
-    }
-
-    public void setPessoaOposicao(boolean pessoaOposicao) {
-        this.pessoaOposicao = pessoaOposicao;
     }
 
     public void listenerPessoaJuridia() {
@@ -2501,6 +2502,14 @@ public class JuridicaBean implements Serializable {
 
     public void setNomePesquisaContabilidade(String nomePesquisaContabilidade) {
         this.nomePesquisaContabilidade = nomePesquisaContabilidade;
+    }
+    
+    public List<Oposicao> getListaOposicao() {
+        return listaOposicao;
+    }
+
+    public void setListaOposicao(List<Oposicao> listaOposicao) {
+        this.listaOposicao = listaOposicao;
     }
 
     public boolean isSomenteAtivas() {

@@ -1,6 +1,5 @@
 package br.com.rtools.associativo.beans;
 
-import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.financeiro.CondicaoPagamento;
@@ -46,10 +45,10 @@ import javax.faces.model.SelectItem;
 public class LancamentoIndividualBean {
     private Fisica fisica = new Fisica();
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
-    private final List<SelectItem> listaServicos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaJuridica = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDiaVencimento = new ArrayList<SelectItem>();
-    private List<SelectItem> listaParcelas = new ArrayList<SelectItem>();
+    private final List<SelectItem> listaServicos = new ArrayList();
+    private List<SelectItem> listaJuridica = new ArrayList();
+    private List<SelectItem> listaDiaVencimento = new ArrayList();
+    private List<SelectItem> listaParcelas = new ArrayList();
     private int idServico = 0;
     private int idJuridica = 0;
     private int idDia = 1;
@@ -174,6 +173,11 @@ public class LancamentoIndividualBean {
             return null;
         }
         
+        if ((listaJuridica.get(idJuridica).getDescription().equals("0"))){
+            msgConfirma = "Empresa Conveniada não encontrada!";
+            return null;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
         // CODICAO DE PAGAMENTO
@@ -238,10 +242,11 @@ public class LancamentoIndividualBean {
             }
         }
         
+        Pessoa empresaConveniada = (listaJuridica.get(idJuridica).getDescription().equals("0")) ? null : ((Juridica) sv.pesquisaCodigo(Integer.valueOf(listaJuridica.get(idJuridica).getDescription()), "Juridica")).getPessoa();
         Guia guias = new Guia(
                 -1,
                 lote, 
-                responsavel, 
+                empresaConveniada, 
                 null, 
                 false
         );
