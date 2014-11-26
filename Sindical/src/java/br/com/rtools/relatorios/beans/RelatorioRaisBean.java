@@ -360,7 +360,8 @@ public class RelatorioRaisBean implements Serializable {
                                 AnaliseString.converteNullString(((List) list1).get(8)),
                                 AnaliseString.converteNullString(((List) list1).get(9)),
                                 AnaliseString.converteNullString(((List) list1).get(10)),
-                                AnaliseString.converteNullString(((List) list1).get(11))
+                                AnaliseString.converteNullString(((List) list1).get(11)),
+                                AnaliseString.converteNullString(((List) list1).get(12))
                         );
 
                     } else {
