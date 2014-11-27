@@ -85,7 +85,9 @@
                                         <p:outputLabel value="Ano Base: " />
                                         <h:column>
                                             <h:panelGrid columns="4">
-                                                <p:inputMask value="#{relatorioRaisBean.anoBase}" mask="9999" size="2" />
+                                                <p:inputMask value="#{relatorioRaisBean.anoBase}" mask="9999" size="2">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputMask>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioRaisBean.close('anoBase')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
