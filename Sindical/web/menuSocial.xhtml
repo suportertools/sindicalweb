@@ -101,8 +101,25 @@
                         </p:panel>
                         <!-- <p:menuitem value="Geração Mensal"         action="# {chamadaPaginaBean.contribuicaoSocio}" /> -->
                         <!-- <p:menuitem value="Geração Individual"     action="# {chamadaPaginaBean.contribuicaoPorSocio}" /> -->
-                        <p:panel style="border: 0px; width: 1024px; height: 350px; margin: 0 auto">
-
+                        <!-- TERMINAR MÉTODO DE ENVIO DE IMAGEM DO BOLETO / E VERSO -->
+                        <p:panel id="i_panel_lateral_esq" style="border: 0px; width: 1024px; height: 350px; margin: 0 auto" rendered="false">
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both;  margin-top: 10px">
+                                <center>
+                                    <h:panelGrid>
+                                        <p:commandLink style="font-weight: bold" value="Alterar imagem Boleto" actionListener="#{impressaoBoletoSocialBean.alterarPathImagem('frente')}" oncomplete="PF('dlg_upload').show();"/>
+                                    </h:panelGrid>
+                                </center>
+                                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/BannerPromoBoleto.png" width="200" /><br />
+                            </p:panel>
+                            
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; margin-top: 10px">
+                                <center>
+                                    <h:panelGrid>
+                                        <p:commandLink style="font-weight: bold" value="Alterar imagem VERSO do Boleto" actionListener="#{impressaoBoletoSocialBean.alterarPathImagem('verso')}" oncomplete="PF('dlg_upload').show();"/>
+                                    </h:panelGrid>
+                                </center>
+                                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoBoletoVersoSocial.png" width="200" /><br />
+                            </p:panel>
                         </p:panel>
                         <p:growl id="i_msg_t_g" showDetail="true" />  
                         <p:dialog widgetVar="i_dlg_t" header="Transferência entre Caixas" resizable="false" modal="true">
@@ -144,6 +161,19 @@
                                 </p:column>
                             </h:panelGrid>
                         </p:dialog>   
+                    </h:form>
+                    
+                    <h:form id="imagem_boleto_social" enctype="multipart/form-data" acceptcharset="UTF-8">
+                        <p:dialog id="i_dlg_anexo" widgetVar="dlg_upload" modal="true"  header="Alterar Imagem" >
+                            <p:fileUpload label="Procurar"
+                                          cancelLabel="Cancelar"
+                                          uploadLabel="Anexar"
+                                          mode="advanced"                                          
+                                          sizeLimit="204800"
+                                          update=":formMenuSocial:i_panel_lateral_esq"
+                                          fileUploadListener="#{uploadFilesBean.upload}"
+                                          oncomplete="PF('dlg_upload').hide()" />
+                        </p:dialog>
                     </h:form>
                 </f:view>
                 <!-- FINALIZA div wrap main -->

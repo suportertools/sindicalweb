@@ -509,9 +509,9 @@ public class ImprimirBoleto {
             arquivo = JasperExportManager.exportReportToPdf(print);
             pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
 
-        } catch (JRException erro) {
+        } catch (Exception e) {
             int x = i;
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage() + " " + mensagemErroMovimento);
+            System.err.println("O arquivo não foi gerado corretamente! Erro: " + e.getMessage() + " " + mensagemErroMovimento);
         }
         return arquivo;
     }

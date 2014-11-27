@@ -20,9 +20,11 @@ import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.impressao.ParametroBoletoSocial;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -38,6 +40,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -66,6 +69,35 @@ public class ImpressaoBoletoSocialBean {
     private String strLote = "";
     private String strData = "";
     
+    @PostConstruct
+    public void init(){
+        UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
+        GenericaSessao.put("uploadFilesBean", uploadFilesBean);
+    }
+    
+    public void alterarPathImagem(String path){
+        UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
+        GenericaSessao.put("uploadFilesBean", uploadFilesBean);
+    }
+    
+//    public String imagemBannerBoletoSocial(){
+//        File file_promo = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/BannerPromoBoleto.png"));
+//
+//        if (!file_promo.exists())
+//            return null;
+//        else
+//            return "Imagens/BannerPromoBoleto.png";
+//    } 
+//    
+//    public String imagemVersoBannerBoletoSocial(){
+//        File file_verso = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoBoletoVersoSocial.png"));
+//
+//        if (!file_verso.exists())
+//            return null;
+//        else
+//            return file_verso.getPath();
+//    } 
+//    
     public void filtrar(){
         listaGrid.clear();
     }
