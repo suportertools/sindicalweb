@@ -304,6 +304,7 @@
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{uploadFilesBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
                                 <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.imprimir()}" ajax="false" update="id_messages_growl"  />
+                                <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pesquisa('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(274)}"/>
                                 <h:column>
                                     <ui:include src="templates/templateStatusLoader.xhtml">
                                         <ui:param name="message" value="Enviando..." />
