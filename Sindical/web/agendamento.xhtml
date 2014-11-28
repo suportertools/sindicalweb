@@ -278,8 +278,8 @@
                             <p:panel styleClass="fundoCinza">
                                 <h:panelGrid columns="4">
                                     <h:column>
-                                        <h:outputLabel value="Profissão"/><br />
-                                        <p:commandButton value="Função" onclick="PF('dlg_profissao').show()" global="false"/>
+                                        <h:column /><br />
+                                        <p:commandButton value="Função" onclick="PF('dlg_profissao').show()" global="false" icon="ui-icon-search" styleClass="#{agendamentoBean.configuracaoHomologacao.validaFuncao ? 'font-color-red' : ''}"/>
                                     </h:column>
 
                                     <h:column>
@@ -457,7 +457,7 @@
                             </h:panelGrid>
                         </p:dialog>    
 
-                        <p:dialog widgetVar="dlg_profissao" header="Pesquisar Profissão" resizable="false" modal="true" width="480">
+                        <p:dialog widgetVar="dlg_profissao" header="Pesquisar Profissão" resizable="false" modal="true" height="550" width="900">
                             <h:panelGrid id="i_panel_profissao">
 
                                 <h:panelGrid columns="4">
