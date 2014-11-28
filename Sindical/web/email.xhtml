@@ -137,7 +137,7 @@
                                                                 <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
                                                                 <p:outputLabel value="Nome: #{emailPessoa.pessoa.nome}" />
                                                                 <p:outputLabel value="CC: #{emailPessoa.cc}" rendered="#{emailPessoa.cc.equals('')}" />
-                                                                <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" />
+                                                                <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" />                                                                
                                                             </p:rowExpansion>
                                                         </p:dataTable>                                            
                                                     </h:panelGrid>
@@ -194,6 +194,8 @@
                                         <p:outputLabel value="CC: #{emailPessoa.cc}" rendered="#{emailPessoa.cc.equals('')}" /><br />
                                         <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
                                         <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" /><br />
+                                        <div class="clear"></div>
+                                        <p:commandLink value="Mensagem" action="#{emailBean.showMensagem(emailPessoa.email.mensagem)}" oncomplete="PF('dlg_show_message').show()" update=":form_email:i_detalhes_msg"/>
                                     </p:rowExpansion>
                                     <f:facet name="footer">
                                         <h:outputText value="Quantidade exibida: #{emailBean.listEmailPessoas.size()} email(s)" /><br /><br />
@@ -223,6 +225,11 @@
                             </p:dialog>
                             <p:dialog widgetVar="dlg_status" width="400" modal="true" header="Destinatário" closable="true" resizable="false">
                                 <p:outputLabel value="Aguarde..." />
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_show_message" width="800" modal="true" header="Mensagem" closable="true" resizable="false" height="400" closeOnEscape="true">
+                                <h:panelGrid id="i_detalhes_msg">
+                                    <p:editor value="#{emailBean.mensagemDetalhes}" disabled="true" height="400" />
+                                </h:panelGrid>
                             </p:dialog>
                         </h:form>
                     </p:panel>
