@@ -154,7 +154,12 @@
                                         <p:column>
                                             <br />
                                             <p:spinner value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5" min="0"/><p:outputLabel value=" min." />
-                                        </p:column>                                    
+                                        </p:column>
+                                        <p:outputLabel value="Mensagem Rais - Email"/>
+                                        <p:column colspan="2">
+                                            <div class="clear"></div>
+                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.raisMensagemEmail}" cols="75" rows="7" styleClass="margin-top-max" maxlength="8000" />
+                                        </p:column>                                        
                                     </p:panelGrid>
                                     <p:panel header="WEB Contribuinte / Contabilidade" styleClass="margin-top-max">
                                         <p:panelGrid columns="1" styleClass="sbb">
