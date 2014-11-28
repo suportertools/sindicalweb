@@ -72,6 +72,7 @@ public class EmailBean implements Serializable {
     private String orderBy;
     private String filterBy;
     private String descricaoPesquisa;
+    private String mensagemDetalhes;
 
     @PostConstruct
     public void init() {
@@ -105,6 +106,7 @@ public class EmailBean implements Serializable {
         filterRascunho = false;
         orderBy = "";
         descricaoPesquisa = "";
+        mensagemDetalhes = "";
         if (GenericaSessao.exists("emailCodigoRotina")) {
             int idCodigoRotina = GenericaSessao.getInteger("emailCodigoRotina", true);
             for (int i = 0; i < getListRotinas().size(); i++) {
@@ -614,11 +616,23 @@ public class EmailBean implements Serializable {
         GenericaSessao.put("emailCodigoRotina", crotina);
     }
 
+    public void showMensagem(String mensagemDetalhes) {
+        this.mensagemDetalhes = mensagemDetalhes;
+    }
+
     public String getUrlRetorno() {
         return urlRetorno;
     }
 
     public void setUrlRetorno(String urlRetorno) {
         this.urlRetorno = urlRetorno;
+    }
+
+    public String getMensagemDetalhes() {
+        return mensagemDetalhes;
+    }
+
+    public void setMensagemDetalhes(String mensagemDetalhes) {
+        this.mensagemDetalhes = mensagemDetalhes;
     }
 }
