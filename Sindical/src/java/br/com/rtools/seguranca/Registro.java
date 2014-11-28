@@ -115,7 +115,9 @@ public class Registro implements java.io.Serializable {
     private String sisEmailMarketingResposta;
     @Column(name = "is_acesso_web_documento", columnDefinition = "boolean default false")
     private boolean acessoWebDocumento;
-    
+    @Column(name = "rais_mensagem_email", length = 8000)
+    private String raisMensagemEmail;
+
     public Registro() {
         this.id = -1;
         this.filial = new Juridica();
@@ -165,6 +167,7 @@ public class Registro implements java.io.Serializable {
         this.homolocaoHabilitaCorrecao = new Date();
         this.sisEmailMarketingResposta = "";
         this.acessoWebDocumento = false;
+        this.raisMensagemEmail = "";
     }
 
     public Registro(int id,
@@ -213,7 +216,8 @@ public class Registro implements java.io.Serializable {
             Date homolocaoHabilitaCorrecao,
             boolean sisEmailMarketing,
             String sisEmailMarketingResposta,
-            boolean acessoWebDocumento) {
+            boolean acessoWebDocumento,
+            String raisMensagemEmail) {
 
         this.id = id;
         this.filial = filial;
@@ -262,6 +266,7 @@ public class Registro implements java.io.Serializable {
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
         this.acessoWebDocumento = acessoWebDocumento;
+        this.raisMensagemEmail = raisMensagemEmail;
     }
 
     public int getId() {
@@ -672,5 +677,13 @@ public class Registro implements java.io.Serializable {
 
     public void setAcessoWebDocumento(boolean acessoWebDocumento) {
         this.acessoWebDocumento = acessoWebDocumento;
+    }
+
+    public String getRaisMensagemEmail() {
+        return raisMensagemEmail;
+    }
+
+    public void setRaisMensagemEmail(String raisMensagemEmail) {
+        this.raisMensagemEmail = raisMensagemEmail;
     }
 }
