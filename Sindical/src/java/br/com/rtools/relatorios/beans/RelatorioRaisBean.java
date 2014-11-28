@@ -11,6 +11,7 @@ import br.com.rtools.pessoa.Raca;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
@@ -147,10 +148,14 @@ public class RelatorioRaisBean implements Serializable {
         selected = null;
         tipo = "todos";
         assunto = "RAIS";
-        mensagem = "";
         SegurancaUtilitariosBean sub = new SegurancaUtilitariosBean();
         UploadFilesBean uploadFilesBean = new UploadFilesBean("Arquivos/anexos/pendentes/rais");
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
+        try {
+            mensagem = ((Registro) new Dao().find(new Registro(), 1)).getRaisMensagemEmail();
+        } catch (Exception e) {
+            mensagem = "";
+        }
     }
 
     @PreDestroy
