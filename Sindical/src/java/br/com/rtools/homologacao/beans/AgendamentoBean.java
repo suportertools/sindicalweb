@@ -550,7 +550,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
 
         if (configuracaoHomologacao.isValidaFuncao()) {
-            if (profissao.getId() == -1) {
+            if (profissao.getId() == -1 || profissao.getId() == 0) {
                 GenericaMensagem.warn("Atenção", "Informar a Função!");
                 return;
             }
