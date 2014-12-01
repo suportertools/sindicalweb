@@ -66,7 +66,7 @@ public class RelatorioAcademiaBean implements Serializable {
         filtro[3] = false; // ALUNO
         filtro[4] = false; // SEXO
         filtro[5] = false; // ORDER
-        filtro[6] = false; // PERÍODOS
+        filtro[6] = false; // PERIODOS
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<>();
         listSelectItem[1] = new ArrayList<>();
