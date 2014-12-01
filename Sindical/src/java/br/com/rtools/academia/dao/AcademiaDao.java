@@ -10,6 +10,8 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.LoteDB;
 import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.principal.DB;
+import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -262,5 +264,60 @@ public class AcademiaDao extends DB {
 
         }
         return false;
+    }
+
+    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inSexo, String order) {
+        List listWhere = new ArrayList();
+        String queryString = ""
+                + "     SELECT A.*                                                              "
+                + "       FROM matr_academia AS A                                               "
+                + " INNER JOIN fin_servico_pessoa   AS SP ON SP.id       = A.id_servico_pessoa  "
+                + " INNER JOIN pes_pessoa           AS P  ON P.id        = SP.id_pessoa         "
+                + " INNER JOIN pes_fisica           AS F  ON F.id_pessoa = P.id                 ";
+        if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
+            listWhere.add("SP.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
+        } else if (!emissaoFinal.isEmpty()) {
+            listWhere.add("SP.dt_emissao = '" + emissaoInicial + "'");
+        } else if (!emissaoFinal.isEmpty()) {
+            listWhere.add("SP.dt_emissao = '" + emissaoFinal + "'");
+        }
+        if (idResponsavel != null) {
+            listWhere.add("SP.id_cobranca = " + idResponsavel);
+        }
+        if (idAluno != null) {
+            listWhere.add("SP.id_pessoa = " + idAluno);
+        }
+        if (inModalidade != null) {
+            listWhere.add("SP.id_servico IN(" + inModalidade + ")");
+        }
+        if (inSexo != null && !inSexo.isEmpty()) {
+            listWhere.add("F.ds_sexo LIKE '" + inSexo + "'");
+        }
+        if (!listWhere.isEmpty()) {
+            queryString += " WHERE ";
+            for (int i = 0; i < listWhere.size(); i++) {
+                if (i > 0) {
+                    queryString += " AND ";
+                }
+                queryString += listWhere.get(i).toString();
+            }
+        }
+        if (r != null && order.isEmpty()) {
+            if (!r.getQryOrdem().isEmpty()) {
+                queryString += " ORDER BY " + r.getQryOrdem();
+            }
+        } else if (!order.isEmpty()) {
+            queryString += " ORDER BY " + order;
+        }
+        try {
+            Query query = getEntityManager().createNativeQuery(queryString, MatriculaAcademia.class);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 }
