@@ -59,7 +59,7 @@ public class RelatorioAcademiaBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        filtro = new Boolean[7];
+        filtro = new Boolean[8];
         filtro[0] = false; // MODALIDADE
         filtro[1] = false; // PERÍODO EMISSÃO
         filtro[2] = false; // RESPONSÁVEL
@@ -67,6 +67,7 @@ public class RelatorioAcademiaBean implements Serializable {
         filtro[4] = false; // SEXO
         filtro[5] = false; // ORDER
         filtro[6] = false; // PERIODO
+        filtro[7] = false; // PERIODO INATIVAÇÃO
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<>();
         listSelectItem[1] = new ArrayList<>();
