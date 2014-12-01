@@ -107,6 +107,23 @@
                                         </h:column>
                                     </h:panelGrid>
                                 </p:column>
+                                <p:column rendered="#{relatorioAcademiaBean.filtro[7]}">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Período Inativação: " />
+                                        <h:column>
+                                            <h:panelGrid columns="4">
+                                                <p:calendar value="#{relatorioAcademiaBean.dataInativoInicial}" pattern="dd/MM/yyyy" size="10" navigator="true" mask="99/99/9999">
+                                                    <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataInativoInicial}" />
+                                                </p:calendar>
+                                                <p:outputLabel value=" até" />
+                                                <p:calendar value="#{relatorioAcademiaBean.dataInativoFinal}" pattern="dd/MM/yyyy"  size="10" navigator="true" mask="99/99/9999">
+                                                    <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataInativoFinal}" />
+                                                </p:calendar>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('periodoInativacao')}" title="Remover filtro"/>
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:column>
                                 <p:column rendered="#{relatorioAcademiaBean.filtro[2]}">
                                     <h:panelGrid columns="2">
                                         <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" icon="ui-icon-search" value="Pesquisar Responsável" />
@@ -149,6 +166,7 @@
                                             <p:outputLabel value="Ordenar por: " />
                                             <p:selectOneMenu value="#{relatorioAcademiaBean.order}">
                                                 <f:selectItem itemValue="" itemLabel="Nenhum"  />
+                                                <f:selectItem itemValue="PA.nome" itemLabel="Nome"  />
                                             </p:selectOneMenu>
                                             <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('order')}" title="Remover filtro"/>
                                         </h:panelGrid>                                        
