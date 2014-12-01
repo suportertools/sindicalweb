@@ -43,14 +43,13 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.sistema.db.SisPessoaDB;
 import br.com.rtools.sistema.db.SisPessoaDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PhotoCam;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -162,34 +161,34 @@ public class ConviteMovimentoBean implements Serializable {
             message = "Informar um número de telefone/celular!";
             return null;
         }
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         if (conviteMovimento.isCortesia()) {
-            conviteMovimento.setAutorizaCortesia(((ConviteAutorizaCortesia) dB.pesquisaObjeto(Integer.parseInt(listPessoaAutoriza.get(idPessoaAutoriza).getDescription()), "ConviteAutorizaCortesia")).getPessoa());
+            conviteMovimento.setAutorizaCortesia(((ConviteAutorizaCortesia) dao.find(new ConviteAutorizaCortesia(), Integer.parseInt(listPessoaAutoriza.get(idPessoaAutoriza).getDescription()))).getPessoa());
         }
         NovoLog novoLog = new NovoLog();
-        conviteMovimento.setConviteServico((ConviteServico) dB.pesquisaObjeto(Integer.parseInt(conviteServicos.get(idServico).getDescription()), "ConviteServico"));
-        dB.abrirTransacao();
+        conviteMovimento.setConviteServico((ConviteServico) dao.find(new ConviteServico(), Integer.parseInt(conviteServicos.get(idServico).getDescription())));
+        dao.openTransaction();
         if (conviteMovimento.getSisPessoa().getId() == -1) {
-            conviteMovimento.getSisPessoa().setTipoDocumento((TipoDocumento) dB.pesquisaObjeto(1, "TipoDocumento"));
-            if (dB.inserirObjeto(conviteMovimento.getSisPessoa())) {
-                dB.comitarTransacao();
+            conviteMovimento.getSisPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
+            if (dao.save(conviteMovimento.getSisPessoa())) {
+                dao.commit();
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
                 message = "Erro ao inserir sis pessoa!";
                 return null;
             }
         } else {
-            if (dB.alterarObjeto(conviteMovimento.getSisPessoa())) {
-                dB.comitarTransacao();
+            if (dao.update(conviteMovimento.getSisPessoa())) {
+                dao.commit();
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
                 message = "Erro ao atualizar sis pessoa!";
                 return null;
             }
         }
 
         if (conviteMovimento.getId() == -1) {
-            Registro r = (Registro) dB.pesquisaObjeto(1, "Registro");
+            Registro r = (Registro) dao.find(new Registro(), 1);
             SpcDB spcDB = new SpcDBToplink();
             if (spcDB.existeRegistroPessoaSPC(conviteMovimento.getPessoa())) {
                 message = "Existem débitos com o síndicato!";
@@ -240,8 +239,8 @@ public class ConviteMovimentoBean implements Serializable {
             conviteMovimento.setDepartamento(null);
             conviteMovimento.setUsuarioInativacao(null);
             conviteMovimento.setAtivo(true);
-            dB.abrirTransacao();
-            if (dB.inserirObjeto(conviteMovimento)) {
+            dao.openTransaction();
+            if (dao.save(conviteMovimento)) {
                 if (conviteMovimento.isCortesia()) {
                     novoLog.save(""
                             + "ID: " + conviteMovimento.getId()
@@ -252,7 +251,7 @@ public class ConviteMovimentoBean implements Serializable {
                             + " - Autorizado por (Pessoa): (" + conviteMovimento.getAutorizaCortesia().getId() + ") " + conviteMovimento.getAutorizaCortesia().getNome()
                             + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
                     );
-                    dB.comitarTransacao();
+                    dao.commit();
                     message = "Registro inserido com sucesso";
                     desabilitaCamposMovimento = true;
                     sucesso = true;
@@ -260,39 +259,47 @@ public class ConviteMovimentoBean implements Serializable {
                 } else {
                     float valor = Moeda.substituiVirgulaFloat(valorString);
                     if (valor == 0) {
-                        dB.desfazerTransacao();
+                        dao.rollback();
                         conviteMovimento.setId(-1);
                         message = "Informar valor do serviço! Deve ser direfente de 0.";
                         return null;
                     }
                     try {
-                        if (gerarMovimento(dB)) {
-                            dB.comitarTransacao();
+                        if (gerarMovimento(dao)) {
+                            dao.commit();
                             message = "Registro inserido com sucesso";
                             desabilitaCamposMovimento = true;
                             sucesso = true;
+                            novoLog.save(""
+                                    + "ID: " + conviteMovimento.getId()
+                                    + " - Emissão: " + conviteMovimento.getEmissao()
+                                    + " - SisPessoa: (" + conviteMovimento.getSisPessoa().getId() + ") " + conviteMovimento.getSisPessoa().getNome()
+                                    + " - Responsável (Pessoa): (" + conviteMovimento.getPessoa().getId() + ") " + conviteMovimento.getPessoa().getNome()
+                                    + " - Validade: " + conviteMovimento.getValidade()
+                                    + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
+                            );
                         } else {
-                            dB.desfazerTransacao();
+                            dao.rollback();
                             conviteMovimento.setId(-1);
                             message = "Erro ao inserir registro!";
                             return null;
                         }
                     } catch (Exception e) {
-                        dB.desfazerTransacao();
+                        dao.rollback();
                         conviteMovimento.setId(-1);
                         message = "Erro ao inserir registro!";
                         return null;
                     }
                 }
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
                 conviteMovimento.setId(-1);
                 message = "Erro ao inserir registro!";
                 return null;
             }
         } else {
-            dB.abrirTransacao();
-            ConviteMovimento cm = (ConviteMovimento) dB.pesquisaObjeto(conviteMovimento.getId(), "ConviteMovimento");
+            dao.openTransaction();
+            ConviteMovimento cm = (ConviteMovimento) dao.find(new ConviteMovimento(), conviteMovimento.getId());
             String beforeUpdate = ""
                     + "ID: " + cm.getId()
                     + " - Emissão: " + cm.getEmissao()
@@ -301,8 +308,8 @@ public class ConviteMovimentoBean implements Serializable {
                     + " - Validade: " + cm.getValidade()
                     + " - Autorizado por (Pessoa): (" + cm.getAutorizaCortesia().getId() + ") " + cm.getAutorizaCortesia().getNome()
                     + " - Convite Serviço: (" + cm.getConviteServico().getId() + ") " + cm.getConviteServico().getServicos().getDescricao();
-            if (dB.alterarObjeto(conviteMovimento)) {
-                dB.comitarTransacao();
+            if (dao.update(conviteMovimento)) {
+                dao.commit();
                 message = "Registro atualizado com sucesso";
                 novoLog.update(beforeUpdate, ""
                         + "ID: " + conviteMovimento.getId()
@@ -315,7 +322,7 @@ public class ConviteMovimentoBean implements Serializable {
                 );
                 sucesso = true;
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
                 message = "Erro ao atualizar registro!";
                 return null;
             }
@@ -401,15 +408,15 @@ public class ConviteMovimentoBean implements Serializable {
     public void delete() {
         String msg = "";
         if (conviteMovimento.getId() != -1) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            conviteMovimento.setUsuarioInativacao((Usuario) dB.pesquisaObjeto(getUsuario().getId(), "Usuario"));
+            Dao dao = new Dao();
+            conviteMovimento.setUsuarioInativacao((Usuario) dao.find(new Usuario(), getUsuario().getId()));
             conviteMovimento.setAtivo(false);
-            dB.abrirTransacao();
-            if (dB.alterarObjeto((ConviteMovimento) dB.pesquisaObjeto(conviteMovimento.getId(), "ConviteMovimento"))) {
+            dao.openTransaction();
+            if (dao.update((ConviteMovimento) dao.find(new ConviteMovimento(), conviteMovimento.getId()))) {
                 if (getMovimento().getId() != -1) {
                     getMovimento().setAtivo(false);
-                    if (!dB.alterarObjeto(getMovimento())) {
-                        dB.desfazerTransacao();
+                    if (!dao.update(getMovimento())) {
+                        dao.rollback();
                         return;
                     }
                 }
@@ -423,12 +430,12 @@ public class ConviteMovimentoBean implements Serializable {
                         + " - Autorizado por (Pessoa): (" + conviteMovimento.getAutorizaCortesia().getId() + ") " + conviteMovimento.getAutorizaCortesia().getNome()
                         + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
                 );
-                dB.comitarTransacao();
+                dao.commit();
                 msg = "Registro inativado com sucesso";
                 RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').show()");
                 RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
                 msg = "Erro ao inativar registro!";
             }
         }
@@ -559,8 +566,8 @@ public class ConviteMovimentoBean implements Serializable {
 
     public List<SelectItem> getConviteServicos() {
         if (conviteServicos.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<ConviteServico> list = (List<ConviteServico>) dB.listaObjeto("ConviteServico", true);
+            Dao dao = new Dao();
+            List<ConviteServico> list = (List<ConviteServico>) dao.list(new ConviteServico(), true);
             int i = 0;
             for (ConviteServico cs : list) {
                 List listSemana = new ArrayList();
@@ -762,8 +769,8 @@ public class ConviteMovimentoBean implements Serializable {
 
     public List<SelectItem> getListPessoaAutoriza() {
         if (listPessoaAutoriza.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<ConviteAutorizaCortesia> list = (List<ConviteAutorizaCortesia>) dB.listaObjeto("ConviteAutorizaCortesia");
+            Dao dao = new Dao();
+            List<ConviteAutorizaCortesia> list = (List<ConviteAutorizaCortesia>) dao.list(new ConviteAutorizaCortesia());
             int i = 0;
             for (ConviteAutorizaCortesia cac : list) {
                 listPessoaAutoriza.add(new SelectItem(i, cac.getPessoa().getNome(), "" + cac.getId()));
@@ -841,11 +848,11 @@ public class ConviteMovimentoBean implements Serializable {
         if (!conviteMovimento.isCortesia()) {
             if (!conviteServicos.isEmpty()) {
                 if (!conviteMovimento.getSisPessoa().getNome().equals("")) {
-                    SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+                    Dao dao = new Dao();
                     ServicoValorDB svdb = new ServicoValorDBToplink();
                     try {
                         DataHoje dh = new DataHoje();
-                        ServicoValor sv = (ServicoValor) svdb.pesquisaServicoValorPorIdade(((ConviteServico) sadb.pesquisaObjeto(Integer.parseInt(conviteServicos.get(idServico).getDescription()), "ConviteServico")).getServicos().getId(), dh.calcularIdade(conviteMovimento.getSisPessoa().getNascimento()));
+                        ServicoValor sv = (ServicoValor) svdb.pesquisaServicoValorPorIdade(((ConviteServico) dao.find(new ConviteServico(), Integer.parseInt(conviteServicos.get(idServico).getDescription()))).getServicos().getId(), dh.calcularIdade(conviteMovimento.getSisPessoa().getNascimento()));
                         valorString = Moeda.converteR$(Float.toString((sv.getValor())));
                     } catch (NumberFormatException e) {
                         valorString = "0,00";
@@ -863,21 +870,21 @@ public class ConviteMovimentoBean implements Serializable {
     }
 
     public void gerarMovimento() {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        dB.abrirTransacao();
-        gerarMovimento(dB);
+        Dao dao = new Dao();
+        dao.openTransaction();
+        gerarMovimento(dao);
     }
 
-    public boolean gerarMovimento(SalvarAcumuladoDB dB) {
+    public boolean gerarMovimento(Dao dao) {
         if (conviteMovimento.getEvt() == null) {
             String vencimento = conviteMovimento.getEmissao();
             String referencia;
             Plano5 plano5 = conviteMovimento.getConviteServico().getServicos().getPlano5();
-            FTipoDocumento fTipoDocumento = (FTipoDocumento) dB.pesquisaCodigo(13, "FTipoDocumento");
+            FTipoDocumento fTipoDocumento = (FTipoDocumento) dao.find(new FTipoDocumento(), 13);
             float valor = Moeda.substituiVirgulaFloat(valorString);
             Lote lote = new Lote(
                     -1,
-                    (Rotina) dB.pesquisaCodigo(215, "Rotina"),
+                    (Rotina) dao.find(new Rotina(), 215),
                     "R",
                     DataHoje.data(),
                     conviteMovimento.getPessoa(),
@@ -889,9 +896,9 @@ public class ConviteMovimentoBean implements Serializable {
                     null,
                     null,
                     "",
-                    (FTipoDocumento) dB.pesquisaCodigo(13, "FTipoDocumento"),
-                    (CondicaoPagamento) dB.pesquisaCodigo(1, "CondicaoPagamento"),
-                    (FStatus) dB.pesquisaCodigo(1, "FStatus"),
+                    (FTipoDocumento) dao.find(new FTipoDocumento(), 13),
+                    (CondicaoPagamento) dao.find(new CondicaoPagamento(), 1),
+                    (FStatus) dao.find(new FStatus(), 1),
                     null,
                     false,
                     0
@@ -907,11 +914,11 @@ public class ConviteMovimentoBean implements Serializable {
                 referencia = mes + "/" + ano;
                 Evt evt = new Evt();
                 evt.setDescricao("CONVITE MOVIMENTO");
-                if (!dB.inserirObjeto(evt)) {
+                if (!dao.save(evt)) {
                     return false;
                 }
                 lote.setEvt(evt);
-                if (!dB.inserirObjeto(lote)) {
+                if (!dao.save(lote)) {
                     return false;
                 }
                 String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
@@ -922,7 +929,7 @@ public class ConviteMovimentoBean implements Serializable {
                         conviteMovimento.getPessoa(),
                         conviteMovimento.getConviteServico().getServicos(),
                         null,
-                        (TipoServico) dB.pesquisaCodigo(1, "TipoServico"),
+                        (TipoServico) dao.find(new TipoServico(), 1),
                         null,
                         valor,
                         referencia,
@@ -946,9 +953,9 @@ public class ConviteMovimentoBean implements Serializable {
                         fTipoDocumento,
                         0, new MatriculaSocios()
                 );
-                if (dB.inserirObjeto(movimento)) {
+                if (dao.save(movimento)) {
                     conviteMovimento.setEvt(evt);
-                    return dB.alterarObjeto(conviteMovimento);
+                    return dao.update(conviteMovimento);
                 } else {
                     return false;
                 }
