@@ -266,15 +266,39 @@ public class AcademiaDao extends DB {
         return false;
     }
 
+    /**
+     * 0 - NOME 1 - IDADE 2 - NASCIMENTO 3 - SEXO 4 - CIDADE 5 - RESPONSÁVEL 6 -
+     * SERVIÇO 7 - PERÍODO
+     *
+     * @param r
+     * @param emissaoInicial
+     * @param emissaoFinal
+     * @param idResponsavel
+     * @param idAluno
+     * @param inModalidade
+     * @param inIdPeriodos
+     * @param inSexo
+     * @param order
+     * @return
+     */
     public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, String order) {
         List listWhere = new ArrayList();
         String queryString = ""
-                + "     SELECT A.*                                                              "
-                + "       FROM matr_academia AS A                                               "
-                + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id       = A.id_servico_pessoa "
-                + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id      = A.id_servico_valor  "
-                + " INNER JOIN pes_pessoa           AS P   ON P.id        = SP.id_pessoa        "
-                + " INNER JOIN pes_fisica           AS F   ON F.id_pessoa = P.id                ";
+                + "     SELECT PA.nome,                                                       " // 0 - NOME
+                + "            func_idade(PA.dt_nascimento, current_date)  AS idade,          " // 1 - IDADE
+                + "            PA.dt_nascimento                            AS nascimento,     " // 2 - NASCIMENTO
+                + "            PA.sexo,                                                       " // 3 - SEXO
+                + "            PA.cidade,                                                     " // 4 - CIDADE
+                + "            PR.ds_nome                                  AS responsavel,    " // 5 - RESPONSÁVEL
+                + "            S.ds_descricao                              AS servico,        " // 6 - SERVIÇO
+                + "            P.ds_descricao                              AS periodo         " // 7 - PERÍODO
+                + "       FROM matr_academia AS A                                             "
+                + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id     = A.id_servico_pessoa "
+                + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id    = A.id_servico_valor  "
+                + " INNER JOIN fin_servicos         AS S   ON S.id      = ASV.id_servico      "
+                + " INNER JOIN sis_periodo          AS P   ON P.id      = ASV.id_periodo      "
+                + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo = SP.id_pessoa        "
+                + " INNER JOIN pes_pessoa           AS PR  ON PR.id     = SP.id_cobranca      ";
         if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
             listWhere.add("SP.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
         } else if (!emissaoFinal.isEmpty()) {
@@ -295,7 +319,7 @@ public class AcademiaDao extends DB {
             listWhere.add("ASV.id_periodo IN(" + inIdPeriodos + ")");
         }
         if (inSexo != null && !inSexo.isEmpty()) {
-            listWhere.add("F.ds_sexo LIKE '" + inSexo + "'");
+            listWhere.add("PA.sexo LIKE '" + inSexo + "'");
         }
         if (!listWhere.isEmpty()) {
             queryString += " WHERE ";
@@ -314,7 +338,7 @@ public class AcademiaDao extends DB {
             queryString += " ORDER BY " + order;
         }
         try {
-            Query query = getEntityManager().createNativeQuery(queryString, MatriculaAcademia.class);
+            Query query = getEntityManager().createNativeQuery(queryString);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
