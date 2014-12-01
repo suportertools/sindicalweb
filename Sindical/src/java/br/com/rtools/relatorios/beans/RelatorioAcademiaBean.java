@@ -4,6 +4,7 @@ import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.dao.AcademiaDao;
 import br.com.rtools.arrecadacao.dao.RaisDao;
 import br.com.rtools.endereco.Cidade;
+import br.com.rtools.impressao.ParametroAcademiaCadastral;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -11,10 +12,12 @@ import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.sistema.Periodo;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
@@ -109,173 +112,87 @@ public class RelatorioAcademiaBean implements Serializable {
         }
         String order = "";
         String detalheRelatorio = "";
-        if (true) {
-            RaisDao raisDao = new RaisDao();
-            Integer idResponsavel = null;
-            Integer idAluno = null;
-            String pIStringI = "";
-            String pFStringI = "";
-            String referencia = "";
-            String dReferencia = "";
-            String inIdModalidades = inIdModalidades();
-            String inIdPeriodos = inIdPeriodos();
-            List listDetalhePesquisa = new ArrayList();
-            if (filtro[1]) {
-                pIStringI = DataHoje.converteData(dataInicial);
-                pFStringI = DataHoje.converteData(dataFinal);
-                listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
-            }
-            if (!dReferencia.isEmpty()) {
-                listDetalhePesquisa.add(" Período convenção: " + dReferencia + "");
-            }
-            if (aluno.getId() != -1) {
-                idAluno = aluno.getId();
-                listDetalhePesquisa.add(" Empresa por Física CPF: " + aluno.getDocumento() + " - " + aluno.getNome());
-            }
-            if (responsavel.getId() != -1) {
-                idResponsavel = responsavel.getId();
-                listDetalhePesquisa.add(" Escritório por Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
-            }
-            String orderString = "";
-            AcademiaDao academiaDao = new AcademiaDao();
-            List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, orderString);
-            if (list.isEmpty()) {
-                GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
-                return;
-            }
-
-            if (listDetalhePesquisa.isEmpty()) {
-                detalheRelatorio += "Pesquisar todos registros!";
+        RaisDao raisDao = new RaisDao();
+        Integer idResponsavel = null;
+        Integer idAluno = null;
+        String pIStringI = "";
+        String pFStringI = "";
+        String referencia = "";
+        String sexoString = "";
+        String dReferencia = "";
+        String inIdModalidades = inIdModalidades();
+        String inIdPeriodos = inIdPeriodos();
+        List listDetalhePesquisa = new ArrayList();
+        if (filtro[1]) {
+            pIStringI = DataHoje.converteData(dataInicial);
+            pFStringI = DataHoje.converteData(dataFinal);
+            listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+        }
+        if (filtro[4]) {
+            if(sexo.equals("M")) {
+                sexoString = "Masculino";                
+            } else if(sexo.equals("F")) {
+                sexoString = "Feminino";
             } else {
-                detalheRelatorio += "";
-                for (int i = 0; i < listDetalhePesquisa.size(); i++) {
-                    if (i == 0) {
-                        detalheRelatorio += "" + listDetalhePesquisa.get(i).toString();
-                    } else {
-                        detalheRelatorio += "; " + listDetalhePesquisa.get(i).toString();
-                    }
+                sexoString = "Todos";                
+            }
+            listDetalhePesquisa.add(" Sexo: " + sexoString + "");
+        }
+        if (!dReferencia.isEmpty()) {
+            listDetalhePesquisa.add(" Período convenção: " + dReferencia + "");
+        }
+        if (aluno.getId() != -1) {
+            idAluno = aluno.getId();
+            listDetalhePesquisa.add(" Empresa por Física CPF: " + aluno.getDocumento() + " - " + aluno.getNome());
+        }
+        if (responsavel.getId() != -1) {
+            idResponsavel = responsavel.getId();
+            listDetalhePesquisa.add(" Escritório por Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
+        }
+        String orderString = "";
+        AcademiaDao academiaDao = new AcademiaDao();
+        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, orderString);
+        if (list.isEmpty()) {
+            GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
+            return;
+        }
+
+        if (listDetalhePesquisa.isEmpty()) {
+            detalheRelatorio += "Pesquisar todos registros!";
+        } else {
+            detalheRelatorio += "";
+            for (int i = 0; i < listDetalhePesquisa.size(); i++) {
+                if (i == 0) {
+                    detalheRelatorio += "" + listDetalhePesquisa.get(i).toString();
+                } else {
+                    detalheRelatorio += "; " + listDetalhePesquisa.get(i).toString();
                 }
             }
-            String dt = "";
-            String dte = "";
-            String dtd = "";
-            String dta = "";
-//            for (Object list1 : list) {
-//                if (raisEnviadas) {
-//                    dt = GenericaString.converterNullToString(((List) list1).get(30));
-//                    dte = GenericaString.converterNullToString(((List) list1).get(4));
-//                    dta = GenericaString.converterNullToString(((List) list1).get(13));
-//                    dtd = GenericaString.converterNullToString(((List) list1).get(11));
-//                    if (!dt.isEmpty()) {
-//                        dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
-//                    }
-//                    if (!dte.isEmpty()) {
-//                        dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
-//                    }
-//                    if (!dta.isEmpty()) {
-//                        dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
-//                    }
-//                    if (!dtd.isEmpty()) {
-//                        dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
-//                    }
-//                    pr = new ParametroRaisRelatorio(
-//                            detalheRelatorio,
-//                            AnaliseString.converteNullString(((List) list1).get(0)),
-//                            AnaliseString.converteNullString(((List) list1).get(1)),
-//                            dte,
-//                            AnaliseString.converteNullString(((List) list1).get(3)),
-//                            AnaliseString.converteNullString(((List) list1).get(5)),
-//                            AnaliseString.converteNullString(((List) list1).get(6)),
-//                            AnaliseString.converteNullString(((List) list1).get(7)),
-//                            AnaliseString.converteNullString(((List) list1).get(8)),
-//                            AnaliseString.converteNullString(((List) list1).get(9)),
-//                            AnaliseString.converteNullString(((List) list1).get(10)),
-//                            dtd,
-//                            AnaliseString.converteNullString(((List) list1).get(12)),
-//                            dta,
-//                            AnaliseString.converteNullString(((List) list1).get(14)),
-//                            AnaliseString.converteNullString(((List) list1).get(15)),
-//                            AnaliseString.converteNullString(((List) list1).get(16)),
-//                            AnaliseString.converteNullString(((List) list1).get(17)),
-//                            AnaliseString.converteNullString(((List) list1).get(18)),
-//                            AnaliseString.converteNullString(((List) list1).get(19)),
-//                            AnaliseString.converteNullString(((List) list1).get(20)),
-//                            AnaliseString.converteNullString(((List) list1).get(21)),
-//                            AnaliseString.converteNullString(((List) list1).get(22)),
-//                            AnaliseString.converteNullString(((List) list1).get(23)),
-//                            AnaliseString.converteNullString(((List) list1).get(24)),
-//                            AnaliseString.converteNullString(((List) list1).get(25)),
-//                            AnaliseString.converteNullString(((List) list1).get(26)),
-//                            AnaliseString.converteNullString(((List) list1).get(27)),
-//                            AnaliseString.converteNullString(((List) list1).get(28)),
-//                            AnaliseString.converteNullString(((List) list1).get(29)),
-//                            AnaliseString.converteNullString(dt),
-//                            AnaliseString.converteNullString(((List) list1).get(31))
-//                    );
-//                    parametroRaisRelatorio.add(pr);
-//                } else {
-//                    if (escritorios) {
-//                        String quantidade = "0";
-//                        try {
-//                            quantidade = "" + Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4)));
-//                        } catch (Exception e) {
-//                            quantidade = "" + 0;
-//                        }
-//                        prne = new ParametroRaisNaoEnviadasRelatorio(
-//                                detalheRelatorio,
-//                                AnaliseString.converteNullString(((List) list1).get(0)),
-//                                AnaliseString.converteNullString(((List) list1).get(1)),
-//                                AnaliseString.converteNullString(((List) list1).get(2)),
-//                                AnaliseString.converteNullString(((List) list1).get(3)),
-//                                quantidade,
-//                                AnaliseString.converteNullString(((List) list1).get(5)),
-//                                AnaliseString.converteNullString(((List) list1).get(6)),
-//                                AnaliseString.converteNullString(((List) list1).get(7)),
-//                                AnaliseString.converteNullString(((List) list1).get(8)),
-//                                AnaliseString.converteNullString(((List) list1).get(9)),
-//                                AnaliseString.converteNullString(((List) list1).get(10)),
-//                                AnaliseString.converteNullString(((List) list1).get(11)),
-//                                AnaliseString.converteNullString(((List) list1).get(12))
-//                        );
-//
-//                    } else {
-//                        prne = new ParametroRaisNaoEnviadasRelatorio(
-//                                detalheRelatorio,
-//                                AnaliseString.converteNullString(((List) list1).get(0)),
-//                                AnaliseString.converteNullString(((List) list1).get(1)),
-//                                AnaliseString.converteNullString(((List) list1).get(2)),
-//                                AnaliseString.converteNullString(((List) list1).get(3)),
-//                                AnaliseString.converteNullString(((List) list1).get(4)),
-//                                AnaliseString.converteNullString(((List) list1).get(5)),
-//                                AnaliseString.converteNullString(((List) list1).get(6)),
-//                                AnaliseString.converteNullString(((List) list1).get(7)),
-//                                AnaliseString.converteNullString(((List) list1).get(8)),
-//                                AnaliseString.converteNullString(((List) list1).get(9)),
-//                                AnaliseString.converteNullString(((List) list1).get(10)),
-//                                AnaliseString.converteNullString(((List) list1).get(11)),
-//                                AnaliseString.converteNullString(((List) list1).get(12)),
-//                                AnaliseString.converteNullString(((List) list1).get(13)),
-//                                AnaliseString.converteNullString(((List) list1).get(14)),
-//                                AnaliseString.converteNullString(((List) list1).get(15)),
-//                                AnaliseString.converteNullString(((List) list1).get(16)),
-//                                AnaliseString.converteNullString(((List) list1).get(17)),
-//                                AnaliseString.converteNullString(((List) list1).get(18)),
-//                                AnaliseString.converteNullString(((List) list1).get(19)),
-//                                AnaliseString.converteNullString(((List) list1).get(20)),
-//                                AnaliseString.converteNullString(((List) list1).get(21)),
-//                                AnaliseString.converteNullString(((List) list1).get(22)),
-//                                AnaliseString.converteNullString(((List) list1).get(23)),
-//                                AnaliseString.converteNullString(((List) list1).get(24)),
-//                                "0",
-//                                AnaliseString.converteNullString(((List) list1).get(25)),
-//                                AnaliseString.converteNullString(((List) list1).get(26))
-//                        );
-//                    }
-//                    parametroRaisNaoEnviadasRelatorio.add(prne);
-//                }
-//            }
         }
-        // Jasper.printReports(relatorios.getJasper(), "academia", null);
+        String nascimento = "";
+        List<ParametroAcademiaCadastral> pacs = new ArrayList<>();
+        ParametroAcademiaCadastral pac;
+        for (Object list1 : list) {
+            nascimento = AnaliseString.converteNullString(((List) list1).get(2));
+            if (!nascimento.isEmpty()) {
+                nascimento = DataHoje.converteData(DataHoje.converteDateSqlToDate(nascimento));
+            }
+            pac = new ParametroAcademiaCadastral(
+                    detalheRelatorio,
+                    AnaliseString.converteNullString(((List) list1).get(0)),
+                    AnaliseString.converteNullString(((List) list1).get(1)),
+                    nascimento,
+                    AnaliseString.converteNullString(((List) list1).get(3)),
+                    AnaliseString.converteNullString(((List) list1).get(4)),
+                    AnaliseString.converteNullString(((List) list1).get(6)),
+                    AnaliseString.converteNullString(((List) list1).get(7)),
+                    AnaliseString.converteNullString(((List) list1).get(5))
+            );
+            pacs.add(pac);
+        }
+        if (!pacs.isEmpty()) {
+            Jasper.printReports(relatorios.getJasper(), "academia", (Collection) pacs);
+        }
     }
 
     public List<SelectItem> getListTipoRelatorios() {
