@@ -11,8 +11,9 @@ public class ParametroAcademiaCadastral {
     private String servico;
     private String periodo;
     private String responsavel_nome;
+    private String emissao;
 
-    public ParametroAcademiaCadastral(String detalhes_relatorio, String aluno_nome, String aluno_idade, String aluno_nascimento, String aluno_sexo, String aluno_cidade, String servico, String periodo, String responsavel_nome) {
+    public ParametroAcademiaCadastral(String detalhes_relatorio, String aluno_nome, String aluno_idade, String aluno_nascimento, String aluno_sexo, String aluno_cidade, String servico, String periodo, String responsavel_nome, String emissao) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.aluno_nome = aluno_nome;
         this.aluno_idade = aluno_idade;
@@ -22,6 +23,7 @@ public class ParametroAcademiaCadastral {
         this.servico = servico;
         this.periodo = periodo;
         this.responsavel_nome = responsavel_nome;
+        this.emissao = emissao;
     }
 
     public String getAluno_nome() {
@@ -94,5 +96,13 @@ public class ParametroAcademiaCadastral {
 
     public void setResponsavel_nome(String responsavel_nome) {
         this.responsavel_nome = responsavel_nome;
+    }
+
+    public String getEmissao() {
+        return emissao;
+    }
+
+    public void setEmissao(String emissao) {
+        this.emissao = emissao;
     }
 }
