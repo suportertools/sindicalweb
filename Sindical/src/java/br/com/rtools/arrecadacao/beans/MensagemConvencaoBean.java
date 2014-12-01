@@ -10,11 +10,13 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.financeiro.db.TipoServicoDB;
 import br.com.rtools.financeiro.db.TipoServicoDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+//import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+//import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,9 +54,9 @@ public class MensagemConvencaoBean {
 
         listam = db.pesquisaTodosAno(this.getListaRefReplica().get(idReplica).getLabel());
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         if (!listam.isEmpty()) {
-            sv.abrirTransacao();
+            dao.openTransaction();
         }
         DataHoje dh = new DataHoje();
         boolean comita = false;
@@ -74,18 +76,18 @@ public class MensagemConvencaoBean {
                     listam.get(i).getMensagemCompensacao(),
                     listam.get(i).getReferencia().substring(0, 3) + replicaPara, DataHoje.converte(dh.incrementarAnos(1, listam.get(i).getVencimento())));
 
-            if (sv.inserirObjeto(men)) {
+            if (dao.save(men)) {
                 comita = true;
             } else {
             }
 
         }
         if (comita) {
-            sv.comitarTransacao();
+            dao.commit();
             msgConfirma = "Registro replicado com Sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
         } else {
-            sv.desfazerTransacao();;
+            dao.rollback();
             msgConfirma = "Nenhuma mensagem para Replicar!";
             GenericaMensagem.warn("Erro", msgConfirma);
         }
@@ -318,7 +320,9 @@ public class MensagemConvencaoBean {
                     }
                 }
             } else {
+                Dao dao = new Dao();
                 MensagemConvencao men = null;
+                NovoLog novoLog = new NovoLog();
                 if (processarTipoServicos) {
                     List<MensagemConvencao> lista = db.mesmoTipoServico(
                             Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
@@ -334,8 +338,26 @@ public class MensagemConvencaoBean {
                                 lista.get(i).getGrupoCidade().getId(),
                                 lista.get(i).getReferencia());
                         if ((men == null) || (men.getId() != -1)) {
+                            MensagemConvencao mcBefore = (MensagemConvencao) dao.find(men);
+                            String beforeUpdate = " - Referência: " + mcBefore.getReferencia()
+                                    + " - Vencimento: " + mcBefore.getVencimento()
+                                    + " - Serviço: (" + mcBefore.getServicos().getId() + ") "
+                                    + " - Tipo Serviço: (" + mcBefore.getTipoServico().getId() + ") " + mcBefore.getTipoServico().getDescricao()
+                                    + " - Convenção: (" + mcBefore.getConvencao().getId() + ") " + mcBefore.getConvencao().getDescricao()
+                                    + " - Grupo Cidade: (" + mcBefore.getGrupoCidade().getId() + ") " + mcBefore.getGrupoCidade().getDescricao()
+                                    + " - Mensagem Compensação: " + mcBefore.getMensagemCompensacao();
                             if (db.update(lista.get(i))) {
                                 msgConfirma = "Mensagem atualizado com sucesso!";
+                                novoLog.update(beforeUpdate,
+                                        " - Referência: " + men.getReferencia()
+                                        + " - Vencimento: " + men.getVencimento()
+                                        + " - Serviço: (" + men.getServicos().getId() + ") "
+                                        + " - Tipo Serviço: (" + men.getTipoServico().getId() + ") " + men.getTipoServico().getDescricao()
+                                        + " - Convenção: (" + men.getConvencao().getId() + ") " + men.getConvencao().getDescricao()
+                                        + " - Grupo Cidade: (" + men.getGrupoCidade().getId() + ") " + men.getGrupoCidade().getDescricao()
+                                        + " - Mensagem Compensação: " + men.getMensagemCompensacao()
+                                        + " - Mensagem Contribuinte: " + men.getMensagemContribuinte()
+                                );
                                 GenericaMensagem.info("Sucesso", msgConfirma);
                             } else {
                                 msgConfirma = "Ocorreu um erro ao atualizar!";
@@ -349,8 +371,26 @@ public class MensagemConvencaoBean {
                             mensagemConvencao.getTipoServico().getId(),
                             mensagemConvencao.getGrupoCidade().getId(),
                             mensagemConvencao.getReferencia());
+                    MensagemConvencao mcBefore = (MensagemConvencao) dao.find(mensagemConvencao);
+                    String beforeUpdate = " - Referência: " + mcBefore.getReferencia()
+                            + " - Vencimento: " + mcBefore.getVencimento()
+                            + " - Serviço: (" + mcBefore.getServicos().getId() + ") "
+                            + " - Tipo Serviço: (" + mcBefore.getTipoServico().getId() + ") " + mcBefore.getTipoServico().getDescricao()
+                            + " - Convenção: (" + mcBefore.getConvencao().getId() + ") " + mcBefore.getConvencao().getDescricao()
+                            + " - Grupo Cidade: (" + mcBefore.getGrupoCidade().getId() + ") " + mcBefore.getGrupoCidade().getDescricao()
+                            + " - Mensagem Compensação: " + mcBefore.getMensagemCompensacao();
                     if (men == null || (men.getId() == mensagemConvencao.getId())) {
                         if (db.update(mensagemConvencao)) {
+                            novoLog.update(beforeUpdate,
+                                    " - Referência: " + mensagemConvencao.getReferencia()
+                                    + " - Vencimento: " + mensagemConvencao.getVencimento()
+                                    + " - Serviço: (" + mensagemConvencao.getServicos().getId() + ") "
+                                    + " - Tipo Serviço: (" + mensagemConvencao.getTipoServico().getId() + ") " + mensagemConvencao.getTipoServico().getDescricao()
+                                    + " - Convenção: (" + mensagemConvencao.getConvencao().getId() + ") " + mensagemConvencao.getConvencao().getDescricao()
+                                    + " - Grupo Cidade: (" + mensagemConvencao.getGrupoCidade().getId() + ") " + mensagemConvencao.getGrupoCidade().getDescricao()
+                                    + " - Mensagem Compensação: " + mensagemConvencao.getMensagemCompensacao()
+                                    + " - Mensagem Contribuinte: " + mensagemConvencao.getMensagemContribuinte()
+                            );
                             msgConfirma = "Mensagem atualizado com sucesso!";
                             GenericaMensagem.info("Sucesso", msgConfirma);
                         } else {
@@ -376,26 +416,37 @@ public class MensagemConvencaoBean {
     }
 
     private synchronized String insertMensagem(int idConv, int idGrupo, int idServ, int idTipo, String referencia, String vencimento) {
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         MensagemConvencaoDB db = new MensagemConvencaoDBToplink();
         String result = "";
-        mensagemConvencao.setConvencao((Convencao) sadb.find("Convencao", idConv));
-        mensagemConvencao.setGrupoCidade((GrupoCidade) sadb.find("GrupoCidade", idGrupo));
-        mensagemConvencao.setServicos((Servicos) sadb.find("Servicos", idServ));
-        mensagemConvencao.setTipoServico((TipoServico) sadb.find("TipoServico", idTipo));
+        mensagemConvencao.setConvencao((Convencao) dao.find(new Convencao(), idConv));
+        mensagemConvencao.setGrupoCidade((GrupoCidade) dao.find(new GrupoCidade(), idGrupo));
+        mensagemConvencao.setServicos((Servicos) dao.find(new Servicos(), idServ));
+        mensagemConvencao.setTipoServico((TipoServico) dao.find(new TipoServico(), idTipo));
         mensagemConvencao.setReferencia(referencia);
         mensagemConvencao.setVencimento(vencimento);
+        NovoLog novoLog = new NovoLog();
         MensagemConvencao menConvencao = db.verificaMensagem(idConv, idServ, idTipo, idGrupo, referencia);
         try {
             if (menConvencao == null) {
-                sadb.abrirTransacao();
-                if (sadb.inserirObjeto(mensagemConvencao)) {
-                    sadb.comitarTransacao();
+                dao.openTransaction();
+                if (dao.save(mensagemConvencao)) {
+                    novoLog.save(
+                            " - Referência: " + mensagemConvencao.getReferencia()
+                            + " - Vencimento: " + mensagemConvencao.getVencimento()
+                            + " - Serviço: (" + mensagemConvencao.getServicos().getId() + ") "
+                            + " - Tipo Serviço: (" + mensagemConvencao.getTipoServico().getId() + ") " + mensagemConvencao.getTipoServico().getDescricao()
+                            + " - Convenção: (" + mensagemConvencao.getConvencao().getId() + ") " + mensagemConvencao.getConvencao().getDescricao()
+                            + " - Grupo Cidade: (" + mensagemConvencao.getGrupoCidade().getId() + ") " + mensagemConvencao.getGrupoCidade().getDescricao()
+                            + " - Mensagem Compensação: " + mensagemConvencao.getMensagemCompensacao()
+                            + " - Mensagem Contribuinte: " + mensagemConvencao.getMensagemContribuinte()
+                    );
+                    dao.commit();
                     mensagemConvencao.setId(-1);
                     result = "Mensagem salva com Sucesso!";
                 } else {
                     result = "Erro ao salvar mensagem!";
-                    sadb.desfazerTransacao();
+                    dao.rollback();
                 }
             } else if (menConvencao.getId() == -1) {
                 result = "Mensagem ja existe!";
@@ -424,15 +475,26 @@ public class MensagemConvencaoBean {
 
     public String excluir() {
         if (mensagemConvencao.getId() != -1) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            mensagemConvencao = (MensagemConvencao) sadb.find(mensagemConvencao);
-            sadb.abrirTransacao();
-            if (sadb.deletarObjeto(mensagemConvencao)) {
-                sadb.comitarTransacao();
+            NovoLog novoLog = new NovoLog();
+            Dao dao = new Dao();
+            mensagemConvencao = (MensagemConvencao) dao.find(mensagemConvencao);
+            dao.openTransaction();
+            if (dao.delete(mensagemConvencao)) {
+                novoLog.delete(
+                        " - Referência: " + mensagemConvencao.getReferencia()
+                        + " - Vencimento: " + mensagemConvencao.getVencimento()
+                        + " - Serviço: (" + mensagemConvencao.getServicos().getId() + ") "
+                        + " - Tipo Serviço: (" + mensagemConvencao.getTipoServico().getId() + ") " + mensagemConvencao.getTipoServico().getDescricao()
+                        + " - Convenção: (" + mensagemConvencao.getConvencao().getId() + ") " + mensagemConvencao.getConvencao().getDescricao()
+                        + " - Grupo Cidade: (" + mensagemConvencao.getGrupoCidade().getId() + ") " + mensagemConvencao.getGrupoCidade().getDescricao()
+                        + " - Mensagem Compensação: " + mensagemConvencao.getMensagemCompensacao()
+                        + " - Mensagem Contribuinte: " + mensagemConvencao.getMensagemContribuinte()
+                );
+                dao.commit();
                 msgConfirma = "Mensagem Excluida com Sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
-                sadb.desfazerTransacao();
+                dao.rollback();
                 msgConfirma = "Mensagem não pode ser Excluida!";
                 GenericaMensagem.warn("Erro", msgConfirma);
             }
@@ -529,8 +591,8 @@ public class MensagemConvencaoBean {
 
     public List<SelectItem> getListaConvencoes() {
         List<SelectItem> convencoes = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        List<Convencao> list = (List<Convencao>) sadb.listaObjeto("Convencao");
+        Dao dao = new Dao();
+        List<Convencao> list = (List<Convencao>) dao.list(new Convencao());
         for (int i = 0; i < list.size(); i++) {
             convencoes.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
         }
@@ -540,8 +602,8 @@ public class MensagemConvencaoBean {
     public List<SelectItem> getListaGrupoCidade() {
         List<SelectItem> grupo = new ArrayList<SelectItem>();
         ConvencaoCidadeDB convencaoCidadeDB = new ConvencaoCidadeDBToplink();
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        Convencao convencao = (Convencao) sadb.find("Convencao", Integer.parseInt(((SelectItem) getListaConvencoes().get(idConvencao)).getDescription()));
+        Dao dao = new Dao();
+        Convencao convencao = (Convencao) dao.find(new Convencao(), Integer.parseInt(((SelectItem) getListaConvencoes().get(idConvencao)).getDescription()));
         if (convencao == null) {
             return grupo;
         }
