@@ -268,7 +268,7 @@ public class AcademiaDao extends DB {
 
     /**
      * 0 - NOME 1 - IDADE 2 - NASCIMENTO 3 - SEXO 4 - CIDADE 5 - RESPONSÁVEL 6 -
-     * SERVIÇO 7 - PERÍODO
+     * SERVIÇO 7 - PERÍODO - 8 EMISSÃO
      *
      * @param r
      * @param emissaoInicial
@@ -291,7 +291,8 @@ public class AcademiaDao extends DB {
                 + "            PA.cidade,                                                     " // 4 - CIDADE
                 + "            PR.ds_nome                                  AS responsavel,    " // 5 - RESPONSÁVEL
                 + "            S.ds_descricao                              AS servico,        " // 6 - SERVIÇO
-                + "            P.ds_descricao                              AS periodo         " // 7 - PERÍODO
+                + "            P.ds_descricao                              AS periodo,        " // 7 - PERÍODO
+                + "            A.dt_emissao                                AS emissao         " // 8 - EMISSÃO
                 + "       FROM matr_academia AS A                                             "
                 + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id     = A.id_servico_pessoa "
                 + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id    = A.id_servico_valor  "
