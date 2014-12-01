@@ -50,7 +50,7 @@
                                         <p:ajax event="toggleSelect" process="@this" />
                                         <p:column selectionMode="multiple" width="20" styleClass="text-center" />
                                         <p:column styleClass="text-center" width="25">
-                                            <p:commandButton icon="ui-icon-contact" value="#{conclusaoMatriculaBean.editar(lme)}" oncomplete="PF('dlg_panel').show();" update=":form_conclusao:i_panel" title="Detalhes"/>
+                                            <p:commandButton icon="ui-icon-contact" value="#{conclusaoMatriculaBean.edit(lme)}" oncomplete="PF('dlg_panel').show();" update=":form_conclusao:i_panel" title="Detalhes"/>
                                         </p:column>
                                         <p:column headerText="Período" styleClass="text-center">
                                             #{lme.periodo}
@@ -67,7 +67,7 @@
                                     </p:dataTable>
                                 </p:panel>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
-                                    <p:commandButton value="Novo" action="#{conclusaoMatriculaBean.novo}" update=":form_conclusao:" />
+                                    <p:commandButton value="Novo" action="#{conclusaoMatriculaBean.clear}" update=":form_conclusao:" />
                                     <p:commandButton value="Salvar selecionados" onclick="PF('dlg_salvar_todos').show();" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{conclusaoMatriculaBean.turmaPesquisa}"/>
                                 </h:panelGrid>
                                 <p:dialog widgetVar="dlg_panel" width="600" header="Matrícula" modal="true">
@@ -105,14 +105,14 @@
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_salvar" width="400" header="Deseja realmente concluir?" modal="true">
                                     <h:panelGrid columns="2" styleClass="margin-top-max">
-                                        <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.salvar}"/>
+                                        <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.save}"/>
                                         <p:commandButton value="Não" onclick="PF('dlg_salvar').hide();"/>
                                     </h:panelGrid>
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_salvar_todos" width="400" header="Deseja salvar todos selecionados?" modal="true">
                                     <p:panel styleClass="no-border" footer="* Não serão salvos alunos que estiverem com status trancado e desistente; * Alunos com débitos;">
                                         <h:panelGrid columns="2" styleClass="margin-top-max">
-                                            <p:commandButton value="Sim" oncomplete="PF('dlg_salvar_todos').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.salvarTodos}"/>
+                                            <p:commandButton value="Sim" oncomplete="PF('dlg_salvar_todos').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.saveAll}"/>
                                             <p:commandButton value="Não" onclick="PF('dlg_salvar_todos').hide();"/>
                                         </h:panelGrid>
                                     </p:panel>
