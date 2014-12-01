@@ -10,7 +10,9 @@ import br.com.rtools.arrecadacao.lista.ListaContribuicao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.GerarMovimento;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -184,6 +186,9 @@ public class ContribuicaoBean {
         if (selectedListaContribuicoes == null) {
             GenericaMensagem.warn("Validação", "Nenhuma linha foi selecionada!");
         }
+        NovoLog novoLog = new NovoLog();
+        novoLog.startList();
+        String logList;
         for (int i = 0; i < selectedListaContribuicoes.size(); i++) {
             GerarMovimento g = new GerarMovimento();
             mensagem += g.gerarBoletos(String.valueOf(selectedListaContribuicoes.get(i).getReferencia()),
@@ -193,8 +198,17 @@ public class ContribuicaoBean {
                     listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getId(),
                     1,
                     4);
+            logList = " Referência: " + selectedListaContribuicoes.get(i).getReferencia()
+                    + " - Vencimento: " + selectedListaContribuicoes.get(i).getVencimento()
+                    + " - Grupo Cidade: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getDescricao()
+                    + " - Convenção: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getDescricao()
+                    + " - Serviços: (" + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getId() + ") " + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getDescricao()
+                    + " - Tipo Serviço: (" + 1 + ")"
+                    + " - Rotina: (" + 4 + ")";
+            novoLog.save(logList);
             GenericaMensagem.info("Mensagem", mensagem);
         }
+        novoLog.saveList();
         selectedListaContribuicoes = null;
         //movimentoDB.gerarContribuicao(lista, listaServicos, 4);
     }
