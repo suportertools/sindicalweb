@@ -266,14 +266,15 @@ public class AcademiaDao extends DB {
         return false;
     }
 
-    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inSexo, String order) {
+    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, String order) {
         List listWhere = new ArrayList();
         String queryString = ""
                 + "     SELECT A.*                                                              "
                 + "       FROM matr_academia AS A                                               "
-                + " INNER JOIN fin_servico_pessoa   AS SP ON SP.id       = A.id_servico_pessoa  "
-                + " INNER JOIN pes_pessoa           AS P  ON P.id        = SP.id_pessoa         "
-                + " INNER JOIN pes_fisica           AS F  ON F.id_pessoa = P.id                 ";
+                + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id       = A.id_servico_pessoa "
+                + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id      = A.id_servico_valor  "
+                + " INNER JOIN pes_pessoa           AS P   ON P.id        = SP.id_pessoa        "
+                + " INNER JOIN pes_fisica           AS F   ON F.id_pessoa = P.id                ";
         if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
             listWhere.add("SP.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
         } else if (!emissaoFinal.isEmpty()) {
@@ -289,6 +290,9 @@ public class AcademiaDao extends DB {
         }
         if (inModalidade != null) {
             listWhere.add("SP.id_servico IN(" + inModalidade + ")");
+        }
+        if (inIdPeriodos != null) {
+            listWhere.add("ASV.id_periodo IN(" + inIdPeriodos + ")");
         }
         if (inSexo != null && !inSexo.isEmpty()) {
             listWhere.add("F.ds_sexo LIKE '" + inSexo + "'");
