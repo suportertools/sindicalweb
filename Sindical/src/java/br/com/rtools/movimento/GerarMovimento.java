@@ -23,6 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.persistence.Query;
 
 public class GerarMovimento extends DB {
+
     public String gerarBoletos(String referencia, String vencimento, int id_grupo_cidade, int id_convencao, int id_servico, int id_tipo_servico, int id_rotina) {
         String textQry = "";
         getEntityManager().getTransaction().begin();
@@ -150,7 +151,7 @@ public class GerarMovimento extends DB {
                         listaMovimento.get(i).getServicos().getId(),
                         listaMovimento.get(i).getTipoServico().getId(),
                         dbgc.grupoCidadesPorPessoa(listaMovimento.get(i).getPessoa().getId(),
-                        convencao.getId()).getId(),
+                                convencao.getId()).getId(),
                         "");
                 if (mc == null) {
                     return "Mensagem de cobrança não encontrada";
@@ -267,7 +268,7 @@ public class GerarMovimento extends DB {
         }
         return "";
     }
-    
+
     public static boolean salvarUmMovimentoBaixa(Lote lote, Movimento movimento) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         ContaCobrancaDB dbc = new ContaCobrancaDBToplink();
@@ -368,7 +369,7 @@ public class GerarMovimento extends DB {
                         movimento.getServicos().getId(),
                         movimento.getTipoServico().getId(),
                         dbgc.grupoCidadesPorPessoa(movimento.getPessoa().getId(),
-                        convencao.getId()).getId(),
+                                convencao.getId()).getId(),
                         movimento.getReferencia());
                 if (mc == null) {
                     return false;
@@ -412,7 +413,7 @@ public class GerarMovimento extends DB {
                 movimento.setLote(lote);
                 movimento.setVencimento(mc.getVencimento());
                 movimento.setVencimentoOriginal(mc.getVencimento());
-                
+
                 if (sv.inserirObjeto(movimento)) {
                     // BOLETO ---
 
@@ -467,7 +468,7 @@ public class GerarMovimento extends DB {
 //            
 //            //ServicoContaCobranca scc = dbc.pesquisaServPorIdServIdTipoServ(movimento.getServicos().getId(), movimento.getTipoServico().getId());
             if (sv.alterarObjeto(lote)) {
-                log.novo("Alterar Lote", "ID: " + lote.getId() + " Pessoa: " + lote.getPessoa().getNome() + " Data: " + lote.getEmissao() + " Valor: " + lote.getValor());
+                // log.update("", "Alterar Lote - ID: " + lote.getId() + " Pessoa: " + lote.getPessoa().getNome() + " Data: " + lote.getEmissao() + " Valor: " + lote.getValor());
             } else {
                 sv.desfazerTransacao();
                 return false;
@@ -476,7 +477,7 @@ public class GerarMovimento extends DB {
 //            // MOVIMENTO ----
 //            movimento.setLote(lote);
             if (sv.alterarObjeto(movimento)) {
-                log.novo("Alterar Movimento", "ID: " + movimento.getId() + " Pessoa: " + movimento.getPessoa().getNome() + " Valor: " + movimento.getValor());
+                // log.update("", "Alterar Movimento - ID: " + movimento.getId() + " Pessoa: " + movimento.getPessoa().getNome() + " Valor: " + movimento.getValor());
             } else {
                 sv.desfazerTransacao();
                 return false;
@@ -488,7 +489,6 @@ public class GerarMovimento extends DB {
         return true;
     }
 
-    
     public static boolean excluirUmMovimento(Movimento movimento) {
         String mensagem = "Deletados com sucesso!";
         MovimentoDB movDB = new MovimentoDBToplink();
@@ -705,7 +705,7 @@ public class GerarMovimento extends DB {
         baixa.setSequenciaBaixa(nrSequencia);
         baixa.setDocumentoBaixa(numeroComposto);
         baixa.setCaixa(null);
-        
+
         sv.abrirTransacao();
         if (!sv.inserirObjeto(baixa)) {
             sv.desfazerTransacao();
@@ -715,8 +715,6 @@ public class GerarMovimento extends DB {
         // CALCULO PARA PORCENTAGEM DO VALOR PAGO -- NESSE CASO DE ARRECADACAO É 100%
         //float calc = Moeda.multiplicarValores(Moeda.divisaoValores(fp.get(i).getValor(), valorTotal), 100);
         //calc = Moeda.converteFloatR$Float(calc);
-
-
         FormaPagamento fp = new FormaPagamento(-1,
                 baixa,
                 null,
@@ -742,7 +740,6 @@ public class GerarMovimento extends DB {
 
         //movimento.setValor(movimento.getValorBaixa());
         //movimento.setAtivo(false);
-
         if (!sv.alterarObjeto(movimento)) {
             sv.desfazerTransacao();
             return false;
@@ -764,7 +761,6 @@ public class GerarMovimento extends DB {
 //                movi.setAtivo(true);
 //                
 //                if (salvarUmMovimento(null, movimento))
-
         sv.comitarTransacao();
         return true;
     }
@@ -778,8 +774,8 @@ public class GerarMovimento extends DB {
         // 0000022912
         try {
             String numeroComposto = "";
-            if (movimento.get(0).getServicos() != null){
-                
+            if (movimento.get(0).getServicos() != null) {
+
                 if (movimento.get(0).getServicos().getId() == 1) {
                     //String documento = movimento.get(0).getPessoa().getDocumento().replace(".", "").replace("/", "").replace("-", "").substring(0, 12);
                     String documento = movimento.get(0).getDocumento();
@@ -797,7 +793,7 @@ public class GerarMovimento extends DB {
             baixa.setBaixa(pagamento);
             baixa.setDocumentoBaixa(numeroComposto);
             baixa.setCaixa(caixa);
-            
+
             sv.abrirTransacao();
             if (!sv.inserirObjeto(baixa)) {
                 sv.desfazerTransacao();
@@ -829,26 +825,26 @@ public class GerarMovimento extends DB {
                     ch_p.setPlano5(fp1.getChequePag().getPlano5());
                     ch_p.setStatus(fp1.getChequePag().getStatus());
                     ch_p.setVencimento(fp1.getChequePag().getVencimento());
-                    
+
                     if (!sv.inserirObjeto(ch_p)) {
                         sv.desfazerTransacao();
                         return false;
                     }
                     fp1.setChequePag(ch_p);
-                    
-                    ContaBanco cb = (ContaBanco) sv.pesquisaCodigo(ch_p.getPlano5().getContaBanco().getId(),  "ContaBanco");
-                    cb.setUCheque(cb.getUCheque()+1);
+
+                    ContaBanco cb = (ContaBanco) sv.pesquisaCodigo(ch_p.getPlano5().getContaBanco().getId(), "ContaBanco");
+                    cb.setUCheque(cb.getUCheque() + 1);
                     if (!sv.alterarObjeto(cb)) {
                         sv.desfazerTransacao();
                         return false;
                     }
                 }
-                
+
                 if (!sv.inserirObjeto(fp1)) {
                     sv.desfazerTransacao();
                     return false;
                 }
-                
+
             }
 
             for (int i = 0; i < movimento.size(); i++) {
@@ -866,7 +862,7 @@ public class GerarMovimento extends DB {
         }
         return true;
     }
-    
+
     public static Object[] baixarMovimentoSocial(List<Movimento> lista_movimento, Usuario usuario, String data_pagamento, float valor_baixa, float valor_taxa) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Object[] lista_log = new Object[3];
@@ -883,50 +879,49 @@ public class GerarMovimento extends DB {
             lista_log[0] = 0; // 0 - ERRO AO INSERIR BAIXA
             lista_log[1] = baixa;
             lista_log[2] = "Erro ao inserir Baixa";
-            return lista_log; 
+            return lista_log;
         }
 
         FormaPagamento fp = new FormaPagamento(
-                -1, 
-                baixa, 
-                null, 
-                null, 
-                100, 
-                valor_baixa, 
-                lista_movimento.get(0).getLote().getFilial(), 
-                lista_movimento.get(0).getPlano5(), 
-                null, 
-                null, 
-                (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"), 
-                valor_baixa, 
-                null, 
+                -1,
+                baixa,
+                null,
+                null,
+                100,
+                valor_baixa,
+                lista_movimento.get(0).getLote().getFilial(),
+                lista_movimento.get(0).getPlano5(),
+                null,
+                null,
+                (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"),
+                valor_baixa,
+                null,
                 0
         );
-        
+
         if (!sv.inserirObjeto(fp)) {
             sv.desfazerTransacao();
             lista_log[0] = 1; // 1 - ERRO AO INSERIR FORMA DE PAGAMENTO
             lista_log[1] = fp;
             lista_log[2] = "Erro ao inserir Forma de Pagamento";
-            return lista_log; 
+            return lista_log;
         }
-        
+
         float soma = 0;
         for (Movimento movimento : lista_movimento) {
             soma = Moeda.somaValores(soma, movimento.getValor());
-            
-            
+
             movimento.setBaixa(baixa);
             if (!sv.alterarObjeto(movimento)) {
                 sv.desfazerTransacao();
                 lista_log[0] = 2; // 2 - ERRO AO ALTERAR MOVIMENTO COM A BAIXA
                 lista_log[1] = movimento;
                 lista_log[2] = "Erro ao alterar Movimento";
-                return lista_log; 
+                return lista_log;
             }
         }
-                
-        if (valor_baixa == soma){
+
+        if (valor_baixa == soma) {
             // valor baixado corretamente
             // sv.comitarTransacao();
             for (Movimento movimento : lista_movimento) {
@@ -936,9 +931,9 @@ public class GerarMovimento extends DB {
                     lista_log[0] = 9; // 9 - ERRO AO ALTERAR MOVIMENTO VALOR BAIXA CORRETO
                     lista_log[1] = movimento;
                     lista_log[2] = "Erro ao alterar Movimento com Desconto e Valor Baixa";
-                } 
+                }
             }
-        }else if (valor_baixa < soma){
+        } else if (valor_baixa < soma) {
             float acrescimo = Moeda.subtracaoValores(soma, valor_baixa);
             // valor da baixa é menor que os boletos ( O CLIENTE PAGOU MENOS )
             for (Movimento movimento : lista_movimento) {
@@ -948,22 +943,22 @@ public class GerarMovimento extends DB {
 
                 movimento.setDesconto(valor);
                 movimento.setValorBaixa(Moeda.subtracaoValores(movimento.getValor(), valor));
-                
+
                 if (!sv.alterarObjeto(movimento)) {
                     sv.desfazerTransacao();
                     lista_log[0] = 3; // 3 - ERRO AO ALTERAR MOVIMENTO COM DESCONTO E VALOR BAIXA
                     lista_log[1] = movimento;
                     lista_log[2] = "Erro ao alterar Movimento com Desconto e Valor Baixa";
-                    return lista_log; 
+                    return lista_log;
                 }
             }
             sv.comitarTransacao();
             //sv.desfazerTransacao();
             lista_log[0] = 6; // 6 - VALOR DO ARQUIVO MENOR
             lista_log[1] = lista_movimento;
-            lista_log[2] = "Valor do Boleto "+lista_movimento.get(0).getDocumento()+" - vencto. "+lista_movimento.get(0).getVencimento()+" - pag. "+data_pagamento+" MENOR com défit de "+Moeda.converteR$Float(acrescimo);
-            return lista_log; 
-        }else if (valor_baixa > soma){
+            lista_log[2] = "Valor do Boleto " + lista_movimento.get(0).getDocumento() + " - vencto. " + lista_movimento.get(0).getVencimento() + " - pag. " + data_pagamento + " MENOR com défit de " + Moeda.converteR$Float(acrescimo);
+            return lista_log;
+        } else if (valor_baixa > soma) {
             float acrescimo = Moeda.subtracaoValores(valor_baixa, soma);
             // valor da baixa é maior que os boletos ( O CLIENTE PAGOU MAIS ) 
             for (Movimento movimento : lista_movimento) {
@@ -973,27 +968,27 @@ public class GerarMovimento extends DB {
 
                 movimento.setCorrecao(valor);
                 movimento.setValorBaixa(Moeda.somaValores(valor, movimento.getValor()));
-                
+
                 if (!sv.alterarObjeto(movimento)) {
                     sv.desfazerTransacao();
                     lista_log[0] = 4; // 4 - ERRO AO ALTERAR MOVIMENTO COM CORREÇÃO E VALOR BAIXA
                     lista_log[1] = movimento;
                     lista_log[2] = "Erro ao alterar Movimento com Correção e Valor Baixa";
-                    return lista_log; 
+                    return lista_log;
                 }
             }
             sv.comitarTransacao();
             //sv.desfazerTransacao();
             lista_log[0] = 7; // 7 - VALOR DO ARQUIVO MAIOR
             lista_log[1] = lista_movimento;
-            lista_log[2] = "Valor do Boleto "+lista_movimento.get(0).getDocumento()+" - vencto. "+lista_movimento.get(0).getVencimento()+" - pag. "+data_pagamento +" MAIOR com acréscimo de "+Moeda.converteR$Float(acrescimo);
-            return lista_log; 
+            lista_log[2] = "Valor do Boleto " + lista_movimento.get(0).getDocumento() + " - vencto. " + lista_movimento.get(0).getVencimento() + " - pag. " + data_pagamento + " MAIOR com acréscimo de " + Moeda.converteR$Float(acrescimo);
+            return lista_log;
         }
         sv.comitarTransacao();
         //sv.desfazerTransacao();
         lista_log[0] = 5; // 5 - BAIXA CONCLUÍDA COM SUCESSO
         lista_log[1] = lista_movimento;
         lista_log[2] = "Baixa concluída com Sucesso!";
-        return lista_log; 
-    }    
+        return lista_log;
+    }
 }
