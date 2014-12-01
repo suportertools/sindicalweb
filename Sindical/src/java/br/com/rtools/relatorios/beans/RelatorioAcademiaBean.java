@@ -10,6 +10,8 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.sistema.Periodo;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -39,8 +41,10 @@ public class RelatorioAcademiaBean implements Serializable {
     private Pessoa aluno;
     private Pessoa responsavel;
     private List selectedModalidades;
+    private List selectedPeriodos;
     private List<SelectItem>[] listSelectItem;
     private Map<String, Integer> listModalidades;
+    private Map<String, Integer> listPeriodos;
     private Boolean[] filtro;
     private Date dataInicial;
     private Date dataFinal;
@@ -53,13 +57,14 @@ public class RelatorioAcademiaBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        filtro = new Boolean[6];
+        filtro = new Boolean[7];
         filtro[0] = false; // MODALIDADE
         filtro[1] = false; // PERÍODO EMISSÃO
         filtro[2] = false; // RESPONSÁVEL
         filtro[3] = false; // ALUNO
         filtro[4] = false; // SEXO
         filtro[5] = false; // ORDER
+        filtro[6] = false; // PERÍODOS
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<>();
         listSelectItem[1] = new ArrayList<>();
@@ -113,6 +118,7 @@ public class RelatorioAcademiaBean implements Serializable {
             String referencia = "";
             String dReferencia = "";
             String inIdModalidades = inIdModalidades();
+            String inIdPeriodos = inIdPeriodos();
             List listDetalhePesquisa = new ArrayList();
             if (filtro[1]) {
                 pIStringI = DataHoje.converteData(dataInicial);
@@ -132,7 +138,7 @@ public class RelatorioAcademiaBean implements Serializable {
             }
             String orderString = "";
             AcademiaDao academiaDao = new AcademiaDao();
-            List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, sexo, orderString);
+            List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, orderString);
             if (list.isEmpty()) {
                 GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
                 return;
@@ -275,7 +281,7 @@ public class RelatorioAcademiaBean implements Serializable {
     public List<SelectItem> getListTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(-1);
+            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(275);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
             }
@@ -334,6 +340,9 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[5]) {
             order = "";
         }
+        if (!filtro[6]) {
+            selectedPeriodos = null;
+        }
     }
 
     public void close(String close) {
@@ -363,6 +372,11 @@ public class RelatorioAcademiaBean implements Serializable {
             case "order":
                 order = "";
                 filtro[5] = false;
+                break;
+            case "periodo":
+                filtro[6] = false;
+                selectedPeriodos = null;
+                listPeriodos = null;
                 break;
         }
         PF.update("form_relatorio:id_panel");
@@ -426,6 +440,7 @@ public class RelatorioAcademiaBean implements Serializable {
      * <li>[3] ALUNO</li>
      * <li>[4] SEXO</li>
      * <li>[5] ORDENAÇÃO </li>
+     * <li>[6] PERIODOS </li>
      * </ul>
      *
      * @return boolean
@@ -478,7 +493,7 @@ public class RelatorioAcademiaBean implements Serializable {
             if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
                     if (idServicoMemoria != list.get(i).getServicos().getId()) {
-                        listModalidades.put(list.get(i).getServicos().getDescricao(), list.get(i).getId());
+                        listModalidades.put(list.get(i).getServicos().getDescricao(), list.get(i).getServicos().getId());
                         idServicoMemoria = list.get(i).getServicos().getId();
                         b++;
                     }
@@ -488,8 +503,26 @@ public class RelatorioAcademiaBean implements Serializable {
         return listModalidades;
     }
 
-    public void setListListModalidades(Map<String, Integer> listModalidades) {
+    public void setListModalidades(Map<String, Integer> listModalidades) {
         this.listModalidades = listModalidades;
+    }
+
+    public Map<String, Integer> getListPeriodos() {
+        if (listPeriodos == null) {
+            listPeriodos = new HashMap<>();
+            Dao dao = new Dao();
+            List<Periodo> list = dao.list(new Periodo());
+            if (list != null) {
+                for (int i = 0; i < list.size(); i++) {
+                    listPeriodos.put(list.get(i).getDescricao(), list.get(i).getId());
+                }
+            }
+        }
+        return listPeriodos;
+    }
+
+    public void setListPeriodos(Map<String, Integer> listPeriodos) {
+        this.listPeriodos = listPeriodos;
     }
 
     public String inIdModalidades() {
@@ -500,6 +533,20 @@ public class RelatorioAcademiaBean implements Serializable {
                     ids = "" + selectedModalidades.get(i);
                 } else {
                     ids += "," + selectedModalidades.get(i);
+                }
+            }
+        }
+        return ids;
+    }
+
+    public String inIdPeriodos() {
+        String ids = null;
+        if (selectedPeriodos != null) {
+            for (int i = 0; i < selectedPeriodos.size(); i++) {
+                if (ids == null) {
+                    ids = "" + selectedPeriodos.get(i);
+                } else {
+                    ids += "," + selectedPeriodos.get(i);
                 }
             }
         }
@@ -528,5 +575,13 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public void setSelectedModalidades(List selectedModalidades) {
         this.selectedModalidades = selectedModalidades;
+    }
+
+    public List getSelectedPeriodos() {
+        return selectedPeriodos;
+    }
+
+    public void setSelectedPeriodos(List selectedPeriodos) {
+        this.selectedPeriodos = selectedPeriodos;
     }
 }
