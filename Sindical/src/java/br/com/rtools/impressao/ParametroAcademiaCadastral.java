@@ -2,6 +2,7 @@ package br.com.rtools.impressao;
 
 public class ParametroAcademiaCadastral {
 
+    private String detalhes_relatorio;
     private String aluno_nome;
     private String aluno_idade;
     private String aluno_nascimento;
@@ -11,7 +12,8 @@ public class ParametroAcademiaCadastral {
     private String periodo;
     private String responsavel;
 
-    public ParametroAcademiaCadastral(String aluno_nome, String aluno_idade, String aluno_nascimento, String aluno_sexo, String aluno_cidade, String servico, String periodo, String responsavel) {
+    public ParametroAcademiaCadastral(String detalhes_relatorio, String aluno_nome, String aluno_idade, String aluno_nascimento, String aluno_sexo, String aluno_cidade, String servico, String periodo, String responsavel) {
+        this.detalhes_relatorio = detalhes_relatorio;
         this.aluno_nome = aluno_nome;
         this.aluno_idade = aluno_idade;
         this.aluno_nascimento = aluno_nascimento;
@@ -84,5 +86,13 @@ public class ParametroAcademiaCadastral {
 
     public void setResponsavel(String responsavel) {
         this.responsavel = responsavel;
+    }
+
+    public String getDetalhes_relatorio() {
+        return detalhes_relatorio;
+    }
+
+    public void setDetalhes_relatorio(String detalhes_relatorio) {
+        this.detalhes_relatorio = detalhes_relatorio;
     }
 }
