@@ -10,12 +10,12 @@ import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,23 +56,23 @@ public class ConclusaoMatriculaBean implements Serializable {
         /* chamado quando outra view for chamada através do UIViewRoot.setViewId(String viewId) */
     }
 
-    public void novo() {
+    public void clear() {
         GenericaSessao.remove("conclusaoMatriculaBean");
     }
 
-    public void editar(ListaMatriculaEscola lme) {
+    public void edit(ListaMatriculaEscola lme) {
         matriculaEscola = lme.getMatriculaEscola();
         matriculaTurma = lme.getMatriculaTurma();
         matriculaIndividual = lme.getMatriculaIndividual();
     }
 
-    public void salvar() {
+    public void save() {
         HomologacaoDB hdb = new HomologacaoDBToplink();
         List list = hdb.pesquisaPessoaDebito(matriculaEscola.getResponsavel().getId(), DataHoje.data());
-        if(!list.isEmpty()) {
-            mensagem = "Responsável possui débitos!";
-            return;            
-        }
+//        if (!list.isEmpty()) {
+//            mensagem = "Responsável possui débitos!";
+//            return;
+//        }
         if (matriculaEscola.getEscStatus().getId() == 3 || matriculaEscola.getEscStatus().getId() == 4) {
             mensagem = "Não é possível realizar a conclusão se o status estiver como trancado ou desistente!";
             return;
@@ -96,42 +96,58 @@ public class ConclusaoMatriculaBean implements Serializable {
             mensagem = "Matrícula não encontrada!";
             return;
         }
-        if (dataHoje <= dataConclusao) {
-            mensagem = "O curso ainda não foi concluído! Data da finalização do curso é " + dtConclusao;
-            return;
-        }
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        matriculaEscola.setEscStatus((EscStatus) sadb.find(new EscStatus(), 2));
+//        if (dataHoje <= dataConclusao) {
+//            mensagem = "O curso ainda não foi concluído! Data da finalização do curso é " + dtConclusao;
+//            return;
+//        }
+        Dao dao = new Dao();
+        matriculaEscola.setEscStatus((EscStatus) dao.find(new EscStatus(), 2));
         matriculaEscola.setStatus(DataHoje.dataHoje());
-        sadb.abrirTransacao();
-        if(sadb.alterarObjeto(matriculaEscola)) {
-            sadb.comitarTransacao();
+        dao.openTransaction();
+        MatriculaEscola me = (MatriculaEscola) dao.find(new MatriculaEscola(), matriculaEscola.getId());
+        String beforeUpdate = "Mudança de Status - Matrícula " + me.getId()
+                + " - Aluno: " + me.getAluno().getId() + " - " + me.getAluno().getNome()
+                + " - Responsável: " + me.getResponsavel().getId() + " - " + me.getResponsavel().getNome()
+                + " - Status: " + me.getEscStatus().getDescricao()
+                + " - Filial: " + me.getFilial().getFilial().getPessoa().getId();
+        NovoLog novoLog = new NovoLog();
+        if (dao.update(matriculaEscola)) {
+            dao.commit();
             listaMatriculaEscola.clear();
             mensagem = "Matrícula atualizada com sucesso!";
-            if(isTurma) {
+            String servicoString;
+            if (isTurma) {
                 GenericaSessao.put("matriculaTurmaPesquisa", matriculaTurma);
+                servicoString = " - Turma: (" + matriculaTurma.getTurma().getCursos().getId() + ") " + matriculaTurma.getTurma().getCursos().getDescricao();
             } else {
-                GenericaSessao.put("matriculaIndiviualPesquisa", matriculaIndividual);                
+                GenericaSessao.put("matriculaIndiviualPesquisa", matriculaIndividual);
+                servicoString = " - Individual: (" + matriculaIndividual.getCurso().getId() + ") " + matriculaIndividual.getCurso().getDescricao();
             }
+            novoLog.update(beforeUpdate,
+                    " Matrícula " + matriculaEscola.getId()
+                    + " - Aluno: " + matriculaEscola.getAluno().getId() + " - " + matriculaEscola.getAluno().getNome()
+                    + " - Responsável: " + matriculaEscola.getResponsavel().getId() + " - " + matriculaEscola.getResponsavel().getNome()
+                    + " - Status: " + matriculaEscola.getEscStatus().getDescricao()
+                    + " - Filial: " + matriculaEscola.getFilial().getFilial().getPessoa().getId() + servicoString);
         } else {
-            sadb.desfazerTransacao();
+            dao.rollback();
         }
     }
 
-    public void salvarTodos() {
+    public void saveAll() {
         if (matriculaEscolaSelecionado.length == 0) {
             mensagem = "Nenhuma matrícula selecionada!";
             return;
         }
-        HomologacaoDB hdb = new HomologacaoDBToplink();        
+        HomologacaoDB hdb = new HomologacaoDBToplink();
         int dataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
         int dataConclusao;
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        EscStatus es = (EscStatus) sadb.find(new EscStatus(), 2);
+        Dao dao = new Dao();
+        EscStatus es = (EscStatus) dao.find(new EscStatus(), 2);
         Date dataStatus = DataHoje.dataHoje();
         ListaMatriculaEscola lme = null;
         Turma t = new Turma();
-        sadb.abrirTransacao();
+        dao.openTransaction();
         for (int i = 0; i < matriculaEscolaSelecionado.length; i++) {
             lme = matriculaEscolaSelecionado[i];
             if (i == 0) {
@@ -143,29 +159,23 @@ public class ConclusaoMatriculaBean implements Serializable {
             if (dataHoje > dataConclusao) {
                 if (lme.getMatriculaEscola().getEscStatus().getId() != 3 || lme.getMatriculaEscola().getEscStatus().getId() != 4 && lme.getMatriculaEscola().getEscStatus().getId() == 2) {
                     List list = hdb.pesquisaPessoaDebito(matriculaEscola.getResponsavel().getId(), DataHoje.data());
-                    if(!list.isEmpty()) {
-                        sadb.desfazerTransacao();
-                        return;            
-                    }                    
-                    if (!sadb.alterarObjeto(lme.getMatriculaEscola())) {
-                        sadb.desfazerTransacao();
+                    if (!list.isEmpty()) {
+                        dao.rollback();
+                        return;
+                    }
+                    if (!dao.update(lme.getMatriculaEscola())) {
+                        dao.rollback();
                         return;
                     }
                 }
             }
         }
-        sadb.comitarTransacao();
+        dao.commit();
         GenericaSessao.put("turmaPesquisa", t);
         listaMatriculaEscola.clear();
         mensagem = "Matrículas atualizadas com sucesso!";
     }
 
-//    public String load() {
-//        getMatriculaTurma();
-//        getMatriculaIndividual();
-//        getTurma();
-//        return null;
-//    }
     public MatriculaEscola getMatriculaEscola() {
         return matriculaEscola;
     }
