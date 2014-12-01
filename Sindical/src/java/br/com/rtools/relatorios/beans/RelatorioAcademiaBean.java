@@ -129,12 +129,12 @@ public class RelatorioAcademiaBean implements Serializable {
             listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
         }
         if (filtro[4]) {
-            if(sexo.equals("M")) {
-                sexoString = "Masculino";                
-            } else if(sexo.equals("F")) {
+            if (sexo.equals("M")) {
+                sexoString = "Masculino";
+            } else if (sexo.equals("F")) {
                 sexoString = "Feminino";
             } else {
-                sexoString = "Todos";                
+                sexoString = "Todos";
             }
             listDetalhePesquisa.add(" Sexo: " + sexoString + "");
         }
@@ -170,12 +170,17 @@ public class RelatorioAcademiaBean implements Serializable {
             }
         }
         String nascimento = "";
+        String emissao = "";
         List<ParametroAcademiaCadastral> pacs = new ArrayList<>();
         ParametroAcademiaCadastral pac;
         for (Object list1 : list) {
             nascimento = AnaliseString.converteNullString(((List) list1).get(2));
             if (!nascimento.isEmpty()) {
                 nascimento = DataHoje.converteData(DataHoje.converteDateSqlToDate(nascimento));
+            }
+            emissao = AnaliseString.converteNullString(((List) list1).get(8));
+            if (!emissao.isEmpty()) {
+                emissao = DataHoje.converteData(DataHoje.converteDateSqlToDate(emissao));
             }
             pac = new ParametroAcademiaCadastral(
                     detalheRelatorio,
@@ -186,7 +191,8 @@ public class RelatorioAcademiaBean implements Serializable {
                     AnaliseString.converteNullString(((List) list1).get(4)),
                     AnaliseString.converteNullString(((List) list1).get(6)),
                     AnaliseString.converteNullString(((List) list1).get(7)),
-                    AnaliseString.converteNullString(((List) list1).get(5))
+                    AnaliseString.converteNullString(((List) list1).get(5)),
+                    emissao
             );
             pacs.add(pac);
         }
