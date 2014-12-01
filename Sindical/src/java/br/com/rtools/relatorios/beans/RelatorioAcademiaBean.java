@@ -249,6 +249,16 @@ public class RelatorioAcademiaBean implements Serializable {
         this.dataFinal = DataHoje.converte(format.format(event.getObject()));
     }
 
+    public void selecionaDataInativoInicial(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataInativoInicial = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void selecionaDataInativoFinal(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataInativoFinal = DataHoje.converte(format.format(event.getObject()));
+    }
+
     public void clear() {
         if (!filtro[0]) {
             selectedModalidades = null;
@@ -272,6 +282,10 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[6]) {
             selectedPeriodos = null;
         }
+        if (!filtro[7]) {
+            dataInicial = DataHoje.dataHoje();
+            dataFinal = DataHoje.dataHoje();
+        }
     }
 
     public void close(String close) {
@@ -285,6 +299,11 @@ public class RelatorioAcademiaBean implements Serializable {
                 filtro[1] = false;
                 dataInicial = DataHoje.dataHoje();
                 dataFinal = DataHoje.dataHoje();
+                break;
+            case "periodoInativacao":
+                filtro[7] = false;
+                dataInativoInicial = DataHoje.dataHoje();
+                dataInativoFinal = DataHoje.dataHoje();
                 break;
             case "responsavel":
                 responsavel = new Pessoa();
