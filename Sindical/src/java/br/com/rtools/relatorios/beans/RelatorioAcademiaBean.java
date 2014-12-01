@@ -3,10 +3,8 @@ package br.com.rtools.relatorios.beans;
 import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.dao.AcademiaDao;
 import br.com.rtools.arrecadacao.dao.RaisDao;
-import br.com.rtools.endereco.Cidade;
 import br.com.rtools.impressao.ParametroAcademiaCadastral;
 import br.com.rtools.pessoa.Fisica;
-import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
@@ -17,7 +15,6 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
@@ -51,6 +48,8 @@ public class RelatorioAcademiaBean implements Serializable {
     private Boolean[] filtro;
     private Date dataInicial;
     private Date dataFinal;
+    private Date dataInativoInicial;
+    private Date dataInativoFinal;
     private Integer[] index;
     private String tipoRelatorio;
     private String tipo;
@@ -73,12 +72,14 @@ public class RelatorioAcademiaBean implements Serializable {
         listSelectItem[1] = new ArrayList<>();
         dataInicial = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
+        dataInativoInicial = DataHoje.dataHoje();
+        dataInativoFinal = DataHoje.dataHoje();
         index = new Integer[2];
         index[0] = 0;
         index[1] = 0;
         tipoRelatorio = "Simples";
         indexAccordion = "Simples";
-        order = "";
+        order = "PA.nome";
         aluno = new Pessoa();
         responsavel = new Pessoa();
         sexo = "";
@@ -110,7 +111,6 @@ public class RelatorioAcademiaBean implements Serializable {
         if (relatorios == null) {
             return;
         }
-        String order = "";
         String detalheRelatorio = "";
         RaisDao raisDao = new RaisDao();
         Integer idResponsavel = null;
@@ -129,12 +129,16 @@ public class RelatorioAcademiaBean implements Serializable {
             listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
         }
         if (filtro[4]) {
-            if (sexo.equals("M")) {
-                sexoString = "Masculino";
-            } else if (sexo.equals("F")) {
-                sexoString = "Feminino";
-            } else {
-                sexoString = "Todos";
+            switch (sexo) {
+                case "M":
+                    sexoString = "Masculino";
+                    break;
+                case "F":
+                    sexoString = "Feminino";
+                    break;
+                default:
+                    sexoString = "Todos";
+                    break;
             }
             listDetalhePesquisa.add(" Sexo: " + sexoString + "");
         }
@@ -149,9 +153,11 @@ public class RelatorioAcademiaBean implements Serializable {
             idResponsavel = responsavel.getId();
             listDetalhePesquisa.add(" Escritório por Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
         }
-        String orderString = "";
         AcademiaDao academiaDao = new AcademiaDao();
-        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, orderString);
+        if (order == null) {
+            order = "";
+        }
+        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, order);
         if (list.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
@@ -506,5 +512,21 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public void setSelectedPeriodos(List selectedPeriodos) {
         this.selectedPeriodos = selectedPeriodos;
+    }
+
+    public Date getDataInativoInicial() {
+        return dataInativoInicial;
+    }
+
+    public void setDataInativoInicial(Date dataInativoInicial) {
+        this.dataInativoInicial = dataInativoInicial;
+    }
+
+    public Date getDataInativoFinal() {
+        return dataInativoFinal;
+    }
+
+    public void setDataInativoFinal(Date dataInativoFinal) {
+        this.dataInativoFinal = dataInativoFinal;
     }
 }
