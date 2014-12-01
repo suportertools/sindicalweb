@@ -7,6 +7,7 @@ import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.financeiro.beans.MovimentoValorBean;
 import br.com.rtools.financeiro.db.*;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
@@ -85,7 +86,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
     private Pessoa pessoaEnvio = new Pessoa();
 
     public ProcessamentoIndividualJSFBean() {
-    
+
     }
 
     public void removerEmpresa() {
@@ -473,6 +474,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
     public synchronized String gerarBoleto() {
         Movimento movim = new Movimento();
         Lote lote = new Lote();
+        Dao dao = new Dao();
+        NovoLog novoLog = new NovoLog();
+        String beforeUpdate = "";
+        Movimento movimentoBefore = new Movimento();
         MovimentoDB finDB = new MovimentoDBToplink();
         if (!listMovimentos.isEmpty()) {
             for (int i = 0; i < listMovimentos.size(); i++) {
@@ -481,11 +486,25 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getReferencia(),
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getTipoServico().getId(),
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getServicos().getId());
-
                 if (movim != null) {
+                    movimentoBefore = (Movimento) dao.find((Movimento) listMovimentos.get(i).getArgumento1());
+                    beforeUpdate
+                            = " Movimento: (" + movimentoBefore.getId() + ") "
+                            + " - Referência: (" + movimentoBefore.getReferencia()
+                            + " - Tipo Serviço: (" + movimentoBefore.getTipoServico().getId() + ") " + movim.getTipoServico().getDescricao()
+                            + " - Serviços: (" + movimentoBefore.getServicos().getId() + ") " + movim.getServicos().getDescricao()
+                            + " - Pessoa: (" + movimentoBefore.getPessoa().getId() + ") " + movim.getPessoa().getNome()
+                            + " - Valor: " + movimentoBefore.getValorString();
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
-
                     if (GerarMovimento.alterarUmMovimento(movim)) {
+                        novoLog.update("",
+                                " Movimento: (" + movim.getId() + ") "
+                                + " - Referência: (" + movim.getReferencia()
+                                + " - Tipo Serviço: (" + movim.getTipoServico().getId() + ") " + movim.getTipoServico().getDescricao()
+                                + " - Serviços: (" + movim.getServicos().getId() + ") " + movim.getServicos().getDescricao()
+                                + " - Pessoa: (" + movim.getPessoa().getId() + ") " + movim.getPessoa().getNome()
+                                + " - Valor: " + movim.getValorString()
+                        );
                         msgConfirma = "Alterado com sucesso!";
                     } else {
                         msgConfirma = "Erro ao alterar boletos!";
@@ -500,13 +519,23 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
 
                     if (GerarMovimento.salvarUmMovimento(lote, movim)) {
                         movim.setVencimento(vencto);
+                        novoLog.save(
+                                " Movimento: (" + movim.getId() + ") "
+                                + " - Referência: (" + movim.getReferencia()
+                                + " - Tipo Serviço: (" + movim.getTipoServico().getId() + ") " + movim.getTipoServico().getDescricao()
+                                + " - Serviços: (" + movim.getServicos().getId() + ") " + movim.getServicos().getDescricao()
+                                + " - Pessoa: (" + movim.getPessoa().getId() + ") " + movim.getPessoa().getNome()
+                                + " - Valor: " + movim.getValorString()
+                        );
                         msgConfirma = "Gerado com sucesso!";
                     } else {
                         msgConfirma = "Erro ao Gerar boletos!";
                     }
                 }
+                movimentoBefore = new Movimento();
                 movim = new Movimento();
                 lote = new Lote();
+                beforeUpdate = "";
             }
             processou = true;
         }
@@ -522,7 +551,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
         if (!listMovimentos.isEmpty()) {
             Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
+
             sv.abrirTransacao();
             for (int i = 0; i < listMovimentos.size(); i++) {
                 movi = (Movimento) listMovimentos.get(i).getArgumento1();
@@ -530,26 +559,26 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                 listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento7()));
                 //listaValores.add(movi.getValor());
                 listaVencimentos.add(movi.getVencimento());
-                
+
                 Impressao impressao = new Impressao();
-                
+
                 impressao.setUsuario(usuario);
                 impressao.setDtVencimento(movi.getDtVencimento());
                 impressao.setMovimento(movi);
-                
-                if (!sv.inserirObjeto(impressao)){
+
+                if (!sv.inserirObjeto(impressao)) {
                     sv.desfazerTransacao();
                     GenericaMensagem.error("Erro", "Não foi possível SALVAR impressão!");
                     return null;
                 }
             }
-            
+
             sv.comitarTransacao();
-            
+
             ImprimirBoleto imp = new ImprimirBoleto();
 
             movs = imp.atualizaContaCobrancaMovimento(movs);
-            
+
             imp.imprimirBoleto(movs, listaValores, listaVencimentos, imprimeVerso);
 
             imp.visualizar(null);
@@ -594,7 +623,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                 List<String> listaVencimentos = new ArrayList<String>();
                 String mensagem = "";
                 List<File> fls = new ArrayList<File>();
-                
+
                 for (int i = 0; i < listMovimentos.size(); i++) {
                     ((Movimento) listMovimentos.get(i).getArgumento1()).setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
                     movs.add((Movimento) listMovimentos.get(i).getArgumento1());
@@ -610,19 +639,20 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                     pessoas.add(movs.get(0).getPessoa());
 
                     String nome_envio = "";
-                    if (listMovimentos.size() == 1)
-                        nome_envio = "Boleto " + ((Movimento) listMovimentos.get(0).getArgumento1()).getServicos().getDescricao()+" N° "+((Movimento) listMovimentos.get(0).getArgumento1()).getDocumento();
-                    else
+                    if (listMovimentos.size() == 1) {
+                        nome_envio = "Boleto " + ((Movimento) listMovimentos.get(0).getArgumento1()).getServicos().getDescricao() + " N° " + ((Movimento) listMovimentos.get(0).getArgumento1()).getDocumento();
+                    } else {
                         nome_envio = "Boleto";
-                    
+                    }
+
                     if (!reg.isEnviarEmailAnexo()) {
                         mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
-                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
+                                + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                     } else {
                         fls.add(new File(imp.getPathPasta() + "/" + nome));
                         mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
                     }
-                    
+
                     DaoInterface di = new Dao();
                     Mail mail = new Mail();
                     mail.setFiles(fls);
@@ -705,19 +735,20 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         pessoas.add(jur.getPessoa());
 
                         String nome_envio = "";
-                        if (movs.size() == 1)
-                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao()+" N° " + m.get(0).getDocumento();
-                        else
+                        if (movs.size() == 1) {
+                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao() + " N° " + m.get(0).getDocumento();
+                        } else {
                             nome_envio = "Boleto";
-                        
+                        }
+
                         if (!reg.isEnviarEmailAnexo()) {
                             mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
-                                     + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
+                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                         } else {
                             fls.add(new File(imp.getPathPasta() + "/" + nome));
                             mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
                         }
-                        
+
                         DaoInterface di = new Dao();
                         Mail mail = new Mail();
                         mail.setFiles(fls);
@@ -735,7 +766,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                                         false
                                 )
                         );
-                        
+
                         List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
                         EmailPessoa emailPessoa = new EmailPessoa();
                         for (Pessoa pe : pessoas) {
@@ -746,7 +777,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                             mail.setEmailPessoas(emailPessoas);
                             emailPessoa = new EmailPessoa();
                         }
-                        
+
                         String[] retorno = mail.send("personalizado");
 
                         if (!retorno[1].isEmpty()) {
@@ -783,19 +814,20 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         pessoas.add(jur.getContabilidade().getPessoa());
 
                         String nome_envio = "";
-                        if (m.size() == 1)
-                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao()+" N° " + m.get(0).getDocumento();
-                        else
+                        if (m.size() == 1) {
+                            nome_envio = "Boleto " + m.get(0).getServicos().getDescricao() + " N° " + m.get(0).getDocumento();
+                        } else {
                             nome_envio = "Boleto";
-                        
+                        }
+
                         if (!reg.isEnviarEmailAnexo()) {
                             mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
-                                     + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
+                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                         } else {
                             fls.add(new File(imp.getPathPasta() + "/" + nome));
                             mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
                         }
-                        
+
                         DaoInterface di = new Dao();
                         Mail mail = new Mail();
                         mail.setFiles(fls);
@@ -814,7 +846,6 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                                 )
                         );
 
-                        
                         List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
                         EmailPessoa emailPessoa = new EmailPessoa();
                         for (Pessoa pe : pessoas) {
@@ -825,7 +856,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                             mail.setEmailPessoas(emailPessoas);
                             emailPessoa = new EmailPessoa();
                         }
-                        
+
                         String[] retorno = mail.send("personalizado");
 
                         if (!retorno[1].isEmpty()) {
@@ -835,7 +866,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                             msgConfirma = retorno[0];
                             GenericaMensagem.info("Sucesso", msgConfirma);
                         }
-                        
+
                         m.clear();
                         listaValores.clear();
                         listaVencimentos.clear();
@@ -879,21 +910,22 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
 
             List<File> fls = new ArrayList<File>();
             String mensagem = "";
-            
+
             String nome_envio = "";
-            if (movs.size() == 1)
-                nome_envio = "Boleto " + movs.get(0).getServicos().getDescricao()+" N° " + movs.get(0).getDocumento();
-            else
+            if (movs.size() == 1) {
+                nome_envio = "Boleto " + movs.get(0).getServicos().getDescricao() + " N° " + movs.get(0).getDocumento();
+            } else {
                 nome_envio = "Boleto";
+            }
 
             if (!reg.isEnviarEmailAnexo()) {
                 mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
-                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir o boleto</a><br />";
+                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir o boleto</a><br />";
             } else {
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
                 mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
             }
-            
+
             DaoInterface di = new Dao();
             Mail mail = new Mail();
             mail.setFiles(fls);
@@ -911,7 +943,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                             false
                     )
             );
-            
+
             List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
             EmailPessoa emailPessoa = new EmailPessoa();
             for (Pessoa pe : pessoas) {
@@ -922,7 +954,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                 mail.setEmailPessoas(emailPessoas);
                 emailPessoa = new EmailPessoa();
             }
-            
+
             String[] retorno = mail.send("personalizado");
 
             if (!retorno[1].isEmpty()) {
