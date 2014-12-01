@@ -69,10 +69,10 @@ public class ConclusaoMatriculaBean implements Serializable {
     public void save() {
         HomologacaoDB hdb = new HomologacaoDBToplink();
         List list = hdb.pesquisaPessoaDebito(matriculaEscola.getResponsavel().getId(), DataHoje.data());
-//        if (!list.isEmpty()) {
-//            mensagem = "Responsável possui débitos!";
-//            return;
-//        }
+        if (!list.isEmpty()) {
+            mensagem = "Responsável possui débitos!";
+            return;
+        }
         if (matriculaEscola.getEscStatus().getId() == 3 || matriculaEscola.getEscStatus().getId() == 4) {
             mensagem = "Não é possível realizar a conclusão se o status estiver como trancado ou desistente!";
             return;
@@ -96,10 +96,10 @@ public class ConclusaoMatriculaBean implements Serializable {
             mensagem = "Matrícula não encontrada!";
             return;
         }
-//        if (dataHoje <= dataConclusao) {
-//            mensagem = "O curso ainda não foi concluído! Data da finalização do curso é " + dtConclusao;
-//            return;
-//        }
+        if (dataHoje <= dataConclusao) {
+            mensagem = "O curso ainda não foi concluído! Data da finalização do curso é " + dtConclusao;
+            return;
+        }
         Dao dao = new Dao();
         matriculaEscola.setEscStatus((EscStatus) dao.find(new EscStatus(), 2));
         matriculaEscola.setStatus(DataHoje.dataHoje());
