@@ -27,6 +27,7 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.MemoryFile;
 import br.com.rtools.utilitarios.PF;
@@ -431,41 +432,7 @@ public class RelatorioRaisBean implements Serializable {
     }
 
     public void imprimir(Collection c, Relatorios r) {
-        if (!Diretorio.criar("Arquivos/downloads/relatorios/rais")) {
-            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-        }
-        try {
-            JasperReport jasper;
-            FacesContext faces = FacesContext.getCurrentInstance();
-            if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + r.getJasper())).exists()) {
-                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + r.getJasper())));
-            } else {
-                jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(r.getJasper())));
-            }
-            try {
-                JRBeanCollectionDataSource dtSource;
-                if (raisEnviadas) {
-                    dtSource = new JRBeanCollectionDataSource(c);
-                } else {
-                    dtSource = new JRBeanCollectionDataSource(c);
-                }
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_rais_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/rais/");
-                salvaArquivos.salvaNaPasta(pathPasta);
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
-                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            }
-        } catch (JRException erro) {
-            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-        }
+        Jasper.printReports(r.getJasper(), "rais", c);
     }
 
     public List<SelectItem> getListaTipoRelatorios() {
@@ -478,11 +445,11 @@ public class RelatorioRaisBean implements Serializable {
                 list = (List<Relatorios>) db.pesquisaTipoRelatorio(274);
             }
             for (int i = 0; i < list.size(); i++) {
-                if (filtro[2]) {
+                if (filtro[2] && !raisEnviadas) {
                     if (list.get(i).getNome().contains("Empresa") && !raisEnviadas) {
                         listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                     }
-                } else if (filtro[11]) {
+                } else if (filtro[11] && !raisEnviadas) {
                     if (list.get(i).getNome().contains("Escritório")) {
                         listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                     }
