@@ -21,6 +21,7 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
@@ -230,32 +231,33 @@ public class RelatorioOposicaoBean implements Serializable {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
         }
-        if (!Diretorio.criar("Arquivos/downloads/relatorios/oposicao")) {
-            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-            return;
-        }
-        try {
-            FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-            try {
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroOposicao);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_oposicao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/oposicao/");
-                salvaArquivos.salvaNaPasta(pathPasta);
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
-                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            }
-        } catch (JRException erro) {
-            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-        }
+        Jasper.printReports(relatorios.getJasper(), "oposicao", (Collection) parametroOposicao);
+//        if (!Diretorio.criar("Arquivos/downloads/relatorios/oposicao")) {
+//            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
+//            return;
+//        }
+//        try {
+//            FacesContext faces = FacesContext.getCurrentInstance();
+//            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
+//            try {
+//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroOposicao);
+//                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//                String nomeDownload = "relatorio_oposicao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+//                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/oposicao/");
+//                salvaArquivos.salvaNaPasta(pathPasta);
+//                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+//                download.baixar();
+//                download.remover();
+//            } catch (JRException erro) {
+//                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+//                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+//            }
+//        } catch (JRException erro) {
+//            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+//            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+//        }
     }
 
     public List<SelectItem> getListaTipoRelatorios() {
