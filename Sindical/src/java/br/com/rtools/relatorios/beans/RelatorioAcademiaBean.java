@@ -48,8 +48,6 @@ public class RelatorioAcademiaBean implements Serializable {
     private Boolean[] filtro;
     private Date dataInicial;
     private Date dataFinal;
-    private Date dataInativoInicial;
-    private Date dataInativoFinal;
     private Integer[] index;
     private String tipoRelatorio;
     private String tipo;
@@ -61,7 +59,7 @@ public class RelatorioAcademiaBean implements Serializable {
     public void init() {
         filtro = new Boolean[8];
         filtro[0] = false; // MODALIDADE
-        filtro[1] = false; // PERÍODO EMISSÃO
+        filtro[1] = false; // PERÍODO EMISSÃO / INATIVAÇÃO
         filtro[2] = false; // RESPONSÁVEL
         filtro[3] = false; // ALUNO
         filtro[4] = false; // SEXO
@@ -73,8 +71,6 @@ public class RelatorioAcademiaBean implements Serializable {
         listSelectItem[1] = new ArrayList<>();
         dataInicial = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
-        dataInativoInicial = DataHoje.dataHoje();
-        dataInativoFinal = DataHoje.dataHoje();
         index = new Integer[2];
         index[0] = 0;
         index[1] = 0;
@@ -113,12 +109,10 @@ public class RelatorioAcademiaBean implements Serializable {
             return;
         }
         String detalheRelatorio = "";
-        RaisDao raisDao = new RaisDao();
         Integer idResponsavel = null;
         Integer idAluno = null;
         String pIStringI = "";
         String pFStringI = "";
-        String referencia = "";
         String sexoString = "";
         String dReferencia = "";
         String inIdModalidades = inIdModalidades();
@@ -127,7 +121,11 @@ public class RelatorioAcademiaBean implements Serializable {
         if (filtro[1]) {
             pIStringI = DataHoje.converteData(dataInicial);
             pFStringI = DataHoje.converteData(dataFinal);
-            listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+            if (filtro[7]) {
+                listDetalhePesquisa.add(" Período de Inativação entre " + pIStringI + " e " + pFStringI);
+            } else {
+                listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+            }
         }
         if (filtro[4]) {
             switch (sexo) {
@@ -158,7 +156,7 @@ public class RelatorioAcademiaBean implements Serializable {
         if (order == null) {
             order = "";
         }
-        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, order);
+        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, filtro[7], order);
         if (list.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
@@ -250,16 +248,6 @@ public class RelatorioAcademiaBean implements Serializable {
         this.dataFinal = DataHoje.converte(format.format(event.getObject()));
     }
 
-    public void selecionaDataInativoInicial(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
-        this.dataInativoInicial = DataHoje.converte(format.format(event.getObject()));
-    }
-
-    public void selecionaDataInativoFinal(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
-        this.dataInativoFinal = DataHoje.converte(format.format(event.getObject()));
-    }
-
     public void clear() {
         if (!filtro[0]) {
             selectedModalidades = null;
@@ -283,10 +271,6 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[6]) {
             selectedPeriodos = null;
         }
-        if (!filtro[7]) {
-            dataInicial = DataHoje.dataHoje();
-            dataFinal = DataHoje.dataHoje();
-        }
     }
 
     public void close(String close) {
@@ -296,15 +280,11 @@ public class RelatorioAcademiaBean implements Serializable {
                 listModalidades = null;
                 filtro[0] = false;
                 break;
-            case "periodoEmissao":
+            case "emissao_inativacao":
                 filtro[1] = false;
                 dataInicial = DataHoje.dataHoje();
                 dataFinal = DataHoje.dataHoje();
-                break;
-            case "periodoInativacao":
                 filtro[7] = false;
-                dataInativoInicial = DataHoje.dataHoje();
-                dataInativoFinal = DataHoje.dataHoje();
                 break;
             case "responsavel":
                 responsavel = new Pessoa();
@@ -384,7 +364,7 @@ public class RelatorioAcademiaBean implements Serializable {
      * <strong>Filtros</strong>
      * <ul>
      * <li>[0] MODALIDADE</li>
-     * <li>[1] PERÍODO EMISSÃO</li>
+     * <li>[1] PERÍODO EMISSÃO / INATIVAÇÃO</li>
      * <li>[2] RESPONSÁVEL</li>
      * <li>[3] ALUNO</li>
      * <li>[4] SEXO</li>
@@ -532,21 +512,5 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public void setSelectedPeriodos(List selectedPeriodos) {
         this.selectedPeriodos = selectedPeriodos;
-    }
-
-    public Date getDataInativoInicial() {
-        return dataInativoInicial;
-    }
-
-    public void setDataInativoInicial(Date dataInativoInicial) {
-        this.dataInativoInicial = dataInativoInicial;
-    }
-
-    public Date getDataInativoFinal() {
-        return dataInativoFinal;
-    }
-
-    public void setDataInativoFinal(Date dataInativoFinal) {
-        this.dataInativoFinal = dataInativoFinal;
     }
 }
