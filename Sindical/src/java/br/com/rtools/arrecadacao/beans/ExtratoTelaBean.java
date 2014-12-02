@@ -58,14 +58,14 @@ public class ExtratoTelaBean implements Serializable {
     private String dataRefFinal = "";
     private String boletoInicial = "";
     private String boletoFinal = "";
-    
+
     private String vlTotal = "0,00";
     private String vlRecebido = "0,00";
     private String vlNaoRecebido = "0,00";
     private String vlTaxa = "0,00";
     private String vlLiquido = "0,00";
     private String vlRepasse = "0,00";
-    
+
     private String msgConfirma = "";
     //private String valorSomado;
     private String dataAntiga = "";
@@ -77,18 +77,17 @@ public class ExtratoTelaBean implements Serializable {
     private String valorExtenso = "";
     private List<Impressao> listaImpressao = new ArrayList();
 
-    
     public ExtratoTelaBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
-        controx.setModulo((Modulo)new Dao().find(new Modulo(), 3));
-        
+        controx.setModulo((Modulo) new Dao().find(new Modulo(), 3));
+
         if (!controx.getListaExtratoTela()) {
             porPesquisa = "naoRecebidas";
         } else {
             porPesquisa = "todos";
         }
     }
-    
+
     public void loadList() {
         listaMovimentos.clear();
         boolean habData = false;
@@ -101,7 +100,7 @@ public class ExtratoTelaBean implements Serializable {
         vlTaxa = "0,00";
         vlLiquido = "0,00";
         vlRepasse = "0,00";
-        
+
         MovimentoDB db = new MovimentoDBToplink();
 
         int ic, its;
@@ -143,7 +142,7 @@ public class ExtratoTelaBean implements Serializable {
                 && dataRefInicial.isEmpty() && dataRefFinal.isEmpty() && ic == 0 && its == 0 && boletoInicial.isEmpty() && boletoFinal.isEmpty() && getPessoa().getId() == -1) {
             return;
         }
-        
+
         Date dtInicial, dtFinal;
         if (!dataInicial.isEmpty() && (!dataFinal.isEmpty())) {
             dtInicial = DataHoje.converte(dataInicial);
@@ -155,35 +154,35 @@ public class ExtratoTelaBean implements Serializable {
             dtInicial = DataHoje.dataHoje();
             dtFinal = DataHoje.dataHoje();
         }
-        
+
         List<Vector> listax = new ArrayList();
-        
+
         if (porPesquisa.equals("todos")) {
             listax = db.listaTodosMovimentos(
-                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                        boletoFinal, getPessoa().getId(), ordenacao
+                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                    boletoFinal, getPessoa().getId(), ordenacao
             );
-        }else if (porPesquisa.equals("recebidas")) {
+        } else if (porPesquisa.equals("recebidas")) {
             listax = db.listaRecebidasMovimentos(
-                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                        boletoFinal, getPessoa().getId(), ordenacao
+                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                    boletoFinal, getPessoa().getId(), ordenacao
             );
-        }else if (porPesquisa.equals("naoRecebidas")) {
+        } else if (porPesquisa.equals("naoRecebidas")) {
             listax = db.listaNaoRecebidasMovimentos(
-                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                        boletoFinal, getPessoa().getId(), ordenacao
-            );            
-        }else {
+                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                    boletoFinal, getPessoa().getId(), ordenacao
+            );
+        } else {
             listax = db.listaAtrazadasMovimentos(
-                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                        boletoFinal, getPessoa().getId(), ordenacao
-            );            
+                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                    boletoFinal, getPessoa().getId(), ordenacao
+            );
         }
-        
+
         for (Vector linha_list : listax) {
             if ((linha_list.get(21)) == null) {
                 linha_list.set(21, 0.0);
@@ -233,9 +232,9 @@ public class ExtratoTelaBean implements Serializable {
                 classTbl = "";
             }
             float valor_baixa = Float.parseFloat(Double.toString((Double) linha_list.get(21))),
-                  valor = Float.parseFloat(Double.toString((Double) linha_list.get(8))),
-                  taxa = Float.parseFloat(Double.toString((Double) linha_list.get(9)));
-            
+                    valor = Float.parseFloat(Double.toString((Double) linha_list.get(8))),
+                    taxa = Float.parseFloat(Double.toString((Double) linha_list.get(9)));
+
             listaMovimentos.add(new DataObject(
                     false,
                     ((Integer) linha_list.get(0)), //ARG 1 id
@@ -266,59 +265,58 @@ public class ExtratoTelaBean implements Serializable {
                     classTbl, // ARG 26 null
                     null, // ARG 27 null
                     null // ARG 28 null
-                )
+            )
             );
-            
+
             if (linha_list.get(12) != null) {
                 vlRecebido = somarValores(valor_baixa, vlRecebido);
                 vlTaxa = somarValores(taxa, vlTaxa);
             }
-            
+
             vlNaoRecebido = somarValores(valor, vlNaoRecebido);
             vlTotal = somarValores(valor_baixa, vlTotal);
-            
+
             float contaLiquido = Moeda.subtracaoValores(valor_baixa, taxa);
             vlLiquido = somarValores(contaLiquido, vlLiquido);
-            
+
             vlRepasse = somarValores(somaRepasse, vlRepasse);
         }
         vlRepasse = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(vlLiquido), Moeda.converteUS$(vlRepasse)));
-        
+
         dataRefInicial = "";
         dataRefFinal = "";
     }
-    
+
     // SOMA DOS VALORES //
-    public String somarValores(float valor, String valorString){
+    public String somarValores(float valor, String valorString) {
         float somaFloat = Moeda.somaValores(valor, Moeda.converteUS$(valorString));
         return Moeda.converteR$Float(somaFloat);
     }
-    
-    public String getVlRecebido(){
+
+    public String getVlRecebido() {
         return vlRecebido;
     }
-    
-    public String getVlNaoRecebido(){
+
+    public String getVlNaoRecebido() {
         return vlNaoRecebido;
     }
-    
-    public String getVlTotal(){
+
+    public String getVlTotal() {
         return vlTotal;
     }
-    
-    public String getVlTaxa(){
+
+    public String getVlTaxa() {
         return vlTaxa;
     }
-    
-    public String getVlLiquido(){
+
+    public String getVlLiquido() {
         return vlLiquido;
     }
-    
-    public String getVlRepasse(){
+
+    public String getVlRepasse() {
         return vlRepasse;
     }
-    
-    
+
     public List<SelectItem> getListaServico() {
         List<SelectItem> servicos = new Vector<SelectItem>();
         if (chkContribuicao) {
@@ -433,7 +431,7 @@ public class ExtratoTelaBean implements Serializable {
         } else {
             msgConfirma = "Boleto excluído com sucesso!";
         }
-        
+
         loadList();
         return null;
     }
@@ -477,7 +475,7 @@ public class ExtratoTelaBean implements Serializable {
         } else {
             msgConfirma = "Boleto excluído com sucesso!";
         }
-        
+
         loadList();
         return null;
     }
@@ -507,7 +505,6 @@ public class ExtratoTelaBean implements Serializable {
 //            return result;
 //        }
 //    }
-
     public boolean bltQuitados() {
         boolean result = false;
         if (!listaMovimentos.isEmpty()) {
@@ -574,7 +571,6 @@ public class ExtratoTelaBean implements Serializable {
 //        }
 //        return linkVoltar;
 //    }
-
 //    public String getValorTotal() {
 //        getSomarBoletoSelecionados();
 //        String v = "";
@@ -585,7 +581,6 @@ public class ExtratoTelaBean implements Serializable {
 //        }
 //        return v;
 //    }
-
     public String getOrdenacao() {
         return ordenacao;
     }
@@ -722,7 +717,7 @@ public class ExtratoTelaBean implements Serializable {
 
         imp.imprimirBoleto(listaC, listaValores, listaVencimentos, imprimirVerso);
         imp.visualizar(null);
-        
+
         loadList();
         return "extratoTela";
     }
@@ -856,13 +851,13 @@ public class ExtratoTelaBean implements Serializable {
             }
 
             if (!reg.isEnviarEmailAnexo()) {
-                mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Enviado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                         + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir boleto</a><br />";
             } else {
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
-                mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />";
+                mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Enviado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                        + " <h5>Segue boleto em anexo</h5><br /><br />";
             }
 
             DaoInterface di = new Dao();
@@ -1024,7 +1019,7 @@ public class ExtratoTelaBean implements Serializable {
             } else {
                 db.excluirAcordoIn(ids, listaC.get(0).getAcordo().getId());
             }
-            
+
             loadList();
             msgConfirma = "Acordo Excluído com sucesso!";
         } else {
@@ -1078,7 +1073,7 @@ public class ExtratoTelaBean implements Serializable {
     }
 
     public Pessoa getPessoa() {
-        if (GenericaSessao.exists("pessoaPesquisa")){
+        if (GenericaSessao.exists("pessoaPesquisa")) {
             pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
             GenericaSessao.remove("pessoaPesquisa");
             loadList();
@@ -1312,9 +1307,7 @@ public class ExtratoTelaBean implements Serializable {
 //        valorSomado = getValorTotal();
 //        return valorSomado;
 //    }
-
 //    public void setValorSomado(String valorSomado) {
 //        this.valorSomado = valorSomado;
 //    }
-
 }
