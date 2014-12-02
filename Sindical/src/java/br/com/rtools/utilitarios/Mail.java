@@ -154,17 +154,19 @@ public class Mail extends MailTemplate implements Serializable {
                                 htmlString += ""
                                         + "<html>"
                                         + "     <body style='background-color: white'>"
-                                        + "         <h2>"
+                                        + "         <h2>                                                            "
                                         + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>   "
+                                        + "         <h3>                                                            "
+                                        + "             A/C                                                         "
+                                        + "         </h3><b> " + jur.getContato() + " </b><br /><br />              "
                                         + "         </h2><br /><br />                                               "
                                         + "         <h4> " + email.getMensagem() + "</h4><br /><br />               "
-                                        + "         <h3>                                                            "
-                                        + "             Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong>"
-                                        + "         </h3>"
-                                        + "         <br /><br />"
-                                        + "         <h3>"
-                                        + "             A/C"
-                                        + "         </h3><b> " + jur.getContato() + " </b><br /><br />"
+                                        + "                                                                     ";
+                                if (!registro.getFilial().getPessoa().getEmail1().equals(registro.getSisEmailResposta())) {
+                                    htmlString += "<h3>Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong></h3>";
+                                }
+                                htmlString
+                                        += "         <br /><br />"
                                         + "     </body>"
                                         + "</html>";
                             }
@@ -220,7 +222,7 @@ public class Mail extends MailTemplate implements Serializable {
                             }
                             if (di.save(email, true)) {
                                 emailPessoas.get(i).setEmail(email);
-                                emailPessoas.get(i).setHoraSaida(DataHoje.livre(new Date(), "HH:mm")); 
+                                emailPessoas.get(i).setHoraSaida(DataHoje.livre(new Date(), "HH:mm"));
                                 di.save(emailPessoas.get(i), true);
                             }
                             if (!saveArquivosEmail) {
