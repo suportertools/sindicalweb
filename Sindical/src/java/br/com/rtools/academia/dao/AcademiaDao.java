@@ -281,7 +281,7 @@ public class AcademiaDao extends DB {
      * @param order
      * @return
      */
-    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, String order) {
+    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, Boolean ativos, String order) {
         List listWhere = new ArrayList();
         String queryString = ""
                 + "     SELECT PA.nome,                                                       " // 0 - NOME
@@ -292,7 +292,7 @@ public class AcademiaDao extends DB {
                 + "            PR.ds_nome                                  AS responsavel,    " // 5 - RESPONSÁVEL
                 + "            S.ds_descricao                              AS servico,        " // 6 - SERVIÇO
                 + "            P.ds_descricao                              AS periodo,        " // 7 - PERÍODO
-                + "            A.dt_emissao                                AS emissao         " // 8 - EMISSÃO
+                + "            SP.dt_emissao                               AS emissao         " // 8 - EMISSÃO
                 + "       FROM matr_academia AS A                                             "
                 + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id     = A.id_servico_pessoa "
                 + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id    = A.id_servico_valor  "
@@ -300,28 +300,45 @@ public class AcademiaDao extends DB {
                 + " INNER JOIN sis_periodo          AS P   ON P.id      = ASV.id_periodo      "
                 + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo = SP.id_pessoa        "
                 + " INNER JOIN pes_pessoa           AS PR  ON PR.id     = SP.id_cobranca      ";
-        if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
-            listWhere.add("SP.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
-        } else if (!emissaoFinal.isEmpty()) {
-            listWhere.add("SP.dt_emissao = '" + emissaoInicial + "'");
-        } else if (!emissaoFinal.isEmpty()) {
-            listWhere.add("SP.dt_emissao = '" + emissaoFinal + "'");
+        String emissaoInativacaoString;
+        if (!ativos) {
+            emissaoInativacaoString = " SP.dt_emissao ";
+        } else {
+            emissaoInativacaoString = " A.dt_inativo ";
         }
-        if (idResponsavel != null) {
+
+        if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
+            listWhere.add(emissaoInativacaoString + "BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
+        } else if (!emissaoFinal.isEmpty()) {
+            listWhere.add(emissaoInativacaoString + " = '" + emissaoInicial + "'");
+        } else if (!emissaoFinal.isEmpty()) {
+            listWhere.add(emissaoInativacaoString + " = '" + emissaoFinal + "'");
+        } else if (emissaoInicial.isEmpty() || emissaoFinal.isEmpty()) {
+            if (ativos) {
+                listWhere.add(emissaoInativacaoString + " IS NOT NULL ");
+            }
+        }
+        if (idResponsavel
+                != null) {
             listWhere.add("SP.id_cobranca = " + idResponsavel);
         }
-        if (idAluno != null) {
+        if (idAluno
+                != null) {
             listWhere.add("SP.id_pessoa = " + idAluno);
         }
-        if (inModalidade != null) {
+        if (inModalidade
+                != null) {
             listWhere.add("SP.id_servico IN(" + inModalidade + ")");
         }
-        if (inIdPeriodos != null) {
+        if (inIdPeriodos
+                != null) {
             listWhere.add("ASV.id_periodo IN(" + inIdPeriodos + ")");
         }
-        if (inSexo != null && !inSexo.isEmpty()) {
+        if (inSexo
+                != null && !inSexo.isEmpty()) {
             listWhere.add("PA.sexo LIKE '" + inSexo + "'");
         }
+
         if (!listWhere.isEmpty()) {
             queryString += " WHERE ";
             for (int i = 0; i < listWhere.size(); i++) {
@@ -331,13 +348,15 @@ public class AcademiaDao extends DB {
                 queryString += listWhere.get(i).toString();
             }
         }
-        if (r != null && order.isEmpty()) {
+        if (r
+                != null && order.isEmpty()) {
             if (!r.getQryOrdem().isEmpty()) {
                 queryString += " ORDER BY " + r.getQryOrdem();
             }
         } else if (!order.isEmpty()) {
             queryString += " ORDER BY " + order;
         }
+
         try {
             Query query = getEntityManager().createNativeQuery(queryString);
             List list = query.getResultList();
@@ -347,6 +366,7 @@ public class AcademiaDao extends DB {
         } catch (Exception e) {
             return new ArrayList<>();
         }
+
         return new ArrayList<>();
     }
 }
