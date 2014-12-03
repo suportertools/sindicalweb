@@ -1,10 +1,11 @@
 package br.com.rtools.utilitarios;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
-public class GenericaSessao implements Serializable{
+public class GenericaSessao implements Serializable {
 
     public static void put(String sessionName, String sessionValue) {
         if (GenericaSessao.exists(sessionName)) {
@@ -38,11 +39,11 @@ public class GenericaSessao implements Serializable{
         }
         return string;
     }
-    
+
     public static String[] getStringVector(String sessionName) {
         return getStringVector(sessionName, false);
     }
-    
+
     public static String[] getStringVector(String sessionName, boolean remove) {
         String[] string = new String[]{};
         if (exists(sessionName)) {
@@ -53,7 +54,7 @@ public class GenericaSessao implements Serializable{
         }
         return string;
     }
-    
+
     public static boolean getBoolean(String sessionName) {
         return getBoolean(sessionName, false);
     }
@@ -82,7 +83,22 @@ public class GenericaSessao implements Serializable{
         }
         return object;
     }
-    
+
+    public static List getList(String sessionName) {
+        return getList(sessionName, false);
+    }
+
+    public static List getList(String sessionName, boolean remove) {
+        List list = new ArrayList();
+        if (exists(sessionName)) {
+            list = (List) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
+            if (remove) {
+                remove(sessionName);
+            }
+        }
+        return list;
+    }
+
     public static Integer getInteger(String sessionName) {
         return getInteger(sessionName, false);
     }
@@ -96,7 +112,7 @@ public class GenericaSessao implements Serializable{
             }
         }
         return integer;
-    }    
+    }
 
     public static void remove(String sessionName) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
