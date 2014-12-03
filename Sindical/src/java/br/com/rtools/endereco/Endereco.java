@@ -107,7 +107,7 @@ public class Endereco implements java.io.Serializable {
     public void setFaixa(String faixa) {
         this.faixa = faixa;
     }
-    
+
     public boolean getAtivo() {
         return ativo;
     }

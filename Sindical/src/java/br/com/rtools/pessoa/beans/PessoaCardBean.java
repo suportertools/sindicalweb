@@ -1,5 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.financeiro.db.MovimentoDB;
+import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -58,6 +60,9 @@ public class PessoaCardBean implements Serializable {
         close();
         JuridicaDB juridicaDB = new JuridicaDBToplink();
         juridica = (Juridica) juridicaDB.pesquisaJuridicaPorPessoa(idPessoa);
+        if (juridica == null) {
+            juridica = (Juridica) new Dao().find(new Juridica(), idPessoa);
+        }
     }
 
     public Juridica getJuridica() {
@@ -245,6 +250,38 @@ public class PessoaCardBean implements Serializable {
         emailBean.setUrlRetorno(urlRetorno);
         GenericaSessao.put("emailBean", emailBean);
         return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).pesquisa("email");
+    }
+
+    public String getStatusJuridica() {
+        return status(juridica.getPessoa());
+    }
+
+    public String getStatusFisica() {
+        return status(fisica.getPessoa());
+    }
+
+    public String getStatusPessoa() {
+        return status(pessoa);
+    }
+
+    public String getStatusJuridicaPorPessoaEmpresa() {
+        return status(pessoaEmpresa.getJuridica().getPessoa());
+    }
+
+    public String getStatusFisicaPorPessoaEmpresa() {
+        return status(pessoaEmpresa.getFisica().getPessoa());
+    }
+
+    public String status(Pessoa p) {
+        MovimentoDB movimentoDB = new MovimentoDBToplink();
+        if (p.getId() != -1) {
+            if (movimentoDB.existeDebitoPessoa(pessoa, DataHoje.dataHoje())) {
+                return "EM DÉBITO";
+            } else {
+                return "REGULAR";
+            }
+        }
+        return "";
     }
 
 }
