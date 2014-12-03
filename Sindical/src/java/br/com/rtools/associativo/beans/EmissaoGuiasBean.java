@@ -165,6 +165,19 @@ public class EmissaoGuiasBean implements Serializable {
         GenericaSessao.remove("listaMovimento");
     }
 
+ 
+    public Guia pesquisaGuia(int id_lote){
+        MovimentosReceberSocialJSFBean mr = new MovimentosReceberSocialJSFBean();
+        Guia gu = mr.pesquisaGuia(id_lote);
+        return gu;
+    }
+    
+    public void imprimirEncaminhamento(){
+        MovimentosReceberSocialJSFBean mr = new MovimentosReceberSocialJSFBean();
+        
+        mr.encaminhamento(lote.getId());
+    }
+    
     public String baixarErrado(HistoricoEmissaoGuias heg) {
         if (!listHistoricoEmissaoGuias.isEmpty()) {
             listaMovimentoAuxiliar.clear();

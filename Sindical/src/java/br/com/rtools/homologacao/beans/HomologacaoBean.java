@@ -425,7 +425,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                         senhax.getAteMovimento().setStatus((AteStatus) di.find(new AteStatus(), 4));
                         senhax.getAteMovimento().setAtendente(su.getSessaoUsuario());
 
-                        senhax.setHoraChamada(DataHoje.horaMinuto());
+                        senhax.setHoraChamada(DataHoje.horaMinuto()); // aqui
                         senhax.setMesa(macFilial.getMesa());
 
                         di.update(senhax);

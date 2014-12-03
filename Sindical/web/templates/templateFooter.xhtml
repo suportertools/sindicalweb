@@ -4,7 +4,19 @@
                 xmlns:p="http://primefaces.org/ui">
     
     <h:panelGrid style="margin: 0 auto;">
-        <h:panelGrid styleClass="wrapper" style="width: 1024px;" columns="5">
+        <h:panelGrid styleClass="wrapper" style="width: 1200px;" columns="5" rendered="#{(facesContext.externalContext.request.requestURI == '/Sindical/extratoTela.jsf')}">
+            <p:panel styleClass="fundoCinza" style="height: 50px">
+                <h:graphicImage url="/Imagens/iconPhone.png" width="20px" style="float: left;" title="(16) 3964-6117"/>
+                <h:outputLabel value="(16) 3964-6117" style="float: left"/>
+
+                <h:graphicImage url="/Imagens/iconEmail.png" width="20px" style="float: left; margin-left: 20px" title="suporte@rtools.com.br"/>          
+                <h:outputLabel value="suporte@rtools.com.br" style="float: left; font-size: 10pt;"/>
+            </p:panel>
+
+            <h:outputLabel value="R'Tools Desenvolvimento de Sistemas LTDA ® - 2014" style="clear: both; float: right"/>
+        </h:panelGrid>
+        
+        <h:panelGrid styleClass="wrapper" style="width: 1024px;" columns="5" rendered="#{(facesContext.externalContext.request.requestURI != '/Sindical/extratoTela.jsf')}">
             <p:panel styleClass="fundoCinza" style="height: 50px">
                 <h:graphicImage url="/Imagens/iconPhone.png" width="20px" style="float: left;" title="(16) 3964-6117"/>
                 <h:outputLabel value="(16) 3964-6117" style="float: left"/>

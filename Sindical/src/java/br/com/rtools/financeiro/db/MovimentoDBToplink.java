@@ -422,9 +422,173 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     }
 
     @Override
+    public List listaMovimentosExtrato(String tipo, String faixa_data, String data_inicial, String data_final, String referencia_inicial, String referencia_final, String boleto_inicial, String boleto_final, int id_servico, int id_tipo_servico, int id_pessoa, String ordenacao, boolean movimentoDaEmpresa) {
+        String qry_data = "", qry_servico = "", qry_tipo_servico = "", qry_condicao = "", qry_boleto = "", qry_pessoa = "", ordem = "";
+
+        String textQuery;
+        switch (faixa_data) {
+            case "recebimento":
+                if (!data_inicial.isEmpty() && data_final.isEmpty())
+                    qry_data = " and ba.dt_baixa >= '" + data_inicial;
+                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = " and ba.dt_baixa >= '" + data_inicial + "' and ba.dt_baixa <= '" + data_final + "'";
+                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = "' and ba.dt_baixa <= '" + data_final + "'";
+                break;
+            case "importacao":
+                if (!data_inicial.isEmpty() && data_final.isEmpty())
+                    qry_data = " and ba.dt_importacao >= '" + data_inicial;
+                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = " and ba.dt_importacao >= '" + data_inicial + "' and ba.dt_importacao <= '" + data_final + "'";
+                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = "' and ba.dt_importacao <= '" + data_final + "'";
+                break;
+            case "vencimento":
+                if (!data_inicial.isEmpty() && data_final.isEmpty())
+                    qry_data = " and m.dt_vencimento >= '" + data_inicial+"'";
+                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = " and m.dt_vencimento >= '" + data_inicial + "' and m.dt_vencimento <= '" + data_final + "'";
+                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                    qry_data = "' and m.dt_vencimento <= '" + data_final + "'";
+                break;
+            case "referencia":
+                
+                if (!referencia_inicial.isEmpty() && referencia_final.isEmpty()){
+                    String ini = referencia_inicial.substring(3, 7) + referencia_inicial.substring(0, 2);
+                    qry_data = " and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) >= '" + ini+"'";
+                }else if (!referencia_inicial.isEmpty() && !referencia_final.isEmpty()){
+                    String ini = referencia_inicial.substring(3, 7) + referencia_inicial.substring(0, 2);
+                    String fin = referencia_final.substring(3, 7) + referencia_final.substring(0, 2);
+                    qry_data = " and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) >= '" + ini + "' and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) <= '" + fin + "'";
+                }else if (referencia_inicial.isEmpty() && !referencia_final.isEmpty()){
+                    String fin = referencia_final.substring(3, 7) + referencia_final.substring(0, 2);
+                    qry_data = "' substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) <= '" + fin + "'";
+                }
+                break;                
+        }
+
+        if (id_servico != 0) {
+            qry_servico = " and m.id_servicos = " + id_servico;
+        }
+        
+        if (id_tipo_servico != 0) {
+            qry_tipo_servico = " and m.id_tipo_servico = " + id_tipo_servico;
+        }
+        
+        if (id_pessoa != -1) {
+            if (movimentoDaEmpresa){
+                qry_pessoa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + id_pessoa + " and dt_inativacao is null order by ds_nome)";
+                 ordem = "nome, ";
+            }else
+                qry_pessoa = " and m.id_pessoa = " + id_pessoa;
+        }
+        
+        if (!boleto_inicial.isEmpty() && boleto_final.isEmpty()){
+            qry_boleto = " and b.ds_boleto >= '" + boleto_inicial + "'";
+        }else if (!boleto_inicial.isEmpty() && !boleto_final.isEmpty()){
+            qry_boleto = " and b.ds_boleto >= '" + boleto_inicial + "'"
+                       + " and b.ds_boleto <= '" + boleto_final + "'";
+        }else if (boleto_inicial.isEmpty() && !boleto_final.isEmpty()){
+            qry_boleto = " and b.ds_boleto <= '" + boleto_final + "'";
+        }
+        
+        switch (tipo) {
+            case "todos":
+                break;
+            case "recebidas":
+                qry_condicao = "   and m.id_baixa is not null ";
+                break;
+            case "naoRecebidas":
+                qry_condicao = "   and m.id_baixa is null ";
+                break;
+            case "atrasadas":
+                qry_condicao = "   and m.id_baixa is null "
+                             + "   and m.dt_vencimento < '" + DataHoje.data() + "'";
+                break;
+        }
+        
+//        if (nrBoletos == true) {
+//            cntNrBoletos = " and b.ds_boleto >= '" + descNrBoletoIni + "'"
+//                    + " and b.ds_boleto <= '" + descNrBoletoFin + "'";
+//        } else {
+//            cntNrBoletos = "";
+//        }
+//        if (empresa == true) {
+//            if (!movimentoDaEmpresa)
+//                cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+//            else{
+//                cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
+//                ordem = "nome, ";
+//            }
+//        } else {
+//            cntEmpresa = "";
+//        }
+
+        if (ordenacao.equals("referencia")) {
+            ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
+        } else if (ordenacao.equals("vencimento")) {
+            ordem += "m.dt_vencimento desc";
+        } else if (ordenacao.equals("quitacao")) {
+            ordem += "ba.dt_baixa desc";
+        } else {
+            ordem += "ba.dt_importacao desc";
+        }
+
+        textQuery = "select m.id            as id, "
+                + "       p.ds_documento  as documento, "
+                + "       p.ds_nome       as nome, "
+                + "       m.ds_documento  as boleto, "
+                + "       s.ds_descricao  as contribuicao, "
+                + "       m.ds_referencia as referencia, "
+                + "       m.dt_vencimento as vencimento, "
+                + "       ba.dt_importacao as importacao, "
+                + "       m.nr_valor      as valor, "
+                + "       m.nr_taxa       as taxa, "
+                + "       pu.ds_nome      as nomeUsuario, "
+                + "       t.ds_descricao  as tipo,"
+                + "       ba.dt_baixa     as quitacao, "
+                + "       m.nr_multa      as multa, "
+                + "       m.nr_juros      as juros, "
+                + "       m.nr_correcao   as correcao, "
+                + "       m.nr_desconto   as desconto, "
+                + "       cc.nr_repasse   as repasse, "
+                + "       case when l.id = null              then 0 else l.id end   as id_baixa, "
+                + "       case when pb.ds_nome = null then '' else pb.ds_nome end  as beneficiario, "
+                + "       case when pf.ds_nome = null       then '' else pf.ds_nome end  as filial, "
+                + "       m.nr_valor_baixa as valor_baixa "
+                + "  from fin_movimento m "
+                + "  left join fin_baixa ba on (m.id_baixa = ba.id) "
+                + "  left join fin_lote l on (m.id_lote = l.id) "
+                + "  left join seg_usuario u    on (u.id = ba.id_usuario) "
+                + "  left join pes_pessoa pu    on (pu.id = u.id_pessoa)"
+                + "  left join fin_boleto b     on (b.nr_ctr_boleto = cast(m.id as text)) "
+                + "  left join fin_conta_cobranca cc on (cc.id = b.id_conta_cobranca) "
+                + "  left join pes_filial f on (f.id = l.id_filial) "
+                + "  left join pes_juridica pj on (pj.id = f.id_filial) "
+                + "  left join pes_pessoa pf on (pf.id = pj.id_pessoa) "
+                + "  left join pes_pessoa pb on (pb.id = m.id_beneficiario), "
+                + "       pes_pessoa p, "
+                + "       fin_servicos s, "
+                + "       fin_tipo_servico t "
+                + " where m.id_servicos in (select sr.id_servicos from fin_servico_rotina sr where sr.id_rotina = 4) "
+                + "   and m.is_ativo = true "
+                + "   and m.id_pessoa = p.id "
+                + "   and m.id_servicos = s.id "
+                + "   and m.id_tipo_servico = t.id " + qry_data + qry_boleto + qry_servico + qry_tipo_servico + qry_pessoa + qry_condicao
+                + " order by " + ordem + ", nome";
+
+        try {
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
+        } catch (Exception e) {
+            
+        }
+        return new Vector();
+    }
+    
     public List<Vector> listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao) {
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
         String textQuery;
@@ -463,7 +627,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            if (!movimentoDaEmpresa)
+                cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            else{
+                cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
+                ordem = "nome, ";
+            }
         } else {
             cntEmpresa = "";
         }
@@ -474,13 +643,13 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
 
         if (ordenacao.equals("referencia")) {
-            ordem = "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
+            ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
         } else if (ordenacao.equals("vencimento")) {
-            ordem = "m.dt_vencimento desc";
+            ordem += "m.dt_vencimento desc";
         } else if (ordenacao.equals("quitacao")) {
-            ordem = "ba.dt_baixa desc";
+            ordem += "ba.dt_baixa desc";
         } else {
-            ordem = "ba.dt_importacao desc";
+            ordem += "ba.dt_importacao desc";
         }
 
         textQuery = "select m.id            as id, "
@@ -538,7 +707,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List listaRecebidasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao) {
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
         if (data == true) {
@@ -576,7 +745,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            if (!movimentoDaEmpresa)
+                cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            else{
+                cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
+                ordem = "nome, ";
+            }
         } else {
             cntEmpresa = "";
         }
@@ -587,13 +761,13 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
 
         if (ordenacao.equals("referencia")) {
-            ordem = "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
+            ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
         } else if (ordenacao.equals("vencimento")) {
-            ordem = "m.dt_vencimento desc";
+            ordem += "m.dt_vencimento desc";
         } else if (ordenacao.equals("quitacao")) {
-            ordem = "ba.dt_baixa desc";
+            ordem += "ba.dt_baixa desc";
         } else {
-            ordem = "ba.dt_importacao desc";
+            ordem += "ba.dt_importacao desc";
         }
 
         String textQuery = "select m.id            as id, "
@@ -651,7 +825,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List listaNaoRecebidasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao) {
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
         if (data == true) {
@@ -689,7 +863,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            if (!movimentoDaEmpresa)
+                cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            else{
+                cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
+                ordem = "nome, ";
+            }
         } else {
             cntEmpresa = "";
         }
@@ -700,13 +879,13 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
 
         if (ordenacao.equals("referencia")) {
-            ordem = "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
+            ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
         } else if (ordenacao.equals("vencimento")) {
-            ordem = "m.dt_vencimento desc";
+            ordem += "m.dt_vencimento desc";
         } else if (ordenacao.equals("quitacao")) {
-            ordem = "ba.dt_baixa desc";
+            ordem += "ba.dt_baixa desc";
         } else {
-            ordem = "ba.dt_importacao desc";
+            ordem += "ba.dt_importacao desc";
         }
 
         String textQuery = "select m.id            as id, "
@@ -761,7 +940,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List listaAtrazadasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao) {
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa) {
         String cntData = "", cntContrib = "", cntNrBoletos = "", cntEmpresa = "", cntTipo = "", ordem = "";
 
         if (data == true) {
@@ -799,7 +978,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            if (!movimentoDaEmpresa)
+                cntEmpresa = " and m.id_pessoa = " + descEmpresa;
+            else{
+                cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
+                ordem = "nome, ";
+            }
         } else {
             cntEmpresa = "";
         }
@@ -810,13 +994,13 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
 
         if (ordenacao.equals("referencia")) {
-            ordem = "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
+            ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
         } else if (ordenacao.equals("vencimento")) {
-            ordem = "m.dt_vencimento desc";
+            ordem += "m.dt_vencimento desc";
         } else if (ordenacao.equals("quitacao")) {
-            ordem = "ba.dt_baixa desc";
+            ordem += "ba.dt_baixa desc";
         } else {
-            ordem = "ba.dt_importacao desc";
+            ordem += "ba.dt_importacao desc";
         }
 
         String textQuery = "select m.id            as id, "

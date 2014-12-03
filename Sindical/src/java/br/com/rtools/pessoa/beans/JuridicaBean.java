@@ -406,7 +406,10 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setPessoa(null);
                     juridicaReceita.setStatus(obj.getString("situacao_cadastral"));
                     juridicaReceita.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
-
+                    juridicaReceita.setCnaeSegundario(obj.getString("atividades_secundarias"));
+                    juridicaReceita.setCidade(obj.getString("municipio"));
+                    juridicaReceita.setUf(obj.getString("uf"));
+                    
                     dao.openTransaction();
 
                     if (!dao.save(juridicaReceita)) {

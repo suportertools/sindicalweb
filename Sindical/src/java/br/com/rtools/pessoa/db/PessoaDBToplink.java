@@ -6,9 +6,10 @@ import br.com.rtools.principal.DB;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaSemCadastro;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import br.com.rtools.utilitarios.SelectTranslate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -111,9 +112,34 @@ public class PessoaDBToplink extends DB implements PessoaDB {
         String field = por;
         if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) field = "documento";
         
-        SelectTranslate st = new SelectTranslate();
+        int maxResults = 300;
+        if (desc.length() == 1) {
+            maxResults = 50;
+        } else if (desc.length() == 2) {
+            maxResults = 150;
+        } else if (desc.length() == 3) {
+            maxResults = 200;
+        }
+        
+        desc = AnaliseString.normalizeLower(desc);
         desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
-        return st.select(new Pessoa()).where(field, desc).find();        
+        
+        String text_qry = 
+                " SELECT p.* "
+                + " FROM pes_pessoa p "
+                + "WHERE LOWER(FUNC_TRANSLATE(p.ds_"+field+")) LIKE '"+desc+"' "
+                + "ORDER BY p.ds_nome";
+        try{
+        Query qry = getEntityManager().createNativeQuery(text_qry, Pessoa.class);
+        qry.setMaxResults(maxResults);
+        return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+            return new ArrayList();
+        }
+//        SelectTranslate st = new SelectTranslate();
+//        
+//        return st.select(new Pessoa()).where(field, desc).find();        
         
         
 //        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){

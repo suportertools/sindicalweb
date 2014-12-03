@@ -112,6 +112,7 @@
                             <h:panelGrid columns="2" styleClass="margin-top-max">
                                 <p:commandButton onclick="PF('dlg_save').show()" value="Salvar" rendered="#{emissaoGuiasBean.lote.id == -1}"  title="Salvar este Lançamento"/>
                                 <p:commandButton action="#{emissaoGuiasBean.clear()}" value="Novo" update=":form_eg:" title="Novo Lançamento" />
+                                <p:commandButton action="#{emissaoGuiasBean.imprimirEncaminhamento()}" value="Imprimir Encaminhamento" title="Imprimir este Encaminhamento" rendered="#{emissaoGuiasBean.pesquisaGuia(emissaoGuiasBean.lote.id).encaminhamento == true}" ajax="false"/>
                             </h:panelGrid>                    
 
                             <p:dialog id="i_dlg_cadastro" header="Cadastrar Pessoa" widgetVar="dlg_cadastro" modal="true" width="1024" closable="true" >

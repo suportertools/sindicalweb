@@ -309,9 +309,9 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
     }
 
     @Override
-    public List listaContabilidadePertencente(int id_juridica) {
+    public List<Juridica> listaContabilidadePertencente(int id_juridica) {
         List vetor;
-        List listJur = new ArrayList();
+        List<Juridica> listJur = new ArrayList();
         try {
             String textQuery = "select id_juridica from arr_contribuintes_vw where id_contabilidade = " + id_juridica + " and dt_inativacao is null order by ds_nome";
 
