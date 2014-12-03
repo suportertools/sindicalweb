@@ -320,6 +320,9 @@
                             <p:column headerText="Qtde empresas" rendered="#{relatorioRaisBean.filtro[11]}" width="80" styleClass="text-center">
                                 #{rais.quantidade}
                             </p:column>
+                            <p:column width="30" rendered="#{relatorioRaisBean.filtro[11]}" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-contact" update=":form_relatorio:i_pessoa_juridica_card" action="#{pessoaCardBean.cardJuridica(rais.escritorio_id)}" oncomplete="PF('dlg_pessoa_juridica_card').show()" title="Ver detalhes" />
+                            </p:column>
                         </p:dataTable>
                         <p:outputLabel value="Mensagem:"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/> <br />
                         <p:inputTextarea value="#{relatorioRaisBean.mensagem}" cols="150" rows="5" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max"></p:inputTextarea>
@@ -350,7 +353,13 @@
                                 </p:column>
                             </p:dataTable>
                         </h:panelGrid>
-                    </p:dialog>                    
+                    </p:dialog>
+                    <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="600" header="Detalhes">
+                        <p:ajax event="close" listener="#{pessoaCardBean.close}"/>
+                        <p:panel id="i_pessoa_juridica_card">
+                            <ui:include src="templates/templatePessoaJuridicaCard.xhtml" />
+                        </p:panel>
+                    </p:dialog>                      
                 </h:form>
                 <h:form id="form_relatorio_arquivos" enctype="multipart/form-data" acceptcharset="UTF-8">
                     <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true" width="500" height="400" header="Anexar arquivos" closable="true">
