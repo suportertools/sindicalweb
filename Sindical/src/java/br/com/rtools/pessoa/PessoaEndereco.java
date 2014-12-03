@@ -1,6 +1,8 @@
 package br.com.rtools.pessoa;
 
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Mask;
 import javax.persistence.*;
 
 @Entity
@@ -90,6 +92,32 @@ public class PessoaEndereco implements java.io.Serializable {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public String getEnderecoCompletoString() {
+        String enderecoString = "";
+        if (!this.endereco.getLogradouro().getDescricao().equals("")) {
+            enderecoString += this.endereco.getLogradouro().getDescricao();
+        }
+        if (!this.endereco.getDescricaoEndereco().getDescricao().equals("")) {
+            enderecoString += " " + this.endereco.getDescricaoEndereco().getDescricao();
+        }
+        if (!numero.equals("")) {
+            enderecoString += ", nº" + numero + " ";
+        }
+        if (!complemento.equals("")) {
+            enderecoString += " - " + enderecoString;
+        }
+        if (!this.endereco.getCidade().getCidade().equals("")) {
+            enderecoString += " - " + this.endereco.getCidade().getCidade();
+        }
+        if (!this.endereco.getCidade().getUf().equals("")) {
+            enderecoString += " - " + this.endereco.getCidade().getUf();
+        }
+        if (!this.endereco.getCep().equals("")) {
+            enderecoString += " - CEP: " + Mask.cep(this.endereco.getCep());
+        }
+        return enderecoString;
     }
 
     /* public String getEnderecoToString(){
