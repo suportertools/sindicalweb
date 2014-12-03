@@ -143,6 +143,9 @@
                         <p:column width="15">  
                             <p:rowToggler />  
                         </p:column>  
+                        <p:column headerText="" width="20" styleClass="text-center">
+                            <h:outputText value="#{repisMovimento.id}" style="font-size: 8pt!important"/>
+                        </p:column>
                         <p:column headerText="CNPJ" width="120" styleClass="text-center">
                             <h:outputText value="#{repisMovimento.pessoa.documento}" style="font-size: 8pt!important"/>
                         </p:column>
@@ -167,9 +170,13 @@
                         
                         <p:rowExpansion>
                             <h:panelGrid columns="5" styleClass="sbb">
-                                <p:column>
+                                <p:column rendered="false">
                                     <h:outputLabel value="Procolo" style="font-weight: bold"/><br />
                                     <h:outputText value="#{repisMovimento.id}" style="margin-left: 20px"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Ano" style="font-weight: bold"/><br />
+                                    <h:outputText value="#{repisMovimento.ano}" style="margin-left: 20px"/>
                                 </p:column>
                             </h:panelGrid>
                         </p:rowExpansion>

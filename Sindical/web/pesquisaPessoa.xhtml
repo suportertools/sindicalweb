@@ -36,7 +36,7 @@
                                         </p:inputMask>
                                     </p:column>
 
-                                    <p:selectOneMenu value="#{pessoaBean.porPesquisa}">
+                                    <p:selectOneMenu value="#{pessoaBean.porPesquisa}" style="width: 100px">
                                         <p:ajax event="change" update="i_panel_pesquisa" listener="#{pessoaBean.limparMascara}"/>
                                         <f:selectItem itemValue="nome" itemLabel="Nome"/>
                                         <f:selectItem itemValue="cei"      itemLabel="CEI"/>

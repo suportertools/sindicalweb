@@ -212,7 +212,7 @@ public class WebREPISBean implements Serializable {
         repisMovimento = new RepisMovimento();
         showProtocolo = false;
         pessoaSolicitante = new Pessoa();
-        idPessoa = 0;
+        //idPessoa = 0;
         listRepisMovimento.clear();
     }
 
@@ -236,6 +236,7 @@ public class WebREPISBean implements Serializable {
         if (renderEmpresa) {
             result = wsrepisdb.pesquisarListaSolicitacao("", "", pessoa.getId(), -1);
         } else if (renderContabil) {
+            //Pessoa pes = (Pessoa) new Dao().find(new Pessoa(), Integer.parseInt(listComboPessoa.get(idPessoa).getDescription()));
             result = wsrepisdb.pesquisarListaSolicitacao("", "", -1, pessoa.getId());
         }
         return result;
@@ -671,8 +672,9 @@ public class WebREPISBean implements Serializable {
 
     public List<RepisMovimento> getListRepisMovimento() {
         if (listRepisMovimento.isEmpty()) {
-            if (!listPessoaRepisAno().isEmpty()) {
-                listRepisMovimento = listPessoaRepisAno();
+            List list_result = listPessoaRepisAno();
+            if (!list_result.isEmpty()) {
+                listRepisMovimento = list_result;
             }
         }
         return listRepisMovimento;

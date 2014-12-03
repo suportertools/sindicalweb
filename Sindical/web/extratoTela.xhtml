@@ -2,538 +2,506 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Extrato de Tela</title>
+        <title>Sindical - Extrato Tela</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+            
+            .tblExtratoTelaX{ background-color: #ff9587!important; }
+            .tblExtratoTelaX:hover{ background-color: #fe887f!important; }
+            //.tblExtratoTelaX:hover {font-weight: normal; font-weight: bold; cursor: pointer}
+        </style>
+
+        <script type="text/javascript">
+        
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formExtratoTela">
-
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Extrato de Tela" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" align="left" style="width: auto">
-
-                        <h:panelGrid columns="4">
-                            <h:column>
-                                <h:outputText value="Filtrar Por:" styleClass="fonteExtratoTela"/>
-                                <h:selectOneMenu value="#{extratoTelaBean.porPesquisa}" rendered="#{controleAcessoBean.listaExtratoTela}">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItem itemValue="todos"             itemLabel="Todas"/>
-                                    <f:selectItem itemValue="recebidas"         itemLabel="Recebidas"/>
-                                    <f:selectItem itemValue="naoRecebidas"      itemLabel="Não Recebidas"/>
-                                    <f:selectItem itemValue="atrazadas"         itemLabel="Atrasadas"/>
-                                </h:selectOneMenu>
-                                <h:selectOneMenu value="#{extratoTelaBean.porPesquisa}" rendered="#{!controleAcessoBean.listaExtratoTela}">
-                                    <a4j:ajax event="change" render="this"/>
-                                    <f:selectItem itemValue="naoRecebidas"      itemLabel="Não Recebidas"/>
-                                    <f:selectItem itemValue="atrazadas"         itemLabel="Atrasadas"/>
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <h:column>
-                                <h:outputText value="Gerados pela Caixa:" styleClass="fonteExtratoTela" style="margin-left: 15px"/>
-                                <h:selectOneMenu value="#{extratoTelaBean.geraPesquisa}">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItem itemValue="sim"               itemLabel="Sim"/>
-                                    <f:selectItem itemValue="nao"               itemLabel="Não"/>
-                                    <f:selectItem itemValue="naoVerificar"      itemLabel="Não Verificar"/>
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <h:column>
-                                <h:outputText value="Ordenação: " styleClass="fonteExtratoTela" style="margin-left: 15px"/>
-                                <h:selectOneMenu value="#{extratoTelaBean.ordenacao}">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItem itemValue="referencia"        itemLabel="Referência"/>
-                                    <f:selectItem itemValue="vencimento"        itemLabel="Vencimento"/>
-                                    <f:selectItem itemValue="quitacao"          itemLabel="Quitação"/>
-                                    <f:selectItem itemValue="importacao"        itemLabel="Importação"/>
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <a4j:commandButton value="Filtrar" style="margin-left: 15px" action="#{extratoTelaBean.loadList()}" render="tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso, idSomarVlNaoRecebido" 
-                                               onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)"/>
-
-                        </h:panelGrid>
-
-                        <br />
-
-                        <h:panelGrid columns="5">
-                            <h:column>
-                                <rich:panel style="height: 120px">
-                                    <h:panelGrid columns="2">
-                                        <h:selectBooleanCheckbox value="#{extratoTelaBean.chkData}">
-                                            <a4j:ajax event="change" render="idDtInicial,idDtFinal,idDtMAInicial,idDtMAFinal,idFiltroData"/>
-                                        </h:selectBooleanCheckbox>
-
-                                        <h:selectOneMenu id="idFiltroData" value="#{extratoTelaBean.tipoDataPesquisa}" disabled="#{!extratoTelaBean.chkData}" onchange="submit();">
-                                            <f:selectItem itemValue="importacao"  itemLabel="Faixa de Importação"/>
-                                            <f:selectItem itemValue="recebimento" itemLabel="Faixa de Recebimento"/>
-                                            <f:selectItem itemValue="vencimento"  itemLabel="Faixa de Vencimento"/>
-                                            <f:selectItem itemValue="referencia"  itemLabel="Faixa de Referência"/>
-                                        </h:selectOneMenu>
-                                    </h:panelGrid>
-                                    <br />
-                                    <h:panelGrid id="ipdata" columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa != 'referencia'}">
-                                        <h:outputLabel value="Data Inicial: " styleClass="fonteExtratoTela" for="idDtInicial"/>
-                                        <h:inputText id="idDtInicial" size="7" class="data" value="#{extratoTelaBean.dataInicial}" disabled="#{!extratoTelaBean.chkData}"/>
-
-                                        <h:outputLabel value="Data Final: " styleClass="fonteExtratoTela" for="idDtFinal"/>
-                                        <h:inputText id="idDtFinal" size="7" class="data" value="#{extratoTelaBean.dataFinal}" disabled="#{!extratoTelaBean.chkData}"/>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid id="ipref" columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa == 'referencia'}">
-                                        <h:outputLabel value="Data Mês/Ano Inicial: " styleClass="fonteExtratoTela" for="idDtMAInicial"/>
-                                        <h:inputText id="idDtMAInicial" size="5" class="referencia" value="#{extratoTelaBean.dataRefInicial}" disabled="#{!extratoTelaBean.chkData}"/>
-
-                                        <h:outputLabel value="Data Mês/Ano Final: " styleClass="fonteExtratoTela" for="idDtMAFinal"/>
-                                        <h:inputText id="idDtMAFinal" size="5" class="referencia" value="#{extratoTelaBean.dataRefFinal}" disabled="#{!extratoTelaBean.chkData}"/>
-                                    </h:panelGrid>
-                                </rich:panel>
-                            </h:column>
-
-                            <h:column>
-                                <rich:panel style="height: 120px; margin-left: 8px">
-                                    <h:panelGrid>
-                                        <h:panelGrid columns="2">
-                                            <h:selectBooleanCheckbox value="#{extratoTelaBean.chkNrBoletos}">
-                                                <a4j:ajax event="change" render="idBoletoInicial, idBoletoFinal"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel value="Boleto Inicial: " styleClass="fonteExtratoTela" for="idBoletoInicial"/>
-                                        </h:panelGrid>
-                                        <h:inputText id="idBoletoInicial" size="20" value="#{extratoTelaBean.boletoInicial}" disabled="#{!extratoTelaBean.chkNrBoletos}"/>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid>
-                                        <h:outputLabel value="Boleto Final: " styleClass="fonteExtratoTela" for="idBoletoFinal"/>
-                                        <h:inputText id="idBoletoFinal" size="20" value="#{extratoTelaBean.boletoFinal}" disabled="#{!extratoTelaBean.chkNrBoletos}"/>
-                                    </h:panelGrid>
-                                </rich:panel>
-                            </h:column>
-
-                            <h:column>
-                                <rich:panel style="height:120px; margin-left: 8px">
-                                    <h:panelGrid columns="10">
-                                        <h:column>
-                                            <h:selectBooleanCheckbox value="#{extratoTelaBean.chkContribuicao}">
-                                                <a4j:ajax event="change" render="idContri"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputText value="Contribuição: " styleClass="fonteExtratoTela"/>
-                                            <h:selectOneMenu id="idContri" value="#{extratoTelaBean.idContribuicao}" disabled="#{!extratoTelaBean.chkContribuicao}">
-                                                <a4j:ajax event="change" render="this" />
-                                                <f:selectItems value="#{extratoTelaBean.listaServico}"/>
-                                            </h:selectOneMenu>
-                                        </h:column>
-
-                                        <h:column>
-                                            <h:selectBooleanCheckbox value="#{extratoTelaBean.chkTipo}">
-                                                <a4j:ajax event="change" render="idTipoContri"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputText value="Tipo: " styleClass="fonteExtratoTela"/>
-                                            <h:selectOneMenu id="idTipoContri" value="#{extratoTelaBean.idTipoServico}" disabled="#{!extratoTelaBean.chkTipo}">
-                                                <a4j:ajax event="change" render="this"/>
-                                                <f:selectItems value="#{extratoTelaBean.listaTipoServico}"/>
-                                            </h:selectOneMenu>
-                                        </h:column>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid columns="1">
-                                        <h:column>
-                                            <h:selectBooleanCheckbox value="#{extratoTelaBean.chkEmpresa}">
-                                                <a4j:ajax event="change" render="@form" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputText value="Pessoa:" styleClass="fonteExtratoTela"/>
-                                            <h:outputText id="lbtipoDocumento" value="#{extratoTelaBean.pessoa.tipoDocumento.descricao}" styleClass="fonteExtratoTela"/>
-                                        </h:column>
-                                    </h:panelGrid>
-
-                                    <h:panelGrid columns="10">
-                                        <h:column>
-                                            <h:inputText id="idEmpresa" size="40" value="#{extratoTelaBean.pessoa.nome}" disabled="true"/>
-                                            <h:inputText id="idEmpresaCNPJ" size="15" value="#{extratoTelaBean.pessoa.documento}" disabled="true"/>
-                                            <h:commandButton id="idEmpresaPes" alt="Pesquisar Empresa" value="..." action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" disabled="#{!extratoTelaBean.chkEmpresa}" />
-                                        </h:column>
-                                    </h:panelGrid>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid>
-
-                        <br />
-
-                        <rich:panel style="width: 965px">
-                            <h:panelGroup style="overflow:auto; height:200px; width:950px;" layout="block">
-                                <rich:dataTable value="#{extratoTelaBean.listaMovimentos}" var="linha" id="tbl" iterationStatusVar="it" rows="500" style="width: 700px" rowClasses="#{linha.argumento26}">
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column> 
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Selecione"/></f:facet>
-                                        <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                            <a4j:ajax event="change" render="this"/>
-                                        </h:selectBooleanCheckbox>
-                                    </rich:column>
-
-                                    <rich:column rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.chkEmpresa == false}">
-                                        <f:facet name="header"><h:outputText value="CNPJ"/></f:facet>
-                                        <div style="width: 100px">
-                                            <h:outputText value="#{linha.argumento4}"/>
-                                        </div>
-                                    </rich:column>
-
-                                    <rich:column sortBy="#{linha.argumento5}" rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.chkEmpresa == false}">
-                                        <f:facet name="header"><h:outputText value="Razão"/></f:facet>
-                                        <div style="width: 300px">
-                                            <h:outputText value="#{linha.argumento5}"/>
-                                        </div>
-                                    </rich:column>
-
-                                    <rich:column sortBy="#{linha.argumento6}">
-                                        <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
-                                        <h:outputText value="#{linha.argumento6}"/>
-                                    </rich:column>
-
-                                    <rich:column sortBy="#{linha.argumento7}">
-                                        <f:facet name="header"><h:outputText value="Contribuinção"/></f:facet>
-                                        <h:outputText value="#{linha.argumento7}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna" sortBy="#{linha.argumento14}">
-                                        <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
-                                        <h:outputText value="#{linha.argumento14}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna" sortBy="#{linha.argumento8}">
-                                        <f:facet name="header"><h:outputText value="Referência"/></f:facet>
-                                        <h:outputText value="#{linha.argumento8}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                                        <h:column rendered="#{(linha.argumento21 == true) and (controleAcessoBean.botaoAlterarDataVenctoExtrato == false)}">
-                                            <a4j:commandLink value="#{linha.argumento9}" action="#{extratoTelaBean.carregaDataAntiga}" onclick="modalOpcao('divAlterarVencimento');" render="dataAntigo,inputNovo">
-                                                <a4j:param value="#{it.index}" assignTo="#{extratoTelaBean.idIndex}"/>
-                                            </a4j:commandLink>
-                                        </h:column> 
-
-                                        <h:column rendered="#{linha.argumento21 == false || controleAcessoBean.botaoAlterarDataVenctoExtrato == true}">
-                                            <h:outputText value="#{linha.argumento9}"/>
-                                        </h:column>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                        <h:outputText value="#{linha.argumento11}" style="float: right"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Quitação"/></f:facet>
-                                        <h:outputText value="#{linha.argumento15}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Vlr Baixa"/></f:facet>
-                                        <h:outputText value="#{linha.argumento25}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Taxa"/></f:facet>
-                                        <h:outputText value="#{linha.argumento12}"/>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Importação"/></f:facet>
-                                        <h:outputText value="#{linha.argumento10}"/>
-                                    </rich:column>
-
-                                    <rich:column style="width: 500px"  styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Usuário"/></f:facet>
-                                        <div style="width: 400px">
-                                            <h:outputText value="#{linha.argumento13}"/>
-                                        </div>
-                                    </rich:column>
-
-                                    <rich:column style="width: 500px" styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Filial"/></f:facet>
-                                        <div style="width: 400px">
-                                            <h:outputText value="#{linha.argumento24}"/>
-                                        </div>
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="Lote"/></f:facet>
-                                        <h:outputText value="#{linha.argumento22}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Beneficiário"/></f:facet>
-                                        <div style="width: 400px">
-                                            <h:outputText value="#{linha.argumento23}"/>
-                                        </div>
-                                    </rich:column>
-                                    
-                                    <rich:column style="text-align: center">
-                                        <f:facet name="header"><h:outputText value="Ult. Impressão"/></f:facet>
-                                        <a4j:commandLink onclick="modalOpcao('divUltimaImpressao');" value="#{extratoTelaBean.getUltimaImpressão(linha.argumento1)}" action="#{extratoTelaBean.verUltimaImpressão(linha.argumento1)}" title="Ver Lista de Impressões" render="tbl_impressao"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
-                        </rich:panel>
-
-                        <h:panelGrid columns="1">
-                            <f:facet name="footer">
-                                <rich:dataScroller id="datascroller2" render="datascroller1" for="tbl"/>
-                            </f:facet>
-                        </h:panelGrid>                        
-
-                        <br />
-
-                        <rich:panel style="width: 1024px">
-                            <h:panelGrid columns="7">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: 1200px">
+                        <h:outputText value="Extrato Tela" styleClass="fonteHeader" />
+                        <h:form id="formExtratoTela">
+                            <h:panelGrid columns="4" style="clear: both;">
                                 <h:column>
-                                    <h:outputLabel value="Núm de Boletos: " styleClass="fonteExtratoTela" for="idQntBoletos"/> <br />
-                                    <h:inputText id="idQntBoletos" size="10" value="#{extratoTelaBean.qntBoletos}" readonly="true" style="font-weight:bold; text-align:center;"/>
+                                    <p:outputLabel value="Filtrar por" /><br />
+                                    <p:selectOneMenu value="#{extratoTelaBean.porPesquisa}" rendered="#{controleAcessoBean.listaExtratoTela}" style="margin-right: 20px">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItem itemValue="todos"             itemLabel="Todas"/>
+                                        <f:selectItem itemValue="recebidas"         itemLabel="Recebidas"/>
+                                        <f:selectItem itemValue="naoRecebidas"      itemLabel="Não Recebidas"/>
+                                        <f:selectItem itemValue="atrasadas"         itemLabel="Atrasadas"/>
+                                    </p:selectOneMenu>
+
+                                    <p:selectOneMenu value="#{extratoTelaBean.porPesquisa}" rendered="#{!controleAcessoBean.listaExtratoTela}" style="margin-right: 20px">
+                                        <p:ajax event="change" update="@this"/>
+                                        <f:selectItem itemValue="naoRecebidas"      itemLabel="Não Recebidas"/>
+                                        <f:selectItem itemValue="atrasadas"         itemLabel="Atrasadas"/>
+                                    </p:selectOneMenu>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Gerados pela Caixa"/><br />
+                                    <p:selectOneMenu value="#{extratoTelaBean.geraPesquisa}" style="margin-right: 20px">
+                                        <p:ajax event="change" update="@this"/>
+                                        <f:selectItem itemValue="sim"               itemLabel="Sim"/>
+                                        <f:selectItem itemValue="nao"               itemLabel="Não"/>
+                                        <f:selectItem itemValue="naoVerificar"      itemLabel="Não Verificar"/>
+                                    </p:selectOneMenu>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Ordenação" /><br />
+                                    <p:selectOneMenu value="#{extratoTelaBean.ordenacao}">
+                                        <p:ajax event="change" update="@this"/>
+                                        <f:selectItem itemValue="referencia"        itemLabel="Referência"/>
+                                        <f:selectItem itemValue="vencimento"        itemLabel="Vencimento"/>
+                                        <f:selectItem itemValue="quitacao"          itemLabel="Quitação"/>
+                                        <f:selectItem itemValue="importacao"        itemLabel="Importação"/>
+                                    </p:selectOneMenu>
+                                </h:column>
+
+                                <h:column>
+                                    <p:commandButton value="FILTRAR LISTA" style="float: right; font-weight: bold; margin-left: 600px" action="#{extratoTelaBean.loadListBeta()}" update="formExtratoTela" />
+                                </h:column>
+                            </h:panelGrid>
+
+                            <p:panel styleClass="fundoCinza" style="margin-top: 10px">
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <p:fieldset id="i_fieldset_data" legend="Filtrar Data" toggleable="false" toggleSpeed="500" style="height: 150px">
+                                            <p:ajax event="toggle" update="@this" />
+
+                                            <p:selectOneMenu value="#{extratoTelaBean.tipoDataPesquisa}" style="width: 200px">
+                                                <p:ajax event="change" update="i_fieldset_data" global="false" listener="#{extratoTelaBean.limparDatas}"/>
+                                                <f:selectItem itemValue="importacao"  itemLabel="Faixa de Importação"/>
+                                                <f:selectItem itemValue="recebimento" itemLabel="Faixa de Recebimento"/>
+                                                <f:selectItem itemValue="vencimento"  itemLabel="Faixa de Vencimento"/>
+                                                <f:selectItem itemValue="referencia"  itemLabel="Faixa de Referência"/>
+                                            </p:selectOneMenu>
+
+                                            <h:panelGrid columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa != 'referencia'}" style="width: 100%">
+                                                <p:outputLabel value="Data Inicial:" style="font-weight: bold"/>
+                                                <p:inputMask value="#{extratoTelaBean.dataInicial}" mask="99/99/9999" style="width: 100px; text-align: center; font-size: 10pt!important; float: right" placeholder="__/__/____">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputMask>
+
+                                                <p:outputLabel value="Data Final:" style="font-weight: bold"/>
+                                                <p:inputMask value="#{extratoTelaBean.dataFinal}" mask="99/99/9999" style="width: 100px; text-align: center; font-size: 10pt!important; float: right" placeholder="__/__/____">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputMask>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa == 'referencia'}" style="width: 100%">
+                                                <p:outputLabel value="Mês/Ano Inicial:" style="font-weight: bold"/>
+                                                <p:inputMask value="#{extratoTelaBean.dataRefInicial}" mask="99/9999" style="width: 100px; text-align: center; font-size: 10pt!important; float: right" placeholder="__/____">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputMask>
+
+                                                <p:outputLabel value="Mês/Ano Final:" style="font-weight: bold"/>
+                                                <p:inputMask value="#{extratoTelaBean.dataRefFinal}" mask="99/9999" style="width: 100px; text-align: center; font-size: 10pt!important; float: right" placeholder="__/____">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputMask>
+                                            </h:panelGrid>
+                                        </p:fieldset>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:fieldset id="i_fieldset_boleto" legend="Número de Boleto" toggleable="false" toggleSpeed="500" style="height: 150px">
+                                            <p:ajax event="toggle" update="@this" />
+
+                                            <h:panelGrid>
+                                                <p:outputLabel value="Boleto Inicial" style="font-weight: bold"/>
+                                                <p:inputText value="#{extratoTelaBean.boletoInicial}" style="text-align: right">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputText>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid>
+                                                <p:outputLabel value="Boleto Final" style="font-weight: bold"/>
+                                                <p:inputText value="#{extratoTelaBean.boletoFinal}" style="text-align: right">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputText>
+                                            </h:panelGrid>
+                                        </p:fieldset>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:fieldset id="i_fieldset_pessoa" legend="Contribuição e Pessoa" toggleable="false" toggleSpeed="500" style="height: 150px">
+                                            <p:ajax event="toggle" update="@this" />
+
+                                            <h:panelGrid columns="2">
+                                                <h:column>
+                                                    <p:outputLabel value="Contribuição" style="font-weight: bold"/><br />
+                                                    <p:selectOneMenu value="#{extratoTelaBean.idContribuicao}">
+                                                        <p:ajax event="change" update="@this" global="false"/>
+                                                        <f:selectItems value="#{extratoTelaBean.listaServico}"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
+                                                
+                                                <h:column>
+                                                    <p:outputLabel value="Tipo" style="font-weight: bold"/><br />
+                                                    <p:selectOneMenu value="#{extratoTelaBean.idTipoServico}">
+                                                        <p:ajax event="change" update="@this" global="false"/>
+                                                        <f:selectItems value="#{extratoTelaBean.listaTipoServico}"/>
+                                                    </p:selectOneMenu>
+                                                </h:column>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid columns="3">
+                                                <h:column>
+                                                    <p:outputLabel value="Pessoa" style="font-weight: bold"/><br />
+                                                    <p:inputText value="#{extratoTelaBean.pessoa.documento}" disabled="true" style="width: 130px; font-weight: bold"/>
+                                                    <p:inputText value="#{extratoTelaBean.pessoa.nome}" disabled="true" style="width: 445px; font-weight: bold"/>
+                                                    <p:commandButton icon="ui-icon-search" alt="Pesquisar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" />
+                                                    <p:commandButton icon="ui-icon-close" alt="Excluir Pessoa" action="#{extratoTelaBean.limparPesquisaPessoa}" update="i_fieldset_pessoa" />
+                                                </h:column>
+                                            </h:panelGrid>
+                                            
+                                            <h:panelGrid rendered="#{extratoTelaBean.listaEmpresasPertencentes.size() gt 1}">
+                                                <h:column>
+                                                    <p:selectBooleanCheckbox value="#{extratoTelaBean.movimentosDasEmpresas}" itemLabel="Ver os movimentos das empresas vinculadas">
+                                                        <p:ajax event="change" update="@form" />
+                                                    </p:selectBooleanCheckbox>
+                                                </h:column>
+                                            </h:panelGrid>                                            
+                                        </p:fieldset>
+                                    </h:column>
+
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:messages id="i_msg" closable="true" showDetail="true"/>
+                            <p:dataTable value="#{extratoTelaBean.listaMovimentos}" var="linha" id="tbl" rows="500" rowStyleClass="#{linha.argumento26}" emptyMessage="Nenhum Boleto Pesquisado" scrollable="true" scrollHeight="300" paginator="true">
+                                <p:column style="width:15px">  
+                                    <p:rowToggler />  
+                                </p:column>  
+
+                                <p:column style="width:15px">
+                                    <p:selectBooleanCheckbox value="#{linha.argumento0}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:selectBooleanCheckbox>
+                                </p:column>
+
+                                <p:column headerText="CNPJ" rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1}" style="width: 110px">
+                                    <p:outputLabel value="#{linha.argumento4}"/>
+                                </p:column>
+
+                                <p:column headerText="Razão" rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1}">
+                                    <p:outputLabel value="#{linha.argumento5}"/>
+                                </p:column>
+
+                                <p:column headerText="Boleto" style="width: 115px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento6}"/>
+                                </p:column>
+
+                                <p:column headerText="Contr. / Tipo" style="width: 110px">
+                                    <p:outputLabel value="#{linha.argumento7} - #{linha.argumento14}"/>
+                                </p:column>
+
+                                <p:column headerText="Ref" style="width: 45px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento8}"/>
+                                </p:column>
+
+                                <p:column headerText="Vencto" style="width: 60px; text-align: center">
+                                    <h:column rendered="#{(linha.argumento21 == true) and (controleAcessoBean.botaoAlterarDataVenctoExtrato == false)}">
+                                        <p:commandLink value="#{linha.argumento9}" action="#{extratoTelaBean.carregaDataAntiga(linha.argumento1)}" oncomplete="PF('dlg_alterar_vencimento').show();" style="color: blue" update=":formExtratoTelaAlteraVencimento :formExtratoTela:i_msg">
+
+                                        </p:commandLink>
+                                    </h:column> 
+
+                                    <h:column rendered="#{linha.argumento21 == false || controleAcessoBean.botaoAlterarDataVenctoExtrato == true}">
+                                        <p:outputLabel value="#{linha.argumento9}"/>
+                                    </h:column>
+                                </p:column>
+
+                                <p:column headerText="Valor" style="width: 60px">
+                                    <p:outputLabel value="#{linha.argumento11}" style="float: right"/>
+                                </p:column>
+
+                                <p:column headerText="Quitação" style="text-align: center; width: 60px">
+                                    <p:outputLabel value="#{linha.argumento15}"/>
+                                </p:column>
+
+                                <p:column headerText="Vlr Baixa" style="width: 60px">
+                                    <p:outputLabel value="#{linha.argumento25}" style="float: right"/>
+                                </p:column>
+
+                                <p:column headerText="Taxa" style="width: 30px">
+                                    <p:outputLabel value="#{linha.argumento12}" style="float: right"/>
+                                </p:column>
+                                
+                                <p:column headerText="Ult. Imp" style="width: 30px; text-align: center">
+                                    <p:commandButton icon="ui-icon-print" oncomplete="PF('dlg_ultima_impressao').show()" rendered="#{extratoTelaBean.getUltimaImpressão(linha.argumento1)}" action="#{extratoTelaBean.verUltimaImpressão(linha.argumento1)}" title="Ver Lista de Impressões" update=":formExtratoTela:i_tbl_impressao" />
+                                </p:column>
+
+                                <p:rowExpansion>
+                                    <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
+                                        <p:column>
+                                            <p:outputLabel value="ID" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento1}"/>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Lote" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento22}"/>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Beneficiário" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento23}"/>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Filial" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento24}"/>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento13}"/>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Importação" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento10}"/>
+                                        </p:column>
+                                    </h:panelGrid>
+                                </p:rowExpansion>                                
+                            </p:dataTable>
+                            
+                            <h:panelGrid id="i_panel_valores" columns="7" style="margin-top: 10px">
+                                <h:column>
+                                    <p:outputLabel value="Núm de Boletos" for="idQntBoletos"/><br />
+                                    <h:inputText id="idQntBoletos" size="10" value="#{extratoTelaBean.qntBoletos}" readonly="true" style="font-weight:bold; text-align:center; margin-right: 15px"/>
                                 </h:column>
 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
-                                    <h:outputLabel value="Total Recebido: " styleClass="fonteExtratoTela" for="idSomarVlRecebido"/> <br />
-                                    <h:inputText id="idSomarVlRecebido" size="15" value="#{extratoTelaBean.vlRecebido}" readonly="true" style="font-weight:bold; text-align: right"/>
+                                    <p:outputLabel value="Total Recebido " styleClass="fonteExtratoTela" for="idSomarVlRecebido"/> <br />
+                                    <h:inputText id="idSomarVlRecebido" size="15" value="#{extratoTelaBean.vlRecebido}" readonly="true" style="font-weight:bold; text-align: right; margin-right: 15px"/>
                                 </h:column>
                                 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
-                                    <h:outputLabel value="Total NÃO Recebido: " styleClass="fonteExtratoTela" for="idSomarVlNaoRecebido"/> <br />
-                                    <h:inputText id="idSomarVlNaoRecebido" size="15" value="#{extratoTelaBean.vlNaoRecebido}" readonly="true" style="font-weight:bold; text-align: right"/>
+                                    <p:outputLabel value="Total NÃO Recebido" styleClass="fonteExtratoTela" for="idSomarVlNaoRecebido"/> <br />
+                                    <h:inputText id="idSomarVlNaoRecebido" size="15" value="#{extratoTelaBean.vlNaoRecebido}" readonly="true" style="font-weight:bold; text-align: right; margin-right: 15px"/>
                                 </h:column>
 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
-                                    <h:outputLabel value="Total Valor: " styleClass="fonteExtratoTela" for=""/> <br />
-                                    <h:inputText id="idSomarVlTotal" size="15" value="#{extratoTelaBean.vlTotal}" readonly="true" style="font-weight:bold; text-align: right" />
+                                    <p:outputLabel value="Total Valor" /> <br />
+                                    <h:inputText id="idSomarVlTotal" size="15" value="#{extratoTelaBean.vlTotal}" readonly="true" style="font-weight:bold; text-align: right; margin-right: 15px" />
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Total Taxa: " styleClass="fonteExtratoTela" for="idSomarTaxa"/> <br />
-                                    <h:inputText id="idSomarTaxa" size="10" value="#{extratoTelaBean.vlTaxa}" readonly="true" style="font-weight:bold; text-align: right" />
+                                    <p:outputLabel value="Total Taxa" for="idSomarTaxa"/> <br />
+                                    <h:inputText id="idSomarTaxa" size="10" value="#{extratoTelaBean.vlTaxa}" readonly="true" style="font-weight:bold; text-align: right; margin-right: 15px" />
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Total Liquido: " styleClass="fonteExtratoTela" for="idSomarVlLiquido"/> <br />
-                                    <h:inputText id="idSomarVlLiquido" size="15" value="#{extratoTelaBean.vlLiquido}" readonly="true" style="font-weight:bold; text-align: right" />
+                                    <p:outputLabel value="Total Liquido" for="idSomarVlLiquido"/> <br />
+                                    <h:inputText id="idSomarVlLiquido" size="15" value="#{extratoTelaBean.vlLiquido}" readonly="true" style="font-weight:bold; text-align: right; margin-right: 15px" />
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Liquido - Repasse: " styleClass="fonteExtratoTela" for="idSomarVlLiquidoRepasse"/> <br />
+                                    <p:outputLabel value="Liquido - Repasse" for="idSomarVlLiquidoRepasse"/> <br />
                                     <h:inputText id="idSomarVlLiquidoRepasse" size="12" value="#{extratoTelaBean.vlRepasse}" readonly="true" style="font-weight:bold; text-align: right" />
                                 </h:column>
                             </h:panelGrid>
-                        </rich:panel>
-
-                        <br />
-                        <h:panelGrid columns="6">
-                            <h:selectBooleanCheckbox value="#{extratoTelaBean.imprimirVerso}">
-                                <a4j:ajax event="change" render="this"/>
-                            </h:selectBooleanCheckbox>
-                            <h:outputLabel value=" Imprime Verso" styleClass="fontePadrao"/>
-                            <h:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.imprimir}" value="Imprimir Boleto" style="width: 150px; margin-left: 7px" title="Imprimir Boleto" target="_blank"/>
-                            <h:outputLabel value="#{extratoTelaBean.msgConfirma}" styleClass="corErro" style="margin-right: 7px"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');"  styleClass="idExcluir iLink" value="Excluir Boletos" style="width: 150px;" title="Excluir Boletos" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                            <a4j:commandLink onclick="modalOpcao('divEstornar');" styleClass="idNovo iLink" value="Estornar Boletos" style="width: 150px; margin-left: 7px " title="Estornar Boletos"/>
-                        </h:panelGrid>
-                        <hr />
-                        <h:panelGrid>
-                            <h:column>
-                                <a4j:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.enviarEmail}" value="Enviar Boleto" style="width: 150px; margin-left: 7px" title="Enviar Email" onclick="modalOpcao('divProcesso');" oncomplete="modalMensagem(), fecharModalOpcao('divProcesso', true)" render="outConfirma"/>
-                                <h:outputLabel value=" Para " styleClass="fontePadrao" />
-                                <h:selectOneMenu value="#{extratoTelaBean.tipoEnvio}">
-                                    <a4j:ajax event="change" render="@this" />
-                                    <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
-                                    <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
-                                </h:selectOneMenu>
-
-                                <a4j:commandLink styleClass="idExcluir iLink" value="Excluir Acordo" style="width: 140px; margin-left: 10px" title="Excluir Acordo" onclick="modalOpcao('divAcordo');" disabled="#{controleAcessoBean.botaoExcluirAcordo}"/>
-                                <h:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.imprimirPlanilha}" value="Planilha Acordo" style="width: 150px; margin-left: 7px" title="Planilha Acordo" target="_blank"/>
-                                <h:commandLink styleClass="idNovo iLink" value="Promissória Acordo" style="width: 200px; margin-left: 7px" title="Promissória Acordo" action="#{extratoTelaBean.imprimirPromissoria}" target="_blank"/>
-                            </h:column>
-                        </h:panelGrid>
-                    </div>
-                </center>
-
-                <div id="boxes">
-                    <div id="divUltimaImpressao" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid id="tbl_impressao">
-                                <rich:dataTable value="#{extratoTelaBean.listaImpressao}" var="linha" iterationStatusVar="it" style="width: 400px">
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Impressão"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.impressao}"/>
-                                    </rich:column> 
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Vencimento"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.vencimento}"/>
-                                    </rich:column> 
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Valor"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.movimento.valorString}"/>
-                                    </rich:column> 
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Usuário"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.usuario.pessoa.nome}"/>
-                                    </rich:column> 
-                                </rich:dataTable>
-                            </h:panelGrid>
                             
-                            <a4j:commandLink value="Ok" styleClass="idNovo iLink" oncomplete="fecharModal()" />
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>  
-                
-                <div id="boxes">
-                    <div id="divAlterarVencimento" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Confirma alteração do vencimento deste acordo?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <h:panelGrid style="float: left; margin-left: 20px" columns="2">
-                                <h:outputText id="outAntigo" value="Vencimento Anterior: " styleClass="fontePadrao"/>
-                                <h:outputText id="dataAntigo" value="#{extratoTelaBean.dataAntiga}" styleClass="fontePadraoNegrito"/>
-                            </h:panelGrid>
-                            <br /><br />
-                            <h:panelGrid style="float: left; margin-left: 20px" columns="2">
-                                <h:outputText id="outNovo" value="Digite o novo Vencimento: " styleClass="fontePadrao"/>
-                                <h:inputText id="inputNovo" value="#{extratoTelaBean.dataNova}" size="8" class="data">
-                                    <a4j:ajax event="change" render="this" />
-                                </h:inputText>
-                            </h:panelGrid>
-                            <a4j:commandLink value="Ok" styleClass="idNovo iLink" action="#{extratoTelaBean.atualizarData}" oncomplete="fecharModal()" render="inputNovo"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
+                            <p:dialog widgetVar="dlg_ultima_impressao" header="Últimas Impressões desse movimento" resizable="false" modal="true" width="700">
+                                <h:panelGrid id="i_tbl_impressao" columns="2">
+                                    <p:dataTable value="#{extratoTelaBean.listaImpressao}" var="linha" style="width: 100%" emptyMessage="Nenhuma Impressão encontrada!">
+                                        <p:column headerText="Impressão" style="text-align: center; width: 85px">
+                                            <h:outputText value="#{linha.impressao}"/>
+                                        </p:column> 
 
-                <div id="boxes">
-                    <div id="divExcluir" class="window" style="height: 250px;">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir estes Boletos?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                                        <p:column headerText="Vencimento" style="text-align: center; width: 85px">
+                                            <h:outputText value="#{linha.vencimento}"/>
+                                        </p:column> 
+
+                                        <p:column headerText="Valor" style="text-align: right; width: 80px">
+                                            <h:outputText value="#{linha.movimento.valorString}"/>
+                                        </p:column> 
+
+                                        <p:column headerText="Usuário">
+                                            <h:outputText value="#{linha.usuario.pessoa.nome}"/>
+                                        </p:column> 
+                                    </p:dataTable>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="1">
+                                    <p:commandButton icon="ui-icon-circle-check" value="OK" onclick="PF('dlg_ultima_impressao').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                        </h:form>
+                        
+                        <h:form id="formExtratoTelaOpcoes">
+                            <p:panel styleClass="fundoCinza">
+                                <p:outputLabel value="Opções do Boleto" style="font-weight: bold; font-size: 8pt!important"/>
+                                <h:panelGrid columns="7" style="width: 850px">
+                                    <h:column>
+                                        <p:selectBooleanCheckbox value="#{extratoTelaBean.imprimirVerso}" itemLabel="Imprimir Verso" style="margin-right: 20px"/>
+                                    </h:column>
+                                        
+                                    <h:column>
+                                        <p:commandLink action="#{extratoTelaBean.imprimir}" title="Imprimir Boletos Selecionados" target="_blank" ajax="false">
+                                            <p:commandButton icon="ui-icon-print" value="Imprimir" title="Imprimir Boletos Selecionados" ajax="false" style="margin-right: 20px"/>
+                                        </p:commandLink>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:commandButton icon="ui-icon-close" value="Excluir" title="Excluir Boletos Selecionados" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_excluir').show()" style="margin-right: 20px"/>
+                                    </h:column>
+                                
+                                    <h:column>
+                                        <p:commandButton icon="ui-icon-arrowreturnthick-1-w" value="Estornar" title="Estornar Boletos Selecionados (Apenas Pagos)" disabled="#{controleAcessoBean.botaoEstornarBoleto}" onclick="PF('dlg_estornar').show()" style="margin-right: 20px"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:commandButton icon="ui-icon-mail-closed" value="Enviar por Email" title="Enviar movimentos por Email (das respectivas empresas)" onclick="PF('dlg_enviar_email').show()"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value=" para " styleClass="fontePadrao" />
+                                    </h:column>
+                                        
+                                    <h:column>
+                                        <p:selectOneMenu value="#{extratoTelaBean.tipoEnvio}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                            <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
+                                            <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
+                                        </p:selectOneMenu>                                        
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:panel styleClass="fundoCinza" style="margin-top: 10px">
+                                <p:outputLabel value="Opções do Acordo" style="font-weight: bold; font-size: 8pt!important"/>
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <p:commandButton icon="ui-icon-close" value="Excluir Acordo" style="margin-right: 15px" title="Excluir Acordos Selecionados" onclick="PF('dlg_acordo').show()" disabled="#{controleAcessoBean.botaoExcluirAcordo}"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:commandLink action="#{extratoTelaBean.imprimirPlanilha}" title="Planilha Acordo" target="_blank" ajax="false">
+                                            <p:commandButton icon="ui-icon-print" value="Planilha Acordo" style="margin-right: 15px" title="Planilha Acordo" ajax="false"/>
+                                        </p:commandLink>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:commandLink action="#{extratoTelaBean.imprimirPromissoria}" title="Promissória Acordo" target="_blank" ajax="false">
+                                            <p:commandButton icon="ui-icon-print" value="Promissória Acordo" title="Promissória Acordo" ajax="false"/>
+                                        </p:commandLink>
+                                    </h:column>
+                                        
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:dialog widgetVar="dlg_excluir" header="Excluir Movimentos" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente excluir esses movimentos?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                <p:messages id="i_msg_excluir" closable="true" showDetail="true"/>
+                                <h:panelGrid style="width: 100%"> 
+                                    <p:outputLabel value="Digite o motivo para exclusão"/>
+                                    <p:inputTextarea value="#{extratoTelaBean.historico}" rows="5" style="width: 100%"> 
+
+                                    </p:inputTextarea>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{extratoTelaBean.inativarBoleto}" title="Excluir boletos selecionados" update="i_msg_excluir"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar exclusão" onclick="PF('dlg_excluir').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_estornar" header="Estornar Movimentos" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente ESTORNAR esses movimentos?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                <p:messages id="i_msg_estornar" closable="true" showDetail="true"/>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{extratoTelaBean.estornarBaixa()}" title="Estornar boletos selecionados" update="i_msg_estornar"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Estorno" onclick="PF('dlg_estornar').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_enviar_email" header="Enviar Email" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente ENVIAR esses movimentos por EMAIL?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                <p:messages id="i_msg_enviar_email" closable="true" showDetail="true"/>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{extratoTelaBean.enviarEmail()}" title="Enviar boletos selecionados" update="i_msg_enviar_email"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Envio de Email" onclick="PF('dlg_enviar_email').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_acordo" header="Excluir Acordos" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente EXCLUIR esses acordos?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                
+                                <p:messages id="i_msg_acordo" closable="true" showDetail="true"/>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{extratoTelaBean.excluirAcordo()}" title="Excluir acordos selecionados" update="i_msg_acordo"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar exclusão de Acordos" onclick="PF('dlg_acordo').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                        </h:form>
+                        
+                    </p:panel>
+                    
+                        
+                    <p:dialog widgetVar="dlg_alterar_vencimento" header="Alterar data de Vencimento" resizable="false" modal="true" width="400">
+                        <h:form id="formExtratoTelaAlteraVencimento">
+                            <h:panelGrid>
+                                <p:outputLabel value="Confirma alteração do vencimento deste acordo?" style="font-weight: bold; font-size: 12pt!important"/>
                             </h:panelGrid>
-                            <br />
-                            <div style="float: left">
-                                <h:outputLabel value="Digite o motivo para Exclusão: " style="font-weight: bold"/>
-                                <h:inputTextarea value="#{extratoTelaBean.historico}" cols="30" rows="5"> 
-
-                                </h:inputTextarea>
-                            </div>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{extratoTelaBean.inativarBoleto}" title="Excluir" oncomplete="modalMensagem()" render="outConfirma, tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-
-                <div id="boxes">
-                    <div id="divEstornar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja estornar esses boletos?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            <p:messages id="i_msg_vencimento" closable="true" showDetail="true"/>
+                            <h:panelGrid style="margin-top: 20px; clear: both" columns="2">
+                                <h:column>
+                                    <p:outputLabel value="Vencimento Anterior"/><br />
+                                    <p:inputText value="#{extratoTelaBean.dataAntiga}" readonly="true" style="margin-right: 50px; width: 100px; font-weight: bold; text-align: center"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <p:outputLabel value="Digite o novo Vencimento" /><br />
+                                    <p:inputMask id="i_nova_data" value="#{extratoTelaBean.dataNova}" mask="99/99/9999" style="width: 100px; text-align: center">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputMask>
+                                    <p:commandButton value="OK" action="#{extratoTelaBean.atualizarData}" update="i_msg_vencimento"/>
+                                    <p:focus for="i_nova_data" />
+                                </h:column>
                             </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Estornar" action="#{extratoTelaBean.estornarBaixa}" oncomplete="modalMensagem()" render="outConfirma, tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
+                        </h:form>
+                    </p:dialog>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                <div id="boxes">
-                    <div id="divAcordo" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir esses acordos?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Estornar" action="#{extratoTelaBean.excluirAcordo}" oncomplete="modalMensagem()" render="outConfirma, tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-                </div>                
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{extratoTelaBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" onclick="fecharModal();"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                 
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
+

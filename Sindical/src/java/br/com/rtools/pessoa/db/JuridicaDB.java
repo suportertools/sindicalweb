@@ -49,7 +49,7 @@ public interface JuridicaDB {
 
     public List listaJuridicaContribuinte(int id_juridica);
 
-    public List listaContabilidadePertencente(int id_juridica);
+    public List<Juridica> listaContabilidadePertencente(int id_juridica);
 
     public List listaJuridicaContribuinteID();
 

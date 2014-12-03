@@ -9,8 +9,11 @@ import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
@@ -34,7 +37,6 @@ public class ExtratoTelaBean implements Serializable {
 
     private int idContribuicao = 0;
     private int idTipoServico = 0;
-    private int idMovimento = 0;
     private int idIndex = -1;
     private Pessoa pessoa = new Pessoa();
     private Movimento mov = new Movimento();
@@ -76,7 +78,14 @@ public class ExtratoTelaBean implements Serializable {
     private String tipoEnvio = "empresa";
     private String valorExtenso = "";
     private List<Impressao> listaImpressao = new ArrayList();
-
+    
+    private boolean movimentosDasEmpresas = false;
+    private List<Juridica> listaEmpresasPertencentes = new ArrayList();
+    private boolean dcData = false; /* dc = defaultCollapsed */
+    private boolean dcBoleto = false;
+    private final List<SelectItem> listaTipoServico = new ArrayList();
+    private final List<SelectItem> listaServico = new ArrayList();
+    private Movimento movimentoVencimento = new Movimento();
     public ExtratoTelaBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
         controx.setModulo((Modulo) new Dao().find(new Modulo(), 3));
@@ -88,7 +97,192 @@ public class ExtratoTelaBean implements Serializable {
         }
     }
 
+    
+    
+    public List<Juridica> loadListaEmpresasPertencentes() {
+        listaEmpresasPertencentes.clear();
+        JuridicaDB db = new JuridicaDBToplink();
+        PessoaEnderecoDB dbPe = new PessoaEnderecoDBToplink();
+        PessoaEndereco pe;
+        if (pessoa.getId() != -1) {
+            Juridica j = db.pesquisaJuridicaPorPessoa(pessoa.getId());
+            List lista_x = db.listaContabilidadePertencente(j.getId());
+            for (Object lista_x1 : lista_x) {
+                // pe = dbPe.pesquisaEndPorPessoaTipo(((Juridica) (listaX.get(i))).getPessoa().getId(), 2); // endereco da empresa pertencente
+                listaEmpresasPertencentes.add((Juridica) lista_x1);
+            }
+        }
+        
+        if (listaEmpresasPertencentes.isEmpty()) movimentosDasEmpresas = false;
+        
+        return listaEmpresasPertencentes;
+    }
+    
+    
+    public void loadListBeta() {
+        loadListaEmpresasPertencentes();
+        listaMovimentos.clear();
+        boolean habData = false;
+        float somaValores = 0, somaRepasse = 0;
+        String classTbl = "";
+
+        vlRecebido = "0,00";
+        vlNaoRecebido = "0,00";
+        vlTotal = "0,00";
+        vlTaxa = "0,00";
+        vlLiquido = "0,00";
+        vlRepasse = "0,00";
+        
+        MovimentoDB db = new MovimentoDBToplink();
+
+        int ic, its;
+
+        if (chkData && !tipoDataPesquisa.equals("referencia")) {
+            if (dataInicial.isEmpty() || dataFinal.isEmpty()) {
+                chkData = false;
+            }
+        } else {
+            if (dataRefInicial.isEmpty() || dataRefFinal.isEmpty()) {
+                chkData = false;
+            }
+        }
+        if (pessoa == null) {
+            pessoa = new Pessoa();
+        }
+
+        if (!getListaServico().isEmpty()) {
+            ic = Integer.parseInt(getListaServico().get(idContribuicao).getDescription());
+        } else {
+            ic = 0;
+        }
+
+        if (!getListaTipoServico().isEmpty()) {
+            its = Integer.parseInt(getListaTipoServico().get(idTipoServico).getDescription());
+        } else {
+            its = 0;
+        }
+
+        if (!boletoInicial.isEmpty() && boletoFinal.isEmpty()) {
+            boletoFinal = boletoInicial;
+        }
+
+        if (boletoInicial.isEmpty() && !boletoFinal.isEmpty()) {
+            boletoInicial = boletoFinal;
+        }
+
+        //  BLOQUEIA QUE O USUÁRIO GERE UMA PESQUISA SEM FILTRO, TRAZENDO (N) REGISTROS
+        if (dataInicial.isEmpty() && dataFinal.isEmpty() && dataRefInicial.isEmpty() && dataRefFinal.isEmpty() && ic == 0 && its == 0 && boletoInicial.isEmpty() && boletoFinal.isEmpty() && getPessoa().getId() == -1) {
+            return;
+        }
+        
+        
+        List<Vector> listax = db.listaMovimentosExtrato(
+                        porPesquisa, tipoDataPesquisa, dataInicial, dataFinal, dataRefInicial, dataRefFinal, boletoInicial, boletoFinal, ic, its, pessoa.getId(), ordenacao, movimentosDasEmpresas
+        );
+        
+        for (Vector linha_list : listax) {
+            if ((linha_list.get(21)) == null) {
+                linha_list.set(21, 0.0);
+            }
+            if ((linha_list.get(9)) == null) {
+                linha_list.set(9, 0.0);
+            }
+            if ((linha_list.get(13)) == null) {
+                linha_list.set(13, 0.0);
+            }
+            if ((linha_list.get(14)) == null) {
+                linha_list.set(14, 0.0);
+            }
+            if ((linha_list.get(15)) == null) {
+                linha_list.set(15, 0.0);
+            }
+            if ((linha_list.get(16)) == null) {
+                linha_list.set(16, 0.0);
+            }
+            if ((linha_list.get(17)) == null) {
+                linha_list.set(17, 0.0);
+            }
+
+            somaValores = Moeda.subtracaoValores(Moeda.somaValores(
+                    Moeda.somaValores(
+                            Moeda.somaValores(
+                                    Float.parseFloat(Double.toString((Double) linha_list.get(21))),//valor
+                                    Float.parseFloat(Double.toString((Double) linha_list.get(14)))//juros
+                            ),
+                            Float.parseFloat(Double.toString((Double) linha_list.get(15)))//correcao
+                    ), Float.parseFloat(Double.toString((Double) linha_list.get(13))) //multa
+            ), Float.parseFloat(Double.toString((Double) linha_list.get(16))));// desconto
+            somaRepasse = Moeda.multiplicarValores(somaValores,
+                    Moeda.divisaoValores(
+                            Float.parseFloat(Double.toString((Double) linha_list.get(17))), 100));
+
+            if (linha_list.get(12) == null
+                    && ((String) linha_list.get(11)).equals("Acordo")) {
+                habData = true;
+            } else {
+                habData = false;
+            }
+
+            if (linha_list.get(12) == null) {
+                classTbl = "tblExtratoTelaX";
+            } else {
+                classTbl = "";
+            }
+            float valor_baixa = Float.parseFloat(Double.toString((Double) linha_list.get(21))),
+                  valor = Float.parseFloat(Double.toString((Double) linha_list.get(8))),
+                  taxa = Float.parseFloat(Double.toString((Double) linha_list.get(9)));
+            
+            listaMovimentos.add(new DataObject(
+                    false,
+                    ((Integer) linha_list.get(0)), //ARG 1 id
+                    linha_list.get(13), // ARG 2 multa
+                    somaValores, // ARG 3 somaValores
+                    linha_list.get(1), // ARG 4 documento
+                    linha_list.get(2), // ARG 5 nome
+                    linha_list.get(3), // ARG 6 boleto
+                    linha_list.get(4), // ARG 7 contribuicao
+                    linha_list.get(5), // ARG 8 referencia
+                    DataHoje.converteData((Date) linha_list.get(6)), // ARG 9 vencimento
+                    DataHoje.converteData((Date) linha_list.get(7)), // ARG 10 importacao
+                    Moeda.converteR$Float(valor), // ARG 11 valor
+                    Moeda.converteR$Float(taxa), // ARG 12 taxa
+                    linha_list.get(10), // ARG 13 nomeUsuario
+                    linha_list.get(11), // ARG 14 tipo
+                    DataHoje.converteData((Date) linha_list.get(12)),// ARG 15 quitacao
+                    linha_list.get(14), // ARG 16 juros
+                    linha_list.get(15), // ARG 17 correcao
+                    linha_list.get(16),// ARG 18 desconto
+                    linha_list.get(17), // ARG 19 repasse
+                    somaRepasse,// ARG 20 somaRepasse
+                    habData, // ARG 21 boolean habilita data
+                    linha_list.get(18), // ARG 22 lote baixa
+                    linha_list.get(19), // ARG 23 beneficiario
+                    linha_list.get(20), // ARG 24 filial
+                    Moeda.converteR$Float(valor_baixa), // ARG 25 valor_baixa
+                    classTbl, // ARG 26 null
+                    null, // ARG 27 null
+                    null // ARG 28 null
+                )
+            );
+            
+            if (linha_list.get(12) != null) {
+                vlRecebido = somarValores(valor_baixa, vlRecebido);
+                vlTaxa = somarValores(taxa, vlTaxa);
+            }else
+                vlNaoRecebido = somarValores(valor, vlNaoRecebido);
+            
+            vlTotal = somarValores(valor_baixa, vlTotal);
+            
+            float contaLiquido = Moeda.subtracaoValores(valor_baixa, taxa);
+            vlLiquido = somarValores(contaLiquido, vlLiquido);
+            
+            vlRepasse = somarValores(somaRepasse, vlRepasse);
+        }
+        vlRepasse = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(vlLiquido), Moeda.converteUS$(vlRepasse)));
+    }
+    
     public void loadList() {
+        loadListaEmpresasPertencentes();
         listaMovimentos.clear();
         boolean habData = false;
         float somaValores = 0, somaRepasse = 0;
@@ -157,29 +351,30 @@ public class ExtratoTelaBean implements Serializable {
 
         List<Vector> listax = new ArrayList();
 
-        if (porPesquisa.equals("todos")) {
-            listax = db.listaTodosMovimentos(
+        switch (porPesquisa) {
+            case "todos":
+                listax = db.listaTodosMovimentos(
+                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                        boletoFinal, getPessoa().getId(), ordenacao, movimentosDasEmpresas
+                );  break;
+            case "recebidas":
+                listax = db.listaRecebidasMovimentos(
+                        chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+                        boletoFinal, getPessoa().getId(), ordenacao, movimentosDasEmpresas
+                );  break;
+            case "naoRecebidas":
+                listax = db.listaNaoRecebidasMovimentos(
                     chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
                     dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                    boletoFinal, getPessoa().getId(), ordenacao
-            );
-        } else if (porPesquisa.equals("recebidas")) {
-            listax = db.listaRecebidasMovimentos(
+                    boletoFinal, getPessoa().getId(), ordenacao, movimentosDasEmpresas
+            );  break;
+            default:
+                listax = db.listaAtrazadasMovimentos(
                     chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
                     dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                    boletoFinal, getPessoa().getId(), ordenacao
-            );
-        } else if (porPesquisa.equals("naoRecebidas")) {
-            listax = db.listaNaoRecebidasMovimentos(
-                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                    boletoFinal, getPessoa().getId(), ordenacao
-            );
-        } else {
-            listax = db.listaAtrazadasMovimentos(
-                    chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
-                    dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
-                    boletoFinal, getPessoa().getId(), ordenacao
+                    boletoFinal, getPessoa().getId(), ordenacao, movimentosDasEmpresas
             );
         }
 
@@ -227,7 +422,7 @@ public class ExtratoTelaBean implements Serializable {
             }
 
             if (linha_list.get(12) == null) {
-                classTbl = "tblExtratoTela";
+                classTbl = "tblExtratoTelaX";
             } else {
                 classTbl = "";
             }
@@ -287,6 +482,22 @@ public class ExtratoTelaBean implements Serializable {
         dataRefFinal = "";
     }
 
+    public void limparPesquisaPessoa(){
+        pessoa = new Pessoa();
+        listaEmpresasPertencentes.clear();
+        movimentosDasEmpresas = false;
+    }
+    
+    public void limparDatas(){
+        if (tipoDataPesquisa.equals("referencia")){
+            dataInicial = "";
+            dataFinal = "";
+        }else{
+            dataRefInicial = "";
+            dataRefFinal = "";
+        }
+    }
+    
     // SOMA DOS VALORES //
     public String somarValores(float valor, String valorString) {
         float somaFloat = Moeda.somaValores(valor, Moeda.converteUS$(valorString));
@@ -318,35 +529,35 @@ public class ExtratoTelaBean implements Serializable {
     }
 
     public List<SelectItem> getListaServico() {
-        List<SelectItem> servicos = new Vector<SelectItem>();
-        if (chkContribuicao) {
-            int i = 0;
+        if (listaServico.isEmpty()){
             ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos(4);
-            while (i < select.size()) {
-                servicos.add(new SelectItem(i,
-                        (String) ((Servicos) select.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) select.get(i)).getId())));
-                i++;
+            List<Servicos> select = db.pesquisaTodos(4);
+            
+            listaServico.add(new SelectItem(0, "-- Selecione um Serviço --", "0"));
+            for (int i = 0; i < select.size(); i++) {
+                listaServico.add(new SelectItem(i+1,
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())
+                ));
             }
         }
-        return servicos;
+        return listaServico;
     }
 
     public List<SelectItem> getListaTipoServico() {
-        List<SelectItem> tipoServico = new Vector<SelectItem>();
-        if (chkTipo) {
-            int i = 0;
+        if (listaTipoServico.isEmpty()){
             TipoServicoDB db = new TipoServicoDBToplink();
-            List select = db.pesquisaTodos();
-            while (i < select.size()) {
-                tipoServico.add(new SelectItem(i,
-                        (String) ((TipoServico) select.get(i)).getDescricao(),
-                        Integer.toString(((TipoServico) select.get(i)).getId())));
-                i++;
+            List<TipoServico> select = db.pesquisaTodos();
+            
+            listaTipoServico.add(new SelectItem(0, "-- Selecione um Tipo --", "0"));
+            for(int i = 0; i < select.size(); i++){
+                listaTipoServico.add(new SelectItem(i+1,
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())
+                ));
             }
         }
-        return tipoServico;
+        return listaTipoServico;
     }
 
     public String novo() {
@@ -359,17 +570,17 @@ public class ExtratoTelaBean implements Serializable {
         return "extratoTela";
     }
 
-    public String getUltimaImpressão(int id_movimento) {
+    public boolean getUltimaImpressão(int id_movimento) {
         MovimentoDB db = new MovimentoDBToplink();
 
         List<Impressao> lista_result = db.listaImpressao(id_movimento);
 
         if (!lista_result.isEmpty()) {
-            return lista_result.get(0).getImpressao();
+            return true;//lista_result.get(0).getImpressao();
         } else {
 
         }
-        return "SEM IMPRESSÃO";
+        return false;
     }
 
     public String verUltimaImpressão(int id_movimento) {
@@ -432,7 +643,7 @@ public class ExtratoTelaBean implements Serializable {
             msgConfirma = "Boleto excluído com sucesso!";
         }
 
-        loadList();
+        loadListBeta();
         return null;
     }
 
@@ -440,28 +651,35 @@ public class ExtratoTelaBean implements Serializable {
         MovimentoDB db = new MovimentoDBToplink();
         if (listaMovimentos.isEmpty()) {
             msgConfirma = "Lista Vazia!";
+            GenericaMensagem.warn("Atenção", "Lista Vazia!");
             return null;
         }
         if (bltQuitados() == true) {
-            msgConfirma = "Boletos quitados não podem ser Excluídos!";
+            msgConfirma = "Boletos quitados não podem ser excluídos!";
+            GenericaMensagem.error("Atenção", "Boletos quitados não podem ser excluídos!");
             return null;
         }
         if (bltSelecionados() != true) {
             msgConfirma = "Nenhum Boleto Selecionado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Boleto Selecionado!");
             return null;
         }
         if (bltAcordo() == true) {
             msgConfirma = "Boletos do tipo acordo não podem ser Excluídos";
+            GenericaMensagem.error("Atenção", "Boletos do tipo acordo não podem ser Excluídos");
             return null;
         }
 
         if (historico.isEmpty()) {
             msgConfirma = "Digite um motivo para exclusão!";
+            GenericaMensagem.error("Atenção", "Digite um motivo para exclusão!");
             return null;
         } else if (historico.length() < 6) {
             msgConfirma = "Motivo de exclusão inválido!";
+            GenericaMensagem.error("Atenção", "Motivo de exclusão inválido!");
             return null;
         }
+        
         boolean exc = true;
         for (int i = 0; i < listaMovimentos.size(); i++) {
             if (((Boolean) listaMovimentos.get(i).getArgumento0())) {
@@ -472,11 +690,15 @@ public class ExtratoTelaBean implements Serializable {
         }
         if (!exc) {
             msgConfirma = "Ocorreu um erro em uma das exclusões, verifique o log!";
+            GenericaMensagem.error("ERRO", "Ocorreu um erro em uma das exclusões, verifique o log!");
         } else {
             msgConfirma = "Boleto excluído com sucesso!";
+            GenericaMensagem.info("OK", "Boleto excluído com sucesso!");
         }
+        PF.update("formExtratoTela:i_msg");
+        PF.update("formExtratoTela:tbl");
 
-        loadList();
+        PF.closeDialog("dlg_excluir");
         return null;
     }
 
@@ -592,12 +814,19 @@ public class ExtratoTelaBean implements Serializable {
     public String estornarBaixa() {
         MovimentoDB db = new MovimentoDBToplink();
         if (listaMovimentos.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Lista vazia!");
             return null;
         }
+        
+        if (bltSelecionados() != true) {
+            GenericaMensagem.warn("Atenção", "Nenhum Boleto Selecionado!");
+            return null;
+        }
+        
         boolean est = true;
-        for (int i = 0; i < listaMovimentos.size(); i++) {
-            if (((Boolean) listaMovimentos.get(i).getArgumento0())) {
-                if (!GerarMovimento.estornarMovimento(db.pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1()))) {
+        for (DataObject listaMovimento : listaMovimentos) {
+            if ((Boolean) listaMovimento.getArgumento0()) {
+                if (!GerarMovimento.estornarMovimento(db.pesquisaCodigo((Integer) listaMovimento.getArgumento1()))) {
                     est = false;
                 }
             }
@@ -605,10 +834,18 @@ public class ExtratoTelaBean implements Serializable {
 
         if (!est) {
             msgConfirma = "Ocorreu erros ao estornar boletos, verifique o log!";
+            GenericaMensagem.error("ERRO", "Ocorreu erros ao estornar boletos, verifique o log!");
         } else {
             msgConfirma = "Boletos estornados com sucesso!";
+            GenericaMensagem.info("OK", "Boletos estornados com sucesso!");
         }
-        loadList();
+        loadListBeta();
+        
+        
+        PF.update("formExtratoTela:i_msg");
+        PF.update("formExtratoTela:tbl");
+
+        PF.closeDialog("dlg_estornar");        
         return null;
     }
 
@@ -636,6 +873,7 @@ public class ExtratoTelaBean implements Serializable {
         Historico historico = new Historico();
         if (bltSelecionados() != true) {
             msgConfirma = "Nenhum Boleto Selecionado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Boleto Selecionado!");
             return null;
         }
 
@@ -645,6 +883,7 @@ public class ExtratoTelaBean implements Serializable {
                 qnt++;
                 if (qnt > 1) {
                     msgConfirma = "Somente um acordo pode ser selecionado!";
+                    GenericaMensagem.warn("Atenção", "Somente um acordo pode ser selecionado!");
                     return null;
                 }
                 movimento = db.pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1());
@@ -655,6 +894,7 @@ public class ExtratoTelaBean implements Serializable {
                     }
                 } else {
                     msgConfirma = "Não existe acordo para este boleto!";
+                    GenericaMensagem.warn("Atenção", "Não existe acordo para este boleto!");
                     return null;
                 }
             }
@@ -674,38 +914,42 @@ public class ExtratoTelaBean implements Serializable {
                 imp.visualizar(null);
             } else {
                 msgConfirma = "Não existe histórico para este acordo!";
+                GenericaMensagem.warn("Atenção", "Não existe histórico para este acordo!");
             }
         } else {
             msgConfirma = "Nenhum Acordo encontrado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Acordo encontrado!");
         }
         return null;
     }
 
     public String imprimir() {
         MovimentoDB db = new MovimentoDBToplink();
-        List<Movimento> listaC = new ArrayList<Movimento>();
-        List<Float> listaValores = new ArrayList<Float>();
-        List<String> listaVencimentos = new ArrayList<String>();
+        List<Movimento> listaC = new ArrayList();
+        List<Float> listaValores = new ArrayList();
+        List<String> listaVencimentos = new ArrayList();
 
         if (listaMovimentos.isEmpty()) {
             msgConfirma = "Lista vazia!";
+            GenericaMensagem.error("Atenção", "Lista Vazia");
             return null;
         }
 
         if (bltQuitados() == true) {
             msgConfirma = "Boletos quitados não podem ser Impressos!";
+            GenericaMensagem.error("Atenção", "Boletos quitados não podem ser Impressos!");
             return null;
         }
 
         if (bltSelecionados() != true) {
             msgConfirma = "Nenhum Boleto Selecionado!";
+            GenericaMensagem.error("Atenção", "Nenhum Boleto Selecionado!");
             return null;
         }
 
-        Movimento mov = new Movimento();
-        for (int i = 0; i < listaMovimentos.size(); i++) {
-            if (((Boolean) listaMovimentos.get(i).getArgumento0())) {
-                mov = db.pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1());
+        for (DataObject listaMovimento : listaMovimentos) {
+            if ((Boolean) listaMovimento.getArgumento0()) {
+                Movimento mov = db.pesquisaCodigo((Integer) listaMovimento.getArgumento1());
                 listaC.add(mov);
                 listaValores.add(mov.getValor());
                 listaVencimentos.add(mov.getVencimento());
@@ -718,7 +962,7 @@ public class ExtratoTelaBean implements Serializable {
         imp.imprimirBoleto(listaC, listaValores, listaVencimentos, imprimirVerso);
         imp.visualizar(null);
 
-        loadList();
+        loadListBeta();
         return "extratoTela";
     }
 
@@ -748,6 +992,7 @@ public class ExtratoTelaBean implements Serializable {
 
         if (listaMovimentos.isEmpty()) {
             msgConfirma = "Lista vazia!";
+            GenericaMensagem.warn("Atenção", "Lista vazia!");
             return null;
         }
 
@@ -756,6 +1001,7 @@ public class ExtratoTelaBean implements Serializable {
                 Movimento mo = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1(), "Movimento");
                 if (mo.getBaixa() != null) {
                     msgConfirma = "Não pode enviar email de boletos quitados!";
+                    GenericaMensagem.error("Atenção", "Não pode enviar email de boletos quitados! - Boleto: "+mo.getDocumento());
                     return null;
                 } else {
                     listaux.add(mo);
@@ -765,6 +1011,7 @@ public class ExtratoTelaBean implements Serializable {
 
         if (listaux.isEmpty()) {
             msgConfirma = "Nenhum boleto selecionado";
+            GenericaMensagem.warn("Atenção", "Nenhum boleto selecionado");
             return null;
         }
 
@@ -777,6 +1024,7 @@ public class ExtratoTelaBean implements Serializable {
                     id_contabil = juridica.getContabilidade().getId();
                 } else {
                     msgConfirma = "Empresa " + juridica.getPessoa().getNome() + " não pertence a nenhuma contabilidade";
+                    GenericaMensagem.error("Atenção", "Empresa " + juridica.getPessoa().getNome() + " não pertence a nenhuma contabilidade");
                     return null;
                 }
                 movadd.add(listaux.get(i));
@@ -826,6 +1074,9 @@ public class ExtratoTelaBean implements Serializable {
             }
 
         }
+        
+        PF.update("formExtratoTela:i_msg");
+        PF.closeDialog("dlg_enviar_email");
         return null;
     }
 
@@ -912,6 +1163,7 @@ public class ExtratoTelaBean implements Serializable {
         AcordoDB dbAc = new AcordoDBToplink();
         if (bltSelecionados() != true) {
             msgConfirma = "Nenhum Boleto Selecionado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Boleto Selecionado!");
             return null;
         }
         int qnt = 0;
@@ -920,6 +1172,7 @@ public class ExtratoTelaBean implements Serializable {
                 qnt++;
                 if (qnt > 1) {
                     msgConfirma = "Somente um acordo pode ser selecionado!";
+                    GenericaMensagem.warn("Atenção", "Somente um acordo pode ser selecionado!");
                     return null;
                 }
                 movimento = db.pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1());
@@ -930,6 +1183,7 @@ public class ExtratoTelaBean implements Serializable {
                     }
                 } else {
                     msgConfirma = "Não existe acordo para este boleto!";
+                    GenericaMensagem.warn("Atenção", "Não existe acordo para este boleto!");
                     return null;
                 }
             }
@@ -963,20 +1217,23 @@ public class ExtratoTelaBean implements Serializable {
                 imp.visualizar(null);
             } else {
                 msgConfirma = "Não existe histórico para este acordo!";
+                GenericaMensagem.warn("Atenção", "Não existe histórico para este acordo!");
             }
         } else {
             msgConfirma = "Nenhum Acordo encontrado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Acordo encontrado!");
         }
         return null;
     }
 
     public String excluirAcordo() {
 
-        List<Movimento> listaC = new ArrayList<Movimento>();
+        List<Movimento> listaC = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
         if (bltSelecionados() != true) {
             msgConfirma = "Nenhum Boleto Selecionado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Boleto Selecionado!");
             return null;
         }
         int qnt = 0;
@@ -985,6 +1242,7 @@ public class ExtratoTelaBean implements Serializable {
                 qnt++;
                 if (qnt > 1) {
                     msgConfirma = "Somente um acordo pode ser selecionado!";
+                    GenericaMensagem.warn("Atenção", "Somente um acordo pode ser selecionado!");
                     return null;
                 }
                 movimento = db.pesquisaCodigo((Integer) listaMovimentos.get(i).getArgumento1());
@@ -994,11 +1252,13 @@ public class ExtratoTelaBean implements Serializable {
                     }
                 } else {
                     msgConfirma = "Não existe acordo para este boleto!";
+                    GenericaMensagem.warn("Atenção", "Não existe acordo para este boleto!");
                     return null;
                 }
                 for (int w = 0; w < listaC.size(); w++) {
                     if (listaC.get(w).getBaixa() != null && listaC.get(w).isAtivo()) {
                         msgConfirma = "Acordo com parcela já paga não pode ser excluído!";
+                        GenericaMensagem.warn("Atenção", "Acordo com parcela já paga não pode ser excluído!");
                         return null;
                     }
                 }
@@ -1020,40 +1280,57 @@ public class ExtratoTelaBean implements Serializable {
                 db.excluirAcordoIn(ids, listaC.get(0).getAcordo().getId());
             }
 
-            loadList();
+            loadListBeta();
             msgConfirma = "Acordo Excluído com sucesso!";
+            GenericaMensagem.info("OK", "Acordo Excluído com sucesso!");
+            
+            PF.update("formExtratoTela:i_msg");
+            PF.update("formExtratoTela:tbl");
+
+            PF.closeDialog("dlg_acordo");
         } else {
             msgConfirma = "Nenhum Acordo encontrado!";
+            GenericaMensagem.warn("Atenção", "Nenhum Acordo encontrado!");
         }
         return null;
     }
 
-    public String carregaDataAntiga() {
-        DataObject dtObj = listaMovimentos.get(idIndex);
-        dataAntiga = ((String) dtObj.getArgumento9());
+    public String carregaDataAntiga(int id_movimento) {
+        movimentoVencimento = (Movimento) new Dao().find(new Movimento(), id_movimento);
+        //dataAntiga = ((String) dtObj.getArgumento9());
+        dataAntiga = movimentoVencimento.getVencimento();
         dataNova = "";
-        idMovimento = (Integer) dtObj.getArgumento1();
         return null;
     }
 
     public String atualizarData() {
-        MovimentoDB db = new MovimentoDBToplink();
-        Movimento movi = null;
-        SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        if (dataNova.length() == 10) {
+        if (!dataNova.isEmpty()) {
             if (DataHoje.converteDataParaInteger(dataNova) >= DataHoje.converteDataParaInteger(DataHoje.data())) {
-                movi = db.pesquisaCodigo(idMovimento);
-                movi.setVencimento(dataNova);
-                dbSalvar.abrirTransacao();
-                if (dbSalvar.alterarObjeto(movi)) {
-                    dbSalvar.comitarTransacao();
-                } else {
-                    dbSalvar.desfazerTransacao();
+                movimentoVencimento.setVencimento(dataNova);
+                Dao di = new Dao();
+                
+                di.openTransaction();
+                
+                if (!di.update(movimentoVencimento)){
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Não foi possível alterar o movimento, tente novamente!");
+                    return null;
                 }
+                
+                di.commit();
+                movimentoVencimento = new Movimento();
+                loadListBeta();
+                GenericaMensagem.info("OK", "Data alterada com sucesso!");
+                
+                PF.update("formExtratoTela:i_msg");
+                PF.update("formExtratoTela:tbl");
+                
+                PF.closeDialog("dlg_alterar_vencimento");
+            }else{
+                GenericaMensagem.warn("Atenção", "A nova data deve ser MAIOR ou IGUAL a data de hoje!");
             }
         }
-        loadList();
-        return "extratoTela";
+        return null;
     }
 
     public String getDataAntiga() {
@@ -1076,7 +1353,7 @@ public class ExtratoTelaBean implements Serializable {
         if (GenericaSessao.exists("pessoaPesquisa")) {
             pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
             GenericaSessao.remove("pessoaPesquisa");
-            loadList();
+            loadListBeta();
         }
         return pessoa;
     }
@@ -1310,4 +1587,36 @@ public class ExtratoTelaBean implements Serializable {
 //    public void setValorSomado(String valorSomado) {
 //        this.valorSomado = valorSomado;
 //    }
+    public boolean isMovimentosDasEmpresas() {
+        return movimentosDasEmpresas;
+    }
+
+    public void setMovimentosDasEmpresas(boolean movimentosDasEmpresas) {
+        this.movimentosDasEmpresas = movimentosDasEmpresas;
+    }
+
+    public List<Juridica> getListaEmpresasPertencentes() {
+        return listaEmpresasPertencentes;
+    }
+
+    public void setListaEmpresasPertencentes(List<Juridica> listaEmpresasPertencentes) {
+        this.listaEmpresasPertencentes = listaEmpresasPertencentes;
+    }
+
+    public boolean isDcData() {
+        return dcData;
+    }
+
+    public void setDcData(boolean dcData) {
+        this.dcData = dcData;
+    }
+
+    public boolean isDcBoleto() {
+        return dcBoleto;
+    }
+
+    public void setDcBoleto(boolean dcBoleto) {
+        this.dcBoleto = dcBoleto;
+    }
+
 }

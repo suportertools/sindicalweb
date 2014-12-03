@@ -4,8 +4,10 @@ import br.com.rtools.arrecadacao.Empregados;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.endereco.Bairro;
+import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.pessoa.Cnae;
@@ -387,7 +389,10 @@ public class ControleAcessoWebBean implements Serializable {
                     jr.setPessoa(null);
                     jr.setStatus(obj.getString("situacao_cadastral"));
                     jr.setDtAbertura(DataHoje.converte(obj.getString("data_abertura")));
-
+                    jr.setCnaeSegundario(obj.getString("atividades_secundarias"));
+                    jr.setCidade(obj.getString("municipio"));
+                    jr.setUf(obj.getString("uf"));
+                                        
                     Dao di = new Dao();
                     di.openTransaction();
                     if (!di.save(jr)) {
@@ -492,12 +497,35 @@ public class ControleAcessoWebBean implements Serializable {
             }else{
                 dex = ldescricao.get(0);
             }
+            
+            List<Cidade> lcidade = st.select(new Cidade()).where("ds_cidade", jr.getCidade()).find();
+            Cidade cx;
+            
+            if (lcidade.isEmpty()){
+                cx = new Cidade(-1, jr.getCidade(), jr.getUf());
+                
+                if (!di.save(cx)){
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Não foi possível salvar a Cidade, tente novamente!");
+                    return null;
+                }
+            }else{
+                cx = lcidade.get(0);
+            }
+            
             EnderecoDB dbx = new EnderecoDBToplink();
             List<Endereco> le = dbx.pesquisaEnderecoCep(cep);
-
-            Endereco ex = new Endereco(-1, le.get(0).getCidade(), bx, le.get(0).getLogradouro(), dex, cep, "", false);   
-
-            if (!di.save(ex)){
+            
+            if (le.isEmpty()){
+                endereco = new Endereco(-1, cx, bx, (Logradouro) di.find(new Logradouro(), 0), dex, cep, "", false);   
+//                di.rollback();
+//                GenericaMensagem.error("Erro", "CEP não encontrado no sistema, contate seu Sindicato!");
+//                return null;
+            }else{
+                endereco = new Endereco(-1, le.get(0).getCidade(), bx, le.get(0).getLogradouro(), dex, cep, "", false); 
+            }
+            
+            if (!di.save(endereco)){
                 di.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível salvar o Endereço, tente novamente!");
                 return null;

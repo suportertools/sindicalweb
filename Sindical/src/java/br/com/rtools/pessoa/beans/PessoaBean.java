@@ -31,6 +31,14 @@ public class PessoaBean implements Serializable {
         comoPesquisa = "";
     }
 
+    public void loadListaPessoa(){
+        listaPessoa.clear();
+        PessoaDB pesquisa = new PessoaDBToplink();
+        if (!descPesquisa.isEmpty()) {
+            listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
+        }
+    }
+    
     public Pessoa getPessoa() {
         return pessoa;
     }
@@ -118,12 +126,12 @@ public class PessoaBean implements Serializable {
 
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
-        listaPessoa.clear();
+        loadListaPessoa();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
-        listaPessoa.clear();
+        loadListaPessoa();
     }
 
     public String pesquisarPessoa() {
@@ -165,14 +173,7 @@ public class PessoaBean implements Serializable {
     }
 
     public List<Pessoa> getListaPessoa() {
-        PessoaDB pesquisa = new PessoaDBToplink();
-        if (descPesquisa.equals("")) {
-            listaPessoa.clear();
-            return listaPessoa;
-        } else {
-            listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
-            return listaPessoa;
-        }
+        return listaPessoa;
     }
 
     public void setListaPessoa(List<Pessoa> listaPessoa) {

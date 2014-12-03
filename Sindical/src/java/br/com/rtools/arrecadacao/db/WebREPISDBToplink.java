@@ -473,7 +473,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         return new ArrayList();
     }
     
-    @Override
+    
 //    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
 //        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
 //        descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
@@ -530,7 +530,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
 //        }
 //        return new ArrayList();
 //    }
-    
+    @Override
     public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade){
         descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
@@ -548,9 +548,12 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         }else{
             inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
-            and   += "  WHERE rm.id_pessoa IN (SELECT j.id_pessoa FROM pes_juridica j" +
-                     "                          WHERE j.id_contabilidade = " + id_contabilidade
-                   + "                        )";
+            and   += "  WHERE rm.id_pessoa IN ("
+                   + "	select j.id_pessoa " 
+                   + "	  from pes_juridica j " 
+                   + "	 inner join pes_juridica jc ON jc.id_pessoa = " +id_contabilidade
+                   + "	 where j.id_contabilidade = jc.id"
+                   + ")";
         }
         
         if (!descricao.isEmpty()){

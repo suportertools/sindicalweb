@@ -43,7 +43,13 @@ public class JuridicaReceita implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_abertura")
     private Date dtAbertura;
-    
+    @Column(name = "ds_cnae_segundario", length = 1000)
+    private String cnaeSegundario;
+    @Column(name = "ds_cidade", length = 100)
+    private String cidade;
+    @Column(name = "ds_uf", length = 2)
+    private String uf;
+        
     public JuridicaReceita() {
         this.id = -1;
         this.pessoa = new Pessoa();
@@ -59,9 +65,12 @@ public class JuridicaReceita implements Serializable {
         this.cnae = "";
         this.status = "";
         this.dtAbertura = null;
+        this.cnaeSegundario = "";
+        this.cidade = "";
+        this.uf = "";
     }
 
-    public JuridicaReceita(int id, Pessoa pessoa, Date dtPesquisa, String documento, String nome, String fantasia, String cep, String descricaoEndereco, String bairro, String complemento, String numero, String cnae, String status, Date dtAbertura) {
+    public JuridicaReceita(int id, Pessoa pessoa, Date dtPesquisa, String documento, String nome, String fantasia, String cep, String descricaoEndereco, String bairro, String complemento, String numero, String cnae, String status, Date dtAbertura, String cnaeSegundario, String cidade, String uf) {
         this.id = id;
         this.pessoa = pessoa;
         this.dtPesquisa = dtPesquisa;
@@ -76,6 +85,9 @@ public class JuridicaReceita implements Serializable {
         this.cnae = cnae;
         this.status = status;
         this.dtAbertura = dtAbertura;
+        this.cnaeSegundario = cnaeSegundario;
+        this.cidade = cidade;
+        this.uf = uf;
     }
 
     public int getId() {
@@ -196,5 +208,29 @@ public class JuridicaReceita implements Serializable {
 
     public void setDtAbertura(Date dtAbertura) {
         this.dtAbertura = dtAbertura;
+    }
+
+    public String getCnaeSegundario() {
+        return cnaeSegundario;
+    }
+
+    public void setCnaeSegundario(String cnaeSegundario) {
+        this.cnaeSegundario = cnaeSegundario;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
     }
 }

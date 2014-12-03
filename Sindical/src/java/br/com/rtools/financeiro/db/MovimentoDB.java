@@ -48,21 +48,23 @@ public interface MovimentoDB {
 
     public boolean verificaMovimentoArrecadacao(int idPessoa, String referencia, int idServico, int idTipoServico);
 
+    public List listaMovimentosExtrato(String tipo, String faixa_data, String data_inicial, String data_final, String referencia_inicial, String referencia_final, String boleto_inicial, String boleto_final, int id_servico, int id_tipo_servico, int id_pessoa, String ordenacao, boolean movimentoDaEmpresa);
+    
     public List<Vector> listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao);
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa);
 
     public List listaRecebidasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao);
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa);
 
     public List listaNaoRecebidasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao);
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa);
 
     public List listaAtrazadasMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
-            String descNrBoletoFin, int descEmpresa, String ordenacao);
+            String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa);
 
     public List pesquisaMovimentoPorJuridica(int id);
 
