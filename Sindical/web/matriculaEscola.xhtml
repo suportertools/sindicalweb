@@ -88,7 +88,7 @@
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
-                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.id)}" title="Ver detalhes"/>
+                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
                                     </h:column>
