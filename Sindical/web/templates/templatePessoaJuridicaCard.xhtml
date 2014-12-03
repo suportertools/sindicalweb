@@ -14,6 +14,8 @@
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.nome}"  />
         </f:facet>
         <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
+            <h:outputLabel value="Status:"  />
+            <h:outputLabel value="#{pessoaCardBean.statusJuridica}" styleClass="bold"/>
             <h:outputLabel value="Fantasia:"  />
             <h:outputLabel value="#{pessoaCardBean.juridica.fantasia}"/>
             <h:outputLabel value="Documento:"  />
@@ -27,10 +29,23 @@
             <h:outputLabel value="Telefone 2:"  />
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.telefone2}"  />
             <h:outputLabel value="Email:"  />
-            <h:commandLink value="#{pessoaCardBean.juridica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.juridica.pessoa.id)}" />
+            <h:commandLink value="#{pessoaCardBean.juridica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.juridica.pessoa.id)}" title="Enviar email" styleClass="font-color-blue"/>
+            
         </h:panelGrid>
-        <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id == -1}">
-            <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.endereco.enderecoToString} - Nº. #{pessoaCardBean.pessoaEndereco.numero} - #{pessoaCardBean.pessoaEndereco.complemento}" />
-        </p:panel> 
+        <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id != -1}">
+            <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.enderecoCompletoString}" />
+        </p:panel>
+        <p:panel styleClass="margin-top-max" header="Contabilidade" rendered="#{pessoaCardBean.juridica.contabilidade != null}">
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Contabilidade:" />
+                <h:outputLabel value="#{pessoaCardBean.juridica.contabilidade.pessoa.nome}" />
+                <h:outputLabel value="Telefone:" />
+                <h:outputLabel value="#{pessoaCardBean.juridica.contabilidade.pessoa.telefone1}" />
+                <h:outputLabel value="Email:"  />
+                <h:commandLink value="#{pessoaCardBean.juridica.contabilidade.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.juridica.contabilidade.pessoa.id)}" title="Enviar email" styleClass="font-color-blue"/>
+                <h:outputLabel value="Contato:" />
+                <h:outputLabel value="#{pessoaCardBean.juridica.contabilidade.contato}" />
+            </h:panelGrid>
+        </p:panel>        
     </f:view>
 </ui:composition>

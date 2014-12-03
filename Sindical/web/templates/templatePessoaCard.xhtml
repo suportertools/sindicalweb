@@ -25,7 +25,7 @@
             <h:outputLabel value="Telefone 2:"  />
             <h:outputLabel value="#{pessoaCardBean.pessoa.telefone2}"  />
             <h:outputLabel value="Email:"  />
-            <h:commandLink value="#{pessoaCardBean.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.pessoa.id)}" />
+            <h:commandLink value="#{pessoaCardBean.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.pessoa.id)}" styleClass="font-color-blue" title="Enviar email"/>
         </h:panelGrid>
         <h:column rendered="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></h:column>
         <p:panel header="Associado" style="background: #ccffcc;" styleClass="no-border margin-top-max" rendered="#{sociosCardBean.socios.id != -1}">
@@ -38,8 +38,19 @@
             <h:panelGrid columns="1">
                 <h:outputLabel value="Admissão: #{pessoaCardBean.pessoaEmpresa.admissao}" />
                 <h:outputLabel value="Empresa: #{pessoaCardBean.pessoaEmpresa.juridica.pessoa.nome}" />
+                <h:outputLabel value="STATUS: #{pessoaCardBean.statusJuridicaPorPessoaEmpresa}" styleClass="bold"/>
                 <h:outputLabel value="Profissão: #{pessoaCardBean.pessoaEmpresa.funcao.profissao}" />
             </h:panelGrid>
-        </p:panel>         
+        </p:panel>
+        <p:panel styleClass="margin-top-max" header="Contabilidade" rendered="#{pessoaCardBean.pessoaEmpresa.juridica.contabilidade != null}">
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Contabilidade:" />
+                <h:outputLabel value="#{pessoaCardBean.pessoaEmpresa.juridica.contabilidade.pessoa.nome}" />
+                <h:outputLabel value="Telefone:" />
+                <h:outputLabel value="#{pessoaCardBean.pessoaEmpresa.juridica.contabilidade.pessoa.telefone1}" />
+                <h:outputLabel value="Email:" />
+                <h:commandLink value="#{pessoaCardBean.pessoaEmpresa.juridica.contabilidade.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.pessoaEmpresa.juridica.contabilidade.pessoa.id)}" styleClass="font-color-blue" title="Enviar email"/>
+            </h:panelGrid>
+        </p:panel>        
     </f:view>
 </ui:composition>
