@@ -106,7 +106,7 @@ public class PessoaEndereco implements java.io.Serializable {
             enderecoString += ", nº" + numero + " ";
         }
         if (!complemento.equals("")) {
-            enderecoString += " - " + enderecoString;
+            enderecoString += " - " + this.complemento;
         }
         if (!this.endereco.getCidade().getCidade().equals("")) {
             enderecoString += " - " + this.endereco.getCidade().getCidade();
