@@ -38,32 +38,37 @@
                                         <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
                                         <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
                                     </p:selectOneMenu>                             
-                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}">
+                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}" placeholder="#{fisicaBean.porPesquisa.equals('endereco') ?  'Logradouro + Descrição Endereço + , + Número + - + Bairro' : ''}">
                                         <p:ajax event="change" update="@this" global="false" />
                                     </p:inputMask>
                                     <h:column>
                                         <h:panelGrid id="i_por">
-                                            <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{!fisicaBean.pesquisaPor.equals('pessoa')}">
-                                                <p:ajax event="change" update="@this i_panel_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
-                                                <f:selectItem itemValue="nome"     itemLabel="Nome"/>
-                                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                                                <f:selectItem itemValue="rg"      itemLabel="RG" />
-                                                <f:selectItem itemValue="email1" itemLabel="E-mail 1" />
-                                                <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
-                                                <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
-                                                <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
-                                                <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
-                                            </p:selectOneMenu>
-                                            <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{fisicaBean.pesquisaPor.equals('pessoa')}">
-                                                <p:ajax event="change" update="@this i_panel_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
-                                                <f:selectItem itemValue="nome"     itemLabel="Nome"/>
-                                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                                                <f:selectItem itemValue="rg"      itemLabel="RG" />
-                                                <f:selectItem itemValue="email1" itemLabel="E-mail 1" />
-                                                <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
-                                                <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
-                                                <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
-                                            </p:selectOneMenu>
+                                            <h:column>
+                                                <h:panelGrid columns="2">
+                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{!fisicaBean.pesquisaPor.equals('pessoa')}">
+                                                        <p:ajax event="change" update="@this i_panel_pesquisa id_desc_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
+                                                        <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                                                        <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                                        <f:selectItem itemValue="rg"      itemLabel="RG" />
+                                                        <f:selectItem itemValue="email1" itemLabel="E-mail 1" />
+                                                        <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
+                                                        <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                                                        <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
+                                                        <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
+                                                    </p:selectOneMenu>
+                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{fisicaBean.pesquisaPor.equals('pessoa')}">
+                                                        <p:ajax event="change" update="@this i_panel_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
+                                                        <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                                                        <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                                        <f:selectItem itemValue="rg"      itemLabel="RG" />
+                                                        <f:selectItem itemValue="email1" itemLabel="E-mail 1" />
+                                                        <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
+                                                        <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                                                        <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
+                                                    </p:selectOneMenu>
+                                                    <p:commandLink rendered="#{fisicaBean.porPesquisa.equals('endereco')}" onclick="PF('dlg_wiki').show()" value="Ajuda" global="false"/>
+                                                </h:panelGrid>
+                                            </h:column>
                                         </h:panelGrid>
                                     </h:column>
                                     <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
@@ -72,55 +77,79 @@
                                 </h:panelGrid>
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
-                            
+
                             <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
                                 <p:column style="width:5%">  
                                     <p:rowToggler />  
                                 </p:column>  
-                                
+
                                 <p:column headerText="Nome">
                                     <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.pessoa.nome}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="RG" width="80"  styleClass="text-center">
                                     <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.rg}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="CPF" width="100"  styleClass="text-center">
                                     <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.pessoa.documento}"/>
                                 </p:column>                            
-                                
+
                                 <p:column headerText="E-mail">
                                     <h:outputText value="#{fisica.pessoa.email1}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Telefone" width="100" styleClass="text-center">
                                     <h:outputText value="#{fisica.pessoa.telefone1}"/>
                                 </p:column>
-                                
+
                                 <p:rowExpansion>
                                     <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
                                         <p:column>
                                             <h:outputText value="Dt Nascimento" style="font-weight: bold"/><br />
                                             <h:outputText value="#{fisica.nascimento}"/>
                                         </p:column>
-                                
+
                                         <p:column>
                                             <h:outputText value="Local de trabalho" style="font-weight: bold"/><br />
                                             <h:outputText value="#{fisicaBean.pessoaEmpresaString(fisica)}"/>
                                         </p:column>
-                                        
+
                                         <p:column>
                                             <h:outputText value="Pessoa cadastrada em oposição!" style="font-weight: bold; color: red;" rendered="#{fisicaBean.existePessoaOposicaoPorDocumento(fisica.pessoa.documento)}"/>
                                         </p:column>
-                                   </h:panelGrid>
+
+                                        <p:column>
+                                            <p:commandButton icon="ui-icon-contact" update=":form_pesquisa_pessoa:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(fisica.pessoa.id)}" title="Ver detalhes" />
+                                        </p:column>
+                                    </h:panelGrid>
+                                    <h:panelGrid style="height: 40px" styleClass="sbb">
+                                        <h:outputLabel value="Endereço: #{fisica.pessoa.pessoaEndereco.enderecoCompletoString} " styleClass="bold font-color-red"/>
+                                    </h:panelGrid>
                                 </p:rowExpansion>
-                                
+
                                 <f:facet name="footer">Abra a lista para mais informações</f:facet>
                             </p:dataTable>
+
+                            <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                                <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                <p:panel id="i_pessoa_fisica_card">
+                                    <ui:include src="templates/templatePessoaFisicaCard.xhtml" />
+                                </p:panel>
+                            </p:dialog>                            
+                            <p:dialog widgetVar="dlg_wiki" modal="true" resizable="false" height="400" width="600" header="Ajuda - Pesquisa Endereço">
+                                <h:outputLabel value="Exemplos" /><br />
+                                <h:outputLabel value="José Paulo (Descrição Endereço)" /><br />
+                                <h:outputLabel value="Rua José Paulo (Logradouro + Descrição Endereço)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número + - + Bairro)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número +,+ Bairro, + Cidade )" /><br />
+                                <h:outputLabel value="São Paulo (Cidade)" /><br />
+                                <h:outputLabel value="SP (UF)" /><br />
+                            </p:dialog>                            
                         </h:form>
                     </p:panel>
-                             
+
                     <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde enquanto pesquisamos ..." />
