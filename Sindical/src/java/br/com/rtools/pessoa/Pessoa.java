@@ -1,6 +1,8 @@
 package br.com.rtools.pessoa;
 
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Mask;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -215,6 +217,18 @@ public class Pessoa implements Serializable {
     public void selecionaDataCriacao(SelectEvent event) {
         SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtCriacao = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public PessoaEndereco getPessoaEndereco() {
+        int idTipoEndereco = 1;
+        if (tipoDocumento.getId() == 2) {
+            idTipoEndereco = 2;
+        }
+        PessoaEndereco pessoaEndereco = new PessoaEnderecoDBToplink().pesquisaEndPorPessoaTipo(this.id, idTipoEndereco);
+        if (pessoaEndereco == null) {
+            pessoaEndereco = new PessoaEnderecoDBToplink().pesquisaEndPorPessoaTipo(this.id, 2);
+        }
+        return pessoaEndereco;
     }
 
     @Override
