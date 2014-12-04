@@ -119,13 +119,14 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                         + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                         + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                        + "  WHERE LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                        + "  WHERE (LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
                         + "     OR LOWER(FUNC_TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                "
                         + "     OR LOWER(FUNC_TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
-                        + "     OR LOWER(FUNC_TRANSLATE(ende.ds_cep)) = '" + desc + "'"
+                        + "     OR LOWER(FUNC_TRANSLATE(ende.ds_cep)) = '" + desc + "')"
+                        + "    AND pesend.id_tipo_endereco = 1 "
                         + "  ORDER BY pes.ds_nome LIMIT " + maxResults;
 
             } else if (por.equals("codigo")) {
@@ -213,8 +214,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                         + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                         + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                        + "  WHERE ("
-                        + "     LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                        + "  WHERE (LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
@@ -222,6 +222,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "     OR LOWER(FUNC_TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
                         + "     OR LOWER(FUNC_TRANSLATE(ende.ds_cep)) = '" + desc + "'"
                         + "  ) "
+                        + "  AND pesend.id_tipo_endereco = 1 "
                         + "  AND pes.id IN ( "
                         + "         SELECT p2.id FROM fin_servico_pessoa sp "
                         + "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa "
@@ -353,8 +354,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
                         + "  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
                         + "  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
-                        + "  WHERE ("
-                        + "     LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
+                        + "  WHERE (LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)) LIKE '%" + desc + "%' "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf)) LIKE '%" + desc + "%'                     "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  )) LIKE '%" + desc + "%'                                         "
                         + "     OR LOWER(FUNC_TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                    "
@@ -362,6 +362,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "     OR LOWER(FUNC_TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                      "
                         + "     OR LOWER(FUNC_TRANSLATE(ende.ds_cep)) = '" + desc + "'"
                         + "  ) "
+                        + "  AND pesend.id_tipo_endereco = 1 "
                         + "  AND pes.id IN ( "
                         + "         SELECT p2.id FROM fin_servico_pessoa sp "
                         + "          INNER JOIN soc_socios s ON sp.id = s.id_servico_pessoa "
@@ -412,7 +413,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "    ) "
                         + "  ORDER BY p.ds_nome LIMIT " + maxResults;
             } else {
-                if(!field.isEmpty()) {
+                if (!field.isEmpty()) {
                     textQuery
                             = " SELECT f.* FROM pes_fisica f "
                             + "  INNER JOIN pes_pessoa p ON p.id = f.id_pessoa "
@@ -428,12 +429,12 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                             + "          INNER JOIN pes_pessoa p2 ON  p2.id = sp.id_pessoa "
                             + "          WHERE sp.is_ativo = TRUE "
                             + "    ) "
-                            + "  ORDER BY p.ds_nome LIMIT " + maxResults;                
+                            + "  ORDER BY p.ds_nome LIMIT " + maxResults;
                 } else {
                     textQuery = "";
                 }
             }
-            if(!textQuery.isEmpty()) {
+            if (!textQuery.isEmpty()) {
                 Query query = getEntityManager().createNativeQuery(textQuery, Fisica.class);
 
                 List list = query.getResultList();
@@ -444,7 +445,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         } catch (Exception e) {
             return new ArrayList();
         }
-        return new ArrayList();            
+        return new ArrayList();
 //        List<Vector> result_list = qry.getResultList();
 //        List<Object> return_list = new ArrayList<Object>();
 //

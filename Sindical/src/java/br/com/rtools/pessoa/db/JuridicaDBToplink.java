@@ -123,7 +123,8 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                     + "     OR LOWER(TRANSLATE(logr.ds_descricao || ' ' || enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                               "
                     + "     OR LOWER(TRANSLATE(enddes.ds_descricao)) LIKE '%" + desc + "%'                                                                                                           "
                     + "     OR LOWER(TRANSLATE(cid.ds_cidade)) LIKE '%" + desc + "%'                                                                                                                 "
-                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "') ";
+                    + "     OR LOWER(TRANSLATE(ende.ds_cep)) = '" + desc + "') "
+                    + "    AND pesend.id_tipo_endereco = 2 ";
             if (isAtivas) {
                 textQuery += " AND jur.id IN (SELECT id_juridica FROM arr_contribuintes_vw WHERE dt_inativacao IS NULL) ";
                 // textQuery += " AND j.id != id_contabilidade ";
