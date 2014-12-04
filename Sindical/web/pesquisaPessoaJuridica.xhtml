@@ -34,18 +34,23 @@
                             <div class="clear"></div>
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                                 <h:panelGrid columns="4">
-                                    <p:inputMask value="#{juridicaBean.descPesquisa}" size="50" mask="#{juridicaBean.mascaraPesquisaJuridica}"/>
-                                    <p:selectOneMenu value="#{juridicaBean.porPesquisa}">
-                                        <p:ajax event="change" update="i_panel_pesquisa" global="false"/>
-                                        <f:selectItem itemValue="nome"     itemLabel="Nome"/>
-                                        <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
-                                        <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
-                                        <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                                        <f:selectItem itemValue="cei"      itemLabel="CEI"/>
-                                        <f:selectItem itemValue="email1" itemLabel="E-mail 1"/>
-                                        <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
-                                        <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
-                                    </p:selectOneMenu>                        
+                                    <p:inputMask value="#{juridicaBean.descPesquisa}" size="50" mask="#{juridicaBean.mascaraPesquisaJuridica}" placeholder="#{juridicaBean.porPesquisa.equals('endereco') ?  'Logradouro + Descrição Endereço + , + Número + - + Bairro' : ''}"/>
+                                    <h:column>
+                                        <h:panelGrid columns="2">
+                                            <p:selectOneMenu value="#{juridicaBean.porPesquisa}">
+                                                <p:ajax event="change" update="i_panel_pesquisa" global="false"/>
+                                                <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                                                <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
+                                                <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
+                                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                                <f:selectItem itemValue="cei"      itemLabel="CEI"/>
+                                                <f:selectItem itemValue="email1" itemLabel="E-mail 1"/>
+                                                <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
+                                                <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                                            </p:selectOneMenu>                        
+                                            <p:commandLink rendered="#{juridicaBean.porPesquisa.equals('endereco')}" onclick="PF('dlg_wiki').show()" value="Ajuda" global="false"/>
+                                        </h:panelGrid>
+                                    </h:column>
                                     <p:commandButton value="Inicial" action="#{juridicaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
                                     <p:commandButton value="Parcial" action="#{juridicaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
                                     <h:column>
@@ -105,10 +110,32 @@
                                                 <h:outputText value="Telefone" style="font-weight: bold"/><br />
                                                 <h:outputText value="#{juridica.pessoa.telefone1}"/>
                                             </p:column>
+                                            <p:column>
+                                                <p:commandButton icon="ui-icon-contact" update=":formGridPesquisaPessoaJuridica:i_pessoa_juridica_card" action="#{pessoaCardBean.cardJuridica(juridica.pessoa.id)}" oncomplete="PF('dlg_pessoa_juridica_card').show()" title="Ver detalhes" />
+                                            </p:column>
+                                        </h:panelGrid>
+                                        <h:panelGrid style="height: 40px" styleClass="sbb">
+                                            <h:outputLabel value="Endereço: #{juridica.pessoa.pessoaEndereco.enderecoCompletoString} " styleClass="bold font-color-red"/>
                                         </h:panelGrid>
                                     </p:rowExpansion>
                                 </p:dataTable>
                             </h:panelGrid>
+                            <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" header="Detalhes">
+                                <p:ajax event="close" listener="#{pessoaCardBean.close}"/>
+                                <p:panel id="i_pessoa_juridica_card">
+                                    <ui:include src="templates/templatePessoaJuridicaCard.xhtml" />
+                                </p:panel>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_wiki" modal="true" resizable="false" height="400" width="600" header="Ajuda - Pesquisa Endereço">
+                                <h:outputLabel value="Exemplos" /><br />
+                                <h:outputLabel value="José Paulo (Descrição Endereço)" /><br />
+                                <h:outputLabel value="Rua José Paulo (Logradouro + Descrição Endereço)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número + - + Bairro)" /><br />
+                                <h:outputLabel value="Rua José Paulo, 22  (Logradouro + Descrição Endereço + , + Número +,+ Bairro, + Cidade )" /><br />
+                                <h:outputLabel value="São Paulo (Cidade)" /><br />
+                                <h:outputLabel value="SP (UF)" /><br />
+                            </p:dialog>                            
                         </h:form>                        
                     </p:panel>
 
