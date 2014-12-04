@@ -17,6 +17,7 @@ public class Jasper {
 
     public static String PATH = "downloads/relatorios";
     public static String PART_NAME = "relatorio";
+    public static Boolean IS_DOWNLOAD = true;
 
     public static void printReports(String jasperName, String fileName, Collection c) {
         if (fileName.isEmpty() || jasperName.isEmpty() || c.isEmpty()) {
@@ -44,9 +45,11 @@ public class Jasper {
                 SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, downloadName, false);
                 String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/");
                 salvaArquivos.salvaNaPasta(dirPath);
-                Download download = new Download(downloadName, dirPath, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
+                if (IS_DOWNLOAD) {
+                    Download download = new Download(downloadName, dirPath, "application/pdf", FacesContext.getCurrentInstance());
+                    download.baixar();
+                    download.remover();
+                }
             } catch (JRException erro) {
                 GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
