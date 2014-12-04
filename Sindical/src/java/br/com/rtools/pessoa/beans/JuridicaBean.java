@@ -2482,7 +2482,7 @@ public class JuridicaBean implements Serializable {
 
     public void listenerPessoaJuridia() {
         GenericaSessao.remove("oposicaoPesquisa");
-        OposicaoBean oposicaoBean = (OposicaoBean) GenericaSessao.getObject("oposicaoBean");
+        OposicaoBean oposicaoBean = new OposicaoBean();
         oposicaoBean.setPorPesquisa("cnpj");
         oposicaoBean.setComoPesquisa("Inicial");
         oposicaoBean.setDescricaoPesquisa(juridica.getPessoa().getDocumento());
