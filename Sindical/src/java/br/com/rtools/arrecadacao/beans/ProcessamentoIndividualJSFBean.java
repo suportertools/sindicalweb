@@ -651,11 +651,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                     }
 
                     if (!reg.isEnviarEmailAnexo()) {
-                        mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                        mensagem = " <h5> Visualize seu boleto clicando no link abaixo </h5> <br /><br />"
                                 + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                     } else {
                         fls.add(new File(imp.getPathPasta() + "/" + nome));
-                        mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
+                        mensagem = "<h5>Segue boleto em anexo</h5><br /><br />";
                     }
 
                     DaoInterface di = new Dao();
@@ -747,11 +747,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         }
 
                         if (!reg.isEnviarEmailAnexo()) {
-                            mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                            mensagem = " <h5> Visualize seu boleto clicando no link abaixo </h5> <br /><br />"
                                     + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                         } else {
                             fls.add(new File(imp.getPathPasta() + "/" + nome));
-                            mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
+                            mensagem = "<h5>Segue boleto em anexo</h5><br /><br />";
                         }
 
                         DaoInterface di = new Dao();
@@ -826,11 +826,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         }
 
                         if (!reg.isEnviarEmailAnexo()) {
-                            mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                            mensagem = " <h5> Visualize seu boleto clicando no link abaixo </h5> <br /><br />"
                                     + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />";
                         } else {
                             fls.add(new File(imp.getPathPasta() + "/" + nome));
-                            mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
+                            mensagem = "<h5>Segue boleto em anexo</h5><br /><br />";
                         }
 
                         DaoInterface di = new Dao();
@@ -924,11 +924,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
             }
 
             if (!reg.isEnviarEmailAnexo()) {
-                mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                mensagem = " <h5> Visualize seu boleto clicando no link abaixo </h5> <br /><br />"
                         + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir o boleto</a><br />";
             } else {
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
-                mensagem = "<h5>Baixe seu boleto anexado neste email</5><br /><br />";
+                mensagem = "<h5>Segue boleto em anexo</h5><br /><br />";
             }
 
             DaoInterface di = new Dao();
