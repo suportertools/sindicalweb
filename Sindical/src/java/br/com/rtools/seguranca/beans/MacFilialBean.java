@@ -69,10 +69,7 @@ public class MacFilialBean implements Serializable {
             GenericaMensagem.warn("Validação", "Digite um mac válido!");
             return;
         }
-        if (dbm.pesquisaMac(macFilial.getMac()) != null) {
-            GenericaMensagem.warn("Validação", "Este computador ja está registrado!");
-            return;
-        }
+
         Registro registro = (Registro) di.find(new Registro(), 1);
         if (registro.isSenhaHomologacao() && macFilial.getMesa() <= 0) {
             GenericaMensagem.warn("Validação", "O campo mesa é obrigatório devido Senha Homologação em Registro ser verdadeiro");
@@ -85,7 +82,9 @@ public class MacFilialBean implements Serializable {
             macFilial.setCaixa(null);
         } else {
             for (int i = 0; i < listaMacs.size(); i++) {
-                if (listaMacs.get(i).getCaixa() != null && listaMacs.get(i).getCaixa().getId() == Integer.valueOf(listaCaixa.get(idCaixa).getDescription())) {
+                if (listaMacs.get(i).getCaixa() != null && 
+                    listaMacs.get(i).getCaixa().getId() == Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) &&
+                    macFilial.getId() == -1) {
                     GenericaMensagem.warn("Validação", "Já existe uma filial cadastrada para este Caixa");
                     return;
                 }
@@ -93,21 +92,87 @@ public class MacFilialBean implements Serializable {
             macFilial.setCaixa((Caixa) di.find(new Caixa(), Integer.valueOf(listaCaixa.get(idCaixa).getDescription())));
         }
         di.openTransaction();
-        if (di.save(macFilial)) {
-            novoLog.save(
-                    "ID: " + macFilial.getId()
-                    + " - Filial: (" + macFilial.getFilial().getId() + ") " + macFilial.getFilial().getFilial().getPessoa().getNome()
-                    + " - Departamento: (" + macFilial.getDepartamento().getId() + ") " + macFilial.getDepartamento().getDescricao()
-                    + " - Mesa: " + macFilial.getMesa()
-                    + " - Mac: " + macFilial.getMac()
-            );
-            di.commit();
-            GenericaMensagem.info("Salvo", "Este Computador registrado com sucesso!");
-            macFilial = new MacFilial();
-            listaMacs.clear();
-        } else {
-            di.rollback();
-            GenericaMensagem.warn("Erro", "Erro ao inserir esse registro!");
+        
+        if (macFilial.getId() == -1){
+            if (dbm.pesquisaMac(macFilial.getMac()) != null) {
+                GenericaMensagem.warn("Validação", "Este computador ja está registrado!");
+                return;
+            }
+            
+            if (di.save(macFilial)) {
+                novoLog.save(
+                        "ID: " + macFilial.getId()
+                        + " - Filial: (" + macFilial.getFilial().getId() + ") " + macFilial.getFilial().getFilial().getPessoa().getNome()
+                        + " - Departamento: (" + macFilial.getDepartamento().getId() + ") " + macFilial.getDepartamento().getDescricao()
+                        + " - Mesa: " + macFilial.getMesa()
+                        + " - Mac: " + macFilial.getMac()
+                );
+                di.commit();
+                GenericaMensagem.info("Salvo", "Este Computador registrado com sucesso!");
+                macFilial = new MacFilial();
+                listaMacs.clear();
+            } else {
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao inserir esse registro!");
+            }
+        }else{
+            MacFilial mf = (MacFilial) new Dao().find(macFilial);
+            
+            String before_update = 
+                        "ID: " + macFilial.getId()
+                        + " - Filial: (" + mf.getFilial().getId() + ") " + mf.getFilial().getFilial().getPessoa().getNome()
+                        + " - Departamento: (" + mf.getDepartamento().getId() + ") " + mf.getDepartamento().getDescricao()
+                        + " - Mesa: " + mf.getMesa()
+                        + " - Mac: " + mf.getMac()
+                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : mf.getCaixa().getCaixa())
+                        + " - Caixa: " + ((mf.getCaixa() == null) ? "" : mf.getCaixa().getDescricao());
+            
+            if (di.update(macFilial)) {
+                novoLog.update(
+                        before_update,
+                        "ID: " + macFilial.getId()
+                        + " - Filial: (" + macFilial.getFilial().getId() + ") " + macFilial.getFilial().getFilial().getPessoa().getNome()
+                        + " - Departamento: (" + macFilial.getDepartamento().getId() + ") " + macFilial.getDepartamento().getDescricao()
+                        + " - Mesa: " + macFilial.getMesa()
+                        + " - Mac: " + macFilial.getMac()
+                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : macFilial.getCaixa().getCaixa())
+                        + " - Caixa: " + ((mf.getCaixa() == null) ? "" : macFilial.getCaixa().getDescricao())
+                );
+                di.commit();
+                GenericaMensagem.info("Atualizado", "Computador atualizado com sucesso!");
+                macFilial = new MacFilial();
+                listaMacs.clear();
+            } else {
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao inserir esse registro!");
+            }
+
+        }
+    }
+    
+    public void edit(MacFilial mf){
+        macFilial = mf;
+        
+        for(int i = 0; i < listaDepartamentos.size(); i++){
+            if (Integer.valueOf(listaDepartamentos.get(i).getDescription()) == macFilial.getDepartamento().getId()){
+                idDepartamento = i;
+            }
+        }
+        
+        for(int i = 0; i < listaFiliais.size(); i++){
+            if (Integer.valueOf(listaFiliais.get(i).getDescription()) == macFilial.getFilial().getId()){
+                idFilial = i;
+            }
+        }
+        
+        if (macFilial.getCaixa() == null){
+            idCaixa = 0;
+        }else{
+            for(int i = 0; i < listaCaixa.size(); i++){
+                if (Integer.valueOf(listaCaixa.get(i).getDescription()) == macFilial.getCaixa().getId()){
+                    idCaixa = i;
+                }
+            }
         }
     }
 
@@ -136,7 +201,7 @@ public class MacFilialBean implements Serializable {
     }
 
     public List<SelectItem> getListaFiliais() {
-        if (listaFiliais.isEmpty()) {
+            if (listaFiliais.isEmpty()) {
 //            FilialDB db = new FilialDBToplink();
 //            List<Filial> list = db.pesquisaTodos();
             DaoInterface di = new Dao();
@@ -151,16 +216,17 @@ public class MacFilialBean implements Serializable {
     }
 
     public List<SelectItem> getListaDepartamentos() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        PermissaoUsuarioDB pu = new PermissaoUsuarioDBToplink();
-//        DepartamentoDB db = new DepartamentoDBToplink();
-        List<Departamento> select = pu.pesquisaTodosDepOrdenado();
-        for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(i,
-                    select.get(i).getDescricao(),
-                    Integer.toString(select.get(i).getId())));
+        if (listaDepartamentos.isEmpty()){
+            PermissaoUsuarioDB pu = new PermissaoUsuarioDBToplink();
+        //        DepartamentoDB db = new DepartamentoDBToplink();
+            List<Departamento> select = pu.pesquisaTodosDepOrdenado();
+            for (int i = 0; i < select.size(); i++) {
+                listaDepartamentos.add(new SelectItem(i,
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())));
+            }
         }
-        return result;
+        return listaDepartamentos;
     }
 
     public void refreshForm() {

@@ -35,7 +35,7 @@
                             <p:panel id="i_saldo_atual" style="clear: both; background: #ECF3FE;">
                                 <h:panelGrid columns="1">
                                     <p:column>
-                                        <h:outputLabel value="Saldo Anterior: " style="font-size: 10pt!important; font-weight: bold"/>
+                                        <h:outputLabel value="#{(fechamentoCaixaBean.dataSaldo == '') ? 'Saldo Atual' : 'Saldo até a data '.concat(fechamentoCaixaBean.dataSaldo)}: " style="font-size: 10pt!important; font-weight: bold"/>
                                         <h:outputLabel value="#{fechamentoCaixaBean.saldoAtual}" style="font-size: 12pt!important"/>
                                         <h:outputLabel value=" ( ATENÇÃO ) Este valor não entra na soma do FECHAMENTO CAIXA" style="font-size: 8pt!important; color: red" rendered="false"/>
                                     </p:column>
@@ -59,7 +59,7 @@
                                     
                                     <p:column>
                                         <h:outputLabel value="Valor do Caixa"/><br />
-                                        <p:inputText value="#{fechamentoCaixaBean.valor}" dir="rtl" style="margin-right: 15px;">
+                                        <p:inputText value="#{fechamentoCaixaBean.valor}" style="margin-right: 15px; text-align: right">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputText>
                                     </p:column>

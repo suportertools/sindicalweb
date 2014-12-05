@@ -95,7 +95,7 @@
                                             <p:separator />
                                             <br />
                                             <p:fieldset legend="Opções da GUIA" toggleable="true" collapsed="true" toggleSpeed="500">
-                                                <h:panelGrid columns="5">
+                                                <h:panelGrid id="i_panel_opcoes" columns="3">
                                                     <h:column>
                                                         <p:outputLabel value="Periodo de fornecimento gratuito "/><br />
                                                         <p:selectOneMenu id="i_periodo" value="#{servicosBean.idPeriodo}" style="margin-right: 10px; width: 200px">
@@ -107,21 +107,29 @@
                                                         <p:outputLabel value="Quantidade por Periodo"/><br />
                                                         <p:inputText value="#{servicosBean.servicos.quantidadePeriodo}" size="18"/>                                        
                                                     </h:column>
+                                                    <h:panelGrid columns="2">
+                                                        <h:column>
+                                                            <br />
+                                                            <p:selectBooleanCheckbox value="#{servicosBean.servicos.familiarPeriodo}" itemLabel="Controle Familiar" style="margin-left: 20px; margin-right: 20px"/>
+                                                        </h:column>
 
-                                                    <h:column>
-                                                        <br />
-                                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.familiarPeriodo}" itemLabel="Controle Familiar" style="margin-left: 20px; margin-right: 20px"/>
-                                                    </h:column>
+                                                        <h:column>
+                                                            <br />
+                                                            <p:selectBooleanCheckbox value="#{servicosBean.servicos.validadeGuiasVigente}" itemLabel="Validade somente dentro do mês vigente"   >
+                                                                <p:ajax event="change" update="@this i_panel_opcoes"/>
+                                                            </p:selectBooleanCheckbox>
+                                                        </h:column>
+                                                        
+                                                        <h:column>
+                                                            <br />
+                                                            <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorZerado}" itemLabel="Valor zerado Guias" style="margin-left: 20px; margin-right: 30px"/>
+                                                        </h:column>
 
-                                                    <h:column>
-                                                        <p:outputLabel value="Dias validos da guia" for="idDiaValido" /><br />
-                                                        <p:spinner id="idDiaValido" size="14" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
-                                                    </h:column>
-
-                                                    <h:column>
-                                                        <br />
-                                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorZerado}" itemLabel="Valor zerado Guias" style="margin-left: 20px"/>
-                                                    </h:column>
+                                                        <h:column rendered="#{!servicosBean.servicos.validadeGuiasVigente}">
+                                                            <p:outputLabel value="Dias validos da guia" for="idDiaValido" style="font-weight: bold"/><br />
+                                                            <p:spinner id="idDiaValido" size="14" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
+                                                        </h:column>
+                                                    </h:panelGrid>
                                                 </h:panelGrid>
                                             </p:fieldset>
                                         </p:tab>

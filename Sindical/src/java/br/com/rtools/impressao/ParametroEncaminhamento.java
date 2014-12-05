@@ -33,8 +33,9 @@ public class ParametroEncaminhamento {
     private String parentesco;
     private String matricula;
     private String categoria;
+    private String observacao;
     
-    public ParametroEncaminhamento(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String guia, String codigo, String grupo, String subgrupo, String empresaConveniada, String empresaEndereco, String empresaTelefone, String servicos, String emissao, String validade, String usuario, String nome, String parentesco, String matricula, String categoria) {
+    public ParametroEncaminhamento(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String guia, String codigo, String grupo, String subgrupo, String empresaConveniada, String empresaEndereco, String empresaTelefone, String servicos, String emissao, String validade, String usuario, String nome, String parentesco, String matricula, String categoria, String observacao) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -64,6 +65,7 @@ public class ParametroEncaminhamento {
         this.parentesco = parentesco;
         this.matricula = matricula;
         this.categoria = categoria;
+        this.observacao = observacao;
     }
     
     public String getSinLogo() {
@@ -296,6 +298,14 @@ public class ParametroEncaminhamento {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
     
 }

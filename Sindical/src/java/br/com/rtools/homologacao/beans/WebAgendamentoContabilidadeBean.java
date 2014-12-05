@@ -659,7 +659,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
             HomologacaoDB db = new HomologacaoDBToplink();
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
-            PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaPertencente(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != empresa.getId()) {
                 GenericaMensagem.warn("Atenção", "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome());

@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
-
     @Override
     public boolean insert(PessoaEmpresa pessoaEmpresa) {
         try {
@@ -71,8 +70,39 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
     @Override
     public List listaPessoaEmpresaPorFisica(int id) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT PE FROM PessoaEmpresa AS PE WHERE PE.fisica.id = :id AND PE.dtDemissao IS NOT NULL ORDER BY PE.dtAdmissao DESC ");
+            Query qry = getEntityManager().createQuery(" SELECT PE FROM PessoaEmpresa AS PE WHERE PE.fisica.id = :id AND PE.principal = false ORDER BY PE.dtAdmissao DESC ");
             qry.setParameter("id", id);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;                
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List listaPessoaEmpresaPorFisicaDemissao(int id) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT PE FROM PessoaEmpresa AS PE WHERE PE.fisica.id = :id AND PE.principal = false AND PE.dtDemissao IS NULL ORDER BY PE.dtAdmissao DESC ");
+            qry.setParameter("id", id);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;                
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<PessoaEmpresa> listaPessoaEmpresaPorFisicaEmpresaDemissao(int id, int id_juridica) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT PE FROM PessoaEmpresa AS PE WHERE PE.fisica.id = :id AND PE.juridica.id = :id_empresa AND PE.principal = false AND PE.dtDemissao IS NULL ORDER BY PE.dtAdmissao DESC ");
+            qry.setParameter("id", id);
+            qry.setParameter("id_empresa", id_juridica);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;                
@@ -102,7 +132,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     "    SELECT PE                          "
                     + "    FROM PessoaEmpresa AS PE         "
                     + "   WHERE PE.fisica.id = " + id
-                    + "     AND PE.dtDemissao is null       ");
+                    + "     AND PE.principal = true");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 PessoaEmpresa pessoaEmpresa = ((PessoaEmpresa) qry.getSingleResult());                
@@ -121,7 +151,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     "  SELECT PE                                    "
                     + "  FROM PessoaEmpresa AS PE                   "
                     + " WHERE PE.fisica.pessoa.id = " + idPessoa
-                    + "   AND PE.dtDemissao IS NULL                 ");
+                    + "   AND PE.principal = true");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (PessoaEmpresa) query.getSingleResult();

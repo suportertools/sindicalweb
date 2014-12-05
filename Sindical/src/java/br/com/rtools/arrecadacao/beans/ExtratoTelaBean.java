@@ -695,6 +695,9 @@ public class ExtratoTelaBean implements Serializable {
             msgConfirma = "Boleto excluído com sucesso!";
             GenericaMensagem.info("OK", "Boleto excluído com sucesso!");
         }
+        
+        loadListBeta();
+        
         PF.update("formExtratoTela:i_msg");
         PF.update("formExtratoTela:tbl");
 

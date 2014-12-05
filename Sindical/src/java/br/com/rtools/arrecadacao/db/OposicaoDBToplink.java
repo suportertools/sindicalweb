@@ -70,15 +70,16 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                 + "         INNER JOIN pes_pessoa_empresa emp ON(emp.id_fisica = fis.id)                             "
                 + "         INNER JOIN pes_juridica jur ON(jur.id = emp.id_juridica)                                 "
                 + "              WHERE (                                                                             "
-                + "                         pes.ds_documento = '" + cpf + "'                                             "
+                + "                         pes.ds_documento = '" + cpf + "'                                         "
                 + "                 OR (                                                                             "
-                + "                      TRANSLATE(UPPER(fis.ds_rg),'./-', '') = TRANSLATE('" + rg + "','./-', '')       "
+                + "                      TRANSLATE(UPPER(fis.ds_rg),'./-', '') = TRANSLATE('" + rg + "','./-', '')   "
                 + "                      AND fis.ds_rg is not null                                                   "
                 + "                      AND trim(fis.ds_rg)<>''                                                     "
                 + "                      AND trim(fis.ds_rg)<>'0'                                                    "
                 + "                     )                                                                            "
                 + "               )                                                                                  "
-                + "                AND emp.dt_demissao   is null                                                     "
+                + "                AND emp.is_principal = true                                                       "
+                //+ "                AND emp.dt_demissao   is null                                                   "
                 + "                AND jur.dt_fechamento is null LIMIT 1                                             ";
 
         try {

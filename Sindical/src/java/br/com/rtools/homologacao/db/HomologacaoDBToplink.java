@@ -507,41 +507,39 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    @Override
-    public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc) {
-        PessoaEmpresa result = new PessoaEmpresa();
-        try {
-            Query qry = getEntityManager().createQuery("select pesEmp"
-                    + "  from PessoaEmpresa pesEmp,"
-                    + "       Pessoa pes"
-                    + " where pesEmp.fisica.pessoa.id = pes.id"
-                    + "   and pesEmp.dtDemissao is null"
-                    + "   and pes.documento like :Sdoc");
-            qry.setParameter("Sdoc", doc);
-            if (!qry.getResultList().isEmpty()) {
-                result = (PessoaEmpresa) qry.getSingleResult();
-            }
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
-        return result;
-    }
+//    @Override
+//    public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc) {
+//        PessoaEmpresa result = new PessoaEmpresa();
+//        try {
+//            Query qry = getEntityManager().createQuery("select pesEmp"
+//                    + "  from PessoaEmpresa pesEmp,"
+//                    + "       Pessoa pes"
+//                    + " where pesEmp.fisica.pessoa.id = pes.id"
+//                    + "   and pesEmp.principal = true"
+//                    //+ "   and pesEmp.dtDemissao is null"
+//                    + "   and pes.documento like :Sdoc");
+//            qry.setParameter("Sdoc", doc);
+//            if (!qry.getResultList().isEmpty()) {
+//                result = (PessoaEmpresa) qry.getSingleResult();
+//            }
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     @Override
-    public List pesquisaPessoaEmpresaPertencente(String doc) {
-        List result = new ArrayList();
+    public PessoaEmpresa pesquisaPessoaEmpresaPertencente(String doc) {
+        PessoaEmpresa result = null;
         try {
-            Query qry = getEntityManager().createQuery("select pesEmp"
-                    + "  from PessoaEmpresa pesEmp,"
-                    + "       Pessoa pes"
-                    + " where pesEmp.fisica.pessoa.id = pes.id"
-                    + //"   and pesEmp.dtDemissao is null" +
-                    "   and pes.documento like :Sdoc order by pesEmp.id desc");
+            Query qry = getEntityManager().createQuery(
+                     " SELECT pem "
+                    + "  FROM PessoaEmpresa pem "
+                    + " WHERE pem.fisica.pessoa.documento like :Sdoc"
+                    + "   AND pem.principal = true"
+            );
             qry.setParameter("Sdoc", doc);
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                result = qry.getResultList();
-            }
+            return (PessoaEmpresa) qry.getSingleResult();
         } catch (Exception e) {
             //e.printStackTrace();
         }

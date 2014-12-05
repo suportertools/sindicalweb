@@ -325,6 +325,7 @@ public class CaixaFechadoBean implements Serializable{
             return;
         }
         
+        // AQUI pesquisaCaixaUm COLOCAR id_filial
         TransferenciaCaixa tc = new TransferenciaCaixa(
                 -1,
                 caixa,

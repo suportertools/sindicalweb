@@ -59,6 +59,8 @@ public class Servicos implements java.io.Serializable {
     private boolean familiarPeriodo;
     @Column(name = "is_valor_zerado", nullable = false, columnDefinition = "boolean default false")
     private boolean valorZerado;
+    @Column(name = "is_validade_guias_vigente", nullable = false, columnDefinition = "boolean default false")
+    private boolean validadeGuiasVigente;
 
     public Servicos() {
         this.id = -1;
@@ -82,6 +84,7 @@ public class Servicos implements java.io.Serializable {
         this.quantidadePeriodo = 0;
         this.familiarPeriodo = false;
         this.valorZerado = false;
+        validadeGuiasVigente = false;
     }
 
     public Servicos(int id,
@@ -104,7 +107,8 @@ public class Servicos implements java.io.Serializable {
             Periodo periodo,
             int quantidadePeriodo,
             boolean familiarPeriodo,
-            boolean valorZerado) {
+            boolean valorZerado,
+            boolean validadeGuiasVigente) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -126,6 +130,7 @@ public class Servicos implements java.io.Serializable {
         this.quantidadePeriodo = quantidadePeriodo;
         this.familiarPeriodo = familiarPeriodo;
         this.valorZerado = valorZerado;
+        this.validadeGuiasVigente = validadeGuiasVigente;
     }
 
     public int getId() {
@@ -299,5 +304,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setValorZerado(boolean valorZerado) {
         this.valorZerado = valorZerado;
+    }
+
+    public boolean isValidadeGuiasVigente() {
+        return validadeGuiasVigente;
+    }
+
+    public void setValidadeGuiasVigente(boolean validadeGuiasVigente) {
+        this.validadeGuiasVigente = validadeGuiasVigente;
     }
 }

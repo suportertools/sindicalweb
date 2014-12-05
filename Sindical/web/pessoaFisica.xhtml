@@ -43,7 +43,7 @@
                                     <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered"/> 
                                     <p:tab title="Cadastro Pessoal">                            
                                         <h:outputScript name="script_primefaces.js" library="js" />
-                                        <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true"  />
+                                        <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true"  closable="true"/>
                                         <h:panelGrid id="i_panel_dados" columns="2" style="width: 600px; height: 400px">
                                             <p:column>
                                                 <p:panel styleClass="fundoCinza">
@@ -318,7 +318,7 @@
                                     </p:tab>
 
                                     <p:tab title="Local de Trabalho" id="i_panel_profissao">
-                                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" />
+                                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
                                         <h:panelGrid columns="2">
                                             <h:column>
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" id="i_pesquisar_empresa"/>
@@ -338,21 +338,27 @@
                                         <h:panelGrid columns="3" style="margin-top: 10px">
                                             <h:column>                                        
                                                 <p:outputLabel value="Data Admissão" /><br />
-                                                <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="margin-right: 20px; text-align: center"/>
+                                                <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="margin-right: 20px; text-align: center">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputMask>
                                             </h:column>
 
                                             <h:column>
                                                 <p:outputLabel value="Data Demissão" /><br />
-                                                <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
+                                                <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputMask>
                                             </h:column>
 
                                             <h:column>
                                                 <p:outputLabel value="Código" /><br />
-                                                <p:inputText size="10" value="#{fisicaBean.pessoaEmpresa.codigo}" />
+                                                <p:inputText size="10" value="#{fisicaBean.pessoaEmpresa.codigo}">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputText>
                                             </h:column>
                                         </h:panelGrid>                                
 
-                                        <h:panelGrid columns="2" style="margin-top: 15px">
+                                        <h:panelGrid columns="3" style="margin-top: 15px">
                                             <h:column>
                                                 <p:commandButton icon="ui-icon-search" value="Função" onclick="PF('dgl_painel_profissao').show();" />
                                             </h:column>
@@ -364,33 +370,40 @@
                                                     <p:inputText size="20" id="i_setor" value="#{fisicaBean.pessoaEmpresa.setor}"  />
                                                 </h:panelGrid>
                                             </h:column>
+                                            
+                                            <h:column>
+                                                <p:commandButton value="Adicionar Empresa" action="#{fisicaBean.adicionarEmpresa()}" update="i_tbl_empresa_b, :form_pessoa_fisica:" rendered="#{fisicaBean.pessoaEmpresa.juridica.id != -1 and fisicaBean.fisica.id != -1}"/>
+                                            </h:column>
                                             <p:watermark value="CBO" for="i_cbo"/>
                                             <p:watermark value="Profissão" for="i_profissao"/>
                                             <p:watermark value="Setor" for="i_setor"/>
                                         </h:panelGrid>
 
-                                        <p:panel id="i_tbl_empresa" header="Empresas anteriores" styleClass="margin-top-max">
+                                        <p:panel id="i_tbl_empresa" header="Outras Empresas" styleClass="margin-top-max">
                                             <p:dataTable id="i_tbl_empresa_b" var="pessoaEmpresa" value="#{fisicaBean.listaPessoaEmpresa}" styleClass="margin-top-max" scrollable="true" scrollHeight="100" emptyMessage="Nenhum registro encontrado!">
-                                                <p:column width="150" headerText="Documento">
+                                                <p:column headerText="Documento" style="width: 110px; text-align: center">
                                                     <p:outputLabel value="#{pessoaEmpresa.juridica.pessoa.documento}"/>
                                                 </p:column>
                                                 <p:column headerText="Nome">
                                                     <p:outputLabel value="#{pessoaEmpresa.juridica.pessoa.nome}" title="#{pessoaEmpresa.juridica.pessoa.nome}"/>
                                                 </p:column>
-                                                <p:column headerText="Setor">
+                                                <p:column headerText="Setor" style="width: 110px; text-align: center">
                                                     <p:outputLabel value="#{pessoaEmpresa.setor}"/>
                                                 </p:column>
-                                                <p:column headerText="Data Admissão">
+                                                <p:column headerText="Admissão" style="width: 80px; text-align: center">
                                                     <p:outputLabel value="#{pessoaEmpresa.admissao}"/>
                                                 </p:column>
-                                                <p:column headerText="Data Demissão">
+                                                <p:column headerText="Demissão" style="width: 80px; text-align: center">
                                                     <p:outputLabel value="#{pessoaEmpresa.demissao}"/>
                                                 </p:column>
                                                 <p:column headerText="CBO / Função">
                                                     <p:outputLabel value="#{pessoaEmpresa.funcao.cbo} - #{pessoaEmpresa.funcao.profissao}" title="#{pessoaEmpresa.funcao.cbo} - #{pessoaEmpresa.funcao.profissao}"/>
                                                 </p:column>
                                                 <p:column width="30">
-                                                    <p:commandButton icon="ui-icon-trash" action="#{fisicaBean.excluirEmpresaAnterior(pessoaEmpresa)}" update="i_tbl_empresa_b, :form_pessoa_fisica:"  title="Remover"/>
+                                                    <p:commandButton icon="ui-icon-trash" action="#{fisicaBean.excluirEmpresaAnterior(pessoaEmpresa)}" update="i_tbl_empresa_b, :form_pessoa_fisica:"  title="Remover Difinitivamente essa Empresa"/>
+                                                </p:column>                                
+                                                <p:column width="30">
+                                                    <p:commandButton icon="ui-icon-arrowthick-2-e-w" action="#{fisicaBean.alterarEmpresaAtual(pessoaEmpresa)}" update="i_tbl_empresa_b, :form_pessoa_fisica:"  title="Alterar Empresa Atual"/>
                                                 </p:column>                                
                                             </p:dataTable>
                                         </p:panel>

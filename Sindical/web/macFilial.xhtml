@@ -72,11 +72,13 @@
                                     <h:outputLabel value="Caixa "/>
                                     <br />
 
-                                    <h:panelGrid columns="2">
+                                    <h:panelGrid columns="3">
                                         <p:selectOneMenu value="#{macFilialBean.idCaixa}" style="width: 200px">
                                             <f:selectItems value="#{macFilialBean.listaCaixa}"/>
                                         </p:selectOneMenu>
-                                        <p:commandButton value="Salvar" action="#{macFilialBean.add}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formMacFilial1: :formMacFilial2:tbl"/>
+                                        <p:commandButton value="Salvar" action="#{macFilialBean.add}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formMacFilial1: :formMacFilial2:tbl" rendered="#{macFilialBean.macFilial.id == -1}"/>
+                                        <p:commandButton value="Alterar" action="#{macFilialBean.add}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formMacFilial1: :formMacFilial2:tbl" rendered="#{macFilialBean.macFilial.id != -1}"/>
+                                        <p:commandButton value="Novo" action="#{macFilialBean.clear()}" update=":formMacFilial1: :formMacFilial2:tbl" />
                                     </h:panelGrid>
                                 </p:column>
                             </h:panelGrid>
@@ -98,24 +100,24 @@
                                     </p:column>
 
                                     <p:column headerText="Filial">
-                                        <h:outputLabel value="#{linha.filial.filial.pessoa.nome}"/>
+                                        <p:commandLink value="#{linha.filial.filial.pessoa.nome}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
                                     <p:column headerText="Departamento" style="width: 130px">
-                                        <h:outputLabel value="#{linha.departamento.descricao}"/>
+                                        <p:commandLink value="#{linha.departamento.descricao}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
                                     <p:column headerText="Registro" style="text-align: center; width: 130px">
-                                        <h:outputLabel value="#{linha.mac}" />
+                                        <p:commandLink value="#{linha.mac}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
                                     <p:column headerText="Mesa" style="width: 40px; text-align: right">
-                                        <h:outputLabel value="#{linha.mesa}" />
+                                        <p:commandLink value="#{linha.mesa}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
                                     <p:column headerText="Caixa">
-                                        <h:outputLabel value="#{linha.caixa.caixa} - #{linha.caixa.descricao}" rendered="#{linha.caixa != null}"/>
-                                        <h:outputLabel value="NENHUM CAIXA" rendered="#{linha.caixa == null}"/>
+                                        <p:commandLink value="#{linha.caixa.caixa} - #{linha.caixa.descricao}" rendered="#{linha.caixa != null}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
+                                        <p:commandLink value="NENHUM CAIXA" rendered="#{linha.caixa == null}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
                                     <p:column headerText="..." rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="text-center" style="width: 30px">

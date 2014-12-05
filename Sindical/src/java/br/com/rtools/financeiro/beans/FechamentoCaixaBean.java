@@ -38,21 +38,21 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
 
 @ManagedBean
 @SessionScoped
 public final class FechamentoCaixaBean implements Serializable {
 
     private int idCaixa = 0;
-    private List<SelectItem> listaCaixa = new ArrayList<SelectItem>();
+    private final List<SelectItem> listaCaixa = new ArrayList();
     private int idCaixaDestino = 0;
-    private List<SelectItem> listaCaixaDestino = new ArrayList<SelectItem>();
+    private List<SelectItem> listaCaixaDestino = new ArrayList();
     private FechamentoCaixa fechamento = new FechamentoCaixa();
     private String valor = "";
     private String valorTransferencia = "";
     //private String saldoAnterior = "";
     private String saldoAtual = "0,00";
+    private String dataSaldo = "";
     private ContaSaldo contaSaldo = new ContaSaldo();
     private List<DataObject> listaFechamento = new ArrayList();
 
@@ -543,6 +543,14 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public String getSaldoAtual() {
+        return Moeda.converteR$(saldoAtual);
+    }
+
+    public void setSaldoAtual(String saldoAtual) {
+        this.saldoAtual = saldoAtual;
+    }
+
+    public String getDataSaldo() {
         if (!listaCaixa.isEmpty()) {
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
             if (caixa == null)
@@ -553,14 +561,16 @@ public final class FechamentoCaixaBean implements Serializable {
 
             if (!lista.isEmpty()) {
                 saldoAtual = Moeda.converteR$(lista.get(0).get(1).toString());
+                dataSaldo = DataHoje.converteData((Date) lista.get(0).get(2));
             } else {
                 saldoAtual = "0,00";
+                dataSaldo = "";
             }
         }
-        return Moeda.converteR$(saldoAtual);
+        return dataSaldo;
     }
 
-    public void setSaldoAtual(String saldoAtual) {
-        this.saldoAtual = saldoAtual;
+    public void setDataSaldo(String dataSaldo) {
+        this.dataSaldo = dataSaldo;
     }
 }

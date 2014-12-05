@@ -28,9 +28,9 @@ public interface HomologacaoDB {
 
     public List pesquisaTodosHorariosDisponiveis(int idFilial, int idDiaSemana);
 
-    public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc);
+    //public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc);
 
-    public List pesquisaPessoaEmpresaPertencente(String doc);
+    public PessoaEmpresa pesquisaPessoaEmpresaPertencente(String doc);
 
     public List pesquisaPessoaDebito(int id_pessoa, String vencimento);
 

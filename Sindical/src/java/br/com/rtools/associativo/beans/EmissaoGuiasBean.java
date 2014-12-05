@@ -241,12 +241,11 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void atualizarHistorico() {
         DaoInterface di = new Dao();
-        HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
         Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         MovimentoDB db = new MovimentoDBToplink();
         if (!listaMovimentoAuxiliar.isEmpty()) {
-            for (int i = 0; i < listaMovimentoAuxiliar.size(); i++) {
-                heg = db.pesquisaHistoricoEmissaoGuiasPorMovimento(usuario.getId(), listaMovimentoAuxiliar.get(i).getId());
+            for (Movimento listaMovimentoAuxiliar1 : listaMovimentoAuxiliar) {
+                HistoricoEmissaoGuias heg = db.pesquisaHistoricoEmissaoGuiasPorMovimento(usuario.getId(), listaMovimentoAuxiliar1.getId());
                 heg.setBaixado(true);
                 di.openTransaction();
                 if (di.update(heg)) {

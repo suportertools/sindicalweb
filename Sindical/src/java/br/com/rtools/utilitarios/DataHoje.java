@@ -966,4 +966,35 @@ public class DataHoje {
     public static boolean isDataValida(String input) {
         return dataValidaConverte(input) != null;
     }
+    
+
+    public String ultimoDiaDoMes(String data) {
+        if (isDataValida(data)) {
+            try {
+                int c = 0;
+                int[] d = DataHoje.DataToArrayInt("32/" + data.substring(3, 10));
+//                if ((d[1] + qtd) > 12) {
+//                    int tmp = (d[1] + qtd);
+//                    while (tmp > 12) {
+//                        tmp -= 12;
+//                        c++;
+//                    }
+//                    d[2] += c;
+//                    d[1] = tmp;
+//                } else {
+//                    d[1] += qtd;
+//                }
+
+                if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
+                    d[0] = qtdeDiasDoMes(d[1], d[2]);
+                }
+
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+    
 }

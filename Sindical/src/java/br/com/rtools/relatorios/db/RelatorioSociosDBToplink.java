@@ -332,7 +332,8 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             } //            else if (!dt_demissao.isEmpty())
             //                filtro += " and p.demissao = '"+dt_demissao+"'";
             else {
-                filtro += " and p.demissao is null ";
+                filtro += " and p.principal = true";
+                //filtro += " and p.demissao is null ";
             }
 
             // DATA DE FILIACAO DO SOCIO ----------------
@@ -350,7 +351,8 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             }
 
         } else {
-            filtro += " and p.demissao is null ";
+            filtro += " and p.principal = true";
+            //filtro += " and p.demissao is null ";
         }
 
         if (booVotante) {
