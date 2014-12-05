@@ -137,7 +137,7 @@
                             <h:panelGrid>
                                 <p:column>
                                     <p:commandButton global="false" value="Transferir" type="submit" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaBean.transferir()}" update="i_msg_t i_msg_t_g i_valor_t" style="clear: both; float: left" icon="ui-icon-check" />  
-                                    <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_t.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_t').hide()" style="float: left" icon="ui-icon-close"/>       
                                 </p:column>
                             </h:panelGrid>
                         </p:dialog>                        

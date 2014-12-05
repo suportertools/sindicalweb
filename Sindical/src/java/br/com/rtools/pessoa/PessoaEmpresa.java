@@ -36,6 +36,8 @@ public class PessoaEmpresa implements java.io.Serializable {
     private boolean avisoTrabalhado;
     @Column(name = "ds_codigo", length = 30)
     private String codigo;
+    @Column(name = "is_principal", nullable = false, columnDefinition = "boolean default true")
+    private boolean principal;
 
     public PessoaEmpresa() {
         this.id = -1;
@@ -47,9 +49,10 @@ public class PessoaEmpresa implements java.io.Serializable {
         this.setor = "";
         this.avisoTrabalhado = true;
         this.codigo = "";
+        this.principal = true;
     }
 
-    public PessoaEmpresa(int id, Fisica fisica, Juridica juridica, Profissao funcao, String admissao, String demissao, String setor, boolean avisoTrabalhado, String codigo) {
+    public PessoaEmpresa(int id, Fisica fisica, Juridica juridica, Profissao funcao, String admissao, String demissao, String setor, boolean avisoTrabalhado, String codigo, boolean principal) {
         this.id = id;
         this.fisica = fisica;
         this.juridica = juridica;
@@ -59,6 +62,7 @@ public class PessoaEmpresa implements java.io.Serializable {
         this.setor = setor;
         this.avisoTrabalhado = avisoTrabalhado;
         this.codigo = codigo;
+        this.principal = principal;
     }
 
     public int getId() {
@@ -110,9 +114,8 @@ public class PessoaEmpresa implements java.io.Serializable {
     }
 
     public void setAdmissao(String admissao) {
-        if (!(admissao.isEmpty())) {
-            this.dtAdmissao = DataHoje.converte(admissao);
-        }
+        this.dtAdmissao = DataHoje.converte(admissao);
+        
     }
 
     public Date getDtDemissao() {
@@ -132,9 +135,7 @@ public class PessoaEmpresa implements java.io.Serializable {
     }
 
     public void setDemissao(String demissao) {
-        if (!(demissao.isEmpty())) {
-            this.dtDemissao = DataHoje.converte(demissao);
-        }
+        this.dtDemissao = DataHoje.converte(demissao);
     }
 
     public String getSetor() {
@@ -169,6 +170,14 @@ public class PessoaEmpresa implements java.io.Serializable {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public boolean isPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(boolean principal) {
+        this.principal = principal;
     }
 
 }

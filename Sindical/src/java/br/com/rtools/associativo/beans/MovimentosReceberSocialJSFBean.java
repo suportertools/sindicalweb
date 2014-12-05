@@ -351,8 +351,16 @@ public class MovimentosReceberSocialJSFBean {
         try{
             String path = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads");  
             String nameFile = "encaminhamento_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
-            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ENCAMINHAMENTO.jasper"));
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
+            File fl_original = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ENCAMINHAMENTO.jasper"));
+            File fl_menor = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ENCAMINHAMENTO_MENOR.jasper"));
+            File fl_jasper = null;
+            
+            if(fl_menor.exists())
+                fl_jasper = fl_menor;
+            else
+                fl_jasper = fl_original;
+            
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl_jasper);
 
             for (Movimento movs : list_movimentos){
 //                if (!str_servicos.isEmpty())
@@ -361,7 +369,10 @@ public class MovimentosReceberSocialJSFBean {
 //                    str_servicos = movs.getServicos().getDescricao();
 
                 DataHoje dh = new DataHoje();
-                str_validade = dh.incrementarDias(movs.getServicos().getValidade(), guia.getLote().getEmissao());
+                if (movs.getServicos().isValidadeGuiasVigente())
+                    str_validade = dh.ultimoDiaDoMes(guia.getLote().getEmissao());
+                else
+                    str_validade = dh.incrementarDias(movs.getServicos().getValidade(), guia.getLote().getEmissao());
 
                 if (hash.containsKey(str_validade)){
                     //str_servicos += ", "+movs.getServicos().getDescricao();
@@ -410,7 +421,8 @@ public class MovimentosReceberSocialJSFBean {
                         str_nome,
                         socios.getParentesco().getParentesco(),
                         (socios.getMatriculaSocios().getId() == -1) ? "" : String.valueOf(socios.getMatriculaSocios().getId()),
-                        socios.getMatriculaSocios().getCategoria().getCategoria()
+                        socios.getMatriculaSocios().getCategoria().getCategoria(),
+                        guia.getSubGrupoConvenio().getObservacao()
                 ));
                 
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);

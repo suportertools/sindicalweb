@@ -20,6 +20,10 @@ public interface PessoaEmpresaDB {
 
     public List listaPessoaEmpresaPorFisica(int id);
 
+    public List listaPessoaEmpresaPorFisicaDemissao(int id);
+    
+    public List<PessoaEmpresa> listaPessoaEmpresaPorFisicaEmpresaDemissao(int id, int id_juridica);
+    
     public PessoaEmpresa pesquisaPessoaEmpresaPorFisica(int id);
 
     public List listaPessoaEmpresaTodos(int id);

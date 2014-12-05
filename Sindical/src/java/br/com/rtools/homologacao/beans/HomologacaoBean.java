@@ -1037,7 +1037,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         FisicaDB dbFis = new FisicaDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find("TipoDocumento", 1));
-        PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(fisica.getPessoa().getDocumento());
+        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPertencente(fisica.getPessoa().getDocumento());
         if (pe.getId() != -1) {
             pessoaEmpresa = pe;
             fisica = pessoaEmpresa.getFisica();

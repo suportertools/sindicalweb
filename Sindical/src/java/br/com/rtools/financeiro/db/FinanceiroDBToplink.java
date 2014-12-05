@@ -585,13 +585,13 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     public List<Vector> pesquisaSaldoAtual(int id_caixa) {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor	" +
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor, fc.dt_data as data	" +
                     "	  FROM fin_fechamento_caixa fc " +
                     "	 INNER JOIN fin_baixa b ON b.id_fechamento_caixa = fc.id " +
                     "	 WHERE b.id_caixa = " + id_caixa +
                     "	 GROUP BY fc.id " +
                     " UNION " +
-                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor " +
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor, fc.dt_data as data " +
                     "	  FROM fin_fechamento_caixa fc " +
                     "	 INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id " +
                     "	 WHERE tc.id_caixa_entrada = " +id_caixa +

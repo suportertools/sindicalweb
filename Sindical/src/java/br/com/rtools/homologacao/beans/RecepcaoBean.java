@@ -20,6 +20,8 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.Profissao;
+import br.com.rtools.pessoa.db.PessoaEmpresaDB;
+import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
@@ -42,8 +44,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -375,6 +375,14 @@ public class RecepcaoBean implements Serializable {
             return;
         }
         agendamentoEdit.getPessoaEmpresa().setDtDemissao(null);
+        
+        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
+        PessoaEmpresa pem = db.pesquisaPessoaEmpresaPorFisica(agendamentoEdit.getPessoaEmpresa().getFisica().getId());
+        
+        if (pem.getId() == -1){
+            agendamentoEdit.getPessoaEmpresa().setPrincipal(true);
+        }
+        
         if (!di.update(agendamentoEdit.getPessoaEmpresa())) {
             di.rollback();
             GenericaMensagem.error("Erro", "Erro ao atualizar Pessoa Empresa");

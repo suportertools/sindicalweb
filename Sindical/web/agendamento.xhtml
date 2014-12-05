@@ -143,6 +143,10 @@
                     <h:form id="formConcluirAgendamento">
                         <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" visible="#{agendamentoBean.visibleModal}" height="550" width="900">
                             <p:ajax event="close" listener="#{agendamentoBean.setVisibleModal(false)}" update=":formAgendamento"/>  
+                            
+                            <!-- visibility: hidden SE TIRAR ESSA VARIAVEL OS CAMPOS DE PessoaEmpresa NAO ATUALIZAM QUANDO PESQUISA JURIDICA ex. dt_admissao -->
+                            <p:outputLabel value="Empresa: " style="font-weight: bold" rendered="#{agendamentoBean.juridica.pessoa.nome != ''}"/>
+                            <p:outputLabel value="#{agendamentoBean.juridica.pessoa.nome}" />
                             <p:messages id="msg_dialog1" showDetail="true" closable="true"/>
                             <!-- <p:scrollPanel style="height:500px"> -->
                             <h:panelGrid id="i_panel_protocolo" columns="1" style="width: 100%;">
@@ -213,7 +217,7 @@
 
                                 <h:column>
                                     <h:outputText value="Sexo"/><br />
-                                    <p:selectOneButton value="#{agendamentoBean.fisica.sexo}">
+                                    <p:selectOneButton value="#{agendamentoBean.fisica.sexo}" style="width: 200px">
                                         <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                         <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                     </p:selectOneButton>

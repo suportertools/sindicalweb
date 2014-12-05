@@ -274,7 +274,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         salvarEndereco();
         salvarPessoaEmpresa();
         salvarPessoaProfissao();
-        limparCamposData();
+        //limparCamposData();
         if (sucesso) {
             salvarImagem();
         }
@@ -720,6 +720,20 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (fisica.getId() != -1 && pessoaEmpresa.getJuridica().getId() != -1) {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setAvisoTrabalhado(false);
+            
+            if (pessoaEmpresa.getDtAdmissao() == null) {
+                mensagem = "Informar data de admissão!";
+                return;
+            }
+            
+            if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
+                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
+                        > DataHoje.converteDataParaInteger(DataHoje.data())) {
+                    mensagem = "Data de Demissão maior que atual!";
+                    return;
+                }
+            }
+            
             if (pessoaEmpresa.getDtAdmissao() != null && pessoaEmpresa.getDtDemissao() != null) {
                 int dataAdmissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao());
                 int dataDemissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao());
@@ -728,36 +742,80 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     pessoaEmpresa.setDemissao(null);
                     return;
                 }
-            }
-            if (pessoaEmpresa.getDtAdmissao() == null) {
-                mensagem = "Informar data de admissão!";
-                return;
+                pessoaEmpresa.setPrincipal(false);
             }
             
-            if (profissao.getProfissao().equals("") || profissao.getProfissao() == null) {
-//                mensagem = "Pesquise uma função!";
-//                return;
+            if (profissao.getProfissao() == null || profissao.getProfissao().isEmpty()) {
                 pessoaEmpresa.setFuncao(null);
             }else
                 pessoaEmpresa.setFuncao(profissao);
-            if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().equals("")) {
-                if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
-                        > DataHoje.converteDataParaInteger(DataHoje.data())) {
-                    mensagem = "Data de Demissão maior que atual!";
-                    return;
-                }
-            }
+            
             if (pessoaEmpresa.getId() == -1) {
                 db.insert(pessoaEmpresa);
             } else {
                 db.update(pessoaEmpresa);
             }
-            if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().equals("")) {
+            
+            if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().isEmpty()) {
                 pessoaEmpresa = new PessoaEmpresa();
                 profissao = new Profissao();
                 GenericaSessao.remove("juridicaPesquisa");
                 renderJuridicaPesquisa = false;
+                
+                List<PessoaEmpresa> lpe = db.listaPessoaEmpresaPorFisicaDemissao(fisica.getId());
+                
+                if (!lpe.isEmpty()){
+                    lpe.get(0).setPrincipal(true);
+                    
+                    db.update(lpe.get(0));
+                    
+                    pessoaEmpresa = lpe.get(0);
+                    renderJuridicaPesquisa = true;
+                }
             }
+        }
+    }
+    
+    public void adicionarEmpresa(){
+        if (fisica.getId() != -1 && pessoaEmpresa.getJuridica().getId() != -1) {
+            if (pessoaEmpresa.getAdmissao().isEmpty()){
+                GenericaMensagem.warn("Atenção", "Data de Admissão não pode estar vazia!");
+                return;
+            }
+            
+            pessoaEmpresa.setFisica(fisica);
+            pessoaEmpresa.setAvisoTrabalhado(false);
+            pessoaEmpresa.setPrincipal(false);
+            
+            if (profissao.getProfissao() == null || profissao.getProfissao().isEmpty()) {
+                pessoaEmpresa.setFuncao(null);
+            }else
+                pessoaEmpresa.setFuncao(profissao);
+            
+            Dao di = new Dao();
+            
+            di.openTransaction();
+            
+            if (pessoaEmpresa.getId() == -1){
+                if (!di.save(pessoaEmpresa)){
+                    di.rollback();
+                    GenericaMensagem.error("ERRO", "Não foi possível adicionar Empresa!");
+                    return;
+                }
+            }else{
+                if (!di.update(pessoaEmpresa)){
+                    di.rollback();
+                    GenericaMensagem.error("ERRO", "Não foi possível adicionar Empresa!");
+                    return;
+                }
+            }
+            di.commit();
+            
+            //RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
+            GenericaMensagem.info("Sucesso", "Empresa Adicionada!");
+            pessoaEmpresa = new PessoaEmpresa();
+            profissao = new Profissao();
+            renderJuridicaPesquisa = false;
         }
     }
 
@@ -1112,14 +1170,57 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void removerJuridicaPesquisada() {
         if (pessoaEmpresa.getId() != -1) {
             Dao dao = new Dao();
-            dao.delete(pessoaEmpresa, true);
+            if (!dao.delete(pessoaEmpresa, true)){
+                mensagem = "Empresa com Agendamento não pode ser excluída!";
+                PF.update("form_pessoa_fisica:i_panel_mensagem");
+                PF.openDialog("dlg_painel_mensagem");
+                return;
+            }
         }
         GenericaSessao.remove("juridicaPesquisa");
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
         renderJuridicaPesquisa = false;
+        
+        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
+        List<PessoaEmpresa> lpe = db.listaPessoaEmpresaPorFisicaDemissao(fisica.getId());
+
+        if (!lpe.isEmpty()){
+            lpe.get(0).setPrincipal(true);
+
+            db.update(lpe.get(0));
+
+            pessoaEmpresa = lpe.get(0);
+            renderJuridicaPesquisa = true;
+        }
         RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
     }
+    
+    public void alterarEmpresaAtual(PessoaEmpresa pe){
+        Dao di = new Dao();
+        di.openTransaction();
+        
+        if (pessoaEmpresa.getId() == -1){
+            pe.setPrincipal(true);
+            if (!di.update(pe)){
+                di.rollback();
+                return;
+            }
+            pessoaEmpresa = pe;
+        }else{
+            pessoaEmpresa.setPrincipal(false);
+            pe.setPrincipal(true);
+            
+            if (!di.update(pessoaEmpresa) || !di.update(pe)){
+                di.rollback();
+                return;
+            }
+            pessoaEmpresa = pe;
+        }
+        
+        di.commit();
+    }
+    
 
     public String associarFisica() {
         if (fisica.getId() == -1) {

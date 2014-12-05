@@ -584,7 +584,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             HomologacaoDB db = new HomologacaoDBToplink();
             Dao dao = new Dao();
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
-            PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaPertencente(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != juridica.getId()) {
                 //msgConfirma = "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome();

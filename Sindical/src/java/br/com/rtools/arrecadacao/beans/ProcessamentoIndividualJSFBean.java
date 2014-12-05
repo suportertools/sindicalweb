@@ -487,23 +487,27 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getTipoServico().getId(),
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getServicos().getId());
                 if (movim != null) {
-                    movimentoBefore = (Movimento) dao.find((Movimento) listMovimentos.get(i).getArgumento1());
+                    //movimentoBefore = (Movimento) dao.find((Movimento) listMovimentos.get(i).getArgumento1());
+                    movimentoBefore = (Movimento) dao.find(movim);
                     beforeUpdate
                             = " Movimento: (" + movimentoBefore.getId() + ") "
                             + " - Referência: (" + movimentoBefore.getReferencia()
                             + " - Tipo Serviço: (" + movimentoBefore.getTipoServico().getId() + ") " + movim.getTipoServico().getDescricao()
                             + " - Serviços: (" + movimentoBefore.getServicos().getId() + ") " + movim.getServicos().getDescricao()
                             + " - Pessoa: (" + movimentoBefore.getPessoa().getId() + ") " + movim.getPessoa().getNome()
-                            + " - Valor: " + movimentoBefore.getValorString();
+                            + " - Valor: " + movimentoBefore.getValorString()
+                            + " - Vencimento: " + movimentoBefore.getVencimento();
+                    
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
                     if (GerarMovimento.alterarUmMovimento(movim)) {
-                        novoLog.update("",
+                        novoLog.update(beforeUpdate,
                                 " Movimento: (" + movim.getId() + ") "
                                 + " - Referência: (" + movim.getReferencia()
                                 + " - Tipo Serviço: (" + movim.getTipoServico().getId() + ") " + movim.getTipoServico().getDescricao()
                                 + " - Serviços: (" + movim.getServicos().getId() + ") " + movim.getServicos().getDescricao()
                                 + " - Pessoa: (" + movim.getPessoa().getId() + ") " + movim.getPessoa().getNome()
                                 + " - Valor: " + movim.getValorString()
+                                + " - Vencimento: " + movim.getVencimento()
                         );
                         msgConfirma = "Alterado com sucesso!";
                     } else {
@@ -526,6 +530,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                                 + " - Serviços: (" + movim.getServicos().getId() + ") " + movim.getServicos().getDescricao()
                                 + " - Pessoa: (" + movim.getPessoa().getId() + ") " + movim.getPessoa().getNome()
                                 + " - Valor: " + movim.getValorString()
+                                + " - Vencimento: " + movim.getVencimento()
                         );
                         msgConfirma = "Gerado com sucesso!";
                     } else {

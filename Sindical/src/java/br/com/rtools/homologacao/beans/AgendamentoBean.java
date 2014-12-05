@@ -737,6 +737,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 pessoaEmpresa.setFisica(fisica);
                 pessoaEmpresa.setJuridica(juridica);
                 pessoaEmpresa.setFuncao(profissao);
+                pessoaEmpresa.setPrincipal(false);
                 //pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
@@ -882,6 +883,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             salvarAcumuladoDB.desfazerTransacao();
         }
         pessoaEmpresa.setDtDemissao(null);
+        
+        PessoaEmpresa pem = dbPesEmp.pesquisaPessoaEmpresaPorFisica(pessoaEmpresa.getFisica().getId());
+        
+        if (pem.getId() == -1){
+            pessoaEmpresa.setPrincipal(true);
+        }
+        
         dbPesEmp.update(pessoaEmpresa);
         strEndereco = "";
         renderCancelarHorario = false;
@@ -942,7 +950,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
             List<Fisica> listFisica = dbFis.pesquisaFisicaPorDocSemLike(documento);
             List<Oposicao> listao = db.pesquisaFisicaOposicaoSemEmpresa(documento);
-            List<PessoaEmpresa> listape = db.pesquisaPessoaEmpresaPertencente(documento);
+            PessoaEmpresa pem = db.pesquisaPessoaEmpresaPertencente(documento);
 
             if (!listFisica.isEmpty()) {
                 // AQUI
@@ -951,10 +959,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 //                    msgConfirma = "CPF já foi agendado:" + age.getData() + " às " + age.getHorarios().getHora() + " h(s) ";
 //                    return;
 //                }
-
-                if (!listape.isEmpty() && listape.get(0).getDtDemissao() != null) {
-                    listape.clear();
-                }
             }
 
             // SEM PESSOA FISICA E SEM OPOSICAO
@@ -974,9 +978,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
                 PF.openDialog("dlg_oposicao");
                 // COM FISICA, COM PESSOA EMPRESA E SEM OPOSICAO    
-            } else if (!listFisica.isEmpty() && !listape.isEmpty() && listao.isEmpty()) {
+            } else if (!listFisica.isEmpty() && pem != null && listao.isEmpty()) {
                 //msgConfirma = "CPF verificado com sucesso";
-                pessoaEmpresa = listape.get(0);
+                pessoaEmpresa = pem;
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
                 GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
@@ -984,7 +988,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 protocolo = 0;
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, SEM PESSOA EMPRESA E SEM OPOSICAO    
-            } else if (!listFisica.isEmpty() && listape.isEmpty() && listao.isEmpty()) {
+            } else if (!listFisica.isEmpty() && pem == null && listao.isEmpty()) {
                 //msgConfirma = "CPF verificado com sucesso";
                 fisica = listFisica.get(0);
                 pessoaEmpresa = new PessoaEmpresa();
@@ -992,11 +996,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, COM PESSOA EMPRESA COM OPOSICAO
-            } else if (!listFisica.isEmpty() && !listape.isEmpty() && !listao.isEmpty()) {
+            } else if (!listFisica.isEmpty() && pem != null && !listao.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
 
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
-                pessoaEmpresa = listape.get(0);
+                pessoaEmpresa = pem;
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
@@ -1020,7 +1024,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 GenericaSessao.put("juridicaPesquisa", juridica);
                 PF.openDialog("dlg_oposicao");
                 // COM FISICA, SEM PESSOA EMPRESA COM OPOSICAO
-            } else if (!listFisica.isEmpty() && listape.isEmpty() && !listao.isEmpty()) {
+            } else if (!listFisica.isEmpty() && pem == null && !listao.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "CPF cadastrado em oposição data: " + listao.get(0).getEmissao());
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
 
@@ -1107,6 +1111,21 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             GenericaSessao.put("pessoaPesquisa", juridica.getPessoa());
             if (juridica.getContabilidade() != null && agendamento.getId() == -1) {
                 agendamento.setTelefone(juridica.getContabilidade().getPessoa().getTelefone1());
+            }
+            
+            if (fisica.getId() != -1){
+                PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
+                List<PessoaEmpresa> list_pe = db.listaPessoaEmpresaPorFisicaEmpresaDemissao(fisica.getId(), juridica.getId());
+
+                if (!list_pe.isEmpty()){
+                    pessoaEmpresa = list_pe.get(0);
+                    
+                    if (pessoaEmpresa.getFuncao() != null)
+                        profissao = pessoaEmpresa.getFuncao();
+                }else{
+                    pessoaEmpresa = new PessoaEmpresa();
+                    profissao = new Profissao();
+                }
             }
         }
         return juridica;
