@@ -2,6 +2,8 @@ package br.com.rtools.utilitarios;
 
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -18,8 +20,11 @@ public class Jasper {
     public static String PATH = "downloads/relatorios";
     public static String PART_NAME = "relatorio";
     public static Boolean IS_DOWNLOAD = true;
+    public static byte[] BYTES = null;
 
     public static void printReports(String jasperName, String fileName, Collection c) {
+        byte[] bytesComparer = null;
+        byte[] b;
         if (fileName.isEmpty() || jasperName.isEmpty() || c.isEmpty()) {
             GenericaMensagem.info("Sistema", "Erro ao criar relatório!");
             return;
@@ -40,11 +45,23 @@ public class Jasper {
                 JRBeanCollectionDataSource dtSource;
                 dtSource = new JRBeanCollectionDataSource(c);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                if (bytesComparer == BYTES) {
+                    b = JasperExportManager.exportReportToPdf(print);
+                } else {
+                    b = BYTES;
+                }
                 String downloadName = PART_NAME + "_" + fileName + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, downloadName, false);
                 String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/");
-                salvaArquivos.salvaNaPasta(dirPath);
+                try {
+                    File file = new File(dirPath + "/" + downloadName);
+                    try (FileOutputStream out = new FileOutputStream(file)) {
+                        out.write(b);
+                        out.flush();
+                    }
+                } catch (IOException e) {
+                    System.out.println(e);
+                    return;
+                }
                 if (IS_DOWNLOAD) {
                     Download download = new Download(downloadName, dirPath, "application/pdf", FacesContext.getCurrentInstance());
                     download.baixar();
