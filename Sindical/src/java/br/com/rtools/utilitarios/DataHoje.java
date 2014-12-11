@@ -1029,4 +1029,28 @@ public class DataHoje {
         }
     }
 
+    /**
+     * @param minutesIn H:m timestamp, i.e. [Hour in day (0-23)]:[Minute in hour
+     * (0-59)]
+     * @return total minutes after 00:00
+     */
+    public static String convertMinutesToTime(Integer minutesIn) {
+        try {
+            String hourString = "";
+            int hours = minutesIn / 60;
+            int minutes = minutesIn % 60;
+            if (hours < 10) {
+                hourString += "0";
+            }
+            hourString += "" + hours + ":";
+            if (minutes < 10) {
+                hourString += "0" + minutes;
+            }
+            hourString += "";
+            return hourString;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }
