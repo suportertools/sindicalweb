@@ -966,7 +966,6 @@ public class DataHoje {
     public static boolean isDataValida(String input) {
         return dataValidaConverte(input) != null;
     }
-    
 
     public String ultimoDiaDoMes(String data) {
         if (isDataValida(data)) {
@@ -996,5 +995,38 @@ public class DataHoje {
         }
         return null;
     }
-    
+
+    public static String alterDay(int dia, String dataString) {
+        String diaString;
+        if (dia > 9) {
+            diaString = "" + dia;
+        } else {
+            diaString = "0" + dia;
+        }
+        String mesString = dataString.substring(3, 5);
+        String anoString = dataString.substring(6, 10);
+        dataString = diaString + "/" + mesString + "/" + anoString;
+        if (!isDataValida(dataString)) {
+            return "";
+        }
+        return dataString;
+    }
+
+    /**
+     * @param hourIn H:m timestamp, i.e. [Hour in day (0-23)]:[Minute in hour
+     * (0-59)]
+     * @return total minutes after 00:00
+     */
+    public static Integer convertTimeToInteger(String hourIn) {
+        try {
+            String[] hourMin = hourIn.split(":");
+            int hour = Integer.parseInt(hourMin[0]);
+            int mins = Integer.parseInt(hourMin[1]);
+            int hoursInMins = hour * 60;
+            return hoursInMins + mins;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 }
