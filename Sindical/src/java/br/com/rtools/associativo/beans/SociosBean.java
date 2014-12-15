@@ -58,7 +58,7 @@ public class SociosBean implements Serializable {
     private int idGrupoCategoria;
     private int idCategoria;
     private int idIndexCombo;
-    private int idInativacao;
+    private Integer idInativacao;
     private boolean renderServicos;
     private boolean fotoTemp;
     private boolean temFoto;
@@ -1970,11 +1970,11 @@ public class SociosBean implements Serializable {
         this.dataInativacao = dataInativacao;
     }
 
-    public int getIdInativacao() {
+    public Integer getIdInativacao() {
         return idInativacao;
     }
 
-    public void setIdInativacao(int idInativacao) {
+    public void setIdInativacao(Integer idInativacao) {
         this.idInativacao = idInativacao;
     }
 

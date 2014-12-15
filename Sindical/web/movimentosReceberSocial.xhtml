@@ -49,7 +49,7 @@
                 </f:subview>
                 <f:view>
                     <!-- <p:panel style="border: 0px; width: 1200px; margin: 0 auto"> novo tamanho-->
-                    <p:panel styleClass="wrapper" style="border: 0px">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Movimentos a Receber" styleClass="fonteHeader" />
                         <h:form id="formMovimentosReceberPesquisa">
                             <h:panelGrid columns="3" style="clear: both; float: right">
@@ -148,6 +148,10 @@
                             </h:panelGrid>
                             
                             <p:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!" rowStyleClass="#{linha.argumento28}">
+                                <f:facet name="header">
+                                    <p:commandButton id="toggler" type="button" value="Colunas" style="float:right" icon="ui-icon-calculator" />
+                                    <p:columnToggler datasource="tbl" trigger="toggler" />
+                                </f:facet>
                                 <p:column style="text-align: center; width: 15px">
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosSocialBean.calculoDesconto()}"/>
@@ -162,54 +166,54 @@
                                     <h:outputText value="#{linha.argumento2}" style="font-size: 8pt!important"/>
                                 </p:column>
 
-                                <p:column style="text-align: center;" headerText="Vencimento">
+                                <p:column style="text-align: center; width: 75px" headerText="Vencimento">
                                     <h:outputText value="#{linha.argumento5}" style="font-size: 8pt!important"/>
                                 </p:column>
 
-                                <p:column headerText="Valor Base">
+                                <p:column headerText="Valor Base" style="width: 80px">
                                     <h:outputText value="R$ " />
                                     <h:outputText value="#{linha.argumento6}" style="font-size: 8pt!important; float: right"/>
                                 </p:column>
 
-                                <p:column headerText="Acréscimo">
+                                <p:column headerText="Acréscimo" style="width: 80px">
                                     <h:outputText value="R$ " />
                                     <h:outputText value="#{linha.argumento7}" style="font-size: 8pt!important; float: right"/>
                                 </p:column>
 
-                                <p:column headerText="Desconto">
+                                <p:column headerText="Desconto" style="width: 70px">
                                     <h:outputText value="R$ " />
                                     <h:outputText value="#{linha.argumento8}" style="font-size: 8pt!important; float: right"/>
                                 </p:column>
 
-                                <p:column headerText="Vl. Calculado">
+                                <p:column headerText="Vl. Calculado" style="width: 80px">
                                     <h:outputText value="R$ " />
                                     <h:outputText value="#{linha.argumento9}" style="font-size: 8pt!important; float: right"/>
                                 </p:column>
 
-                                <p:column style="text-align: center;" headerText="Data Baixa">
+                                <p:column style="text-align: center; width: 70px" headerText="Baixa">
                                     <h:outputText value="#{linha.argumento10}" style="font-size: 8pt!important;"/>
                                 </p:column>
 
-                                <p:column headerText="Valor Pago">
+                                <p:column headerText="Valor Pago" style="width: 80px">
                                     <h:outputText value="R$ "/>
                                     <h:outputText value="#{linha.argumento11}" style="font-size: 8pt!important; float: right"/>
                                 </p:column>
 
-                                <p:column style="text-align: center;" headerText="E/S">
+                                <p:column style="text-align: center; width: 20px" headerText="E/S">
                                     <h:outputText value="#{linha.argumento12}" style="font-size: 8pt!important"/>
                                 </p:column>
                                 
-                                <p:column style="text-align: center;" headerText="Mais">
+                                <p:column style="text-align: center; width: 50px" headerText="Mais">
                                     <p:commandLink ajax="false" value="Alterar" action="#{movimentosSocialBean.telaMovimento(linha.argumento1)}"/>
                                 </p:column>
                                 
-                                <p:column style="text-align: center;" headerText="Recibo">
+                                <p:column style="text-align: center; width: 30px" headerText="Recibo">
                                     <h:commandLink target="_blank" action="#{movimentosSocialBean.recibo(linha.argumento1)}" rendered="#{!empty(linha.argumento10)}" title="Imprimir este Recibo">
                                         <p:commandButton icon="ui-icon-print"  title="Imprimir este Recibo"/>
                                     </h:commandLink>
                                 </p:column>
                                 
-                                <p:column style="text-align: center;" headerText="Enc.">
+                                <p:column style="text-align: center; width: 30px" headerText="Enc.">
                                     <h:commandLink target="_blank" action="#{movimentosSocialBean.encaminhamento(linha.argumento27)}" rendered="#{movimentosSocialBean.pesquisaGuia(linha.argumento27).encaminhamento == true}" title="Imprimir este Encaminhamento">
                                         <p:commandButton icon="ui-icon-print"  title="Imprimir este Encaminhamento"/>
                                     </h:commandLink>

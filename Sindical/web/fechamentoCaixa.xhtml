@@ -29,13 +29,13 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Fechamento de Caixa" styleClass="fonteHeader" />
                         <h:form id="formFechamentoCaixa">
                             <p:panel id="i_saldo_atual" style="clear: both; background: #ECF3FE;">
                                 <h:panelGrid columns="1">
                                     <p:column>
-                                        <h:outputLabel value="#{(fechamentoCaixaBean.dataSaldo == '') ? 'Saldo Atual' : 'Saldo até a data '.concat(fechamentoCaixaBean.dataSaldo)}: " style="font-size: 10pt!important; font-weight: bold"/>
+                                        <h:outputLabel value="Saldo Inicial: " style="font-size: 10pt!important; font-weight: bold"/>
                                         <h:outputLabel value="#{fechamentoCaixaBean.saldoAtual}" style="font-size: 12pt!important"/>
                                         <h:outputLabel value=" ( ATENÇÃO ) Este valor não entra na soma do FECHAMENTO CAIXA" style="font-size: 8pt!important; color: red" rendered="false"/>
                                     </p:column>
@@ -54,7 +54,7 @@
                                     
                                     <p:column>
                                         <h:outputLabel value="Fechamento"/><br />
-                                        <p:inputMask value="#{fechamentoCaixaBean.fechamento.data}" size="7" style="font-weight: bold; margin-right: 15px;" mask="99/99/9999" readonly="true" />
+                                        <p:inputMask value="#{fechamentoCaixaBean.fechamento.data}" style="font-weight: bold; margin-right: 15px; width: 80px" mask="99/99/9999" readonly="true" />
                                     </p:column>
                                     
                                     <p:column>
@@ -104,15 +104,16 @@
                             </p:dataTable>
                             
                             <p:dialog widgetVar="i_dlg_s" header="Deseja concluir este Fechamento" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaBean.salvar()}" update="formFechamentoCaixa" onclick="PF('i_dlg_s').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="i_dlg_c.show()"/>  
+                                <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaBean.salvar()}" update="formFechamentoCaixa" onclick="PF('i_dlg_s').hide(), PF('i_dlg_modal').show()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
                             <p:dialog widgetVar="i_dlg_c" header="Fechamento Concluído" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
+                                <br />
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
                                     <p:commandButton value="OK" onclick="PF('i_dlg_c').hide()" style="float: left" icon="ui-icon-check"/>  
-                                    <h:commandLink value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(null)}" style="float: right; font-size: 10pt!important; font-weight: bold"/>
+                                    <h:commandLink value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(null)}" rendered="#{fechamentoCaixaBean.fechamento.id != -1}" style="float: right; font-size: 10pt!important; font-weight: bold"/>
                                 </h:panelGrid>
                             </p:dialog>
                             

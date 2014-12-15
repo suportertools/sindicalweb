@@ -18,6 +18,7 @@ import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Pedido;
 import br.com.rtools.estoque.Produto;
 import br.com.rtools.estoque.dao.ProdutoDao;
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FTipoDocumento;
@@ -189,6 +190,7 @@ public class EmissaoGuiasBean implements Serializable {
             }
             listHistoricoEmissaoGuias.clear();
             GenericaSessao.put("listaMovimento", listaMovimentoAuxiliar);
+            GenericaSessao.put("caixa_banco", "caixa");
             return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).baixaGeral();
         }
         return null;
@@ -426,7 +428,7 @@ public class EmissaoGuiasBean implements Serializable {
             if (!servicos.isFamiliarPeriodo()){
                 List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
                 
-                if (list_m.size() >= servicos.getQuantidadePeriodo()){
+                if (list_m.size() >= servicos.getQuantidadePeriodo() || valorx != 0){
                     GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
                     return;
                 }
@@ -440,7 +442,7 @@ public class EmissaoGuiasBean implements Serializable {
                 if (socios.getId() == -1){
                     List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
 
-                    if (list_m.size() >= servicos.getQuantidadePeriodo()){
+                    if (list_m.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
                         GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
                         return;
                     }
@@ -448,7 +450,7 @@ public class EmissaoGuiasBean implements Serializable {
                 }else{
                     List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(socios.getMatriculaSocios().getId(), servicos.getId(), servicos.getPeriodo().getDias(), true);
 
-                    if (list_m.size() >= servicos.getQuantidadePeriodo()){
+                    if (list_m.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
                         GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
                         return;
                     }
@@ -688,7 +690,7 @@ public class EmissaoGuiasBean implements Serializable {
             }
         }
         
-        
+        GenericaSessao.put("caixa_banco", "caixa");
         if(valor_soma == 0){
             di.openTransaction();
             guias.setEncaminhamento(true);
@@ -705,8 +707,8 @@ public class EmissaoGuiasBean implements Serializable {
             }
             
             di.commit();
-            
-            if (!GerarMovimento.baixarMovimentoManual(listaMovimentoAuxiliar, new SegurancaUtilitariosBean().getSessaoUsuario(), new ArrayList(), valor_soma, DataHoje.data(), null)){
+            Caixa caixa = MacFilial.getAcessoFilial().getCaixa();
+            if (!GerarMovimento.baixarMovimentoManual(listaMovimentoAuxiliar, new SegurancaUtilitariosBean().getSessaoUsuario(), new ArrayList(), valor_soma, DataHoje.data(), caixa)){
                 message = "Erro ao baixar Guias";
                 return null;
             }

@@ -771,7 +771,7 @@ public class AcordoBean {
         listaImp.addAll(db.pesquisaAcordoTodos(acordo.getId()));
 
         if (!listaImp.isEmpty()) {
-            imp.imprimirAcordoPromissoria(listaImp, acordo, historico, emailContato, imprimir_pro);
+            imp.imprimirAcordoPromissoria(listaImp, acordo, historico, imprimir_pro);
             imp.visualizar(null);
         }
 

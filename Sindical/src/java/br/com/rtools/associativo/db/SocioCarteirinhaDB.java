@@ -22,11 +22,11 @@ public interface SocioCarteirinhaDB {
 
     public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem);
     
-    public List listaFiltro(String indexFiltro, String descEmpresa, String indexOrdem, boolean fantasia);
+    //public List listaFiltro(String indexFiltro, String descEmpresa, String indexOrdem, boolean fantasia);
 
     public List filtroCartao(int id_socio);
 
-    public List listaFiltroCartao(int id_socio);
+    //public List listaFiltroCartao(int id_socio);
 
     public List listaPesquisaEtiqueta(int id_pessoa);
 

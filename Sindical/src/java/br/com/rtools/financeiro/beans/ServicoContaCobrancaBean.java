@@ -19,26 +19,22 @@ import javax.faces.model.SelectItem;
 @ManagedBean
 @SessionScoped
 public class ServicoContaCobrancaBean implements Serializable {
-
     private ServicoContaCobranca servicoContaCobranca = new ServicoContaCobranca();
-    private Servicos servico = new Servicos();
-    private TipoServico tipoServico = new TipoServico();
-    private ContaCobranca contaCobranca = new ContaCobranca();
-    private String msgConfirma;
     private int idServicos = 0;
     private int idContaCobranca = 0;
     private int idTipoServico = 0;
+    private final List<SelectItem> listaServico = new ArrayList();
+    private final List<SelectItem> listaContaCobranca = new ArrayList();
+    private final List<SelectItem> listaTipoServico = new ArrayList();
     private int idIndex = -1;
     private List<ServicoContaCobranca> listaServicoCobranca = new ArrayList();
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public ServicoContaCobrancaBean(){
+        getListaServico();
+        getListaContaCobranca();
+        getListaTipoServico();
     }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
+    
     public int getIdServicos() {
         return idServicos;
     }
@@ -68,9 +64,9 @@ public class ServicoContaCobrancaBean implements Serializable {
         DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
         if ((servicoContaCobranca != null) && (servicoContaCobranca.getId() == -1)) {
-            servico = (Servicos) di.find(new Servicos(), Integer.parseInt(getListaServico().get(getIdServicos()).getDescription()));
-            tipoServico = (TipoServico) di.find(new TipoServico(), Integer.parseInt(getListaTipoServico().get(getIdTipoServico()).getDescription()));
-            contaCobranca = (ContaCobranca) di.find(new ContaCobranca(), Integer.parseInt(getListaContaCobranca().get(getIdContaCobranca()).getDescription()));
+            Servicos servico = (Servicos) di.find(new Servicos(), Integer.parseInt(listaServico.get(idServicos).getDescription()));
+            TipoServico tipoServico = (TipoServico) di.find(new TipoServico(), Integer.parseInt(listaTipoServico.get(idTipoServico).getDescription()));
+            ContaCobranca contaCobranca = (ContaCobranca) di.find(new ContaCobranca(), Integer.parseInt(listaContaCobranca.get(idContaCobranca).getDescription()));
             List serv = servContaCobrancaDB.pesquisaServPorIdServIdTipoServ(servico.getId(), tipoServico.getId());
             if (serv.isEmpty()) {
                 servicoContaCobranca.setServicos(servico);
@@ -83,18 +79,53 @@ public class ServicoContaCobrancaBean implements Serializable {
                             + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
                             + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
                     );
-                    msgConfirma = "Serviço adicionado!";
-                    GenericaMensagem.info("Sucesso", msgConfirma);
+                    GenericaMensagem.info("Sucesso", "Serviço adicionado!");
                 } else {
-                    msgConfirma = "Erro ao Salvar!";
-                    GenericaMensagem.warn("Erro", msgConfirma);
+                    GenericaMensagem.warn("Erro", "Erro ao Salvar!");
                 }
             } else {
-                msgConfirma = "Serviço já existente!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Serviço já existente!");
             }
         }
         servicoContaCobranca = new ServicoContaCobranca();
+        listaServicoCobranca.clear();
+        return null;
+    }
+
+    public String adicionarTodosTipo() {
+        ServicoContaCobrancaDB servContaCobrancaDB = new ServicoContaCobrancaDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        servicoContaCobranca = new ServicoContaCobranca();
+        
+        Servicos servico = (Servicos) di.find(new Servicos(), Integer.parseInt(listaServico.get(idServicos).getDescription()));
+        ContaCobranca contaCobranca = (ContaCobranca) di.find(new ContaCobranca(), Integer.parseInt(getListaContaCobranca().get(getIdContaCobranca()).getDescription()));
+
+        for (SelectItem ts : listaTipoServico){
+            TipoServico tipoServico = (TipoServico) di.find(new TipoServico(), Integer.parseInt(ts.getDescription()));
+            List serv = servContaCobrancaDB.pesquisaServPorIdServIdTipoServ(servico.getId(), tipoServico.getId());
+
+            if (serv.isEmpty()) {
+                servicoContaCobranca.setServicos(servico);
+                servicoContaCobranca.setTipoServico(tipoServico);
+                servicoContaCobranca.setContaCobranca(contaCobranca);
+                if (di.save(servicoContaCobranca, true)) {
+                    novoLog.save(
+                            "ID: " + servicoContaCobranca.getId()
+                            + " - Serviço: (" + servicoContaCobranca.getServicos().getId() + ") " + servicoContaCobranca.getServicos().getDescricao()
+                            + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
+                            + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
+                    );
+                    GenericaMensagem.info("Sucesso", tipoServico.getDescricao()+" adicionado!");
+                } else {
+                    GenericaMensagem.warn("Erro", "Erro ao Salvar!");
+                }
+            } else {
+                GenericaMensagem.warn("Erro", "Tipo Serviço " +tipoServico.getDescricao()+" já existente para esse Serviço!");
+            }
+            servicoContaCobranca = new ServicoContaCobranca();
+        }
+
         listaServicoCobranca.clear();
         return null;
     }
@@ -111,11 +142,9 @@ public class ServicoContaCobrancaBean implements Serializable {
                         + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
                         + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
                 );
-                msgConfirma = "Serviço excluido!";
-                GenericaMensagem.info("Sucesso", msgConfirma);
+                GenericaMensagem.info("Sucesso", "Serviço excluido!");
             } else {
-                msgConfirma = "Erro ao excluir serviço!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Erro ao excluir serviço!");
             }
         }
         servicoContaCobranca = new ServicoContaCobranca();
@@ -134,40 +163,43 @@ public class ServicoContaCobrancaBean implements Serializable {
     public void refreshForm() {
     }
 
-    public List<SelectItem> getListaServico() {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        ServicosDB db = new ServicosDBToplink();
-        List list = db.pesquisaTodos();
-        for (int i = 0; i < list.size(); i++) {
-            selectItems.add(new SelectItem(i, (String) ((Servicos) list.get(i)).getDescricao(), Integer.toString(((Servicos) list.get(i)).getId())));
+    public final List<SelectItem> getListaServico() {
+        if (listaServico.isEmpty()){
+            ServicosDB db = new ServicosDBToplink();
+            List<Servicos> list = db.pesquisaTodos();
+            for (int i = 0; i < list.size(); i++) {
+                listaServico.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            }
         }
-        return selectItems;
+        return listaServico;
     }
 
-    public List<SelectItem> getListaContaCobranca() {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        DaoInterface di = new Dao();
-        List<ContaCobranca> list = (List<ContaCobranca>) di.list(new ContaCobranca());
-        for (int i = 0; i < list.size(); i++) {
-            selectItems.add(new SelectItem(i,
-                    list.get(i).getCodCedente() + " - "
-                    + list.get(i).getContaBanco().getBanco().getBanco(),
-                    Integer.toString(list.get(i).getId())));
+    public final List<SelectItem> getListaContaCobranca() {
+        if (listaContaCobranca.isEmpty()){
+            DaoInterface di = new Dao();
+            List<ContaCobranca> list = (List<ContaCobranca>) di.list(new ContaCobranca());
+            for (int i = 0; i < list.size(); i++) {
+                listaContaCobranca.add(new SelectItem(i,
+                        list.get(i).getCodCedente() + " - "
+                        + list.get(i).getContaBanco().getBanco().getBanco(),
+                        Integer.toString(list.get(i).getId())));
 
+            }
         }
-        return selectItems;
+        return listaContaCobranca;
     }
 
-    public List<SelectItem> getListaTipoServico() {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        DaoInterface di = new Dao();
-        List<TipoServico> list = (List<TipoServico>) di.list(new TipoServico());
-        for (int i = 0; i < list.size(); i++) {
-            selectItems.add(new SelectItem(i,
-                    list.get(i).getDescricao(),
-                    Integer.toString(list.get(i).getId())));
+    public final List<SelectItem> getListaTipoServico() {
+        if (listaTipoServico.isEmpty()){
+            DaoInterface di = new Dao();
+            List<TipoServico> list = (List<TipoServico>) di.list(new TipoServico());
+            for (int i = 0; i < list.size(); i++) {
+                listaTipoServico.add(new SelectItem(i,
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
+            }
         }
-        return selectItems;
+        return listaTipoServico;
     }
 
     public ServicoContaCobranca getServicoContaCobranca() {

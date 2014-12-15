@@ -44,7 +44,7 @@ public class FormaPagamento implements java.io.Serializable {
     @Column(name = "nr_valor_liquido", length = 10)
     private float valorLiquido;
     @Temporal(TemporalType.DATE)
-    @Column(name = "dt_credito", nullable = false)
+    @Column(name = "dt_credito")
     private Date dtCredito;
     @Column(name = "nr_taxa", length = 10)
     private float taxa;

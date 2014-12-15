@@ -27,7 +27,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Serviço Conta Cobrança" styleClass="fonteHeader" />
                         <h:form id="formServicoContaCobranca">
                             <c:set scope="request" var="object" value="${servicoContaCobrancaBean.servicoContaCobranca}"/>
@@ -36,7 +36,8 @@
                                 <h:panelGrid columns="4">
                                     <h:column>
                                         <h:outputLabel value="Contribuição" /><br />
-                                        <p:selectOneMenu id="idServicos" value="#{servicoContaCobrancaBean.idServicos}" style="margin-right: 30px; padding-right: 20px" >
+                                        <p:selectOneMenu id="idServicos" value="#{servicoContaCobrancaBean.idServicos}" style="margin-right: 30px; padding-right: 20px">
+                                            <p:ajax event="change" update="i_msg" />
                                             <f:selectItems value="#{servicoContaCobrancaBean.listaServico}"/>
                                         </p:selectOneMenu>
                                     </h:column>
@@ -44,6 +45,7 @@
                                     <h:column>
                                         <h:outputLabel value="Tipo Serviço" /><br />
                                         <p:selectOneMenu id="idTipoServico" value="#{servicoContaCobrancaBean.idTipoServico}" style="margin-right: 30px">
+                                            <p:ajax event="change" update="i_msg" />
                                             <f:selectItems value="#{servicoContaCobrancaBean.listaTipoServico}"/>
                                         </p:selectOneMenu>
                                     </h:column>
@@ -51,6 +53,7 @@
                                     <h:column>
                                         <h:outputLabel value="Conta Cobrança" /><br />
                                         <p:selectOneMenu id="idContaCobranca" value="#{servicoContaCobrancaBean.idContaCobranca}" style="margin-right: 30px; width: 400px"> 
+                                            <p:ajax event="change" update="i_msg" />
                                             <f:selectItems value="#{servicoContaCobrancaBean.listaContaCobranca}"/>
                                         </p:selectOneMenu>
                                     </h:column>
@@ -58,20 +61,21 @@
                                     <h:column>
                                         <br />
                                         <p:commandButton action="#{servicoContaCobrancaBean.adicionar}" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" update=":formServicoContaCobranca"/>
+                                        <p:commandButton action="#{servicoContaCobrancaBean.adicionarTodosTipo()}" value="Salvar Todos Tipo" disabled="#{controleAcessoBean.botaoSalvar}" update=":formServicoContaCobranca"/>
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
                             <p:messages id="i_msg" showDetail="true" closable="true" /> 
                             <p:dataTable value="#{servicoContaCobrancaBean.listaServicoCobranca}" var="linha" id="tbl" emptyMessage="Nenhum Serviço Conta Cobrança encontrado!">
-                                <p:column headerText="Excluir" style="text-align: center">
+                                <p:column style="text-align: center; width: 30px">
                                     <p:commandButton icon="ui-icon-trash" action="#{servicoContaCobrancaBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formServicoContaCobranca"/>
                                 </p:column>
                                 
-                                <p:column headerText="Contribuição">
+                                <p:column headerText="Contribuição" style="width: 150px">
                                     <h:outputText value="#{linha.servicos.descricao}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Tipo Serviço">
+                                <p:column headerText="Tipo Serviço" style="width: 100px">
                                     <h:outputText value="#{linha.tipoServico.descricao}"/>
                                 </p:column>
                                 
@@ -79,7 +83,7 @@
                                     <h:outputText value="#{linha.contaCobranca.codCedente} - #{linha.contaCobranca.cedente}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Ag / Banco">
+                                <p:column headerText="Ag / Banco" style="width: 250px">
                                     <h:outputText value="#{linha.contaCobranca.contaBanco.agencia} - #{linha.contaCobranca.contaBanco.banco.banco}"/>
                                 </p:column>
                             </p:dataTable>

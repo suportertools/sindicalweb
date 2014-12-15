@@ -28,10 +28,10 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Retorno Social" styleClass="fonteHeader" />
                         <h:form id="formRetornoSocialEnvio" enctype="multipart/form-data"> 
-                            <p:panel styleClass="fundoCinza" style="clear: both">
+                            <p:panel styleClass="fundoCinza" style="clear: both; ">
                                 <h:panelGrid columns="2">
                                     <h:column>
                                         <h:outputLabel value="Selecionar Conta"/><br />
@@ -43,15 +43,15 @@
                                 </h:panelGrid>
                             </p:panel>
                             <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true"/>
-                            <h:panelGrid>
-                                <p:fileUpload fileUploadListener="#{retornoSocialBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="2000000" multiple="true" style="width: 995px" 
+                            <h:panelGrid style="width: 100%">
+                                <p:fileUpload fileUploadListener="#{retornoSocialBean.fileUpload}" mode="advanced" dragDropSupport="false" sizeLimit="2000000" multiple="true" style="width: 100%" 
                                               cancelLabel="Cancelar" uploadLabel="Enviar para o Servidor" label="Escolher Arquivos" update="i_msg :formRetornoSocial" invalidFileMessage="Arquivo Inválido!" invalidSizeMessage="Arquivo Inválido!" />
                                 
                             </h:panelGrid>
                         </h:form>                        
                         
                         <h:form id="formRetornoSocial">
-                            <h:panelGrid columns="2" style="width: 995px;" columnClasses="columnx">
+                            <h:panelGrid columns="2" style="width: 100%" columnClasses="columnx">
                                 <p:column>
                                     <p:dataTable value="#{retornoSocialBean.listaArquivosPendentes}" var="linha" emptyMessage="Nenhum Arquivo Encontrado" scrollable="true" scrollHeight="200">
                                         <f:facet name="header">
@@ -68,7 +68,7 @@
                                 </p:column>
                             </h:panelGrid>
                             
-                            <h:panelGrid columns="2" style="width: 995px;" columnClasses="columnx">
+                            <h:panelGrid columns="2" style="width: 100%" columnClasses="columnx">
                                 <h:column>
                                     <p:commandButton action="#{retornoSocialBean.enviarArquivoBaixar}" value="Baixar Arquivos" update="formRetornoSocial" rendered="#{retornoSocialBean.listaArquivosPendentes.size() != 0}"/>
                                     <p:commandLink value="Limpar Arquivos Enviados" action="#{retornoSocialBean.limparArquivosEnviados()}" style="margin-left: 20px" update="formRetornoSocial" rendered="#{retornoSocialBean.listaArquivosPendentes.size() != 0}"/>
@@ -79,7 +79,7 @@
                                 </h:column>
                             </h:panelGrid>
                             
-                            <h:panelGrid style="width: 1000px;">
+                            <h:panelGrid style="width: 100%">
                                 <p:dataTable value="#{retornoSocialBean.listaLogs}" id="tbl_logs" var="linha" emptyMessage="Nenhum Arquivo Encontrado" scrollable="true" scrollHeight="200">
                                     <f:facet name="header">
                                         <h:outputLabel value="Log de Boletos" />

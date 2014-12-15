@@ -4,6 +4,8 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.sistema.ConfiguracaoUpload;
+import br.com.rtools.sistema.Resolucao;
+import br.com.rtools.sistema.TipoResolucao;
 import br.com.rtools.sistema.db.ConfiguracaoDB;
 import br.com.rtools.sistema.db.ConfiguracaoDBTopLink;
 import br.com.rtools.utilitarios.Dao;
@@ -17,6 +19,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
@@ -29,6 +34,11 @@ public class ConfiguracaoBean implements Serializable {
     private String descricaoPesquisa;
     private Juridica juridica;
     private Usuario usuario;
+    
+    private int indexTipoResolucao;
+    private List<SelectItem> listaTipoResolucao;
+    private Resolucao resolucao;
+    private String resolucaoUsuario;
 
     @PostConstruct
     public void init() {
@@ -37,7 +47,11 @@ public class ConfiguracaoBean implements Serializable {
         mensagem = "";
         descricaoPesquisa = "";
         juridica = new Juridica();
-        usuario = new Usuario();
+        usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        
+        indexTipoResolucao = 2;
+        listaTipoResolucao = new ArrayList();
+        resolucao = new Resolucao();
     }
 
     @PreDestroy
@@ -51,6 +65,37 @@ public class ConfiguracaoBean implements Serializable {
         GenericaSessao.remove("configuracaoBean");
     }
 
+    public void loadResolucao(){
+        getUsuario();
+        getListaTipoResolucao();
+        getResolucao();
+    }
+    
+    public String salvarResolucao(){
+        Dao di = new Dao();
+        
+        di.openTransaction();
+        
+        if (getResolucao().getId() == -1){
+            resolucao.setUsuario(usuario);
+            resolucao.setTipoResolucao( (TipoResolucao) di.find(new TipoResolucao(), Integer.valueOf(listaTipoResolucao.get(indexTipoResolucao).getDescription())) );
+            if (di.save(resolucao)) di.commit(); else di.rollback();
+        }else{
+            resolucao.setTipoResolucao( (TipoResolucao) di.find(new TipoResolucao(), Integer.valueOf(listaTipoResolucao.get(indexTipoResolucao).getDescription())) );
+            if (di.update(resolucao)) di.commit(); else di.rollback();
+        }
+        
+//        String retorno = GenericaSessao.getString("urlRetorno").isEmpty() ? "menuPrincipal" : GenericaSessao.getString("urlRetorno");
+//        GenericaSessao.put("linkClicado", true);
+        
+        
+        HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String urlAtual = paginaRequerida.getRequestURI();
+        urlAtual = urlAtual.substring(urlAtual.lastIndexOf("/") + 1, urlAtual.lastIndexOf("."));
+        
+        return urlAtual;
+    }
+    
     public void save() {
 
         DaoInterface di = new Dao();
@@ -198,5 +243,52 @@ public class ConfiguracaoBean implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public int getIndexTipoResolucao() {
+        return indexTipoResolucao;
+    }
+
+    public void setIndexTipoResolucao(int indexTipoResolucao) {
+        this.indexTipoResolucao = indexTipoResolucao;
+    }
+
+    public List<SelectItem> getListaTipoResolucao() {
+        if (listaTipoResolucao.isEmpty()){
+            Dao di = new Dao();
+            
+            List<TipoResolucao> result = di.list(new TipoResolucao());
+            
+            for (int i = 0; i < result.size(); i++){
+                listaTipoResolucao.add(new SelectItem(i, result.get(i).getDescricao(), ""+result.get(i).getId()));
+            }
+        }
+        return listaTipoResolucao;
+    }
+
+    public void setListaTipoResolucao(List<SelectItem> listaTipoResolucao) {
+        this.listaTipoResolucao = listaTipoResolucao;
+    }
+
+    public Resolucao getResolucao() {
+        if (resolucao.getId() == -1){
+            ConfiguracaoDB db = new ConfiguracaoDBTopLink();
+            
+            if(usuario != null)
+                resolucao = db.pesquisaResolucaoUsuario(usuario.getId());
+            
+            if (resolucao.getId() != -1){
+                for(int i = 0; i < listaTipoResolucao.size(); i++){
+                    if (resolucao.getTipoResolucao().getId() == Integer.valueOf(listaTipoResolucao.get(i).getDescription())){
+                        indexTipoResolucao = i;
+                    }
+                }
+            }
+        }
+        return resolucao;
+    }
+
+    public void setResolucao(Resolucao resolucao) {
+        this.resolucao = resolucao;
     }
 }

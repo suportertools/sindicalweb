@@ -185,12 +185,15 @@
 
                             <h:column>
                                 <h:outputLabel value="Nascimento"  styleClass="#{agendamentoBean.configuracaoHomologacao.webValidaDataNascimento ? 'font-color-red' : ''}"/><br />
-                                <p:inputMask value="#{webAgendamentoContabilidadeBean.fisica.nascimento}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" size="8" mask="99/99/9999"/>
+                                <p:inputMask value="#{webAgendamentoContabilidadeBean.fisica.nascimento}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" size="8" mask="99/99/9999">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                </p:inputMask>
                             </h:column>
 
                             <h:column>
                                 <h:outputText value="Sexo"/><br />
                                 <p:selectOneButton value="#{webAgendamentoContabilidadeBean.fisica.sexo}">
+                                    <p:ajax event="change" update="@this" global="false"/>
                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                     <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                 </p:selectOneButton>
@@ -234,7 +237,7 @@
                                     <h:outputLabel value="Carteira" rendered="#{!webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaCarteira}"/><br />
                                 </h:column>
                                 <p:inputText size="10" value="#{webAgendamentoContabilidadeBean.fisica.carteira}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
 
@@ -245,14 +248,14 @@
                                     <br />
                                 </h:column>
                                 <p:inputText size="15" maxlength="15" value="#{webAgendamentoContabilidadeBean.fisica.serie}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
                                 <h:outputLabel value="Código do Funcionário" /><br />
                                 <p:inputText size="20" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.codigo}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
                         </h:panelGrid>   
@@ -271,12 +274,16 @@
 
                                 <h:column>
                                     <h:outputLabel value="Admissão"  style="#{webAgendamentoContabilidadeBean.configuracaoHomologacao.webValidaAdmissao == true ? 'color: red; font-weight: bold' : ''}"/><br />
-                                    <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
+                                    <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center">
+                                        <p:ajax event="change" listener="#{webAgendamentoContabilidadeBean.actionValidaAdmissao()}" update="i_panel_agendamento" global="false"/>
+                                    </p:inputMask>
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Demissão" style="color: red; font-weight: bold"/><br />
-                                    <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
+                                    <p:inputMask size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center">
+                                        <p:ajax event="change" listener="#{webAgendamentoContabilidadeBean.actionValidaDemissao()}" update="i_panel_agendamento" global="false"/>
+                                    </p:inputMask>
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>

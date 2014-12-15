@@ -72,7 +72,7 @@ public class ContaRotinaDBToplink extends DB implements ContaRotinaDB {
                     "select pl5"
                     + "  from ContaRotina c, Plano5 pl5 "
                     + " where c.partida  = 1"
-                    + "   and c.rotina.id in (1,2)"
+                    + "   and c.rotina.id in (1, 2)"
                     + "   and c.plano4.id = pl5.plano4.id");
             result = (List) qry.getResultList();
         } catch (Exception e) {

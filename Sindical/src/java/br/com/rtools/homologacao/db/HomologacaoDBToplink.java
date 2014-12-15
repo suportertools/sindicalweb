@@ -1023,4 +1023,80 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
+    @Override
+    public PessoaEmpresa pesquisaPessoaEmpresaAdmissao(int id_fisica, int id_juridica, String dataAdmissao){
+        try{
+            Query qry = getEntityManager().createQuery(
+                    "SELECT pe "
+                  + "  FROM PessoaEmpresa pe"
+                  + " WHERE pe.fisica.id = :id_fisica"
+                  + "   AND pe.juridica.id = :id_juridica"
+                  + "   AND pe.dtAdmissao = :dt_admissao"
+            );
+        
+            qry.setParameter("id_fisica", id_fisica);
+            qry.setParameter("id_juridica", id_juridica);
+            qry.setParameter("dt_admissao", DataHoje.converte(dataAdmissao));
+            
+            return (PessoaEmpresa) qry.getSingleResult();
+        }catch(Exception e){
+            e.getMessage();
+        }        
+        return null;
+    }
+    
+    @Override
+    public PessoaEmpresa pesquisaPessoaEmpresaDemissao(int id_fisica, int id_juridica, String dataDemissao){
+        try{
+            Query qry = getEntityManager().createQuery(
+                    "SELECT pe "
+                  + "  FROM PessoaEmpresa pe"
+                  + " WHERE pe.fisica.id = :id_fisica"
+                  + "   AND pe.juridica.id = :id_juridica"
+                  + "   AND pe.dtDemissao = :dt_demissao"
+            );
+        
+            qry.setParameter("id_fisica", id_fisica);
+            qry.setParameter("id_juridica", id_juridica);
+            qry.setParameter("dt_demissao", DataHoje.converte(dataDemissao));
+            
+            return (PessoaEmpresa) qry.getSingleResult();
+        }catch(Exception e){
+            e.getMessage();
+        }        
+        return null;
+    }
+    
+    @Override
+    public Agendamento pesquisaAgendamentoPorPessoaEmpresa(int id_pessoa_empresa, int[] ids_status){
+        try{
+            String text_qry =
+                    "SELECT a "
+                  + "  FROM Agendamento a"
+                  + " WHERE a.pessoaEmpresa.id = :id_pessoa_empresa ";
+            String ids = "";
+            for (int i = 0; i < ids_status.length; i++){
+                ids += (ids.isEmpty()) ? ""+ids_status[i] : ", "+ids_status[i];
+//                if (ids.isEmpty())
+//                    ids = ""+ids_status[i];
+//                else
+//                    ids += ", "+ids_status[i];
+                    
+            }
+            String text_and =
+                    " AND a.status.id IN ("+ids+")";
+            
+            
+            Query qry = getEntityManager().createQuery(
+                    text_qry + text_and
+            );
+        
+            qry.setParameter("id_pessoa_empresa", id_pessoa_empresa);
+            
+            return (Agendamento) qry.getSingleResult();
+        }catch(Exception e){
+            e.getMessage();
+        }        
+        return null;
+    }
 }

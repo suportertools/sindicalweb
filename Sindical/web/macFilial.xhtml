@@ -26,7 +26,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="formMacFilial1">
                             <c:set scope="request" var="object" value="${macFilialBean.macFilial}"/>
                             <h:outputText value="Mac Filial" styleClass="fonteHeader" />
@@ -115,7 +115,7 @@
                                         <p:commandLink value="#{linha.mesa}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
 
-                                    <p:column headerText="Caixa">
+                                    <p:column headerText="Caixa" style="width: 150px">
                                         <p:commandLink value="#{linha.caixa.caixa} - #{linha.caixa.descricao}" rendered="#{linha.caixa != null}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                         <p:commandLink value="NENHUM CAIXA" rendered="#{linha.caixa == null}" action="#{macFilialBean.edit(linha)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>

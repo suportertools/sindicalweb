@@ -1,9 +1,11 @@
 package br.com.rtools.arrecadacao.beans;
 
 import br.com.rtools.associativo.LoteBoleto;
+import br.com.rtools.associativo.beans.ImpressaoBoletoSocialBean;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -15,14 +17,15 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import org.hsqldb.Trace;
 
 @ManagedBean
 @SessionScoped
 public class GerarBoletoBean {
     private Pessoa pessoa = new Pessoa();
     private List<Pessoa> listaPessoa = new ArrayList();
-    private List<DataObject> listaGerados = new ArrayList<DataObject>();
-    private List<DataObject> listaGeradosSelecionado = new ArrayList<DataObject>();
+    private List<DataObject> listaGerados = new ArrayList();
+    private List<DataObject> listaGeradosSelecionado = new ArrayList();
     private boolean imprimeVerso = true;
     
     private String ano = DataHoje.DataToArrayString(DataHoje.data())[2];
@@ -30,14 +33,38 @@ public class GerarBoletoBean {
     private List listaData = new ArrayList();
     
     private List<Vector> listaServicoSemCobranca = new ArrayList();
+    private List<Vector> listaPessoaSemComplemento = new ArrayList();
     
     public GerarBoletoBean(){
         getListaServicoSemCobranca();
+        getListaPessoaSemComplemento();
+    }
+    
+    public String imprimirLote(LoteBoleto lb){
+        ChamadaPaginaBean cp = (ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean");
+        String pagina = cp.impressaoBoletoSocial();
+        
+        //GenericaSessao.put("linkClicado", true);
+        
+        ImpressaoBoletoSocialBean ibs = new ImpressaoBoletoSocialBean();
+        ibs.setStrData(lb.getProcessamento());
+        GenericaSessao.put("impressaoBoletoSocialBean", ibs);
+        
+        return pagina;
     }
     
     public void gerarTodos(){
         if (!listaServicoSemCobranca.isEmpty()){
             GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique os Serviços e Conta Cobrança!");
+            listaServicoSemCobranca.clear();
+            getListaServicoSemCobranca();
+            return;
+        }
+        
+        if (!listaPessoaSemComplemento.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique as Pessoa Complemento!");
+            listaPessoaSemComplemento.clear();
+            getListaPessoaSemComplemento();
             return;
         }
         
@@ -238,5 +265,31 @@ public class GerarBoletoBean {
 
     public void setListaServicoSemCobranca(List<Vector> listaServicoSemCobranca) {
         this.listaServicoSemCobranca = listaServicoSemCobranca;
+    }
+
+    public List<Vector> getListaPessoaSemComplemento() {
+        if (listaPessoaSemComplemento.isEmpty()){
+            FinanceiroDB db = new FinanceiroDBToplink();
+            
+            if (listaData.isEmpty()){
+                listaPessoaSemComplemento = db.listaPessoaSemComplemento(mes+"/"+ano);
+            }else{
+                for(Object data : listaData){
+                    listaPessoaSemComplemento.addAll(db.listaPessoaSemComplemento(data.toString()));
+                }
+            }
+            
+            if (!listaPessoaSemComplemento.isEmpty()){
+                GenericaMensagem.fatal("Atenção", "Pessoas não contém dia de vencimento: ");
+                for (Vector linha : listaPessoaSemComplemento){
+                    GenericaMensagem.info("ID / Nome: ", linha.get(0).toString() + " - " + linha.get(1).toString());
+                }
+            }
+        }
+        return listaPessoaSemComplemento;
+    }
+
+    public void setListaPessoaSemComplemento(List<Vector> listaPessoaSemComplemento) {
+        this.listaPessoaSemComplemento = listaPessoaSemComplemento;
     }
 }

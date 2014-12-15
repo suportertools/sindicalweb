@@ -100,6 +100,59 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
 
+    public boolean validaAdmissao(){
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getId() == -1){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaAdmissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getAdmissao());
+            
+            if(pe != null){
+                int[] ids = new int[2];
+                ids[0] = 2; 
+                ids[1] = 4;
+                Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
+                
+                if (a != null){
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+                    return false;
+                }
+                
+                pessoaEmpresa = pe;
+            }
+        }
+        return true;
+    }
+    
+    public void actionValidaAdmissao(){
+        validaAdmissao();
+    }
+    
+    public boolean validaDemissao(){
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getId() == -1){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaDemissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getDemissao());
+            
+            if(pe != null){
+                int[] ids = new int[2];
+                ids[0] = 2; 
+                ids[1] = 4;
+                Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
+                
+                if (a != null){
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+                    return false;
+                }
+                pessoaEmpresa = pe;
+            }
+        }
+        return true;
+    }    
+    
+    public void actionValidaDemissao(){
+        validaDemissao();
+    }
+    
     public void alterarTipoMascara() {
         if (tipoTelefone.equals("telefone")) {
             tipoTelefone = "celular";
@@ -337,7 +390,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         + " <div style='background:#00ccff; padding: 15px; font-size:13pt'>         "
                         + "     Envio cadastrado para <b>" + pessoa.getNome() + " </b>              "
                         + " </div><br />                                                            "
-                        + " <h5>Baixe sua planilha de débitos anexado neste email</5><br /><br />   "
+                        + " <h5>Baixe sua planilha de débitos anexado neste email</h5><br /><br />   "
                 );
             }
             mail.setEmail(email);
@@ -533,6 +586,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void save() {
+        if (!validaAdmissao()){
+            return;
+        }
+        
+        if (!validaDemissao()){
+            return;
+        }
         styleDestaque = "";
         Dao dao = new Dao();
         if (configuracaoHomologacao.isValidaNome()) {
@@ -732,6 +792,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
         // -------------------------------------------------------------
         int idStatusI = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        if (profissao.getId() == -1) {
+            profissao = (Profissao) new Dao().find(new Profissao(), 0);
+            profissao.setProfissao("");
+        }
+
         switch (idStatusI) {
             case 1: {
                 pessoaEmpresa.setFisica(fisica);
@@ -1123,8 +1188,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     if (pessoaEmpresa.getFuncao() != null)
                         profissao = pessoaEmpresa.getFuncao();
                 }else{
-                    pessoaEmpresa = new PessoaEmpresa();
-                    profissao = new Profissao();
+                    if (validaAdmissao() && validaDemissao()){
+//                        pessoaEmpresa = new PessoaEmpresa();
+  //                      profissao = new Profissao();
+                    }
                 }
             }
         }

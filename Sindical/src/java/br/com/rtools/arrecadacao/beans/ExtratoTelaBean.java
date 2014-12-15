@@ -1216,7 +1216,7 @@ public class ExtratoTelaBean implements Serializable {
                     s_hist += " " + hist.get(i);
                 }
                 ImprimirBoleto imp = new ImprimirBoleto();
-                imp.imprimirAcordoAcordado(listaC, acordo, s_hist, "", imprimirVerso);
+                imp.imprimirAcordoAcordado(listaC, acordo, s_hist, imprimirVerso);
                 imp.visualizar(null);
             } else {
                 msgConfirma = "Não existe histórico para este acordo!";

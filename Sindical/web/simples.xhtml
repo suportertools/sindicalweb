@@ -6,9 +6,18 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>#{simplesBean.sessoes[1]}</title>
+        <title>Sindical - #{simplesBean.sessoes[1]}</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+        
+        </script>          
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -20,7 +29,7 @@
                 </f:subview>
 
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="formCadastroSimplesTitle">
                             <p:column rendered="#{simplesBean.linkRetorno}">
                                 <h:outputText value="Pesquisar #{simplesBean.sessoes[1]}" styleClass="fonteHeader" />
@@ -29,7 +38,8 @@
                                 <h:outputText value="Cadastro #{simplesBean.sessoes[1]}" styleClass="fonteHeader" />
                             </p:column>
                         </h:form>
-                        <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop" width="1000">
+                        <div class="clear"></div>
+                        <h:panelGrid columns="2" columnClasses="verticalAlignTop, verticalAlignTop">
                             <h:column>
                                 <h:form id="formCadastroSimples">
                                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="clear: both; height: 50px">
@@ -79,7 +89,7 @@
                             </h:column>
                             <h:column>
                                 <h:form id="formCadastroSimplesNovo">
-                                    <p:panel id="i_panel" style="margin-left: 15px; width: 350px;" header="Novo" >
+                                    <p:panel id="i_panel" style="margin-left: 15px; width: 3    50px;" header="Novo" >
                                         <p:growl autoUpdate="true" id="i_msg" showDetail="true" />  
                                         <h:panelGrid columns="1" columnClasses="coluna1, coluna2">
                                             <h:column>
@@ -89,7 +99,7 @@
                                             </h:column>                                            
                                             <br />
                                             <h:outputLabel value="Descrição:"  />
-                                            <p:inputText size="48" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="#{toUpperCase}">
+                                            <p:inputText autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="#{toUpperCase}" style="width: 300px">
                                                 <p:ajax event="blur" update="@this" global="false"/>
                                             </p:inputText>
                                         </h:panelGrid>

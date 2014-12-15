@@ -7,21 +7,37 @@
     <h:head>
         <title>Pesquisa Logs</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{
+                
+            }
+            
+            .coluna01{
+                width: 210px;
+                vertical-align: top!important;
+            }
+            .coluna02{
+                width: 100%;
+                vertical-align: top!important;
+            }
+        </style>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:outputScript name="tradutor_primefaces.js" library="js" />
                 <h:form id="form_logs">            
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
                     <h:outputText value="Pesquisa Logs" styleClass="fonteHeader"/>
                     <div class="clear"></div>
-                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="coluna01, coluna02" styleClass="margin-top-max" style="width: 100%;">
                         <h:column>
-                            <p:accordionPanel styleClass="no-border" style="width: 200px;" dynamic="true" id="i_panel_accordion">
+                            <p:accordionPanel styleClass="no-border" style="width: 200px; float: left" dynamic="true" id="i_panel_accordion">
                                 <p:tab title="Avançado">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
                                         <p:selectBooleanButton value="#{pesquisaLogBean.filtro[0]}" onLabel="Período - Edição" offLabel="Período - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
@@ -45,7 +61,7 @@
                             </p:accordionPanel>
                         </h:column>
                         <h:column>
-                            <p:panel id="id_panel_logs" style="width: 800px;" header="Aplicar os filtros">
+                            <p:panel id="id_panel_logs" style="width: 100%;" header="Aplicar os filtros">
                                 <h:column rendered="#{pesquisaLogBean.filtro[0]}">
                                     <h:panelGrid columns="2">
                                         <p:outputLabel value="Período " styleClass="bold" />
@@ -124,7 +140,7 @@
                 </h:form>
             </p:panel>
             <h:form id="form_logs_list">
-                <p:panel styleClass="wrapper no-border">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <p:dataTable value="#{pesquisaLogBean.listLogs}" scrollable="true" scrollHeight="400" var="log" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true" id="i_logs">
                         <p:column width="25" exportable="false">  
                             <p:rowToggler />  
