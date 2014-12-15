@@ -82,6 +82,60 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             registro = (Registro) dao.find(new Registro(), 1);
         }
     }
+    
+    public boolean validaAdmissao(){
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getId() == -1){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaAdmissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getAdmissao());
+            
+            if(pe != null){
+                int[] ids = new int[2];
+                ids[0] = 2; 
+                ids[1] = 4;
+                Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
+                
+                if (a != null){
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+                    return false;
+                }
+                
+                pessoaEmpresa = pe;
+            }
+        }
+        return true;
+    }
+    
+    public void actionValidaAdmissao(){
+        validaAdmissao();
+    }
+    
+    public boolean validaDemissao(){
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getId() == -1){
+            HomologacaoDB db = new HomologacaoDBToplink();
+            
+            PessoaEmpresa pe = db.pesquisaPessoaEmpresaDemissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getDemissao());
+            
+            if(pe != null){
+                int[] ids = new int[2];
+                ids[0] = 2; 
+                ids[1] = 4;
+                Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
+                
+                if (a != null){
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+                    return false;
+                }
+                pessoaEmpresa = pe;
+            }
+        }
+        return true;
+    }    
+    
+    public void actionValidaDemissao(){
+        validaDemissao();
+    }
+        
 
     public void alterarTipoMascara() {
         if (tipoTelefone.equals("telefone")) {
@@ -205,6 +259,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public void salvar() {
+        if (!validaAdmissao()){
+            return;
+        }
+        
+        if (!validaDemissao()){
+            return;
+        }
         Dao dao = new Dao();
         
         if (listaMotivoDemissao.get(idMotivoDemissao).getDescription().equals("0")){
@@ -376,7 +437,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(juridica);
             if (profissao.getId() == -1) {
-                profissao = null;
+                profissao = (Profissao) dao.find(new Profissao(), 0);
             }
             pessoaEmpresa.setFuncao(profissao);
             if (!dao.save(pessoaEmpresa)) {
@@ -386,8 +447,9 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
         } else {
             if (profissao.getId() == -1) {
-                profissao = null;
+                profissao = (Profissao) dao.find(new Profissao(), 0);
             }
+            pessoaEmpresa.setFuncao(profissao);
             if (!dao.update(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 dao.rollback();
@@ -586,7 +648,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaPertencente(documento);
 
-            if (pe.getId() != -1 && pe.getJuridica().getId() != juridica.getId()) {
+            if (pe != null && pe.getJuridica().getId() != juridica.getId()) {
                 //msgConfirma = "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome();
                 GenericaMensagem.warn("Atenção", "Esta pessoa pertence a Empresa " + pe.getJuridica().getPessoa().getNome());
                 fisica = new Fisica();
@@ -636,6 +698,24 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 enderecoFisica = new PessoaEndereco();
             }
         }
+        
+            // VERIFICAÇÃO DE PESSOA EMPRESA SEM DEMISSAO
+//            if (fisica.getId() != -1){
+//                PessoaEmpresaDB dbx = new PessoaEmpresaDBToplink();
+//                List<PessoaEmpresa> list_pe = dbx.listaPessoaEmpresaPorFisicaEmpresaDemissao(fisica.getId(), juridica.getId());
+//
+//                if (!list_pe.isEmpty()){
+//                    pessoaEmpresa = list_pe.get(0);
+//                    
+//                    if (pessoaEmpresa.getFuncao() != null)
+//                        profissao = pessoaEmpresa.getFuncao();
+//                }else{
+//                    if (validaAdmissao() && validaDemissao()){
+////                        pessoaEmpresa = new PessoaEmpresa();
+//  //                      profissao = new Profissao();
+//                    }
+//                }
+//            }        
         //msgConfirma = "";
         //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/webAgendamentoContribuinte.jsf");
     }

@@ -2359,7 +2359,15 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List<HistoricoEmissaoGuias> pesquisaHistoricoEmissaoGuias(int id_usuario) {
         try {
-            Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.usuario.id = "+id_usuario+" and heg.baixado = false");
+            //Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.usuario.id = "+id_usuario+" and heg.baixado = false");
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT heg.* " +
+                    "  FROM soc_historico_emissao_guias heg " +
+                    " INNER JOIN fin_movimento m ON m.id = heg.id_movimento " +
+                    " WHERE heg.id_usuario = 1 " +
+                    "   AND heg.is_baixado = false " +
+                    "   AND m.is_ativo = TRUE", HistoricoEmissaoGuias.class
+            );
             List<HistoricoEmissaoGuias> list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;

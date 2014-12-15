@@ -17,24 +17,28 @@ public class Acordo implements Serializable {
     @JoinColumn(name = "id_usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @Column(name = "ds_contato", length = 200, nullable = true)
+    @Column(name = "ds_contato", length = 200)
     private String contato;
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_data")
     private Date dtData;
+    @Column(name = "ds_email", length = 500)
+    private String email;
 
     public Acordo() {
         this.id = -1;
         this.usuario = new Usuario();
         this.contato = "";
         this.dtData = DataHoje.dataHoje();
+        this.email = "";
     }
 
-    public Acordo(int id, Usuario usuario, String contato, String data) {
+    public Acordo(int id, Usuario usuario, String contato, String data, String email) {
         this.id = id;
         this.usuario = usuario;
         this.contato = contato;
         setData(data);
+        this.email = email;
     }
 
     public int getId() {
@@ -75,5 +79,13 @@ public class Acordo implements Serializable {
 
     public void setData(String data) {
         setDtData(DataHoje.converte(data));
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

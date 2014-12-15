@@ -31,7 +31,7 @@
                     <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                         <h:outputLabel value="Aguarde ..." />
                     </p:dialog>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Impressão de Boleto Social" styleClass="fonteHeader" />
                         <h:form id="formImpressaoBoletoSocial">
                             <p:panel styleClass="fundoCinza" style="clear: both">
@@ -75,7 +75,7 @@
                             </p:panel>
                             
                             <p:dataTable var="linha" id="tbl" value="#{impressaoBoletoSocialBean.listaGrid}" rowKey="#{linha.argumento0}" emptyMessage="Nenhum Boleto Encontrado!" paginator="true" rows="10">
-                                <p:column headerText="" width="10" style="text-align: center">
+                                <p:column headerText="" style="text-align: center; width: 60px">
                                     <p:commandLink value="#{linha.argumento0}" />
                                 </p:column>
                                 

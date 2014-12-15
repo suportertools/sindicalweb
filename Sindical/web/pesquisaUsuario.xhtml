@@ -5,56 +5,74 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Pesquisar usuários</title>
+        <title>Sindical - Pesquisar Usuários</title>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+        
+        </script>    
     </h:head>
     <h:body>
+                <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <ui:include src="templates/templateStatus.xhtml"/>
-            <p:panel styleClass="wrapper" style="border: 0px;">
-                <h:outputText value="Pesquisa Usuários" styleClass="fonteHeader" />                    
-                <p:panel style="width: 1000px; height: 550px; clear: both;">
-                    <h:form id="formPesquisaUsuario">
-                        <p:panel style="border: 0; clear: both;">
-                            <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="height: 50px">
-                                <h:panelGrid columns="4" style="float: left">
-                                    <p:inputText id="idPesquisar" value="#{usuarioBean.descricaoPesquisa}" size="50" title="Pesquisar"/>
-                                    <p:commandButton value="Pesquisar" update="i_panel_grid" style="margin-left: 10px;" actionListener="#{usuarioBean.listaUsuario.clear()}"/>
-                                    <p:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}"  valueChangeListener="#{usuarioBean.listaUsuario.clear()}" itemLabel="Filtrar usuários">
-                                        <p:ajax event="change" update="i_panel_grid" />
-                                    </p:selectBooleanCheckbox>                                    
-                                </h:panelGrid>
-                                <p:focus for="i_panel_pesquisa" />
-                            </p:panel>
-                            <p:panel id="i_panel_grid" style="clear: both; margin-top: 15px;"> 
-                                <p:dataTable value="#{usuarioBean.listaUsuario}" id="tbl" var="usuario" style="width: 100%;" scrollable="true" scrollHeight="180" emptyMessage="Nenhum registro encontrado" resizableColumns="true">
-                                    <p:column width="25" styleClass="text-center">
-                                        <p:commandButton icon="ui-icon-link" title="Editar Registro nº #{usuario.id}" action="#{usuarioBean.edit(usuario)}" />
-                                    </p:column>
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:outputText value="Pesquisa Usuários" styleClass="fonteHeader" />
+                <div class="clear"></div>
+                <h:form id="formPesquisaUsuario">
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="height: 50px">
+                        <h:panelGrid columns="4" style="float: left">
+                            <p:inputText id="idPesquisar" value="#{usuarioBean.descricaoPesquisa}" size="50" title="Pesquisar"/>
+                            <p:commandButton value="Pesquisar" update="i_panel_grid" style="margin-left: 10px;" actionListener="#{usuarioBean.listaUsuario.clear()}"/>
+                            <p:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}"  valueChangeListener="#{usuarioBean.listaUsuario.clear()}" itemLabel="Filtrar usuários">
+                                <p:ajax event="change" update="i_panel_grid" />
+                            </p:selectBooleanCheckbox>                                    
+                        </h:panelGrid>
+                        <p:focus for="i_panel_pesquisa" />
+                    </p:panel>
+                    <p:panel id="i_panel_grid" style="clear: both; margin-top: 15px;"> 
+                        <p:dataTable value="#{usuarioBean.listaUsuario}" id="tbl" var="usuario" style="width: 100%;" scrollable="true" scrollHeight="180" emptyMessage="Nenhum registro encontrado" resizableColumns="true">
+                            <p:column width="25" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-link" title="Editar Registro nº #{usuario.id}" action="#{usuarioBean.edit(usuario)}" />
+                            </p:column>
 
-                                    <p:column headerText="Nome" >
-                                        #{usuario.pessoa.nome}
-                                    </p:column>
+                            <p:column headerText="Nome" >
+                                #{usuario.pessoa.nome}
+                            </p:column>
 
-                                    <p:column headerText="Login" >
-                                        #{usuario.login}
-                                    </p:column>
-                                    
-                                    <p:column headerText="Ativo" width="25" styleClass="text-center">
-                                        <p:commandButton icon="ui-icon-check" rendered="#{usuario.ativo}" global="false"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </p:panel>
-                        </p:panel>
-                    </h:form>
-                </p:panel>
+                            <p:column headerText="Login" >
+                                #{usuario.login}
+                            </p:column>
+
+                            <p:column headerText="Ativo" width="25" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-check" rendered="#{usuario.ativo}" global="false"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+                    
             </p:panel>
         </f:view>
-        <f:subview id="footer">
-            <ui:include src="templates/templateFooter.xhtml"/>
-        </f:subview>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>           
     </h:body>
 </ui:composition>

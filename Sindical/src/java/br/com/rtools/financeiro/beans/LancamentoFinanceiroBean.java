@@ -60,18 +60,18 @@ public class LancamentoFinanceiroBean implements Serializable {
     private int idTipoCentroCusto = 0;
     private int idContaTipoPlano5 = 0;
 
-    private List<SelectItem> listaFilial = new ArrayList<SelectItem>();
-    private List<SelectItem> listaTipoDocumento = new ArrayList<SelectItem>();
+    private List<SelectItem> listaFilial = new ArrayList();
+    private List<SelectItem> listaTipoDocumento = new ArrayList();
 
-    private List<SelectItem> listaFTipo = new ArrayList<SelectItem>();
-    private List<SelectItem> listaFTipoMovimento = new ArrayList<SelectItem>();
+    private List<SelectItem> listaFTipo = new ArrayList();
+    private List<SelectItem> listaFTipoMovimento = new ArrayList();
 
-    private List<SelectItem> listaOperacao = new ArrayList<SelectItem>();
-    private List<SelectItem> listaContaOperacao = new ArrayList<SelectItem>();
-    private List<SelectItem> listaCentroCusto = new ArrayList<SelectItem>();
-    private List<SelectItem> listaTipoCentroCusto = new ArrayList<SelectItem>();
+    private List<SelectItem> listaOperacao = new ArrayList();
+    private List<SelectItem> listaContaOperacao = new ArrayList();
+    private List<SelectItem> listaCentroCusto = new ArrayList();
+    private List<SelectItem> listaTipoCentroCusto = new ArrayList();
 
-    private List<SelectItem> listaContaTipoPlano5 = new ArrayList<SelectItem>();
+    private List<SelectItem> listaContaTipoPlano5 = new ArrayList();
 
     private String descricao = "";
     private String mascara = "";
@@ -118,7 +118,7 @@ public class LancamentoFinanceiroBean implements Serializable {
     private int quantidadePedido = 0;
     private String valorUnitarioPedido = "";
     private String descontoUnitarioPedido = "";
-    private List<Pedido> listaPedidos = new ArrayList<Pedido>();
+    private List<Pedido> listaPedidos = new ArrayList();
     private String valorTotal = "0";
 
     public void addItemPedido() {
@@ -1497,13 +1497,17 @@ public class LancamentoFinanceiroBean implements Serializable {
             } else {
                 select = (new LancamentoFinanceiroDBToplink()).listaOperacao("2, 3, 4, 5");
             }
-
-            for (int i = 0; i < select.size(); i++) {
-                listaOperacao.add(new SelectItem(
-                        new Integer(i),
-                        select.get(i).getDescricao(),
-                        Integer.toString(select.get(i).getId()))
-                );
+            
+            if (!select.isEmpty()){
+                for (int i = 0; i < select.size(); i++) {
+                    listaOperacao.add(new SelectItem(
+                            i,
+                            select.get(i).getDescricao(),
+                            Integer.toString(select.get(i).getId()))
+                    );
+                }
+            }else{
+                listaOperacao.add(new SelectItem(0, "Nenhuma Operação Encontrada", "0"));
             }
         }
         return listaOperacao;
@@ -1538,12 +1542,13 @@ public class LancamentoFinanceiroBean implements Serializable {
     }
 
     public List<SelectItem> getListaContaOperacao() {
-        if (listaOperacao.isEmpty()) {
+        if (listaOperacao.size() == 1 && listaOperacao.get(0).getDescription().equals("0")) {
+            listaContaOperacao.add(new SelectItem(0, "Nenhuma Conta Encontrada", "0"));
             return listaContaOperacao;
         }
         if (listaContaOperacao.isEmpty()) {
             LancamentoFinanceiroDB db = new LancamentoFinanceiroDBToplink();
-            List<ContaOperacao> listaConta = new ArrayList<ContaOperacao>();
+            List<ContaOperacao> listaConta = new ArrayList();
             if (Integer.valueOf(listaOperacao.get(idOperacao).getDescription()) == 1 || Integer.valueOf(listaOperacao.get(idOperacao).getDescription()) == 2) {
                 if (!listaTipoCentroCusto.isEmpty()) {
                     listaConta = db.listaContaOperacaoContabil(Integer.valueOf(getListaTipoCentroCusto().get(idTipoCentroCusto).getDescription()));
@@ -1638,7 +1643,7 @@ public class LancamentoFinanceiroBean implements Serializable {
     }
 
     public Operacao getOperacao() {
-        if (!listaOperacao.isEmpty()) {
+        if (listaOperacao.size() != 1 && !listaOperacao.get(0).getDescription().equals("0")) {
             if (Integer.valueOf(listaOperacao.get(idOperacao).getDescription()) != operacao.getId()) {
                 operacao = (Operacao) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.valueOf(listaOperacao.get(idOperacao).getDescription()), "Operacao");
             }

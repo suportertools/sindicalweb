@@ -228,7 +228,7 @@
                                                         </p:column>
                                                     </p:column>
                                                     <p:column headerText="Exceção" style="text-align: center" width="100">
-                                                        <p:commandLink value="Dependente" action="#{servicosBean.openDescontoDependente(listServicosCategoriaDesconto.categoriaDesconto)}" oncomplete="PF('dlg_desconto_dependente').show()" update=":form_servicos:i_desconto_dependente"/>
+                                                        <p:commandLink value="Parentesco" action="#{servicosBean.openDescontoDependente(listServicosCategoriaDesconto.categoriaDesconto)}" oncomplete="PF('dlg_desconto_dependente').show()" update=":form_servicos:i_desconto_dependente"/>
                                                     </p:column>
                                                 </p:dataTable>
                                             </p:panel>
@@ -264,7 +264,7 @@
                                     <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                                 </f:facet>
                             </p:dialog>                    
-                            <p:dialog widgetVar="dlg_desconto_dependente" modal="true" width="500" header="Desconto para o Dependente">
+                            <p:dialog widgetVar="dlg_desconto_dependente" modal="true" width="500" header="Desconto para o Parentesco">
                                 <h:outputLabel value="Valor do Serviço: " style="font-weight: bold; font-size: 12pt!important"/>
                                 <h:outputLabel value="R$ #{servicosBean.servicoValorDetalhe.valorString}" style="font-size: 12pt!important"/>
                                 <h:panelGrid id="i_desconto_dependente" style="margin-top: 10px">

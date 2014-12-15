@@ -20,7 +20,7 @@
         </f:subview>
         <f:view>
             <h:form id="form_permissao">
-                <p:panel styleClass="wrapper no-border">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true"/>
                     <c:set scope="request" var="object" value="${permissaoBean.permissao}"/>
                     <h:outputText value="Permissões" styleClass="fonteHeader"/>

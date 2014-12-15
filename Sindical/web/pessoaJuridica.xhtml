@@ -45,14 +45,14 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Pessoa Jurídica" styleClass="fonteHeader" />
                         <h:form id="formPessoaJuridica">
                             <p:growl id="i_msg" autoUpdate="true" showDetail="true"/>
                             <c:set scope="request" var="object" value="${juridicaBean.juridica}"/> 
-                            <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both">
+                            <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both; width: 100%">
                                 <p:messages id="i_msg_m" autoUpdate="true" showDetail="true" closable="true"/>
-                                <p:tabView id="i_tabview_juridica" style="width: 990px" activeIndex="#{juridicaBean.indicaTab}">
+                                <p:tabView id="i_tabview_juridica" style="width: 100%" activeIndex="#{juridicaBean.indicaTab}">
                                     <p:ajax event="tabChange" listener="#{juridicaBean.accordion}" /> 
                                     <p:tab title="Dados Gerais">
                                         <h:panelGrid columns="6" id="i_panel_cnae">
@@ -157,7 +157,7 @@
                                             </h:panelGrid>
                                         </p:panel>
 
-                                        <h:panelGrid id="i_panel_juridica" columns="1" style="margin-top: 10px">
+                                        <h:panelGrid id="i_panel_juridica" columns="1" style="margin-top: 10px; width: 100%">
                                             <h:panelGrid columns="4">
                                                 <p:column>
                                                     <h:outputLabel value="Telefones"/><br />

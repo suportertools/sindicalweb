@@ -543,14 +543,6 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public String getSaldoAtual() {
-        return Moeda.converteR$(saldoAtual);
-    }
-
-    public void setSaldoAtual(String saldoAtual) {
-        this.saldoAtual = saldoAtual;
-    }
-
-    public String getDataSaldo() {
         if (!listaCaixa.isEmpty()) {
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
             if (caixa == null)
@@ -566,7 +558,15 @@ public final class FechamentoCaixaBean implements Serializable {
                 saldoAtual = "0,00";
                 dataSaldo = "";
             }
-        }
+        }        
+        return Moeda.converteR$(saldoAtual);
+    }
+
+    public void setSaldoAtual(String saldoAtual) {
+        this.saldoAtual = saldoAtual;
+    }
+
+    public String getDataSaldo() {
         return dataSaldo;
     }
 

@@ -19,6 +19,7 @@
         </style>
     </h:head>
     <h:body onload="#{controleAcessoBean.validacao}"></h:body>
+    <h:body onload="#{configuracaoBean.loadResolucao()}"></h:body>
     <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
     <f:view>
         <h:outputScript name="tradutor_primefaces.js" library="js" /> 
@@ -39,49 +40,7 @@
         <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}"> 
             <!-- <h:form id="formTemplateLinks" onsubmit="# {chamadaPaginaBean.controleLinksX} ">-->
             <!-- TELA COM 1200px -->
-            <p:panel style="margin: 0 auto; border: 0; width: 1200px" rendered="#{(facesContext.externalContext.request.requestURI == '/Sindical/extratoTela.jsf')}">
-                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left; cursor: pointer; border: 2px dashed gray;" onclick="PF('dlg_logo').show();" title="Alterar imagem" alt="Pesquisar uma imagem" rendered="#{configuracaoBean.usuario.id == 1}"/>
-                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left" rendered="#{configuracaoBean.usuario.id != 1}"/>
-                
-                <p:panel style="float: right; border: 0px; top:0px">
-                    <h:outputLabel value="Bem vindo " style="float: left; font-size: 10pt; margin-left: 50px"/>
-                    <h:outputLabel value="#{controleUsuarioBean.login}" style="float: left; margin-left: 5px; font-size: 10pt; font-weight: bold;"/>
-                    <p:commandLink value="Sair" action="#{usuarioBean.sairSistema}" title="Desejo mesmo sair do Sistema?" style="float: right; font-weight: bold; margin-left: 20px" immediate="true"/>
-                    <br /><br />
-                    <p:outputLabel value="#{controleUsuarioBean.filial}" style="color: #bc4763; font-size: 10pt;  margin-left: 50px; "/>
-                </p:panel>
-                <h:column rendered="true">
-                    <div class="clear"></div>
-                    <p:breadCrumb style="background: #dbeaeb; margin-top: 0px">
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" title="Ir ao Menu Principal" immediate="true" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" style="font-weight: bold;" title="Ir ao Menu Principal" immediate="true" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render1}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento2}" action="#{chamadaPaginaBean.clickNivelLink2}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render2}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento3}" action="#{chamadaPaginaBean.clickNivelLink3}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render3}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento4}" action="#{chamadaPaginaBean.clickNivelLink4}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render4}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento5}" action="#{chamadaPaginaBean.clickNivelLink5}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render5}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento6}" action="#{chamadaPaginaBean.clickNivelLink6}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render6}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento7}" action="#{chamadaPaginaBean.clickNivelLink7}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render7}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render8}" ajax="false"/>
-                        <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render9}" ajax="false"/>
-                    </p:breadCrumb>
-                    <h:commandLink value="Ver meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
-                </h:column>
-                <h:column rendered="false">
-                    <div class="clear"></div>
-                    <div style="background: red; height: 15px; width: 100%; display: block">
-                        <p:dataList var="menuLinks" value="#{chamadaPaginaBean.menuLinks}" rowIndexVar="it" type="definition" >
-                            <h:column>
-                                <h:outputLabel value=" / " title="Voltar um nível" rendered="#{!menuLinks.descricao.equals('Menu Principal')}"/>
-                                <h:commandLink value="#{menuLinks.descricao}" title="#{menuLinks.descricao}" action="#{chamadaPaginaBean.cliqueMenuLinks(it)}" rendered="#{menuLinks.ativo}" immediate="true"/> 
-                            </h:column>
-                        </p:dataList>
-                    </div>
-                </h:column>
-            </p:panel>
-            
-            <!-- TELA COM 1024px -->
-            <p:panel style="margin: 0 auto; border: 0; width: 1024px" rendered="#{(facesContext.externalContext.request.requestURI != '/Sindical/extratoTela.jsf')}">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:graphicImage id="i_logo_update" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left; cursor: pointer; border: 2px dashed gray;" onclick="PF('dlg_logo').show();" title="Alterar imagem" alt="Pesquisar uma imagem" rendered="#{configuracaoBean.usuario.id == 1}"/>
                 <h:graphicImage id="i_logo" value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="120px" style="float: left" rendered="#{configuracaoBean.usuario.id != 1}"/>
                 
@@ -107,7 +66,12 @@
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render8}" ajax="false"/>
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render9}" ajax="false"/>
                     </p:breadCrumb>
-                    <h:commandLink value="Ver meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
+                    <p:menuButton value="Opções" style="float: right">
+                        <p:menuitem value="Meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" />
+                        <p:menuitem value="Resolução" onclick="PF('dlg_resolucao').show()"/>
+                        <p:separator />
+                        <p:menuitem value="Sair" action="#{usuarioBean.sairSistema}" icon="ui-icon-extlink"/>
+                    </p:menuButton>
                 </h:column>
                 <h:column rendered="false">
                     <div class="clear"></div>
@@ -122,5 +86,26 @@
                 </h:column>
             </p:panel>
         </h:form>
+            
+        <p:dialog widgetVar="dlg_resolucao" header="Configurar Resolução do Sistema" resizable="false" modal="true" width="400">
+            <h:form id="formResolucao">
+                <h:panelGrid style="margin-top: 20px; clear: both" columns="3">
+                    <h:column>
+                        <p:outputLabel value="Resolução: " style="font-size: 11pt!important"/>
+                    </h:column>
+
+                    <h:column>
+                        <p:selectOneMenu value="#{configuracaoBean.indexTipoResolucao}" style="padding-right: 10px">
+                            <p:ajax event="change" update="@this" global="false"/>
+                            <f:selectItems value="#{configuracaoBean.listaTipoResolucao}" />
+                        </p:selectOneMenu>
+                    </h:column>
+                    
+                    <h:column>
+                        <p:commandButton value="OK" action="#{configuracaoBean.salvarResolucao}"/>
+                    </h:column>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
     </f:view>    
 </html>

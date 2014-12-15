@@ -122,6 +122,23 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
     }
     
     @Override
+    public List<Parentesco> pesquisaTodosComTitularCategoriaSemDesconto(int id_categoria, int id_categoria_desconto) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                            "  SELECT sc.parentesco "
+                            + "  FROM ServicoCategoria sc "
+                            + " WHERE sc.categoria.id = "+id_categoria+" "
+                            + "   AND sc.parentesco.id NOT IN (SELECT cdd.parentesco.id FROM CategoriaDescontoDependente cdd WHERE cdd.categoriaDesconto.id = " + id_categoria_desconto + ")"
+                            + " ORDER BY sc.parentesco.id"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList<Parentesco>();
+        }
+    }
+    
+    @Override
     public List<Parentesco> pesquisaTodosSemTitularCategoriaSexo(int id_categoria, String sexo) {
         try {
             Query qry = getEntityManager().createQuery(

@@ -16,6 +16,10 @@
             .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
                 background: #ECF3FE;
             }
+            
+            .duas-colunas{
+                width: 100%;
+            }
         </style>
         
         <script type="text/javascript">
@@ -36,12 +40,12 @@
                         <h:outputLabel value="Aguarde ..." />
                     </p:dialog>
                     
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Gerar Boletos" styleClass="fonteHeader" />
                         <h:form id="formGerarBoleto">
-                            <h:panelGrid columns="2" style="clear: both;">
+                            <h:panelGrid columns="2" styleClass="duas-colunas" style="clear: both;">
                                 <p:column>
-                                    <p:panel id="i_panel_mes" styleClass="fundoCinza" style="width: 490px; height: 250px">
+                                    <p:panel id="i_panel_mes" styleClass="fundoCinza" style="height: 250px">
                                         <h:panelGrid columns="3">
                                             
                                             <h:column>
@@ -85,7 +89,7 @@
                                 </p:column>
                                 
                                 <p:column>
-                                    <p:panel id="i_panel_pessoa" styleClass="fundoCinza" style="width: 490px; height: 250px">
+                                    <p:panel id="i_panel_pessoa" styleClass="fundoCinza" style="height: 250px">
                                         <h:panelGrid columns="5">
                                             <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa()}" value="Pesquisa Pessoa" rendered="#{gerarBoletoBean.pessoa.id == -1}"/>
                                             <h:outputText value="#{gerarBoletoBean.pessoa.nome}" title="#{gerarBoletoBean.pessoa.nome}"/>
@@ -142,11 +146,11 @@
                                 <p:column selectionMode="multiple" style="text-align: center; width: 15px"/>
                                 
                                 <p:column headerText="Lote" style="text-align: center">
-                                    <p:commandLink value="#{linha.argumento0.id}"/>
+                                    <p:commandLink value="#{linha.argumento0.id}" action="#{gerarBoletoBean.imprimirLote(linha.argumento0)}" ajax="false"/>
                                 </p:column>
                                 
                                 <p:column headerText="Data do Processamento" style="text-align: center">
-                                    <p:commandLink value="#{linha.argumento0.processamento}" />
+                                    <p:commandLink value="#{linha.argumento0.processamento}" action="#{gerarBoletoBean.imprimirLote(linha.argumento0)}" ajax="false"/>
                                 </p:column>
                             </p:dataTable>
                         </h:form>

@@ -8,6 +8,11 @@
         <title>Sindical - Menu Principal</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{}
+        </style>          
     </h:head>
     
     <h:body>
@@ -21,7 +26,7 @@
 
         <f:view>
             <h:form id="formMenuPrincipal">
-                <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
+                <p:panel style="border: 0px; margin: 0 auto;  width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <p:menubar>
                         <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
                             <p:menuitem value="Horários"                     action="#{chamadaPaginaBean.horarios}" />
@@ -44,44 +49,43 @@
                             <p:menuitem value="Homologações" action="#{chamadaPaginaBean.relatorioHomologacao()}"/>
                         </p:submenu>
                     </p:menubar> 
+                    <p:panel style="margin: 0 auto!important; width: 99%" header="Atendimento - Acesso fácil">
+                        <p:panelGrid columns="4" styleClass="margin-top-max sbb" style="margin: 0 auto!important;" >
+                            <p:commandLink action="#{chamadaPaginaBean.atendimento()}" title="Atendimento Simples" ajax="false">
+                                <p:graphicImage value="/Imagens/icone-atendimento.png" height="150" />
+                            </p:commandLink>
+                            <p:commandLink action="#{chamadaPaginaBean.agendamento}" title="Agendamento de Homologação" ajax="false">
+                                <p:graphicImage value="/Imagens/icone-calendario.jpg" height="150" />
+                            </p:commandLink>
+                            <p:commandLink action="#{chamadaPaginaBean.recepcao}" title="Recepção" ajax="false">
+                                <p:graphicImage value="/Imagens/icone-recepcao.jpg" height="150" />
+                            </p:commandLink>
+                            <p:commandLink action="#{chamadaPaginaBean.homologacao}" title="Efetuar uma Homologação" ajax="false">
+                                <p:graphicImage value="/Imagens/icone-homologacao.jpg" height="150" />
+                            </p:commandLink>
+                            <h:column>
+                                <center>
+                                    <p:outputLabel value="ATENDIMENTO" />
+                                </center>
+                            </h:column>
+                            <h:column>
+                                <center>
+                                    <p:outputLabel value="AGENDAMENTO" />
+                                </center>
+                            </h:column>
+                            <h:column>
+                                <center>
+                                    <p:outputLabel value="RECEPÇÃO"  />
+                                </center>
+                            </h:column>
+                            <h:column>
+                                <center>
+                                    <p:outputLabel value="HOMOLOGAÇÃO" />
+                                </center>
+                            </h:column>
+                        </p:panelGrid>
+                    </p:panel>
                 </p:panel>
-                <p:panel style="margin: 0 auto!important; width: 1000px;" header="Atendimento - Acesso fácil">
-                    <p:panelGrid columns="4" styleClass="margin-top-max sbb" style="margin: 0 auto!important;" >
-                        <p:commandLink action="#{chamadaPaginaBean.atendimento()}" title="Atendimento Simples" ajax="false">
-                            <p:graphicImage value="/Imagens/icone-atendimento.png" height="150" />
-                        </p:commandLink>
-                        <p:commandLink action="#{chamadaPaginaBean.agendamento}" title="Agendamento de Homologação" ajax="false">
-                            <p:graphicImage value="/Imagens/icone-calendario.jpg" height="150" />
-                        </p:commandLink>
-                        <p:commandLink action="#{chamadaPaginaBean.recepcao}" title="Recepção" ajax="false">
-                            <p:graphicImage value="/Imagens/icone-recepcao.jpg" height="150" />
-                        </p:commandLink>
-                        <p:commandLink action="#{chamadaPaginaBean.homologacao}" title="Efetuar uma Homologação" ajax="false">
-                            <p:graphicImage value="/Imagens/icone-homologacao.jpg" height="150" />
-                        </p:commandLink>
-                        <h:column>
-                            <center>
-                                <p:outputLabel value="ATENDIMENTO" />
-                            </center>
-                        </h:column>
-                        <h:column>
-                            <center>
-                                <p:outputLabel value="AGENDAMENTO" />
-                            </center>
-                        </h:column>
-                        <h:column>
-                            <center>
-                                <p:outputLabel value="RECEPÇÃO"  />
-                            </center>
-                        </h:column>
-                        <h:column>
-                            <center>
-                                <p:outputLabel value="HOMOLOGAÇÃO" />
-                            </center>
-                        </h:column>
-                    </p:panelGrid>
-                </p:panel>
-
             </h:form>
         </f:view>
 

@@ -366,6 +366,11 @@ public class MovimentoBancarioBean implements Serializable{
             FinanceiroDB db = new FinanceiroDBToplink();
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             
+            if (listaConta.isEmpty()){
+                GenericaMensagem.fatal("Erro", "Nenhuma Conta Cadastrada!");
+                return new ArrayList();
+            }
+            
             Plano5 plano = (Plano5)sv.pesquisaCodigo(Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
             List<Vector> result = db.listaMovimentoBancario(plano.getId());
             for (int i = 0; i < result.size(); i++){

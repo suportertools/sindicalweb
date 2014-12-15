@@ -107,6 +107,13 @@ public class ImpressaoParaSocios {
                 caminho_img = file_img.getPath();
             }
 
+            String endereco = getConverteNullString(((List) (listaCartao.get(i))).get(21)) + " " +
+                              getConverteNullString(((List) (listaCartao.get(i))).get(22)) + ", "+
+                              getConverteNullString(((List) (listaCartao.get(i))).get(23)) + " " +
+                              getConverteNullString(((List) (listaCartao.get(i))).get(24)) + " - "+
+                              getConverteNullString(((List) (listaCartao.get(i))).get(25));
+            
+            String cidade_uf = getConverteNullString(((List) (listaCartao.get(i))).get(26))+" - "+getConverteNullString(((List) (listaCartao.get(i))).get(27));
             listax.add(
                     new CartaoSocial(
                             matr, // CODIGO
@@ -118,13 +125,21 @@ public class ImpressaoParaSocios {
                             getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
                             getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
                             getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
-                            caminho_img, // CAMINHO FUNDO
+                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO
                             ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
                             getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
                             getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
                             getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
                             getConverteNullString(((List) (listaCartao.get(i))).get(16)), // RG
-                            Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()) // ID_PESSOA
+                            Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()), // ID_PESSOA
+                            endereco, // ENDERECO
+                            cidade_uf, // CIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(29)), // NACIONALIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(30)), // NASCIMENTO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(31)), // ESTADOCIVIL
+                            getConverteNullString(((List) (listaCartao.get(i))).get(32)), // CARTEIRA
+                            getConverteNullString(((List) (listaCartao.get(i))).get(33)), // SERIE
+                            caminho_img // IMAGEMFUNDO
                     )
             );
 

@@ -33,7 +33,7 @@
                     <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel style="margin: 0 auto; border: 0; width: 1200px">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Extrato Tela" styleClass="fonteHeader" />
                         <h:form id="formExtratoTela">
                             <h:panelGrid columns="4" style="clear: both;">
@@ -76,14 +76,15 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:commandButton value="FILTRAR LISTA" style="float: right; font-weight: bold; margin-left: 600px" action="#{extratoTelaBean.loadListBeta()}" update="formExtratoTela" />
+                                    <br />
+                                    <p:commandButton value="FILTRAR LISTA" style="float: right; font-weight: bold; margin-left: 400px" action="#{extratoTelaBean.loadListBeta()}" update="formExtratoTela" />
                                 </h:column>
                             </h:panelGrid>
 
                             <p:panel styleClass="fundoCinza" style="margin-top: 10px">
                                 <h:panelGrid columns="3">
                                     <h:column>
-                                        <p:fieldset id="i_fieldset_data" legend="Filtrar Data" toggleable="false" toggleSpeed="500" style="height: 150px">
+                                        <p:fieldset id="i_fieldset_data" legend="Data" toggleable="false" toggleSpeed="500" style="height: 150px">
                                             <p:ajax event="toggle" update="@this" />
 
                                             <p:selectOneMenu value="#{extratoTelaBean.tipoDataPesquisa}" style="width: 200px">
@@ -166,7 +167,7 @@
                                                 <h:column>
                                                     <p:outputLabel value="Pessoa" style="font-weight: bold"/><br />
                                                     <p:inputText value="#{extratoTelaBean.pessoa.documento}" disabled="true" style="width: 130px; font-weight: bold"/>
-                                                    <p:inputText value="#{extratoTelaBean.pessoa.nome}" disabled="true" style="width: 445px; font-weight: bold"/>
+                                                    <p:inputText value="#{extratoTelaBean.pessoa.nome}" disabled="true" style="width: #{(configuracaoBean.resolucao.tipoResolucao.tamanho == '1200' || configuracaoBean.resolucao.tipoResolucao.tamanho == '') ? '445px' : '260px'}; font-weight: bold"/>
                                                     <p:commandButton icon="ui-icon-search" alt="Pesquisar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" />
                                                     <p:commandButton icon="ui-icon-close" alt="Excluir Pessoa" action="#{extratoTelaBean.limparPesquisaPessoa}" update="i_fieldset_pessoa" />
                                                 </h:column>
@@ -196,7 +197,7 @@
                                     </p:selectBooleanCheckbox>
                                 </p:column>
 
-                                <p:column headerText="CNPJ" rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1}" style="width: 110px">
+                                <p:column headerText="CNPJ" rendered="#{(extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1) and configuracaoBean.resolucao.tipoResolucao.id != 2}" style="width: 110px">
                                     <p:outputLabel value="#{linha.argumento4}"/>
                                 </p:column>
 
@@ -258,6 +259,11 @@
                                         <p:column>
                                             <p:outputLabel value="Lote" style="font-weight: bold"/><br />
                                             <p:outputLabel value="#{linha.argumento22}"/>
+                                        </p:column>
+                                        
+                                        <p:column rendered="#{configuracaoBean.resolucao.tipoResolucao.id == 2}">
+                                            <p:outputLabel value="CNPJ" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento4}"/>
                                         </p:column>
                                         
                                         <p:column>

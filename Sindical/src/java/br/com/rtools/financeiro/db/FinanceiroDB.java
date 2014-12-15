@@ -62,4 +62,5 @@ public interface FinanceiroDB {
     public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data);
     public List<Vector> listaBoletoSocio(String nr_ctr_boleto);
     public List<Vector> listaServicosSemCobranca();
+    public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao);
 }

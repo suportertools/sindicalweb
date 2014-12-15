@@ -518,7 +518,7 @@ public class ImprimirBoleto {
     
     
 
-    public byte[] imprimirAcordo(List<Movimento> lista, Acordo acordo, Historico historico, String emailContato, boolean imprimir_pro) {
+    public byte[] imprimirAcordo(List<Movimento> lista, Acordo acordo, Historico historico, boolean imprimir_pro) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -689,7 +689,7 @@ public class ImprimirBoleto {
                         lista.get(i).getReferencia(),
                         "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
                         acordo.getUsuario().getPessoa().getNome(),
-                        emailContato
+                        acordo.getEmail()
                 ));
                 i++;
             }
@@ -1114,7 +1114,7 @@ public class ImprimirBoleto {
         return arquivo;
     }
 
-    public byte[] imprimirAcordoAcordado(List<Movimento> lista, Acordo acordo, String historico, String emailContato, boolean imprimirVerso) {
+    public byte[] imprimirAcordoAcordado(List<Movimento> lista, Acordo acordo, String historico, boolean imprimirVerso) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -1312,7 +1312,7 @@ public class ImprimirBoleto {
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
                             acordo.getUsuario().getPessoa().getNome(),
-                            emailContato
+                            acordo.getEmail()
                     ));
                 } else if (!lista.get(i).isAtivo()){
                     vetor2.add(new DemonstrativoAcordo(
@@ -1370,7 +1370,7 @@ public class ImprimirBoleto {
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
                             acordo.getUsuario().getPessoa().getNome(),
-                            emailContato
+                            acordo.getEmail()
                     ));
                 }
                 i++;
@@ -1411,7 +1411,7 @@ public class ImprimirBoleto {
         return arquivo;
     }
 
-    public byte[] imprimirAcordoPromissoria(List<Movimento> lista, Acordo acordo, Historico historico, String emailContato, boolean imprimir_pro) {
+    public byte[] imprimirAcordoPromissoria(List<Movimento> lista, Acordo acordo, Historico historico, boolean imprimir_pro) {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             JasperReport jasper;
@@ -1601,7 +1601,7 @@ public class ImprimirBoleto {
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
                             acordo.getUsuario().getPessoa().getNome(),
-                            emailContato
+                            acordo.getEmail()
                     ));
 
                     ValorExtenso ve = new ValorExtenso(new BigDecimal(lista.get(i).getValor()));
@@ -1683,7 +1683,7 @@ public class ImprimirBoleto {
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
                             acordo.getUsuario().getPessoa().getNome(),
-                            emailContato
+                            acordo.getEmail()
                     ));
                 }
                 i++;

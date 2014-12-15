@@ -741,4 +741,31 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }
     }    
     
+    @Override
+    public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT p.id, p.ds_nome "+
+                    "  FROM pes_pessoa AS p "+
+                    "  LEFT JOIN pes_pessoa_complemento AS c ON c.id_pessoa = p.id "+
+                    "  LEFT JOIN fin_servico_pessoa AS sp ON sp.id_cobranca = p.id "+
+                    " WHERE c.id IS NULL "+
+                    "   AND (ds_ref_vigoracao = '' OR( ds_ref_vigoracao != '' AND "+
+                    "                CAST(RIGHT(ds_ref_vigoracao, 4) || LEFT(ds_ref_vigoracao, 2) AS INT) <= "+
+                    "                CAST(RIGHT('"+referenciaVigoracao+"', 4) || LEFT('"+referenciaVigoracao+"',2) AS INT) "+
+                    "      ) "+
+                    "   ) "+
+                    "   AND (ds_ref_validade = '' OR( ds_ref_validade != '' AND "+
+                    "                CAST(RIGHT(ds_ref_validade, 4) || LEFT(ds_ref_validade, 2) AS INT) > "+
+                    "                CAST(RIGHT('"+referenciaVigoracao+"', 4) || LEFT('"+referenciaVigoracao+"', 2) AS INT) "+
+                    "   ) "+
+                    ") "+
+                    " GROUP BY p.id, p.ds_nome "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }    
+   
 }

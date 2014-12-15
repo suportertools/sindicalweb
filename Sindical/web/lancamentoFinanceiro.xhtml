@@ -43,7 +43,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Lançamento Financeiro" styleClass="fonteHeader" />
                         <h:form id="formLancamentoFinanceiro">
                             <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />

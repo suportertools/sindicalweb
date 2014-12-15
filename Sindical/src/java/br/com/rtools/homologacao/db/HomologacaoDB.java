@@ -77,4 +77,9 @@ public interface HomologacaoDB {
     public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario);
     
     public List<Senha> listaSequenciaSenha(int id_filial);
+    
+    public PessoaEmpresa pesquisaPessoaEmpresaAdmissao(int id_fisica, int id_juridica, String dataAdmissao);
+    public PessoaEmpresa pesquisaPessoaEmpresaDemissao(int id_fisica, int id_juridica, String dataDemissao);
+    public Agendamento pesquisaAgendamentoPorPessoaEmpresa(int id_pessoa_empresa, int[] ids_status);
+    
 }

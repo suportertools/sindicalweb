@@ -170,12 +170,15 @@
 
                             <h:column>
                                 <h:outputLabel value="Nascimento"  styleClass="#{agendamentoBean.configuracaoHomologacao.webValidaDataNascimento ? 'font-color-red' : ''}"/><br />
-                                <p:inputMask value="#{webAgendamentoContribuinteBean.fisica.nascimento}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" size="8" mask="99/99/9999"/>
+                                <p:inputMask value="#{webAgendamentoContribuinteBean.fisica.nascimento}" readonly="#{webAgendamentoContribuinteBean.fisica.id != -1}" size="8" mask="99/99/9999">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                </p:inputMask>
                             </h:column>
 
                             <h:column>
                                 <h:outputText value="Sexo"/><br />
                                 <p:selectOneButton value="#{webAgendamentoContribuinteBean.fisica.sexo}">
+                                    <p:ajax event="change" update="@this" global="false"/>
                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                     <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                 </p:selectOneButton>
@@ -219,7 +222,7 @@
                                     <h:outputLabel value="Carteira" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaCarteira}"/><br />
                                 </h:column>
                                 <p:inputText size="10" value="#{webAgendamentoContribuinteBean.fisica.carteira}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
 
@@ -230,14 +233,14 @@
                                     <br />
                                 </h:column>
                                 <p:inputText size="15" maxlength="15" value="#{webAgendamentoContribuinteBean.fisica.serie}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
                                 <h:outputLabel value="Código do Funcionário" /><br />
                                 <p:inputText size="20" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.codigo}">
-
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
                         </h:panelGrid>
@@ -256,12 +259,16 @@
 
                                 <h:column>
                                     <h:outputLabel value="Admissão" style="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaAdmissao == true ? 'color: red; font-weight: bold' : ''}"/><br />
-                                    <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center"/>
+                                    <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="text-align: center">
+                                        <p:ajax event="change" listener="#{webAgendamentoContribuinteBean.actionValidaAdmissao()}" update="i_panel_agendamento" global="false"/>
+                                    </p:inputMask>
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Demissão" style="color: red; font-weight: bold"/><br />
-                                    <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
+                                    <p:inputMask size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center">
+                                        <p:ajax event="change" listener="#{webAgendamentoContribuinteBean.actionValidaDemissao()}" update="i_panel_agendamento" global="false"/>
+                                    </p:inputMask>
                                 </h:column>
                             </h:panelGrid>
                         </p:panel>

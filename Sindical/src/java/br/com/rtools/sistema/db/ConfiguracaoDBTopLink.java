@@ -2,6 +2,7 @@ package br.com.rtools.sistema.db;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.sistema.Configuracao;
+import br.com.rtools.sistema.Resolucao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -48,5 +49,18 @@ public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
         } catch (Exception e) {
         }
         return new ArrayList();
+    }
+    
+    @Override
+    public Resolucao pesquisaResolucaoUsuario(int id_usuario){
+        try {
+            Query query = getEntityManager().createQuery(" SELECT r FROM Resolucao r WHERE r.usuario.id  = :pid");
+            query.setParameter("pid", id_usuario);
+            Resolucao result = (Resolucao) query.getSingleResult();
+            
+            return result;
+        } catch (Exception e) {
+            return new Resolucao();
+        }
     }
 }

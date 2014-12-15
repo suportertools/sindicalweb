@@ -902,7 +902,7 @@ public class ServicosBean implements Serializable {
         if (listaParentesco.isEmpty()){
             ParentescoDB db = new ParentescoDBToplink();
             //List<Parentesco> select = db.pesquisaTodosSemTitularCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
-            List<Parentesco> select = db.pesquisaTodosSemTitularCategoriaSemDesconto(id_categoria,  categoriaDesconto.getId());
+            List<Parentesco> select = db.pesquisaTodosComTitularCategoriaSemDesconto(id_categoria,  categoriaDesconto.getId());
             //List<Parentesco> select = db.pesquisaTodosSemTitular();
             listaParentesco.add(new SelectItem(0, "Selecione um parentesco",  "0"));
             if (!select.isEmpty()){

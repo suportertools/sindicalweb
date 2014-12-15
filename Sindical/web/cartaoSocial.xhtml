@@ -28,7 +28,7 @@
         </f:subview>
         
         <f:view>
-            <p:panel styleClass="wrapper" style="border: 0px; clear: both">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                 <h:form id="formCartaoSocial" >
                     <h:outputText value="Cartão Social" styleClass="fonteHeader" />
@@ -128,7 +128,7 @@
                         <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!">  
                             <p:column selectionMode="multiple" width="25" style="text-align: center"/>  
                             
-                            <p:column headerText="Matrícula" style="text-align: center">  
+                            <p:column headerText="Matrícula" style="text-align: center; width: 80px">  
                                 <h:outputText value="#{linha[10]}" />  
                             </p:column>  
 
@@ -148,11 +148,11 @@
                                 <h:outputText value="#{linha[5]} - #{linha[7]}" />  
                             </p:column>  
                             
-                            <p:column headerText="Impresso">  
+                            <p:column headerText="Impresso" style="text-align: center; width: 80px">  
                                 <h:outputText value="#{linha[4]}" />  
                             </p:column>  
                             
-                            <p:column headerText="Modelo">  
+                            <p:column headerText="Modelo" style="text-align: center; width: 100px">  
                                 <h:outputText value="#{linha[20]}" />  
                             </p:column>  
                         </p:dataTable>  

@@ -27,7 +27,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="formPesquisaPessoaJuridica">
 
                             <h:outputText value="Pesquisa Pessoas Juridicas" styleClass="fonteHeader" />
@@ -68,7 +68,7 @@
                         <h:form id="formGridPesquisaPessoaJuridica">
                             <h:panelGrid id="i_panel_grid" style="width: 100%">
                                 <p:dataTable value="#{juridicaBean.listaJuridica}" var="juridica" id="tbl" emptyMessage="Nenhuma empresa encontrada" scrollHeight="400" scrollable="true">
-                                    <p:column style="width:5%">  
+                                    <p:column style="width:20px">  
                                         <p:rowToggler />  
                                     </p:column>  
 
@@ -84,7 +84,7 @@
                                         <h:outputText value="#{juridica.pessoa.email1}"/>
                                     </p:column>
 
-                                    <p:column headerText="Tipo / Documento">
+                                    <p:column headerText="Tipo / Documento" style="width: 170px; text-align: center">
                                         <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.tipoDocumento.descricao} - #{juridica.pessoa.documento}" ajax="false"/>
                                     </p:column>
 

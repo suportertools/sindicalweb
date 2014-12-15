@@ -28,7 +28,7 @@
                     <ui:include src="templates/templateAcessoFilial.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Baixa Geral" styleClass="fonteHeader" />
                         <h:form id="formBaixaGeral">
                             <p:panel styleClass="fundoCinza" style="clear: both">
@@ -59,9 +59,9 @@
 
                                     <p:column>
                                         <h:outputLabel value="Tipo de Pagamento" /><br />
-                                        <p:selectOneMenu value="#{baixaGeralBean.idTipoDoc}" style="margin-right: 10px; padding-right: 20px">
+                                        <p:selectOneMenu value="#{baixaGeralBean.idTipoPagamento}" style="margin-right: 10px; padding-right: 20px">
                                             <p:ajax event="change" listener="#{baixaGeralBean.atualizaTipo}" update="i_recebimento i_cheque i_cartao"/>
-                                            <f:selectItems value="#{baixaGeralBean.listaTipoDoc}" />
+                                            <f:selectItems value="#{baixaGeralBean.listaTipoPagamento}" />
                                         </p:selectOneMenu>
                                     </p:column>
 
@@ -100,22 +100,22 @@
 
                                     <p:column rendered="#{baixaGeralBean.es != 'S'}">
                                         <br />
-                                        <p:commandButton value="Adicionar Parcela" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral"  rendered="#{baixaGeralBean.idTipoDoc == 0 or baixaGeralBean.idTipoDoc == 8}"/>
+                                        <p:commandButton value="Adicionar Parcela" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral"  rendered="#{baixaGeralBean.idTipoPagamento == 0 or baixaGeralBean.idTipoPagamento == 8}"/>
 
-                                        <p:commandButton value="Adicionar Parcela Cheque" title="Continuar e Inserir dados do Cheque" onclick="PF('i_dlg_cheque').show()" rendered="#{baixaGeralBean.idTipoDoc == 1 or baixaGeralBean.idTipoDoc == 2}"/>
+                                        <p:commandButton value="Adicionar Parcela Cheque" title="Continuar e Inserir dados do Cheque" onclick="PF('i_dlg_cheque').show()" rendered="#{baixaGeralBean.idTipoPagamento == 1 or baixaGeralBean.idTipoPagamento == 2}"/>
 
-                                        <p:commandButton value="Adicionar Parcela Cartão" title="Continuar e Inserir dados do Cartão" onclick="PF('i_dlg_cartao').show()" rendered="#{baixaGeralBean.idTipoDoc == 3 or baixaGeralBean.idTipoDoc == 4}"/>
+                                        <p:commandButton value="Adicionar Parcela Cartão" title="Continuar e Inserir dados do Cartão" onclick="PF('i_dlg_cartao').show()" rendered="#{baixaGeralBean.idTipoPagamento == 3 or baixaGeralBean.idTipoPagamento == 4}"/>
 
-                                        <p:commandButton value="Adicionar Parcela Banco" title="Continuar e Inserir dados do Banco" onclick="PF('i_dlg_banco').show()" rendered="#{baixaGeralBean.idTipoDoc == 5 or baixaGeralBean.idTipoDoc == 6 or baixaGeralBean.idTipoDoc == 7}"/>
+                                        <p:commandButton value="Adicionar Parcela Banco" title="Continuar e Inserir dados do Banco" onclick="PF('i_dlg_banco').show()" rendered="#{baixaGeralBean.idTipoPagamento == 5 or baixaGeralBean.idTipoPagamento == 6 or baixaGeralBean.idTipoPagamento == 7}"/>
                                     </p:column>
 
                                     <p:column rendered="#{baixaGeralBean.es == 'S'}">
                                         <br />
-                                        <p:commandButton value="Adicionar Parcela" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral"  rendered="#{baixaGeralBean.idTipoDoc == 0}"/>
+                                        <p:commandButton value="Adicionar Parcela" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral"  rendered="#{baixaGeralBean.idTipoPagamento == 0}"/>
 
-                                        <p:commandButton value="Adicionar Parcela Cheque" title="Continuar e Inserir dados do Cheque" onclick="PF('i_dlg_cheque').show()" rendered="#{baixaGeralBean.idTipoDoc == 1 or baixaGeralBean.idTipoDoc == 2}"/>
+                                        <p:commandButton value="Adicionar Parcela Cheque" title="Continuar e Inserir dados do Cheque" onclick="PF('i_dlg_cheque').show()" rendered="#{baixaGeralBean.idTipoPagamento == 1 or baixaGeralBean.idTipoPagamento == 2}"/>
 
-                                        <p:commandButton value="Adicionar Parcela Banco" title="Continuar e Inserir dados do Banco" onclick="PF('i_dlg_banco').show()" rendered="#{baixaGeralBean.idTipoDoc == 3 or baixaGeralBean.idTipoDoc == 4 or baixaGeralBean.idTipoDoc == 5}"/>
+                                        <p:commandButton value="Adicionar Parcela Banco" title="Continuar e Inserir dados do Banco" onclick="PF('i_dlg_banco').show()" rendered="#{baixaGeralBean.idTipoPagamento == 3 or baixaGeralBean.idTipoPagamento == 4 or baixaGeralBean.idTipoPagamento == 5}"/>
                                     </p:column>
                                 </h:panelGrid>
                             </p:panel>
@@ -150,12 +150,13 @@
                             <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true" closable="false">
                                 <h:panelGrid id="i_mensagem" style="width: 100%">
                                     <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
-
                                     <h:panelGrid columns="2" style="width: 100%; margin-top: 20px">
-                                        <h:commandLink action="#{baixaGeralBean.imprimirRecibo}" style="float: left" target="_blank">
+                                        <p:commandLink action="#{baixaGeralBean.imprimirRecibo()}" style="float: left" target="_blank" ajax="false">
                                             <p:button icon="ui-icon-print" value="Imprimir Recibo" />
-                                        </h:commandLink>  
-                                        <p:commandButton ajax="false" value="Sair" action="#{baixaGeralBean.retorno}" style="float: right" icon="ui-icon-close"/>
+                                        </p:commandLink>  
+                                        <p:commandLink action="#{baixaGeralBean.retorno}" style="float: right" target="_self" ajax="false" >
+                                            <p:button icon="ui-icon-close" value="Sair" />
+                                        </p:commandLink>
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </p:dialog>

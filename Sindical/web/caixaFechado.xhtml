@@ -27,7 +27,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Transf. p/ CX Central" styleClass="fonteHeader" />
                         <h:form id="formCaixaFechado">
                             <p:panel styleClass="fundoCinza" style="clear: both">
@@ -99,7 +99,7 @@
 
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Sim" onclick="PF('i_dlg_transferir').hide()" action="#{caixaFechadoBean.transferir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Sim" oncomplete="PF('i_dlg_transferir').hide()" action="#{caixaFechadoBean.transferir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
                                         <p:commandButton value="Não" onclick="PF('i_dlg_transferir').hide()" style="float: left" icon="ui-icon-close"/>  
                                     </p:column>
                                 </h:panelGrid>
