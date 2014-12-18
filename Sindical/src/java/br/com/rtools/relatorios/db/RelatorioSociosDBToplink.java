@@ -270,9 +270,9 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
 
         // PARENTESCO ------------------
         if (booGrau) {
-            filtro += " and so.id_parentesco in (" + ids_parentesco + ")";
-        } else {
-            filtro += " and so.id_parentesco = 1 ";
+            if(!ids_parentesco.isEmpty()) {
+                filtro += " and so.id_parentesco in (" + ids_parentesco + ")";                
+            }
         }
 
         if (booFoto) {
@@ -332,7 +332,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             } //            else if (!dt_demissao.isEmpty())
             //                filtro += " and p.demissao = '"+dt_demissao+"'";
             else {
-                filtro += " and p.principal = true";
+                filtro += " and (p.principal = true OR p.principal IS NULL) ";
                 //filtro += " and p.demissao is null ";
             }
 
@@ -351,7 +351,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             }
 
         } else {
-            filtro += " and p.principal = true";
+            filtro += " and (p.principal = true OR p.principal IS NULL) ";
             //filtro += " and p.demissao is null ";
         }
 
