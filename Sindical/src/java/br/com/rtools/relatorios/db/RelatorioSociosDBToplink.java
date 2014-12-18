@@ -413,8 +413,8 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             filtro += " order by " + relatorio.getQryOrdem() + ", " + tordem;
         }
         try {
-
-            Query qry = getEntityManager().createNativeQuery(textQry + filtro);
+            String queryString = textQry + filtro;
+            Query qry = getEntityManager().createNativeQuery(queryString);
 //            String novaQuery = textQry + filtro;
             return qry.getResultList();
         } catch (Exception e) {
