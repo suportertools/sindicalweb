@@ -8,7 +8,8 @@
         <f:view>
             <p:tabView>
                 <p:tab id="socios" title="Dados Pessoais" >
-                    <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pagina('pesquisaPessoaFisica')}" />
+                    <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" rendered="false"/>
+                    <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaSocios')}" />
                     <h:panelGrid columns="2" styleClass="margin-top">
                         <h:outputText value="Documento: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
                         <h:outputText value="#{servicoPessoaBean.titular.pessoa.tipoDocumento.descricao} - #{servicoPessoaBean.titular.pessoa.documento} - " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
@@ -25,7 +26,7 @@
                     <h:panelGrid columns="2">
                         <p:outputLabel value="Desconto: "/>
                         <h:column>
-                            <p:inputText id="idNrDesconto" value="#{servicoPessoaBean.servicoPessoa.nrDesconto}" size="5">
+                            <p:inputText id="idNrDesconto" value="#{servicoPessoaBean.servicoPessoa.nrDescontoString}" size="5" converter="#{toPercent}">
                                 <p:ajax event="change" update="@this"/>
                             </p:inputText>
                             <p:outputLabel value=" %  " />
@@ -34,7 +35,7 @@
                             </p:selectBooleanCheckbox>
                         </h:column>
                         <p:outputLabel value="Serviços: "  rendered="#{servicoPessoaBean.renderServicos}"/>
-                        <p:selectOneMenu id="idServico" value="#{servicoPessoaBean.idServico}" rendered="#{servicoPessoaBean.renderServicos}">
+                        <p:selectOneMenu id="idServico" value="#{servicoPessoaBean.idServico}" rendered="#{servicoPessoaBean.renderServicos}" style="width: 600px">
                             <p:ajax event="change" update="@this"/>
                             <f:selectItems value="#{servicoPessoaBean.listaServicos}"/>
                         </p:selectOneMenu>
