@@ -44,22 +44,26 @@
                                     <p:menuitem value="Juridica"           action="#{chamadaPaginaBean.pessoaJuridica}" />
 
                                     <p:submenu label="Convênio Empresas">
-                                        <p:menuitem value="Convênio"             action="#{chamadaPaginaBean.pagina('convenio')}" />
-                                        <p:menuitem value="Grupo Convênio"       action="#{chamadaPaginaBean.grupoConvenio}" />
-                                        <p:menuitem value="SubGrupo Convênio"    action="#{chamadaPaginaBean.pagina('subGrupoConvenio')}" />
+                                        <p:menuitem value="Convênio"            action="#{chamadaPaginaBean.pagina('convenio')}" />
+                                        <p:menuitem value="Grupo Convênio"      action="#{chamadaPaginaBean.grupoConvenio}" />
+                                        <p:menuitem value="SubGrupo Convênio"   action="#{chamadaPaginaBean.pagina('subGrupoConvenio')}" />
                                     </p:submenu>
 
                                     <p:submenu label="Baile">
-                                        <p:menuitem value="Banda"                action="#{chamadaPaginaBean.bandas}" />
-                                        <p:menuitem value="Baile"                action="#{chamadaPaginaBean.baile}" />
+                                        <p:menuitem value="Banda"               action="#{chamadaPaginaBean.bandas}" />
+                                        <p:menuitem value="Baile"               action="#{chamadaPaginaBean.baile}" />
                                     </p:submenu>
 
                                     <p:submenu label="Viagens">
-                                        <p:menuitem value="Caravanas"            action="#{chamadaPaginaBean.caravana}" />
+                                        <p:menuitem value="Caravanas"           action="#{chamadaPaginaBean.caravana}" />
                                     </p:submenu>
 
-                                    <p:menuitem value="Desc. Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" />
+                                    <p:menuitem value="Desc. Serviço Empresa"   action="#{chamadaPaginaBean.descontoServicoEmpresa}" />
 
+                                    <p:menuitem value="Autorizar Carteirinha"   action="#{chamadaPaginaBean.autorizaCarteirinha()}"/>
+                                    <p:menuitem value="Modelo de Carteirinha"   action="#{chamadaPaginaBean.modeloCarteirinha()}"/>
+                                    <p:menuitem value="Administradora"          action="#{chamadaPaginaBean.pagina('administradora')}" />
+                                    
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" />
                                         <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" />
@@ -68,9 +72,6 @@
                                         <p:menuitem value="Parentesco"           action="#{chamadaPaginaBean.parentesco}" />
                                         <p:menuitem value="Registro Empresarial"         action="#{chamadaPaginaBean.registroEmpresarial}" />
                                     </p:submenu>
-                                    
-                                    <p:menuitem value="Autorizar Carteirinha" action="#{chamadaPaginaBean.autorizaCarteirinha()}"/>
-                                    <p:menuitem value="Modelo de Carteirinha" action="#{chamadaPaginaBean.modeloCarteirinha()}"/>
                                 </p:submenu>
 
                                 <p:submenu label="Movimento" style="margin-right: 15px">

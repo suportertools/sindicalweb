@@ -42,7 +42,7 @@
                         <h:panelGrid columns="4" styleClass="margin-top-max margin-bottom-max">
                             <p:outputLabel value="Data Inativo: " />
                             <p:inputMask value="#{matriculaConvenioMedicoBean.matriculaConvenioMedico.inativo}" mask="99/99/9999" size="10" converter="#{isDateString}">
-                                <p:ajax event="blur" update="@this" />
+                                <p:ajax event="change" update="@this" />
                             </p:inputMask>
                             <p:outputLabel value="Código: " />
                             <p:inputText value="#{matriculaConvenioMedicoBean.matriculaConvenioMedico.codigo}"/>

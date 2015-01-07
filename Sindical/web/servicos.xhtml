@@ -63,15 +63,15 @@
                                                     </p:selectOneMenu>
                                                 </h:column>
                                             </h:panelGrid>
-                                            
+
                                             <p:separator />
-                                            
-                                            <h:panelGrid columns="4">
+
+                                            <h:panelGrid columns="5">
                                                 <h:column>
                                                     <p:outputLabel value="Código" for="idCodigo"/><br />
                                                     <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}"/>
                                                 </h:column>
-                                            
+
                                                 <p:column>
                                                     <p:outputLabel value="Situação" /><br />
                                                     <p:selectOneMenu value="#{servicosBean.servicos.situacao}" style="width: 50px">
@@ -79,8 +79,15 @@
                                                         <f:selectItem itemValue="I" itemLabel="I" />
                                                     </p:selectOneMenu>
                                                 </p:column>
+                                                <p:column>
+                                                    <p:outputLabel value="Administradora" /><br />
+                                                    <p:selectOneMenu id="i_administradora" value="#{servicosBean.idAdministradora}" style="margin-right: 10px;">
+                                                        <f:selectItem itemValue="" itemLabel="Nenhuma" />
+                                                        <f:selectItems value="#{servicosBean.listAdministradora}"/>
+                                                    </p:selectOneMenu>
+                                                </p:column>
                                             </h:panelGrid>
-                                            
+
                                             <p:panelGrid columns="9" styleClass="sbb">
                                                 <p:selectBooleanCheckbox id="idServDebito" value="#{servicosBean.servicos.debito}" itemLabel="Débito"/>
                                                 <p:selectBooleanCheckbox id="idServValor" value="#{servicosBean.servicos.alterarValor}" itemLabel="Alterar valor"/>
@@ -91,7 +98,7 @@
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.produto}" itemLabel="Produto" />
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorFixo}" itemLabel="Valor Fixo" />
                                             </p:panelGrid>
-                                            
+
                                             <p:separator />
                                             <br />
                                             <p:fieldset legend="Opções da GUIA" toggleable="true" collapsed="true" toggleSpeed="500">
@@ -119,7 +126,7 @@
                                                                 <p:ajax event="change" update="@this i_panel_opcoes"/>
                                                             </p:selectBooleanCheckbox>
                                                         </h:column>
-                                                        
+
                                                         <h:column>
                                                             <br />
                                                             <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorZerado}" itemLabel="Valor zerado Guias" style="margin-left: 20px; margin-right: 30px"/>
