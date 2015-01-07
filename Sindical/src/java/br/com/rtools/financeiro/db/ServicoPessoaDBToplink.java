@@ -3,11 +3,13 @@ package br.com.rtools.financeiro.db;
 //import br.com.rtools.associativo.Responsavel;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
+
     public ServicoPessoa pesquisaCodigo(int id) {
         ServicoPessoa result = null;
         try {
@@ -46,6 +48,36 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
             e.getMessage();
         }
         return result;
+    }
+
+    @Override
+    public List listByPessoa(int idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT SP FROM ServicoPessoa AS SP WHERE SP.pessoa.id = :pessoa AND SP.ativo = true");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List listByCobranca(int idCobranca) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT SP FROM ServicoPessoa AS SP WHERE SP.cobranca.id = :pessoa AND SP.ativo = true");
+            query.setParameter("pessoa", idCobranca);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
     }
 
     @Override
