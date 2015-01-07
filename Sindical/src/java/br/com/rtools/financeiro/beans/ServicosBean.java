@@ -17,6 +17,7 @@ import br.com.rtools.financeiro.db.*;
 import br.com.rtools.financeiro.lista.ListServicosCategoriaDesconto;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.beans.Administradora;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.AnaliseString;
@@ -51,6 +52,7 @@ public class ServicosBean implements Serializable {
     private List<SelectItem> listSubGrupo;
     private List<SelectItem> listGrupo;
     private List<SelectItem> listPeriodo;
+    private List<SelectItem> listAdministradora;
     private String porPesquisa;
     private String comoPesquisa;
     private String descPesquisa;
@@ -65,6 +67,7 @@ public class ServicosBean implements Serializable {
     private int idGrupo;
     private int idSubGrupo;
     private int idPeriodo;
+    private Integer idAdministradora;
     private float descontoCategoria;
     private List<SelectItem> listaParentesco;
     private int id_categoria;
@@ -87,25 +90,26 @@ public class ServicosBean implements Serializable {
         desconto = "0";
         activeIndex = 0;
         indice = "servico";
-        listServicoValor = new ArrayList<ServicoValor>();
-        listServicos = new ArrayList<Servicos>();
+        listServicoValor = new ArrayList<>();
+        listServicos = new ArrayList<>();
         listCategoriaDesconto = new ArrayList();
-        listServicosCategoriaDesconto = new ArrayList<ListServicosCategoriaDesconto>();
+        listServicosCategoriaDesconto = new ArrayList<>();
         descontoCategoria = 0;
         categoriaDesconto = new CategoriaDesconto();
         textoBtnServico = "Adicionar";
-        listGrupo = new ArrayList<SelectItem>();
-        listSubGrupo = new ArrayList<SelectItem>();
-        listPeriodo = new ArrayList<SelectItem>();
+        listGrupo = new ArrayList<>();
+        listSubGrupo = new ArrayList<>();
+        listPeriodo = new ArrayList<>();
+        listAdministradora = new ArrayList<>();
         idGrupo = 0;
         idSubGrupo = 0;
         idPeriodo = 0;
-        listaParentesco = new ArrayList<SelectItem>();
+        listaParentesco = new ArrayList<>();
         descontoDepentende = new CategoriaDescontoDependente();
         indexParentesco = 0;
         id_categoria = 0;
         valorDependente = "0,00";
-        listaDescontoDependente = new ArrayList<CategoriaDescontoDependente>();
+        listaDescontoDependente = new ArrayList<>();
         //    private String tabViewTitle = "0";
     }
 
@@ -182,11 +186,16 @@ public class ServicosBean implements Serializable {
             } else {
                 servicos.setSubGrupoFinanceiro(null);
             }
-            
-            if (!listPeriodo.isEmpty() && Integer.valueOf(listPeriodo.get(idPeriodo).getDescription()) != 0){
+
+            if (!listPeriodo.isEmpty() && Integer.valueOf(listPeriodo.get(idPeriodo).getDescription()) != 0) {
                 servicos.setPeriodo((Periodo) di.find(new Periodo(), Integer.valueOf(listPeriodo.get(idPeriodo).getDescription())));
-            }else{
+            } else {
                 servicos.setPeriodo(null);
+            }
+            if (!listAdministradora.isEmpty() && idAdministradora != null) {
+                servicos.setAdministradora((Administradora) di.find(new Administradora(), Integer.parseInt(listAdministradora.get(idAdministradora).getDescription())));
+            } else {
+                servicos.setAdministradora(null);
             }
 
             if (servicos.getId() == -1) {
@@ -327,21 +336,29 @@ public class ServicosBean implements Serializable {
                     idSubGrupo = i;
                 }
             }
-        }else{
+        } else {
             listSubGrupo.clear();
             listGrupo.clear();
             idGrupo = 0;
             idSubGrupo = 0;
         }
         
-        if (servicos.getPeriodo() != null){
+        if(servicos.getAdministradora() != null) {
+            for (int i = 0; i < listAdministradora.size(); i++) {
+                if (Integer.parseInt(listAdministradora.get(i).getDescription()) == servicos.getAdministradora().getId()) {
+                    idAdministradora = i;
+                }
+            }            
+        }
+
+        if (servicos.getPeriodo() != null) {
             getListPeriodo();
             for (int i = 0; i < listPeriodo.size(); i++) {
                 if (Integer.valueOf(listPeriodo.get(i).getDescription()) == servicos.getPeriodo().getId()) {
                     idPeriodo = i;
                 }
             }
-        }else{
+        } else {
             idPeriodo = 0;
         }
         if (GenericaSessao.exists("urlRetorno")) {
@@ -425,7 +442,7 @@ public class ServicosBean implements Serializable {
         listServicoValor.clear();
         listServicoValor = servicoValorDB.pesquisaServicoValor(servicos.getId());
         if (listServicoValor == null) {
-            listServicoValor = new ArrayList<ServicoValor>();
+            listServicoValor = new ArrayList<>();
         } else {
             if (!listServicoValor.isEmpty()) {
                 servicoValorDetalhe = listServicoValor.get(0);
@@ -472,7 +489,7 @@ public class ServicosBean implements Serializable {
                     servicoValor = new ServicoValor();
                     valorf = "0";
                     desconto = "0";
-                    taxa = "0";                    
+                    taxa = "0";
                 } else {
                     GenericaMensagem.warn("Validação", "Este valor para o serviço já existe no sistema.");
                 }
@@ -502,7 +519,7 @@ public class ServicosBean implements Serializable {
                     servicoValor = new ServicoValor();
                     valorf = "0";
                     desconto = "0";
-                    taxa = "0";                    
+                    taxa = "0";
                 } else {
                     GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 }
@@ -563,10 +580,10 @@ public class ServicosBean implements Serializable {
                         + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                 );
 //                if (clean) {
-                    servicoValor = new ServicoValor();
-                    valorf = "0";
-                    desconto = "0";
-                    taxa = "0";
+                servicoValor = new ServicoValor();
+                valorf = "0";
+                desconto = "0";
+                taxa = "0";
 //                }
                 listServicoValor.clear();
                 GenericaMensagem.info("Sucesso", "Registro excluido com sucesso");
@@ -669,7 +686,7 @@ public class ServicosBean implements Serializable {
         List<Categoria> listaCategoria = categoriaDescontoDB.pesquisaCategoriasSemServico(servicos.getId());
         listCategoriaDesconto = categoriaDescontoDB.pesquisaTodosPorServico(servicos.getId());
         if (listCategoriaDesconto == null) {
-            listCategoriaDesconto = new ArrayList<CategoriaDesconto>();
+            listCategoriaDesconto = new ArrayList<>();
         }
         if ((listaCategoria != null) && (this.servicos.getId() != -1)) {
             for (Categoria c : listaCategoria) {
@@ -750,7 +767,7 @@ public class ServicosBean implements Serializable {
 //                if (servicos.getSubGrupoFinanceiro() == null)
 //                    listGrupo.add(new SelectItem(10000, "Nenhum Grupo Financeiro Adicionado", "0"));
                 for (int i = 0; i < result.size(); i++) {
-                    listGrupo.add(new SelectItem(i+1,
+                    listGrupo.add(new SelectItem(i + 1,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
@@ -782,7 +799,7 @@ public class ServicosBean implements Serializable {
 //                if (servicos.getSubGrupoFinanceiro() == null)
 //                    listSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
                 for (int i = 0; i < result.size(); i++) {
-                    listSubGrupo.add(new SelectItem(i+1,
+                    listSubGrupo.add(new SelectItem(i + 1,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
@@ -868,19 +885,19 @@ public class ServicosBean implements Serializable {
 
             List<Periodo> result = (new SalvarAcumuladoDBToplink()).listaObjeto("Periodo");
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
+
             listPeriodo.add(new SelectItem(0, "Selecionar Periodo", "0"));
             if (!result.isEmpty()) {
                 for (int i = 1; i < result.size(); i++) {
                     listPeriodo.add(
-                        new SelectItem(i,
-                            result.get(i).getDescricao(),
-                            Integer.toString(result.get(i).getId())
-                        )
+                            new SelectItem(i,
+                                    result.get(i).getDescricao(),
+                                    Integer.toString(result.get(i).getId())
+                            )
                     );
                 }
             }
-        }        
+        }
         return listPeriodo;
     }
 
@@ -888,7 +905,7 @@ public class ServicosBean implements Serializable {
         this.listPeriodo = listPeriodo;
     }
 
-    public void openDescontoDependente(CategoriaDesconto cd){
+    public void openDescontoDependente(CategoriaDesconto cd) {
         this.id_categoria = cd.getCategoria().getId();
         indexParentesco = 0;
         listaParentesco.clear();
@@ -897,28 +914,27 @@ public class ServicosBean implements Serializable {
         updateDescontoCategoriaDependenteValor();
         categoriaDesconto = cd;
     }
-    
+
     public List<SelectItem> getListaParentesco() {
-        if (listaParentesco.isEmpty()){
+        if (listaParentesco.isEmpty()) {
             ParentescoDB db = new ParentescoDBToplink();
             //List<Parentesco> select = db.pesquisaTodosSemTitularCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
-            List<Parentesco> select = db.pesquisaTodosComTitularCategoriaSemDesconto(id_categoria,  categoriaDesconto.getId());
+            List<Parentesco> select = db.pesquisaTodosComTitularCategoriaSemDesconto(id_categoria, categoriaDesconto.getId());
             //List<Parentesco> select = db.pesquisaTodosSemTitular();
-            listaParentesco.add(new SelectItem(0, "Selecione um parentesco",  "0"));
-            if (!select.isEmpty()){
-                for(int i = 0; i < select.size(); i++){
-                    listaParentesco.add(new SelectItem(i+1, select.get(i).getParentesco(),  "" + select.get(i).getId()));
+            listaParentesco.add(new SelectItem(0, "Selecione um parentesco", "0"));
+            if (!select.isEmpty()) {
+                for (int i = 0; i < select.size(); i++) {
+                    listaParentesco.add(new SelectItem(i + 1, select.get(i).getParentesco(), "" + select.get(i).getId()));
                 }
             }
             return listaParentesco;
         }
         return listaParentesco;
     }
-    
-    
+
     public void updateDescontoCategoriaDependentePercentual() {
         float v = 0;
-        
+
         if (descontoDepentende.getDesconto() > 100) {
             descontoDepentende.setDesconto(100);
         }
@@ -926,7 +942,7 @@ public class ServicosBean implements Serializable {
         //descontoDepentende.setDesconto(Moeda.converteFloatR$Float(v));
         valorDependente = Moeda.converteR$Float(v);
     }
-    
+
     public String linhaDescontoCategoriaDependentePercentual(float desconto) {
         float v = 0;
         v = servicoValorDetalhe.getValor() - (desconto / 100) * servicoValorDetalhe.getValor();
@@ -944,63 +960,63 @@ public class ServicosBean implements Serializable {
         } else {
             updateDescontoCategoriaDependentePercentual();
         }
-    }    
-    
-    public void adicionarDescontoDependente(){
+    }
+
+    public void adicionarDescontoDependente() {
         Dao di = new Dao();
-        
-        if (Integer.valueOf(listaParentesco.get(indexParentesco).getDescription()) == 0){
+
+        if (Integer.valueOf(listaParentesco.get(indexParentesco).getDescription()) == 0) {
             GenericaMensagem.error("Erro", "Selecione um Parentesco para adicionar Desconto!");
             return;
         }
-        Parentesco par = (Parentesco)di.find(new Parentesco(), Integer.valueOf(listaParentesco.get(indexParentesco).getDescription()));
-        if (!listaDescontoDependente.isEmpty()){
+        Parentesco par = (Parentesco) di.find(new Parentesco(), Integer.valueOf(listaParentesco.get(indexParentesco).getDescription()));
+        if (!listaDescontoDependente.isEmpty()) {
             CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
-            if (db.pesquisaDescontoDependentePorCategoria(par.getId(), categoriaDesconto.getId()) != null){
+            if (db.pesquisaDescontoDependentePorCategoria(par.getId(), categoriaDesconto.getId()) != null) {
                 GenericaMensagem.warn("Atenção", "Esse parentesco já existe para esta categoria!");
                 return;
             }
         }
         di.openTransaction();
-        
+
         descontoDepentende.setParentesco(par);
         descontoDepentende.setCategoriaDesconto(categoriaDesconto);
-        
-        if (!di.save(descontoDepentende)){
+
+        if (!di.save(descontoDepentende)) {
             GenericaMensagem.error("Erro", "Não foi possivel salvar Desconto!");
             di.rollback();
             return;
         }
-        
+
         descontoDepentende = new CategoriaDescontoDependente();
-        valorDependente =  servicoValorDetalhe.getValorString();
+        valorDependente = servicoValorDetalhe.getValorString();
         listaDescontoDependente.clear();
         indexParentesco = 0;
         listaParentesco.clear();
         di.commit();
     }
-    
-    public void adicionarDescontoDependenteTodosParentesco(){
+
+    public void adicionarDescontoDependenteTodosParentesco() {
         Dao di = new Dao();
-        
-        if (listaParentesco.size() == 1 && Integer.valueOf(listaParentesco.get(0).getDescription()) == 0){
+
+        if (listaParentesco.size() == 1 && Integer.valueOf(listaParentesco.get(0).getDescription()) == 0) {
             GenericaMensagem.error("Erro", "Não existe lista de Parentesco para ser adicionada!");
             return;
         }
-        
+
         di.openTransaction();
         float descontox = descontoDepentende.getDesconto();
         //float valorx = descontoDepentende.getDesconto();
-        for (SelectItem si: listaParentesco){
-            Parentesco par = (Parentesco)di.find(new Parentesco(), Integer.valueOf(si.getDescription()));
-            if (par != null){
+        for (SelectItem si : listaParentesco) {
+            Parentesco par = (Parentesco) di.find(new Parentesco(), Integer.valueOf(si.getDescription()));
+            if (par != null) {
                 CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
 
-                if (db.pesquisaDescontoDependentePorCategoria(par.getId(), categoriaDesconto.getId()) == null){
+                if (db.pesquisaDescontoDependentePorCategoria(par.getId(), categoriaDesconto.getId()) == null) {
                     descontoDepentende.setParentesco(par);
                     descontoDepentende.setCategoriaDesconto(categoriaDesconto);
 
-                    if (!di.save(descontoDepentende)){
+                    if (!di.save(descontoDepentende)) {
                         GenericaMensagem.error("Erro", "Não foi possivel salvar Desconto!");
                         di.rollback();
                         return;
@@ -1010,37 +1026,37 @@ public class ServicosBean implements Serializable {
                 descontoDepentende.setDesconto(descontox);
             }
         }
-        
-        valorDependente =  servicoValorDetalhe.getValorString();
+
+        valorDependente = servicoValorDetalhe.getValorString();
         listaDescontoDependente.clear();
         indexParentesco = 0;
         listaParentesco.clear();
         di.commit();
     }
-    
-    public void deletarDescontoDependente(CategoriaDescontoDependente cdd){
+
+    public void deletarDescontoDependente(CategoriaDescontoDependente cdd) {
         Dao di = new Dao();
-        
+
         di.openTransaction();
-        
-        if (!di.delete(di.find(cdd, cdd.getId()))){
+
+        if (!di.delete(di.find(cdd, cdd.getId()))) {
             GenericaMensagem.error("Erro", "Não foi possivel deletar Desconto!");
             di.rollback();
             return;
         }
-        
+
         listaDescontoDependente.clear();
         indexParentesco = 0;
         listaParentesco.clear();
         di.commit();
     }
-    
-    public void deletarDescontoDependenteTodos(){
+
+    public void deletarDescontoDependenteTodos() {
         Dao di = new Dao();
         di.openTransaction();
-        
-        for(CategoriaDescontoDependente cdd : listaDescontoDependente){
-            if (!di.delete(di.find(cdd, cdd.getId()))){
+
+        for (CategoriaDescontoDependente cdd : listaDescontoDependente) {
+            if (!di.delete(di.find(cdd, cdd.getId()))) {
                 GenericaMensagem.error("Erro", "Não foi possivel deletar Desconto!");
                 di.rollback();
                 return;
@@ -1081,7 +1097,7 @@ public class ServicosBean implements Serializable {
     }
 
     public List<CategoriaDescontoDependente> getListaDescontoDependente() {
-        if (listaDescontoDependente.isEmpty() && categoriaDesconto.getId() != -1){
+        if (listaDescontoDependente.isEmpty() && categoriaDesconto.getId() != -1) {
             CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
             listaDescontoDependente = db.listaDescontoDependentePorCategoria(categoriaDesconto.getId());
         }
@@ -1090,5 +1106,28 @@ public class ServicosBean implements Serializable {
 
     public void setListaDescontoDependente(List<CategoriaDescontoDependente> listaDescontoDependente) {
         this.listaDescontoDependente = listaDescontoDependente;
+    }
+
+    public List<SelectItem> getListAdministradora() {
+        if (listAdministradora.isEmpty()) {
+            Dao dao = new Dao();
+            List<Administradora> list = dao.list(new Administradora(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listAdministradora.add(new SelectItem(i, list.get(i).getPessoa().getNome(), "" + list.get(i).getId()));
+            }
+        }
+        return listAdministradora;
+    }
+
+    public void setListAdministradora(List<SelectItem> listAdministradora) {
+        this.listAdministradora = listAdministradora;
+    }
+
+    public Integer getIdAdministradora() {
+        return idAdministradora;
+    }
+
+    public void setIdAdministradora(Integer idAdministradora) {
+        this.idAdministradora = idAdministradora;
     }
 }
