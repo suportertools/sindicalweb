@@ -15,6 +15,10 @@ public interface ServicoPessoaDB {
     public List pesquisaTodosParaGeracao(String referencia);
 
     public ServicoPessoa pesquisaServicoPessoaPorPessoa(int idPessoa);
+    
+    public List listByPessoa(int idPessoa);
+    
+    public List listByCobranca(int idPessoa);
 
     public List pesquisaTodosParaGeracao(String referencia, int idPessoa);
 //    public Responsavel buscaResponsavel(int idServicoPessoa);
