@@ -13,6 +13,7 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ServicoPessoaBean implements Serializable {
     protected boolean chkContaCobranca;
     protected boolean renderServicos;
     protected int idTipoDocumento;
-    protected int idServico;
+    protected Integer idServico;
     protected List<SelectItem> listaTipoDocumento;
     protected List<SelectItem> listaServicos;
     //protected FisicaJSFBean fisicaJSFBean;
@@ -49,19 +50,18 @@ public class ServicoPessoaBean implements Serializable {
         chkContaCobranca = false;
         renderServicos = true;
         idTipoDocumento = 0;
-        idServico = 0;
+        idServico = null;
         listaTipoDocumento = new ArrayList();
         listaServicos = new ArrayList();
     }
 
     public void pesquisaFisica() {
-        Fisica fis = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+        Fisica fis = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
         if (fis != null) {
             PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
             titular = fis;
             titularEndereco = db.pesquisaEndPorPessoaTipo(fis.getPessoa().getId(), 3);
             servicoPessoa.setPessoa(fis.getPessoa());
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         }
     }
 
@@ -125,7 +125,6 @@ public class ServicoPessoaBean implements Serializable {
 
     public List<SelectItem> getListaTipoDocumento() {
         if (listaTipoDocumento.isEmpty()) {
-            int i = 0;
             FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
             List<FTipoDocumento> select = new ArrayList();
             if (isChkContaCobranca()) {
@@ -133,11 +132,10 @@ public class ServicoPessoaBean implements Serializable {
             } else {
                 select = db.pesquisaListaTipoExtrato();
             }
-            while (i < select.size()) {
-                listaTipoDocumento.add(new SelectItem(new Integer(i),
+            for (int i = 0; i < select.size(); i++) {
+                listaTipoDocumento.add(new SelectItem(i,
                         (String) (select.get(i).getDescricao()),
                         Integer.toString(select.get(i).getId())));
-                i++;
             }
         }
         return listaTipoDocumento;
@@ -145,14 +143,13 @@ public class ServicoPessoaBean implements Serializable {
 
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
-            int i = 0, idRotina = 0;
+            int idRotina = 0;
             ServicosDB db = new ServicosDBToplink();
             RotinaDB dbr = new RotinaDBToplink();
             idRotina = ((Rotina) dbr.pesquisaPaginaRotina(getRefreshPagina())).getId();
             List<Servicos> select = db.pesquisaTodos(idRotina);
-            while (i < select.size()) {
+            for (int i = 0; i < select.size(); i++) {
                 listaServicos.add(new SelectItem(i, (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
-                i++;
             }
         }
         return listaServicos;
@@ -164,8 +161,8 @@ public class ServicoPessoaBean implements Serializable {
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
 
         // --------------------------------------------
-        if(getListaServicos().isEmpty()) {
-           return "Cadastrar serviços!";
+        if (getListaServicos().isEmpty()) {
+            return "Cadastrar serviços!";
         }
         if (servico == null) {
             servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
@@ -341,11 +338,11 @@ public class ServicoPessoaBean implements Serializable {
         this.idTipoDocumento = idTipoDocumento;
     }
 
-    public int getIdServico() {
+    public Integer getIdServico() {
         return idServico;
     }
 
-    public void setIdServico(int idServico) {
+    public void setIdServico(Integer idServico) {
         this.idServico = idServico;
     }
 }
