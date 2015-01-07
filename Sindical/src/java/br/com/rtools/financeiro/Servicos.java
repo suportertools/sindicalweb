@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.beans.Administradora;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.sistema.Periodo;
 import javax.persistence.*;
@@ -61,6 +62,9 @@ public class Servicos implements java.io.Serializable {
     private boolean valorZerado;
     @Column(name = "is_validade_guias_vigente", nullable = false, columnDefinition = "boolean default false")
     private boolean validadeGuiasVigente;
+    @JoinColumn(name = "id_administradora", referencedColumnName = "id", nullable = true)
+    @ManyToOne
+    private Administradora administradora;    
 
     public Servicos() {
         this.id = -1;
@@ -84,7 +88,8 @@ public class Servicos implements java.io.Serializable {
         this.quantidadePeriodo = 0;
         this.familiarPeriodo = false;
         this.valorZerado = false;
-        validadeGuiasVigente = false;
+        this.validadeGuiasVigente = false;
+        this.administradora = null;
     }
 
     public Servicos(int id,
@@ -108,7 +113,8 @@ public class Servicos implements java.io.Serializable {
             int quantidadePeriodo,
             boolean familiarPeriodo,
             boolean valorZerado,
-            boolean validadeGuiasVigente) {
+            boolean validadeGuiasVigente,
+            Administradora administradora) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -131,6 +137,7 @@ public class Servicos implements java.io.Serializable {
         this.familiarPeriodo = familiarPeriodo;
         this.valorZerado = valorZerado;
         this.validadeGuiasVigente = validadeGuiasVigente;
+        this.administradora = administradora;
     }
 
     public int getId() {
@@ -312,5 +319,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setValidadeGuiasVigente(boolean validadeGuiasVigente) {
         this.validadeGuiasVigente = validadeGuiasVigente;
+    }
+
+    public Administradora getAdministradora() {
+        return administradora;
+    }
+
+    public void setAdministradora(Administradora administradora) {
+        this.administradora = administradora;
     }
 }

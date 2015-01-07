@@ -131,7 +131,7 @@ public class ServicoPessoa implements java.io.Serializable {
     }
 
     public String getNrDescontoString() {
-        return Moeda.converteR$Float(nrDesconto);
+        return Moeda.substituiVirgula(Moeda.converteR$Float(nrDesconto));
     }
 
     public void setNrDescontoString(String nrDescontoString) {
