@@ -1,8 +1,6 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.ServicoPessoa;
-import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +20,7 @@ import java.util.Date;
 @Table(name = "matr_convenio_medico")
 @NamedQuery(name = "MatriculaConvenioMedico.pesquisaID", query = "select mc from MatriculaConvenioMedico mc where mc.id=:pid")
 public class MatriculaConvenioMedico implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,7 +36,7 @@ public class MatriculaConvenioMedico implements java.io.Serializable {
 
     public MatriculaConvenioMedico() {
         this.id = -1;
-        this.setInativo("");
+        this.dtInativo = null;
         this.servicoPessoa = new ServicoPessoa();
         this.codigo = "";
     }
@@ -90,7 +89,7 @@ public class MatriculaConvenioMedico implements java.io.Serializable {
     }
 
     public void setInativo(String inativo) {
-        if (!(inativo.isEmpty())) {
+        if (inativo != null && !inativo.isEmpty()) {
             this.dtInativo = DataHoje.converte(inativo);
         }
     }
