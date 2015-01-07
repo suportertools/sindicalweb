@@ -22,10 +22,10 @@
                         <h:panelGrid columns="8">
                             <p:outputLabel value="Pesquisar: "/>
                             <p:inputMask value="#{matriculaConvenioMedicoBean.descPesquisa}" rendered="#{matriculaConvenioMedicoBean.porPesquisa.equals('cpf')}" mask="999.999.999-99">
-                                <p:ajax event="blur" update="@this" />
+                                <p:ajax event="change" update="@this" />
                             </p:inputMask>
                             <p:inputText value="#{matriculaConvenioMedicoBean.descPesquisa}" rendered="#{matriculaConvenioMedicoBean.porPesquisa.equals('nome')}">
-                                <p:ajax event="blur" update="@this" />
+                                <p:ajax event="change" update="@this" />
                             </p:inputText>
                             <p:outputLabel value="Por: "/>
                             <p:selectOneMenu value="#{matriculaConvenioMedicoBean.porPesquisa}">
@@ -44,14 +44,14 @@
                 </p:panel>
                 <p:panel id="i_tbl" styleClass="no-border">
                     <p:dataTable value="#{matriculaConvenioMedicoBean.listaConvenio}" var="convenioMedico" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
-                        <p:column headerText="ID" width="25" styleClass="text-center">
-                            <p:commandLink action="#{matriculaConvenioMedicoBean.edit(convenioMedico)}" value="#{convenioMedico.id}"  />
+                        <p:column width="30" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-link" action="#{matriculaConvenioMedicoBean.edit(convenioMedico)}" title="Editar registro nº#{convenioMedico.id}"  />
                         </p:column>
-                        <p:column headerText="Documento" width="60" styleClass="text-center">
-                            <p:commandLink action="#{matriculaConvenioMedicoBean.edit(convenioMedico)}" value="#{convenioMedico.servicoPessoa.pessoa.documento}"  />
+                        <p:column headerText="Documento" width="120" styleClass="text-center">
+                            <p:outputLabel value="#{convenioMedico.servicoPessoa.pessoa.documento}" />
                         </p:column>
                         <p:column headerText="Nome" styleClass="text-center">
-                            <h:commandLink value="#{convenioMedico.servicoPessoa.pessoa.documento}"   />
+                            <p:outputLabel value="#{convenioMedico.servicoPessoa.pessoa.nome}" />
                         </p:column>
                     </p:dataTable>
                 </p:panel>
