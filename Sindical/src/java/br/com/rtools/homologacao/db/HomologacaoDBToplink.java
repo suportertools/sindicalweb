@@ -536,7 +536,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                      " SELECT pem "
                     + "  FROM PessoaEmpresa pem "
                     + " WHERE pem.fisica.pessoa.documento like :Sdoc"
-                    + "   AND pem.principal = true"
+                    + "   AND(pem.principal = true OR pem.dtDemissao IS NULL)"
             );
             qry.setParameter("Sdoc", doc);
             return (PessoaEmpresa) qry.getSingleResult();
