@@ -13,7 +13,7 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
-            
+
             .class_tbl_contabil:hover {
                 background: #9eb4cf!important;
             }
@@ -87,7 +87,7 @@
                                                 <h:outputLabel value="Grupo Cidade"  style="font-weight: bold"/><br />
                                                 <h:outputLabel id="idStrGrupoCidade" value="#{juridicaBean.strGrupoCidade}" style="font-size: 12pt!important"/>
                                             </p:column>
-                                            
+
                                             <p:column rendered="#{juridicaBean.listaOposicao.size() > 0}">
                                                 <br />
                                                 <p:commandLink action="#{chamadaPaginaBean.pesquisa('pesquisaOposicao')}" value="Empresa com #{juridicaBean.listaOposicao.size()} carta de oposição cadastrada" actionListener="#{juridicaBean.listenerPessoaJuridia}" style="margin-left: 60px;" styleClass="font-color-red bold" rendered="#{juridicaBean.listaOposicao.size() == 1}" />
@@ -290,7 +290,7 @@
                                             <p:column headerText="Cidade / UF" width="250" style="text-align: center">
                                                 <h:outputText value="#{linha.argumento1.endereco.cidade.cidade} - #{linha.argumento1.endereco.cidade.uf}"/>
                                             </p:column>
-                                            
+
                                             <p:column headerText="" width="100" style="text-align: center">
                                                 <p:commandLink value="Ver Extrato" action="#{juridicaBean.extratoTelaListaContabil(linha.argumento0)}" style="color: red"/>
                                             </p:column>
@@ -301,6 +301,54 @@
                                         <ui:include src="pessoaComplemento_1.xhtml">  
                                             <ui:param name="idPessoa" value="#{juridicaBean.juridica.pessoa.id}" />
                                         </ui:include>                                 
+                                    </p:tab>
+
+                                    <p:tab title="Certidões">
+                                        <p:dataTable styleClass="margin-top-max" value="#{juridicaBean.listRepisMovimento}" var="repisMovimento" id="tbl" style="width: 100%" emptyMessage="Nenhum registro encontrado!">
+                                            <f:facet name="header">
+                                                Lista de Certidões Solicitadas
+                                            </f:facet> 
+                                            <p:column width="15">  
+                                                <p:rowToggler />  
+                                            </p:column>  
+                                            <p:column headerText="" width="20" styleClass="text-center">
+                                                <h:outputText value="#{repisMovimento.id}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="CNPJ" width="120" styleClass="text-center">
+                                                <h:outputText value="#{repisMovimento.pessoa.documento}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="Nome" width="300" >
+                                                <h:outputText value="#{repisMovimento.pessoa.nome}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="STATUS" styleClass="text-center">
+                                                <h:outputText value="#{repisMovimento.repisStatus.descricao}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="Emissão" styleClass="text-center" width="70">
+                                                <h:outputText value="#{repisMovimento.dataEmissaoString}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="Solicitante" styleClass="text-center">
+                                                <h:outputText value="#{repisMovimento.contato}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="Tipo" styleClass="text-center">
+                                                <h:outputText value="#{repisMovimento.certidaoTipo.descricao}" style="font-size: 8pt!important"/>
+                                            </p:column>
+                                            <p:column headerText="..." width="25" styleClass="text-center">
+                                                <p:commandButton icon="ui-icon-print" action="#{webREPISBean.imprimirCertificado(repisMovimento)}" rendered="#{repisMovimento.repisStatus.id == 3}" ajax="false"/>
+                                            </p:column>
+
+                                            <p:rowExpansion>
+                                                <h:panelGrid columns="5" styleClass="sbb">
+                                                    <p:column rendered="false">
+                                                        <h:outputLabel value="Procolo" style="font-weight: bold"/><br />
+                                                        <h:outputText value="#{repisMovimento.id}" style="margin-left: 20px"/>
+                                                    </p:column>
+                                                    <p:column>
+                                                        <h:outputLabel value="Ano" style="font-weight: bold"/><br />
+                                                        <h:outputText value="#{repisMovimento.ano}" style="margin-left: 20px"/>
+                                                    </p:column>
+                                                </h:panelGrid>
+                                            </p:rowExpansion>
+                                        </p:dataTable>
                                     </p:tab>
 
                                 </p:tabView>
@@ -546,7 +594,7 @@
                                     </p:dataTable>                                
                                 </h:panelGrid>
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="dlg_pesquisa_endereco" modal="true" resizable="false" height="600" width="1000" header="Pesquisar Endereço">
                                 <p:ajax event="close" listener="#{pesquisaEnderecoBean.clear()}"/>
                                 <p:panel id="i_pesquisa_endereco" styleClass="no-border">                                    
