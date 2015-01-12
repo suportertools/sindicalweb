@@ -17,7 +17,7 @@ import br.com.rtools.financeiro.db.*;
 import br.com.rtools.financeiro.lista.ListServicosCategoriaDesconto;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.beans.Administradora;
+import br.com.rtools.pessoa.Administradora;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.AnaliseString;
