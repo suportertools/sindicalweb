@@ -1,7 +1,7 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.pessoa.Administradora;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.beans.Administradora;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.sistema.Periodo;
 import javax.persistence.*;
