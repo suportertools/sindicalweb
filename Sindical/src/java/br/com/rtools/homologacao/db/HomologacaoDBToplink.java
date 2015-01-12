@@ -11,13 +11,13 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Query;
 
 public class HomologacaoDBToplink extends DB implements HomologacaoDB {
+
     @Override
     public Agendamento pesquisaProtocolo(int id) {
         Agendamento result = null;
@@ -29,7 +29,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "  AND a.agendador is null "
                     + "  AND a.horarios is null "
             );
-            
+
             qry.setParameter("pid", id);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -284,8 +284,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             statusCampo = " AND age.id_status = " + idStatus;
         }
         try {
-            String textoQry = 
-                    "       SELECT age.*                                      "
+            String textoQry
+                    = "       SELECT age.*                                      "
                     + "       FROM hom_agendamento age                         "
                     + "      INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
                     + innerPessoaEmpresa
@@ -296,11 +296,11 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + pessoaEmpresaCampo
                     + "        AND hor.ativo = true                            "
                     + "        AND age.id_filial = " + idFilial
-                    + "      ORDER BY age.dt_data DESC, hor.ds_hora ASC      " 
+                    + "      ORDER BY age.dt_data DESC, hor.ds_hora ASC      "
                     + "      LIMIT 1000                                        ";
-            
+
             Query qry = getEntityManager().createNativeQuery(textoQry, Agendamento.class);
-            
+
             return qry.getResultList();
 //            if (!qry.getResultList().isEmpty()) {
 //                SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -321,7 +321,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 //                }
 //            }
         } catch (Exception e) {
-        //} catch (StackOverflowError e) {
+            //} catch (StackOverflowError e) {
             e.getMessage();
         }
         return new ArrayList();
@@ -527,13 +527,12 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 //        }
 //        return result;
 //    }
-
     @Override
     public PessoaEmpresa pesquisaPessoaEmpresaPertencente(String doc) {
         PessoaEmpresa result = null;
         try {
             Query qry = getEntityManager().createQuery(
-                     " SELECT pem "
+                    " SELECT pem "
                     + "  FROM PessoaEmpresa pem "
                     + " WHERE pem.fisica.pessoa.documento like :Sdoc"
                     + "   AND(pem.principal = true OR pem.dtDemissao IS NULL)"
@@ -697,7 +696,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 result = (Senha) qry.getSingleResult();
             }
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         return result;
     }
@@ -726,7 +725,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return result;
     }
-    
+
     @Override
     public Senha pesquisaAtendimentoIniciadoSimples(int id_filial) {
         Senha result = null;
@@ -739,7 +738,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   AND S.filial.id = :id_filial"
                     + "   AND S.ateMovimento.reserva IS NULL"
                     + " ORDER BY S.senha");
-            
+
             qry.setParameter("data", DataHoje.dataHoje());
             qry.setParameter("id_filial", id_filial);
             qry.setMaxResults(1);
@@ -747,8 +746,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 result = (Senha) qry.getSingleResult();
             }
         } catch (Exception e) {
-             //e.printStackTrace();
-             return null;
+            //e.printStackTrace();
+            return null;
         }
         return result;
     }
@@ -757,21 +756,15 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     public boolean verificaNaoAtendidosSegRegistroAgendamento() {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    " SELECT *                                            "
+                    " SELECT *                                              "
                     + "   FROM seg_registro                                 "
                     + "  WHERE (CURRENT_DATE - 1) = dt_atualiza_homologacao ");
             if (qry.getResultList().isEmpty()) {
                 getEntityManager().getTransaction().begin();
                 Query qryUpdateAgendamento = getEntityManager().createNativeQuery(
-                        "UPDATE hom_agendamento                                                               "
-                        + "   SET id_status = 7                                                                 "
-                        + " WHERE dt_data > (                                                                   "
-                        + "       SELECT dt_atualiza_homologacao                                                "
-                        + "         FROM seg_registro                                                           "
-                        + "        WHERE id = 1                                                                 "
-                        + " )                                                                                   "
-                        + "   AND dt_data < CURRENT_DATE                                                        "
-                        + "   AND id NOT IN ( SELECT id_agendamento FROM hom_senha WHERE nr_senha IS NOT NULL ) "
+                        "UPDATE hom_agendamento             "
+                        + "   SET id_status = 7             "
+                        + " WHERE dt_data < CURRENT_DATE    "
                         + "   AND id_status = 2");
                 if (qryUpdateAgendamento.executeUpdate() == 0) {
                     getEntityManager().getTransaction().rollback();
@@ -848,7 +841,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return null;
     }
-    
+
     @Override
     public List<Senha> listaAtendimentoIniciadoSimples(int id_filial, int id_usuario) {
         List<Senha> result = new ArrayList();
@@ -865,73 +858,71 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 //            qry.setParameter("data", DataHoje.dataHoje());
 //            qry.setParameter("id_filial", id_filial);
 //            qry.setParameter("id_reserva", id_usuario);
-            
+
             Query qry = getEntityManager().createNativeQuery(
                     "SELECT s.* FROM ate_movimento a "
-                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
-                  + " WHERE a.dt_emissao = '" +DataHoje.dataHoje()+"'"
-                  + "   AND a.id_status = 1"
-                  + "   AND s.id_filial = " + id_filial
-                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +")"
-                  + " ORDER BY s.nr_senha, s.dt_data",
-            Senha.class);
+                    + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                    + " WHERE a.dt_emissao = '" + DataHoje.dataHoje() + "'"
+                    + "   AND a.id_status = 1"
+                    + "   AND s.id_filial = " + id_filial
+                    + "   AND (a.id_reserva IS NULL OR a.id_reserva = " + id_usuario + ")"
+                    + " ORDER BY s.nr_senha, s.dt_data",
+                    Senha.class);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
-             //e.printStackTrace();
+            //e.printStackTrace();
         }
         return result;
     }
-    
+
     @Override
     public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String descricaoFisica, String tipoPesquisaFisica) {
         List<Senha> result = new ArrayList();
         try {
-            
 
             String inner = "", and = "", order = " ORDER BY s.nr_senha desc, s.dt_data ";
-            
-            if (id_status != 0){
-                and += " AND a.id_status = "+ id_status;
+
+            if (id_status != 0) {
+                and += " AND a.id_status = " + id_status;
             }
-            
-            if (tipoData.equals("hoje")){
-                and += " AND a.dt_emissao = '" +DataHoje.dataHoje()+"'";
-            }else{
-                and += " AND a.dt_emissao BETWEEN '" +dataInicial+"' AND '"+ dataFinal +"'";
+
+            if (tipoData.equals("hoje")) {
+                and += " AND a.dt_emissao = '" + DataHoje.dataHoje() + "'";
+            } else {
+                and += " AND a.dt_emissao BETWEEN '" + dataInicial + "' AND '" + dataFinal + "'";
             }
-            
-            if (id_pessoa != -1){
+
+            if (id_pessoa != -1) {
                 inner += " INNER JOIN pes_juridica j ON j.id = a.id_juridica ";
-                and +=  " AND j.id_pessoa = " + id_pessoa;
+                and += " AND j.id_pessoa = " + id_pessoa;
             }
-            
-            
-            if (!tipoPesquisaFisica.isEmpty()){
-                if (!descricaoFisica.isEmpty() && !descricaoFisica.equals("___.___.___-__")){
+
+            if (!tipoPesquisaFisica.isEmpty()) {
+                if (!descricaoFisica.isEmpty() && !descricaoFisica.equals("___.___.___-__")) {
                     inner += " INNER JOIN sis_pessoa p ON p.id = a.id_sis_pessoa ";
-                    if (tipoPesquisaFisica.equals("nome")){
+                    if (tipoPesquisaFisica.equals("nome")) {
                         descricaoFisica = AnaliseString.normalizeLower(descricaoFisica);
-                        and += " AND TRANSLATE(LOWER(p.ds_nome)) like '%"+descricaoFisica+"%' ";
-                    }else if (tipoPesquisaFisica.equals("cpf")){
-                        and += " AND p.ds_documento = '"+descricaoFisica+"' ";
-                    }else{
-                        and += " AND p.ds_rg = '"+descricaoFisica+"' ";
+                        and += " AND TRANSLATE(LOWER(p.ds_nome)) like '%" + descricaoFisica + "%' ";
+                    } else if (tipoPesquisaFisica.equals("cpf")) {
+                        and += " AND p.ds_documento = '" + descricaoFisica + "' ";
+                    } else {
+                        and += " AND p.ds_rg = '" + descricaoFisica + "' ";
                     }
                 }
             }
-            
+
             String textQry = "SELECT s.* FROM ate_movimento a "
-                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
-                  + inner 
-                  + " WHERE s.id_filial = " + id_filial
-                  + and
-                  // ANTES ESTAVA VISUALIZANDO AS RESERVAS SOMENTES PARA QUEM FOSSE O DONO--- TAREFA: 250 runrun.it
-                  //+ "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +") "
-                  + order;
-            
-            Query qry = getEntityManager().createNativeQuery(textQry,Senha.class);
+                    + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                    + inner
+                    + " WHERE s.id_filial = " + id_filial
+                    + and
+                    // ANTES ESTAVA VISUALIZANDO AS RESERVAS SOMENTES PARA QUEM FOSSE O DONO--- TAREFA: 250 runrun.it
+                    //+ "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +") "
+                    + order;
+
+            Query qry = getEntityManager().createNativeQuery(textQry, Senha.class);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
@@ -940,7 +931,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return result;
     }
-    
+
     @Override
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario) {
         List<Senha> result = new ArrayList();
@@ -959,144 +950,143 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 //            qry.setParameter("id_filial", id_filial);
 //            qry.setParameter("id_usuario", id_usuario);
 //            qry.setParameter("id_reserva", id_usuario);
-            
+
             Query qry = getEntityManager().createNativeQuery(
                     "SELECT s.* FROM ate_movimento a "
-                  + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
-                  + " WHERE a.dt_emissao = '" +DataHoje.dataHoje()+"'"
-                  + "   AND a.id_status = 4"
-                  + "   AND s.id_filial = " + id_filial
-                  + "   AND a.id_atendente = " + id_usuario
-                  + "   AND (a.id_reserva IS NULL OR a.id_reserva = "+ id_usuario +")"
-                  + " ORDER BY s.nr_senha, s.dt_data",
-            Senha.class);            
-            
+                    + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                    + " WHERE a.dt_emissao = '" + DataHoje.dataHoje() + "'"
+                    + "   AND a.id_status = 4"
+                    + "   AND s.id_filial = " + id_filial
+                    + "   AND a.id_atendente = " + id_usuario
+                    + "   AND (a.id_reserva IS NULL OR a.id_reserva = " + id_usuario + ")"
+                    + " ORDER BY s.nr_senha, s.dt_data",
+                    Senha.class);
+
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
-             //e.printStackTrace();
+            //e.printStackTrace();
         }
         return result;
     }
-    
+
     @Override
     public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario) {
         Senha result = null;
         Query qry = getEntityManager().createNativeQuery(
-                "SELECT s.* FROM ate_movimento a " +
-                " INNER JOIN hom_senha s on s.id_atendimento = a.id " +
-                " WHERE a.dt_emissao = '"+DataHoje.dataHoje()+"'" +
-                "   AND a.id_status = 1" +
-                "   AND s.id_filial = " + id_filial +
-                "   AND a.id_reserva = " + id_usuario +
-                " ORDER BY s.nr_senha",
-        Senha.class);            
+                "SELECT s.* FROM ate_movimento a "
+                + " INNER JOIN hom_senha s on s.id_atendimento = a.id "
+                + " WHERE a.dt_emissao = '" + DataHoje.dataHoje() + "'"
+                + "   AND a.id_status = 1"
+                + "   AND s.id_filial = " + id_filial
+                + "   AND a.id_reserva = " + id_usuario
+                + " ORDER BY s.nr_senha",
+                Senha.class);
         qry.setMaxResults(1);
-        try{
+        try {
             result = (Senha) qry.getSingleResult();
         } catch (Exception e) {
-             //e.printStackTrace();
+            //e.printStackTrace();
         }
         return result;
     }
-    
+
     @Override
-    public List<Senha> listaSequenciaSenha(int id_filial){
-        try{
+    public List<Senha> listaSequenciaSenha(int id_filial) {
+        try {
             Query qry = getEntityManager().createQuery(
                     "SELECT s "
-                  + "  FROM Senha s"
-                  + " WHERE s.dtData = :pdata"
-                  + "   AND s.filial.id = :pfilial"
-                  + "   AND (s.horaChamada = '' OR s.horaChamada is null)"
-                  + " ORDER BY s.senha ASC"
+                    + "  FROM Senha s"
+                    + " WHERE s.dtData = :pdata"
+                    + "   AND s.filial.id = :pfilial"
+                    + "   AND (s.horaChamada = '' OR s.horaChamada is null)"
+                    + " ORDER BY s.senha ASC"
             );
-        
+
             qry.setParameter("pdata", DataHoje.dataHoje());
             qry.setParameter("pfilial", id_filial);
-            
+
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();
     }
 
     @Override
-    public PessoaEmpresa pesquisaPessoaEmpresaAdmissao(int id_fisica, int id_juridica, String dataAdmissao){
-        try{
+    public PessoaEmpresa pesquisaPessoaEmpresaAdmissao(int id_fisica, int id_juridica, String dataAdmissao) {
+        try {
             Query qry = getEntityManager().createQuery(
                     "SELECT pe "
-                  + "  FROM PessoaEmpresa pe"
-                  + " WHERE pe.fisica.id = :id_fisica"
-                  + "   AND pe.juridica.id = :id_juridica"
-                  + "   AND pe.dtAdmissao = :dt_admissao"
+                    + "  FROM PessoaEmpresa pe"
+                    + " WHERE pe.fisica.id = :id_fisica"
+                    + "   AND pe.juridica.id = :id_juridica"
+                    + "   AND pe.dtAdmissao = :dt_admissao"
             );
-        
+
             qry.setParameter("id_fisica", id_fisica);
             qry.setParameter("id_juridica", id_juridica);
             qry.setParameter("dt_admissao", DataHoje.converte(dataAdmissao));
-            
+
             return (PessoaEmpresa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
-        }        
+        }
         return null;
     }
-    
+
     @Override
-    public PessoaEmpresa pesquisaPessoaEmpresaDemissao(int id_fisica, int id_juridica, String dataDemissao){
-        try{
+    public PessoaEmpresa pesquisaPessoaEmpresaDemissao(int id_fisica, int id_juridica, String dataDemissao) {
+        try {
             Query qry = getEntityManager().createQuery(
                     "SELECT pe "
-                  + "  FROM PessoaEmpresa pe"
-                  + " WHERE pe.fisica.id = :id_fisica"
-                  + "   AND pe.juridica.id = :id_juridica"
-                  + "   AND pe.dtDemissao = :dt_demissao"
+                    + "  FROM PessoaEmpresa pe"
+                    + " WHERE pe.fisica.id = :id_fisica"
+                    + "   AND pe.juridica.id = :id_juridica"
+                    + "   AND pe.dtDemissao = :dt_demissao"
             );
-        
+
             qry.setParameter("id_fisica", id_fisica);
             qry.setParameter("id_juridica", id_juridica);
             qry.setParameter("dt_demissao", DataHoje.converte(dataDemissao));
-            
+
             return (PessoaEmpresa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
-        }        
+        }
         return null;
     }
-    
+
     @Override
-    public Agendamento pesquisaAgendamentoPorPessoaEmpresa(int id_pessoa_empresa, int[] ids_status){
-        try{
-            String text_qry =
-                    "SELECT a "
-                  + "  FROM Agendamento a"
-                  + " WHERE a.pessoaEmpresa.id = :id_pessoa_empresa ";
+    public Agendamento pesquisaAgendamentoPorPessoaEmpresa(int id_pessoa_empresa, int[] ids_status) {
+        try {
+            String text_qry
+                    = "SELECT a "
+                    + "  FROM Agendamento a"
+                    + " WHERE a.pessoaEmpresa.id = :id_pessoa_empresa ";
             String ids = "";
-            for (int i = 0; i < ids_status.length; i++){
-                ids += (ids.isEmpty()) ? ""+ids_status[i] : ", "+ids_status[i];
+            for (int i = 0; i < ids_status.length; i++) {
+                ids += (ids.isEmpty()) ? "" + ids_status[i] : ", " + ids_status[i];
 //                if (ids.isEmpty())
 //                    ids = ""+ids_status[i];
 //                else
 //                    ids += ", "+ids_status[i];
-                    
+
             }
-            String text_and =
-                    " AND a.status.id IN ("+ids+")";
-            
-            
+            String text_and
+                    = " AND a.status.id IN (" + ids + ")";
+
             Query qry = getEntityManager().createQuery(
                     text_qry + text_and
             );
-        
+
             qry.setParameter("id_pessoa_empresa", id_pessoa_empresa);
-            
+
             return (Agendamento) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
-        }        
+        }
         return null;
     }
 }
