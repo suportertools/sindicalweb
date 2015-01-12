@@ -82,7 +82,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             return result;
         }
     }
-    
+
     @Override
     public List validaPessoaRepisAnoTipo(int idPessoa, int ano, int id_tipo_certidao) {
         List result = new ArrayList();
@@ -103,7 +103,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             return result;
         }
     }
-    
+
     @Override
     public List listaProtocolosPorContabilidade(int idPessoa, int ano) {
         List result = new ArrayList();
@@ -159,10 +159,12 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     }
 
     /**
-     * <p>Mudança de estrutura.</p>
-     * @deprecated 
+     * <p>
+     * Mudança de estrutura.</p>
+     *
+     * @deprecated
      * @param id_patronal
-     * @return 
+     * @return
      */
     @Override
     public List listaProtocolosPorPatronalCnae(int id_patronal) {
@@ -336,144 +338,143 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         }
         return null;
     }
-    
+
     @Override
-    public List<CertidaoTipo> listaCertidaoTipo(){
+    public List<CertidaoTipo> listaCertidaoTipo() {
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT ct "
+                    " SELECT ct "
                     + "   FROM CertidaoTipo ct "
                     + "  WHERE ct.ativo = true "
                     + "  ORDER BY ct.id "
             );
-            
+
             return qry.getResultList();
-        }catch(Exception e){
-            
-        }
-        return new ArrayList();
-    }
-    
-    @Override
-    public List<CertidaoDisponivel> listaCertidaoDisponivel(int id_cidade, int id_convencao){
-        try {
-            Query qry = getEntityManager().createQuery(
-                      " SELECT cd "
-                    + "   FROM CertidaoDisponivel cd "
-                    + "  WHERE cd.cidade.id = " + id_cidade 
-                    + "    AND cd.convencao.id = " + id_convencao 
-                    + "  ORDER BY cd.certidaoTipo.descricao "
-            );
-            return qry.getResultList();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return new ArrayList();
     }
 
     @Override
-    public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao){
+    public List<CertidaoDisponivel> listaCertidaoDisponivel(int id_cidade, int id_convencao) {
         try {
-            String referencia = DataHoje.DataToArray(DataHoje.data())[2]+DataHoje.DataToArray(DataHoje.data())[1];
-            
-            Query qry = getEntityManager().createNativeQuery(
-                    " SELECT cp.* FROM arr_convencao_periodo cp "
-                  + "  WHERE cp.id_convencao = "+id_convencao+" "
-                  + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = "+id_cidade+")"
-                  + "    AND ( "+referencia+" >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
-                  + "         AND "+referencia+" <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
-                  + "    ) ", ConvencaoPeriodo.class
+            Query qry = getEntityManager().createQuery(
+                    " SELECT cd "
+                    + "   FROM CertidaoDisponivel cd "
+                    + "  WHERE cd.cidade.id = " + id_cidade
+                    + "    AND cd.convencao.id = " + id_convencao
+                    + "  ORDER BY cd.certidaoTipo.descricao "
             );
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List<ConvencaoPeriodo> listaConvencaoPeriodo(int id_cidade, int id_convencao) {
+        try {
+            String referencia = DataHoje.DataToArray(DataHoje.data())[2] + DataHoje.DataToArray(DataHoje.data())[1];
+
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT cp.* FROM arr_convencao_periodo cp "
+                    + "  WHERE cp.id_convencao = " + id_convencao + " "
+                    + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = " + id_cidade + ")"
+                    + "    AND ( " + referencia + " >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) "
+                    + "         AND " + referencia + " <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
+                    + "    ) ", ConvencaoPeriodo.class
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList<>();
     }
-    
+
     @Override
-    public List<ConvencaoPeriodo> listaConvencaoPeriodoData(int id_cidade, int id_convencao, String referencia){
+    public List<ConvencaoPeriodo> listaConvencaoPeriodoData(int id_cidade, int id_convencao, String referencia) {
         try {
             Query qry = getEntityManager().createNativeQuery(
                     " SELECT cp.* FROM arr_convencao_periodo cp "
-                  + "  WHERE cp.id_convencao = "+id_convencao+" "
-                  + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = "+id_cidade+")"
-                  + "    AND ( "+referencia+" >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) " 
-                  + "         AND "+referencia+" <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
-                  + "    ) ", ConvencaoPeriodo.class
+                    + "  WHERE cp.id_convencao = " + id_convencao + " "
+                    + "    AND cp.id_grupo_cidade IN (SELECT gc.id_grupo_cidade FROM arr_grupo_cidades gc WHERE gc.id_cidade = " + id_cidade + ")"
+                    + "    AND ( " + referencia + " >= CAST(SUBSTRING(cp.ds_referencia_inicial,4,4) || SUBSTRING(cp.ds_referencia_inicial,1,2)  AS int) "
+                    + "         AND " + referencia + " <= CAST(SUBSTRING(cp.ds_referencia_final  ,4,4) || SUBSTRING(cp.ds_referencia_final  ,1,2) AS int) "
+                    + "    ) ", ConvencaoPeriodo.class
             );
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList<>();
     }
-    
+
     @Override
-    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal, String quantidade){
-        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
+    public List<RepisMovimento> pesquisarListaLiberacao(String por, String descricao, int id_patronal, String quantidade) {
+        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
-        
+
         String inner = "", and = "", limit = "";
-        
-        String textQry = 
-                " SELECT rm.* " +
-                "   FROM arr_repis_movimento rm ";
-        
-        
+
+        String textQry
+                = " SELECT rm.* "
+                + "   FROM arr_repis_movimento rm ";
+
         inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
-               + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
-        and   += "  WHERE pa.id = "+id_patronal;
-        
-        if (!descricao.isEmpty()){
+                + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+        and += "  WHERE pa.id = " + id_patronal;
+
+        if (!descricao.isEmpty()) {
             switch (por) {
                 case "nome":
-                    and   += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao+"%'";
+                    and += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao + "%'";
                     break;
                 case "cnpj":
-                    and   += "    AND p.ds_documento LIKE '%"+descricao+"'";
+                    and += "    AND p.ds_documento LIKE '%" + descricao + "'";
                     break;
                 case "protocolo":
-                    and   += "    AND rm.id = "+descricao;
+                    and += "    AND rm.id = " + descricao;
                     break;
                 case "status":
                     inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
-                    if (!descricao.equals("0"))
-                        and   += "    AND rs.id = "+descricao;
+                    if (!descricao.equals("0")) {
+                        and += "    AND rs.id = " + descricao;
+                    }
                     break;
                 case "solicitante":
-                    and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
+                    and += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%" + descricao + "%'";
                     break;
                 case "tipo":
-                    and   += "    AND rm.id_certidao_tipo = " + descricao;
+                    and += "    AND rm.id_certidao_tipo = " + descricao;
                     break;
                 case "cidade":
-                    inner += " INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 5 " +
-                             " INNER JOIN end_endereco e ON e.id = pe.id_endereco " +
-                             " INNER JOIN end_cidade c ON c.id = e.id_cidade";
-                    and   += "   AND c.id = " + descricao;
+                    inner += " INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 5 "
+                            + " INNER JOIN end_endereco e ON e.id = pe.id_endereco "
+                            + " INNER JOIN end_cidade c ON c.id = e.id_cidade";
+                    and += "   AND c.id = " + descricao;
                     break;
             }
         }
-        
-        if (!quantidade.equals("tudo")){
+
+        if (!quantidade.equals("tudo")) {
             limit = " LIMIT " + quantidade;
         }
-        
+
         textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC " + limit;
-        
+
         Query qry = getEntityManager().createNativeQuery(
-            textQry, RepisMovimento.class
+                textQry, RepisMovimento.class
         );
-        try{
+        try {
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();
     }
-    
-    
+
 //    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade, int ano){
 //        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
 //        descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
@@ -531,83 +532,97 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
 //        return new ArrayList();
 //    }
     @Override
-    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade){
-        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);  
+    public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade) {
+        descricao = Normalizer.normalize(descricao, Normalizer.Form.NFD);
         descricao = descricao.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
-        
+
         String inner = "", and = "";
-        
-        String textQry = 
-                " SELECT rm.* " +
-                "   FROM arr_repis_movimento rm ";
-        
-        if (id_pessoa != -1){
+
+        String textQry
+                = " SELECT rm.* "
+                + "   FROM arr_repis_movimento rm ";
+
+        if (id_pessoa != -1) {
             inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
-                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
-            and   += "  WHERE p.id = "+id_pessoa;
-        }else{
+                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+            and += "  WHERE p.id = " + id_pessoa;
+        } else {
             inner += "  INNER JOIN arr_patronal pa ON pa.id = rm.id_patronal "
-                   + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
-            and   += "  WHERE rm.id_pessoa IN ("
-                   + "	select j.id_pessoa " 
-                   + "	  from pes_juridica j " 
-                   + "	 inner join pes_juridica jc ON jc.id_pessoa = " +id_contabilidade
-                   + "	 where j.id_contabilidade = jc.id"
-                   + ")";
+                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa ";
+            and += "  WHERE rm.id_pessoa IN ("
+                    + "	select j.id_pessoa "
+                    + "	  from pes_juridica j "
+                    + "	 inner join pes_juridica jc ON jc.id_pessoa = " + id_contabilidade
+                    + "	 where j.id_contabilidade = jc.id"
+                    + ")";
         }
-        
-        if (!descricao.isEmpty()){
+
+        if (!descricao.isEmpty()) {
             switch (por) {
                 case "nome":
-                    and   += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao+"%'";
+                    and += "    AND TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + descricao + "%'";
                     break;
                 case "cnpj":
-                    and   += "    AND p.ds_documento LIKE '%"+descricao+"'";
+                    and += "    AND p.ds_documento LIKE '%" + descricao + "'";
                     break;
                 case "protocolo":
-                    and   += "    AND rm.id = "+descricao;
+                    and += "    AND rm.id = " + descricao;
                     break;
                 case "status":
                     inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";
-                    and   += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%"+descricao+"%'";
+                    and += "    AND TRANSLATE(LOWER(rs.ds_descricao)) LIKE '%" + descricao + "%'";
                     break;
                 case "solicitante":
-                    and   += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%"+descricao+"%'";
+                    and += "    AND TRANSLATE(LOWER(rm.ds_solicitante)) LIKE '%" + descricao + "%'";
                     break;
             }
         }
-        
+
         textQry += inner + and + " ORDER BY rm.dt_emissao DESC, rm.id DESC, p.ds_nome DESC";
-        
+
         Query qry = getEntityManager().createNativeQuery(
-            textQry, RepisMovimento.class
+                textQry, RepisMovimento.class
         );
-        try{
+        try {
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();
     }
-    
+
     @Override
-    public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo){
-        String textQry = (
-                "  SELECT cm "
+    public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo) {
+        String textQry = ("  SELECT cm "
                 + "  FROM CertidaoMensagem cm "
                 + " WHERE cm.cidade.id = :pcidade "
-                + "   AND cm.certidaoTipo.id = :ptipo"
-        );
-        
-        try{
+                + "   AND cm.certidaoTipo.id = :ptipo");
+
+        try {
             Query qry = getEntityManager().createQuery(textQry);
 
             qry.setParameter("pcidade", id_cidade);
             qry.setParameter("ptipo", id_certidao_tipo);
             return (CertidaoMensagem) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return null;
+    }
+
+    @Override
+    public List listRepisPorPessoa(int idPessoa) {
+
+        try {
+            Query query = getEntityManager().createQuery("SELECT RM FROM RepisMovimento AS RM WHERE RM.pessoa.id = :pessoa");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList<>();
     }
 }

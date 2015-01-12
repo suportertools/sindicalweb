@@ -68,4 +68,6 @@ public interface WebREPISDB {
     public List<RepisMovimento> pesquisarListaSolicitacao(String por, String descricao, int id_pessoa, int id_contabilidade);
     public CertidaoMensagem pesquisaCertidaoMensagem(int id_cidade, int id_certidao_tipo);
     
+    public List listRepisPorPessoa(int idPessoa);
+    
 }
