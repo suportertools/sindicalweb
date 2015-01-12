@@ -73,62 +73,72 @@ public class DB {
 
     public Configuracao servidor(String cliente) {
         Configuracao configuracao = new Configuracao();
-        if (cliente.equals("ComercioAraras")
-                || cliente.equals("ComercioSertaozinho")
-                || cliente.equals("FederacaoBH")
-                || cliente.equals("SinpaaeRP")
-                || cliente.equals("VestuarioLimeira")
-                || cliente.equals("ComercioLimeira")
-                || cliente.equals("ComercioItapetininga")
-                || cliente.equals("SeaacRP")
-                || cliente.equals("MetalRP")
-                || cliente.equals("ExtrativaRP")
-                || cliente.equals("AlimentacaoArceburgo")
-                || cliente.equals("FederacaoExtrativaSP")
-                || cliente.equals("ExtrativaSP")
-                || cliente.equals("HoteleiroRP")
-                || cliente.equals("GaragistaRP")
-                || cliente.equals("MetalBatatais")
-                || cliente.equals("ServidoresRP")
-                || cliente.equals("SeaacFranca")
-                || cliente.equals("SincovagaSP")) {
-            configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence(cliente);
-            configuracao.setHost("192.168.1.102");
-            configuracao.setSenha("r#@tools");
-        } else if (cliente.equals("Rtools")) {
-            configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence(cliente);
-            configuracao.setHost("192.168.1.102");
-            configuracao.setSenha("r#@tools");
-        } else if (cliente.equals("NovaBase")) {
-            configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence(cliente);
-            configuracao.setHost("192.168.1.69");
-            configuracao.setSenha("989899");
-        } else if (cliente.equals("ComercioRP")) {
-            configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence("Sindical");
-            configuracao.setHost("200.152.187.241");
-            configuracao.setSenha("989899");
-        } else {
-            if (cliente.equals("Sindical")) {
+        switch (cliente) {
+            case "ComercioAraras":
+            case "ComercioSertaozinho":
+            case "FederacaoBH":
+            case "SinpaaeRP":
+            case "VestuarioLimeira":
+            case "ComercioItapetininga":
+            case "SeaacRP":
+            case "MetalRP":
+            case "ExtrativaRP":
+            case "AlimentacaoArceburgo":
+            case "FederacaoExtrativaSP":
+            case "ExtrativaSP":
+            case "HoteleiroRP":
+            case "GaragistaRP":
+            case "MetalBatatais":
+            case "ServidoresRP":
+            case "SeaacFranca":
+            case "SincovagaSP":
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence(cliente);
+                configuracao.setHost("192.168.1.102");
+                configuracao.setSenha("r#@tools");
+                break;
+            case "Rtools":
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence(cliente);
+                configuracao.setHost("192.168.1.102");
+                configuracao.setSenha("r#@tools");
+                break;
+            case "ComercioLimeira":
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence(cliente);
+                configuracao.setHost("200.204.32.23");
+                configuracao.setSenha("r#@tools");
+                break;
+            case "NovaBase":
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence(cliente);
+                configuracao.setHost("192.168.1.69");
+                configuracao.setSenha("989899");
+                break;
+            case "ComercioRP":
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence("Sindical");
+                configuracao.setHost("200.152.187.241");
+                configuracao.setSenha("989899");
+                break;
+            default:
+                if (cliente.equals("Sindical")) {
 //                cliente = "c_itapetininga";
 //                configuracao.setHost("localhost");
 //                configuracao.setSenha("989899");
-                // -- ATUAL
-                cliente = "ComercioRP";
-                configuracao.setHost("192.168.1.102");
-                configuracao.setSenha("r#@tools");
-            }
-//            } else {
+                    // -- ATUAL
+                    cliente = "ComercioRP";
+                    configuracao.setHost("192.168.1.102");
+                    configuracao.setSenha("r#@tools");
+                }   //            } else {
 //                if (cliente.equals("ServidoresRP")) {
 //                    configuracao.setHost("localhost");
 //                    configuracao.setSenha("989899");
 //                }
 //            }
-            configuracao.setCaminhoSistema(cliente);
-            configuracao.setPersistence(cliente);
+                configuracao.setCaminhoSistema(cliente);
+                configuracao.setPersistence(cliente);
+                break;
         }
         return configuracao;
     }
