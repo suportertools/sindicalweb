@@ -120,6 +120,7 @@ public class JuridicaBean implements Serializable {
     private List<SelectItem> listaTipoDocumento = new ArrayList<SelectItem>();
     private List<SelectItem> listaPorte = new ArrayList<SelectItem>();
     private List<ContribuintesInativos> listaContribuintesInativos = new ArrayList();
+    private List<RepisMovimento> listRepisMovimento = new ArrayList();
     private List<SelectItem> listaMotivoInativacao = new ArrayList<SelectItem>();
     private String atualiza = "";
     private String tipoFiltro = "todas";
@@ -409,7 +410,7 @@ public class JuridicaBean implements Serializable {
                     juridicaReceita.setCnaeSegundario(obj.getString("atividades_secundarias"));
                     juridicaReceita.setCidade(obj.getString("municipio"));
                     juridicaReceita.setUf(obj.getString("uf"));
-                    
+
                     dao.openTransaction();
 
                     if (!dao.save(juridicaReceita)) {
@@ -928,6 +929,7 @@ public class JuridicaBean implements Serializable {
     }
 
     public String editar(Juridica j) {
+        listRepisMovimento.clear();
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         juridica = j;
@@ -940,13 +942,13 @@ public class JuridicaBean implements Serializable {
         listaContribuintesInativos.clear();
         listaEmpresasPertencentes.clear();
         contribuintesInativos = new ContribuintesInativos();
-        
+
         if (juridica.getContabilidade() != null) {
             nomeContabilidade = juridica.getContabilidade().getPessoa().getNome();
-        }else{
+        } else {
             nomeContabilidade = "";
         }
-        
+
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -2506,7 +2508,7 @@ public class JuridicaBean implements Serializable {
     public void setNomePesquisaContabilidade(String nomePesquisaContabilidade) {
         this.nomePesquisaContabilidade = nomePesquisaContabilidade;
     }
-    
+
     public List<Oposicao> getListaOposicao() {
         return listaOposicao;
     }
@@ -2591,6 +2593,18 @@ public class JuridicaBean implements Serializable {
 
     public void setDisabled(Boolean[] disabled) {
         this.disabled = disabled;
+    }
+
+    public List<RepisMovimento> getListRepisMovimento() {
+        if (listRepisMovimento.isEmpty()) {
+            WebREPISDB webREPISDB = new WebREPISDBToplink();
+            listRepisMovimento = webREPISDB.listRepisPorPessoa(juridica.getPessoa().getId());
+        }
+        return listRepisMovimento;
+    }
+
+    public void setListRepisMovimento(List<RepisMovimento> listRepisMovimento) {
+        this.listRepisMovimento = listRepisMovimento;
     }
 }
 
