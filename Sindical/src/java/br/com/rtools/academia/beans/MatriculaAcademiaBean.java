@@ -97,6 +97,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private PessoaComplemento pessoaComplemento;
     private Movimento movimento;
     private Socios socios;
+    private Socios sociosCobranca;
     private Lote lote;
     private String descricaoPesquisa;
     private String porPesquisa;
@@ -259,6 +260,11 @@ public class MatriculaAcademiaBean implements Serializable {
             matriculaAcademia.getServicoPessoa().setCobranca(cobranca);
         } else {
             matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getCobranca());
+        }        
+        if(matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
+            if(sociosCobranca.getId() != -1) {
+                //matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getPessoa());
+            }
         }
         if (responsavel != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
@@ -1975,5 +1981,17 @@ public class MatriculaAcademiaBean implements Serializable {
 
         }
         return true;
+    }
+    
+    public Socios getSociosCobranca() {
+        if (cobranca != null) {
+            SociosDB sociosDB = new SociosDBToplink();
+            sociosCobranca = sociosDB.pesquisaSocioPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+        }
+        return sociosCobranca;
+    }
+    
+    public void setSociosCobranca(Socios sociosCobranca) {
+        this.sociosCobranca = sociosCobranca;
     }
 }
