@@ -122,8 +122,8 @@
                                                     <p:commandLink id="idResp" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.nome}" onclick="PF('dlg_pessoa_card').show()" update="i_pessoa_card" action="#{pessoaCardBean.cardPessoa(matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.id)}" title="Ver detalhes" />
                                                     <p:commandButton value="Pesquisar / Alterar Responsável" onclick="PF('dlg_painel_trocar_responsavel').show();" type="button" icon="ui-icon-search" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" styleClass="margin-left-max" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
                                                     <h:column rendered="#{matriculaAcademiaBean.sociosCobranca.id != -1}">
-                                                        <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha"/>
-                                                    </h:column>                                                    
+                                                        <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
+                                                    </h:column>
                                                 </h:panelGrid>
                                             </h:column>
                                             <p:outputLabel value="Modalidade:" />
