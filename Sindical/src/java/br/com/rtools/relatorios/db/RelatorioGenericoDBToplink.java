@@ -20,6 +20,7 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
             qry.setParameter("idRotina", idRotina);
             result = qry.getResultList();
         } catch (Exception e) {
+            return result;
         }
         return result;
     }
