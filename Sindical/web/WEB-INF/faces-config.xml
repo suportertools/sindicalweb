@@ -1621,8 +1621,8 @@
         </navigation-case>
         
         <navigation-case>
-            <from-outcome>relatorioMovimentoComparativo</from-outcome>
-            <to-view-id>/relatorioMovimentoComparativo.jsf</to-view-id>
+            <from-outcome>relatorioComparativoArrecadacao</from-outcome>
+            <to-view-id>/relatorioComparativoArrecadacao.jsf</to-view-id>
             <redirect/>
         </navigation-case>
         <!-- 
