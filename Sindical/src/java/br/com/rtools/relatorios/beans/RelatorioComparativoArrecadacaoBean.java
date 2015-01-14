@@ -642,7 +642,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
         }
         if (listSelectItem[1].isEmpty()) {
             ServicoRotinaDB srdb = new ServicoRotinaDBToplink();
-            List<Servicos> select = srdb.pesquisaTodosServicosComRotinas(4);
+            List<Servicos> select = srdb.pesquisaTodosServicosComRotinas(278);
             for (int i = 0; i < select.size(); i++) {
                 listSelectItem[1].add(
                         new SelectItem(
