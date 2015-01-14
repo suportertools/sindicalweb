@@ -86,7 +86,7 @@
                                     <h:column>
                                         <h:panelGrid id="i_panel_filtro_tipo_servico" columns="6" cellpadding="5">
                                             <p:outputLabel value="Tipo de Serviço: " />
-                                            <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.index[2]}" disabled="true">
+                                            <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.index[2]}" disabled="true" style="color: red;">
                                                 <p:ajax event="change" update="@this" />
                                                 <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listTipoServico}" />
                                             </p:selectOneMenu>                                                
