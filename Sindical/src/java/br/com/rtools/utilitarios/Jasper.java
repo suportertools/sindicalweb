@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
@@ -23,6 +25,10 @@ public class Jasper {
     public static byte[] BYTES = null;
 
     public static void printReports(String jasperName, String fileName, Collection c) {
+        printReports(jasperName, fileName, c, null);
+    }
+
+    public static void printReports(String jasperName, String fileName, Collection c, Map parameters) {
         byte[] bytesComparer = null;
         byte[] b;
         if (fileName.isEmpty() || jasperName.isEmpty() || c.isEmpty()) {
@@ -44,7 +50,7 @@ public class Jasper {
             try {
                 JRBeanCollectionDataSource dtSource;
                 dtSource = new JRBeanCollectionDataSource(c);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                JasperPrint print = JasperFillManager.fillReport(jasper, parameters, dtSource);
                 if (bytesComparer == BYTES) {
                     b = JasperExportManager.exportReportToPdf(print);
                 } else {
