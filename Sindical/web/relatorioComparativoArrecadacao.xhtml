@@ -1,0 +1,215 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Relatório - Comparativo Arrecadação</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:outputScript name="tradutor_primefaces.js" library="js" />
+                <h:form id="form_relatorio">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Relatório - Comparativo Arrecadação" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid  cellpadding="5" columns="2">
+                            <p:outputLabel value="Tipo de Relatório: " />
+                            <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioComparativoArrecadacaoBean.index[0]}" style="padding-right: 10px;">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listaTipoRelatorios}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </p:panel>                  
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 200px;" dynamic="true" activeIndex="#{relatorioComparativoArrecadacaoBean.indexAccordion}" id="i_panel_accordion">
+                                <p:ajax event="tabChange" listener="#{relatorioComparativoArrecadacaoBean.tipoRelatorioChange}" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" /> 
+                                <p:tab title="Simples" disabled="true">
+                                    * Todos registros
+                                </p:tab>
+                                <p:tab title="Avançado">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[0]}" onLabel="Serviço - Edição" offLabel="Serviço - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="true">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[1]}" onLabel="Tipo Serviço - Edição" offLabel="Tipo Serviço - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="true">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[2]}" onLabel="Referência - Edição" offLabel="Referência - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="true">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[3]}" onLabel="Empresa - Edição" offLabel="Empresa - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioComparativoArrecadacaoBean.filtro[4]}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[4]}" onLabel="Contabilidade - Edição" offLabel="Contabilidade - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioComparativoArrecadacaoBean.filtro[3]}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[5]}" onLabel="P. Cnae - Edição" offLabel="P. Cnae - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[6]}" onLabel="Cidade Base - Edição" offLabel="Cidade Base - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[8]}" onLabel="Diferença (%)" offLabel="Diferença (%)" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioComparativoArrecadacaoBean.filtro[7]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" rendered="false">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioComparativoArrecadacaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>
+                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 800px;" >
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[0]}">
+                                    <h:column>
+                                        <h:panelGrid id="i_panel_filtro_servico" columns="6" cellpadding="5">
+                                            <p:outputLabel value="Serviços: " />
+                                            <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.index[1]}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="" itemLabel="Nenhum" />
+                                                <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listServicos}"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[1]}">
+                                    <h:column>
+                                        <h:panelGrid id="i_panel_filtro_tipo_servico" columns="6" cellpadding="5">
+                                            <p:outputLabel value="Tipo de Serviço: " />
+                                            <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.index[2]}" disabled="true">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listTipoServico}" />
+                                            </p:selectOneMenu>                                                
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[2]}">
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <h:panelGrid columns="3">
+                                                <p:outputLabel value="Referência 1: " />
+                                                <p:inputMask value="#{relatorioComparativoArrecadacaoBean.referencia[0]}" mask="99/9999" size="5">
+                                                    <p:ajax event="change" update="@this"/>
+                                                </p:inputMask>
+                                                <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.tipo[0]}" style="padding-right: 20px; margin-right: 15px" styleClass="margin-left-max">
+                                                    <p:ajax event="change" update="@this" />
+                                                    <f:selectItem itemValue="todos" itemLabel="Todos"/>
+                                                    <f:selectItem itemValue="baixado"    itemLabel="Baixado"/>
+                                                    <f:selectItem itemValue="nao_baixado"   itemLabel="Não baixado"/>
+                                                </p:selectOneMenu>
+                                                <p:outputLabel value="Referência 2: " />
+                                                <p:inputMask value="#{relatorioComparativoArrecadacaoBean.referencia[1]}" mask="99/9999" size="5">
+                                                    <p:ajax event="change" update="@this"/>
+                                                </p:inputMask>
+                                                <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.tipo[1]}" style="padding-right: 20px; margin-right: 15px" styleClass="margin-left-max">
+                                                    <p:ajax event="change" update="@this" />
+                                                    <f:selectItem itemValue="todos" itemLabel="Todos"/>
+                                                    <f:selectItem itemValue="baixado"    itemLabel="Baixado"/>
+                                                    <f:selectItem itemValue="nao_baixado"   itemLabel="Não baixado"/>
+                                                </p:selectOneMenu>
+                                            </h:panelGrid>
+                                        </h:column>                                        
+                                    </h:panelGrid>
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[3]}">
+                                    <h:panelGrid columns="3">
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search" value="Pesquisar Empresa" actionListener="#{relatorioComparativoArrecadacaoBean.defineTipo('empresa')}" />
+                                        <p:outputLabel value="#{relatorioComparativoArrecadacaoBean.juridica.pessoa.nome} - Documento: #{relatorioComparativoArrecadacaoBean.juridica.pessoa.documento}" rendered="#{relatorioComparativoArrecadacaoBean.juridica.id != -1}" />
+                                        <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('empresa')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[4]}">
+                                    <h:panelGrid columns="3">
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search" value="Pesquisar Contabilidade" actionListener="#{relatorioComparativoArrecadacaoBean.defineTipo('contabilidade')}" />
+                                        <p:outputLabel value="#{relatorioComparativoArrecadacaoBean.contabilidade.pessoa.nome} - Documento: #{relatorioComparativoArrecadacaoBean.contabilidade.pessoa.documento}" rendered="#{relatorioComparativoArrecadacaoBean.contabilidade.id != -1}"/>
+                                        <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('contabilidade')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[5]}">
+                                    <h:column>
+                                        <p:panel header="Filtros">
+                                            <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
+                                                <p:outputLabel value="Convenção: " />
+                                                <p:selectCheckboxMenu label="Selecionar convenção" value="#{relatorioComparativoArrecadacaoBean.selectedConvencao}">
+                                                    <p:ajax event="toggleSelect" update="i_s_gc i_s_c" />
+                                                    <p:ajax event="change" update="i_s_gc i_s_c" />
+                                                    <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listConvencaos}" />
+                                                </p:selectCheckboxMenu>
+                                                <p:outputLabel value="Grupo cidade:"/>
+                                                <p:selectCheckboxMenu id="i_s_gc" label="Selecionar grupo cidade" value="#{relatorioComparativoArrecadacaoBean.selectedGrupoCidades}" disabled="#{relatorioComparativoArrecadacaoBean.listGrupoCidades == null}">
+                                                    <p:ajax event="toggleSelect" update="i_s_c" />
+                                                    <p:ajax event="change" update="i_s_c"  />
+                                                    <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listGrupoCidades}" />
+                                                </p:selectCheckboxMenu>
+                                                <p:outputLabel value="Cnae" />
+                                                <p:selectCheckboxMenu id="i_s_c"  label="Selecionar cnae convenção" value="#{relatorioComparativoArrecadacaoBean.selectedCnae}" disabled="#{relatorioComparativoArrecadacaoBean.listCnaes == null}">
+                                                    <p:ajax event="toggleSelect" update="@this" />
+                                                    <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listCnaes}" />
+                                                </p:selectCheckboxMenu>
+                                            </h:panelGrid>
+                                        </p:panel>                                        
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[6]}">
+                                    <h:column>
+                                        <h:panelGrid id="i_panel_filtro_cidade_base" columns="6" cellpadding="5">
+                                            <p:outputLabel value="Cidade da Base: " />
+                                            <p:selectCheckboxMenu label="Selecionar cidade da base" value="#{relatorioComparativoArrecadacaoBean.selectedCidadeBase}">
+                                                <p:ajax event="toggleSelect" update="@this" />
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listCidadeBase}" />
+                                            </p:selectCheckboxMenu>                                                
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('cidadeBase')}" title="Remover filtro" />
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>  
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[8]}">
+                                    <h:column>
+                                        <h:panelGrid columns="6" cellpadding="5">
+                                            <p:outputLabel value="A partir:" />
+                                            <p:spinner stepFactor="1" value="#{relatorioComparativoArrecadacaoBean.percentualString}" size="5"/>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('percentual')}" title="Remover filtro" />
+                                            <p:outputLabel value="Obs: Se positivo acima; se negativo abaixo;" styleClass="margin-left-max"/>
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>  
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.filtro[7]}">
+                                    <h:column>
+                                        <h:panelGrid columns="3" styleClass="margin-top-max">
+                                            <p:outputLabel value="Ordenar por: " />
+                                            <p:selectOneMenu value="#{relatorioComparativoArrecadacaoBean.order}" >
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="empresa" itemLabel="Empresa" />
+                                                <f:selectItem itemValue="funcionario" itemLabel="Funcionário" />
+                                                <f:selectItem itemValue="emissao" itemLabel="Emissão" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('order')}" title="Remover filtro" update=":form_relatorio:"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.tipoRelatorio == 'Simples'}">
+                                    * Todas
+                                </p:column>
+                                <p:column rendered="#{relatorioComparativoArrecadacaoBean.tipoRelatorio == 'Avançado'}">
+                                    <f:facet name="header">Filtro Avançado</f:facet>
+                                    <f:facet name="footer">Selecione os tipos de filtros disponíveis</f:facet>
+                                </p:column>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
+                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioComparativoArrecadacaoBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioComparativoArrecadacaoBean.parametroComparativoArrecadacaos.clear()}" />
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
