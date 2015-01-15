@@ -11,6 +11,20 @@ public class Etiquetas {
     private String uf;
     private String cep;
     private String complemento;
+    private String observacao;
+
+    public Etiquetas() {
+        this.nome = "";
+        this.logradouro = "";
+        this.endereco = "";
+        this.numero = "";
+        this.bairro = "";
+        this.cidade = "";
+        this.uf = "";
+        this.cep = "";
+        this.complemento = "";
+        this.observacao = "";
+    }
 
     public Etiquetas(String nome, String logradouro, String endereco, String numero, String bairro, String cidade, String uf, String cep, String complemento) {
         this.nome = nome;
@@ -22,6 +36,19 @@ public class Etiquetas {
         this.uf = uf;
         this.cep = cep;
         this.complemento = complemento;
+    }
+
+    public Etiquetas(String nome, String logradouro, String endereco, String numero, String bairro, String cidade, String uf, String cep, String complemento, String observacao) {
+        this.nome = nome;
+        this.logradouro = logradouro;
+        this.endereco = endereco;
+        this.numero = numero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.uf = uf;
+        this.cep = cep;
+        this.complemento = complemento;
+        this.observacao = observacao;
     }
 
     public String getNome() {
@@ -94,5 +121,13 @@ public class Etiquetas {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 }
