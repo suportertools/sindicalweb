@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Etiquetas</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_etiquetas">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Etiquetas" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel>
+                        <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max" cellpadding="5">
+                            <p:outputLabel value="Titulo:" />
+                            <p:inputText value="#{sisEtiquetasBean.sisEtiquetas.titulo}" readonly="#{segurancaUtilitariosBean.sessaoUsuario.id != 1}" maxlength="50" size="78" converter="#{toUpperCase}">
+                                <p:ajax event="change" update="@this" />
+                            </p:inputText>
+                            <p:outputLabel value="Detalhes:" />
+                            <p:inputTextarea value="#{sisEtiquetasBean.sisEtiquetas.detalhes}" readonly="#{segurancaUtilitariosBean.sessaoUsuario.id != 1}" maxlength="255" cols="80" rows="5"/>
+                            <p:outputLabel value="SQL:" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" />
+                            <h:inputTextarea value="#{sisEtiquetasBean.sisEtiquetas.sql}" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" cols="80" rows="10" styleClass="border-radius" />
+                            <p:outputLabel value="Observação da etiqueta:" />
+                            <p:inputText value="#{sisEtiquetasBean.sisEtiquetas.observacao}" readonly="#{segurancaUtilitariosBean.sessaoUsuario.id != 1}" maxlength="50" size="78"/>
+                            <p:commandButton value="Solicitante" icon="ui-icon-search" title="Pesquisar usuário solicitante" action="#{chamadaPaginaBean.pagina('pesquisaUsuario')}" disabled="#{segurancaUtilitariosBean.sessaoUsuario.id != 1}"/>
+                            <p:outputLabel value="#{sisEtiquetasBean.sisEtiquetas.solicitante.pessoa.nome}" />
+                        </h:panelGrid>
+                    </p:panel>
+                    <h:panelGrid columns="3" styleClass="margin-top-max">
+                        <p:commandButton value="Salvar" title="Salvar" action="#{sisEtiquetasBean.save}" update=":form_etiquetas:" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}"/>
+                        <p:commandButton value="Novo" title="Novo" action="#{sisEtiquetasBean.clear}" update=":form_etiquetas:" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}"/>
+                        <p:commandButton value="Imprimir" icon="ui-icon-disk" title="Visualizar" action="#{sisEtiquetasBean.print}" ajax="false" update="id_messages_growl" rendered="false"/>
+                    </h:panelGrid>
+                    <p:dataTable value="#{sisEtiquetasBean.listSisEtiquetas}" var="sisEtiquetas" styleClass="margin-top-max">
+                        <p:column width="30" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-link" title="Editar" action="#{sisEtiquetasBean.edit(sisEtiquetas)}" update=":form_etiquetas:" />
+                        </p:column>
+                        <p:column width="30" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-print" title="Imprimir" action="#{sisEtiquetasBean.print(sisEtiquetas)}" ajax="false" update="id_messages_growl" disabled="#{(sisEtiquetas.solicitante != null or segurancaUtilitariosBean.sessaoUsuario.id != sisEtiquetas.solicitante.id)}"/>
+                        </p:column>
+                        <p:column headerText="Titulo">#{sisEtiquetas.titulo}</p:column>
+                        <p:column headerText="Data da solicitanção" width="100" styleClass="text-center">#{sisEtiquetas.solicitacaoString}</p:column>
+                        <p:column headerText="Solicitante">#{sisEtiquetas.solicitante.pessoa.nome}</p:column>
+                        <p:column width="30" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-trash" title="Remover" action="#{sisEtiquetasBean.delete(sisEtiquetas)}" update=":form_etiquetas:" disabled="#{controleAcessoBean.botaoExcluir}" />
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
