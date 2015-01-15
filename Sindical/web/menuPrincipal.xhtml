@@ -101,8 +101,11 @@
                                         <p:menuitem value="Grupo Usuário"     action="#{chamadaPaginaBean.pagina('agendaGrupoUsuario')}" />
                                     </p:submenu>
                                     <p:menuitem icon="ui-icon ui-icon-mail-closed" value="Email" action="#{chamadaPaginaBean.pagina('email')}" />
+                                    <p:submenu label="Relatórios" icon="ui-icon-document">  
+                                        <p:menuitem value="Manutenção" action="#{chamadaPaginaBean.relatorio}"/>
+                                        <p:menuitem value="Etiquetas" action="#{chamadaPaginaBean.pagina('etiquetas', 'sisEtiquetas')}"/>
+                                    </p:submenu>
                                 </p:submenu>
-                                <p:menuitem value="Relatórios" action="#{chamadaPaginaBean.relatorio}"/>
                             </p:menubar> 
                         </p:panel>
                         <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
@@ -189,7 +192,10 @@
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="false">
                                 <h:outputText style="font-size: 16pt!important; color: red; text-decoration: underline;" value="Comunicado" />
                                 <br /><br />
-                                <h:outputText value="Na Quinta-Feira dia 20/11/2014 não haverá expediente devido ao feriado. Retornaremos na sexta dia 21/11/2014 no horário normal." style="font-size: 10pt!important"/>
+                                <h:outputText value="Por motivo de feriado Municipal na cidade de Ribeirão Preto no dia 20 de Janeiro, excepcionalmente atenderemos só urgências pelo telefone (16) 3443-3828.
+                                              Caso não seja urgente mandar e-mail para suporte@rtools.com.br que entraremos em contato quando retornarmos.
+                                              Retornaremos nossas atividades no dia 21 de Janeiro em horário normal pelo telefone (16) 3964-6117.
+                                              Agradecemos a Compreensão." style="font-size: 10pt!important"/>
                                 <br /><br />
                                 <h:outputText value="Qualquer problema técnico dentro deste horário enviar um email para  " style="font-size: 10pt!important"/>
                                 <h:outputLink value="mailto:suporte@rtools.com.br" style="font-weight: bold">suporte@rtools.com.br</h:outputLink>
