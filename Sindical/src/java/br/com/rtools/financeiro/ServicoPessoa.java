@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.associativo.DescontoSocial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
@@ -46,7 +47,13 @@ public class ServicoPessoa implements java.io.Serializable {
     private boolean banco;
     @Column(name = "nr_valor_fixo", length = 10, nullable = true)
     private float nrValorFixo;
-
+    @JoinColumn(name = "id_desconto", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private DescontoSocial descontoSocial;
+    @JoinColumn(name = "id_cobranca_movimento", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Pessoa cobrancaMovimento;
+    
     public ServicoPessoa() {
         this.id = -1;
         this.setEmissao(DataHoje.data());
@@ -62,10 +69,12 @@ public class ServicoPessoa implements java.io.Serializable {
         this.ativo = true;
         this.banco = false;
         this.nrValorFixo = 0;
+        this.descontoSocial = null;
+        this.descontoSocial = null;
     }
 
     public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,
-            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, float nrValorFixo) {
+            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, float nrValorFixo, DescontoSocial descontoSocial, Pessoa cobrancaMovimento) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -80,6 +89,8 @@ public class ServicoPessoa implements java.io.Serializable {
         this.ativo = ativo;
         this.banco = banco;
         this.nrValorFixo = nrValorFixo;
+        this.descontoSocial = descontoSocial;
+        this.cobrancaMovimento = cobrancaMovimento;
     }
 
     public int getId() {
@@ -135,7 +146,11 @@ public class ServicoPessoa implements java.io.Serializable {
     }
 
     public void setNrDescontoString(String nrDescontoString) {
-        this.nrDesconto = Moeda.converteUS$(nrDescontoString);
+        try{
+            this.nrDesconto = Float.valueOf(nrDescontoString.replace(",", "."));
+        }catch(Exception e){
+            this.nrDesconto = 0;
+        }
     }
 
     public String getReferenciaVigoracao() {
@@ -214,5 +229,21 @@ public class ServicoPessoa implements java.io.Serializable {
 
     public void setNrValorFixo(float nrValorFixo) {
         this.nrValorFixo = nrValorFixo;
+    }
+
+    public DescontoSocial getDescontoSocial() {
+        return descontoSocial;
+    }
+
+    public void setDescontoSocial(DescontoSocial descontoSocial) {
+        this.descontoSocial = descontoSocial;
+    }
+    
+    public Pessoa getCobrancaMovimento() {
+        return cobrancaMovimento;
+    }
+
+    public void setCobrancaMovimento(Pessoa cobrancaMovimento) {
+        this.cobrancaMovimento = cobrancaMovimento;
     }
 }

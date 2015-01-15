@@ -132,7 +132,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     "    SELECT PE                          "
                     + "    FROM PessoaEmpresa AS PE         "
                     + "   WHERE PE.fisica.id = " + id
-                    + "     AND PE.principal = true");
+                    + "     AND (PE.principal = true OR PE.dtDemissao IS NULL)");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 PessoaEmpresa pessoaEmpresa = ((PessoaEmpresa) qry.getSingleResult());                
@@ -151,7 +151,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     "  SELECT PE                                    "
                     + "  FROM PessoaEmpresa AS PE                   "
                     + " WHERE PE.fisica.pessoa.id = " + idPessoa
-                    + "   AND PE.principal = true");
+                    + "   AND (PE.principal = true OR PE.dtDemissao IS NULL)");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (PessoaEmpresa) query.getSingleResult();

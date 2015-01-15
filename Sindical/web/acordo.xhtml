@@ -8,7 +8,7 @@
     
     <h:head>
         <title>Gerar Acordo</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <meta http-equiv="X-UA-Compatible" content="IE=9"/>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
@@ -225,7 +225,7 @@
                             </h:panelGrid>
                             
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{acordoBean.efetuarAcordo}" oncomplete="modalMensagem()" render="outConfirma imprimirBoleto imprimirPlanilha idImprimeVerso chkEmail"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{acordoBean.efetuarAcordo}" oncomplete="modalMensagem()" render="formAcordo"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" />
                         </center>
                     </div>
@@ -267,7 +267,7 @@
                         <center>
                             <h:outputText id="outConfirma" value="#{acordoBean.mensagem}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <h:commandLink styleClass="idNovo iLink" value="OK" title="OK" action="acordo"/>
+                            <a4j:commandButton value="OK" title="OK" action="acordo" render="formAcordo"/>
                         </center>
                     </div>
                     <div id="mask"></div>

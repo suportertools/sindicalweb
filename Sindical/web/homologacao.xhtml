@@ -13,7 +13,7 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
-            .tblAgendamentoOposicaox{
+            .tblAgendamentoOposicaox, .tblOposicaox{
                 background-color: #ff8282!important;
                 //color: #CCFF66!important;
             }
@@ -348,19 +348,19 @@
                                 </p:rowExpansion>
                                 
                                 <f:facet name="footer">
-                                        <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
-                                            <h:column>
-                                                <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
-                                                <h:outputLabel value="Contém Oposição" />
-                                            </h:column>
-                                        </h:panelGrid>
-                                    </f:facet>                                
+                                    <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                        <h:column>
+                                            <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                            <h:outputLabel value="Contém Oposição" />
+                                        </h:column>
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dataTable>                                
                         </h:panelGrid>
                         
                         <h:panelGrid columns="1" id="tbl_at" style="margin: 0 auto; width: 1015px">
                             <p:outputLabel value="ATENDIMENTOS" style="font-size: 11pt!important"/>
-                            <p:dataTable var="linha" value="#{homologacaoBean.listaAtendimentoSimples}" scrollHeight="250" scrollable="true" emptyMessage="Nenhum Atendimento na fila!">
+                            <p:dataTable var="linha" value="#{homologacaoBean.listaAtendimentoSimples}" scrollHeight="250" scrollable="true" emptyMessage="Nenhum Atendimento na fila!" rowStyleClass="#{homologacaoBean.retornaOposicaoPessoa(linha.ateMovimento.pessoa.documento)}">
                                 <p:column headerText="ID" styleClass="text-center" width="50">
                                     <p:outputLabel value="#{linha.id}" />
                                 </p:column>
@@ -384,9 +384,18 @@
                                 </p:column>
                                 
                                 <p:column headerText="" style="text-align: center" width="80">
-                                    <p:commandLink value="Reservado" action="#{homologacaoBean.reservarAtendimento(linha.ateMovimento)}" style="color: red" rendered="#{linha.ateMovimento.reserva != null}" update=":form_cancelar_data_table:tbl_at"/>
+                                    <p:commandLink value="Reservado" action="#{homologacaoBean.reservarAtendimento(linha.ateMovimento)}" style="color: red; font-weight: bold" rendered="#{linha.ateMovimento.reserva != null}" update=":form_cancelar_data_table:tbl_at"/>
                                     <p:commandLink value="Reservar" action="#{homologacaoBean.reservarAtendimento(linha.ateMovimento)}" rendered="#{linha.ateMovimento.reserva == null}" update=":form_cancelar_data_table:tbl_at"/>
-                                </p:column>                                
+                                </p:column>       
+                                
+                                <f:facet name="footer">
+                                    <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                        <h:column>
+                                            <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                            <h:outputLabel value="Contém Oposição" />
+                                        </h:column>
+                                    </h:panelGrid>
+                                </f:facet>                                
                             </p:dataTable>                                
                         </h:panelGrid>
                     </p:panel>

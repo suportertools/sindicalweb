@@ -20,6 +20,8 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
+import br.com.rtools.utilitarios.db.FunctionsDB;
+import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class SociosBean implements Serializable {
     //private List<SelectItem> listaParentesco;
     private List<DataObject> listaDependentes;
     private List<DataObject> listaDependentesInativos;
-    private List<SelectItem> listaMotivoInativacao;
+    private final List<SelectItem> listaMotivoInativacao;
     private int idTipoDocumento;
     private int idServico;
     private int idGrupoCategoria;
@@ -71,29 +73,36 @@ public class SociosBean implements Serializable {
     private String dataInativacao;
     private String dataReativacao;
     private String statusSocio;
+// -- 
+    private List<SelectItem> listaGrupoCategoria;
+    private List<SelectItem> listaCategoria;
+    private List<Fisica> listaFisica;
+    private Fisica fisicaPesquisa;
+    private Pessoa pessoaPesquisa;
+    private List<SelectItem> listaSelectFisica;
 
-    List<SelectItem> listaGrupoCategoria = new ArrayList();
-    List<SelectItem> listaCategoria = new ArrayList();
-    private List<Fisica> listaFisica = new ArrayList();
-    private Fisica fisicaPesquisa = new Fisica();
-    private Pessoa pessoaPesquisa = new Pessoa();
-    private List<SelectItem> listaSelectFisica = new ArrayList();
-
-    private Fisica novoDependente = new Fisica();
-    private int index_dependente = 0;
-    private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
-    private List<Socios> listaSocioInativo = new ArrayList<Socios>();
+    private Fisica novoDependente;
+    private int index_dependente;
+    private final String[] imagensTipo;
+    private List<Socios> listaSocioInativo;
 
     private Part filePart;
-    private String fotoTempPerfil = "";
-    private Usuario usuario = new Usuario();
+    private String fotoTempPerfil;
+    private Usuario usuario;
 
-    private boolean modelVisible = false;
+    private boolean modelVisible;
 
     private final Registro registro;
 
-    private String novaValidadeCartao = "";
-
+    private String novaValidadeCartao;
+    private DescontoSocial descontoSocial;
+    private List<SelectItem> listaDescontoSocial;
+    private DescontoSocial novoDescontoSocial;
+    private String valorServico;
+    private String novoValorServico;
+    private String alteraValorServico;
+    private Integer index_desconto;
+    
     public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
@@ -105,7 +114,6 @@ public class SociosBean implements Serializable {
         chkContaCobranca = false;
         listaTipoDocumento = new ArrayList();
         listaServicos = new ArrayList();
-        //listaParentesco = new ArrayList();
         listaDependentes = new ArrayList();
         listaDependentesInativos = new ArrayList();
         idTipoDocumento = 0;
@@ -129,9 +137,354 @@ public class SociosBean implements Serializable {
         listaMotivoInativacao = new ArrayList();
 
         registro = (Registro) new Dao().find(new Registro(), 1);
+        descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
+        listaDescontoSocial = new ArrayList();
+        novoDescontoSocial = new DescontoSocial();
+        
+        listaGrupoCategoria = new ArrayList();
+        listaCategoria = new ArrayList();
+        listaFisica = new ArrayList();
+        fisicaPesquisa = new Fisica();
+        pessoaPesquisa = new Pessoa();
+        listaSelectFisica = new ArrayList();
+        novoDependente = new Fisica();
+        index_dependente = 0;
+        imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
+        listaSocioInativo = new ArrayList();
+        fotoTempPerfil = "";
+        usuario = new Usuario();
+        modelVisible = false;       
+        novaValidadeCartao = "";
 
+        loadGrupoCategoria();
+        loadCategoria();
+        loadTipoDocumento();
+        // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
+        //loadServicos();
+        
+        valorServico = "0,00";
+        novoValorServico = "0,00";
+        alteraValorServico = "0,00";
+        index_desconto = 0;
     }
+    
+    public void loadSocio(Pessoa p, boolean reativar){
+        SociosDB db = new SociosDBToplink();
+        SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
+        CategoriaDB dbca = new CategoriaDBToplink();
+        
+        Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
+        // SE REATIVAR == FALSE NÃO CARREGAR SOCIO
+        
+        pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
+        
+        if (reativar == false){
+            descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
+            servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+            servicoPessoa.setPessoa(p);
+            // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
+            loadServicos();
+            return;
+        }else{
+            socios = socio_pessoa;
+            
+        }
+        
+        if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
+            socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
+        }
+        
+        servicoPessoa = socios.getServicoPessoa();
+        descontoSocial = servicoPessoa.getDescontoSocial();
+        
+        // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
+        loadServicos();
+        
+        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
+        List<SocioCarteirinha> listsc;
 
+        if (modeloc != null) {
+            listsc = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
+            if (!listsc.isEmpty()) {
+                socCarteirinha = listsc.get(0);
+            } else {
+                GenericaMensagem.warn("Ateção", "Sócio sem modelo de Carteirinha!");
+            }
+        }
+        
+        matriculaSocios = socios.getMatriculaSocios();
+
+        //GrupoCategoria gpCat = dbca.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
+        loadGrupoCategoria();
+        for (int i = 0; i < listaGrupoCategoria.size(); i++) {
+            if (Integer.parseInt( listaGrupoCategoria.get(i).getDescription() ) == socios.getMatriculaSocios().getCategoria().getGrupoCategoria().getId()) {
+          //  if (Integer.parseInt((String) getListaGrupoCategoria().get(i).getDescription()) == gpCat.getId()) {
+                idGrupoCategoria = i;
+                break;
+            }
+        }
+        
+        loadCategoria();
+        //int qntCategoria = getListaCategoria().size();
+        for (int i = 0; i < listaCategoria.size(); i++) {
+            if (Integer.parseInt( listaCategoria.get(i).getDescription() ) == socios.getMatriculaSocios().getCategoria().getId()) {
+                idCategoria = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < getListaTipoDocumento().size(); i++) {
+            if (Integer.parseInt((String) listaTipoDocumento.get(i).getDescription()) == servicoPessoa.getTipoDocumento().getId()) {
+                idTipoDocumento = i;
+                break;
+            }
+        }
+
+        listaDescontoSocial.clear();
+        getListaDescontoSocial();
+        
+        for (int i = 0; i < listaDescontoSocial.size(); i++) {
+            if (Integer.parseInt( listaDescontoSocial.get(i).getDescription() ) == servicoPessoa.getDescontoSocial().getId()) {
+                index_desconto = i;
+                break;
+            }
+        }
+        
+        loadServicos();
+        
+        atualizarListaDependenteAtivo();
+        atualizarListaDependenteInativo();        
+    }
+    
+    public void loadGrupoCategoria(){
+        listaGrupoCategoria.clear();
+        idGrupoCategoria = 0;
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        
+        List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
+        if (!grupoCategorias.isEmpty()) {
+            for (int i = 0; i < grupoCategorias.size(); i++) {
+                listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
+            }
+        } else {
+            listaGrupoCategoria.add(new SelectItem(0, "Nenhum Grupo Categoria Encontrado", "0"));
+        }        
+    }
+    
+    public void loadCategoria(){
+        listaCategoria.clear();
+        idCategoria = 0;
+        if (!listaGrupoCategoria.isEmpty()){
+            CategoriaDB db = new CategoriaDBToplink();
+            List<Categoria> select = db.pesquisaCategoriaPorGrupo(Integer.parseInt(listaGrupoCategoria.get(idGrupoCategoria).getDescription()));
+            if (!select.isEmpty()) {
+                for (int i = 0; i < select.size(); i++) {
+                    listaCategoria.add(new SelectItem(i, select.get(i).getCategoria(), Integer.toString(select.get(i).getId())));
+                }
+            } else {
+                listaCategoria.add(new SelectItem(0, "Nenhuma Categoria Encontrada", "0"));
+            } 
+        }else{
+            listaCategoria.add(new SelectItem(0, "Nenhuma Categoria Encontrada", "0"));
+        }
+    }
+    
+    public void loadTipoDocumento(){
+        listaTipoDocumento.clear();
+        idTipoDocumento = 0;
+        FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
+        List<FTipoDocumento> select = new ArrayList();
+        
+        if (isChkContaCobranca()) {
+            select.add(db.pesquisaCodigo(2));
+        } else {
+            select = db.pesquisaListaTipoExtrato();
+        }
+        
+        if (!select.isEmpty()) {
+            for (int i = 0; i < select.size(); i++) {
+                listaTipoDocumento.add(
+                        new SelectItem(i,
+                            select.get(i).getDescricao(),
+                            Integer.toString(select.get(i).getId())
+                        )
+                );
+            }
+        }
+    }
+    
+    public void loadServicos(){
+        listaServicos.clear();
+        idServico = 0;
+        if (!listaGrupoCategoria.isEmpty() && !listaCategoria.isEmpty()) {
+            ServicoCategoriaDB db = new ServicoCategoriaDBToplink();
+            int id_categoria = Integer.parseInt(listaCategoria.get(idCategoria).getDescription());
+
+            servicoCategoria = db.pesquisaPorParECat(1, id_categoria);
+
+            if (servicoCategoria != null) {
+                listaServicos.add(new SelectItem(0, servicoCategoria.getServicos().getDescricao(),
+                        Integer.toString(servicoCategoria.getServicos().getId()))
+                );
+                valorServico = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+                calculoValor();
+                calculoDesconto();
+            } else {
+                listaServicos.add(new SelectItem(0, "Nenhum Serviço Encontrado", "0"));
+            }
+        }
+    }
+    
+    public void calculoDesconto(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        servicoPessoa.setNrDescontoString(Moeda.percentualDoValor(valorx, valorServico));
+    }
+    
+    
+    public void calculoValor(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        valorServico = Moeda.valorDoPercentual(valorx, servicoPessoa.getNrDescontoString());
+    }
+    
+    public void calculoNovoDesconto(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        novoDescontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, novoValorServico));
+    }
+    
+    
+    public void calculoNovoValor(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        novoValorServico = Moeda.valorDoPercentual(valorx, novoDescontoSocial.getNrDescontoString());
+    }
+    
+    public void calculoAlterarDesconto(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        descontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, alteraValorServico));
+    }
+    
+    
+    public void calculoAlterarValor(){
+        String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+        alteraValorServico = Moeda.valorDoPercentual(valorx, descontoSocial.getNrDescontoString());
+    }
+    
+    public void alterarDesconto(){
+        Dao di = new Dao();
+        
+        di.openTransaction();
+        if (descontoSocial.getId() == -1){
+
+        }else{
+            if (!di.update(descontoSocial)){
+                di.rollback();
+                GenericaMensagem.error("Erro", "Nao foi possivel alterar esse desconto!");
+                return;
+            }
+            
+            servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+            // aqui
+            //String valorx = Moeda.converteR$Float( new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0) );
+            //valorServico = Moeda.valorDoPercentual(valorx, servicoPessoa.getNrDescontoString());
+            calculoValor();
+            SociosDB db = new SociosDBToplink();
+            
+            List<ServicoPessoa> lsp = db.listaServicoPessoaPorDescontoSocial(descontoSocial.getId(), null);
+            
+            for (ServicoPessoa sp : lsp) {
+                sp.setNrDesconto(descontoSocial.getNrDesconto());
+                if (!di.update(sp)) {
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Nao foi possivel alterar esse Serviço Pessoa!");
+                    return;
+                }    
+            }
+            
+            di.commit();
+            
+            atualizarListaDependenteAtivo();
+            atualizarListaDependenteInativo();
+            PF.closeDialog("dlg_alterar_desconto");
+        }
+        listaDescontoSocial.clear();
+        PF.update("formSocios");
+    }
+    
+    public void salvarDesconto(){
+        if (novoDescontoSocial.getDescricao().isEmpty() || novoDescontoSocial.getDescricao().length() < 3){
+            GenericaMensagem.warn("Atenção", "Digite um Nome do Desconto válido!");
+            PF.update("form_desconto:i_panel_desconto");
+            return;
+        }
+        
+        Dao di = new Dao();
+        
+        di.openTransaction();
+        if (novoDescontoSocial.getId() == -1){
+            if (!di.save(novoDescontoSocial)){
+                di.rollback();
+                GenericaMensagem.error("Erro", "Não foi possível salvar esse desconto!");
+                PF.update("form_desconto:i_panel_desconto");
+                return;
+            }
+            di.commit();
+            servicoPessoa.setNrDesconto(novoDescontoSocial.getNrDesconto());
+            descontoSocial = novoDescontoSocial;
+            PF.closeDialog("dlg_desconto");
+        }
+        listaDescontoSocial.clear();
+        
+        getListaDescontoSocial();
+        
+        for (int i = 0; i < listaDescontoSocial.size(); i++){
+            if (Integer.valueOf(listaDescontoSocial.get(i).getDescription()) == descontoSocial.getId()){
+                index_desconto = i;
+            }
+        }
+        
+        PF.update("formSocios:i_panel_servicos");
+    }
+    
+    
+    
+    public void selecionarDesconto(DescontoSocial ds){
+        descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), Integer.valueOf(listaDescontoSocial.get(index_desconto).getDescription()));
+        servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+        
+        calculoValor();
+        PF.update("formSocios:i_panel_servicos");
+    }
+    
+    public void clickSalvarDesconto(){
+        if (!listaCategoria.isEmpty() && !listaCategoria.get(0).getDescription().equals("0")){
+            
+            novoDescontoSocial = new DescontoSocial();
+            novoDescontoSocial.setCategoria((Categoria) new Dao().find(new Categoria(), Integer.valueOf(listaCategoria.get(idCategoria).getDescription())));
+            //ds.setNrDesconto(servicoPessoa.getNrDesconto());
+            calculoNovoValor();
+            
+            PF.update("form_desconto:i_panel_desconto");
+            PF.openDialog("dlg_desconto");
+        }else{
+            GenericaMensagem.error("Atenção", "Lista de Categoria VAZIA!");
+        }
+    }
+    
+    public void clickAlterarDesconto(){
+        if (!listaCategoria.isEmpty() && !listaCategoria.get(0).getDescription().equals("0")){
+            descontoSocial = (DescontoSocial) new Dao().find(descontoSocial);
+    //        descontoSocial.setCategoria((Categoria) new Dao().find(new Categoria(), Integer.valueOf(listaCategoria.get(idCategoria).getDescription())));
+    //        descontoSocial.setNrDesconto(servicoPessoa.getNrDesconto());
+            
+            calculoAlterarValor();
+            calculoAlterarDesconto();
+            
+            PF.update("form_desconto:i_panel_alterar_desconto");
+            PF.openDialog("dlg_alterar_desconto");
+        }else{
+            GenericaMensagem.error("Atenção", "Lista de Categoria VAZIA!");
+        }
+    }
+    
     public void upload(FileUploadEvent event) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
@@ -419,6 +772,14 @@ public class SociosBean implements Serializable {
         if (servicoPessoa.getId() == -1) {
             servicoPessoa.setAtivo(true);
             servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+            
+            // set desconto 
+            if (descontoSocial.getId() != 1){
+                servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+            }
+                
+            servicoPessoa.setDescontoSocial(descontoSocial);
+            
             if (!sv.inserirObjeto(servicoPessoa)) {
                 GenericaMensagem.error("Erro", "Erro ao salvar Serviço Pessoa!");
                 return null;
@@ -426,6 +787,14 @@ public class SociosBean implements Serializable {
             matriculaSocios.setMotivoInativacao(null);
         } else {
             // ATUALIZA REGISTRO -------------------
+            
+            // set desconto
+            if (descontoSocial.getId() != 1){
+                servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+            }
+            
+            servicoPessoa.setDescontoSocial(descontoSocial);
+
             if (!sv.alterarObjeto(servicoPessoa)) {
                 GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                 return null;
@@ -607,7 +976,9 @@ public class SociosBean implements Serializable {
                                 servicoPessoa.getCobranca(),
                                 servicoPessoa.isAtivo(),
                                 servicoPessoa.isBanco(),
-                                0
+                                0, 
+                                servicoPessoa.getDescontoSocial(),
+                                null
                         );
                         if (!sv.inserirObjeto(servicoPessoaDependente)) {
                             GenericaMensagem.warn("Erro", "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
@@ -732,16 +1103,20 @@ public class SociosBean implements Serializable {
             servicoPessoa.setServicos(servicoCategoria.getServicos());
         }
 
-        if (servicoPessoa.isDescontoFolha()) {
-            if (pessoaEmpresa.getId() == -1) {
-                GenericaMensagem.error("Erro", "Este sócio não possui Empresa para desconto em folha!");
-                servicoPessoa.setDescontoFolha(false);
-                return false;
-            }
-            servicoPessoa.setCobranca(pessoaEmpresa.getJuridica().getPessoa());
-        } else {
-            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        }
+        // SE DESCONTO FOLHA = true NAO SALVAR EM cobranca ID EMPRESA -- alterado na data 12/01/2014 (ID da tarefa 388)
+        servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//        
+//        if (servicoPessoa.isDescontoFolha()) {
+//            if (pessoaEmpresa.getId() == -1) {
+//                GenericaMensagem.error("Erro", "Este sócio não possui Empresa para desconto em folha!");
+//                servicoPessoa.setDescontoFolha(false);
+//                return false;
+//            }
+//            servicoPessoa.setCobranca(pessoaEmpresa.getJuridica().getPessoa());
+//        } else {
+//            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//        }
+//        
 
         SociosDB db = new SociosDBToplink();
         if ((servicoPessoa.getId() == -1) && (db.pesquisaSocioPorPessoaAtivo(servicoPessoa.getPessoa().getId()).getId() != -1)) {
@@ -938,7 +1313,7 @@ public class SociosBean implements Serializable {
                     1, // VIA CARTEIRINHA
                     DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
                     null, // DATA VAL DEP
-                    0.0, // DESCONTO
+                    servicoPessoa.getNrDesconto(), // DESCONTO
                     new SelectItem(0, "Selecione um Dependente", "0"), // LISTA DE PARENTESCO
                     null,
                     null,
@@ -956,7 +1331,7 @@ public class SociosBean implements Serializable {
                             1, // VIA CARTEIRINHA
                             DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
                             null, // DATA VAL DEP
-                            0.0, // DESCONTO
+                            servicoPessoa.getNrDesconto(), // DESCONTO
                             new SelectItem(0, "Selecione um Dependente", "0"), // LISTA DE PARENTESCO
                             null,
                             null,
@@ -1148,73 +1523,7 @@ public class SociosBean implements Serializable {
         return true;
     }
 
-    public void editarGenerico(Pessoa sessao, boolean reativar) {
-        CategoriaDB dbCat = new CategoriaDBToplink();
-        SociosDB db = new SociosDBToplink();
-        SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-        FisicaDB dbf = new FisicaDBToplink();
 
-        //socSessao = db.pesquisaSocioPorPessoaAtivo(sessao.getId());
-        Socios socSessao = db.pesquisaSocioPorPessoa(sessao.getId());
-        if (socSessao.getId() != -1 && reativar) {
-            socios = socSessao;
-        } else {
-            return;
-        }
-
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno").equals("emissaoCarteirinha")) {
-            return;
-        }
-
-        //Socios soc = db.pesquisaSocioDoDependente(socios.getId());
-        // SOCIO DIFERENTE PARA TRAZER NA TELA O TITULAR
-        if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
-            socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
-        }
-
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-
-        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
-        List<SocioCarteirinha> listsc = new ArrayList();
-
-        if (modeloc != null) {
-            listsc = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
-            if (!listsc.isEmpty()) {
-                socCarteirinha = listsc.get(0);
-            } else {
-                GenericaMensagem.warn("Ateção", "Sócio sem modelo de Carteirinha!");
-            }
-        }
-
-        servicoPessoa = socios.getServicoPessoa();
-        matriculaSocios = socios.getMatriculaSocios();
-
-        GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-        for (int i = 0; i < getListaGrupoCategoria().size(); i++) {
-            if (Integer.parseInt((String) getListaGrupoCategoria().get(i).getDescription()) == gpCat.getId()) {
-                idGrupoCategoria = i;
-                break;
-            }
-        }
-        int qntCategoria = getListaCategoria().size();
-        for (int i = 0; i < qntCategoria; i++) {
-            if (Integer.parseInt((String) getListaCategoria().get(i).getDescription()) == socios.getMatriculaSocios().getCategoria().getId()) {
-                idCategoria = i;
-                break;
-            }
-        }
-
-        for (int i = 0; i < getListaTipoDocumento().size(); i++) {
-            if (Integer.parseInt((String) listaTipoDocumento.get(i).getDescription()) == servicoPessoa.getTipoDocumento().getId()) {
-                idTipoDocumento = i;
-                break;
-            }
-        }
-
-        atualizarListaDependenteAtivo();
-        atualizarListaDependenteInativo();
-
-    }
 
     public void editarOUsalvar(int index) {
         Fisica fisica = (Fisica) listaDependentes.get(index).getArgumento0();
@@ -1584,57 +1893,43 @@ public class SociosBean implements Serializable {
     }
 
     public void atualizarCategoria() {
-        listaCategoria.clear();
-        listaServicos.clear();
-        //listaParentesco.clear();
-        idCategoria = 0;
+        listaDescontoSocial.clear();
+        index_desconto = 0;
+        descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
+        servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+        
+        loadCategoria();
+        loadServicos();
+    }
+    
+    public void atualizarListaCategoria() {
+        listaDescontoSocial.clear();
+        index_desconto = 0;
+        descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
+        servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+        
+        loadServicos();
     }
 
     public List<SelectItem> getListaGrupoCategoria() {
-        if (listaGrupoCategoria.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
-            if (!grupoCategorias.isEmpty()) {
-                for (int i = 0; i < grupoCategorias.size(); i++) {
-                    listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
-                    if (grupoCategorias.get(i).getGrupoCategoria().toUpperCase().equals("COMERCIÁRIO")) {
-                        idGrupoCategoria = i;
-                    }
-                }
-            } else {
-                listaGrupoCategoria.add(new SelectItem(0, "Nenhum Grupo Categoria Encontrado", "0"));
-            }
-
-        }
         return listaGrupoCategoria;
     }
 
     public List<SelectItem> getListaCategoria() {
-
-        if (listaCategoria.isEmpty() && !listaGrupoCategoria.isEmpty()) {
-            CategoriaDB db = new CategoriaDBToplink();
-            List<Categoria> select = db.pesquisaCategoriaPorGrupo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()));
-            if (!select.isEmpty()) {
-                for (int i = 0; i < select.size(); i++) {
-                    listaCategoria.add(new SelectItem(i, select.get(i).getCategoria(), Integer.toString(select.get(i).getId())));
-                }
-            } else {
-                listaCategoria.add(new SelectItem(0, "Nenhuma Categoria Encontrada", "0"));
-            }
-        }
         return listaCategoria;
     }
 
+    // aqui
     public ServicoPessoa getServicoPessoa() {
-        if (GenericaSessao.getObject("fisicaPesquisa") != null && GenericaSessao.getObject("reativarSocio") != null) {
-            servicoPessoa.setPessoa(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa());
-            editarGenerico(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa(),
-                    GenericaSessao.getBoolean("reativarSocio"));
-            pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
-            GenericaSessao.remove("fisicaPesquisa");
-            GenericaSessao.remove("pessoaEmpresaPesquisa");
-            GenericaSessao.remove("reativarSocio");
-        }
+//        if (GenericaSessao.getObject("fisicaPesquisa") != null && GenericaSessao.getObject("reativarSocio") != null) {
+//            servicoPessoa.setPessoa(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa());
+//            editarGenerico(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa(),
+//                    GenericaSessao.getBoolean("reativarSocio"));
+//            pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
+//            GenericaSessao.remove("fisicaPesquisa");
+//            GenericaSessao.remove("pessoaEmpresaPesquisa");
+//            GenericaSessao.remove("reativarSocio");
+//        }
         return servicoPessoa;
     }
 
@@ -1654,24 +1949,6 @@ public class SociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaTipoDocumento() {
-        if (listaTipoDocumento.isEmpty()) {
-            int i = 0;
-            FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
-            List<FTipoDocumento> select = new ArrayList();
-            if (isChkContaCobranca()) {
-                select.add(db.pesquisaCodigo(2));
-            } else {
-                select = db.pesquisaListaTipoExtrato();
-            }
-            if (!select.isEmpty()) {
-                while (i < select.size()) {
-                    listaTipoDocumento.add(new SelectItem(new Integer(i),
-                            (String) (select.get(i).getDescricao()),
-                            Integer.toString(select.get(i).getId())));
-                    i++;
-                }
-            }
-        }
         return listaTipoDocumento;
     }
 
@@ -1704,24 +1981,6 @@ public class SociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty() && !getListaGrupoCategoria().isEmpty() && !getListaCategoria().isEmpty()) {
-            int i = 0;
-            //ServicosDB db = new ServicosDBToplink();
-            //RotinaDB dbr = new RotinaDBToplink();
-            ServicoCategoriaDB db = new ServicoCategoriaDBToplink();
-            //int id_grupo_categoria = Integer.parseInt(listaGrupoCategoria.get(idGrupoCategoria).getDescription());
-            int id_categoria = Integer.parseInt(listaCategoria.get(idCategoria).getDescription());
-
-            servicoCategoria = db.pesquisaPorParECat(1, id_categoria);
-
-            if (servicoCategoria != null) {
-                listaServicos.add(new SelectItem(i, servicoCategoria.getServicos().getDescricao(),
-                        Integer.toString(servicoCategoria.getServicos().getId()))
-                );
-            } else {
-                listaServicos.add(new SelectItem(0, "Nenhum Serviço Encontrado", "0"));
-            }
-        }
         return listaServicos;
     }
 
@@ -2132,4 +2391,145 @@ public class SociosBean implements Serializable {
     public Registro getRegistro() {
         return registro;
     }
+
+    public DescontoSocial getDescontoSocial() {
+        return descontoSocial;
+    }
+
+    public void setDescontoSocial(DescontoSocial descontoSocial) {
+        this.descontoSocial = descontoSocial;
+    }
+
+    public List<SelectItem> getListaDescontoSocial() {
+        if (listaDescontoSocial.isEmpty()){
+            SociosDB db = new SociosDBToplink();
+            //listaDescontoSocial.add((DescontoSocial) new Dao().find(new DescontoSocial(), 1));
+            DescontoSocial ds = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
+            listaDescontoSocial.add(new SelectItem(0, ds.getDescricao(), ""+ds.getId()));
+            if (Integer.valueOf(listaCategoria.get(idCategoria).getDescription()) != 0) {
+                //listaDescontoSocial.addAll(db.listaDescontoSocial(Integer.valueOf(listaCategoria.get(idCategoria).getDescription())));
+                List<DescontoSocial> lds = db.listaDescontoSocial(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
+                for (int i = 0; i < lds.size(); i++){
+                    listaDescontoSocial.add(
+                            new SelectItem(i+1, lds.get(i).getDescricao(), ""+lds.get(i).getId())
+                    );
+                }
+            }
+        }
+        return listaDescontoSocial;
+    }
+
+    public void setListaDescontoSocial(List<SelectItem> listaDescontoSocial) {
+        this.listaDescontoSocial = listaDescontoSocial;
+    }
+
+    public DescontoSocial getNovoDescontoSocial() {
+        return novoDescontoSocial;
+    }
+
+    public void setNovoDescontoSocial(DescontoSocial novoDescontoSocial) {
+        this.novoDescontoSocial = novoDescontoSocial;
+    }
+
+    public String getValorServico() {
+        return valorServico;
+    }
+
+    public void setValorServico(String valorServico) {
+        this.valorServico = Moeda.converteR$(valorServico);
+    }
+
+    public Integer getIndex_desconto() {
+        return index_desconto;
+    }
+
+    public void setIndex_desconto(Integer index_desconto) {
+        this.index_desconto = index_desconto;
+    }
+
+    public String getNovoValorServico() {
+        return novoValorServico;
+    }
+
+    public void setNovoValorServico(String novoValorServico) {
+        this.novoValorServico = Moeda.converteR$(novoValorServico);
+    }
+
+    public String getAlteraValorServico() {
+        return alteraValorServico;
+    }
+
+    public void setAlteraValorServico(String alteraValorServico) {
+        this.alteraValorServico = Moeda.converteR$(alteraValorServico);;
+    }
 }
+
+//    public void editarGenerico(Pessoa sessao, boolean reativar) {
+//        CategoriaDB dbCat = new CategoriaDBToplink();
+//        SociosDB db = new SociosDBToplink();
+//        SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
+//        //FisicaDB dbf = new FisicaDBToplink();
+//
+//        //socSessao = db.pesquisaSocioPorPessoaAtivo(sessao.getId());
+//        Socios socSessao = db.pesquisaSocioPorPessoa(sessao.getId());
+//        if (socSessao.getId() != -1 && reativar) {
+//            socios = socSessao;
+//        } else {
+//            return;
+//        }
+//        
+//        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno").equals("emissaoCarteirinha")) {
+//            return;
+//        }
+//
+//        //Socios soc = db.pesquisaSocioDoDependente(socios.getId());
+//        // SOCIO DIFERENTE PARA TRAZER NA TELA O TITULAR
+//        if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
+//            socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
+//        }
+//
+//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+//
+//        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
+//        List<SocioCarteirinha> listsc = new ArrayList();
+//
+//        if (modeloc != null) {
+//            listsc = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
+//            if (!listsc.isEmpty()) {
+//                socCarteirinha = listsc.get(0);
+//            } else {
+//                GenericaMensagem.warn("Ateção", "Sócio sem modelo de Carteirinha!");
+//            }
+//        }
+//
+//        servicoPessoa = socios.getServicoPessoa();
+//        descontoSocial = servicoPessoa.getDescontoSocial();
+//        
+//        matriculaSocios = socios.getMatriculaSocios();
+//
+//        GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
+//        for (int i = 0; i < getListaGrupoCategoria().size(); i++) {
+//            if (Integer.parseInt((String) getListaGrupoCategoria().get(i).getDescription()) == gpCat.getId()) {
+//                idGrupoCategoria = i;
+//                break;
+//            }
+//        }
+//        int qntCategoria = getListaCategoria().size();
+//        for (int i = 0; i < qntCategoria; i++) {
+//            if (Integer.parseInt((String) getListaCategoria().get(i).getDescription()) == socios.getMatriculaSocios().getCategoria().getId()) {
+//                idCategoria = i;
+//                break;
+//            }
+//        }
+//
+//        for (int i = 0; i < getListaTipoDocumento().size(); i++) {
+//            if (Integer.parseInt((String) listaTipoDocumento.get(i).getDescription()) == servicoPessoa.getTipoDocumento().getId()) {
+//                idTipoDocumento = i;
+//                break;
+//            }
+//        }
+//
+//        atualizarListaDependenteAtivo();
+//        atualizarListaDependenteInativo();
+//
+//    }

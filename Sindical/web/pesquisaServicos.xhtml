@@ -6,33 +6,40 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Pesquisar serviços</title>
+        <title>Pesquisar Serviços</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
     </h:head>
     <h:body>
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="formPesquisaServicos">
                     <h:outputText value="Pesquisa de Serviços" styleClass="fonteHeader"/>
                     <div class="clear"></div>
-                    <p:panel styleClass="no-border">
-                        <p:outputLabel value="Pesquisar: "/>
-                        <p:inputText value="#{servicosBean.descPesquisa}" title="Pesquisar Serviços"/>
+                    <p:panel styleClass="fundoCinza">
+                        <p:inputText value="#{servicosBean.descPesquisa}" title="Pesquisar Serviços" style="width: 300px" placeholder="DIGITE O NOME DO SERVIÇO"/>
                         <p:commandButton value="Inicial" action="#{servicosBean.acaoInicial}" title="Retorna somente valores referente ao primeiro caractere. Ex: a" update="tbl"/>
                         <p:commandButton value="Parcial" action="#{servicosBean.acaoParcial}" title="Retorna somente valores complentos. Ex: André" update="tbl"/>
                     </p:panel>
-                    <p:panel styleClass="no-border margin-top-max" id="tbl">
-                        <p:dataTable value="#{servicosBean.listServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
-                            <p:column headerText="Serviço" width="300">
-                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
-                            </p:column>
-                            <p:column headerText="Plano 5">
-                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </p:panel>
+                    
+                    <p:dataTable id="tbl" value="#{servicosBean.listServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
+                        <p:column headerText="Serviço" width="400">
+                            <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
+                        </p:column>
+                        <p:column headerText="Plano 5">
+                            <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
+                        </p:column>
+                    </p:dataTable>
+                    
                 </h:form>
             </p:panel>
         </f:view>

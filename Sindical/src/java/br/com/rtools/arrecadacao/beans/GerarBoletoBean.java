@@ -48,6 +48,7 @@ public class GerarBoletoBean {
         
         ImpressaoBoletoSocialBean ibs = new ImpressaoBoletoSocialBean();
         ibs.setStrData(lb.getProcessamento());
+        ibs.loadLista();
         GenericaSessao.put("impressaoBoletoSocialBean", ibs);
         
         return pagina;

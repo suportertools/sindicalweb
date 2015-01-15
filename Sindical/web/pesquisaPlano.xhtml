@@ -23,7 +23,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="form_pesquisa_plano">
                             <h:outputText value="Pesquisa Planos" styleClass="fonteHeader" />
                             <div class="clear"></div>
@@ -45,11 +45,11 @@
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
                         </h:form>
-                    </p:panel>
+                    
                     
                     <h:form id="form_pesquisa_plano_datatable">                           
                         <ui:include src="templates/templateStatus.xhtml" />
-                        <p:dataTable value="#{planoBean.listaPlanoPorPesquisa}" var="plano5" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado!"  styleClass="margin-left-max margin-right-max" id="i_table">
+                        <p:dataTable value="#{planoBean.listaPlanoPorPesquisa}" var="plano5" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado!"  id="i_table">
                             <p:columnGroup type="header">
                                 <p:row>
                                     <p:column colspan="5" headerText="Plano 5" />
@@ -110,7 +110,7 @@
                             </p:column>
                         </p:dataTable>
                     </h:form>
-
+                    </p:panel>
                 </f:view>        
                 <!-- FINALIZA div wrap main -->
             </div>

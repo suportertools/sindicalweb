@@ -77,7 +77,19 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return result;
     }
-
+    
+    @Override
+    public List<Movimento> listaMovimentoPorNrCtrBoleto(String nrCtrBoleto) {
+        List<Movimento> result = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery("select m from Movimento m where m.nrCtrBoleto = '" +nrCtrBoleto+"'");
+            result = qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return result;
+    }
+  
     public Movimento pesquisaPorId(int id) {
         Movimento result = null;
         try {
@@ -2435,7 +2447,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List<Movimento> listaMovimentoBeneficiarioServicoPeriodoAtivo(int id_beneficiario, int id_servico, int periodo_dias, boolean socio) {
         // LISTA TODOS MOVIMENTOS ATIVOS EM QUE O BENEFICIÁRIO id_beneficiario E A DATA ESTEJA ENTRE OS ULTIMOS periodo_dias
-        String where = "";
+        String where;
         
         if (socio)
             where = " WHERE m.id_matricula_socios = " + id_beneficiario;
@@ -2450,7 +2462,35 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 "   AND m.is_ativo = true " +
                 "   AND m.id_servicos = " + id_servico +
                 "   AND (l.dt_emissao >= current_date - "+periodo_dias+" AND l.dt_emissao <= current_date) " +
-                "   ";
+                " ORDER BY l.dt_emissao ";
+        try {
+            Query qry = getEntityManager().createNativeQuery(text_qry, Movimento.class);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Movimento> listaMovimentoBeneficiarioServicoMesVigente(int id_beneficiario, int id_servico, boolean socio) {
+        // LISTA TODOS MOVIMENTOS ATIVOS EM QUE O BENEFICIÁRIO id_beneficiario E A DATA ESTEJA ENTRE O MES ATUAL
+        String where;
+        DataHoje dh = new DataHoje();
+        if (socio)
+            where = " WHERE m.id_matricula_socios = " + id_beneficiario;
+        else
+            where = " WHERE m.id_beneficiario = " + id_beneficiario;
+        
+        String text_qry = 
+                "SELECT m.* " +
+                "  FROM fin_movimento m " +
+                " INNER JOIN fin_lote l ON l.id = m.id_lote " +
+                where +
+                "   AND m.is_ativo = true " +
+                "   AND m.id_servicos = " + id_servico +
+                "   AND (l.dt_emissao >= '"+dh.primeiroDiaDoMes(DataHoje.data())+"' AND l.dt_emissao <= '"+dh.ultimoDiaDoMes(DataHoje.data())+"') " +
+                " ORDER BY l.dt_emissao ";
         try {
             Query qry = getEntityManager().createNativeQuery(text_qry, Movimento.class);
             

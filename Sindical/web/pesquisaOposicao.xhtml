@@ -8,6 +8,10 @@
     <h:head>
         <title>Pesquisa Oposição</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+        </style>             
     </h:head>
     <h:body>
         <f:subview id="header">
@@ -16,7 +20,7 @@
         <f:view>
             <ui:include src="templates/templateStatus.xhtml"/>
             <h:form id="form_pesquisa_oposicao">
-                <p:panel styleClass="wrapper no-border">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <h:outputText value="Pesquisa Oposição" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
@@ -81,51 +85,49 @@
                             </c:if>
                         </h:panelGrid>   
                     </p:panel>
-                </p:panel>
-                <p:panel id="i_tbl" styleClass="no-border">
-                    <p:dataTable value="#{oposicaoBean.listaOposicaos}" var="oposicao" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                
+                    <p:dataTable id="i_tbl" value="#{oposicaoBean.listaOposicaos}" var="oposicao" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
                         <p:column headerText="Data" width="60" styleClass="text-center">
-                            <p:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.emissao}"  />
+                            <p:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.emissao}" style="font-size: 8pt!important" />
                         </p:column>                                    
-                        <p:column headerText="CNPJ" width="140" styleClass="text-center">
-                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.documento}"  />
+                        <p:column headerText="CNPJ" width="115" styleClass="text-center">
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.documento}" style="font-size: 8pt!important"  />
                         </p:column>                                    
                         <p:column headerText="Empresa" >
-                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.nome}"  title="Nome fantasia: #{oposicao.juridica.fantasia}" />
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.nome}"  title="Nome fantasia: #{oposicao.juridica.fantasia}" style="font-size: 8pt!important" />
                         </p:column>
-                        <p:column headerText="CPF" styleClass="text-center" width="120">
-                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.oposicaoPessoa.cpf}"  />
+                        <p:column headerText="CPF" styleClass="text-center" width="90">
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.oposicaoPessoa.cpf}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column headerText="RG" width="80" styleClass="text-center">
-                            <h:outputText value="#{oposicao.oposicaoPessoa.rg}"/>
+                            <h:outputText value="#{oposicao.oposicaoPessoa.rg}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column headerText="Nome">
-                            <h:outputText value="#{oposicao.oposicaoPessoa.nome}"/>
+                            <h:outputText value="#{oposicao.oposicaoPessoa.nome}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column headerText="Convençao" styleClass="text-center">
-                            <h:outputText value="#{oposicao.convencaoPeriodo.convencao.descricao}" />
+                            <h:outputText value="#{oposicao.convencaoPeriodo.convencao.descricao}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column headerText="Grupo Cidade" width="80" styleClass="text-center">
-                            <h:outputText value="#{oposicao.convencaoPeriodo.grupoCidade.descricao}" />
+                            <h:outputText value="#{oposicao.convencaoPeriodo.grupoCidade.descricao}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column rendered="#{!oposicaoBean.porPesquisa.equals('observacao')}" headerText="Ref. Inicial" width="50" styleClass="text-center">
-                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaInicial}" />
+                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaInicial}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column rendered="#{!oposicaoBean.porPesquisa.equals('observacao')}" headerText="Ref. Final" width="50" styleClass="text-center">
-                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaFinal}" />
+                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaFinal}" style="font-size: 8pt!important" />
                         </p:column>
                         <p:column rendered="#{oposicaoBean.porPesquisa.equals('observacao')}" headerText="Ref. Inicial / Final" styleClass="text-center">
-                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaInicial} / #{oposicao.convencaoPeriodo.referenciaFinal}" />
+                            <h:outputText value="#{oposicao.convencaoPeriodo.referenciaInicial} / #{oposicao.convencaoPeriodo.referenciaFinal}" style="font-size: 8pt!important" />
                         </p:column>                                    
                         <p:column rendered="#{oposicaoBean.porPesquisa.equals('observacao')}" headerText="Observação">
-                            <h:outputText value="#{oposicao.observacao}" />
+                            <h:outputText value="#{oposicao.observacao}" style="font-size: 8pt!important" />
                         </p:column>
                         <p:column headerText="Sócio">
-                            <h:outputText value="#{oposicaoBean.pessoaSocio(oposicao.oposicaoPessoa.cpf)}" />
+                            <h:outputText value="#{oposicaoBean.pessoaSocio(oposicao.oposicaoPessoa.cpf)}" style="font-size: 8pt!important" />
                         </p:column>
                     </p:dataTable>
                 </p:panel>
-
             </h:form>                     
         </f:view>
     </h:body>

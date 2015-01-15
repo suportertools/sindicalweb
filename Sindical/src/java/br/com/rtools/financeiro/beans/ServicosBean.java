@@ -714,7 +714,7 @@ public class ServicosBean implements Serializable {
     }
 
     public void updateDescontoCategoriaValor(ListServicosCategoriaDesconto lscd) {
-        float v = 0;
+        //float v = 0;
         float v1 = 0;
         float v2 = 0;
 //        200 + 200 * p/100 = 300 
@@ -906,6 +906,9 @@ public class ServicosBean implements Serializable {
     }
 
     public void openDescontoDependente(CategoriaDesconto cd) {
+        if (cd.getId() == -1)
+            GenericaMensagem.error("Atenção", "Salve o Serviço antes de Adicionar um Desconto");
+        
         this.id_categoria = cd.getCategoria().getId();
         indexParentesco = 0;
         listaParentesco.clear();

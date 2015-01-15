@@ -13,6 +13,10 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu { padding-right: 25px!important; }
+            .tblOposicaox{
+                background-color: #ff8282!important;
+                //color: #CCFF66!important;
+            }
         </style>
 
         <script type="text/javascript">
@@ -51,7 +55,7 @@
                 </f:subview>
                 <f:view>
                     <ui:include src="templates/templateAcessoFilial.xhtml"/>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Atendimento Pessoa" styleClass="fonteHeader" />
                         <h:form id="formAtendimentoPessoa">
                             <c:set scope="request" var="object" value="${atendimentoBean.ateMovimento}"/>
@@ -183,7 +187,7 @@
                             </h:panelGrid>
 
                             <h:panelGrid id="i_panel_lista">
-                                <p:dataTable value="#{atendimentoBean.listaAteMovimento}" var="linha" style="width:100%" emptyMessage="Nenhum Atendimento encontrado!">
+                                <p:dataTable value="#{atendimentoBean.listaAteMovimento}" var="linha" style="width:100%" emptyMessage="Nenhum Atendimento encontrado!" rowStyleClass="#{atendimentoBean.retornaOposicaoPessoa(linha.pessoa.documento)}">
                                     <p:column style="width:15px">  
                                         <p:rowToggler />  
                                     </p:column>  
@@ -253,6 +257,14 @@
                                             </p:column>
                                         </h:panelGrid>
                                     </p:rowExpansion>
+                                    <f:facet name="footer">
+                                        <h:panelGrid style="margin-top: 25px;" columns="2" styleClass="sbb">
+                                            <h:column>
+                                                <div style="width: 15px; height: 15px; background: #ff8282; float: left; margin-right: 5px"></div>
+                                                <h:outputLabel value="Contém Oposição" />
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </f:facet>                                         
                                 </p:dataTable>                            
                             </h:panelGrid>
                             

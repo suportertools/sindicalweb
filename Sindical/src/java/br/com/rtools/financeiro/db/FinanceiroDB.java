@@ -59,8 +59,11 @@ public interface FinanceiroDB {
     public List<Vector> pesquisaSaldoAtualRelatorio(int id_caixa, int id_fechamento);
     public List<Vector> pesquisaUsuarioFechamento(int id_fechamento);
     public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo);
-    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data);
-    public List<Vector> listaBoletoSocio(String nr_ctr_boleto);
+    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data, String tipo);
+    public List<Vector> listaBoletoSocioFisica(String nr_ctr_boleto);
+    public List<Vector> listaBoletoSocioJuridica(String nr_ctr_boleto);
+    public List<Vector> listaQntPorJuridica(String nrCtrBoleto);
+    public List<Vector> listaQntPorFisica(String nrCtrBoleto);
     public List<Vector> listaServicosSemCobranca();
     public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao);
 }

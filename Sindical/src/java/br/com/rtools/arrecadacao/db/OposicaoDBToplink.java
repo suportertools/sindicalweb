@@ -78,7 +78,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                 + "                      AND trim(fis.ds_rg)<>'0'                                                    "
                 + "                     )                                                                            "
                 + "               )                                                                                  "
-                + "                AND emp.is_principal = true                                                       "
+                + "                AND (emp.is_principal = true OR emp.dt_demissao IS NULL)                                                      "
                 //+ "                AND emp.dt_demissao   is null                                                   "
                 + "                AND jur.dt_fechamento is null LIMIT 1                                             ";
 

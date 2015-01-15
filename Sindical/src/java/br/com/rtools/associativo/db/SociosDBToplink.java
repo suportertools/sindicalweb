@@ -1,9 +1,11 @@
 package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.CategoriaDesconto;
+import br.com.rtools.associativo.DescontoSocial;
 import br.com.rtools.associativo.EventoServicoValor;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
@@ -393,6 +395,7 @@ public class SociosDBToplink extends DB implements SociosDB {
         }
     }
 
+    @Override
     public boolean socioDebito(int idPessoa) {
         try {
             Query query = getEntityManager().createNativeQuery(""
@@ -412,5 +415,39 @@ public class SociosDBToplink extends DB implements SociosDB {
         } catch (Exception e) {
         }
         return false;
+    }
+    
+    @Override
+    public List<DescontoSocial> listaDescontoSocial(int id_categoria) {
+        try {
+            Query query = getEntityManager().createQuery(
+                    "SELECT ds FROM DescontoSocial ds WHERE ds.categoria.id = :id_categoria"
+            );
+            
+            query.setParameter("id_categoria", id_categoria);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<ServicoPessoa> listaServicoPessoaPorDescontoSocial(Integer id_desconto_social, Integer id_pessoa) {
+        try {
+            String text_qry = "SELECT sp FROM ServicoPessoa sp WHERE sp.descontoSocial.id = "+id_desconto_social;
+            if (id_pessoa != null){
+                text_qry += " AND sp.pessoa.id <> "+id_pessoa;
+            }
+                
+            
+            
+            Query query = getEntityManager().createQuery(text_qry);
+            
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 }

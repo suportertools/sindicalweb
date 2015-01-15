@@ -42,6 +42,8 @@ public interface MovimentoDB {
 
     public Boleto pesquisaBoletos(String nrCtrBoleto);
 
+    public List<Movimento> listaMovimentoPorNrCtrBoleto(String nrCtrBoleto);
+    
     public MensagemCobranca pesquisaMensagemCobranca(int idMovimento);
 
     public List pesquisaPorVencimento(Date vencimento);
@@ -181,4 +183,5 @@ public interface MovimentoDB {
     public List<Impressao> listaImpressao(int id_movimento);
     
     public List<Movimento> listaMovimentoBeneficiarioServicoPeriodoAtivo(int id_beneficiario, int id_servico, int periodo_dias, boolean socio);
+    public List<Movimento> listaMovimentoBeneficiarioServicoMesVigente(int id_beneficiario, int id_servico, boolean socio);
 }

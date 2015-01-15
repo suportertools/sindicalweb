@@ -1,7 +1,9 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.associativo.DescontoSocial;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Pessoa;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -43,4 +45,8 @@ public interface SociosDB {
     public List pesquisaMotivoInativacao();
     
     public boolean socioDebito(int idPessoa);
+    
+    public List<DescontoSocial> listaDescontoSocial(int id_categoria);
+    
+    public List<ServicoPessoa> listaServicoPessoaPorDescontoSocial(Integer id_desconto_social, Integer id_pessoa);
 }

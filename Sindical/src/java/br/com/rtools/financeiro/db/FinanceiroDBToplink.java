@@ -12,6 +12,7 @@ import br.com.rtools.financeiro.SubGrupoFinanceiro;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
@@ -231,7 +232,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "select bl from BloqueiaServicoPessoa bl where bl.pessoa.id = " + id_pessoa + " order by bl.servicos.descricao");
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<BloqueiaServicoPessoa>();
+            return new ArrayList();
         }
     }
 
@@ -274,7 +275,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             Query qry = getEntityManager().createQuery("select c from Caixa c where c.caixa <> 1 order by c.caixa");
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Caixa>();
+            return new ArrayList();
         }
     }
     
@@ -481,7 +482,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
 //            );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }
     
@@ -511,7 +512,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             return qry.getResultList();
             
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }
     
@@ -614,7 +615,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }
     
@@ -637,7 +638,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }
     
@@ -654,7 +655,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }
     
@@ -670,54 +671,227 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         }catch(Exception e){
-            return new ArrayList<SubGrupoFinanceiro>();
+            return new ArrayList();
         }   
     }
     
     @Override
-    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data) {
+    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data, String tipo) {
         
-        String text_qry = "";
-        String where = "";
-        if (!responsavel.isEmpty())
-            where = " WHERE UPPER(responsavel) like '%"+responsavel.toUpperCase()+"%'";
+        String text_qry = "", where = "", inner_join ="";
         
+        if (tipo.equals("fisica")){
+            inner_join = " INNER JOIN pes_fisica f ON f.id_pessoa = b.codigo ";
+        }else if (tipo.equals("juridica")){
+            inner_join = " INNER JOIN pes_juridica j ON j.id_pessoa = b.codigo ";
+        }
+        
+        if (!responsavel.isEmpty()){
+            responsavel = AnaliseString.normalizeLower(responsavel);
+            where = " WHERE TRANSLATE(LOWER(b.responsavel)) like '%"+responsavel+"%'";
+        }
         if (!lote.isEmpty() && responsavel.isEmpty())
-            where += " WHERE id_lote_boleto = "+Integer.valueOf(lote);
+            where += " WHERE b.id_lote_boleto = "+Integer.valueOf(lote);
         else if (!lote.isEmpty())
-            where += " AND id_lote_boleto = "+Integer.valueOf(lote);
+            where += " AND b.id_lote_boleto = "+Integer.valueOf(lote);
             
         if (!data.isEmpty()  && responsavel.isEmpty() && lote.isEmpty())
-            where += " WHERE processamento = '"+data+"'";
+            where += " WHERE b.processamento = '"+data+"'";
         else if (!data.isEmpty())
-            where += " AND processamento = '"+data+"'";
+            where += " AND b.processamento = '"+data+"'";
             
-        text_qry = "SELECT nr_ctr_boleto, id_lote_boleto, responsavel, boleto, to_char(vencimento,'dd/MM/yyyy') as vencimento, to_char(processamento,'dd/MM/yyyy') as processamento, sum(valor) as valor " +
-                   "  FROM soc_boletos_vw " + where +
-                   " GROUP BY nr_ctr_boleto, id_lote_boleto, responsavel, boleto, vencimento, processamento "+
-                  "  ORDER BY responsavel, vencimento desc";
+        text_qry = "SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor " +
+                   "  FROM soc_boletos_vw b " + inner_join + where +
+                   " GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento "+
+                  "  ORDER BY b.responsavel, b.vencimento desc";
         
         try {
             Query qry = getEntityManager().createNativeQuery(text_qry);
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
         
     }   
     
     @Override
-    public List<Vector> listaBoletoSocio(String nr_ctr_boleto) {
+    public List<Vector> listaBoletoSocioFisica(String nr_ctr_boleto) {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    "SELECT * FROM soc_boletos_vw" +
-                    "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "')"
+                    " SELECT " +
+                    "       id_fin_lote, " +
+                    "       id_fin_movimento, " +
+                    "       nr_ctr_boleto, " +
+                    "       id_lote_boleto, " +
+                    "       processamento, " +
+                    "       codigo," +
+                    "       responsavel," +
+                    "       vencimento," +
+                    "       matricula," +
+                    "       grupo_categoria," +
+                    "       categoria," +
+                    "       servico," +
+                    "       id_beneficiario," +
+                    "       nome_beneficiario," +
+                    "       valor," +
+                    "       mensalidades_corrigidas," +
+                    "       mensagem_boleto," +
+                    "       banco," +
+                    "       agencia," +
+                    "       cedente," +
+                    "       boleto," +
+                    "       email," +
+                    "       nome_filial," +
+                    "       site_filial," +
+                    "       cnpj_filial," +
+                    "       tel_filial," +
+                    "       endereco_filial," +
+                    "       bairro_filial," +
+                    "       cidade_filial," +
+                    "       uf_filial," +
+                    "       cep_filial," +
+                    "       logradouro_responsavel," +
+                    "       endereco_responsavel," +
+                    "       cep_responsavel," +
+                    "       uf_responsavel," +
+                    "       cidade_responsavel," +
+                    "       informativo," +
+                    "       local_pagamento " +
+                    "   FROM soc_boletos_vw " +
+                    "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
+                    "  ORDER BY responsavel, codigo, nome_beneficiario "
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }    
+    
+    @Override
+    public List<Vector> listaBoletoSocioJuridica(String nr_ctr_boleto) {
+        try {
+            String text_qry = 
+                    " SELECT "+
+                    "       0 as id_lotex, " +
+                    "       0 as id_movimentox, " +
+                    "       nr_ctr_boleto, " +
+                    "       id_lote_boleto, " +
+                    "       processamento, " +
+                    "       codigo," +
+                    "       responsavel," +
+                    "       vencimento," +
+                    "       matricula," +
+                    "       grupo_categoria," +
+                    "       categoria," +
+                    "       ''," +
+                    "       codigo_titular," +
+                    "       nome_titular," +
+                    "       SUM(valor)," +
+                    "       mensalidades_corrigidas," +
+                    "       mensagem_boleto," +
+                    "       banco," +
+                    "       agencia," +
+                    "       cedente," +
+                    "       boleto," +
+                    "       email," +
+                    "       nome_filial," +
+                    "       site_filial," +
+                    "       cnpj_filial," +
+                    "       tel_filial," +
+                    "       endereco_filial," +
+                    "       bairro_filial," +
+                    "       cidade_filial," +
+                    "       uf_filial," +
+                    "       cep_filial," +
+                    "       logradouro_responsavel," +
+                    "       endereco_responsavel," +
+                    "       cep_responsavel," +
+                    "       uf_responsavel," +
+                    "       cidade_responsavel," +
+                    "       informativo," +
+                    "       local_pagamento " +
+                    "   FROM soc_boletos_vw" +
+                    "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
+                    "  GROUP BY " +
+                    //"       id_fin_lote, " +
+                    //"       id_fin_movimento, " +
+                    "       nr_ctr_boleto, " +
+                    "       id_lote_boleto, " +
+                    "       processamento, " +
+                    "       codigo," +
+                    "       responsavel," +
+                    "       vencimento," +
+                    "       matricula," +
+                    "       grupo_categoria," +
+                    "       categoria," +
+                    //"       servico," +
+                    "       codigo_titular," +
+                    "       nome_titular," +
+                    "       mensalidades_corrigidas," +
+                    "       mensagem_boleto," +
+                    "       banco," +
+                    "       agencia," +
+                    "       cedente," +
+                    "       boleto," +
+                    "       email," +
+                    "       nome_filial," +
+                    "       site_filial," +
+                    "       cnpj_filial," +
+                    "       tel_filial," +
+                    "       endereco_filial," +
+                    "       bairro_filial," +
+                    "       cidade_filial," +
+                    "       uf_filial," +
+                    "       cep_filial," +
+                    "       logradouro_responsavel," +
+                    "       endereco_responsavel," +
+                    "       cep_responsavel," +
+                    "       uf_responsavel," +
+                    "       cidade_responsavel," +
+                    "       informativo," +
+                    "       local_pagamento " +
+                    "  ORDER BY responsavel, codigo, nome_titular ";
+            
+            Query qry = getEntityManager().createNativeQuery(text_qry);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Vector> listaQntPorJuridica(String nrCtrBoleto){
+        Query qry = getEntityManager().createNativeQuery(
+                "select j.id_pessoa, m.id_titular " +
+                "  from fin_movimento m " +
+                " inner join pes_juridica j on j.id_pessoa = m.id_pessoa " +
+                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"'" +
+                "  group by j.id_pessoa, m.id_titular"
+        );
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<Vector> listaQntPorFisica(String nrCtrBoleto){
+        Query qry = getEntityManager().createNativeQuery(
+                "select f.id_pessoa, m.id_titular " +
+                "  from fin_movimento m " +
+                " inner join pes_fisica f on f.id_pessoa = m.id_pessoa " +
+                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"'" +
+                "  group by f.id_pessoa, m.id_titular"
+        );
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
     
     @Override
     public List<Vector> listaServicosSemCobranca() {
@@ -737,7 +911,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }    
     
@@ -764,7 +938,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Vector>();
+            return new ArrayList();
         }
     }    
    

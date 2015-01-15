@@ -112,6 +112,9 @@ public class EmissaoGuiasBean implements Serializable {
      * </ul>
      */
     private String[] var;
+    
+    private Socios socios;
+    private List<Movimento> listaMovimentosEmitidos;
 
     @PostConstruct
     public void init() {
@@ -154,6 +157,9 @@ public class EmissaoGuiasBean implements Serializable {
             SubGrupoConvenio sgc = (SubGrupoConvenio) (new Dao()).find(new SubGrupoConvenio(), Integer.parseInt(getListSubGrupo().get(index[1]).getDescription()));
             lote.setHistorico(sgc.getDescricao());
         }
+        
+        socios = new Socios();
+        listaMovimentosEmitidos = new ArrayList();
     }
 
     @PreDestroy
@@ -166,6 +172,22 @@ public class EmissaoGuiasBean implements Serializable {
         GenericaSessao.remove("listaMovimento");
     }
 
+    public String calculoIdade(){
+        if (fisica != null && fisica.getId() != -1 && !fisica.getNascimento().isEmpty()){
+        DataHoje dh = new DataHoje();
+            return "" + dh.calcularIdade(fisica.getNascimento());
+        }else{
+            return "NAO ENCONTRADA";
+        }
+    }
+    
+    public String verMovimentosEmitidos(Movimento linha){
+        String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).movimentosReceberSocial();
+        
+        GenericaSessao.put("pessoaPesquisa", linha.getPessoa());
+        return retorno;
+    }
+    
  
     public Guia pesquisaGuia(int id_lote){
         MovimentosReceberSocialJSFBean mr = new MovimentosReceberSocialJSFBean();
@@ -422,37 +444,69 @@ public class EmissaoGuiasBean implements Serializable {
         float valorx = Moeda.converteUS$(valor);
         Servicos servicos = (Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
         MovimentoDB db = new MovimentoDBToplink();
-        SociosDB dbs = new SociosDBToplink();
+        //SociosDB dbs = new SociosDBToplink();
+        listaMovimentosEmitidos.clear();
         if (servicos.getPeriodo() != null){
+            DataHoje dh = new DataHoje();
             // SEM CONTROLE FAMILIAR ---
             if (!servicos.isFamiliarPeriodo()){
-                List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
                 
-                if (list_m.size() >= servicos.getQuantidadePeriodo() || valorx != 0){
-                    GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
-                    return;
+                if (!servicos.isValidadeGuiasVigente()){
+                    listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
+                    if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                        GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! " + ((!listaMovimentosEmitidos.isEmpty()) ? " Liberação a partir de "+dh.incrementarDias(servicos.getPeriodo().getDias(), listaMovimentosEmitidos.get(0).getLote().getEmissao()) : ""));
+                        return;
+                    }
+                    listaMovimentosEmitidos.clear();
+                }else{
+                    listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoMesVigente(pessoa.getId(), servicos.getId(), false);
+                    if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                        GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! Liberação a partir de "+DataHoje.alterDay(1, dh.incrementarMeses(1, DataHoje.data())));
+                        return;
+                    }
+                    listaMovimentosEmitidos.clear();
                 }
+                
             }
             
             // COM CONTROLE FAMILIAR --- 
             if (servicos.isFamiliarPeriodo()){
-                Socios socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
+                //Socios socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
                 
                 // NÃO SÓCIO ---
                 if (socios.getId() == -1){
-                    List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
-
-                    if (list_m.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
-                        GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
-                        return;
+                    if (!servicos.isValidadeGuiasVigente()){
+                        listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(pessoa.getId(), servicos.getId(), servicos.getPeriodo().getDias(), false);
+                        if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                            GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! " + ((!listaMovimentosEmitidos.isEmpty()) ? " Liberação a partir de "+dh.incrementarDias(servicos.getPeriodo().getDias(), listaMovimentosEmitidos.get(0).getLote().getEmissao()) : ""));
+                            return;
+                        }
+                        listaMovimentosEmitidos.clear();
+                    }else{
+                        listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoMesVigente(pessoa.getId(), servicos.getId(), false);
+                        if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                                GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! Liberação a partir de "+DataHoje.alterDay(1, dh.incrementarMeses(1, DataHoje.data())));
+                                return;
+                        }
+                        listaMovimentosEmitidos.clear();
                     }
                 // SOCIO ---
                 }else{
-                    List<Movimento> list_m = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(socios.getMatriculaSocios().getId(), servicos.getId(), servicos.getPeriodo().getDias(), true);
+                    if (!servicos.isValidadeGuiasVigente()){
+                        listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoPeriodoAtivo(socios.getMatriculaSocios().getId(), servicos.getId(), servicos.getPeriodo().getDias(), true);
 
-                    if (list_m.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
-                        GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado!");
-                        return;
+                        if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                            GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! " + ((!listaMovimentosEmitidos.isEmpty()) ? " Liberação a partir de "+dh.incrementarDias(servicos.getPeriodo().getDias(), listaMovimentosEmitidos.get(0).getLote().getEmissao()) : ""));
+                            return;
+                        }
+                        listaMovimentosEmitidos.clear();
+                    }else{
+                        listaMovimentosEmitidos = db.listaMovimentoBeneficiarioServicoMesVigente(socios.getMatriculaSocios().getId(), servicos.getId(), true);
+                        if (listaMovimentosEmitidos.size() >= servicos.getQuantidadePeriodo() && valorx == 0){
+                                GenericaMensagem.error("Atenção", "Excedido o limite de utilização deste serviço no periodo determinado! Liberação a partir de "+DataHoje.alterDay(1, dh.incrementarMeses(1, DataHoje.data())));
+                                return;
+                        }
+                        listaMovimentosEmitidos.clear();
                     }
                 }
             }
@@ -753,6 +807,9 @@ public class EmissaoGuiasBean implements Serializable {
             fisica = new Fisica();
             FisicaDB db = new FisicaDBToplink();
             fisica = db.pesquisaFisicaPorPessoa(pessoa.getId());
+            
+            SociosDB dbs = new SociosDBToplink();
+            socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
         }
         boolean isFisica = false;
         if (GenericaSessao.exists("fisicaPesquisa")) {
@@ -760,12 +817,16 @@ public class EmissaoGuiasBean implements Serializable {
             pessoa = new Pessoa();
             pessoa = fisica.getPessoa();
             isFisica = true;
+            
+            SociosDB dbs = new SociosDBToplink();
+            socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
         }
         if (!isFisica) {
             if (GenericaSessao.exists("juridicaPesquisa")) {
                 juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
                 pessoa = new Pessoa();
                 pessoa = juridica.getPessoa();
+                socios = new Socios();
             }
         }
         return pessoa;
@@ -1157,5 +1218,21 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void setEstoque(Estoque estoque) {
         this.estoque = estoque;
+    }
+
+    public Socios getSocios() {
+        return socios;
+    }
+
+    public void setSocios(Socios socios) {
+        this.socios = socios;
+    }
+
+    public List<Movimento> getListaMovimentosEmitidos() {
+        return listaMovimentosEmitidos;
+    }
+
+    public void setListaMovimentosEmitidos(List<Movimento> listaMovimentosEmitidos) {
+        this.listaMovimentosEmitidos = listaMovimentosEmitidos;
     }
 }
