@@ -303,11 +303,11 @@
                                         </h:column>
                                         <h:column>
                                             <br />
-                                            <p:commandButton value="Adicionar" action="#{servicosBean.adicionarDescontoDependente()}" update="i_desconto_dependente"/>
+                                            <p:commandButton value="Adicionar" action="#{servicosBean.adicionarDescontoDependente()}" update="i_desconto_dependente" disabled="#{servicosBean.categoriaDesconto.id == -1}"/>
                                         </h:column>
                                         <h:column>
                                             <br />
-                                            <p:commandButton value="Adicionar Todos Parentescos" action="#{servicosBean.adicionarDescontoDependenteTodosParentesco()}" update="i_desconto_dependente"/>
+                                            <p:commandButton value="Adicionar Todos Parentescos" action="#{servicosBean.adicionarDescontoDependenteTodosParentesco()}" update="i_desconto_dependente" disabled="#{servicosBean.categoriaDesconto.id == -1}"/>
                                         </h:column>
                                     </h:panelGrid>
 

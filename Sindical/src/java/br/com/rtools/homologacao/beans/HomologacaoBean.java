@@ -71,6 +71,15 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
     
+    
+    public String retornaOposicaoPessoa(String documento){
+        AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
+        if (atendimentoDB.pessoaOposicao(documento)) {
+            return "tblOposicaox";
+        }else
+            return "";
+    }
+    
     public final void loadListaHomologacao(){
         listaHomologacoes.clear();
         try {

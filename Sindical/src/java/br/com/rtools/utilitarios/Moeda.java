@@ -222,4 +222,16 @@ public final class Moeda {
         }
         return result;
     }
+    
+    public static String percentualDoValor(String valorFixo, String valorCalculo){
+        float v1 = Moeda.subtracaoValores(Moeda.converteUS$(valorFixo), Moeda.converteUS$(valorCalculo));
+        float v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, Moeda.converteUS$(valorFixo)), 100);
+        return Moeda.converteR$Float(v2);
+    }
+    
+    public static String valorDoPercentual(String valorFixo, String percentual){
+        //v = servicoValorDetalhe.getValor() - (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() / 100) * servicoValorDetalhe.getValor();
+        float v = Moeda.converteUS$(valorFixo) - (Moeda.converteUS$(percentual) / 100) * Moeda.converteUS$(valorFixo);
+        return Moeda.converteR$Float(v);
+    }
 }

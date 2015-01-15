@@ -17,13 +17,17 @@ import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
+import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.impressao.ParametroBoletoSocial;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -32,7 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import static java.util.Collections.swap;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,7 +58,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
-
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 @ManagedBean
 @SessionScoped
@@ -69,10 +74,65 @@ public class ImpressaoBoletoSocialBean {
     private String strLote = "";
     private String strData = "";
     
+    private String tipo = "fisica";
+    private Integer qntFolhas = 0;
+    
     @PostConstruct
     public void init(){
         UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
+    }
+    
+    public String qntDeFolhas(String nrCtrBoleto){
+        FinanceiroDB db = new FinanceiroDBToplink();
+        List<Vector> lista_socio;
+        if (tipo.equals("fisica"))
+            lista_socio = db.listaBoletoSocioFisica(nrCtrBoleto); // NR_CTR_BOLETO
+        else
+            lista_socio = db.listaBoletoSocioJuridica(nrCtrBoleto); // NR_CTR_BOLETO
+        
+        return String.valueOf(lista_socio.size());
+    }
+    
+    public void loadLista(){
+        listaGrid.clear();
+        if (!strData.isEmpty()){
+            FinanceiroDB db = new FinanceiroDBToplink();
+            List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData, tipo);
+            
+            int contador = 1;
+            for (int i = 0; i < lista_agrupado.size(); i++){
+                List<Vector> lista_socio;
+                if (tipo.equals("fisica"))
+                    lista_socio = db.listaQntPorFisica(lista_agrupado.get(i).get(0).toString()); // NR_CTR_BOLETO
+                else
+                    lista_socio = db.listaQntPorJuridica(lista_agrupado.get(i).get(0).toString()); // NR_CTR_BOLETO
+            
+                if (qntFolhas == 0){
+                    // TODAS
+                    listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
+                    contador++;
+                }else if (qntFolhas == 1 && lista_socio.size() <= 25){ // 25 quantidade de linhas que cabe em um boleto sem que estore
+                    // APENAS COM 1 PÁGINA    
+                    listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
+                    contador++;
+                }else if (qntFolhas == 2 && (lista_socio.size() >= 26 && lista_socio.size() <= 125)){
+                    // DE 2 A 5 PAGINAS    
+                    listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
+                    contador++;
+                }else if (qntFolhas == 3 && lista_socio.size() > 126){
+                    // ACIMA DE 5 PAGINAS    
+                    listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
+                    contador++;
+                }
+            }
+        }
+    }
+    
+    public int calculoDePaginas(int quantidade){
+        float soma = Moeda.divisaoValores(quantidade, 25);
+        //return ((int) Math.ceil(soma) == 0) ? 1 : (int) Math.ceil(soma);
+        return (int) Math.ceil(soma);
     }
     
     public void alterarPathImagem(String path){
@@ -98,10 +158,6 @@ public class ImpressaoBoletoSocialBean {
 //            return file_verso.getPath();
 //    } 
 //    
-    public void filtrar(){
-        listaGrid.clear();
-    }
-    
     public void marcar(){
         for (int i = 0; i < listaGrid.size(); i++){
             if ((i+1) >= de && ate == 0)
@@ -115,6 +171,12 @@ public class ImpressaoBoletoSocialBean {
         }
     }
     
+    public void desmarcarTudo(){
+        for (int i = 0; i < listaGrid.size(); i++){
+            listaGrid.get(i).setArgumento1(false);
+        }
+    }
+    
     public void imprimir(){
         List lista = new ArrayList();
         //List<Vector> result = new ArrayList<Vector>();//db.listaChequesRecebidos(ids_filial, ids_caixa, tipo, d_i, d_f, id_status);
@@ -123,14 +185,8 @@ public class ImpressaoBoletoSocialBean {
         Filial filial = (Filial) sv.pesquisaCodigo(1, "Filial");
         FinanceiroDB db = new FinanceiroDBToplink();
         
-        //List result = new ArrayList();
-        
-        //Vector x = new ArrayList()
-        
-        Map<String, Object> map = new LinkedHashMap<String, Object>();  
-        
-        //List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado();
-        
+        Map<String, Object> map = new LinkedHashMap();  
+                
         float valor = 0, valor_total = 0;
         
         try {
@@ -152,76 +208,82 @@ public class ImpressaoBoletoSocialBean {
             
             for (int i = 0; i < listaGrid.size(); i++){
                 if ((Boolean)listaGrid.get(i).getArgumento1()){
-                    List<Vector> lista_socio = db.listaBoletoSocio((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
+                    List<Vector> lista_socio = null;
+                    if (tipo.equals("fisica"))
+                        lista_socio = db.listaBoletoSocioFisica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
+                    else 
+                        lista_socio = db.listaBoletoSocioJuridica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
 
                     for (int w = 0; w < lista_socio.size(); w++){
                         Boleto boletox = movDB.pesquisaBoletos("'"+(String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)+"'"); // NR_CTR_BOLETO
-                        Movimento mov = (Movimento)sv.pesquisaCodigo((Integer)lista_socio.get(w).get(1), "Movimento");
+                        //Movimento mov = (Movimento)sv.pesquisaCodigo((Integer)lista_socio.get(w).get(1), "Movimento");
+                        List<Movimento> list_mov = movDB.listaMovimentoPorNrCtrBoleto(boletox.getNrCtrBoleto());
                         
                         if (boletox.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
-                            cobranca = new CaixaFederalSindical(mov, boletox);
+                            cobranca = new CaixaFederalSindical(list_mov.get(0), boletox);
                             //swap[43] = "EXERC " + lista.get(i).getReferencia().substring(3);
                             //swap[42] = "BLOQUETO DE CONTRIBUIÇÃO SINDICAL URBANA.";
                         } else if ((boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal))
                                 && (boletox.getContaCobranca().getLayout().getId() == Cobranca.SICOB)) {
-                            cobranca = new CaixaFederalSicob(mov, boletox);
+                            cobranca = new CaixaFederalSicob(list_mov.get(0), boletox);
                         } else if ((boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal))
                                 && (boletox.getContaCobranca().getLayout().getId() == Cobranca.SIGCB)) {
-                            cobranca = new CaixaFederalSigCB(mov, boletox);
+                            cobranca = new CaixaFederalSigCB(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.itau)) {
-                            cobranca = new Itau(mov, boletox);
+                            cobranca = new Itau(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bancoDoBrasil)) {
-                            cobranca = new BancoDoBrasil(mov, boletox);
+                            cobranca = new BancoDoBrasil(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.real)) {
-                            cobranca = new Real(mov, boletox);
+                            cobranca = new Real(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bradesco)) {
-                            cobranca = new Bradesco(mov, boletox);
+                            cobranca = new Bradesco(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.santander)) {
-                            cobranca = new Santander(mov, boletox);
+                            cobranca = new Santander(list_mov.get(0), boletox);
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.sicoob)) {
-                            cobranca = new Sicoob(mov, boletox);
+                            cobranca = new Sicoob(list_mov.get(0), boletox);
                         }
 
-                        valor = Moeda.converteUS$(lista_socio.get(w).get(18).toString());
-                        valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(18).toString()));
+                        valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
+                        valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(14).toString()));
 
                         lista.add(new ParametroBoletoSocial(
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO SINDICATO
                                 filial.getFilial().getPessoa().getNome(), 
-                                lista_socio.get(w).get(9).toString(), // CODIGO
-                                lista_socio.get(w).get(10).toString(), // RESPONSAVEL
-                                DataHoje.converteData((Date)lista_socio.get(w).get(11)), // VENCIMENTO
-                                (lista_socio.get(w).get(12) == null) ? "" : lista_socio.get(w).get(12).toString(), // MATRICULA
-                                (lista_socio.get(w).get(14) == null) ? "" : lista_socio.get(w).get(14).toString(), // CATEGORIA
-                                (lista_socio.get(w).get(13) == null) ? "" : lista_socio.get(w).get(13).toString(), // GRUPO
-                                lista_socio.get(w).get(16).toString(), // CODIGO BENEFICIARIO
-                                lista_socio.get(w).get(17).toString(), // BENEFICIARIO
-                                lista_socio.get(w).get(15).toString(), // SERVICO
+                                lista_socio.get(w).get(5).toString(), // CODIGO
+                                lista_socio.get(w).get(6).toString(), // RESPONSAVEL
+                                DataHoje.converteData((Date)lista_socio.get(w).get(7)), // VENCIMENTO
+                                (lista_socio.get(w).get(8) == null) ? "" : lista_socio.get(w).get(8).toString(), // MATRICULA
+                                (lista_socio.get(w).get(10) == null) ? "" : lista_socio.get(w).get(10).toString(), // CATEGORIA
+                                (lista_socio.get(w).get(9) == null) ? "" : lista_socio.get(w).get(9).toString(), // GRUPO
+                                lista_socio.get(w).get(12).toString(), // CODIGO BENEFICIARIO
+                                lista_socio.get(w).get(13).toString(), // BENEFICIARIO
+                                lista_socio.get(w).get(11).toString(), // SERVICO
                                 Moeda.converteR$Float(valor), // VALOR
                                 Moeda.converteR$Float(valor_total), // VALOR TOTAL
-                                Moeda.converteR$(lista_socio.get(w).get(19).toString()), // VALOR ATRASADAS
+                                Moeda.converteR$(lista_socio.get(w).get(15).toString()), // VALOR ATRASADAS
                                 Moeda.converteR$Float(valor_total), // VALOR ATÉ  VALORVENCIMENTO
                                 file_promo == null ? null : file_promo.getAbsolutePath(), // LOGO PROMOÇÃO
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(boletox.getContaCobranca().getContaBanco().getBanco().getLogo().trim()), // LOGO BANCO
-                                lista_socio.get(w).get(20).toString(), // MENSAGEM
-                                lista_socio.get(w).get(22).toString(), // AGENCIA
+                                lista_socio.get(w).get(16).toString(), // MENSAGEM
+                                lista_socio.get(w).get(18).toString(), // AGENCIA
                                 cobranca.representacao(), // REPRESENTACAO
-                                lista_socio.get(w).get(23).toString(), // CODIGO CEDENTE
-                                lista_socio.get(w).get(24).toString(), // NOSSO NUMENTO
+                                lista_socio.get(w).get(19).toString(), // CODIGO CEDENTE
+                                lista_socio.get(w).get(20).toString(), // NOSSO NUMENTO
                                 DataHoje.converteData((Date)lista_socio.get(w).get(4)), // PROCESSAMENTO
                                 cobranca.codigoBarras(), // CODIGO DE BARRAS
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/serrilha.GIF"), // SERRILHA
-                                lista_socio.get(w).get(35).toString() +" "+ lista_socio.get(w).get(36).toString(), // ENDERECO RESPONSAVEL
-                                lista_socio.get(w).get(30).toString() +" "+ lista_socio.get(w).get(31).toString(), // ENDERECO FILIAL
-                                lista_socio.get(w).get(39).toString() +" "+ lista_socio.get(w).get(38).toString() +" " + lista_socio.get(w).get(37).toString(), // COMPLEMENTO RESPONSAVEL
-                                lista_socio.get(w).get(32).toString() +" - "+ lista_socio.get(w).get(33).toString() +" "+ lista_socio.get(w).get(34).toString(), // COMPLEMENTO FILIAL
-                                lista_socio.get(w).get(28).toString(), // CNPJ FILIAL
-                                lista_socio.get(w).get(29).toString(), // TELEFONE FILIAL
-                                lista_socio.get(w).get(25).toString(), // EMAIL FILIAL
-                                lista_socio.get(w).get(27).toString(), // SITE FILIAL
+                                lista_socio.get(w).get(31).toString() +" "+ lista_socio.get(w).get(32).toString(), // ENDERECO RESPONSAVEL
+                                //lista_socio.get(w).get(30).toString() +" "+ lista_socio.get(w).get(31).toString(), // ENDERECO FILIAL
+                                lista_socio.get(w).get(26).toString() +" "+ lista_socio.get(w).get(27).toString(), // ENDERECO FILIAL
+                                lista_socio.get(w).get(35).toString() +" "+ lista_socio.get(w).get(34).toString() +" " + lista_socio.get(w).get(33).toString(), // COMPLEMENTO RESPONSAVEL
+                                lista_socio.get(w).get(28).toString() +" - "+ lista_socio.get(w).get(29).toString() +" "+ lista_socio.get(w).get(30).toString(), // COMPLEMENTO FILIAL
+                                lista_socio.get(w).get(24).toString(), // CNPJ FILIAL
+                                lista_socio.get(w).get(25).toString(), // TELEFONE FILIAL
+                                lista_socio.get(w).get(21).toString(), // EMAIL FILIAL
+                                lista_socio.get(w).get(23).toString(), // SITE FILIAL
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoBoletoVersoSocial.png"), // LOGO BOLETO VERSO SOCIAL
-                                lista_socio.get(w).get(41).toString(), // LOCAL DE PAGAMENTO
-                                lista_socio.get(w).get(40).toString() // INFORMATIVO
+                                lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
+                                lista_socio.get(w).get(36).toString() // INFORMATIVO
                         ));
                     }
                 
@@ -255,20 +317,98 @@ public class ImpressaoBoletoSocialBean {
             res.getCharacterEncoding();
             FacesContext.getCurrentInstance().responseComplete();
         } catch (JRException e) {
-            e.printStackTrace();
+            e.getMessage();
         } catch (IOException ex) {
             Logger.getLogger(GerarBoletoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }    
     
-    public List<DataObject> getListaGrid() {
-        if (listaGrid.isEmpty() && !strData.isEmpty()){
-            FinanceiroDB db = new FinanceiroDBToplink();
-            List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData);
-            for (int i = 0; i < lista_agrupado.size(); i++){
-                listaGrid.add(new DataObject(i+1, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString())));
+    public void etiqueta(){
+        List lista = new ArrayList();
+        
+        FinanceiroDB db = new FinanceiroDBToplink();
+        
+        try {
+            for (int i = 0; i < listaGrid.size(); i++){
+                if ((Boolean)listaGrid.get(i).getArgumento1()){
+                    List<Vector> lista_socio;
+                    PessoaEnderecoDB dbpe = new PessoaEnderecoDBToplink();
+                    PessoaEndereco pe;
+                        
+                    if (tipo.equals("fisica")){
+                        lista_socio = db.listaBoletoSocioFisica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
+                    }else {
+                        lista_socio = db.listaBoletoSocioJuridica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
+                    }
+                    
+                    for (int w = 0; w < lista_socio.size(); w++){
+                        if (tipo.equals("fisica")){
+                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(5).toString()), 1);
+                        } else {
+                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(5).toString()), 5);
+                        }
+                        
+                        if (pe != null){
+                            lista.add(
+                                    new Etiquetas(
+                                            pe.getPessoa().getNome(), // NOME
+                                            pe.getEndereco().getLogradouro().getDescricao(), // LOGRADOURO
+                                            pe.getEndereco().getDescricaoEndereco().getDescricao(), // ENDERECO
+                                            pe.getNumero(), // NÚMERO
+                                            pe.getEndereco().getBairro().getDescricao(), // BAIRRO
+                                            pe.getEndereco().getCidade().getCidade(), // CIDADE
+                                            pe.getEndereco().getCidade().getUf(), // UF
+                                            pe.getEndereco().getCep(), // CEP
+                                            pe.getComplemento() // COMPLEMENTO
+                                    ) 
+                            );
+                        }
+                    }
+                }
             }
-        }
+            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_SOCIO.jasper"));
+            
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+            
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+            
+            List<JasperPrint> lista_jasper = new ArrayList();
+            lista_jasper.add(JasperFillManager.fillReport(jasperReport, null, dtSource));
+            
+            JRPdfExporter exporter = new JRPdfExporter();
+            
+            String nomeDownload = "etiqueta_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
+            
+            exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
+            
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            
+            configuration.setCreatingBatchModeBookmarks(true);
+            
+            exporter.setConfiguration(configuration);
+            
+            exporter.exportReport();
+
+            File fl = new File(pathPasta);
+            
+            if (fl.exists()){
+                Download download = new Download(
+                        nomeDownload,
+                        pathPasta,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance()
+                );
+                download.baixar();
+                download.remover();
+            }
+        } catch (JRException e) {
+            e.getMessage();
+        } 
+    }
+    
+    public List<DataObject> getListaGrid() {
         return listaGrid;
     }
 
@@ -322,6 +462,22 @@ public class ImpressaoBoletoSocialBean {
 
     public void setStrData(String strData) {
         this.strData = strData;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Integer getQntFolhas() {
+        return qntFolhas;
+    }
+
+    public void setQntFolhas(Integer qntFolhas) {
+        this.qntFolhas = qntFolhas;
     }
 
     

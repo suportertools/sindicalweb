@@ -499,6 +499,15 @@ public class AtendimentoBean implements Serializable {
             sv.comitarTransacao();
         }
     }
+    
+    public String retornaOposicaoPessoa(String documento){
+        AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
+        if (atendimentoDB.pessoaOposicao(documento)) {
+            return "tblOposicaox";
+        }else
+            return "";
+    }
+    
     public void verificaPessoaOposicao() {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         if (atendimentoDB.pessoaOposicao(sisPessoa.getDocumento())) {

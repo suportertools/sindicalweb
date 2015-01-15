@@ -25,6 +25,7 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show()" onsuccess="PF('i_dlg_modal').hide()" />
@@ -36,7 +37,7 @@
                         <h:form id="formImpressaoBoletoSocial">
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:outputLabel value="Opção Marcar" style="font-size: 12pt!important"/><br />
-                                <h:panelGrid columns="7">
+                                <h:panelGrid columns="9">
                                     <p:column>
                                         <h:outputLabel value="De" /><br />
                                         <p:inputText size="5" value="#{impressaoBoletoSocialBean.de}"/>
@@ -49,17 +50,38 @@
 
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Marcar" action="#{impressaoBoletoSocialBean.marcar()}" update="tbl"/>
+                                        <p:commandButton icon="ui-icon-check" action="#{impressaoBoletoSocialBean.marcar()}" update="tbl"/>
+                                        <p:commandButton icon="ui-icon-close" action="#{impressaoBoletoSocialBean.desmarcarTudo()}" update="tbl"/>
                                     </p:column>
 
                                     <p:column>
-                                        <h:outputLabel value="Responsável" style="margin-left: 20px"/><br />
-                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="60" style="margin-left: 20px"/>
+                                        <h:outputLabel value="Responsável" style="margin-left: 10px"/><br />
+                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="30" style="margin-left: 10px"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <br />
+                                        <p:selectOneMenu value="#{impressaoBoletoSocialBean.tipo}" style="padding-right: 20px">
+                                            <p:ajax event="change" update="@this tbl" listener="#{impressaoBoletoSocialBean.loadLista()}"/>
+                                            <f:selectItem itemValue="fisica" itemLabel="Física" />
+                                            <f:selectItem itemValue="juridica" itemLabel="Jurídica" />
+                                        </p:selectOneMenu>
                                     </p:column>
 
                                     <p:column>
                                         <h:outputLabel value="Lote" /><br />
                                         <p:inputText value="#{impressaoBoletoSocialBean.strLote}" size="10"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Qnt. Páginas" /><br />
+                                        <p:selectOneMenu value="#{impressaoBoletoSocialBean.qntFolhas}" style="padding-right: 20px">
+                                            <p:ajax event="change" update="@this tbl" listener="#{impressaoBoletoSocialBean.loadLista()}"/>
+                                            <f:selectItem itemValue="0" itemLabel="Todas" />
+                                            <f:selectItem itemValue="1" itemLabel="1 Página" />
+                                            <f:selectItem itemValue="2" itemLabel="2 à 5 Páginas" />
+                                            <f:selectItem itemValue="3" itemLabel="Mais de 5" />
+                                        </p:selectOneMenu>
                                     </p:column>
 
                                     <p:column>
@@ -69,13 +91,13 @@
 
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Filtrar" action="#{impressaoBoletoSocialBean.filtrar()}" update="tbl"/>
+                                        <p:commandButton value="Filtrar" action="#{impressaoBoletoSocialBean.loadLista()}" update="tbl"/>
                                     </p:column>
                                 </h:panelGrid>        
                             </p:panel>
                             
                             <p:dataTable var="linha" id="tbl" value="#{impressaoBoletoSocialBean.listaGrid}" rowKey="#{linha.argumento0}" emptyMessage="Nenhum Boleto Encontrado!" paginator="true" rows="10">
-                                <p:column headerText="" style="text-align: center; width: 60px">
+                                <p:column headerText="" style="text-align: center; width: 40px">
                                     <p:commandLink value="#{linha.argumento0}" />
                                 </p:column>
                                 
@@ -106,11 +128,20 @@
                                 <p:column headerText="Valor Total" width="65" >
                                     <p:commandLink value="#{linha.argumento3}" style="float: right"/>
                                 </p:column>
+                                
+                                <p:column headerText="Pag." style="width: 40px; text-align: center">
+                                    <p:commandLink value="#{linha.argumento4}" />
+                                </p:column>
+                                
+                                <f:facet name="footer">
+                                    <p:outputLabel value="O total de páginas não conta o verso" style="color: red"/>
+                                </f:facet>
                             </p:dataTable>
                             
-                            <h:panelGrid columns="2">
+                            <h:panelGrid columns="3">
                                 <p:commandButton ajax="false" value="Imprimir" action="#{impressaoBoletoSocialBean.imprimir()}"/>
                                 <p:selectBooleanCheckbox value="#{impressaoBoletoSocialBean.imprimeVerso}" style="margin-left: 30px" itemLabel="Imprimir Verso"/>
+                                <p:commandButton ajax="false" value="Etiquetas" action="#{impressaoBoletoSocialBean.etiqueta()}" style="margin-left: 30px"/>
                             </h:panelGrid>
                         </h:form>
                     </p:panel>

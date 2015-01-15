@@ -462,15 +462,31 @@ public class WebREPISBean implements Serializable {
 
                     CertidaoMensagem certidaoMensagem = null;
                     File file = null;
-                    if (repis.getCertidaoTipo().getId() == 1){
-                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
-                    }else if (repis.getCertidaoTipo().getId() == 2){
-                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS.jasper"));
-                    }else if (repis.getCertidaoTipo().getId() == 3){
-                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS.jasper"));
-                        certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
-                    }else if (repis.getCertidaoTipo().getId() == 4){
-                        file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));
+                    
+                    switch(repis.getCertidaoTipo().getId()){
+                        case 1:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
+                            break;
+                        case 2:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS.jasper"));
+                            break;
+                        case 3:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS.jasper"));
+                            certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
+                            break;
+                        case 4:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));                            
+                            break;
+                        case 5:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS_AUXILIAR.jasper"));
+                            break;
+                        case 6:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_DOMINGOS_AUXILIAR.jasper"));
+                            break;
+                        case 7:
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS_AUXILIAR.jasper"));
+                            certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
+                            break;                            
                     }
 
                     JasperReport jasper = (JasperReport) JRLoader.loadObject(file);   
@@ -524,57 +540,39 @@ public class WebREPISBean implements Serializable {
             
             if (!lista_jasper.isEmpty()){
                 di.commit();
+                JRPdfExporter exporter = new JRPdfExporter();
+
+                String nomeDownload = "certificado_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
+
+                exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
+
+                SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+
+                configuration.setCreatingBatchModeBookmarks(true);
+
+                exporter.setConfiguration(configuration);
+
+                exporter.exportReport();
+
+                File fl = new File(pathPasta);
+
+                if (fl.exists()){
+                    Download download = new Download(
+                            nomeDownload,
+                            pathPasta,
+                            "application/pdf",
+                            FacesContext.getCurrentInstance()
+                    );
+                    download.baixar();
+                    download.remover();
+                }
+                listRepisMovimentoPatronal.clear();
             }else{
                 di.rollback();
+                GenericaMensagem.warn("Atenção", "O Status da Certidão não pode impresso!");
             }
-            
-            JRPdfExporter exporter = new JRPdfExporter();
-            //ByteArrayOutputStream retorno = new ByteArrayOutputStream();
-            String nomeDownload = "certificado_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
-            
-            exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
-            
-            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-            
-            configuration.setCreatingBatchModeBookmarks(true);
-            
-            exporter.setConfiguration(configuration);
-//            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, lista_jasper);
-//            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
-            //exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
-            exporter.exportReport();
-            
-            File fl = new File(pathPasta);
-            
-            if (fl.exists()){
-                Download download = new Download(
-                        nomeDownload,
-                        pathPasta,
-                        "application/pdf",
-                        FacesContext.getCurrentInstance()
-                );
-                download.baixar();
-                download.remover();
-            }
-//            byte[] arquivo = retorno.toByteArray();
-//
-//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
-//            SalvaArquivos sa = new SalvaArquivos(arquivo,
-//                    nomeDownload,
-//                    false);
-//            sa.salvaNaPasta(pathPasta);
-//
-//            Download download = new Download(nomeDownload,
-//                    pathPasta,
-//                    "application/pdf",
-//                    FacesContext.getCurrentInstance()
-//            );
-//            download.baixar();
-//            download.remover();
-            
-            listRepisMovimentoPatronal.clear();
         } catch (NumberFormatException | JRException e) {
             di.rollback();
             e.getMessage();

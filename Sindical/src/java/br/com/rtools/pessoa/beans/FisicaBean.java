@@ -2,6 +2,7 @@ package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.beans.SociosBean;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
@@ -32,7 +33,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
@@ -1223,29 +1223,49 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     
 
     public String associarFisica() {
+        boolean reativar;
         if (fisica.getId() == -1) {
             msgSocio = "Cadastre uma pessoa fisica para associar!";
             GenericaMensagem.warn("Validação", "Cadastre uma pessoa fisica para associar!");
             return "pessoaFisica";
         } else {
             msgSocio = "";
-            GenericaSessao.put("fisicaPesquisa", fisica);
+//            GenericaSessao.put("fisicaPesquisa", fisica);
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
+            
             if (socios.getMatriculaSocios().getMotivoInativacao() == null) {
-                GenericaSessao.put("reativarSocio", true);
+                reativar = true;
+                //GenericaSessao.put("reativarSocio", true);
             } else {
-                GenericaSessao.put("reativarSocio", false);
+                reativar = false;
+                //GenericaSessao.put("reativarSocio", false);
             }
 
         }
-        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+        
+        String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+        
+        GenericaSessao.put("sociosBean", new SociosBean());
+        SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
+        sb.loadSocio(fisica.getPessoa(), reativar);
+        
+        return retorno;
     }
 
     public String associarFisica(Pessoa _pessoa) {
-        GenericaSessao.put("fisicaPesquisa", (new FisicaDBToplink()).pesquisaFisicaPorPessoa(_pessoa.getId()));
-        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
-        GenericaSessao.put("reativarSocio", true);
-        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+//        GenericaSessao.put("fisicaPesquisa", (new FisicaDBToplink()).pesquisaFisicaPorPessoa(_pessoa.getId()));
+//        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
+//        GenericaSessao.put("reativarSocio", true);
+//        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+        
+            String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+            GenericaSessao.put("pessoaEmpresaPesquisa",  (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
+            GenericaSessao.put("sociosBean", new SociosBean());
+            
+            SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
+            sb.loadSocio(fisica.getPessoa(), true);
+
+            return retorno;
     }
 
     public String hojeRecadastro() {

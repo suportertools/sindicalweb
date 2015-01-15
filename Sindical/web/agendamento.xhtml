@@ -269,17 +269,23 @@
 
                                 <h:column>
                                     <h:outputLabel value="Carteira" styleClass="#{agendamentoBean.configuracaoHomologacao.validaCarteira ? 'font-color-red' : ''}"/><br />
-                                    <p:inputText size="10" value="#{agendamentoBean.fisica.carteira}" />
+                                    <p:inputText size="10" value="#{agendamentoBean.fisica.carteira}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText> 
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Série" styleClass="#{agendamentoBean.configuracaoHomologacao.validaSerie ? 'font-color-red' : ''}"/><br />
-                                    <p:inputText size="15" maxlength="15" value="#{agendamentoBean.fisica.serie}" />
+                                    <p:inputText size="15" maxlength="15" value="#{agendamentoBean.fisica.serie}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText>
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Código do Funcionário" /><br />
-                                    <p:inputText size="20" value="#{agendamentoBean.pessoaEmpresa.codigo}" />
+                                    <p:inputText size="20" value="#{agendamentoBean.pessoaEmpresa.codigo}">
+                                        <p:ajax event="change" update="@this" global="false"/>
+                                    </p:inputText>
                                 </h:column>
                             </h:panelGrid>
 
