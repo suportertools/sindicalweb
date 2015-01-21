@@ -35,10 +35,24 @@ public class GerarBoletoBean {
     private List<Vector> listaServicoSemCobranca = new ArrayList();
     private List<Vector> listaPessoaSemComplemento = new ArrayList();
     
+    private List<Vector> listaPessoaFisicaSemEndereco = new ArrayList();
+    private List<Vector> listaPessoaJuridicaSemEndereco = new ArrayList();
+    
     public GerarBoletoBean(){
         getListaServicoSemCobranca();
         getListaPessoaSemComplemento();
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
+//        getListaPessoaFisicaSemEndereco();
+//        getListaPessoaJuridicaSemEndereco();
     }
+    
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
+//    public void atualizarListaNotificacao(){
+//        listaPessoaFisicaSemEndereco.clear();
+//        getListaPessoaFisicaSemEndereco();
+//        listaPessoaJuridicaSemEndereco.clear();
+//        getListaPessoaJuridicaSemEndereco();
+//    }
     
     public String imprimirLote(LoteBoleto lb){
         ChamadaPaginaBean cp = (ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean");
@@ -48,6 +62,7 @@ public class GerarBoletoBean {
         
         ImpressaoBoletoSocialBean ibs = new ImpressaoBoletoSocialBean();
         ibs.setStrData(lb.getProcessamento());
+        ibs.setStrLote(""+lb.getId());
         ibs.loadLista();
         GenericaSessao.put("impressaoBoletoSocialBean", ibs);
         
@@ -68,7 +83,21 @@ public class GerarBoletoBean {
             getListaPessoaSemComplemento();
             return;
         }
-        
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
+//        if (!listaPessoaFisicaSemEndereco.isEmpty()){
+//            GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique as Pessoa Física sem Endereço!");
+//            listaPessoaFisicaSemEndereco.clear();
+//            getListaPessoaFisicaSemEndereco();
+//            return;
+//        }
+//        
+//        if (!listaPessoaJuridicaSemEndereco.isEmpty()){
+//            GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique as Pessoa Jurídica sem Endereço!");
+//            listaPessoaJuridicaSemEndereco.clear();
+//            getListaPessoaJuridicaSemEndereco();
+//            return;
+//        }
+//        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
 
@@ -293,4 +322,58 @@ public class GerarBoletoBean {
     public void setListaPessoaSemComplemento(List<Vector> listaPessoaSemComplemento) {
         this.listaPessoaSemComplemento = listaPessoaSemComplemento;
     }
+    
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015    
+//
+//    public List<Vector> getListaPessoaFisicaSemEndereco() {
+//        if (listaPessoaFisicaSemEndereco.isEmpty()){
+//            FinanceiroDB db = new FinanceiroDBToplink();
+//
+//            if (listaData.isEmpty()){
+//                listaPessoaFisicaSemEndereco = db.listaPessoaFisicaSemEndereco(Integer.parseInt(mes), Integer.parseInt(ano));
+//            }else{
+//                for(Object data : listaData){
+//                    listaPessoaFisicaSemEndereco.addAll(db.listaPessoaFisicaSemEndereco(Integer.parseInt(data.toString().substring(0, 2)), Integer.parseInt(data.toString().substring(3, 7))));
+//                }
+//            }
+//
+//            if (!listaPessoaFisicaSemEndereco.isEmpty()){
+//                GenericaMensagem.fatal("Atenção", "PESSOAS FÍSICAS que não contém Endereço!");
+//                for (Vector linha : listaPessoaFisicaSemEndereco){
+//                    GenericaMensagem.info("ID / PESSOA FÍSICA: ", linha.get(0).toString() + " - " + linha.get(1).toString());
+//                }
+//            }
+//        }
+//        return listaPessoaFisicaSemEndereco;
+//    }
+//
+//    public void setListaPessoaFisicaSemEndereco(List<Vector> listaPessoaFisicaSemEndereco) {
+//        this.listaPessoaFisicaSemEndereco = listaPessoaFisicaSemEndereco;
+//    }
+//
+//    public List<Vector> getListaPessoaJuridicaSemEndereco() {
+//        if (listaPessoaJuridicaSemEndereco.isEmpty()){
+//            FinanceiroDB db = new FinanceiroDBToplink();
+//
+//            if (listaData.isEmpty()){
+//                listaPessoaJuridicaSemEndereco = db.listaPessoaJuridicaSemEndereco(Integer.parseInt(mes), Integer.parseInt(ano));
+//            }else{
+//                for(Object data : listaData){
+//                    listaPessoaJuridicaSemEndereco.addAll(db.listaPessoaJuridicaSemEndereco(Integer.parseInt(data.toString().substring(0, 2)), Integer.parseInt(data.toString().substring(3, 7))));
+//                }
+//            }
+//
+//            if (!listaPessoaJuridicaSemEndereco.isEmpty()){
+//                GenericaMensagem.fatal("Atenção", "PESSOAS JURÍDICAS que não contém Endereço!");
+//                for (Vector linha : listaPessoaJuridicaSemEndereco){
+//                    GenericaMensagem.info("ID / PESSOA JURÍDICA: ", linha.get(0).toString() + " - " + linha.get(1).toString());
+//                }
+//            }
+//        }        
+//        return listaPessoaJuridicaSemEndereco;
+//    }
+//
+//    public void setListaPessoaJuridicaSemEndereco(List<Vector> listaPessoaJuridicaSemEndereco) {
+//        this.listaPessoaJuridicaSemEndereco = listaPessoaJuridicaSemEndereco;
+//    }
 }

@@ -160,7 +160,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     + "   and m.ativo is false");
             return (List<Movimento>) qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<Movimento>();
+            return new ArrayList();
         }
     }
 
@@ -700,9 +700,9 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         else if (!data.isEmpty())
             where += " AND b.processamento = '"+data+"'";
             
-        text_qry = "SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor " +
+        text_qry = "SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor, b.endereco_responsavel, b.codigo " +
                    "  FROM soc_boletos_vw b " + inner_join + where +
-                   " GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento "+
+                   " GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento, b.endereco_responsavel, b.codigo "+
                   "  ORDER BY b.responsavel, b.vencimento desc";
         
         try {
@@ -941,5 +941,51 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             return new ArrayList();
         }
     }    
-   
+    
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
+//    @Override
+//    public List<Vector> listaPessoaFisicaSemEndereco(int mes, int ano) {
+//        try {
+//            Query qry = getEntityManager().createNativeQuery(
+//                    "SELECT m.id_pessoa, p.ds_nome " +
+//                    "  FROM fin_movimento m " +
+//                    " INNER JOIN pes_fisica f ON f.id_pessoa = m.id_pessoa " +
+//                    " INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " +
+//                    " WHERE EXTRACT(MONTH FROM dt_vencimento) = " + mes +
+//                    "   AND EXTRACT(YEAR FROM dt_vencimento) = " + ano +
+//                    "   AND m.is_ativo = true " +
+//                    "   AND m.id_pessoa NOT IN ( " +
+//                    "       SELECT f.id_pessoa FROM soc_boletos_vw b " +
+//                    "       INNER JOIN pes_fisica f ON f.id_pessoa = b.codigo " +
+//                    "   )"
+//            );
+//            return qry.getResultList();
+//        } catch (Exception e) {
+//            return new ArrayList();
+//        }
+//    }
+//    
+//    @Override
+//    public List<Vector> listaPessoaJuridicaSemEndereco(int mes, int ano) {
+//        try {
+//            Query qry = getEntityManager().createNativeQuery(
+//                    "SELECT m.id_pessoa, p.ds_nome " +
+//                    "  FROM fin_movimento m " +
+//                    " INNER JOIN pes_juridica j ON j.id_pessoa = m.id_pessoa " +
+//                    " INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
+//                    " WHERE EXTRACT(MONTH FROM m.dt_vencimento) = " + mes +
+//                    "   AND EXTRACT(YEAR FROM m.dt_vencimento) = " + ano +
+//                    "   AND m.is_ativo = true " +
+//                    "   AND m.id_pessoa NOT IN ( " +
+//                    "       SELECT f.id_pessoa FROM soc_boletos_vw b " +
+//                    "	INNER JOIN pes_juridica f ON f.id_pessoa = b.codigo " +
+//                    "   ) " +
+//                    " GROUP BY m.id_pessoa, p.ds_nome "
+//            );
+//            return qry.getResultList();
+//        } catch (Exception e) {
+//            return new ArrayList();
+//        }
+//    }
+    
 }

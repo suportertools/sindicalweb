@@ -440,6 +440,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 profissao = (Profissao) dao.find(new Profissao(), 0);
             }
             pessoaEmpresa.setFuncao(profissao);
+            pessoaEmpresa.setPrincipal(false);
+            
             if (!dao.save(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao adicionar Pessoa Empresa!");
                 dao.rollback();
@@ -450,6 +452,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 profissao = (Profissao) dao.find(new Profissao(), 0);
             }
             pessoaEmpresa.setFuncao(profissao);
+            pessoaEmpresa.setPrincipal(false);
+            
             if (!dao.update(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 dao.rollback();

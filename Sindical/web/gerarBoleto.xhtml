@@ -51,6 +51,7 @@
                                             <h:column>
                                                 <h:outputLabel value="Mês"/><br />
                                                 <p:selectOneMenu value="#{gerarBoletoBean.mes}" style="width: 60px">
+                                                    
                                                     <f:selectItem itemValue="01" itemLabel="01"/>
                                                     <f:selectItem itemValue="02" itemLabel="02"/>
                                                     <f:selectItem itemValue="03" itemLabel="03"/>
@@ -68,7 +69,9 @@
 
                                             <h:column>
                                                 <h:outputLabel value="Ano"/><br />
-                                                <p:inputText id="ano" value="#{gerarBoletoBean.ano}" maxlength="4" size="5"/>
+                                                <p:inputText id="ano" value="#{gerarBoletoBean.ano}" maxlength="4" size="5">
+                                                    
+                                                </p:inputText>
                                             </h:column>
 
                                         <h:column>
@@ -143,7 +146,7 @@
                                 <!-- <p:column style="text-align: center; width: 20px">
                                     <p:commandButton action="# {grupoFinanceiroBean.modalExcluir(linha)}" oncomplete="i_dlg_ex.show()" title="Excluir Sub Grupo" icon="ui-icon-close" style="width: 20px; height: 20px"/>
                                 </p:column> -->
-                                <p:column selectionMode="multiple" style="text-align: center; width: 15px"/>
+                                <p:column selectionMode="multiple" style="text-align: center; width: 15px" rendered="false"/>
                                 
                                 <p:column headerText="Lote" style="text-align: center">
                                     <p:commandLink value="#{linha.argumento0.id}" action="#{gerarBoletoBean.imprimirLote(linha.argumento0)}" ajax="false"/>

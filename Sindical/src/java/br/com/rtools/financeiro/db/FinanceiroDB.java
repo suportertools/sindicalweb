@@ -66,4 +66,7 @@ public interface FinanceiroDB {
     public List<Vector> listaQntPorFisica(String nrCtrBoleto);
     public List<Vector> listaServicosSemCobranca();
     public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao);
+//        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015    
+//    public List<Vector> listaPessoaFisicaSemEndereco(int mes, int ano);
+//    public List<Vector> listaPessoaJuridicaSemEndereco(int mes, int ano);
 }

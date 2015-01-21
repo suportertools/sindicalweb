@@ -20,16 +20,29 @@ import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.impressao.ParametroBoletoSocial;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.beans.FisicaBean;
+import br.com.rtools.pessoa.beans.JuridicaBean;
+import br.com.rtools.pessoa.db.FisicaDB;
+import br.com.rtools.pessoa.db.FisicaDBToplink;
+import br.com.rtools.pessoa.db.JuridicaDB;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.beans.UploadFilesBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.ByteArrayOutputStream;
@@ -77,10 +90,38 @@ public class ImpressaoBoletoSocialBean {
     private String tipo = "fisica";
     private Integer qntFolhas = 0;
     
+    private List<Pessoa> listaPessoaSemEndereco = new ArrayList();
+    private boolean atualizaListaPessoaSemEndereco = true;
     @PostConstruct
     public void init(){
         UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
+    }
+    
+    public String editarPessoaSemEndereco(Pessoa pessoa){
+        ChamadaPaginaBean cp = (ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean");
+        String pagina = "";
+        
+        FisicaDB dbf = new FisicaDBToplink();
+        Fisica f = dbf.pesquisaFisicaPorPessoa(pessoa.getId());
+        if (f != null){
+            pagina = cp.pessoaFisica();
+            FisicaBean fb = new FisicaBean();
+            fb.editarFisica(f);
+            GenericaSessao.put("fisicaBean", fb);
+            setAtualizaListaPessoaSemEndereco(true);
+        }else{
+            JuridicaDB jdb = new JuridicaDBToplink();
+            Juridica j = jdb.pesquisaJuridicaPorPessoa(pessoa.getId());
+            
+            pagina = cp.pessoaJuridica();
+            
+            JuridicaBean jb = new JuridicaBean();
+            jb.editar(j);
+            GenericaSessao.put("juridicaBean", jb);
+            setAtualizaListaPessoaSemEndereco(true);
+        }
+        return pagina;
     }
     
     public String qntDeFolhas(String nrCtrBoleto){
@@ -96,6 +137,7 @@ public class ImpressaoBoletoSocialBean {
     
     public void loadLista(){
         listaGrid.clear();
+        listaPessoaSemEndereco.clear();
         if (!strData.isEmpty()){
             FinanceiroDB db = new FinanceiroDBToplink();
             List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData, tipo);
@@ -125,13 +167,19 @@ public class ImpressaoBoletoSocialBean {
                     listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
                     contador++;
                 }
+                
+                // FILTRA PESSOAS SEM ENDERECO ---
+                if (lista_agrupado.get(i).get(7) == null || lista_agrupado.get(i).get(7).toString().isEmpty()){
+                    listaPessoaSemEndereco.add((Pessoa)new Dao().find(new Pessoa(), Integer.valueOf(lista_agrupado.get(i).get(8).toString())));
+                    setAtualizaListaPessoaSemEndereco(false);
+                }
             }
         }
     }
     
     public int calculoDePaginas(int quantidade){
         float soma = Moeda.divisaoValores(quantidade, 25);
-        //return ((int) Math.ceil(soma) == 0) ? 1 : (int) Math.ceil(soma);
+        // return ((int) Math.ceil(soma) == 0) ? 1 : (int) Math.ceil(soma); // CALCULO
         return (int) Math.ceil(soma);
     }
     
@@ -178,6 +226,11 @@ public class ImpressaoBoletoSocialBean {
     }
     
     public void imprimir(){
+        if (!listaPessoaSemEndereco.isEmpty()){
+            GenericaMensagem.fatal("Atenção", "Existem pessoas sem endereço, favor cadastra-las!");
+            return;
+        }
+        
         List lista = new ArrayList();
         //List<Vector> result = new ArrayList<Vector>();//db.listaChequesRecebidos(ids_filial, ids_caixa, tipo, d_i, d_f, id_status);
         
@@ -324,6 +377,11 @@ public class ImpressaoBoletoSocialBean {
     }    
     
     public void etiqueta(){
+        if (!listaPessoaSemEndereco.isEmpty()){
+            GenericaMensagem.fatal("Atenção", "Existem pessoas sem endereço, favor cadastra-las!");
+            return;
+        }
+        
         List lista = new ArrayList();
         
         FinanceiroDB db = new FinanceiroDBToplink();
@@ -480,5 +538,22 @@ public class ImpressaoBoletoSocialBean {
         this.qntFolhas = qntFolhas;
     }
 
-    
+    public List<Pessoa> getListaPessoaSemEndereco() {
+        if (atualizaListaPessoaSemEndereco){
+            loadLista();
+        }
+        return listaPessoaSemEndereco;
+    }
+
+    public void setListaPessoaSemEndereco(List<Pessoa> listaPessoaSemEndereco) {
+        this.listaPessoaSemEndereco = listaPessoaSemEndereco;
+    }
+
+    public boolean isAtualizaListaPessoaSemEndereco() {
+        return atualizaListaPessoaSemEndereco;
+    }
+
+    public void setAtualizaListaPessoaSemEndereco(boolean atualizaListaPessoaSemEndereco) {
+        this.atualizaListaPessoaSemEndereco = atualizaListaPessoaSemEndereco;
+    }
 }

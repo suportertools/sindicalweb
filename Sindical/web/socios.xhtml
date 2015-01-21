@@ -256,7 +256,9 @@
                                 </p:column>
                                 
                                 <p:panel style="background-color: #ff8484; margin-left: 30px" rendered="#{sociosBean.matriculaSocios.id != -1 and sociosBean.matriculaSocios.motivoInativacao != null and sociosBean.matriculaSocios.motivoInativacao.id != -1}">
-                                    <h:outputLabel value="Este sócio esta inativo desde: #{sociosBean.matriculaSocios.inativo} por #{sociosBean.matriculaSocios.motivoInativacao.descricao}" style="margin-left: 30px; font-size: 10pt; color: white; font-weight: bold"/><br />
+                                    <h:outputLabel value="Este sócio esta inativo desde: #{sociosBean.matriculaSocios.inativo} por #{sociosBean.matriculaSocios.motivoInativacao.descricao}" style="margin-left: 30px; font-size: 10pt; color: white; font-weight: bold"/>
+                                    <p:commandLink value=" detalhes " onclick="PF('i_dlg_smi_detalhes').show()" style="margin-left: 10px" rendered="#{sociosBean.matriculaSocios.motivo != ''}"/>
+                                    <br />
                                     <p:commandLink value="CLIQUE AQUI PARA REATIVAR" onclick="PF('i_dlg_re').show()" style="margin-left: 30px; font-size: 8pt; font-weight: bold"/>
                                 </p:panel>
 
@@ -392,8 +394,29 @@
                                     </p:selectOneMenu>
                                 </h:panelGrid>
 
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.inativarSocio()}" update="formSocios" onclick="PF('i_dlg_i').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
+                                <p:commandButton value="Inativar"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.validaMotivoInativacao()}" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_i').hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_smi" header="Complementar Motivo de Inativação" resizable="false" width="400" modal="true">
+                                <p:messages id="i_msg_motivo" autoUpdate="false" closable="true" showDetail="true"/>
+                                <h:panelGrid columns="1" style="width: 100%">
+                                    <h:outputLabel value="Motivo" />
+                                    <p:inputTextarea style="width: 100%" value="#{sociosBean.matriculaSocios.motivo}" rows="3">
+                                        
+                                    </p:inputTextarea>
+                                </h:panelGrid>
+
+                                <p:commandButton value="Confirmar" type="submit" action="#{sociosBean.inativarSocio()}" styleClass="ui-confirmdialog-yes" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_smi').hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_smi_detalhes" header="Motivo de Inativação" resizable="false" width="400" modal="true">
+                                <h:panelGrid columns="1" style="width: 100%">
+                                    <h:outputLabel value="#{sociosBean.matriculaSocios.motivo}" style="font-size: 11pt!important" />
+                                </h:panelGrid>
+                                <br />
+                                <p:commandButton value="OK" style="clear: both" icon="ui-icon-check" onclick="PF('i_dlg_smi_detalhes').hide()"/>  
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_re" header="Deseja REATIVAR este Sócio" resizable="false" width="400" modal="true">
@@ -406,13 +429,13 @@
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_re').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
-                            <p:dialog widgetVar="dlg_validade_carteirinha_vencida" header="Carteirinha Vencida" resizable="false" width="400" modal="true">
+                            <p:dialog widgetVar="dlg_validade_carteirinha" header="Carteirinha Vencida" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Esta carteirinha esta vencida! Alterar para nova validade?" /><br />
                                     <p:inputMask value="#{sociosBean.novaValidadeCartao}" size="8" maxlength="10" mask="99/99/9999"/>
                                 </h:panelGrid>
 
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.visualizarCarteirinha(true)}" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.visualizarCarteirinha(true)}" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_validade_carteirinha').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             

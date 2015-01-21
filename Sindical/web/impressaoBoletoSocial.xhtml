@@ -62,7 +62,7 @@
                                     <p:column>
                                         <br />
                                         <p:selectOneMenu value="#{impressaoBoletoSocialBean.tipo}" style="padding-right: 20px">
-                                            <p:ajax event="change" update="@this tbl" listener="#{impressaoBoletoSocialBean.loadLista()}"/>
+                                            <p:ajax event="change" update="formImpressaoBoletoSocial" listener="#{impressaoBoletoSocialBean.loadLista()}"/>
                                             <f:selectItem itemValue="fisica" itemLabel="Física" />
                                             <f:selectItem itemValue="juridica" itemLabel="Jurídica" />
                                         </p:selectOneMenu>
@@ -95,7 +95,8 @@
                                     </p:column>
                                 </h:panelGrid>        
                             </p:panel>
-                            
+                            <p:messages autoUpdate="false" closable="true" showDetail="true"/>
+                            <p:growl autoUpdate="false" showDetail="true" />
                             <p:dataTable var="linha" id="tbl" value="#{impressaoBoletoSocialBean.listaGrid}" rowKey="#{linha.argumento0}" emptyMessage="Nenhum Boleto Encontrado!" paginator="true" rows="10">
                                 <p:column headerText="" style="text-align: center; width: 40px">
                                     <p:commandLink value="#{linha.argumento0}" />
@@ -136,6 +137,12 @@
                                 <f:facet name="footer">
                                     <p:outputLabel value="O total de páginas não conta o verso" style="color: red"/>
                                 </f:facet>
+                            </p:dataTable>
+                            
+                            <p:dataTable var="linha" id="tbl2" value="#{impressaoBoletoSocialBean.listaPessoaSemEndereco}" rendered="#{impressaoBoletoSocialBean.listaPessoaSemEndereco.size() > 0}">
+                                <p:column headerText="PESSOAS SEM ENDEREÇO">
+                                    <p:commandLink value="#{linha.nome}" action="#{impressaoBoletoSocialBean.editarPessoaSemEndereco(linha)}"/>
+                                </p:column>
                             </p:dataTable>
                             
                             <h:panelGrid columns="3">
