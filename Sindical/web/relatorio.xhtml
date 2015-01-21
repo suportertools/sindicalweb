@@ -57,8 +57,27 @@
                                 <h:outputLabel value="order by: " styleClass="fontePadraoNegrito" style="font-size: 8pt"/>
                                 <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qryOrdem}" style="width: 100%"/>
                             </h:panelGrid>
+                            
+                            <p:panel rendered="#{relatorioBean.relatorio.id != -1}" styleClass="margin-top-max" header="Ordenações">
+                                <h:panelGrid columns="5">
+                                    <p:outputLabel value="Descrição:" />
+                                    <p:inputText value="#{relatorioBean.relatorioOrdem.nome}" size="40"/>
+                                    <p:outputLabel value="Query:" styleClass="margin-left-max"/>
+                                    <p:inputText value="#{relatorioBean.relatorioOrdem.query}" size="70"/>
+                                    <p:commandButton value="Adicionar"  action="#{relatorioBean.addRelatorioOrdem()}" update=":formRelatorio:" styleClass="margin-left-max"/>
+                                </h:panelGrid>
+                                <p:dataTable value="#{relatorioBean.listRelatorioOrdem}" var="relatorioOrdem" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column width="30" styleClass="text-center">
+                                        <p:commandButton icon="ui-icon-link" action="#{relatorioBean.editRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
+                                    </p:column>
+                                    <p:column headerText="Descrição">#{relatorioOrdem.nome}</p:column>
+                                    <p:column width="30" styleClass="text-center">
+                                        <p:commandButton icon="ui-icon-trash" action="#{relatorioBean.deleteRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
 
-                            <h:panelGrid columns="4" style="float: left">
+                            <h:panelGrid columns="4" style="float: left" styleClass="margin-top-max">
                                 <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show()"/>
                                 <p:commandButton value="Novo" action="#{relatorioBean.novo()}"/>
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()"/>

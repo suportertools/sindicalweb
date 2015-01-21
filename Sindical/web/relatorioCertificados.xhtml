@@ -1,0 +1,184 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Relatório - Certificados</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_relatorio">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Relatório - Certificados" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid cellpadding="7" columns="2">
+                            <p:outputLabel value="Tipo de Relatório: " />
+                            <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioCertificadosBean.index[0]}" style="padding-right: 10px;">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItems value="#{relatorioCertificadosBean.listaTipoRelatorios}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </p:panel>                  
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 200px;" dynamic="true" activeIndex="#{relatorioCertificadosBean.indexAccordion}" id="i_panel_accordion">
+                                <p:ajax event="tabChange" listener="#{relatorioCertificadosBean.tipoRelatorioChange}" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" /> 
+                                <p:tab title="Avançado">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[0]}" onLabel="Ano - Edição" offLabel="Ano - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[0]}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[1]}" onLabel="Data Emissão - Edição" offLabel="Emissão - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[1]}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[2]}" onLabel="Data Resposta" offLabel="Data Resposta" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[2]}">
+                                            <p:ajax event="change" update="@this, :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[3]}" onLabel="Status - Edição" offLabel="Status - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[4]}" onLabel="Tipo de Certidão" offLabel="Tipo de Certidão" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[5]}" onLabel="Pessoa - Edição" offLabel="Pessoa - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>                                        
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[6]}" onLabel="Cidade Base" offLabel="Cidade Base" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[7]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioCertificadosBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>
+                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 800px;">
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[0]}">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Ano: " />
+                                        <h:column>
+                                            <h:panelGrid columns="4">
+                                                <p:inputMask value="#{relatorioCertificadosBean.ano}" size="4" mask="9999" converter="#{thisNumber}">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputMask>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('ano')}" title="Remover filtro" />
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </h:panelGrid>                                    
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[1]}">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Período Emissão: " />
+                                        <h:column>
+                                            <h:panelGrid columns="4">
+                                                <p:inputMask value="#{relatorioCertificadosBean.periodo[0]}" size="10" mask="99/99/9999" converter="#{isDateString}">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputMask>
+                                                <p:outputLabel value=" até" />
+                                                <p:inputMask value="#{relatorioCertificadosBean.periodo[1]}" size="10" mask="99/99/9999" converter="#{isDateString}">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputMask>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('periodoEmissao')}" title="Remover filtro" />
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[2]}">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Período Resposta: " />
+                                        <h:column>
+                                            <h:panelGrid columns="4">
+                                                <p:inputMask value="#{relatorioCertificadosBean.periodo[2]}" size="10" mask="99/99/9999" converter="#{isDateString}" disabled="#{relatorioCertificadosBean.aguardandoResposta}">
+                                                    <p:ajax event="change"  update="@this" />
+                                                </p:inputMask>
+                                                <p:outputLabel value=" até" />
+                                                <p:inputMask value="#{relatorioCertificadosBean.periodo[3]}" size="10" mask="99/99/9999" converter="#{isDateString}" disabled="#{relatorioCertificadosBean.aguardandoResposta}">
+                                                    <p:ajax event="change"  update="@this" />
+                                                </p:inputMask>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('periodoResposta')}" title="Remover filtro" />
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <h:column />
+                                        <p:selectBooleanCheckbox value="#{relatorioCertificadosBean.aguardandoResposta}" itemLabel="Aguardando resposta" styleClass="margin-top-max">
+                                            <p:ajax event="change"  update=":form_relatorio:id_panel_relatorio" />                                                    
+                                        </p:selectBooleanCheckbox>
+                                    </h:panelGrid>                                    
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[3]}">
+                                    <h:column>
+                                        <h:panelGrid columns="6" cellpadding="5">
+                                            <p:outputLabel value="Repis Status: " />
+                                            <p:selectCheckboxMenu label="Selecionar status" value="#{relatorioCertificadosBean.selectedRepisStatus}" filter="true" filterMatchMode="startsWith">
+                                                <f:selectItems value="#{relatorioCertificadosBean.listRepisStatus}" />
+                                            </p:selectCheckboxMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('repisStatus')}" title="Remover filtro" />
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[4]}">
+                                    <h:column>
+                                        <h:panelGrid columns="6" cellpadding="5">
+                                            <p:outputLabel value="Certificado tipo: " />
+                                            <p:selectCheckboxMenu label="Selecionar tipo" value="#{relatorioCertificadosBean.selectedCertidaoTipo}" filter="true" filterMatchMode="startsWith">
+                                                <f:selectItems value="#{relatorioCertificadosBean.listCertidaoTipo}" />
+                                            </p:selectCheckboxMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('certidaoTipo')}" title="Remover filtro" />
+                                        </h:panelGrid>                                       
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[5]}">
+                                    <h:panelGrid columns="3">
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search" value="Pesquisar Empresa"  />
+                                        <p:outputLabel value="#{relatorioCertificadosBean.juridica.pessoa.nome} - Documento: #{relatorioCertificadosBean.juridica.pessoa.documento}" rendered="#{relatorioCertificadosBean.juridica.id != -1}" />
+                                        <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('empresa')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                </p:column>
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[6]}">
+                                    <h:column>
+                                        <h:panelGrid columns="6" cellpadding="5">
+                                            <p:outputLabel value="Cidade base: " />
+                                            <p:selectCheckboxMenu label="Selecionar cidade base" value="#{relatorioCertificadosBean.selectedCidadeBase}" filter="true" filterMatchMode="startsWith">
+                                                <f:selectItems value="#{relatorioCertificadosBean.listCidadeBase}" />
+                                            </p:selectCheckboxMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('cidadeBase')}" title="Remover filtro" />
+                                        </h:panelGrid>                                       
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioCertificadosBean.filtro[7]}">
+                                    <h:column>
+                                        <h:panelGrid columns="3" styleClass="margin-top-max">
+                                            <p:outputLabel value="Ordenar por: " />
+                                            <p:selectOneMenu value="#{relatorioCertificadosBean.index[1]}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="" itemLabel="Nenhum" />
+                                                <f:selectItems value="#{relatorioCertificadosBean.listaRelatorioOrdem}"/>
+                                            </p:selectOneMenu>                                            
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('order')}" title="Remover filtro" update=":form_relatorio:"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioCertificadosBean.tipoRelatorio == 'Simples'}">
+                                    * Todas
+                                </p:column>
+                                <p:column rendered="#{relatorioCertificadosBean.tipoRelatorio == 'Avançado'}">
+                                    <f:facet name="header">Filtro Avançado</f:facet>
+                                    <f:facet name="footer">Selecione os tipos de filtros disponíveis</f:facet>
+                                </p:column>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
+                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioCertificadosBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioCertificadosBean.listParametroCertificados.clear()}" />                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
