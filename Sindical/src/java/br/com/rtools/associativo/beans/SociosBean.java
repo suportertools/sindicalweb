@@ -641,20 +641,30 @@ public class SociosBean implements Serializable {
         }
     }
 
-    public String inativarSocio() {
+    public void inativarSocio() {
         if (socios.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             SociosDB db = new SociosDBToplink();
             if (dataInativacao.length() < 10) {
                 GenericaMensagem.warn("Erro", "Data de inativação inválida!");
-                return null;
+                return;
             }
 
             if (DataHoje.converteDataParaInteger(dataInativacao) > DataHoje.converteDataParaInteger(DataHoje.data())) {
                 GenericaMensagem.warn("Erro", "Data de inativação não pode ser maior que dia de hoje!");
-                return null;
+                return;
             }
+            
 
+            SMotivoInativacao smi = (SMotivoInativacao) sv.pesquisaCodigo(Integer.parseInt(listaMotivoInativacao.get(idInativacao).getDescription()), "SMotivoInativacao");
+            if (smi.getId() == 6 && (matriculaSocios.getMotivo().isEmpty() || matriculaSocios.getMotivo().length() < 3)){
+                if (matriculaSocios.getMotivo().isEmpty() || matriculaSocios.getMotivo().length() < 3){
+                    GenericaMensagem.error("Atenção", "Digite um Motivo de Inativação válido!");
+                    PF.update("formSocios:i_msg_motivo");
+                    return;
+                }
+            }
+        
             sv.abrirTransacao();
 
             ServicoPessoa sp = (ServicoPessoa) sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa");
@@ -663,7 +673,7 @@ public class SociosBean implements Serializable {
             if (!sv.alterarObjeto(sp)) {
                 GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
             servicoPessoa = sp;
             for (int i = 0; i < listaDps.size(); i++) {
@@ -672,17 +682,17 @@ public class SociosBean implements Serializable {
                 if (!sv.alterarObjeto(sp2)) {
                     GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                     sv.desfazerTransacao();
-                    return null;
+                    return;
                 }
                 sp2 = new ServicoPessoa();
             }
 
-            matriculaSocios.setMotivoInativacao((SMotivoInativacao) sv.pesquisaCodigo(Integer.parseInt(listaMotivoInativacao.get(idInativacao).getDescription()), "SMotivoInativacao"));
+            matriculaSocios.setMotivoInativacao(smi);
             matriculaSocios.setInativo(dataInativacao);
             if (!sv.alterarObjeto(matriculaSocios)) {
                 GenericaMensagem.error("Erro", "Erro ao alterar matrícula");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
 
             GenericaMensagem.info("Concluído", "Sócio inativado com Sucesso!");
@@ -693,11 +703,22 @@ public class SociosBean implements Serializable {
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
-
+            
+            PF.update("formSocios");
+            
         } else {
             GenericaMensagem.warn("Erro", "Não existe sócio para ser inativado!");
         }
-        return null;
+    }
+    
+    public void validaMotivoInativacao(){
+        SMotivoInativacao smi = (SMotivoInativacao) new Dao().find(new SMotivoInativacao(), Integer.parseInt(listaMotivoInativacao.get(idInativacao).getDescription()));
+            
+        if (smi.getId() == 6 && (matriculaSocios.getMotivo().isEmpty() || matriculaSocios.getMotivo().length() < 3)){
+            PF.openDialog("i_dlg_smi");
+        }else{
+            inativarSocio();
+        }
     }
 
     public String reativarSocio() {

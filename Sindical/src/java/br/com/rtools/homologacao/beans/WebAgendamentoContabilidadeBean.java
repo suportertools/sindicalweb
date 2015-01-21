@@ -634,6 +634,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(empresa);
+            pessoaEmpresa.setPrincipal(false);
             
             if (!dao.save(pessoaEmpresa)) {
                 dao.rollback();
@@ -644,7 +645,9 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             if (pessoaEmpresa == null || profissao.getId() == -1) {
                 profissao = (Profissao) dao.find(new Profissao(), 0);
             }
+            
             pessoaEmpresa.setFuncao(profissao);
+            pessoaEmpresa.setPrincipal(false);
             if (!dao.update(pessoaEmpresa)) {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");

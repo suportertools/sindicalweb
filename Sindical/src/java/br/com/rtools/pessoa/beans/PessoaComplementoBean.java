@@ -4,6 +4,8 @@ import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -23,7 +25,7 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
     private Pessoa responsavel = new Pessoa();
     private Registro registro = new Registro();
     private int diaVencimento = 0;
-    private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDataVencimento = new ArrayList();
 
     public void atualizar(int idPessoa) {
         if (idPessoa != -1) {
@@ -31,25 +33,31 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 //                PessoaDB pessoaDB = new PessoaDBToplink();
 //                pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
 //            }
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            pessoaComplemento.setPessoa((Pessoa) salvarAcumuladoDB.pesquisaCodigo(idPessoa, "Pessoa"));
+            Dao di = new Dao();
+            pessoaComplemento.setPessoa((Pessoa) di.find(new Pessoa(), idPessoa));
             pessoaComplemento.setNrDiaVencimento(diaVencimento);
             
-            if (responsavel != null)
+            if (responsavel != null && responsavel.getId() != -1)
                 pessoaComplemento.setResponsavel(responsavel);
+            else
+                pessoaComplemento.setResponsavel(null);
             
-            salvarAcumuladoDB.abrirTransacao();
+            di.openTransaction();
             if (pessoaComplemento.getId() == -1) {
-                if (salvarAcumuladoDB.inserirObjeto(pessoaComplemento)) {
-                    salvarAcumuladoDB.comitarTransacao();
+                if (di.save(pessoaComplemento)) {
+                    di.commit();
+                    GenericaMensagem.info("Sucesso", "Pessoa Complemento salva!");
                 } else {
-                    salvarAcumuladoDB.desfazerTransacao();
+                    di.rollback();
+                    GenericaMensagem.error("Atenção", "Erro ao salvar Pessoa Complemento!");
                 }
             } else {
-                if (salvarAcumuladoDB.alterarObjeto(pessoaComplemento)) {
-                    salvarAcumuladoDB.comitarTransacao();
+                if (di.update(pessoaComplemento)) {
+                    di.commit();
+                    GenericaMensagem.info("Sucesso", "Pessoa Complemento atualizada!");
                 } else {
-                    salvarAcumuladoDB.desfazerTransacao();
+                    di.rollback();
+                    GenericaMensagem.error("Atenção", "Erro ao Atualizar Pessoa Complemento!");
                 }
             }
         }
@@ -83,10 +91,10 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
             if(pessoaComplemento.getId() == -1) {
                 diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
             } else {
-                diaVencimento = pessoaComplemento.getNrDiaVencimento();                
+                diaVencimento = pessoaComplemento.getNrDiaVencimento();
             }
         } else {
-            diaVencimento = pessoaComplemento.getNrDiaVencimento();            
+            diaVencimento = pessoaComplemento.getNrDiaVencimento();
         }
         return "";
     }

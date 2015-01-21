@@ -51,10 +51,10 @@ public class MatriculaSocios implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_emissao")
     private Date dtEmissao;
+    @Column(name = "ds_motivo", length = 500)
+    private String motivo;
 
-    public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade,
-            String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao,
-            Pessoa titular, String emissao) {
+    public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade, String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao, Pessoa titular, String emissao, String motivo) {
         this.id = id;
         this.setInativo(inativo);
         this.categoria = categoria;
@@ -66,6 +66,7 @@ public class MatriculaSocios implements java.io.Serializable {
         this.motivoInativacao = motivoInativacao;
         this.titular = titular;
         this.setEmissao(emissao);
+        this.motivo = motivo;
 
     }
 
@@ -81,6 +82,7 @@ public class MatriculaSocios implements java.io.Serializable {
         this.motivoInativacao = new SMotivoInativacao();
         this.titular = new Pessoa();
         this.setEmissao("");
+        this.motivo = "";
     }
 
     public int getId() {
@@ -191,5 +193,13 @@ public class MatriculaSocios implements java.io.Serializable {
 
     public void setEmissao(String dtEmissao) {
         this.dtEmissao = DataHoje.converte(dtEmissao);
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 }
