@@ -42,7 +42,7 @@ public class DB {
                     properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + configuracao.getHost() + ":5432/" + configuracao.getPersistence());
                     EntityManagerFactory emf = Persistence.createEntityManagerFactory(configuracao.getPersistence(), properties);
                     String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
-                    if (createTable.equals("criar")) {
+                    if (!createTable.equals("criar")) {
                         properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
                     }
                     entidade = emf.createEntityManager();
