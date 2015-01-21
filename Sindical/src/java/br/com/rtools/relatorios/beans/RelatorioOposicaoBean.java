@@ -13,18 +13,13 @@ import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.SalvaArquivos;
-import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,16 +32,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
@@ -213,15 +199,15 @@ public class RelatorioOposicaoBean implements Serializable {
                                 GenericaString.converterNullToString(((List) list1).get(6)), // CPF
                                 GenericaString.converterNullToString(((List) list1).get(7)), // RG
                                 GenericaString.converterNullToString(((List) list1).get(8)), // Referência Inicial
-                                GenericaString.converterNullToString(((List) list1).get(9)),  // Referência Final
-                                GenericaString.converterNullToString(((List) list1).get(10)),  // Logradouro
-                                GenericaString.converterNullToString(((List) list1).get(11)),  // Endereço
-                                GenericaString.converterNullToString(((List) list1).get(12)),  // Número
-                                GenericaString.converterNullToString(((List) list1).get(13)),  // Complemento
-                                GenericaString.converterNullToString(((List) list1).get(14)),  // Bairro
-                                GenericaString.converterNullToString(((List) list1).get(15)),  // Cidade
-                                GenericaString.converterNullToString(((List) list1).get(16)),  // UF
-                                GenericaString.converterNullToString(((List) list1).get(17))   // CEP
+                                GenericaString.converterNullToString(((List) list1).get(9)), // Referência Final
+                                GenericaString.converterNullToString(((List) list1).get(10)), // Logradouro
+                                GenericaString.converterNullToString(((List) list1).get(11)), // Endereço
+                                GenericaString.converterNullToString(((List) list1).get(12)), // Número
+                                GenericaString.converterNullToString(((List) list1).get(13)), // Complemento
+                                GenericaString.converterNullToString(((List) list1).get(14)), // Bairro
+                                GenericaString.converterNullToString(((List) list1).get(15)), // Cidade
+                                GenericaString.converterNullToString(((List) list1).get(16)), // UF
+                                GenericaString.converterNullToString(((List) list1).get(17)) // CEP
                         );
                 parametroOposicao.add(po);
             }
@@ -232,32 +218,6 @@ public class RelatorioOposicaoBean implements Serializable {
             return;
         }
         Jasper.printReports(relatorios.getJasper(), "oposicao", (Collection) parametroOposicao);
-//        if (!Diretorio.criar("Arquivos/downloads/relatorios/oposicao")) {
-//            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-//            return;
-//        }
-//        try {
-//            FacesContext faces = FacesContext.getCurrentInstance();
-//            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-//            try {
-//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroOposicao);
-//                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//                String nomeDownload = "relatorio_oposicao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-//                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/oposicao/");
-//                salvaArquivos.salvaNaPasta(pathPasta);
-//                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-//                download.baixar();
-//                download.remover();
-//            } catch (JRException erro) {
-//                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//            }
-//        } catch (JRException erro) {
-//            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//        }
     }
 
     public List<SelectItem> getListaTipoRelatorios() {
@@ -334,8 +294,8 @@ public class RelatorioOposicaoBean implements Serializable {
             listConvencoes = null;
             listGrupoCidades = null;
             listSelectItem = new ArrayList[2];
-            listSelectItem[0] = new ArrayList<SelectItem>();
-            listSelectItem[1] = new ArrayList<SelectItem>();
+            listSelectItem[0] = new ArrayList<>();
+            listSelectItem[1] = new ArrayList<>();
         }
         if (!filtro[4]) {
             order = "";
@@ -361,8 +321,8 @@ public class RelatorioOposicaoBean implements Serializable {
             listConvencoes = null;
             listGrupoCidades = null;
             listSelectItem = new ArrayList[2];
-            listSelectItem[0] = new ArrayList<SelectItem>();
-            listSelectItem[1] = new ArrayList<SelectItem>();
+            listSelectItem[0] = new ArrayList<>();
+            listSelectItem[1] = new ArrayList<>();
         } else if (close.equals("order")) {
             order = "";
             filtro[4] = false;
@@ -535,7 +495,7 @@ public class RelatorioOposicaoBean implements Serializable {
     public Map<String, Integer> getListCnaes() {
         listCnaes = null;
         if (!selectedConvencao.isEmpty()) {
-            listCnaes = new HashMap<String, Integer>();
+            listCnaes = new HashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
                 OposicaoDB odb = new OposicaoDBToplink();
@@ -556,7 +516,7 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public Map<String, Integer> getListConvencaos() {
         if (listConvencoes == null) {
-            listConvencoes = new HashMap<String, Integer>();
+            listConvencoes = new HashMap<>();
             EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
             List<Convencao> list = enviarArquivosDB.listaConvencao();
             for (int i = 0; i < list.size(); i++) {

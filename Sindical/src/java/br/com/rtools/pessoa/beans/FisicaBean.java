@@ -450,10 +450,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         msgSocio = "";
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
-            if (pessoaEmpresa.getFuncao() != null)
+            if (pessoaEmpresa.getFuncao() != null) {
                 profissao = pessoaEmpresa.getFuncao();
-            else
+            } else {
                 profissao = new Profissao();
+            }
             //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
@@ -465,7 +466,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaProfissao = dbp.pesquisaProfPorFisica(fisica.getId());
         if (pessoaProfissao.getId() != -1) {
             for (int i = 0; i < listaProfissoes.size(); i++) {
-                if (Objects.equals(Integer.valueOf(listaProfissoes.get(i).getDescription()), pessoaProfissao.getProfissao().getId())){
+                if (Objects.equals(Integer.valueOf(listaProfissoes.get(i).getDescription()), pessoaProfissao.getProfissao().getId())) {
                     idProfissao = i;
                     break;
                 }
@@ -550,10 +551,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         alterarEnd = true;
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
-            if (pessoaEmpresa.getFuncao() != null)
+            if (pessoaEmpresa.getFuncao() != null) {
                 profissao = pessoaEmpresa.getFuncao();
-            else
+            } else {
                 profissao = new Profissao();
+            }
             //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
@@ -720,12 +722,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (fisica.getId() != -1 && pessoaEmpresa.getJuridica().getId() != -1) {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setAvisoTrabalhado(false);
-            
+
             if (pessoaEmpresa.getDtAdmissao() == null) {
                 mensagem = "Informar data de admissão!";
                 return;
             }
-            
+
             if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(DataHoje.data())) {
@@ -733,7 +735,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     return;
                 }
             }
-            
+
             if (pessoaEmpresa.getDtAdmissao() != null && pessoaEmpresa.getDtDemissao() != null) {
                 int dataAdmissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao());
                 int dataDemissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao());
@@ -744,73 +746,75 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 }
                 pessoaEmpresa.setPrincipal(false);
             }
-            
+
             if (profissao.getProfissao() == null || profissao.getProfissao().isEmpty()) {
                 pessoaEmpresa.setFuncao(null);
-            }else
+            } else {
                 pessoaEmpresa.setFuncao(profissao);
-            
+            }
+
             if (pessoaEmpresa.getId() == -1) {
                 db.insert(pessoaEmpresa);
             } else {
                 db.update(pessoaEmpresa);
             }
-            
+
             if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().isEmpty()) {
                 pessoaEmpresa = new PessoaEmpresa();
                 profissao = new Profissao();
                 GenericaSessao.remove("juridicaPesquisa");
                 renderJuridicaPesquisa = false;
-                
+
                 List<PessoaEmpresa> lpe = db.listaPessoaEmpresaPorFisicaDemissao(fisica.getId());
-                
-                if (!lpe.isEmpty()){
+
+                if (!lpe.isEmpty()) {
                     lpe.get(0).setPrincipal(true);
-                    
+
                     db.update(lpe.get(0));
-                    
+
                     pessoaEmpresa = lpe.get(0);
                     renderJuridicaPesquisa = true;
                 }
             }
         }
     }
-    
-    public void adicionarEmpresa(){
+
+    public void adicionarEmpresa() {
         if (fisica.getId() != -1 && pessoaEmpresa.getJuridica().getId() != -1) {
-            if (pessoaEmpresa.getAdmissao().isEmpty()){
+            if (pessoaEmpresa.getAdmissao().isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Data de Admissão não pode estar vazia!");
                 return;
             }
-            
+
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setAvisoTrabalhado(false);
             pessoaEmpresa.setPrincipal(false);
-            
+
             if (profissao.getProfissao() == null || profissao.getProfissao().isEmpty()) {
                 pessoaEmpresa.setFuncao(null);
-            }else
+            } else {
                 pessoaEmpresa.setFuncao(profissao);
-            
+            }
+
             Dao di = new Dao();
-            
+
             di.openTransaction();
-            
-            if (pessoaEmpresa.getId() == -1){
-                if (!di.save(pessoaEmpresa)){
+
+            if (pessoaEmpresa.getId() == -1) {
+                if (!di.save(pessoaEmpresa)) {
                     di.rollback();
                     GenericaMensagem.error("ERRO", "Não foi possível adicionar Empresa!");
                     return;
                 }
-            }else{
-                if (!di.update(pessoaEmpresa)){
+            } else {
+                if (!di.update(pessoaEmpresa)) {
                     di.rollback();
                     GenericaMensagem.error("ERRO", "Não foi possível adicionar Empresa!");
                     return;
                 }
             }
             di.commit();
-            
+
             //RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
             GenericaMensagem.info("Sucesso", "Empresa Adicionada!");
             pessoaEmpresa = new PessoaEmpresa();
@@ -1170,7 +1174,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void removerJuridicaPesquisada() {
         if (pessoaEmpresa.getId() != -1) {
             Dao dao = new Dao();
-            if (!dao.delete(pessoaEmpresa, true)){
+            if (!dao.delete(pessoaEmpresa, true)) {
                 mensagem = "Empresa com Agendamento não pode ser excluída!";
                 PF.update("form_pessoa_fisica:i_panel_mensagem");
                 PF.openDialog("dlg_painel_mensagem");
@@ -1181,11 +1185,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
         renderJuridicaPesquisa = false;
-        
+
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         List<PessoaEmpresa> lpe = db.listaPessoaEmpresaPorFisicaDemissao(fisica.getId());
 
-        if (!lpe.isEmpty()){
+        if (!lpe.isEmpty()) {
             lpe.get(0).setPrincipal(true);
 
             db.update(lpe.get(0));
@@ -1195,32 +1199,31 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
         RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
     }
-    
-    public void alterarEmpresaAtual(PessoaEmpresa pe){
+
+    public void alterarEmpresaAtual(PessoaEmpresa pe) {
         Dao di = new Dao();
         di.openTransaction();
-        
-        if (pessoaEmpresa.getId() == -1){
+
+        if (pessoaEmpresa.getId() == -1) {
             pe.setPrincipal(true);
-            if (!di.update(pe)){
+            if (!di.update(pe)) {
                 di.rollback();
                 return;
             }
             pessoaEmpresa = pe;
-        }else{
+        } else {
             pessoaEmpresa.setPrincipal(false);
             pe.setPrincipal(true);
-            
-            if (!di.update(pessoaEmpresa) || !di.update(pe)){
+
+            if (!di.update(pessoaEmpresa) || !di.update(pe)) {
                 di.rollback();
                 return;
             }
             pessoaEmpresa = pe;
         }
-        
+
         di.commit();
     }
-    
 
     public String associarFisica() {
         boolean reativar;
@@ -1712,7 +1715,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void upload(FileUploadEvent event) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));       
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
         if (f.exists()) {
             boolean delete = f.delete();
         } else {

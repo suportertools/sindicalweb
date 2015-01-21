@@ -732,8 +732,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         agendamento = a;
         cancelamento = new Cancelamento();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        boolean hc = false;
+        if (registro.getHomolocaoHabilitaCorrecao() != null && DataHoje.converteData(registro.getHomolocaoHabilitaCorrecao()).equals(DataHoje.data())) {
+            hc = true;
+        }
         if (nrStatus == 4) {
-            if (!desabilitaEdicao(agendamento.getDtData(), 30)) {
+            if (!desabilitaEdicao(agendamento.getDtData(), 30) && !hc) {
                 GenericaMensagem.warn("Atenção", "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!");
                 PF.update("form_homologacao:i_msg");                                
 //                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
@@ -742,10 +746,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 return null;
             }
         } else if (nrStatus == 3 || nrStatus == 5) {
-            boolean hc = false;
-            if (registro.getHomolocaoHabilitaCorrecao() != null && DataHoje.converteData(registro.getHomolocaoHabilitaCorrecao()).equals(DataHoje.data())) {
-                hc = true;
-            }
             if (!desabilitaEdicao(agendamento.getDtData(), 30) && !hc) {
                 GenericaMensagem.warn("Atenção", "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!");
                 PF.update("form_homologacao:i_msg");                

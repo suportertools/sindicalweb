@@ -10,19 +10,14 @@ import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -32,16 +27,7 @@ import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -179,32 +165,6 @@ public class RelatorioConviteClubeBean implements Serializable {
             return;
         }
         Jasper.printReports(relatorios.getJasper(), "convite_clube", (Collection) parametroConviteClubes);
-//        if (!Diretorio.criar("Arquivos/downloads/relatorios/ConviteClube")) {
-//            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-//            return;
-//        }
-//        try {
-//            FacesContext faces = FacesContext.getCurrentInstance();
-//            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-//            try {
-//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroConviteClubes);
-//                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//                String nomeDownload = "relatorio_convite_clube_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-//                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/ConviteClube/");
-//                salvaArquivos.salvaNaPasta(pathPasta);
-//                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-//                download.baixar();
-//                download.remover();
-//            } catch (JRException erro) {
-//                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//            }
-//        } catch (JRException erro) {
-//            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-//        }
     }
 
     public List<SelectItem> getListaTipoRelatorios() {

@@ -11,8 +11,6 @@ import br.com.rtools.escola.Vendedor;
 import br.com.rtools.escola.db.TurmaDB;
 import br.com.rtools.escola.db.TurmaDBToplink;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
-import br.com.rtools.financeiro.Servicos;
-import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
