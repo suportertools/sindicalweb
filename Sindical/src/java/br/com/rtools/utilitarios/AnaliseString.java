@@ -168,12 +168,12 @@ public class AnaliseString {
         }
         return sb.toString();
     }
-    
-    public static String normalizeLower(String value){
-                
-        value = Normalizer.normalize(value, Normalizer.Form.NFD);  
+
+    public static String normalizeLower(String value) {
+
+        value = Normalizer.normalize(value, Normalizer.Form.NFD);
         value = value.toLowerCase().replaceAll("[^\\p{ASCII}]", "");
-        
+
         return value;
     }
 
@@ -224,7 +224,7 @@ public class AnaliseString {
         }
         return novaDescricao;
     }
-    
+
     public static String converteNullString(Object object) {
         if (object == null) {
             return "";
@@ -232,44 +232,66 @@ public class AnaliseString {
             return String.valueOf(object);
         }
     }
-    
+
     public static boolean isInteger(String s) {
-        try { 
-            Integer.parseInt(s); 
-        } catch(NumberFormatException e) { 
-            return false; 
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
         }
         // only got here if we didn't return false
         return true;
     }
-    
+
     public static boolean isFloat(String s) {
         boolean retorno = false;
-        try { 
+        try {
             Float.parseFloat(s);
             retorno = true;
-        } catch(NumberFormatException e) { 
-            retorno = false; 
+        } catch (NumberFormatException e) {
+            retorno = false;
         }
-        if(!retorno){
-            try { 
+        if (!retorno) {
+            try {
                 float numero = Moeda.substituiVirgulaFloat(s);
                 retorno = true;
-            } catch(NumberFormatException e) { 
-                retorno = false; 
+            } catch (NumberFormatException e) {
+                retorno = false;
             }
         }
         // only got here if we didn't return false
         return retorno;
     }
-    
+
     public static boolean isString(String s) {
-        try { 
-            Integer.parseInt(s); 
-        } catch(NumberFormatException e) { 
-            return false; 
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
         }
         // only got here if we didn't return false
         return true;
-    }    
+    }
+
+    public static String removeDiff(String string, int length, boolean isWhites) {
+        if (string.isEmpty()) {
+            return string;
+        }
+        if (string.length() > length) {
+            string = string.substring(length);
+        }
+        if (isWhites) {
+            if (string.length() < length) {
+                int diff = length - string.length();
+                for (int i = 0; i < diff; i++) {
+                    string += " ";
+                }
+            }
+        }
+        return string;
+    }
+
+    public static String removeDiff(String string, Integer length) {
+        return AnaliseString.removeDiff(string, length, false);
+    }
 }
