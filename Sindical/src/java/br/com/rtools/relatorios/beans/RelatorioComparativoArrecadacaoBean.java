@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -141,7 +142,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
             GenericaMensagem.warn("Validação", "Informar referência 2!");
             return;
         }
-        Map parameters = new HashMap();
+        Map parameters = new LinkedHashMap();
         float valor_total_1 = 0;
         float valor_total_2 = 0;
         String detalheRelatorio = "";
@@ -462,7 +463,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
     public Map<String, Integer> getListCnaes() {
         listCnaes = null;
         if (!selectedConvencao.isEmpty()) {
-            listCnaes = new HashMap<>();
+            listCnaes = new LinkedHashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
                 OposicaoDB odb = new OposicaoDBToplink();
@@ -483,7 +484,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
 
     public Map<String, Integer> getListConvencaos() {
         if (listConvencoes == null) {
-            listConvencoes = new HashMap<>();
+            listConvencoes = new LinkedHashMap<>();
             EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
             List<Convencao> list = enviarArquivosDB.listaConvencao();
             for (int i = 0; i < list.size(); i++) {
@@ -500,7 +501,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
     public Map<String, Integer> getListGrupoCidades() {
         listGrupoCidades = null;
         if (!selectedConvencao.isEmpty()) {
-            listGrupoCidades = new HashMap<>();
+            listGrupoCidades = new LinkedHashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
                 EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
@@ -610,17 +611,14 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
     }
 
     public Map<String, Integer> getListCidadeBase() {
-        if (listCidadeBase == null) {
-            listCidadeBase = new HashMap<>();
+        if (listCidadeBase == null || listCidadeBase.isEmpty()) {
+            listCidadeBase = new LinkedHashMap<>();
             GrupoCidadesDB grupoCidadesDB = new GrupoCidadesDBToplink();
             List<Cidade> list = grupoCidadesDB.pesquisaCidadesBase();
             for (int i = 0; i < list.size(); i++) {
                 listCidadeBase.put(list.get(i).getCidade(), list.get(i).getId());
             }
-        } else {
-            listCidadeBase = new HashMap<>();
         }
-
         return listCidadeBase;
     }
 
