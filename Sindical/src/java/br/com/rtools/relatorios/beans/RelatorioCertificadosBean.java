@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -101,7 +102,7 @@ public class RelatorioCertificadosBean implements Serializable {
         index[1] = null;
         tipoRelatorio = "Avançado";
         indexAccordion = "Avançado";
-        order = "";        
+        order = "";
     }
 
     @PreDestroy
@@ -511,7 +512,7 @@ public class RelatorioCertificadosBean implements Serializable {
 
     public Map<String, Integer> getListRepisStatus() {
         if (listRepisStatus == null || listRepisStatus.isEmpty()) {
-            listRepisStatus = new HashMap<>();
+            listRepisStatus = new LinkedHashMap<>();
             Dao dao = new Dao();
             List<RepisStatus> list = (List<RepisStatus>) dao.list(new RepisStatus());
             for (int i = 0; i < list.size(); i++) {
@@ -527,7 +528,7 @@ public class RelatorioCertificadosBean implements Serializable {
 
     public Map<String, Integer> getListCertidaoTipo() {
         if (listCertidaoTipo == null || listCertidaoTipo.isEmpty()) {
-            listCertidaoTipo = new HashMap<>();
+            listCertidaoTipo = new LinkedHashMap<>();
             Dao dao = new Dao();
             List<CertidaoTipo> list = (List<CertidaoTipo>) dao.list(new CertidaoTipo());
             for (int i = 0; i < list.size(); i++) {
@@ -543,16 +544,17 @@ public class RelatorioCertificadosBean implements Serializable {
 
     public Map<String, Integer> getListCidadeBase() {
         if (listCidadeBase == null || listCidadeBase.isEmpty()) {
-            listCidadeBase = new HashMap<>();
+            listCidadeBase = new LinkedHashMap<>();
             GrupoCidadesDB grupoCidadesDB = new GrupoCidadesDBToplink();
             List<Cidade> list = grupoCidadesDB.pesquisaCidadesBase();
+            int id = -1;
             for (int i = 0; i < list.size(); i++) {
-                listCidadeBase.put(list.get(i).getCidade(), list.get(i).getId());
+                if(id != list.get(i).getId()) {
+                    id = list.get(i).getId();
+                }
+                listCidadeBase.put(list.get(i).getCidade().toUpperCase(), list.get(i).getId());
             }
-        } else {
-            listCidadeBase = new HashMap<>();
         }
-
         return listCidadeBase;
     }
 
