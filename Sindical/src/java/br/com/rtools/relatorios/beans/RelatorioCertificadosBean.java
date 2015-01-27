@@ -14,18 +14,26 @@ import br.com.rtools.relatorios.dao.RelatorioCertificadosDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +41,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.event.TabChangeEvent;
 
@@ -111,7 +121,7 @@ public class RelatorioCertificadosBean implements Serializable {
         GenericaSessao.remove("juridicaPesquisa");
     }
 
-    public void visualizar() {
+    public synchronized void visualizar() {
         Relatorios relatorios = null;
         if (!getListaTipoRelatorios().isEmpty()) {
             RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
@@ -171,7 +181,7 @@ public class RelatorioCertificadosBean implements Serializable {
             }
             Dao dao = new Dao();
             if (filtro[3]) {
-                if (selectedRepisStatus != null) {
+                if (selectedRepisStatus != null && !selectedRepisStatus.isEmpty()) {
                     String repisStatusString = "";
                     Integer id = 0;
                     for (int i = 0; i < selectedRepisStatus.size(); i++) {
@@ -186,7 +196,7 @@ public class RelatorioCertificadosBean implements Serializable {
                 }
             }
             if (filtro[4]) {
-                if (selectedCertidaoTipo != null) {
+                if (selectedCertidaoTipo != null && !selectedCertidaoTipo.isEmpty()) {
                     String certidaoTipoString = "";
                     Integer id = 0;
                     for (int i = 0; i < selectedCertidaoTipo.size(); i++) {
@@ -201,7 +211,7 @@ public class RelatorioCertificadosBean implements Serializable {
                 }
             }
             if (filtro[6]) {
-                if (selectedCidadeBase != null) {
+                if (selectedCidadeBase != null && !selectedCidadeBase.isEmpty()) {
                     String cidadeString = "";
                     Integer id = 0;
                     for (int i = 0; i < selectedCidadeBase.size(); i++) {
@@ -240,11 +250,11 @@ public class RelatorioCertificadosBean implements Serializable {
             String dataEmissao = "";
             String dataResposta = "";
             for (Object list1 : list) {
-                dataEmissao = GenericaString.converterNullToString(((List) list1).get(5));
+                dataEmissao = GenericaString.converterNullToString(((List) list1).get(4));
                 if (!dataEmissao.isEmpty()) {
                     dataEmissao = DataHoje.converteData(DataHoje.converteDateSqlToDate(dataEmissao));
                 }
-                dataResposta = GenericaString.converterNullToString(((List) list1).get(6));
+                dataResposta = GenericaString.converterNullToString(((List) list1).get(5));
                 if (!dataResposta.isEmpty()) {
                     dataResposta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dataResposta));
                 }
@@ -253,12 +263,22 @@ public class RelatorioCertificadosBean implements Serializable {
                                 detalheRelatorio,
                                 GenericaString.converterNullToString(((List) list1).get(0)), // Documento
                                 GenericaString.converterNullToString(((List) list1).get(1)), // Nome
-                                GenericaString.converterNullToString(((List) list1).get(2)), // Cidade
-                                GenericaString.converterNullToString(((List) list1).get(3)), // Ano
-                                GenericaString.converterNullToString(((List) list1).get(4)), // Status
+                                GenericaString.converterNullToString(((List) list1).get(2)), // Ano
+                                GenericaString.converterNullToString(((List) list1).get(3)), // Status
                                 dataEmissao, // Emissao
                                 dataResposta, // Resposta
-                                GenericaString.converterNullToString(((List) list1).get(7)) // Ano
+                                GenericaString.converterNullToString(((List) list1).get(6)), // Ano
+                                GenericaString.converterNullToString(((List) list1).get(7)), // Solicitante
+                                GenericaString.converterNullToString(((List) list1).get(8)), // Email
+                                GenericaString.converterNullToString(((List) list1).get(9)), // Telefone
+                                GenericaString.converterNullToString(((List) list1).get(10)), // Logradouro
+                                GenericaString.converterNullToString(((List) list1).get(11)), // Descrição Endereço
+                                GenericaString.converterNullToString(((List) list1).get(12)), // Número
+                                GenericaString.converterNullToString(((List) list1).get(13)), // Complemento
+                                GenericaString.converterNullToString(((List) list1).get(14)), // Bairro
+                                GenericaString.converterNullToString(((List) list1).get(15)), // Cidade
+                                GenericaString.converterNullToString(((List) list1).get(16)), // UF
+                                GenericaString.converterNullToString(((List) list1).get(17)) // CEP
                         );
                 listParametroCertificados.add(pc);
             }
@@ -271,6 +291,86 @@ public class RelatorioCertificadosBean implements Serializable {
         Jasper.IS_HEADER = true;
         Jasper.TYPE = "paisagem";
         Jasper.printReports(relatorios.getJasper(), "certificados", (Collection) listParametroCertificados);
+    }
+
+    public void export() throws FileNotFoundException, IOException {
+        listParametroCertificados.clear();
+        RelatorioCertificadosDao relatorioCertificadosDao = new RelatorioCertificadosDao();
+        String inRepisStatus = inIdRepisStatus();
+        String inCertidaoTipo = inIdCertidaoTipo();
+        String inCidadeBase = inIdCidadeBase();
+        Integer tipoPeriodo = null;
+        String periodoString[] = new String[]{"", ""};
+        if (filtro[0]) {
+            tipoPeriodo = 1;
+            periodoString[0] = ano;
+            periodoString[1] = "";
+        } else if (filtro[1]) {
+            tipoPeriodo = 2;
+            periodoString[0] = periodo[0];
+            periodoString[0] = periodo[1];
+            periodoString[1] = "";
+        } else if (filtro[2]) {
+            tipoPeriodo = 3;
+            periodoString[0] = periodo[2];
+            periodoString[0] = periodo[3];
+            if (aguardandoResposta) {
+                periodoString[0] = "";
+                periodoString[0] = "";
+                tipoPeriodo = 4;
+            }
+        }
+        List list = relatorioCertificadosDao.find(tipoPeriodo, periodoString, inRepisStatus, inCertidaoTipo, inCidadeBase);
+        for (Object list1 : list) {
+            ParametroCertificados pc
+                    = new ParametroCertificados(
+                            GenericaString.converterNullToString(((List) list1).get(0)), // Nome
+                            GenericaString.converterNullToString(((List) list1).get(1)), // Logradouro
+                            GenericaString.converterNullToString(((List) list1).get(2)), // Descrição Endereço
+                            GenericaString.converterNullToString(((List) list1).get(3)), // Número
+                            GenericaString.converterNullToString(((List) list1).get(4)), // Complemento
+                            GenericaString.converterNullToString(((List) list1).get(5)), // Bairro
+                            GenericaString.converterNullToString(((List) list1).get(6)), // Cidade
+                            GenericaString.converterNullToString(((List) list1).get(7)), // UF
+                            GenericaString.converterNullToString(((List) list1).get(8)) // CEP
+                    );
+            listParametroCertificados.add(pc);
+        }
+
+        Diretorio.criar("downloads/outros");
+        FacesContext context = FacesContext.getCurrentInstance();
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/outros/");
+        String path = caminho;
+        File flDes = new File(caminho); // 0 DIA, 1 MES, 2 ANO
+
+        flDes.mkdir();
+        caminho += "/endereco" + DataHoje.hora().replace(":", "") + ".txt";
+        FileWriter writer;
+        try (FileOutputStream file = new FileOutputStream(caminho)) {
+            writer = new FileWriter(caminho);
+        }
+        try (BufferedWriter buffWriter = new BufferedWriter(writer)) {
+            String header = "Razão;Endereço;Nº;Bairro;Cep;Cidade;UF";
+            buffWriter.write(header);
+            buffWriter.newLine();
+            String content;
+            for (int i = 0; i < listParametroCertificados.size(); i++) {
+                content = listParametroCertificados.get(i).getNome() + ";"
+                        + listParametroCertificados.get(i).getLogradouro() + " " + listParametroCertificados.get(i).getEndereco() + ";"
+                        + listParametroCertificados.get(i).getNumero() + ";"
+                        + listParametroCertificados.get(i).getBairro() + ";"
+                        + listParametroCertificados.get(i).getCep() + ";"
+                        + listParametroCertificados.get(i).getCidade() + ";"
+                        + listParametroCertificados.get(i).getUf();
+                buffWriter.write(content);
+                buffWriter.newLine();
+                content = "";
+            }
+            buffWriter.flush();
+        }
+        Download download = new Download("/endereco" + DataHoje.hora().replace(":", "") + ".txt", path, "text/plain", context);
+        download.baixar();
+        download.remover();
     }
 
     public List<SelectItem> getListaTipoRelatorios() {
@@ -317,8 +417,6 @@ public class RelatorioCertificadosBean implements Serializable {
         indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
         if (tipoRelatorio.equals("Avançado")) {
             limpar();
-            filtro[2] = false;
-            filtro[0] = false;
         }
     }
 
@@ -340,13 +438,13 @@ public class RelatorioCertificadosBean implements Serializable {
         }
         // Status
         if (!filtro[3]) {
-            listRepisStatus = null;
             selectedRepisStatus = new ArrayList();
+            listRepisStatus = null;
         }
         // Tipo de Certificado
         if (!filtro[4]) {
-            listCertidaoTipo = null;
             selectedCertidaoTipo = new ArrayList();
+            listCertidaoTipo = null;
         }
         // Empresa
         if (!filtro[5]) {
@@ -354,38 +452,38 @@ public class RelatorioCertificadosBean implements Serializable {
         }
         // Cidade Base
         if (!filtro[6]) {
-            listCidadeBase = null;
             selectedCidadeBase = new ArrayList();
+            listCidadeBase = null;
         }
         // Order
         if (!filtro[7]) {
             order = "";
             index[1] = null;
         }
-        if (filtro[0]) {
-            // Desabilita - Emissão e Resposta
-            disabled[1] = true;
-            disabled[2] = true;
-            periodo[0] = "";
-            periodo[1] = "";
-            periodo[2] = "";
-            periodo[3] = "";
-        } else if (filtro[1]) {
-            // Desabilita - Ano e Resposta
-            ano = "";
-            disabled[0] = true;
-            disabled[2] = true;
-        } else if (filtro[2]) {
-            // Desabilita - Ano e Emissão
-            periodo[0] = "";
-            periodo[1] = "";
-            disabled[0] = true;
-            disabled[1] = true;
-        } else {
-            disabled[0] = false;
-            disabled[1] = false;
-            disabled[2] = false;
-        }
+//        if (filtro[0]) {
+//            // Desabilita - Emissão e Resposta
+//            disabled[1] = true;
+//            disabled[2] = true;
+//            periodo[0] = "";
+//            periodo[1] = "";
+//            periodo[2] = "";
+//            periodo[3] = "";
+//        } else if (filtro[1]) {
+//            // Desabilita - Ano e Resposta
+//            ano = "";
+//            disabled[0] = true;
+//            disabled[2] = true;
+//        } else if (filtro[2]) {
+//            // Desabilita - Ano e Emissão
+//            periodo[0] = "";
+//            periodo[1] = "";
+//            disabled[0] = true;
+//            disabled[1] = true;
+//        } else {
+//            disabled[0] = false;
+//            disabled[1] = false;
+//            disabled[2] = false;
+//        }
     }
 
     public void close(String close) {
@@ -417,8 +515,8 @@ public class RelatorioCertificadosBean implements Serializable {
             case "repisStatus":
                 // Repis status
                 filtro[3] = false;
-                listCertidaoTipo = null;
-                selectedCertidaoTipo = new ArrayList();
+                listRepisStatus = null;
+                selectedRepisStatus = new ArrayList();
             case "certidaoTipo":
                 // Certidão tipo
                 filtro[4] = false;
@@ -549,7 +647,7 @@ public class RelatorioCertificadosBean implements Serializable {
             List<Cidade> list = grupoCidadesDB.pesquisaCidadesBase();
             int id = -1;
             for (int i = 0; i < list.size(); i++) {
-                if(id != list.get(i).getId()) {
+                if (id != list.get(i).getId()) {
                     id = list.get(i).getId();
                 }
                 listCidadeBase.put(list.get(i).getCidade().toUpperCase(), list.get(i).getId());

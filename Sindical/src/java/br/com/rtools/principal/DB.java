@@ -18,15 +18,7 @@ import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 public class DB {
 
     private EntityManager entidade;
-    private Statement statement;
 
-//  public EntityManager getEntityManager(){
-//      if (entidade==null){
-//          EntityManagerFactory emf = Persistence.createEntityManagerFactory("ComercioIta");
-//          entidade = emf.createEntityManager();
-//        }
-//        return entidade;
-//    } 
     public EntityManager getEntityManager() {
         if (entidade == null) {
             if (!GenericaSessao.exists("conexao")) {
@@ -34,7 +26,8 @@ public class DB {
                 Configuracao configuracao = servidor(cliente.replace("/", ""));
                 try {
                     Map properties = new HashMap();
-                    properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.Full);
+                    properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.SoftWeak);
+                    //properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.FULL);
                     properties.put(TopLinkProperties.JDBC_USER, "postgres");
                     properties.put(TopLinkProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
                     properties.put(TopLinkProperties.JDBC_DRIVER, "org.postgresql.Driver");
@@ -42,7 +35,7 @@ public class DB {
                     properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + configuracao.getHost() + ":5432/" + configuracao.getPersistence());
                     EntityManagerFactory emf = Persistence.createEntityManagerFactory(configuracao.getPersistence(), properties);
                     String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
-                    if (!createTable.equals("criar")) {
+                    if (createTable.equals("criar")) {
                         properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
                     }
                     entidade = emf.createEntityManager();
@@ -57,15 +50,6 @@ public class DB {
                 } catch (Exception e) {
                     return null;
                 }
-//            if (!GenericaSessao.exists("conexao")) {
-//            } else {
-//                try {
-//                    EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
-//                    entidade = emf.createEntityManager();
-//                } catch (Exception e) {
-//                    return null;
-//                }
-//            }
             }
         }
         return entidade;
@@ -106,8 +90,10 @@ public class DB {
             case "ComercioLimeira":
                 configuracao.setCaminhoSistema(cliente);
                 configuracao.setPersistence(cliente);
-                configuracao.setHost("200.204.32.23");
-                configuracao.setSenha("r#@tools");
+//                configuracao.setHost("200.204.32.23");
+//                configuracao.setSenha("r#@tools");
+                configuracao.setHost("localhost");
+                configuracao.setSenha("989899");
                 break;
             case "NovaBase":
                 configuracao.setCaminhoSistema(cliente);
