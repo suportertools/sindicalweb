@@ -50,6 +50,7 @@
 
                             <p:submenu label="PATRONAL" rendered="#{controleAcessoWebBean.pessoaPatronal != null}">
                                 <p:menuitem value="Liberação de Certidões" action="#{chamadaPaginaBean.webLiberacaoREPIS}" />
+                                <p:menuitem value="Relatório Certidões"    action="#{chamadaPaginaBean.pagina('webRelatorioCertificados', 'relatorioCertificadosBean')}" />
                             </p:submenu>
                         </p:menu>
                     </h:panelGrid>

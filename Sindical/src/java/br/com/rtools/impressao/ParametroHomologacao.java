@@ -2,7 +2,7 @@ package br.com.rtools.impressao;
 
 public class ParametroHomologacao {
 
-    private String dataInicial;
+    private String detalhes_relatorio;
     private String dataFinal;
     private String data;
     private String hora;
@@ -11,12 +11,12 @@ public class ParametroHomologacao {
     private String funcionario;
     private String contato;
     private String telefone;
-    private String homologador;
+    private String operador;
     private String obs;
+    private String status;
 
-    public ParametroHomologacao(String dataInicial, String dataFinal, String data, String hora, String cnpj, String empresa, String funcionario, String contato, String telefone, String homologador, String obs) {
-        this.dataInicial = dataInicial;
-        this.dataFinal = dataFinal;
+    public ParametroHomologacao(String detalhes_relatorio, String data, String hora, String cnpj, String empresa, String funcionario, String contato, String telefone, String operador, String obs, String status) {
+        this.detalhes_relatorio = detalhes_relatorio;
         this.data = data;
         this.hora = hora;
         this.cnpj = cnpj;
@@ -24,16 +24,17 @@ public class ParametroHomologacao {
         this.funcionario = funcionario;
         this.contato = contato;
         this.telefone = telefone;
-        this.homologador = homologador;
+        this.operador = operador;
         this.obs = obs;
+        this.status = status;
     }
 
-    public String getDataInicial() {
-        return dataInicial;
+    public String getDetalhes_relatorio() {
+        return detalhes_relatorio;
     }
 
-    public void setDataInicial(String dataInicial) {
-        this.dataInicial = dataInicial;
+    public void setDetalhes_relatorio(String detalhes_relatorio) {
+        this.detalhes_relatorio = detalhes_relatorio;
     }
 
     public String getDataFinal() {
@@ -100,12 +101,12 @@ public class ParametroHomologacao {
         this.telefone = telefone;
     }
 
-    public String getHomologador() {
-        return homologador;
+    public String getOperador() {
+        return operador;
     }
 
-    public void setHomologador(String homologador) {
-        this.homologador = homologador;
+    public void setOperador(String operador) {
+        this.operador = operador;
     }
 
     public String getObs() {
@@ -114,5 +115,13 @@ public class ParametroHomologacao {
 
     public void setObs(String obs) {
         this.obs = obs;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

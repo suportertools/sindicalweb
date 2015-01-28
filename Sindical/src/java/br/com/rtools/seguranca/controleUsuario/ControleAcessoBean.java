@@ -151,7 +151,7 @@ public class ControleAcessoBean implements Serializable {
             return true;
         } else if ((tipo == 2) && (conv.equals("webContabilidade") || conv.equals("webAgendamentoContabilidade") || conv.equals("webSolicitaREPIS"))) {
             return true;
-        } else if ((tipo == 3) && (conv.equals("webLiberacaoREPIS"))) {
+        } else if ((tipo == 3) && (conv.equals("webLiberacaoREPIS") || conv.equals("webRelatorioCertificados"))) {
             return true;
         }
         return false;
@@ -197,14 +197,14 @@ public class ControleAcessoBean implements Serializable {
                     cont.setAcessos(cont.getAcessos() + 1);
                     SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                     salvarAcumuladoDB.abrirTransacao();
-                    
-                    if (cont.getId() == -1){
+
+                    if (cont.getId() == -1) {
                         if (salvarAcumuladoDB.inserirObjeto(cont)) {
                             salvarAcumuladoDB.comitarTransacao();
                         } else {
                             salvarAcumuladoDB.desfazerTransacao();
                         }
-                    }else{
+                    } else {
                         if (salvarAcumuladoDB.alterarObjeto(cont)) {
                             salvarAcumuladoDB.comitarTransacao();
                         } else {
@@ -806,7 +806,7 @@ public class ControleAcessoBean implements Serializable {
         }
         return retorno;
     }
-    
+
     public boolean getBotaoDescontoSocial() {
         //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
         boolean retorno = false;
@@ -852,6 +852,7 @@ public class ControleAcessoBean implements Serializable {
         }
         return retorno;
     }
+
     public boolean getBotaoAlterarValorCobrancaMensal() {
         //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
         boolean retorno = false;
@@ -942,8 +943,8 @@ public class ControleAcessoBean implements Serializable {
     public void setIdIndexPermissao(int idIndexPermissao) {
         this.idIndexPermissao = idIndexPermissao;
     }
-    
-    public void setModulo(Modulo modulo){
+
+    public void setModulo(Modulo modulo) {
         this.modulo = modulo;
     }
 }

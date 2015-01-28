@@ -166,7 +166,6 @@
                                             <p:outputLabel value="Cidade da Base: " />
                                             <p:selectCheckboxMenu label="Selecionar cidade da base" value="#{relatorioComparativoArrecadacaoBean.selectedCidadeBase}">
                                                 <p:ajax event="toggleSelect" update="@this" />
-                                                <p:ajax event="change" update="@this" />
                                                 <f:selectItems value="#{relatorioComparativoArrecadacaoBean.listCidadeBase}" />
                                             </p:selectCheckboxMenu>                                                
                                             <p:commandButton icon="ui-icon-close" action="#{relatorioComparativoArrecadacaoBean.close('cidadeBase')}" title="Remover filtro" />
