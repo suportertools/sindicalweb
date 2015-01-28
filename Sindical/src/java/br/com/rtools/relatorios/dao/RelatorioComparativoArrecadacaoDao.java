@@ -2,7 +2,6 @@ package br.com.rtools.relatorios.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -37,9 +36,9 @@ public class RelatorioComparativoArrecadacaoDao extends DB {
                     + "            P.ds_nome                           AS empresa,                                                                          "
                     + "            S.ds_descricao                      AS contribuicao,                                                                     "
                     + "            M1.ds_referencia                    AS referencia1,                                                                      "
-                    + "            func_nulldouble(m1.nr_valor_baixa)  AS valor1,                                                                           "
+                    + "            func_nulldouble(M1.nr_valor_baixa)  AS valor1,                                                                           "
                     + "            M2.ds_referencia                    AS referencia2,                                                                      "
-                    + "            func_nulldouble(m2.nr_valor_baixa)  AS valor2,                                                                           "
+                    + "            func_nulldouble(M2.nr_valor_baixa)  AS valor2,                                                                           "
                     + "      to_char(                                                                                                                       "
                     + "      (CASE WHEN func_nulldouble(M2.nr_valor_baixa) > 0 AND func_nulldouble(M1.nr_valor_baixa) = 0 THEN   100                        "
                     + "            WHEN func_nulldouble(M2.nr_valor_baixa) = 0 AND func_nulldouble(M1.nr_valor_baixa) > 0 THEN - 100                        "
@@ -47,24 +46,29 @@ public class RelatorioComparativoArrecadacaoDao extends DB {
                     + "            WHEN func_nulldouble(M2.nr_valor_baixa) > 0 AND func_nulldouble(M1.nr_valor_baixa) > 0 THEN                              "
                     + "                (func_nulldouble(M2.nr_valor_baixa) - func_nulldouble(M1.nr_valor_baixa)) / func_nulldouble(M2.nr_valor_baixa) * 100 "
                     + "       END), 'FM999999999.00') AS percentual                                                                                         "
-                    + "       FROM pes_pessoa           AS P                                                                                                "
-                    + "  LEFT JOIN arr_contribuintes_vw AS C  ON C.id_pessoa  = P.id                                                                        "
-                    + "  LEFT JOIN pes_juridica_vw      AS J  ON J.id_pessoa  = P.id                                                                        "
-                    + "  LEFT JOIN fin_movimento        AS M1 ON M1.id_pessoa = P.id                                                                        "
-                    + "  LEFT JOIN fin_servicos         AS S  ON S.id         = M1.id_servicos                                                              "
-                    + "  LEFT JOIN fin_movimento        AS M2 ON                                                                                            "
-                    + "            M1.id_pessoa = M2.id_pessoa                                                                                              "
-                    + "            AND M1.id_servicos = M2.id_servicos                                                                                      "
-                    + "            AND M2.id_tipo_servico = 1                                                                                               "
-                    + "            AND M2.ds_referencia = '" + referencia2 + "'                                                                             "
-                    + "            AND M2.is_ativo = true                                                                                                   "
-                    + "      WHERE M1.id_servicos = " + servico + "                                                                                         "
-                    + "            AND M1.id_tipo_servico = 1                                                                                               "
-                    + "            AND M1.ds_referencia = '" + referencia1 + "'                                                                             "
+                    + "       FROM pes_pessoa               AS P                                                                                            "
+                    + " INNER JOIN arr_contribuintes_vw     AS C  ON C.id_pessoa  = P.id AND C.dt_inativacao IS NULL                                        "
+                    + " INNER JOIN pes_juridica             AS J  ON J.id_pessoa  = P.id                                                                    "
+                    + " INNER JOIN pes_pessoa_endereco      AS PE ON PE.id_pessoa = P.id AND PE.id_tipo_endereco = 2                                        "
+                    + " INNER JOIN end_endereco             AS ENDE ON ENDE.id    = PE.id_endereco                                                          "
+                    + "  LEFT JOIN fin_movimento            AS M1 ON                                                                                        "
+                    + "            M1.id_pessoa             = P.id                                                                                              "
+                    + "            AND M1.id_servicos       = " + servico + "                                                                                      "
+                    + "            AND M1.id_tipo_servico   = 1                                                                                               "
+                    + "            AND M1.ds_referencia     = '" + referencia1 + "'                                                                             "
+                    + "            AND M1.is_ativo          = true                                                                                                   "
+                    + "  LEFT JOIN fin_movimento            AS M2 ON                                                                                        "
+                    + "            M2.id_pessoa             = P.id                                                                                                      "
+                    + "            AND M2.id_servicos       = " + servico + "                                                                                      "
+                    + "            AND M2.id_tipo_servico   = 1                                                                                               "
+                    + "            AND M2.ds_referencia     = '" + referencia2 + "'                                                                             "
+                    + "            AND M2.is_ativo          = true                                                                                                   "
+                    + "  LEFT JOIN fin_servicos             AS S  ON S.id         = " + servico + "                                                         "
+                    + "      WHERE M1.is_ativo = true                                                                                                           "
                     + "            " + tipo(1, tipo1)
                     + "            " + tipo(2, tipo2)
-                    + "            AND M1.is_ativo = true                                                                                                   "
                     + "            AND P.id > 0 ";
+                        
             if (!inConvencao.isEmpty()) {
                 queryString += " AND C.id_convencao IN(" + inConvencao + ")";
             }
@@ -72,10 +76,10 @@ public class RelatorioComparativoArrecadacaoDao extends DB {
                 queryString += " AND C.id_grupo_cidade IN(" + inGrupoCidade + ")";
             }
             if (!inCnaes.isEmpty()) {
-                queryString += " AND J.id_cnaes IN(" + inCnaes + ")";
+                queryString += " AND J.id_cnae IN(" + inCnaes + ")";
             }
             if (!inCidadeBase.isEmpty()) {
-                queryString += " AND J.jur_idcidade IN(" + inCidadeBase + ")";
+                queryString += " AND ENDE.id_cidade IN(" + inCidadeBase + ")";
             }
             if (contabilidade != null) {
                 queryString += " AND C.id_contabilidade = " + contabilidade;

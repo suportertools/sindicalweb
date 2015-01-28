@@ -147,6 +147,12 @@ public class RelatorioCertificadosBean implements Serializable {
             String inCidadeBase = inIdCidadeBase();
             Integer tipoPeriodo = null;
             String periodoString[] = new String[]{"", ""};
+            if(periodo[0] == null) {
+                periodo[0] = "";
+            }
+            if(periodo[1] == null) {
+                periodo[1] = "";
+            }
             if (filtro[0]) {
                 listDetalhePesquisa.add(" Ano: " + ano);
                 tipoPeriodo = 1;
@@ -160,15 +166,15 @@ public class RelatorioCertificadosBean implements Serializable {
                 } else if (!periodo[0].isEmpty()) {
                     listDetalhePesquisa.add(" Emissão: " + periodo[0]);
                 }
-                periodoString[0] = periodo[1];
-                periodoString[1] = "";
+                periodoString[0] = periodo[0];
+                periodoString[1] = periodo[1];
             } else if (filtro[2]) {
                 tipoPeriodo = 3;
                 periodoString[0] = periodo[2];
-                periodoString[0] = periodo[3];
+                periodoString[1] = periodo[3];
                 if (aguardandoResposta) {
                     periodoString[0] = "";
-                    periodoString[0] = "";
+                    periodoString[1] = "";
                     tipoPeriodo = 4;
                     listDetalhePesquisa.add(" Aguardando resposta");
                 } else {
@@ -263,8 +269,8 @@ public class RelatorioCertificadosBean implements Serializable {
                                 detalheRelatorio,
                                 GenericaString.converterNullToString(((List) list1).get(0)), // Documento
                                 GenericaString.converterNullToString(((List) list1).get(1)), // Nome
-                                GenericaString.converterNullToString(((List) list1).get(2)), // Ano
                                 GenericaString.converterNullToString(((List) list1).get(3)), // Status
+                                GenericaString.converterNullToString(((List) list1).get(2)), // Tipo
                                 dataEmissao, // Emissao
                                 dataResposta, // Resposta
                                 GenericaString.converterNullToString(((List) list1).get(6)), // Ano
@@ -432,8 +438,8 @@ public class RelatorioCertificadosBean implements Serializable {
         }
         // Resposta
         if (!filtro[2]) {
-            periodo[0] = "";
-            periodo[1] = "";
+            periodo[2] = "";
+            periodo[3] = "";
             aguardandoResposta = false;
         }
         // Status
@@ -460,30 +466,36 @@ public class RelatorioCertificadosBean implements Serializable {
             order = "";
             index[1] = null;
         }
-//        if (filtro[0]) {
-//            // Desabilita - Emissão e Resposta
-//            disabled[1] = true;
-//            disabled[2] = true;
-//            periodo[0] = "";
-//            periodo[1] = "";
-//            periodo[2] = "";
-//            periodo[3] = "";
-//        } else if (filtro[1]) {
-//            // Desabilita - Ano e Resposta
-//            ano = "";
-//            disabled[0] = true;
-//            disabled[2] = true;
-//        } else if (filtro[2]) {
-//            // Desabilita - Ano e Emissão
-//            periodo[0] = "";
-//            periodo[1] = "";
-//            disabled[0] = true;
-//            disabled[1] = true;
-//        } else {
-//            disabled[0] = false;
-//            disabled[1] = false;
-//            disabled[2] = false;
-//        }
+        if (filtro[0]) {
+            if(!filtro[1] && !filtro[2]) {
+                // Desabilita - Emissão e Resposta
+                disabled[1] = true;
+                disabled[2] = true;
+                periodo[0] = "";
+                periodo[1] = "";
+                periodo[2] = "";
+                periodo[3] = "";
+            }
+        } else if (filtro[1]) {
+            if(!filtro[0] && !filtro[2]) {
+                // Desabilita - Ano e Resposta
+                ano = "";
+                disabled[0] = true;
+                disabled[2] = true;                
+            }
+        } else if (filtro[2]) {
+            if(!filtro[0] && !filtro[1]) {
+                // Desabilita - Ano e Emissão
+                periodo[0] = "";
+                periodo[1] = "";
+                disabled[0] = true;
+                disabled[1] = true;
+            }
+        } else {
+            disabled[0] = false;
+            disabled[1] = false;
+            disabled[2] = false;
+        }
     }
 
     public void close(String close) {
@@ -495,7 +507,7 @@ public class RelatorioCertificadosBean implements Serializable {
                 disabled[1] = false;
                 disabled[2] = false;
                 break;
-            case "emissao":
+            case "periodo_emissao":
                 filtro[1] = false;
                 periodo[0] = "";
                 periodo[1] = "";
@@ -503,21 +515,21 @@ public class RelatorioCertificadosBean implements Serializable {
                 disabled[1] = false;
                 disabled[2] = false;
                 break;
-            case "resposta":
+            case "periodo_resposta":
                 filtro[2] = false;
-                periodo[0] = "";
-                periodo[1] = "";
+                periodo[2] = "";
+                periodo[3] = "";
                 disabled[0] = false;
                 disabled[1] = false;
                 disabled[2] = false;
                 aguardandoResposta = false;
                 break;
-            case "repisStatus":
+            case "repis_status":
                 // Repis status
                 filtro[3] = false;
                 listRepisStatus = null;
                 selectedRepisStatus = new ArrayList();
-            case "certidaoTipo":
+            case "certidao_tipo":
                 // Certidão tipo
                 filtro[4] = false;
                 listCertidaoTipo = null;
@@ -527,7 +539,7 @@ public class RelatorioCertificadosBean implements Serializable {
                 filtro[5] = false;
                 juridica = new Juridica();
                 break;
-            case "cidadeBase":
+            case "cidade_base":
                 // Cidade base
                 filtro[6] = false;
                 listCidadeBase = null;

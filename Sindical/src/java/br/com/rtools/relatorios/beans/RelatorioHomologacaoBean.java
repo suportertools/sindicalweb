@@ -1,347 +1,683 @@
 package br.com.rtools.relatorios.beans;
 
+import br.com.rtools.homologacao.Demissao;
+import br.com.rtools.homologacao.Status;
 import br.com.rtools.impressao.ParametroHomologacao;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
-import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.relatorios.dao.RelatorioHomologacaoDao;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
-import br.com.rtools.relatorios.db.RelatorioHomologacaoDB;
-import br.com.rtools.relatorios.db.RelatorioHomologacaoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Download;
-import br.com.rtools.utilitarios.SalvaArquivos;
-import java.io.File;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
+import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
+import org.primefaces.component.accordionpanel.AccordionPanel;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
 @SessionScoped
 public class RelatorioHomologacaoBean implements Serializable {
 
-    private int idRelatorio = 0;
-    private int indexFilial = 0;
-    private String selectAccordion = "simples";
-    private List<DataObject> listaMenuRHomologacao = new ArrayList();
-    private boolean booEmpresa = false;
-    private boolean booFuncionario = false;
-    private boolean booData = false;
-    private boolean booHomologador = false;
-    private boolean booFilial = false;
-    private Juridica juridica = new Juridica();
-    private Fisica fisica = new Fisica();
-    private Pessoa usuario = new Pessoa();
-    private String datai = "";
-    private String dataf = "";
-    private String tipoOrdem = "data";
-    private List<SelectItem> listaFiliais = new ArrayList();
-    
+    private Fisica funcionario;
+    private Juridica empresa;
+    private Usuario operador;
+    private List<SelectItem>[] listSelectItem;
+    private Boolean[] filtro;
+    private Boolean[] disabled;
+    private Date dataInicial;
+    private Date dataFinal;
+    private Date dataDemissaoInicial;
+    private Date dataDemissaoFinal;
+    private Integer[] index;
+    // 1 - AGENDADOR [web / não web / todos]
+    // 2 - RECEPÇÃO
+    // 3 - HOMOLOGADOR
+    private String tipoUsuarioOperacional;
+    private String tipoRelatorio;
+    private String tipo;
+    private String indexAccordion;
+    private String order;
+    private String sexo;
+    private String tipoAgendador;
+    private Boolean tipoAviso;
+    private Boolean printHeader;
+    private Boolean webAgendamento;
 
-    public String visualizarRelatorio() {
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-        RelatorioHomologacaoDB dbh = new RelatorioHomologacaoDBToplink();
-        Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
-
-        //String di = String.valueOf(datai), df = String.valueOf(dataf);
-        if (booData) {
-        }
-
-        int id_empresa = -1, id_funcionario = -1, id_homologador = -1, id_filial = -1;
-        if (booEmpresa) {
-            if (juridica.getId() != -1) {
-                id_empresa = juridica.getId();
-            }
-        }
-
-        if (booFuncionario) {
-            if (fisica.getId() != -1) {
-                id_funcionario = fisica.getId();
-            }
-        }
-
-        if (booHomologador) {
-            if (usuario.getId() != -1) {
-                id_homologador = usuario.getId();
-            }
-        }
-        
-        if (booFilial) {
-            id_filial = Integer.valueOf(getListaFiliais().get(indexFilial).getDescription());
-        }
-
-        List<Vector> result = dbh.pesquisaHomologacao(relatorios, booEmpresa, id_empresa, booFuncionario, id_funcionario, booData, datai, dataf, booHomologador, id_homologador, id_filial, tipoOrdem);
-        Collection lista = new ArrayList<ParametroHomologacao>();
-
-        for (int i = 0; i < result.size(); i++) {
-            lista.add(new ParametroHomologacao(datai, // DATA INICIAL
-                    dataf, // DATA FINAL
-                    getConverteNullString(result.get(i).get(2)), // DATA 
-                    getConverteNullString(result.get(i).get(3)), // HORA
-                    getConverteNullString(result.get(i).get(4)), // CNPJ
-                    getConverteNullString(result.get(i).get(5)), // EMPRESA
-                    getConverteNullString(result.get(i).get(6)), // FUNCIONARIO
-                    getConverteNullString(result.get(i).get(7)), // CONTATO
-                    getConverteNullString(result.get(i).get(8)), // TELEFONE
-                    getConverteNullString(result.get(i).get(9)), // HOMOLOGADOR
-                    getConverteNullString(result.get(i).get(10)) // OBS
-            ));
-        }
-
-        try {
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo = new byte[0];
-            arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = relatorios.getNome() + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    @PostConstruct
+    public void init() {
+        disabled = new Boolean[2];
+        disabled[0] = false; // PERÍODO AGENDAMENTO
+        disabled[1] = false; // PERÍODO DEMISSÃO
+        filtro = new Boolean[11];
+        filtro[0] = false; // FILIAL
+        filtro[1] = false; // PERÍODO AGENDAMENTO
+        filtro[2] = false; // STATUS
+        filtro[3] = false; // EMPRESA
+        filtro[4] = false; // FUNCIONÁRIO
+        filtro[5] = false; // USUÁRIO OPERACIONAL
+        filtro[6] = false; // SEXO
+        filtro[7] = false; // MOTIVO DEMISSÃO
+        filtro[8] = false; // TIPO AVISO
+        filtro[9] = false; // PERÍODO DEMISSÃO
+        filtro[10] = false; // ORDER
+        listSelectItem = new ArrayList[5];
+        listSelectItem[0] = new ArrayList<>();
+        listSelectItem[1] = new ArrayList<>();
+        listSelectItem[2] = new ArrayList<>();
+        listSelectItem[3] = new ArrayList<>();
+        listSelectItem[4] = new ArrayList<>();
+        dataInicial = DataHoje.dataHoje();
+        dataFinal = DataHoje.dataHoje();
+        dataDemissaoInicial = DataHoje.dataHoje();
+        dataDemissaoFinal = DataHoje.dataHoje();
+        index = new Integer[5];
+        index[0] = null;
+        index[1] = null;
+        index[2] = null;
+        index[3] = null;
+        index[4] = null;
+        tipoAviso = null;
+        tipoUsuarioOperacional = null;
+        tipoAgendador = null;
+        tipoRelatorio = "Simples";
+        indexAccordion = "Simples";
+        order = "";
+        funcionario = new Fisica();
+        empresa = new Juridica();
+        operador = new Usuario();
+        sexo = "";
+        tipo = "todos";
+        printHeader = false;
+        webAgendamento = false;
     }
 
-    public List<SelectItem> getListaFiliais() {
-        if (listaFiliais.isEmpty()) {
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("relatorioHomologacaoBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("usuarioPesquisa");
+        GenericaSessao.remove("tipoPesquisaPessoaJuridica");
+    }
+
+    public void print() {
+        print(0);
+    }
+
+    public void print(int tcase) {
+        Dao dao = new Dao();
+        Relatorios relatorios;
+        if (!getListTipoRelatorios().isEmpty()) {
+            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            relatorios = rgdb.pesquisaRelatorios(index[0]);
+        } else {
+            GenericaMensagem.info("Sistema", "Nenhum relatório encontrado!");
+            return;
+        }
+        if (relatorios == null) {
+            return;
+        }
+        String detalheRelatorio = "";
+        Integer idEmpresa = null;
+        Integer idFuncionario = null;
+        Integer idUsuarioOperacional = null;
+        Integer idFilial = null;
+        Integer idStatus = null;
+        Integer idMotivoDemissao = null;
+        String pIStringI = "";
+        String pFStringI = "";
+        String sexoString = "";
+        List listDetalhePesquisa = new ArrayList();
+        Integer tCase = null;
+        if (filtro[1]) {
+            tCase = 1;
+            pIStringI = DataHoje.converteData(dataInicial);
+            pFStringI = DataHoje.converteData(dataFinal);
+            listDetalhePesquisa.add(" Período de Agendamento entre " + pIStringI + " e " + pFStringI);
+        } else if (filtro[9]) {
+            tCase = 2;
+            pIStringI = DataHoje.converteData(dataInicial);
+            pFStringI = DataHoje.converteData(dataFinal);
+            listDetalhePesquisa.add(" Período de Demissão entre " + pIStringI + " e " + pFStringI);
+        }
+        if (filtro[6]) {
+            if (sexo != null) {
+                switch (sexo) {
+                    case "M":
+                        sexoString = "Masculino";
+                        break;
+                    case "F":
+                        sexoString = "Feminino";
+                        break;
+                    default:
+                        sexoString = "Todos";
+                        break;
+                }
+            }
+            listDetalhePesquisa.add("Sexo: " + sexoString + "");
+        }
+        if (empresa.getId() != -1) {
+            idEmpresa = empresa.getId();
+            listDetalhePesquisa.add("Empresa: " + empresa.getPessoa().getDocumento() + " - " + empresa.getPessoa().getNome());
+        }
+        if (funcionario.getId() != -1) {
+            idFuncionario = funcionario.getId();
+            listDetalhePesquisa.add("Funcionário: " + funcionario.getPessoa().getDocumento() + " - " + funcionario.getPessoa().getNome());
+        }
+        if (operador.getId() != -1) {
+            idUsuarioOperacional = operador.getId();
+            listDetalhePesquisa.add("Operador: " + operador.getPessoa().getDocumento() + " - " + operador.getPessoa().getNome());
+        }
+        if (index[1] != null) {
+            idFilial = Integer.parseInt(listSelectItem[1].get(index[1]).getDescription());
+            listDetalhePesquisa.add("Filial: " + ((Filial) dao.find(new Filial(), idFilial)).getFilial().getPessoa().getNome());
+        }
+        if (index[2] != null) {
+            idStatus = Integer.parseInt(listSelectItem[2].get(index[2]).getDescription());
+            listDetalhePesquisa.add("Status: " + ((Status) dao.find(new Status(), idStatus)).getDescricao());
+        }
+        if (index[3] != null) {
+            idMotivoDemissao = Integer.parseInt(listSelectItem[3].get(index[3]).getDescription());
+            listDetalhePesquisa.add("Motivo Demissão: " + ((Demissao) dao.find(new Demissao(), idMotivoDemissao)).getDescricao());
+        }
+        if (filtro[8]) {
+            if (tipoAviso != null) {
+                if (tipoAviso) {
+                    listDetalhePesquisa.add("Tipo de aviso: trabalhado");
+                } else {
+                    listDetalhePesquisa.add("Tipo de aviso: indenizado");
+                }
+            }
+        }
+        if (order == null) {
+            order = "";
+        }
+        RelatorioHomologacaoDao relatorioHomologacaoDao = new RelatorioHomologacaoDao();
+        relatorioHomologacaoDao.setOrder(order);
+        String operadorHeader = "";
+        if (tipoUsuarioOperacional == null || tipoUsuarioOperacional.equals("id_homologador")) {
+            operadorHeader = "HOMOLOGADOR";
+            tipoUsuarioOperacional = "id_homologador";
+        } else if (tipoUsuarioOperacional.equals("id_agendador")) {
+            operadorHeader = "AGENDADOR";
+        }
+        List list = relatorioHomologacaoDao.find(relatorios, idEmpresa, idFuncionario, tipoUsuarioOperacional, idUsuarioOperacional, idStatus, idFilial, tCase, pIStringI, pFStringI, idMotivoDemissao, tipoAviso, tipoAgendador, sexo, webAgendamento);
+        if (list.isEmpty()) {
+            GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
+            return;
+        }
+
+        if (listDetalhePesquisa.isEmpty()) {
+            detalheRelatorio += "Pesquisar todos registros!";
+        } else {
+            detalheRelatorio += "";
+            for (int i = 0; i < listDetalhePesquisa.size(); i++) {
+                if (i == 0) {
+                    detalheRelatorio += "Detalhes: " + listDetalhePesquisa.get(i).toString();
+                } else {
+                    detalheRelatorio += "; " + listDetalhePesquisa.get(i).toString();
+                }
+            }
+        }
+        List<ParametroHomologacao> phs = new ArrayList<>();
+        String operadorString = "";
+        for (Object list1 : list) {
+            if (tipoUsuarioOperacional == null || tipoUsuarioOperacional.equals("id_homologador")) {
+                operadorString = AnaliseString.converteNullString(((List) list1).get(9));
+            } else if (tipoUsuarioOperacional.equals("id_agendador")) {
+                operadorString = AnaliseString.converteNullString(((List) list1).get(9));
+                if (operadorString.isEmpty()) {
+                    operadorString = "** Web ** ";
+                }
+            }
+            phs.add(new ParametroHomologacao(
+                    detalheRelatorio,
+                    AnaliseString.converteNullString(((List) list1).get(2)), // DATA
+                    AnaliseString.converteNullString(((List) list1).get(3)), // HORA
+                    AnaliseString.converteNullString(((List) list1).get(4)), // CNPJ
+                    AnaliseString.converteNullString(((List) list1).get(5)), // EMPRESA
+                    AnaliseString.converteNullString(((List) list1).get(6)), // FUNCIONARIO
+                    AnaliseString.converteNullString(((List) list1).get(7)), // CONTATO
+                    AnaliseString.converteNullString(((List) list1).get(8)), // TELEFONE
+                    operadorString, // OPERADOR
+                    AnaliseString.converteNullString(((List) list1).get(10)), // OBS
+                    AnaliseString.converteNullString(((List) list1).get(11)) // STATUS
+            ));
+        }
+        if (!phs.isEmpty()) {
+            Jasper.TYPE = "paisagem";
+            Jasper.IS_HEADER = printHeader;
+            Map map = new HashMap();
+            map.put("operador_header", operadorHeader);
+            Jasper.printReports(relatorios.getJasper(), "homologacao", (Collection) phs, map);
+        }
+    }
+
+    public List<SelectItem> getListTipoRelatorios() {
+        if (listSelectItem[0].isEmpty()) {
+            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(177);
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+            }
+            if (listSelectItem[0].isEmpty()) {
+                listSelectItem[0] = new ArrayList<>();
+            }
+        }
+        return listSelectItem[0];
+    }
+
+    public String getTipoRelatorio() {
+        return tipoRelatorio;
+    }
+
+    public void setTipoRelatorio(String tipoRelatorio) {
+        this.tipoRelatorio = tipoRelatorio;
+    }
+
+    public void tipoRelatorioChange(TabChangeEvent event) {
+        tipoRelatorio = event.getTab().getTitle();
+        indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
+        if (tipoRelatorio.equals("Simples")) {
+            clear();
+        }
+    }
+
+    public void selecionaDataInicial(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataInicial = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void selecionaDataFinal(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataFinal = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void clear() {
+        if (!filtro[0]) {
+            listSelectItem[1] = new ArrayList();
+            index[1] = null;
+        }
+        if (!filtro[1]) {
+            if (!filtro[9]) {
+                dataInicial = DataHoje.dataHoje();
+                dataFinal = null;
+                disabled[0] = false;
+                disabled[1] = false;
+            }
+        } else {
+            disabled[0] = true;
+            disabled[1] = false;
+            filtro[9] = false;
+        }
+        if (!filtro[2]) {
+            listSelectItem[2] = new ArrayList();
+            index[2] = null;
+        }
+        if (!filtro[3]) {
+            empresa = new Juridica();
+        }
+        if (!filtro[4]) {
+            funcionario = new Fisica();
+        }
+        if (!filtro[5]) {
+            operador = new Usuario();
+            webAgendamento = false;
+            tipoUsuarioOperacional = null;
+        }
+        if (!filtro[6]) {
+            sexo = "";
+        }
+        if (!filtro[7]) {
+            listSelectItem[3] = new ArrayList();
+            index[3] = null;
+        }
+        if (!filtro[8]) {
+            tipoAviso = null;
+        }
+        if (!filtro[9]) {
+            if (!filtro[1]) {
+                disabled[0] = false;
+                disabled[1] = false;
+                dataDemissaoInicial = DataHoje.dataHoje();
+                dataDemissaoInicial = null;
+            }
+        } else {
+            disabled[0] = false;
+            disabled[1] = true;
+            filtro[1] = false;
+        }
+        if (!filtro[10]) {
+            order = "";
+        }
+    }
+
+    public void close(String close) {
+        switch (close) {
+            case "filial":
+                listSelectItem[1] = new ArrayList();
+                index[1] = null;
+                filtro[0] = false;
+                break;
+            case "periodo_emissao":
+                dataInicial = DataHoje.dataHoje();
+                dataFinal = null;
+                disabled[0] = false;
+                disabled[1] = false;
+                filtro[1] = false;
+                PF.update("form_relatorio:i_panel_accordion:i_panel_avancado");
+                break;
+            case "status":
+                listSelectItem[2] = new ArrayList();
+                index[2] = null;
+                filtro[2] = false;
+                break;
+            case "empresa":
+                empresa = new Juridica();
+                filtro[3] = false;
+                break;
+            case "funcionario":
+                funcionario = new Fisica();
+                filtro[4] = false;
+                break;
+            case "operador":
+                operador = new Usuario();
+                filtro[5] = false;
+                webAgendamento = false;
+                tipoUsuarioOperacional = null;
+                break;
+            case "sexo":
+                filtro[6] = false;
+                sexo = "";
+                break;
+            case "motivo_demissao":
+                listSelectItem[3] = new ArrayList();
+                index[3] = null;
+                filtro[7] = false;
+                break;
+            case "tipo_aviso":
+                tipoAviso = null;
+                filtro[8] = false;
+                break;
+            case "periodo_demissao":
+                dataDemissaoInicial = DataHoje.dataHoje();
+                dataDemissaoFinal = null;
+                disabled[0] = false;
+                disabled[1] = false;
+                filtro[9] = false;
+                PF.update("form_relatorio:i_panel_accordion:i_panel_avancado");
+                break;
+            case "order":
+                order = "";
+                filtro[10] = false;
+                break;
+        }
+        PF.update("form_relatorio:id_panel");
+    }
+
+    public String getIndexAccordion() {
+        return indexAccordion;
+    }
+
+    public void setIndexAccordion(String indexAccordion) {
+        this.indexAccordion = indexAccordion;
+    }
+
+    public Date getDataInicial() {
+        return dataInicial;
+    }
+
+    public void setDataInicial(Date dataInicial) {
+        this.dataInicial = dataInicial;
+    }
+
+    public Date getDataFinal() {
+        return dataFinal;
+    }
+
+    public void setDataFinal(Date dataFinal) {
+        this.dataFinal = dataFinal;
+    }
+
+    public List<SelectItem>[] getListSelectItem() {
+        return listSelectItem;
+    }
+
+    public void setListSelectItem(List<SelectItem>[] listSelectItem) {
+        this.listSelectItem = listSelectItem;
+    }
+
+    /**
+     * <strong>Index</strong>
+     * <ul>
+     * <li>[0] Tipos de Relatórios</li>
+     * <li>[1] List[SelectItem] Convenção Período</li>
+     * </ul>
+     *
+     * @return Integer
+     */
+    public Integer[] getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer[] index) {
+        this.index = index;
+    }
+
+    /**
+     * <strong>Filtros</strong>
+     * <ul>
+     * <li>[0] MODALIDADE</li>
+     * <li>[1] PERÍODO EMISSÃO / INATIVAÇÃO</li>
+     * <li>[2] RESPONSÁVEL</li>
+     * <li>[3] ALUNO</li>
+     * <li>[4] SEXO</li>
+     * <li>[5] ORDENAÇÃO </li>
+     * <li>[6] PERIODOS </li>
+     * </ul>
+     *
+     * @return boolean
+     */
+    public Boolean[] getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(Boolean[] filtro) {
+        this.filtro = filtro;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
+    }
+
+    public Fisica getFuncionario() {
+        if (GenericaSessao.exists("fisicaPesquisa")) {
+            funcionario = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true));
+        }
+        return funcionario;
+    }
+
+    public void setFuncionario(Fisica funcionario) {
+        this.funcionario = funcionario;
+    }
+
+    public Juridica getEmpresa() {
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            empresa = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+        }
+        return empresa;
+    }
+
+    public void setEmpresa(Juridica empresa) {
+        this.empresa = empresa;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public Usuario getOperador() {
+        if (GenericaSessao.exists("usuarioPesquisa")) {
+            operador = ((Usuario) GenericaSessao.getObject("usuarioPesquisa", true));
+        }
+        return operador;
+    }
+
+    public void setOperador(Usuario operador) {
+        this.operador = operador;
+    }
+
+    public String getTipoUsuarioOperacional() {
+        return tipoUsuarioOperacional;
+    }
+
+    public void setTipoUsuarioOperacional(String tipoUsuarioOperacional) {
+        this.tipoUsuarioOperacional = tipoUsuarioOperacional;
+    }
+
+    public List<SelectItem> getListFiliais() {
+        if (listSelectItem[1].isEmpty()) {
             DaoInterface di = new Dao();
             List<Filial> list = (List<Filial>) di.list(new Filial(), true);
             for (int i = 0; i < list.size(); i++) {
-                listaFiliais.add(new SelectItem(i,
+                listSelectItem[1].add(new SelectItem(i,
                         list.get(i).getFilial().getPessoa().getDocumento() + " / " + list.get(i).getFilial().getPessoa().getNome(),
                         Integer.toString(list.get(i).getId())));
             }
         }
-        return listaFiliais;
+        return listSelectItem[1];
     }
 
-    
-    public List<SelectItem> getListaTipoRelatorios() {
-        List<SelectItem> relatorios = new Vector<SelectItem>();
-        int i = 0;
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-        List select = db.pesquisaTipoRelatorio(177);
-        while (i < select.size()) {
-            relatorios.add(new SelectItem(new Integer(i),
-                    (String) ((Relatorios) select.get(i)).getNome(),
-                    Integer.toString(((Relatorios) select.get(i)).getId())));
-            i++;
-        }
-        return relatorios;
-    }
-
-    public String getConverteNullString(Object object) {
-        if (object == null) {
-            return "";
-        } else {
-            return String.valueOf(object);
-        }
-    }
-
-    public int getIdRelatorio() {
-        return idRelatorio;
-    }
-
-    public void setIdRelatorio(int idRelatorio) {
-        this.idRelatorio = idRelatorio;
-    }
-
-    public String getSelectAccordion() {
-        return selectAccordion;
-    }
-
-    public void setSelectAccordion(String selectAccordion) {
-        this.selectAccordion = selectAccordion;
-    }
-
-    public List<DataObject> getListaMenuRHomologacao() {
-        if (listaMenuRHomologacao.isEmpty()) {
-            listaMenuRHomologacao.add(new DataObject("* Nome Empresa ", "Editar", null, null, null, null));
-            listaMenuRHomologacao.add(new DataObject("* Nome Funcionário ", "Editar", null, null, null, null));
-            listaMenuRHomologacao.add(new DataObject("* Data Inicial/Final ", "Editar", null, null, null, null));
-            listaMenuRHomologacao.add(new DataObject("* Homologador ", "Editar", null, null, null, null));
-            listaMenuRHomologacao.add(new DataObject("* Filial ", "Editar", null, null, null, null));
-        }
-        return listaMenuRHomologacao;
-    }
-
-    public void setListaMenuRHomologacao(List<DataObject> listaMenuRHomologacao) {
-        this.listaMenuRHomologacao = listaMenuRHomologacao;
-    }
-
-    public String editarOpcao(int index) {
-        if (listaMenuRHomologacao.get(index).getArgumento1().equals("Remover")) {
-            listaMenuRHomologacao.get(index).setArgumento1("Editar");
-        } else {
-            listaMenuRHomologacao.get(index).setArgumento1("Remover");
-        }
-
-        if (index == 0) {
-            if (booEmpresa) {
-                booEmpresa = false;
-            } else {
-                booEmpresa = true;
-            }
-        } else if (index == 1) {
-            if (booFuncionario) {
-                booFuncionario = false;
-            } else {
-                booFuncionario = true;
-            }
-        } else if (index == 2) {
-            if (booData) {
-                booData = false;
-            } else {
-                booData = true;
-            }
-        } else if (index == 3) {
-            if (booHomologador) {
-                booHomologador = false;
-            } else {
-                booHomologador = true;
-            }
-        } else if (index == 4) {
-            if (booFilial) {
-                booFilial = false;
-            } else {
-                booFilial = true;
+    public List<SelectItem> getListStatus() {
+        if (listSelectItem[2].isEmpty()) {
+            DaoInterface di = new Dao();
+            List<Status> list = (List<Status>) di.list(new Status(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[2].add(new SelectItem(i,
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
         }
-        return "relatorioHomologacao";
+        return listSelectItem[2];
     }
 
-    public boolean isBooEmpresa() {
-        return booEmpresa;
-    }
-
-    public void setBooEmpresa(boolean booEmpresa) {
-        this.booEmpresa = booEmpresa;
-    }
-
-    public boolean isBooFuncionario() {
-        return booFuncionario;
-    }
-
-    public void setBooFuncionario(boolean booFuncionario) {
-        this.booFuncionario = booFuncionario;
-    }
-
-    public boolean isBooData() {
-        return booData;
-    }
-
-    public void setBooData(boolean booData) {
-        this.booData = booData;
-    }
-
-    public boolean isBooHomologador() {
-        return booHomologador;
-    }
-
-    public void setBooHomologador(boolean booHomologador) {
-        this.booHomologador = booHomologador;
-    }
-
-    public Juridica getJuridica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-            juridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+    public List<SelectItem> getListMotivoDemissao() {
+        if (listSelectItem[3].isEmpty()) {
+            DaoInterface di = new Dao();
+            List<Demissao> list = (List<Demissao>) di.list(new Demissao(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[3].add(new SelectItem(i,
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
+            }
         }
-        return juridica;
+        return listSelectItem[3];
     }
 
-    public void setJuridica(Juridica juridica) {
-        this.juridica = juridica;
+    public Boolean getTipoAviso() {
+        return tipoAviso;
     }
 
-    public Fisica getFisica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null) {
-            fisica = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
+    public void setTipoAviso(Boolean tipoAviso) {
+        this.tipoAviso = tipoAviso;
+    }
+
+    public String getTipoAgendador() {
+        return tipoAgendador;
+    }
+
+    public void setTipoAgendador(String tipoAgendador) {
+        this.tipoAgendador = tipoAgendador;
+    }
+
+    public Boolean getPrintHeader() {
+        return printHeader;
+    }
+
+    public void setPrintHeader(Boolean printHeader) {
+        this.printHeader = printHeader;
+    }
+
+    public Date getDataDemissaoInicial() {
+        return dataDemissaoInicial;
+    }
+
+    public void setDataDemissaoInicial(Date dataDemissaoInicial) {
+        this.dataDemissaoInicial = dataDemissaoInicial;
+    }
+
+    public Date getDataDemissaoFinal() {
+        return dataDemissaoFinal;
+    }
+
+    public void setDataDemissaoFinal(Date dataDemissaoFinal) {
+        this.dataDemissaoFinal = dataDemissaoFinal;
+    }
+
+    public Boolean[] getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean[] disabled) {
+        this.disabled = disabled;
+    }
+
+    public Boolean getWebAgendamento() {
+        return webAgendamento;
+    }
+
+    public void setWebAgendamento(Boolean webAgendamento) {
+        this.webAgendamento = webAgendamento;
+    }
+
+    public void listener(Integer tCase) {
+        if (tCase == 1) {
+            if (tipoUsuarioOperacional != null && tipoUsuarioOperacional.equals("id_homologador")) {
+                if (!filtro[2]) {
+                    filtro[2] = true;
+                    getListStatus();
+                    for (int i = 0; i < listSelectItem[2].size(); i++) {
+                        if (Integer.parseInt(listSelectItem[2].get(i).getDescription()) == 4) {
+                            index[2] = i;
+                            break;
+                        }
+                    }
+                }
+            }
         }
-        return fisica;
-    }
-
-    public void setFisica(Fisica fisica) {
-        this.fisica = fisica;
-    }
-
-    public String getDatai() {
-        return datai;
-    }
-
-    public void setDatai(String datai) {
-        this.datai = datai;
-    }
-
-    public String getDataf() {
-        return dataf;
-    }
-
-    public void setDataf(String dataf) {
-        this.dataf = dataf;
-    }
-
-    public Pessoa getUsuario() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            usuario = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        }
-        return usuario;
-    }
-
-    public void setUsuario(Pessoa usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getTipoOrdem() {
-        return tipoOrdem;
-    }
-
-    public void setTipoOrdem(String tipoOrdem) {
-        this.tipoOrdem = tipoOrdem;
-    }
-
-    public int getIndexFilial() {
-        return indexFilial;
-    }
-
-    public void setIndexFilial(int indexFilial) {
-        this.indexFilial = indexFilial;
-    }
-
-    public boolean isBooFilial() {
-        return booFilial;
-    }
-
-    public void setBooFilial(boolean booFilial) {
-        this.booFilial = booFilial;
     }
 }

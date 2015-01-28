@@ -155,7 +155,7 @@ public class RotinaDBToplink extends DB implements RotinaDB {
     public Rotina pesquisaRotinaPorPagina(String pagina) {
         Rotina rotina = new Rotina();
         try {
-            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE ROT.pagina LIKE 'Sindical/" + pagina + ".jsf' OR ROT.pagina LIKE '\"/Sindical/" + pagina + ".jsf\"'");
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE (ROT.pagina LIKE 'Sindical/" + pagina + ".jsf' OR ROT.pagina LIKE '\"/Sindical/" + pagina + ".jsf\"')");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (Rotina) query.getSingleResult();

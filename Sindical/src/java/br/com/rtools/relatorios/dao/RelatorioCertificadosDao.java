@@ -63,15 +63,15 @@ public class RelatorioCertificadosDao extends DB {
                     listQuery.add("RM.nr_ano = " + referencia[0]);
                 } else if (tipo == 2) {
                     if (referencia[1].isEmpty()) {
-                        listQuery.add("RM.dt_emissao = '" + DataHoje.converteData(referencia[0]) + "'");
+                        listQuery.add("RM.dt_emissao = '" + referencia[0] + "'");
                     } else {
-                        listQuery.add("RM.dt_emissao BETWEEN '" + DataHoje.converteData(referencia[0]) + "' AND '" + DataHoje.converteData(referencia[1]) + "'");
+                        listQuery.add("RM.dt_emissao BETWEEN '" + referencia[0] + "' AND '" + referencia[1] + "'");
                     }
                 } else if (tipo == 3) {
                     if (referencia[1].isEmpty()) {
-                        listQuery.add("RM.dt_resposta = '" + DataHoje.converteData(referencia[0]) + "'");
+                        listQuery.add("RM.dt_resposta = '" + referencia[0] + "'");
                     } else {
-                        listQuery.add("RM.dt_resposta BETWEEN '" + DataHoje.converteData(referencia[0]) + "' AND '" + DataHoje.converteData(referencia[1]) + "'");
+                        listQuery.add("RM.dt_resposta BETWEEN '" + referencia[0] + "' AND '" + referencia[1] + "'");
                     }
                 } else if (tipo == 4) {
                     listQuery.add("RM.dt_resposta IS NULL");
