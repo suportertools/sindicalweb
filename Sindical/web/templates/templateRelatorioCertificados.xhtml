@@ -3,6 +3,16 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <style type="text/css">
+            .without-selectall .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none; 
+            }            
+            .ui-selectcheckboxmenu-close .ui-icon-circle-close {
+                display: none; 
+            }
+        </style>        
+    </h:head>
     <h:body>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -74,11 +84,11 @@
                                         <h:column>
                                             <h:panelGrid columns="4">
                                                 <p:inputMask value="#{relatorioCertificadosBean.periodo[0]}" size="10" mask="99/99/9999" converter="#{isDateString}">
-                                                    <p:ajax event="change" update="@this" />
+                                                    <p:ajax event="change" update="@this" global="false" />
                                                 </p:inputMask>
                                                 <p:outputLabel value=" até" />
                                                 <p:inputMask value="#{relatorioCertificadosBean.periodo[1]}" size="10" mask="99/99/9999" converter="#{isDateString}">
-                                                    <p:ajax event="change" update="@this" />
+                                                    <p:ajax event="change" update="@this" global="false"/>
                                                 </p:inputMask>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('periodo_emissao')}" title="Remover filtro" />
                                             </h:panelGrid>
@@ -91,18 +101,18 @@
                                         <h:column>
                                             <h:panelGrid columns="4">
                                                 <p:inputMask value="#{relatorioCertificadosBean.periodo[2]}" size="10" mask="99/99/9999" converter="#{isDateString}" disabled="#{relatorioCertificadosBean.aguardandoResposta}">
-                                                    <p:ajax event="change"  update="@this" />
+                                                    <p:ajax event="change"  update="@this" global="false"/>
                                                 </p:inputMask>
                                                 <p:outputLabel value=" até" />
                                                 <p:inputMask value="#{relatorioCertificadosBean.periodo[3]}" size="10" mask="99/99/9999" converter="#{isDateString}" disabled="#{relatorioCertificadosBean.aguardandoResposta}">
-                                                    <p:ajax event="change"  update="@this" />
+                                                    <p:ajax event="change"  update="@this" global="false"/>
                                                 </p:inputMask>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioCertificadosBean.close('periodo_resposta')}" title="Remover filtro" />
                                             </h:panelGrid>
                                         </h:column>
                                         <h:column />
                                         <p:selectBooleanCheckbox value="#{relatorioCertificadosBean.aguardandoResposta}" itemLabel="Aguardando resposta" styleClass="margin-top-max">
-                                            <p:ajax event="change"  update=":form_relatorio:" />                                                    
+                                            <p:ajax event="change"  update=":form_relatorio:" global="false" />                                                    
                                         </p:selectBooleanCheckbox>
                                     </h:panelGrid>                                    
                                 </p:column>                                
@@ -111,7 +121,7 @@
                                         <h:panelGrid columns="7" cellpadding="5">
                                             <p:outputLabel value="Repis Status: " />
                                             <p:selectCheckboxMenu id="i_rs" label="Selecionar status" value="#{relatorioCertificadosBean.selectedRepisStatus}" panelStyleClass="without-selectall">
-                                                <p:ajax event="toggleSelect" update="@this" />
+                                                <p:ajax event="toggleSelect" update="@this" global="false"/>
                                                 <f:selectItems value="#{relatorioCertificadosBean.listRepisStatus}" />
                                             </p:selectCheckboxMenu>
                                             <p:commandButton icon="ui-icon-circle-check" update="i_rs id_messages_growl" title="Confirmar itens" action="#{genericaMensagem.show('info', 'Confirmado', 'Campos selecionados com sucesso!')}" />
@@ -124,7 +134,7 @@
                                         <h:panelGrid columns="6" cellpadding="5">
                                             <p:outputLabel value="Certidões tipo: " />
                                             <p:selectCheckboxMenu label="Selecionar certidões" id="i_ct" value="#{relatorioCertificadosBean.selectedCertidaoTipo}" panelStyleClass="without-selectall">
-                                                <p:ajax event="toggleSelect" update="@this" />
+                                                <p:ajax event="toggleSelect" update="@this" global="false"/>
                                                 <f:selectItems value="#{relatorioCertificadosBean.listCertidaoTipo}" />
                                             </p:selectCheckboxMenu>
                                             <p:commandButton icon="ui-icon-circle-check" update="i_ct id_messages_growl" title="Confirmar itens" action="#{genericaMensagem.show('info', 'Confirmado', 'Campos selecionados com sucesso!')}" />
@@ -144,7 +154,7 @@
                                         <h:panelGrid columns="6" cellpadding="5">
                                             <p:outputLabel value="Cidade base: " />
                                             <p:selectCheckboxMenu label="Selecionar cidade base" id="i_cb" value="#{relatorioCertificadosBean.selectedCidadeBase}" filter="true" filterMatchMode="startsWith" panelStyleClass="without-selectall">
-                                                <p:ajax event="toggleSelect" update="i_cb" process="@this"/>
+                                                <p:ajax event="toggleSelect" update="i_cb" process="@this" global="false"/>
                                                 <f:selectItems value="#{relatorioCertificadosBean.listCidadeBase}" />
                                             </p:selectCheckboxMenu>
                                             <p:commandButton icon="ui-icon-circle-check" update="i_cb id_messages_growl" title="Confirmar itens" action="#{genericaMensagem.show('info', 'Confirmado', 'Campos selecionados com sucesso!')}"/>
