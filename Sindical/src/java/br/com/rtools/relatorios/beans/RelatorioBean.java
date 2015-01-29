@@ -127,6 +127,8 @@ public class RelatorioBean implements Serializable {
 
     public String novo() {
         relatorio = new Relatorios();
+        listRelatorioOrdem.clear();
+        relatorioOrdem = new RelatorioOrdem();
         index = 0;
         msgConfirma = "";
         return "relatorio";

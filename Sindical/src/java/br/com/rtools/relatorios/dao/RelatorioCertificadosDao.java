@@ -1,6 +1,5 @@
 package br.com.rtools.relatorios.dao;
 
-import br.com.rtools.arrecadacao.RepisMovimento;
 import br.com.rtools.principal.DB;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.utilitarios.DataHoje;
@@ -47,15 +46,15 @@ public class RelatorioCertificadosDao extends DB {
                     + "             C.ds_uf,                                                                        " // 16 - UF
                     + "             ENDE.ds_cep                                                                     " // 17 - CEP
                     + "        FROM arr_repis_movimento     AS RM                                                   "
-                    + "  INNER JOIN pes_pessoa              AS P    ON P.id     = RM.id_pessoa                      "
-                    + "  INNER JOIN pes_pessoa_endereco     AS PE   ON PE.id    = P.id                              "
-                    + "  INNER JOIN end_endereco            AS ENDE ON ENDE.id  = PE.id_endereco                    "
-                    + "  INNER JOIN arr_repis_status        AS RS   ON RS.id    = RM.id_repis_status                "
-                    + "  INNER JOIN arr_certidao_tipo       AS CT   ON CT.id    = RM.id_certidao_tipo               "
-                    + "  INNER JOIN end_logradouro          AS L    ON L.id     = ENDE.id_logradouro                "
-                    + "  INNER JOIN end_descricao_endereco  AS DE   ON DE.id    = ENDE.id_descricao_endereco        "
-                    + "  INNER JOIN end_bairro              AS B    ON B.id     = ENDE.id_bairro                    "
-                    + "  INNER JOIN end_cidade              AS C    ON C.id     = ENDE.id_cidade                    "
+                    + "  INNER JOIN pes_pessoa              AS P    ON P.id         = RM.id_pessoa                      "
+                    + "  INNER JOIN pes_pessoa_endereco     AS PE   ON PE.id_pessoa = P.id                              "
+                    + "  INNER JOIN end_endereco            AS ENDE ON ENDE.id      = PE.id_endereco                    "
+                    + "  INNER JOIN arr_repis_status        AS RS   ON RS.id        = RM.id_repis_status                "
+                    + "  INNER JOIN arr_certidao_tipo       AS CT   ON CT.id        = RM.id_certidao_tipo               "
+                    + "  INNER JOIN end_logradouro          AS L    ON L.id         = ENDE.id_logradouro                "
+                    + "  INNER JOIN end_descricao_endereco  AS DE   ON DE.id        = ENDE.id_descricao_endereco        "
+                    + "  INNER JOIN end_bairro              AS B    ON B.id         = ENDE.id_bairro                    "
+                    + "  INNER JOIN end_cidade              AS C    ON C.id         = ENDE.id_cidade                    "
                     + "";
             if (tipo != null) {
                 listQuery.add("PE.id_tipo_endereco = 2");
@@ -63,13 +62,17 @@ public class RelatorioCertificadosDao extends DB {
                     listQuery.add("RM.nr_ano = " + referencia[0]);
                 } else if (tipo == 2) {
                     if (referencia[1].isEmpty()) {
-                        listQuery.add("RM.dt_emissao = '" + referencia[0] + "'");
+                        if (!referencia[0].isEmpty()) {
+                            listQuery.add("RM.dt_emissao = '" + referencia[0] + "'");
+                        }
                     } else {
                         listQuery.add("RM.dt_emissao BETWEEN '" + referencia[0] + "' AND '" + referencia[1] + "'");
                     }
                 } else if (tipo == 3) {
                     if (referencia[1].isEmpty()) {
-                        listQuery.add("RM.dt_resposta = '" + referencia[0] + "'");
+                        if (!referencia[0].isEmpty()) {
+                            listQuery.add("RM.dt_resposta = '" + referencia[0] + "'");
+                        }
                     } else {
                         listQuery.add("RM.dt_resposta BETWEEN '" + referencia[0] + "' AND '" + referencia[1] + "'");
                     }
@@ -149,9 +152,9 @@ public class RelatorioCertificadosDao extends DB {
                     + "       WHERE                                                                                                 ";
 
             String subQueryString = ""
-                    + "CVW.id_pessoa NOT IN (                                                           "
-                    + "      SELECT RM.id_pessoa                                                        "
-                    + "        FROM arr_repis_movimento AS RM                                           ";
+                    + "CVW.id_pessoa NOT IN (                                                                                           "
+                    + "      SELECT RM.id_pessoa                                                                                        "
+                    + "        FROM arr_repis_movimento AS RM                                                                           ";
             if (tipo != null) {
                 if (tipo == 1) {
                     listQuery.add("RM.nr_ano = " + referencia[0]);
@@ -177,9 +180,9 @@ public class RelatorioCertificadosDao extends DB {
             if (!inCertidoesTipo.isEmpty()) {
                 listQuery.add("RM.id_certidao_tipo IN(" + inCertidoesTipo + ")");
             }
-            if (!inCidadeBase.isEmpty()) {
-                listQuery.add("C.id IN(" + inCidadeBase + ")");
-            }
+//            if (!inCidadeBase.isEmpty()) {
+//                listQuery.add("ENDE2.id_cidade IN(" + inCidadeBase + ")");
+//            }
             for (int i = 0; i < listQuery.size(); i++) {
                 if (i == 0) {
                     subQueryString += " WHERE ";
@@ -189,6 +192,9 @@ public class RelatorioCertificadosDao extends DB {
                 subQueryString += " " + listQuery.get(i).toString();
             }
             subQueryString += " GROUP BY RM.id_pessoa) AND CVW.dt_inativacao IS NULL ";
+            if (!inCidadeBase.isEmpty()) {
+                subQueryString += " AND C.id IN ( " + inCidadeBase + ") ";
+            }
             queryString += subQueryString + " "
                     + " ORDER BY C.ds_cidade ASC,   "
                     + "          L.ds_descricao,    "
