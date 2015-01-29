@@ -906,7 +906,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
         // -------------------------------------------------------------
         pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
-        pessoaEmpresa.setFuncao(this.profissao);
+        if(this.profissao.getId() == -1) {
+            pessoaEmpresa.setFuncao(null);
+        } else {
+            pessoaEmpresa.setFuncao(this.profissao);            
+        }
         if (!sv.alterarObjeto(pessoaEmpresa)) {
             msgConfirma = "Erro ao alterar Pessoa Empresa!";
             sv.desfazerTransacao();
