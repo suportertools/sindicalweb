@@ -56,7 +56,7 @@ public class PesquisarProfissaoBean implements Serializable {
     }
 
     public Profissao getProfissao() {
-        if (profissao.getId() == -1) {
+        if (profissao == null || profissao.getId() == -1) {
             profissao = new Profissao();
         }
         return profissao;
