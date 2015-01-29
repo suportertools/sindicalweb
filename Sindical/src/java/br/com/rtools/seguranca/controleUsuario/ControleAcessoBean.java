@@ -772,9 +772,9 @@ public class ControleAcessoBean implements Serializable {
                 return false;
             }
             if (modulo.getId() != -1) {
-                permissao = db.pesquisaPermissao(modulo.getId(), 176, 3);
+                permissao = db.pesquisaPermissao(modulo.getId(), 136, 3);
             } else {
-                permissao = db.pesquisaPermissao(9, 176, 3);
+                permissao = db.pesquisaPermissao(9, 136, 3);
             }
 
             if (permissao.getId() != -1) {

@@ -630,8 +630,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
         
-        if (!strContribuinte.isEmpty()) {
-            GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
+        if (!getStrContribuinte().isEmpty()) {
+            GenericaMensagem.error("Atenção", getStrContribuinte());
             return;
         }
 

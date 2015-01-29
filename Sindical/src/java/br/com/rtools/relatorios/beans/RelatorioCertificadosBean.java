@@ -62,9 +62,11 @@ public class RelatorioCertificadosBean implements Serializable {
     private Map<String, Integer> listCidadeBase;
     private Boolean[] filtro;
     private Boolean[] disabled;
-    private Boolean aguardandoResposta;
-    private String[] periodo;
-    private Date[] dtPeriodo;
+    private boolean aguardandoResposta;
+    private String periodoInicial;
+    private String periodoFinal;
+    private String respostaInicial;
+    private String respostaFinal;
     private Integer[] index;
     private String tipoRelatorio;
     private String indexAccordion;
@@ -89,14 +91,10 @@ public class RelatorioCertificadosBean implements Serializable {
         disabled[2] = false;
         aguardandoResposta = false;
         ano = DataHoje.livre(new Date(), "YYYY");
-        dtPeriodo = new Date[2];
-        dtPeriodo[0] = null;
-        dtPeriodo[1] = null;
-        periodo = new String[4];
-        periodo[0] = "";
-        periodo[1] = "";
-        periodo[2] = "";
-        periodo[3] = "";
+        periodoInicial = "";
+        periodoFinal = "";
+        respostaInicial = "";
+        respostaFinal = "";
         selectedRepisStatus = new ArrayList<>();
         selectedCertidaoTipo = new ArrayList<>();
         selectedCidadeBase = new ArrayList<>();
@@ -117,11 +115,11 @@ public class RelatorioCertificadosBean implements Serializable {
 
     @PreDestroy
     public void destroy() {
-        GenericaSessao.remove("relatorioComparativoArrecadacaoBean");
+        GenericaSessao.remove("relatorioCertidicadosBean");
         GenericaSessao.remove("juridicaPesquisa");
     }
 
-    public synchronized void visualizar() {
+    public void visualizar() {
         Relatorios relatorios = null;
         if (!getListaTipoRelatorios().isEmpty()) {
             RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
@@ -131,6 +129,7 @@ public class RelatorioCertificadosBean implements Serializable {
             return;
         }
         String detalheRelatorio = "";
+        listParametroCertificados.clear();
         if (listParametroCertificados.isEmpty()) {
             RelatorioCertificadosDao relatorioCertificadosDao = new RelatorioCertificadosDao();
             Integer pEmpresa = null;
@@ -147,11 +146,17 @@ public class RelatorioCertificadosBean implements Serializable {
             String inCidadeBase = inIdCidadeBase();
             Integer tipoPeriodo = null;
             String periodoString[] = new String[]{"", ""};
-            if(periodo[0] == null) {
-                periodo[0] = "";
+            if (periodoInicial == null) {
+                periodoInicial = "";
             }
-            if(periodo[1] == null) {
-                periodo[1] = "";
+            if (periodoFinal == null) {
+                periodoFinal = "";
+            }
+            if (respostaInicial == null) {
+                respostaInicial = "";
+            }
+            if (respostaFinal == null) {
+                respostaFinal = "";
             }
             if (filtro[0]) {
                 listDetalhePesquisa.add(" Ano: " + ano);
@@ -160,28 +165,28 @@ public class RelatorioCertificadosBean implements Serializable {
                 periodoString[1] = "";
             } else if (filtro[1]) {
                 tipoPeriodo = 2;
-                periodoString[0] = periodo[0];
-                if (!periodo[0].isEmpty() && !periodo[1].isEmpty()) {
-                    listDetalhePesquisa.add(" Emissão: " + periodo[0] + " até " + periodo[1]);
-                } else if (!periodo[0].isEmpty()) {
-                    listDetalhePesquisa.add(" Emissão: " + periodo[0]);
+                periodoString[0] = periodoInicial;
+                if (!periodoInicial.isEmpty() && !periodoFinal.isEmpty()) {
+                    listDetalhePesquisa.add(" Emissão: " + periodoInicial + " até " + periodoFinal);
+                } else if (!periodoInicial.isEmpty()) {
+                    listDetalhePesquisa.add(" Emissão: " + periodoInicial);
                 }
-                periodoString[0] = periodo[0];
-                periodoString[1] = periodo[1];
+                periodoString[0] = periodoInicial;
+                periodoString[1] = periodoFinal;
             } else if (filtro[2]) {
                 tipoPeriodo = 3;
-                periodoString[0] = periodo[2];
-                periodoString[1] = periodo[3];
+                periodoString[0] = respostaInicial;
+                periodoString[1] = respostaFinal;
                 if (aguardandoResposta) {
                     periodoString[0] = "";
                     periodoString[1] = "";
                     tipoPeriodo = 4;
                     listDetalhePesquisa.add(" Aguardando resposta");
                 } else {
-                    if (!periodo[0].isEmpty() && !periodo[1].isEmpty()) {
-                        listDetalhePesquisa.add(" Data resposta: " + periodo[2] + " até " + periodo[3]);
-                    } else if (!periodo[0].isEmpty()) {
-                        listDetalhePesquisa.add(" Data resposta: " + periodo[2]);
+                    if (!respostaInicial.isEmpty() && !respostaFinal.isEmpty()) {
+                        listDetalhePesquisa.add(" Data resposta: " + respostaInicial + " até " + respostaFinal);
+                    } else if (!respostaInicial.isEmpty()) {
+                        listDetalhePesquisa.add(" Data resposta: " + respostaInicial);
                     }
                 }
             }
@@ -313,13 +318,13 @@ public class RelatorioCertificadosBean implements Serializable {
             periodoString[1] = "";
         } else if (filtro[1]) {
             tipoPeriodo = 2;
-            periodoString[0] = periodo[0];
-            periodoString[0] = periodo[1];
+            periodoString[0] = periodoInicial;
+            periodoString[0] = periodoFinal;
             periodoString[1] = "";
         } else if (filtro[2]) {
             tipoPeriodo = 3;
-            periodoString[0] = periodo[2];
-            periodoString[0] = periodo[3];
+            periodoString[0] = respostaInicial;
+            periodoString[0] = respostaFinal;
             if (aguardandoResposta) {
                 periodoString[0] = "";
                 periodoString[0] = "";
@@ -433,13 +438,13 @@ public class RelatorioCertificadosBean implements Serializable {
         }
         // Emissão
         if (!filtro[1]) {
-            periodo[0] = "";
-            periodo[1] = "";
+            periodoInicial = "";
+            periodoFinal = "";
         }
         // Resposta
         if (!filtro[2]) {
-            periodo[2] = "";
-            periodo[3] = "";
+            respostaInicial = "";
+            respostaFinal = "";
             aguardandoResposta = false;
         }
         // Status
@@ -467,27 +472,27 @@ public class RelatorioCertificadosBean implements Serializable {
             index[1] = null;
         }
         if (filtro[0]) {
-            if(!filtro[1] && !filtro[2]) {
+            if (!filtro[1] && !filtro[2]) {
                 // Desabilita - Emissão e Resposta
                 disabled[1] = true;
                 disabled[2] = true;
-                periodo[0] = "";
-                periodo[1] = "";
-                periodo[2] = "";
-                periodo[3] = "";
+                periodoInicial = "";
+                periodoFinal = "";
+                respostaInicial = "";
+                respostaFinal = "";
             }
         } else if (filtro[1]) {
-            if(!filtro[0] && !filtro[2]) {
+            if (!filtro[0] && !filtro[2]) {
                 // Desabilita - Ano e Resposta
                 ano = "";
                 disabled[0] = true;
-                disabled[2] = true;                
+                disabled[2] = true;
             }
         } else if (filtro[2]) {
-            if(!filtro[0] && !filtro[1]) {
+            if (!filtro[0] && !filtro[1]) {
                 // Desabilita - Ano e Emissão
-                periodo[0] = "";
-                periodo[1] = "";
+                periodoInicial = "";
+                periodoFinal = "";
                 disabled[0] = true;
                 disabled[1] = true;
             }
@@ -509,16 +514,16 @@ public class RelatorioCertificadosBean implements Serializable {
                 break;
             case "periodo_emissao":
                 filtro[1] = false;
-                periodo[0] = "";
-                periodo[1] = "";
+                periodoInicial = "";
+                periodoFinal = "";
                 disabled[0] = false;
                 disabled[1] = false;
                 disabled[2] = false;
                 break;
             case "periodo_resposta":
                 filtro[2] = false;
-                periodo[2] = "";
-                periodo[3] = "";
+                respostaInicial = "";
+                respostaFinal = "";
                 disabled[0] = false;
                 disabled[1] = false;
                 disabled[2] = false;
@@ -744,14 +749,6 @@ public class RelatorioCertificadosBean implements Serializable {
         this.ano = ano;
     }
 
-    public String[] getPeriodo() {
-        return periodo;
-    }
-
-    public void setPeriodo(String[] periodo) {
-        this.periodo = periodo;
-    }
-
     public List getSelectedRepisStatus() {
         return selectedRepisStatus;
     }
@@ -784,15 +781,11 @@ public class RelatorioCertificadosBean implements Serializable {
         this.disabled = disabled;
     }
 
-    public Boolean getAguardandoResposta() {
+    public boolean isAguardandoResposta() {
         return aguardandoResposta;
     }
 
-    public void setAguardandoResposta(Boolean aguardandoResposta) {
-        if (!this.aguardandoResposta) {
-            periodo[2] = "";
-            periodo[3] = "";
-        }
+    public void setAguardandoResposta(boolean aguardandoResposta) {
         this.aguardandoResposta = aguardandoResposta;
     }
 
@@ -802,6 +795,48 @@ public class RelatorioCertificadosBean implements Serializable {
 
     public void setSelectedCidadeBase(List selectedCidadeBase) {
         this.selectedCidadeBase = selectedCidadeBase;
+    }
+
+    public String getPeriodoInicial() {
+        return periodoInicial;
+    }
+
+    public void setPeriodoInicial(String periodoInicial) {
+        this.periodoInicial = periodoInicial;
+    }
+
+    public String getPeriodoFinal() {
+        return periodoFinal;
+    }
+
+    public void setPeriodoFinal(String periodoFinal) {
+        this.periodoFinal = periodoFinal;
+    }
+
+    public String getRespostaInicial() {
+        return respostaInicial;
+    }
+
+    public void setRespostaInicial(String respostaInicial) {
+        this.respostaInicial = respostaInicial;
+    }
+
+    public String getRespostaFinal() {
+        return respostaFinal;
+    }
+
+    public void setRespostaFinal(String respostaFinal) {
+        this.respostaFinal = respostaFinal;
+    }
+
+    public void listener(Integer tCase) {
+        if (tCase == 1) {
+            if (!this.aguardandoResposta) {
+                this.respostaInicial = "";
+                this.respostaFinal = "";
+            }
+        }
+
     }
 
 }
