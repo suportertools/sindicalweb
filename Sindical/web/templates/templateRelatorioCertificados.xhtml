@@ -35,13 +35,13 @@
                                 <p:ajax event="tabChange" listener="#{relatorioCertificadosBean.tipoRelatorioChange}" global="false" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" /> 
                                 <p:tab title="Avançado">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
-                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[0]}" onLabel="Ano - Edição" offLabel="Ano - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[0]}" onLabel="Ano - Edição" offLabel="Ano - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[0]}">
                                             <p:ajax event="change" update="@this :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:" listener="#{relatorioCertificadosBean.limpar}" global="false"/>
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[1]}" onLabel="Data Emissão - Edição" offLabel="Emissão - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[1]}" onLabel="Data Emissão - Edição" offLabel="Emissão - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[1]}">
                                             <p:ajax event="change" update="@this :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:" listener="#{relatorioCertificadosBean.limpar}" global="false"/>
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[2]}" onLabel="Data Resposta" offLabel="Data Resposta" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                        <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[2]}" onLabel="Data Resposta" offLabel="Data Resposta" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{relatorioCertificadosBean.disabled[2]}">
                                             <p:ajax event="change" update="@this :form_relatorio:i_panel_accordion:i_panel_avancado :form_relatorio:" listener="#{relatorioCertificadosBean.limpar}" global="false"/>
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{relatorioCertificadosBean.filtro[3]}" onLabel="Status - Edição" offLabel="Status - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
