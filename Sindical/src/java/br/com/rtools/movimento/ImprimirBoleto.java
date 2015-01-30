@@ -1752,7 +1752,6 @@ public class ImprimirBoleto {
             System.arraycopy(arrays[i], 0, result, currentIndex, arrays[i].length);
             currentIndex += arrays[i].length;
         }
-
         return result;
     }
 
@@ -1786,9 +1785,9 @@ public class ImprimirBoleto {
     }
 
     public void baixarArquivo() {
-        SalvaArquivos sa = new SalvaArquivos(arquivo, "boleto_x", false);
+        SalvaArquivos sa = new SalvaArquivos(arquivo, "boleto_x.pdf", false);
         sa.salvaNaPasta(pathPasta);
-        Download download = new Download("boleto_x", pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+        Download download = new Download("boleto_x.pdf", pathPasta, "application/pdf", FacesContext.getCurrentInstance());
         download.baixar();
     }
 
