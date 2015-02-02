@@ -4,7 +4,6 @@ import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.utilitarios.GenericaRequisicao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -90,6 +89,8 @@ public class DB {
             case "ComercioLimeira":
                 configuracao.setCaminhoSistema(cliente);
                 configuracao.setPersistence(cliente);
+                // IP LOCAL: 192.168.0.201
+                // IP EXTERNO: 200.204.32.23
                 configuracao.setHost("200.204.32.23");
                 configuracao.setSenha("r#@tools");
                 break;
@@ -126,4 +127,26 @@ public class DB {
         }
         return configuracao;
     }
+
+    // COMÉRCIO LIMEIRA
+//    public Configuracao servidor(String cliente) {
+//        Configuracao configuracao = new Configuracao();
+//        configuracao.setCaminhoSistema(cliente);
+//        configuracao.setPersistence(cliente);
+//        // IP LOCAL: 192.168.0.201
+//        // IP EXTERNO: 200.204.32.23
+//        configuracao.setHost("192.168.0.201");
+//        configuracao.setSenha("r#@tools");
+//        return configuracao;
+//    }
+    
+    // COMÉRCIO RIBEIRÃO
+//    public Configuracao servidor(String cliente) {
+//        Configuracao configuracao = new Configuracao();
+//        configuracao.setCaminhoSistema("Sindical");
+//        configuracao.setHost("192.168.1.102");
+//        configuracao.setSenha("r#@tools");
+//        configuracao.setPersistence(cliente);
+//        return configuracao;
+//    }
 }

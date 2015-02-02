@@ -2484,6 +2484,7 @@ public class JuridicaBean implements Serializable {
 
     public void listenerPessoaJuridia() {
         GenericaSessao.remove("oposicaoPesquisa");
+        GenericaSessao.remove("oposicaoBean");
         OposicaoBean oposicaoBean = new OposicaoBean();
         oposicaoBean.setPorPesquisa("cnpj");
         oposicaoBean.setComoPesquisa("Inicial");

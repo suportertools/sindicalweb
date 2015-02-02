@@ -4,6 +4,7 @@ import br.com.rtools.escola.EscolaAutorizados;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaComplemento;
 import java.util.List;
@@ -34,5 +35,7 @@ public interface MatriculaEscolaDB {
     public List<EscolaAutorizados> listaPessoasAutorizas(int idMatricula);
 
     public List<MatriculaTurma> pesquisaMatriculaEscolaPorTurma(int idTurma);
+
+    public List<Servicos> listServicosPorMatriculaIndividual();
 
 }
