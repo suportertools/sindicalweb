@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.Evt;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoValor;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.LoteDB;
 import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.pessoa.Filial;
@@ -32,28 +33,28 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
                 }
-                if(filial != null) {
-                    if(filial.getId() != -1) {
+                if (filial != null) {
+                    if (filial.getId() != -1) {
                         queryString = " mi.matriculaEscola.filial.id = " + filial.getId() + " AND ";
                     }
                 }
-                if(filtroStatus != 0 && filtroStatus != 5) {
-                    queryString += " mi.matriculaEscola.escStatus.id = "+ filtroStatus + " AND ";
+                if (filtroStatus != 0 && filtroStatus != 5) {
+                    queryString += " mi.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
                 }
-                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " +queryString+ " UPPER(mi.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
+                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " + queryString + " UPPER(mi.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
             } else {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
                 }
-                if(filial != null) {
-                    if(filial.getId() != -1) {
+                if (filial != null) {
+                    if (filial.getId() != -1) {
                         queryString = " mt.matriculaEscola.filial.id = " + filial.getId() + " AND ";
                     }
                 }
-                if(filtroStatus != 0 && filtroStatus != 5) {
-                    queryString += " mt.matriculaEscola.escStatus.id = "+ filtroStatus + " AND ";
+                if (filtroStatus != 0 && filtroStatus != 5) {
+                    queryString += " mt.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
                 }
-                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " +queryString+ " UPPER(mt.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
+                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " + queryString + " UPPER(mt.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
             }
             if (comoPesquisa.equals("Inicial")) {
                 query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");
@@ -71,7 +72,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             }
             list = query.getResultList();
             if (!list.isEmpty()) {
-                return list;                
+                return list;
             }
         } catch (Exception e) {
             e.getMessage();
@@ -224,7 +225,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return false;
     }
-    
+
     @Override
     public boolean existeVagasDisponivel(MatriculaTurma mt) {
         int quantidadeVagas = mt.getTurma().getQuantidade();
@@ -269,27 +270,41 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             Query query = getEntityManager().createQuery(" SELECT EA FROM EscolaAutorizados AS EA WHERE EA.matriculaEscola.id = :matricula");
             query.setParameter("matricula", idMatricula);
             List list = query.getResultList();
-            if(!list.isEmpty()) {
+            if (!list.isEmpty()) {
                 return list;
             }
         } catch (Exception e) {
 
         }
         return new ArrayList();
-    }   
-    
+    }
+
     @Override
     public List<MatriculaTurma> pesquisaMatriculaEscolaPorTurma(int idTurma) {
         try {
             Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma");
             query.setParameter("idTurma", idTurma);
             List list = query.getResultList();
-            if(!list.isEmpty()) {
+            if (!list.isEmpty()) {
                 return list;
             }
         } catch (Exception e) {
 
         }
-        return new ArrayList();        
+        return new ArrayList();
+    }
+
+    @Override
+    public List<Servicos> listServicosPorMatriculaIndividual() {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MI.curso FROM MatriculaIndividual AS MI GROUP BY MI.curso ORDER BY MI.curso.descricao ASC ");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
     }
 }

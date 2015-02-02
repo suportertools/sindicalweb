@@ -12,19 +12,15 @@ import javax.persistence.EntityManager;
 public interface JuridicaDB {
 
 //    public boolean insert(Juridica juridica);
-
 //    public boolean update(Juridica Juridica);
-
 //    public boolean delete(Juridica Juridica);
-
     public EntityManager getEntityManager();
 
     public Juridica pesquisaCodigo(int id);
 
 //    public List pesquisaTodos();
-
     public List pesquisaPessoa(String desc, String por, String como);
-    
+
     public List pesquisaPessoa(String desc, String por, String como, boolean isContabilidades, boolean isAtivas);
 
     public List<PessoaEndereco> pesquisarPessoaEnderecoJuridica(int id);
@@ -56,14 +52,16 @@ public interface JuridicaDB {
     public List pesquisaContabilidade();
 
     public int[] listaInadimplencia(int id_juridica);
-    
+
     /**
-     * 
+     *
      * @param pessoa
      * @param motivo (FECHOU ...)
-     * @return 
+     * @return
      */
     public boolean empresaInativa(Pessoa pessoa, String motivo);
-    
+
+    public boolean empresaInativa(Integer pessoa);
+
     public Empregados pesquisaEmpregados(int id_juridica);
 }

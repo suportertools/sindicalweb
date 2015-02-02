@@ -264,6 +264,10 @@ public class PessoaCardBean implements Serializable {
         return status(pessoa);
     }
 
+    public String getContribuinteStatus() {
+        return situacao(pessoa);
+    }
+
     public String getStatusJuridicaPorPessoaEmpresa() {
         return status(pessoaEmpresa.getJuridica().getPessoa());
     }
@@ -282,6 +286,15 @@ public class PessoaCardBean implements Serializable {
             }
         }
         return "";
+    }
+
+    public String situacao(Pessoa p) {
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        if (juridicaDB.empresaInativa(p.getId())) {
+            return "CONTRIBUINTE INÁTIVO";
+        } else {
+            return "CONTRIBUINTE";
+        }
     }
 
 }

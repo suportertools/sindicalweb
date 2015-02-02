@@ -381,6 +381,13 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
     }
 
     @Override
+    public boolean empresaInativa(Integer pessoa) {
+        Pessoa p = new Pessoa();
+        p.setId(pessoa);
+        return empresaInativa(p, "");
+    }
+
+    @Override
     public boolean empresaInativa(Pessoa pessoa, String motivo) {
         String stringMotivo = "";
         if (!motivo.equals("")) {
