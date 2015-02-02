@@ -29,15 +29,15 @@
                         <p:panel style="border: 0px; margin: 0 auto;  width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                             <p:menubar>
                                 <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
-                                    <p:menuitem value="Vendedor"                    action="#{chamadaPaginaBean.pagina('vendedor')}"/>
-                                    <p:menuitem value="Professor"                   action="#{chamadaPaginaBean.pagina('professor')}"/>
-                                    <p:menuitem value="Turma"                       action="#{chamadaPaginaBean.pagina('turma')}"/>
-                                    <p:menuitem value="Matricula"                   action="#{chamadaPaginaBean.pagina('matriculaEscola')}"/>
-                                    <p:menuitem value="Pessoa Jurídica"             action="#{chamadaPaginaBean.pessoaJuridica}"/>
-                                    <p:menuitem value="Pessoa Física"               action="#{chamadaPaginaBean.pessoaFisica}"/>
-                                    <p:menuitem value="SPC"                         action="#{chamadaPaginaBean.pagina('spc')}"/>
-                                    <p:menuitem value="Rescisão de Contrato"        action="#{chamadaPaginaBean.rescisaoMatricula}" actionListener="#{rescisaoContratoBean.defineTipoRescisaoContrato('matriculaEscola')}" />
-                                    <p:menuitem value="Conclusão"                   action="#{chamadaPaginaBean.conclusaoMatricula}" />
+                                    <p:menuitem value="Vendedor"                action="#{chamadaPaginaBean.pagina('vendedor')}"/>
+                                    <p:menuitem value="Professor"               action="#{chamadaPaginaBean.pagina('professor')}"/>
+                                    <p:menuitem value="Turma"                   action="#{chamadaPaginaBean.pagina('turma')}"/>
+                                    <p:menuitem value="Matricula"               action="#{chamadaPaginaBean.pagina('matriculaEscola')}"/>
+                                    <p:menuitem value="Pessoa Jurídica"         action="#{chamadaPaginaBean.pessoaJuridica}"/>
+                                    <p:menuitem value="Pessoa Física"           action="#{chamadaPaginaBean.pessoaFisica}"/>
+                                    <p:menuitem value="SPC"                     action="#{chamadaPaginaBean.pagina('spc')}"/>
+                                    <p:menuitem value="Rescisão de Contrato"    action="#{chamadaPaginaBean.rescisaoMatricula}" actionListener="#{rescisaoContratoBean.defineTipoRescisaoContrato('matriculaEscola')}" />
+                                    <p:menuitem value="Conclusão"               action="#{chamadaPaginaBean.conclusaoMatricula}" />
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Componente Curricular"   action="#{chamadaPaginaBean.paginaSimples('ComponenteCurricular', 'Componente Curricular')}"/>
                                         <p:menuitem value="Agrupa Turma"        action="#{chamadaPaginaBean.pagina('agrupaTurma')}"/>
@@ -54,7 +54,8 @@
                                     <p:menuitem value="Financeiro"              action="#{chamadaPaginaBean.eFinanceiro}"/>
                                 </p:submenu>
                                 <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
-                                    <p:menuitem value="Escola" />
+                                    <p:menuitem value="Matrícula Turma"         action="#{chamadaPaginaBean.pagina('relatorioMatriculaEscola')}" actionListener="#{relatorioMatriculaEscolaBean.listener('matriculaTurma')}"/>
+                                    <p:menuitem value="Matrícula Individual"    action="#{chamadaPaginaBean.pagina('relatorioMatriculaEscola')}" actionListener="#{relatorioMatriculaEscolaBean.listener('matriculaIndividual')}"/>
                                 </p:submenu>
                             </p:menubar> 
                         </p:panel>
