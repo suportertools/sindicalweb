@@ -26,19 +26,19 @@
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                         <h:panelGrid columns="8">
                             <p:outputLabel value="Pesquisar: "/>
-                            <c:if test="#{!oposicaoBean.removeFiltro}">
+                            <h:column rendered="#{!oposicaoBean.removeFiltro}">
                                 <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" disabled="#{oposicaoBean.porPesquisa == 'todos'}">
-                                    <p:ajax event="change" update="@this" />
+                                    <p:ajax event="change" update="@this" global="false" />
                                 </p:inputMask>
-                            </c:if>
-                            <c:if test="#{oposicaoBean.removeFiltro}">
+                            </h:column>
+                            <h:column rendered="#{oposicaoBean.removeFiltro}">
                                 <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" >
-                                    <p:ajax event="change" update="@this" />
+                                    <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputMask>
-                            </c:if>
+                            </h:column>
                             <h:outputLabel value="Por: "/>
-                            <c:if test="#{!oposicaoBean.removeFiltro}">
-                                <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
+                            <h:column rendered="#{!oposicaoBean.removeFiltro}">
+                                <p:selectOneMenu value="#{oposicaoBean.porPesquisa}">
                                     <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
                                     <f:selectItem itemValue="todos"         itemLabel="Todos" />
                                     <f:selectItem itemValue="nome"          itemLabel="Nome" />
@@ -49,9 +49,9 @@
                                     <f:selectItem itemValue="rgs"           itemLabel="RG" />
                                     <f:selectItem itemValue="observacao"    itemLabel="Observação"  />
                                 </p:selectOneMenu>
-                            </c:if>
-                            <c:if test="#{oposicaoBean.removeFiltro}">
-                                <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
+                            </h:column>
+                            <h:column rendered="#{oposicaoBean.removeFiltro}">
+                                <p:selectOneMenu value="#{oposicaoBean.porPesquisa}">
                                     <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
                                     <f:selectItem itemValue="nome"          itemLabel="Nome" />
                                     <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
@@ -59,30 +59,30 @@
                                     <f:selectItem itemValue="cpf"           itemLabel="CPF" />
                                     <f:selectItem itemValue="rgs"           itemLabel="RG" />
                                 </p:selectOneMenu>
-                            </c:if>
-                            <c:if test="#{!oposicaoBean.removeFiltro}">
-                                <c:if test="#{oposicaoBean.porPesquisa != 'todos'}">
-                                    <p:commandButton id="idInicial" value="Inicial">
+                            </h:column>
+                            <h:column rendered="#{!oposicaoBean.removeFiltro}">
+                                <h:column rendered="#{oposicaoBean.porPesquisa != 'todos'}">
+                                    <p:commandButton value="Inicial">
                                         <p:ajax listener="#{oposicaoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                    <p:commandButton id="idParcial" value="Parcial">
+                                    <p:commandButton value="Parcial">
                                         <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                </c:if> 
-                                <c:if test="#{oposicaoBean.porPesquisa == 'todos'}">
+                                </h:column> 
+                                <h:column rendered="#{oposicaoBean.porPesquisa == 'todos'}">
                                     <p:commandButton value="Atualizar">
                                         <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                     </p:commandButton>
-                                </c:if>
-                            </c:if>
-                            <c:if test="#{oposicaoBean.removeFiltro}">
-                                <p:commandButton id="idInicial" value="Inicial">
+                                </h:column>
+                            </h:column>
+                            <h:column rendered="#{oposicaoBean.removeFiltro}">
+                                <p:commandButton value="Inicial">
                                     <p:ajax listener="#{oposicaoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
                                 </p:commandButton>
-                                <p:commandButton id="idParcial" value="Parcial">
+                                <p:commandButton value="Parcial">
                                     <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
                                 </p:commandButton>                                
-                            </c:if>
+                            </h:column>
                         </h:panelGrid>   
                     </p:panel>
                 

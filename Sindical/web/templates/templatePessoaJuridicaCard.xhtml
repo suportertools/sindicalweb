@@ -14,6 +14,8 @@
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.nome}"  />
         </f:facet>
         <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
+            <h:outputLabel value="Situação:"  />
+            <h:outputLabel value="#{pessoaCardBean.contribuinteStatus}" styleClass="bold"/>
             <h:outputLabel value="Status:"  />
             <h:outputLabel value="#{pessoaCardBean.statusJuridica}" styleClass="bold"/>
             <h:outputLabel value="Fantasia:"  />
@@ -30,7 +32,7 @@
             <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.telefone2}"  />
             <h:outputLabel value="Email:"  />
             <h:commandLink value="#{pessoaCardBean.juridica.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.juridica.pessoa.id)}" title="Enviar email" styleClass="font-color-blue"/>
-            
+
         </h:panelGrid>
         <p:panel styleClass="margin-top-max" header="Endereço" rendered="#{pessoaCardBean.pessoaEndereco.id != -1}">
             <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.enderecoCompletoString}" />
