@@ -14,6 +14,7 @@ import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
 import java.io.Serializable;
@@ -61,6 +62,8 @@ public class SenhaHomologacao implements Serializable {
 
     public void imprimir(Collection lista) {
         try {
+            Jasper jasper = new Jasper();
+            Jasper.IS_DOWNLOAD = true;
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
@@ -72,11 +75,12 @@ public class SenhaHomologacao implements Serializable {
                 File file = new File(pathPasta);
                 file.mkdir();
             }
-            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-            salvaArquivos.salvaNaPasta(pathPasta);
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-            download.remover();
+            Jasper.printReports(nomeDownload, "Arquivos/senhas", lista);
+//            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+//            salvaArquivos.salvaNaPasta(pathPasta);
+//            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+//            download.baixar();
+//            download.remover();
         } catch (JRException e) {
         }
     }
