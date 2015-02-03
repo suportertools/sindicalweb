@@ -930,12 +930,12 @@ public class JuridicaBean implements Serializable {
 
     public String editar(Juridica j) {
         listRepisMovimento.clear();
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        String url = (String) GenericaSessao.getString("urlRetorno");
+        GenericaSessao.put("linkClicado", true);
         juridica = j;
         if (url != null && !url.isEmpty() && !url.equals("pessoaJuridica")) {
-            GenericaSessao.remove("juridicaBean");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+            // GenericaSessao.remove("juridicaBean");
+            GenericaSessao.put("juridicaPesquisa", juridica);
             return url;
         }
 
