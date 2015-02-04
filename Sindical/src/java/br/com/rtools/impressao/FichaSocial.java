@@ -1,26 +1,24 @@
 package br.com.rtools.impressao;
 
-import java.util.Date;
-
 public class FichaSocial {
 
     private int ordem;
-    private int codsocio;
+    private int codigo_socio;
     private int matricula;
-    private Date datacadastro;
-    private Date recadastro;
+    private String data_cadastro;
+    private String recadastro;
     private String grupo;
     private String categoria;
     private String nome;
     private String sexo;
-    private Date datanascimento;
+    private String data_nascimento;
     private String naturalidade;
     private String nacionalidade;
     private String rg;
     private String cpf;
     private String ctps;
-    private String seriectps;
-    private String estadocivil;
+    private String serie_ctps;
+    private String estado_civil;
     private String pai;
     private String mae;
     private String telefone;
@@ -34,8 +32,8 @@ public class FichaSocial {
     private String cidade;
     private String uf;
     private String cep;
-    private boolean imprimeVerso;
-    private String dest_cgc;
+    private boolean imprime_verso;
+    private String dest_cnpj;
     private String dest_nome;
     private String dest_logradouro;
     private String dest_endereco;
@@ -45,151 +43,63 @@ public class FichaSocial {
     private String dest_cidade;
     private String dest_uf;
     private String dest_cep;
-    private String e_nome;
-    private String e_telefone;
-    private String e_fax;
-    private Date e_admissao;
-    private String e_cargo;
-    private String e_endereco;
-    private String e_numero;
-    private String e_complemento;
-    private String e_bairro;
-    private String e_cidade;
-    private String e_uf;
-    private String e_cep;
+    private String empresa_nome;
+    private String empresa_telefone;
+    private String empresa_fax;
+    private String empresa_admissao;
+    private String empresa_cargo;
+    private String empresa_endereco;
+    private String empresa_numero;
+    private String empresa_complemento;
+    private String empresa_bairro;
+    private String empresa_cidade;
+    private String empresa_uf;
+    private String empresa_cep;
     private String imagem;
     private String obs;
     private String grau;
     private String entidade;
-    private String endent;
-    private String nument;
-    private String compent;
-    private String baient;
-    private String cident;
-    private String estent;
-    private String cepent;
-    private String cgcent;
+    private String entidade_endereco;
+    private String entidade_numero;
+    private String entidade_complemento;
+    private String entidade_bairro;
+    private String entidade_cidade;
+    private String entidade_uf;
+    private String entidade_cep;
+    private String entidade_cnpj;
     private String texto;
     private String imagem2;
     private String foto;
-    private String emailent;
-    private String siteent;
-    private String telent;
-    private String caminhoverso;
-    private String cgc;
-    private Date datarecadastro;
+    private String entidade_email;
+    private String entidade_site;
+    private String entidade_telefone;
+    private String caminho_verso;
+    private String cnpj;
+    private String data_recadastro;
     private String fantasia;
-    private String logrent;
-    private String e_logradouro;
+    private String entidade_logradouro;
+    private String empresa_logradouro;
     private String assinatura;
-
-    public FichaSocial(int ordem, int codsocio, int matricula, Date datacadastro, Date recadastro, String grupo, String categoria, String nome, String sexo, Date datanascimento,
-            String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String seriectps, String estadocivil, String pai, String mae, String telefone,
-            String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep,
-            boolean imprimeVerso, String dest_cgc, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento,
-            String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String e_nome, String e_telefone, String e_fax, Date e_admissao, String e_cargo,
-            String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String imagem, String obs, String grau,
-            String entidade, String endent, String nument, String compent, String baient, String cident, String estent, String cepent, String cgcent, String texto,
-            String imagem2, String foto, String emailent, String siteent, String telent, String caminhoverso, String cgc, Date datarecadastro, String fantasia, String logrent, String e_logradouro,
-            String assinatura) {
-        this.ordem = ordem;
-        this.codsocio = codsocio;
-        this.matricula = matricula;
-        this.datacadastro = datacadastro;
-        this.recadastro = recadastro;
-        this.grupo = grupo;
-        this.categoria = categoria;
-        this.nome = nome;
-        this.sexo = sexo;
-        this.datanascimento = datanascimento;
-        this.naturalidade = naturalidade;
-        this.nacionalidade = nacionalidade;
-        this.rg = rg;
-        this.cpf = cpf;
-        this.ctps = ctps;
-        this.seriectps = seriectps;
-        this.estadocivil = estadocivil;
-        this.pai = pai;
-        this.mae = mae;
-        this.telefone = telefone;
-        this.celular = celular;
-        this.email = email;
-        this.logradouro = logradouro;
-        this.endereco = endereco;
-        this.numero = numero;
-        this.complemento = complemento;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.uf = uf;
-        this.cep = cep;
-        this.imprimeVerso = imprimeVerso;
-        this.dest_cgc = dest_cgc;
-        this.dest_nome = dest_nome;
-        this.dest_logradouro = dest_logradouro;
-        this.dest_endereco = dest_endereco;
-        this.dest_numero = dest_numero;
-        this.dest_complemento = dest_complemento;
-        this.dest_bairro = dest_bairro;
-        this.dest_cidade = dest_cidade;
-        this.dest_uf = dest_uf;
-        this.dest_cep = dest_cep;
-        this.e_nome = e_nome;
-        this.e_telefone = e_telefone;
-        this.e_fax = e_fax;
-        this.e_admissao = e_admissao;
-        this.e_cargo = e_cargo;
-        this.e_endereco = e_endereco;
-        this.e_numero = e_numero;
-        this.e_complemento = e_complemento;
-        this.e_bairro = e_bairro;
-        this.e_cidade = e_cidade;
-        this.e_uf = e_uf;
-        this.e_cep = e_cep;
-        this.imagem = imagem;
-        this.obs = obs;
-        this.grau = grau;
-        this.entidade = entidade;
-        this.endent = endent;
-        this.nument = nument;
-        this.compent = compent;
-        this.baient = baient;
-        this.cident = cident;
-        this.estent = estent;
-        this.cepent = cepent;
-        this.cgcent = cgcent;
-        this.texto = texto;
-        this.imagem2 = imagem2;
-        this.foto = foto;
-        this.emailent = emailent;
-        this.siteent = siteent;
-        this.telent = telent;
-        this.caminhoverso = caminhoverso;
-        this.cgc = cgc;
-        this.datarecadastro = datarecadastro;
-        this.fantasia = fantasia;
-        this.logrent = logrent;
-        this.e_logradouro = e_logradouro;
-        this.assinatura = assinatura;
-    }
+    private String empresa_codigo;
 
     public FichaSocial() {
         this.ordem = 0;
-        this.codsocio = 0;
+        this.codigo_socio = 0;
         this.matricula = 0;
-        this.datacadastro = null;
-        this.recadastro = null;
+        this.data_cadastro = "";
+        this.recadastro = "";
         this.grupo = "";
         this.categoria = "";
         this.nome = "";
         this.sexo = "";
-        this.datanascimento = null;
+        this.data_nascimento = "";
         this.naturalidade = "";
         this.nacionalidade = "";
         this.rg = "";
         this.cpf = "";
         this.ctps = "";
-        this.seriectps = "";
-        this.estadocivil = "";
+        this.serie_ctps = "";
+        this.estado_civil = "";
         this.pai = "";
         this.mae = "";
         this.telefone = "";
@@ -203,8 +113,8 @@ public class FichaSocial {
         this.cidade = "";
         this.uf = "";
         this.cep = "";
-        this.imprimeVerso = false;
-        this.dest_cgc = "";
+        this.imprime_verso = false;
+        this.dest_cnpj = "";
         this.dest_nome = "";
         this.dest_logradouro = "";
         this.dest_endereco = "";
@@ -214,43 +124,126 @@ public class FichaSocial {
         this.dest_cidade = "";
         this.dest_uf = "";
         this.dest_cep = "";
-        this.e_nome = "";
-        this.e_telefone = "";
-        this.e_fax = "";
-        this.e_admissao = null;
-        this.e_cargo = "";
-        this.e_endereco = "";
-        this.e_numero = "";
-        this.e_complemento = "";
-        this.e_bairro = "";
-        this.e_cidade = "";
-        this.e_uf = "";
-        this.e_cep = "";
+        this.empresa_nome = "";
+        this.empresa_telefone = "";
+        this.empresa_fax = "";
+        this.empresa_admissao = "";
+        this.empresa_cargo = "";
+        this.empresa_endereco = "";
+        this.empresa_numero = "";
+        this.empresa_complemento = "";
+        this.empresa_bairro = "";
+        this.empresa_cidade = "";
+        this.empresa_uf = "";
+        this.empresa_cep = "";
         this.imagem = "";
         this.obs = "";
         this.grau = "";
         this.entidade = "";
-        this.endent = "";
-        this.nument = "";
-        this.compent = "";
-        this.baient = "";
-        this.cident = "";
-        this.estent = "";
-        this.cepent = "";
-        this.cgcent = "";
+        this.entidade_endereco = "";
+        this.entidade_numero = "";
+        this.entidade_complemento = "";
+        this.entidade_bairro = "";
+        this.entidade_cidade = "";
+        this.entidade_uf = "";
+        this.entidade_cep = "";
+        this.entidade_cnpj = "";
         this.texto = "";
         this.imagem2 = "";
         this.foto = "";
-        this.emailent = "";
-        this.siteent = "";
-        this.telent = "";
-        this.caminhoverso = "";
-        this.cgc = "";
-        this.datarecadastro = null;
+        this.entidade_email = "";
+        this.entidade_site = "";
+        this.entidade_telefone = "";
+        this.caminho_verso = "";
+        this.cnpj = "";
+        this.data_recadastro = "";
         this.fantasia = "";
-        this.logrent = "";
-        this.e_logradouro = "";
+        this.entidade_logradouro = "";
+        this.empresa_logradouro = "";
         this.assinatura = "";
+        this.empresa_codigo = "";
+    }
+
+    public FichaSocial(int ordem, int codigo_socio, int matricula, String data_cadastro, String recadastro, String grupo, String categoria, String nome, String sexo, String data_nascimento, String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String serie_ctps, String estado_civil, String pai, String mae, String telefone, String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, boolean imprime_verso, String dest_cnpj, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento, String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String empresa_nome, String empresa_telefone, String empresa_fax, String empresa_admissao, String empresa_cargo, String empresa_endereco, String empresa_numero, String empresa_complemento, String empresa_bairro, String empresa_cidade, String empresa_uf, String empresa_cep, String imagem, String obs, String grau, String entidade, String entidade_endereco, String entidade_numero, String entidade_complemento, String entidade_bairro, String entidade_cidade, String entidade_uf, String entidade_cep, String entidade_cnpj, String texto, String imagem2, String foto, String entidade_email, String entidade_site, String entidade_telefone, String caminho_verso, String cnpj, String data_recadastro, String fantasia, String entidade_logradouro, String empresa_logradouro, String assinatura, String empresa_codigo) {
+        this.ordem = ordem;
+        this.codigo_socio = codigo_socio;
+        this.matricula = matricula;
+        this.data_cadastro = data_cadastro;
+        this.recadastro = recadastro;
+        this.grupo = grupo;
+        this.categoria = categoria;
+        this.nome = nome;
+        this.sexo = sexo;
+        this.data_nascimento = data_nascimento;
+        this.naturalidade = naturalidade;
+        this.nacionalidade = nacionalidade;
+        this.rg = rg;
+        this.cpf = cpf;
+        this.ctps = ctps;
+        this.serie_ctps = serie_ctps;
+        this.estado_civil = estado_civil;
+        this.pai = pai;
+        this.mae = mae;
+        this.telefone = telefone;
+        this.celular = celular;
+        this.email = email;
+        this.logradouro = logradouro;
+        this.endereco = endereco;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.uf = uf;
+        this.cep = cep;
+        this.imprime_verso = imprime_verso;
+        this.dest_cnpj = dest_cnpj;
+        this.dest_nome = dest_nome;
+        this.dest_logradouro = dest_logradouro;
+        this.dest_endereco = dest_endereco;
+        this.dest_numero = dest_numero;
+        this.dest_complemento = dest_complemento;
+        this.dest_bairro = dest_bairro;
+        this.dest_cidade = dest_cidade;
+        this.dest_uf = dest_uf;
+        this.dest_cep = dest_cep;
+        this.empresa_nome = empresa_nome;
+        this.empresa_telefone = empresa_telefone;
+        this.empresa_fax = empresa_fax;
+        this.empresa_admissao = empresa_admissao;
+        this.empresa_cargo = empresa_cargo;
+        this.empresa_endereco = empresa_endereco;
+        this.empresa_numero = empresa_numero;
+        this.empresa_complemento = empresa_complemento;
+        this.empresa_bairro = empresa_bairro;
+        this.empresa_cidade = empresa_cidade;
+        this.empresa_uf = empresa_uf;
+        this.empresa_cep = empresa_cep;
+        this.imagem = imagem;
+        this.obs = obs;
+        this.grau = grau;
+        this.entidade = entidade;
+        this.entidade_endereco = entidade_endereco;
+        this.entidade_numero = entidade_numero;
+        this.entidade_complemento = entidade_complemento;
+        this.entidade_bairro = entidade_bairro;
+        this.entidade_cidade = entidade_cidade;
+        this.entidade_uf = entidade_uf;
+        this.entidade_cep = entidade_cep;
+        this.entidade_cnpj = entidade_cnpj;
+        this.texto = texto;
+        this.imagem2 = imagem2;
+        this.foto = foto;
+        this.entidade_email = entidade_email;
+        this.entidade_site = entidade_site;
+        this.entidade_telefone = entidade_telefone;
+        this.caminho_verso = caminho_verso;
+        this.cnpj = cnpj;
+        this.data_recadastro = data_recadastro;
+        this.fantasia = fantasia;
+        this.entidade_logradouro = entidade_logradouro;
+        this.empresa_logradouro = empresa_logradouro;
+        this.assinatura = assinatura;
+        this.empresa_codigo = empresa_codigo;
     }
 
     public int getOrdem() {
@@ -261,12 +254,12 @@ public class FichaSocial {
         this.ordem = ordem;
     }
 
-    public int getCodsocio() {
-        return codsocio;
+    public int getCodigo_socio() {
+        return codigo_socio;
     }
 
-    public void setCodsocio(int codsocio) {
-        this.codsocio = codsocio;
+    public void setCodigo_socio(int codigo_socio) {
+        this.codigo_socio = codigo_socio;
     }
 
     public int getMatricula() {
@@ -277,19 +270,19 @@ public class FichaSocial {
         this.matricula = matricula;
     }
 
-    public Date getDatacadastro() {
-        return datacadastro;
+    public String getData_cadastro() {
+        return data_cadastro;
     }
 
-    public void setDatacadastro(Date datacadastro) {
-        this.datacadastro = datacadastro;
+    public void setData_cadastro(String data_cadastro) {
+        this.data_cadastro = data_cadastro;
     }
 
-    public Date getRecadastro() {
+    public String getRecadastro() {
         return recadastro;
     }
 
-    public void setRecadastro(Date recadastro) {
+    public void setRecadastro(String recadastro) {
         this.recadastro = recadastro;
     }
 
@@ -325,12 +318,12 @@ public class FichaSocial {
         this.sexo = sexo;
     }
 
-    public Date getDatanascimento() {
-        return datanascimento;
+    public String getData_nascimento() {
+        return data_nascimento;
     }
 
-    public void setDatanascimento(Date datanascimento) {
-        this.datanascimento = datanascimento;
+    public void setData_nascimento(String data_nascimento) {
+        this.data_nascimento = data_nascimento;
     }
 
     public String getNaturalidade() {
@@ -373,20 +366,12 @@ public class FichaSocial {
         this.ctps = ctps;
     }
 
-    public String getSeriectps() {
-        return seriectps;
+    public String getEstado_civil() {
+        return estado_civil;
     }
 
-    public void setSeriectps(String seriectps) {
-        this.seriectps = seriectps;
-    }
-
-    public String getEstadocivil() {
-        return estadocivil;
-    }
-
-    public void setEstadocivil(String estadocivil) {
-        this.estadocivil = estadocivil;
+    public void setEstado_civil(String estado_civil) {
+        this.estado_civil = estado_civil;
     }
 
     public String getPai() {
@@ -493,20 +478,20 @@ public class FichaSocial {
         this.cep = cep;
     }
 
-    public boolean isImprimeVerso() {
-        return imprimeVerso;
+    public boolean getImprime_verso() {
+        return imprime_verso;
     }
 
-    public void setImprimeVerso(boolean imprimeVerso) {
-        this.imprimeVerso = imprimeVerso;
+    public void setImprime_verso(boolean imprime_verso) {
+        this.imprime_verso = imprime_verso;
     }
 
-    public String getDest_cgc() {
-        return dest_cgc;
+    public String getDest_cnpj() {
+        return dest_cnpj;
     }
 
-    public void setDest_cgc(String dest_cgc) {
-        this.dest_cgc = dest_cgc;
+    public void setDest_cnpj(String dest_cnpj) {
+        this.dest_cnpj = dest_cnpj;
     }
 
     public String getDest_nome() {
@@ -581,100 +566,100 @@ public class FichaSocial {
         this.dest_cep = dest_cep;
     }
 
-    public String getE_nome() {
-        return e_nome;
+    public String getEmpresa_nome() {
+        return empresa_nome;
     }
 
-    public void setE_nome(String e_nome) {
-        this.e_nome = e_nome;
+    public void setEmpresa_nome(String empresa_nome) {
+        this.empresa_nome = empresa_nome;
     }
 
-    public String getE_telefone() {
-        return e_telefone;
+    public String getEmpresa_telefone() {
+        return empresa_telefone;
     }
 
-    public void setE_telefone(String e_telefone) {
-        this.e_telefone = e_telefone;
+    public void setEmpresa_telefone(String empresa_telefone) {
+        this.empresa_telefone = empresa_telefone;
     }
 
-    public String getE_fax() {
-        return e_fax;
+    public String getEmpresa_fax() {
+        return empresa_fax;
     }
 
-    public void setE_fax(String e_fax) {
-        this.e_fax = e_fax;
+    public void setEmpresa_fax(String empresa_fax) {
+        this.empresa_fax = empresa_fax;
     }
 
-    public Date getE_admissao() {
-        return e_admissao;
+    public String getEmpresa_admissao() {
+        return empresa_admissao;
     }
 
-    public void setE_admissao(Date e_admissao) {
-        this.e_admissao = e_admissao;
+    public void setEmpresa_admissao(String empresa_admissao) {
+        this.empresa_admissao = empresa_admissao;
     }
 
-    public String getE_cargo() {
-        return e_cargo;
+    public String getEmpresa_cargo() {
+        return empresa_cargo;
     }
 
-    public void setE_cargo(String e_cargo) {
-        this.e_cargo = e_cargo;
+    public void setEmpresa_cargo(String empresa_cargo) {
+        this.empresa_cargo = empresa_cargo;
     }
 
-    public String getE_endereco() {
-        return e_endereco;
+    public String getEmpresa_endereco() {
+        return empresa_endereco;
     }
 
-    public void setE_endereco(String e_endereco) {
-        this.e_endereco = e_endereco;
+    public void setEmpresa_endereco(String empresa_endereco) {
+        this.empresa_endereco = empresa_endereco;
     }
 
-    public String getE_numero() {
-        return e_numero;
+    public String getEmpresa_numero() {
+        return empresa_numero;
     }
 
-    public void setE_numero(String e_numero) {
-        this.e_numero = e_numero;
+    public void setEmpresa_numero(String empresa_numero) {
+        this.empresa_numero = empresa_numero;
     }
 
-    public String getE_complemento() {
-        return e_complemento;
+    public String getEmpresa_complemento() {
+        return empresa_complemento;
     }
 
-    public void setE_complemento(String e_complemento) {
-        this.e_complemento = e_complemento;
+    public void setEmpresa_complemento(String empresa_complemento) {
+        this.empresa_complemento = empresa_complemento;
     }
 
-    public String getE_bairro() {
-        return e_bairro;
+    public String getEmpresa_bairro() {
+        return empresa_bairro;
     }
 
-    public void setE_bairro(String e_bairro) {
-        this.e_bairro = e_bairro;
+    public void setEmpresa_bairro(String empresa_bairro) {
+        this.empresa_bairro = empresa_bairro;
     }
 
-    public String getE_cidade() {
-        return e_cidade;
+    public String getEmpresa_cidade() {
+        return empresa_cidade;
     }
 
-    public void setE_cidade(String e_cidade) {
-        this.e_cidade = e_cidade;
+    public void setEmpresa_cidade(String empresa_cidade) {
+        this.empresa_cidade = empresa_cidade;
     }
 
-    public String getE_uf() {
-        return e_uf;
+    public String getEmpresa_uf() {
+        return empresa_uf;
     }
 
-    public void setE_uf(String e_uf) {
-        this.e_uf = e_uf;
+    public void setEmpresa_uf(String empresa_uf) {
+        this.empresa_uf = empresa_uf;
     }
 
-    public String getE_cep() {
-        return e_cep;
+    public String getEmpresa_cep() {
+        return empresa_cep;
     }
 
-    public void setE_cep(String e_cep) {
-        this.e_cep = e_cep;
+    public void setEmpresa_cep(String empresa_cep) {
+        this.empresa_cep = empresa_cep;
     }
 
     public String getImagem() {
@@ -709,68 +694,68 @@ public class FichaSocial {
         this.entidade = entidade;
     }
 
-    public String getEndent() {
-        return endent;
+    public String getEntidade_endereco() {
+        return entidade_endereco;
     }
 
-    public void setEndent(String endent) {
-        this.endent = endent;
+    public void setEntidade_endereco(String entidade_endereco) {
+        this.entidade_endereco = entidade_endereco;
     }
 
-    public String getNument() {
-        return nument;
+    public String getEntidade_numero() {
+        return entidade_numero;
     }
 
-    public void setNument(String nument) {
-        this.nument = nument;
+    public void setEntidade_numero(String entidade_numero) {
+        this.entidade_numero = entidade_numero;
     }
 
-    public String getCompent() {
-        return compent;
+    public String getEntidade_complemento() {
+        return entidade_complemento;
     }
 
-    public void setCompent(String compent) {
-        this.compent = compent;
+    public void setEntidade_complemento(String entidade_complemento) {
+        this.entidade_complemento = entidade_complemento;
     }
 
-    public String getBaient() {
-        return baient;
+    public String getEntidade_bairro() {
+        return entidade_bairro;
     }
 
-    public void setBaient(String baient) {
-        this.baient = baient;
+    public void setEntidade_bairro(String entidade_bairro) {
+        this.entidade_bairro = entidade_bairro;
     }
 
-    public String getCident() {
-        return cident;
+    public String getEntidade_cidade() {
+        return entidade_cidade;
     }
 
-    public void setCident(String cident) {
-        this.cident = cident;
+    public void setEntidade_cidade(String entidade_cidade) {
+        this.entidade_cidade = entidade_cidade;
     }
 
-    public String getEstent() {
-        return estent;
+    public String getEntidade_uf() {
+        return entidade_uf;
     }
 
-    public void setEstent(String estent) {
-        this.estent = estent;
+    public void setEntidade_uf(String entidade_uf) {
+        this.entidade_uf = entidade_uf;
     }
 
-    public String getCepent() {
-        return cepent;
+    public String getEntidade_cep() {
+        return entidade_cep;
     }
 
-    public void setCepent(String cepent) {
-        this.cepent = cepent;
+    public void setEntidade_cep(String entidade_cep) {
+        this.entidade_cep = entidade_cep;
     }
 
-    public String getCgcent() {
-        return cgcent;
+    public String getEntidade_cnpj() {
+        return entidade_cnpj;
     }
 
-    public void setCgcent(String cgcent) {
-        this.cgcent = cgcent;
+    public void setEntidade_cnpj(String entidade_cnpj) {
+        this.entidade_cnpj = entidade_cnpj;
     }
 
     public String getTexto() {
@@ -797,52 +782,20 @@ public class FichaSocial {
         this.foto = foto;
     }
 
-    public String getEmailent() {
-        return emailent;
+    public String getCaminho_verso() {
+        return caminho_verso;
     }
 
-    public void setEmailent(String emailent) {
-        this.emailent = emailent;
+    public void setCaminho_verso(String caminho_verso) {
+        this.caminho_verso = caminho_verso;
     }
 
-    public String getSiteent() {
-        return siteent;
+    public String getData_recadastro() {
+        return data_recadastro;
     }
 
-    public void setSiteent(String siteent) {
-        this.siteent = siteent;
-    }
-
-    public String getTelent() {
-        return telent;
-    }
-
-    public void setTelent(String telent) {
-        this.telent = telent;
-    }
-
-    public String getCaminhoverso() {
-        return caminhoverso;
-    }
-
-    public void setCaminhoverso(String caminhoverso) {
-        this.caminhoverso = caminhoverso;
-    }
-
-    public String getCgc() {
-        return cgc;
-    }
-
-    public void setCgc(String cgc) {
-        this.cgc = cgc;
-    }
-
-    public Date getDatarecadastro() {
-        return datarecadastro;
-    }
-
-    public void setDatarecadastro(Date datarecadastro) {
-        this.datarecadastro = datarecadastro;
+    public void setData_recadastro(String data_recadastro) {
+        this.data_recadastro = data_recadastro;
     }
 
     public String getFantasia() {
@@ -853,20 +806,20 @@ public class FichaSocial {
         this.fantasia = fantasia;
     }
 
-    public String getLogrent() {
-        return logrent;
+    public String getEntidade_logradouro() {
+        return entidade_logradouro;
     }
 
-    public void setLogrent(String logrent) {
-        this.logrent = logrent;
+    public void setEntidade_logradouro(String entidade_logradouro) {
+        this.entidade_logradouro = entidade_logradouro;
     }
 
-    public String getE_logradouro() {
-        return e_logradouro;
+    public String getEmpresa_logradouro() {
+        return empresa_logradouro;
     }
 
-    public void setE_logradouro(String e_logradouro) {
-        this.e_logradouro = e_logradouro;
+    public void setEmpresa_logradouro(String empresa_logradouro) {
+        this.empresa_logradouro = empresa_logradouro;
     }
 
     public String getAssinatura() {
@@ -876,4 +829,53 @@ public class FichaSocial {
     public void setAssinatura(String assinatura) {
         this.assinatura = assinatura;
     }
+
+    public String getEmpresa_codigo() {
+        return empresa_codigo;
+    }
+
+    public void setEmpresa_codigo(String empresa_codigo) {
+        this.empresa_codigo = empresa_codigo;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public String getEntidade_site() {
+        return entidade_site;
+    }
+
+    public void setEntidade_site(String entidade_site) {
+        this.entidade_site = entidade_site;
+    }
+
+    public String getEntidade_telefone() {
+        return entidade_telefone;
+    }
+
+    public void setEntidade_telefone(String entidade_telefone) {
+        this.entidade_telefone = entidade_telefone;
+    }
+
+    public String getSerie_ctps() {
+        return serie_ctps;
+    }
+
+    public void setSerie_ctps(String serie_ctps) {
+        this.serie_ctps = serie_ctps;
+    }
+
+    public String getEntidade_email() {
+        return entidade_email;
+    }
+
+    public void setEntidade_email(String entidade_email) {
+        this.entidade_email = entidade_email;
+    }
+
 }
