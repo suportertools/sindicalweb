@@ -1885,7 +1885,7 @@ public class SociosBean implements Serializable {
                 pessoaEmpresa,
                 matriculaSocios,
                 imprimirVerso,
-                foto);
+                foto);        
         return null;
     }
 
