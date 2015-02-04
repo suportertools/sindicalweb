@@ -46,7 +46,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-@ManagedBean (name = "socioCarteirinhaBean")
+@ManagedBean(name = "socioCarteirinhaBean")
 @SessionScoped
 public class SocioCarteirinhaJSFBean {
 
@@ -246,12 +246,12 @@ public class SocioCarteirinhaJSFBean {
         PessoaEmpresa pesEmpresa = new PessoaEmpresa();
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
         SociosDB dbSoc = new SociosDBToplink();
-        String dados[] = new String[32];
+        String dados[] = new String[34];
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            
+
             File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
             JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
@@ -328,6 +328,7 @@ public class SocioCarteirinhaJSFBean {
                         dados[29] = pesEmpresa.getJuridica().getPessoa().getDocumento();
                         dados[30] = pesEmpresa.getJuridica().getFantasia();
                         dados[31] = pesEndEmpresa.getEndereco().getLogradouro().getDescricao();
+                        dados[32] = pesEmpresa.getCodigo();
                     } catch (Exception e) {
                         dados[16] = "";
                         dados[17] = "";
@@ -343,19 +344,20 @@ public class SocioCarteirinhaJSFBean {
                         dados[29] = "";
                         dados[30] = "";
                         dados[31] = "";
+                        dados[32] = "";
                     }
 
                     try {
                         listaSocios.add(new FichaSocial(0,
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getId(),
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getNrMatricula(),
-                                ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getServicoPessoa().getDtEmissao(),
+                                ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getServicoPessoa().getEmissao(),
                                 null,
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getCategoria().getGrupoCategoria().getGrupoCategoria(),
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getCategoria().getCategoria(),
                                 fisica.getPessoa().getNome(),
                                 fisica.getSexo(),
-                                fisica.getDtNascimento(),
+                                fisica.getNascimento(),
                                 fisica.getNaturalidade(),
                                 fisica.getNacionalidade(),
                                 fisica.getRg(),
@@ -390,7 +392,7 @@ public class SocioCarteirinhaJSFBean {
                                 dados[16],
                                 dados[17],
                                 null, // fax
-                                DataHoje.converte(dados[28]),
+                                dados[28],
                                 dados[18],
                                 dados[19],
                                 dados[20],
@@ -419,10 +421,13 @@ public class SocioCarteirinhaJSFBean {
                                 sindicato.getPessoa().getTelefone1(),
                                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
                                 dados[29],
-                                fisica.getDtRecadastro(),
+                                fisica.getRecadastro(),
                                 dados[30],
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                                dados[31], ""));
+                                dados[31],
+                                "",
+                                dados[32])
+                        );
 
                         //List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(fisica.getPessoa().getId());
                         List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(0); // ID DA MATRICULA NAO DA PESSOA
@@ -436,7 +441,7 @@ public class SocioCarteirinhaJSFBean {
                                     ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getCategoria().getCategoria(),
                                     deps.get(n).getServicoPessoa().getPessoa().getNome(),
                                     db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getSexo(),
-                                    db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getDtNascimento(),
+                                    db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getNascimento(),
                                     "",
                                     "",
                                     "",
@@ -500,7 +505,7 @@ public class SocioCarteirinhaJSFBean {
                                     "",
                                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
                                     "",
-                                    null, "", "", "", ""));
+                                    null, "", "", "", "", ""));
                         }
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -547,7 +552,7 @@ public class SocioCarteirinhaJSFBean {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            
+
             File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
             JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
@@ -624,6 +629,7 @@ public class SocioCarteirinhaJSFBean {
                         dados[29] = pesEmpresa.getJuridica().getPessoa().getDocumento();
                         dados[30] = pesEmpresa.getJuridica().getFantasia();
                         dados[31] = pesEndEmpresa.getEndereco().getLogradouro().getDescricao();
+                        dados[32] = pesEmpresa.getCodigo();
                     } catch (Exception e) {
                         dados[16] = "";
                         dados[17] = "";
@@ -639,19 +645,20 @@ public class SocioCarteirinhaJSFBean {
                         dados[29] = "";
                         dados[30] = "";
                         dados[31] = "";
+                        dados[32] = "";
                     }
 
                     try {
                         listaSocios.add(new FichaSocial(0,
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getId(),
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getNrMatricula(),
-                                ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getServicoPessoa().getDtEmissao(),
+                                ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getServicoPessoa().getEmissao(),
                                 null,
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getCategoria().getGrupoCategoria().getGrupoCategoria(),
                                 ((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getMatriculaSocios().getCategoria().getCategoria(),
                                 fisica.getPessoa().getNome(),
                                 fisica.getSexo(),
-                                fisica.getDtNascimento(),
+                                fisica.getNascimento(),
                                 fisica.getNaturalidade(),
                                 fisica.getNacionalidade(),
                                 fisica.getRg(),
@@ -686,7 +693,7 @@ public class SocioCarteirinhaJSFBean {
                                 dados[16],
                                 dados[17],
                                 null, // fax
-                                DataHoje.converte(dados[28]),
+                                dados[28],
                                 dados[18],
                                 dados[19],
                                 dados[20],
@@ -715,10 +722,12 @@ public class SocioCarteirinhaJSFBean {
                                 sindicato.getPessoa().getTelefone1(),
                                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
                                 dados[29],
-                                fisica.getDtRecadastro(),
+                                fisica.getRecadastro(),
                                 dados[30],
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                                dados[31], ""));
+                                dados[31],
+                                "",
+                                dados[32]));
 
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -768,7 +777,7 @@ public class SocioCarteirinhaJSFBean {
 
     public SocioCarteirinha getSocioCarteirinha() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa") != null) {
-            socioCarteirinha.setPessoa( ((Socios) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa")).getServicoPessoa().getPessoa() );
+            socioCarteirinha.setPessoa(((Socios) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa")).getServicoPessoa().getPessoa());
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("socioPesquisa");
             renderAdc = true;
         }
