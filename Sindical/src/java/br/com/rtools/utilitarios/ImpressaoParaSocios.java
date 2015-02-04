@@ -15,7 +15,6 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import com.google.common.collect.HashBiMap;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -107,13 +106,13 @@ public class ImpressaoParaSocios {
                 caminho_img = file_img.getPath();
             }
 
-            String endereco = getConverteNullString(((List) (listaCartao.get(i))).get(21)) + " " +
-                              getConverteNullString(((List) (listaCartao.get(i))).get(22)) + ", "+
-                              getConverteNullString(((List) (listaCartao.get(i))).get(23)) + " " +
-                              getConverteNullString(((List) (listaCartao.get(i))).get(24)) + " - "+
-                              getConverteNullString(((List) (listaCartao.get(i))).get(25));
-            
-            String cidade_uf = getConverteNullString(((List) (listaCartao.get(i))).get(26))+" - "+getConverteNullString(((List) (listaCartao.get(i))).get(27));
+            String endereco = getConverteNullString(((List) (listaCartao.get(i))).get(21)) + " "
+                    + getConverteNullString(((List) (listaCartao.get(i))).get(22)) + ", "
+                    + getConverteNullString(((List) (listaCartao.get(i))).get(23)) + " "
+                    + getConverteNullString(((List) (listaCartao.get(i))).get(24)) + " - "
+                    + getConverteNullString(((List) (listaCartao.get(i))).get(25));
+
+            String cidade_uf = getConverteNullString(((List) (listaCartao.get(i))).get(26)) + " - " + getConverteNullString(((List) (listaCartao.get(i))).get(27));
             listax.add(
                     new CartaoSocial(
                             matr, // CODIGO
@@ -257,7 +256,7 @@ public class ImpressaoParaSocios {
 
             pesDestinatario = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
 
-            String dados[] = new String[32];
+            String dados[] = new String[34];
 
             try {
                 dados[0] = pesEndereco.getEndereco().getLogradouro().getDescricao();
@@ -306,7 +305,11 @@ public class ImpressaoParaSocios {
             try {
                 dados[16] = pessoaEmpresa.getJuridica().getPessoa().getNome();
                 dados[17] = pessoaEmpresa.getJuridica().getPessoa().getTelefone1();
-                dados[18] = pessoaEmpresa.getFuncao().getProfissao();
+                if (pessoaEmpresa.getFuncao() == null) {
+                    dados[18] = "";
+                } else {
+                    dados[18] = pessoaEmpresa.getFuncao().getProfissao();
+                }
                 dados[19] = pesEndEmpresa.getEndereco().getDescricaoEndereco().getDescricao();
                 dados[20] = pesEndEmpresa.getNumero();
                 dados[21] = pesEndEmpresa.getComplemento();
@@ -318,6 +321,7 @@ public class ImpressaoParaSocios {
                 dados[29] = pessoaEmpresa.getJuridica().getPessoa().getDocumento();
                 dados[30] = pessoaEmpresa.getJuridica().getFantasia();
                 dados[31] = pesEndEmpresa.getEndereco().getLogradouro().getDescricao();
+                dados[32] = pessoaEmpresa.getCodigo();
             } catch (Exception e) {
                 dados[16] = "";
                 dados[17] = "";
@@ -333,6 +337,7 @@ public class ImpressaoParaSocios {
                 dados[29] = "";
                 dados[30] = "";
                 dados[31] = "";
+                dados[32] = "";
             }
             String assinatura = "";
             File f = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/assinatura.jpg"));
@@ -343,13 +348,13 @@ public class ImpressaoParaSocios {
                 listaSocios.add(new FichaSocial(0,
                         matriculaSocios.getTitular().getId(),
                         matriculaSocios.getNrMatricula(),
-                        matriculaSocios.getDtEmissao(),
-                        null,
+                        matriculaSocios.getEmissao(),
+                        "",
                         matriculaSocios.getCategoria().getGrupoCategoria().getGrupoCategoria(),
                         matriculaSocios.getCategoria().getCategoria(),
                         fisica.getPessoa().getNome(),
                         fisica.getSexo(),
-                        fisica.getDtNascimento(),
+                        fisica.getNascimento(),
                         fisica.getNaturalidade(),
                         fisica.getNacionalidade(),
                         fisica.getRg(),
@@ -383,8 +388,8 @@ public class ImpressaoParaSocios {
                         dados[15],
                         dados[16],
                         dados[17],
-                        null, // fax
-                        DataHoje.converte(dados[28]),
+                        "", // fax
+                        dados[28],
                         dados[18],
                         dados[19],
                         dados[20],
@@ -413,23 +418,26 @@ public class ImpressaoParaSocios {
                         sindicato.getPessoa().getTelefone1(),
                         ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
                         dados[29],
-                        fisica.getDtRecadastro(),
+                        fisica.getRecadastro(),
                         dados[30],
                         pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                        dados[31], assinatura));
+                        dados[31],
+                        assinatura,
+                        dados[32]
+                ));
 
                 List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(matriculaSocios.getId());
                 for (int n = 0; n < deps.size(); n++) {
                     listaSocios.add(new FichaSocial(0,
                             deps.get(n).getServicoPessoa().getPessoa().getId(),
                             matriculaSocios.getNrMatricula(),
-                            null,
-                            null,
+                            "",
+                            "",
                             "",
                             matriculaSocios.getCategoria().getCategoria(),
                             deps.get(n).getServicoPessoa().getPessoa().getNome(),
                             db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getSexo(),
-                            db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getDtNascimento(),
+                            db.pesquisaFisicaPorPessoa(deps.get(n).getServicoPessoa().getPessoa().getId()).getNascimento(),
                             "",
                             "",
                             "",
@@ -464,7 +472,7 @@ public class ImpressaoParaSocios {
                             "",
                             "",
                             "",
-                            null,
+                            "",
                             "",
                             "",
                             "",
@@ -493,11 +501,12 @@ public class ImpressaoParaSocios {
                             "",
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
                             "",
-                            null,
                             "",
                             "",
                             "",
-                            assinatura)
+                            "",
+                            assinatura,
+                            "")
                     );
                 }
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
@@ -541,7 +550,7 @@ public class ImpressaoParaSocios {
         PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
         PessoaEmpresa pesEmpresa = new PessoaEmpresa();
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
-        String dados[] = new String[32];
+        String dados[] = new String[34];
         List<Socios> listaSocs = new ArrayList();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         try {
@@ -626,6 +635,7 @@ public class ImpressaoParaSocios {
                     dados[29] = pesEmpresa.getJuridica().getPessoa().getDocumento();
                     dados[30] = pesEmpresa.getJuridica().getFantasia();
                     dados[31] = pesEndEmpresa.getEndereco().getLogradouro().getDescricao();
+                    dados[32] = pesEmpresa.getCodigo();
                 } catch (Exception e) {
                     dados[16] = "";
                     dados[17] = "";
@@ -640,20 +650,20 @@ public class ImpressaoParaSocios {
                     dados[28] = "";
                     dados[29] = "";
                     dados[30] = "";
-                    dados[31] = "";
+                    dados[32] = "";
                 }
 
                 try {
                     listaSocios.add(new FichaSocial(0,
                             listaSocs.get(i).getMatriculaSocios().getTitular().getId(),
                             listaSocs.get(i).getMatriculaSocios().getNrMatricula(),
-                            listaSocs.get(i).getServicoPessoa().getDtEmissao(),
+                            listaSocs.get(i).getServicoPessoa().getEmissao(),
                             null,
                             listaSocs.get(i).getMatriculaSocios().getCategoria().getGrupoCategoria().getGrupoCategoria(),
                             listaSocs.get(i).getMatriculaSocios().getCategoria().getCategoria(),
                             fisica.getPessoa().getNome(),
                             fisica.getSexo(),
-                            fisica.getDtNascimento(),
+                            fisica.getNascimento(),
                             fisica.getNaturalidade(),
                             fisica.getNacionalidade(),
                             fisica.getRg(),
@@ -688,7 +698,7 @@ public class ImpressaoParaSocios {
                             dados[16],
                             dados[17],
                             null, // fax
-                            DataHoje.converte(dados[28]),
+                            dados[28],
                             dados[18],
                             dados[19],
                             dados[20],
@@ -717,10 +727,13 @@ public class ImpressaoParaSocios {
                             sindicato.getPessoa().getTelefone1(),
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
                             dados[29],
-                            fisica.getDtRecadastro(),
+                            fisica.getRecadastro(),
                             dados[30],
                             pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                            dados[31], ""));
+                            dados[31],
+                            "",
+                            dados[32]
+                    ));
                 } catch (Exception erro) {
                     System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                     continue;
@@ -758,25 +771,25 @@ public class ImpressaoParaSocios {
     public static void branco() {
         String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
         PessoaEnderecoDB enderecoDB = new PessoaEnderecoDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection listaSocios = new ArrayList<FichaSocial>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROBRANCO.jasper")));
-            Juridica sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
+            Juridica sindicato = (Juridica) dao.find(new Juridica(), 1);
             PessoaEndereco pessoaEndereco = enderecoDB.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
-            Registro registro = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+            Registro registro = (Registro) dao.find(new Registro(), 1);
             try {
                 listaSocios.add(new FichaSocial(0,
                         0, // ID TITULAR
                         0, // NR MATRICULA
-                        new Date(), // DATA EMISSÃO
-                        new Date(),
+                        DataHoje.data(), // DATA EMISSÃO
+                        DataHoje.data(),
                         "", // MATR GRUPO
                         "", // MATR SOC_CATEGORIA
                         "", // NOME
                         "", // SEXO
-                        new Date(), // NASCIMENTO
+                        DataHoje.data(), // NASCIMENTO
                         "", // NATURALIDADE
                         "", // NACIONALIDADE
                         "", // RG
@@ -811,7 +824,7 @@ public class ImpressaoParaSocios {
                         "",
                         "",
                         "", // fax
-                        DataHoje.converte(DataHoje.data()),
+                        DataHoje.data(),
                         "",
                         "",
                         "",
@@ -840,10 +853,12 @@ public class ImpressaoParaSocios {
                         sindicato.getPessoa().getTelefone1(),
                         "",
                         "",
-                        new Date(),
+                        DataHoje.data(),
                         "",
                         pessoaEndereco.getEndereco().getLogradouro().getDescricao(),
-                        "", ""));
+                        "", "",
+                        ""
+                ));
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
