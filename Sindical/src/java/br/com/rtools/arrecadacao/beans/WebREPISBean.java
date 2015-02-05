@@ -97,8 +97,7 @@ public class WebREPISBean implements Serializable {
     private int indexStatus = 1;
     private String valueLenght = "15";
     private String contato = "";
-    
-    
+
     public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
         getPessoa();
@@ -118,29 +117,29 @@ public class WebREPISBean implements Serializable {
             renderContabil = false;
         }
     }
-    
-    public PessoaEndereco enderecoPessoa(int id_pessoa){
+
+    public PessoaEndereco enderecoPessoa(int id_pessoa) {
         PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
         PessoaEndereco endereco_pessoa = dbe.pesquisaEndPorPessoaTipo(id_pessoa, 5);
         return endereco_pessoa;
     }
-    
-    public String retornaCor(RepisMovimento rm){
-        if (DataHoje.igualdadeData(rm.getPessoa().getCriacao(), rm.getDataEmissaoString()) && rm.getRepisStatus().getId() == 1){
-            return "tblColorx";    
+
+    public String retornaCor(RepisMovimento rm) {
+        if (DataHoje.igualdadeData(rm.getPessoa().getCriacao(), rm.getDataEmissaoString()) && rm.getRepisStatus().getId() == 1) {
+            return "tblColorx";
         }
         return "";
     }
 
-    public void alterValueLenght(String value){
+    public void alterValueLenght(String value) {
         listRepisMovimentoPatronal.clear();
         listRepisMovimentoPatronalSelecionado.clear();
-        
+
         valueLenght = value;
-        
+
         pesquisar();
     }
-    
+
     public String refresh() {
         return "webLiberacaoREPIS";
     }
@@ -154,9 +153,9 @@ public class WebREPISBean implements Serializable {
 
             RepisStatus rs = (RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription()));
             rm.setRepisStatus(rs);
-            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4){
+            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4) {
                 rm.setDataResposta(DataHoje.dataHoje());
-            }else{
+            } else {
                 rm.setDataResposta(null);
             }
 
@@ -178,16 +177,16 @@ public class WebREPISBean implements Serializable {
         listRepisMovimentoPatronal.clear();
         listRepisMovimentoPatronalSelecionado.clear();
         Patronal patro = db.pesquisaPatronalPorPessoa(pessoa.getId());
-        
+
         switch (tipoPesquisa) {
             case "tipo":
                 listRepisMovimentoPatronal = db.pesquisarListaLiberacao("tipo", getListaTipoCertidao().get(indexCertidaoTipo).getDescription(), patro.getId(), valueLenght);
                 break;
             case "status":
-                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("status",  getListaStatus().get(indexStatus).getDescription(), patro.getId(), valueLenght);
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("status", getListaStatus().get(indexStatus).getDescription(), patro.getId(), valueLenght);
                 break;
             case "cidade":
-                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("cidade",  getListaCidade().get(indexCidade).getDescription(), patro.getId(), valueLenght);
+                listRepisMovimentoPatronal = db.pesquisarListaLiberacao("cidade", getListaCidade().get(indexCidade).getDescription(), patro.getId(), valueLenght);
                 break;
             default:
                 listRepisMovimentoPatronal = db.pesquisarListaLiberacao(tipoPesquisa, descricao, patro.getId(), valueLenght);
@@ -242,10 +241,10 @@ public class WebREPISBean implements Serializable {
         return result;
     }
 
-    public boolean showAndamentoProtocolo(int idPessoa) {
+    public boolean showAndamentoProtocolo(int idPessoa, int idPatronal) {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         CertidaoDisponivel cd = (CertidaoDisponivel) new Dao().find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
-        if (wsrepisdb.validaPessoaRepisAnoTipo(idPessoa, getAnoConvencao(), cd.getCertidaoTipo().getId()).size() > 0) {
+        if (wsrepisdb.validaPessoaRepisAnoTipoPatronal(idPessoa, getAnoConvencao(), cd.getCertidaoTipo().getId(), idPatronal).size() > 0) {
             return true;
         }
         return false;
@@ -277,7 +276,7 @@ public class WebREPISBean implements Serializable {
                 GenericaMensagem.warn("Atenção", "Informe o nome do solicitante!");
                 return;
             }
-            
+
             Patronal patronal = dbr.pesquisaPatronalPorSolicitante(getPessoaSolicitante().getId());
             if (patronal == null) {
                 GenericaMensagem.warn("Atenção", "Nenhuma patronal encontrada!");
@@ -305,19 +304,19 @@ public class WebREPISBean implements Serializable {
             CertidaoDisponivel cd = (CertidaoDisponivel) di.find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
 
             List<ConvencaoPeriodo> result = dbr.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
-            
+
             Integer anoConvencao = null;
-            
+
             if (cd.isPeriodoConvencao()) {
                 if (result.isEmpty()) {
                     GenericaMensagem.warn("Atenção", "Contribuinte fora do Período de Convenção!");
                     return;
                 }
                 anoConvencao = Integer.valueOf(result.get(0).getReferenciaFinal().substring(3));
-            }else{
+            } else {
                 anoConvencao = getAnoAtual();
             }
-            
+
             //repisMovimento.setAno(getAnoConvencao());
             repisMovimento.setAno(anoConvencao);
             repisMovimento.setContato(contato);
@@ -327,9 +326,9 @@ public class WebREPISBean implements Serializable {
             repisMovimento.setDataEmissao(DataHoje.dataHoje());
             repisMovimento.setPatronal(patronal);
             repisMovimento.setCertidaoTipo(cd.getCertidaoTipo());
-            
+
             di.openTransaction();
-            if (!showAndamentoProtocolo(pessoaSolicitante.getId())) {
+            if (!showAndamentoProtocolo(pessoaSolicitante.getId(), repisMovimento.getPatronal().getId())) {
                 if (di.save(repisMovimento)) {
                     di.commit();
                     GenericaMensagem.info("Sucesso", "Solicitação encaminhada com sucesso!");
@@ -351,13 +350,13 @@ public class WebREPISBean implements Serializable {
         if (repisMovimento.getId() != -1) {
             RepisStatus rs = (RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription()));
             repisMovimento.setRepisStatus(rs);
-            
-            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4){
+
+            if (rs.getId() == 2 || rs.getId() == 3 || rs.getId() == 4) {
                 repisMovimento.setDataResposta(DataHoje.dataHoje());
-            }else{
+            } else {
                 repisMovimento.setDataResposta(null);
             }
-            
+
             di.openTransaction();
             if (di.update(repisMovimento)) {
                 di.commit();
@@ -392,13 +391,13 @@ public class WebREPISBean implements Serializable {
         imprimirCertificado(listam);
         return null;
     }
-    
+
     public String imprimirCertificado(List<RepisMovimento> listam) {
         JuridicaDB dbj = new JuridicaDBToplink();
         WebREPISDB dbw = new WebREPISDBToplink();
         List<JasperPrint> lista_jasper = new ArrayList();
-        
-        if (listam.isEmpty()){
+
+        if (listam.isEmpty()) {
             return null;
         }
         Dao di = new Dao();
@@ -407,40 +406,40 @@ public class WebREPISBean implements Serializable {
 
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
             PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
-            
+
             di.openTransaction();
             for (RepisMovimento repis : listam) {
-                if (repis.getRepisStatus().getId() == 3 || repis.getRepisStatus().getId() == 4 || repis.getRepisStatus().getId() == 5){
+                if (repis.getRepisStatus().getId() == 3 || repis.getRepisStatus().getId() == 4 || repis.getRepisStatus().getId() == 5) {
                     Juridica juridica = dbj.pesquisaJuridicaPorPessoa(repis.getPessoa().getId());
                     PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repis.getAno(), repis.getPatronal().getId(), juridica.getPorte().getId());
                     PessoaEndereco ee = dbe.pesquisaEndPorPessoaTipo(repis.getPessoa().getId(), 5);
                     List<PisoSalarial> listapiso = dbw.listaPisoSalarialLote(lote.getId());
-                    
+
                     List<List> listax = dbj.listaJuridicaContribuinte(juridica.getId());
-                    if (listax.isEmpty()){
+                    if (listax.isEmpty()) {
                         GenericaMensagem.warn("Atenção", "Empresa não é Contribuinte!");
                         di.rollback();
                         return null;
                     }
                     int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
-                    
-                    String referencia = DataHoje.DataToArray(repis.getDataEmissao())[2]+DataHoje.DataToArray(repis.getDataEmissao())[1];
-                    
+
+                    String referencia = DataHoje.DataToArray(repis.getDataEmissao())[2] + DataHoje.DataToArray(repis.getDataEmissao())[1];
+
                     List<ConvencaoPeriodo> result = dbw.listaConvencaoPeriodoData(ee.getEndereco().getCidade().getId(), id_convencao, referencia);
-                    
-                    if (result.isEmpty()){
+
+                    if (result.isEmpty()) {
                         GenericaMensagem.warn("Atenção", "Contribuinte fora do período de Convenção!");
                         di.rollback();
                         return null;
                     }
-                    
-                    String ref = result.get(0).getReferenciaInicial().substring(3)+"/"+ result.get(0).getReferenciaFinal().substring(3);
-                    Date data_validade = DataHoje.converte(DataHoje.qtdeDiasDoMes(Integer.valueOf(result.get(0).getReferenciaFinal().substring(0, 2)), Integer.valueOf(result.get(0).getReferenciaFinal().substring(3))) +"/"+ result.get(0).getReferenciaFinal());
-                    
+
+                    String ref = result.get(0).getReferenciaInicial().substring(3) + "/" + result.get(0).getReferenciaFinal().substring(3);
+                    Date data_validade = DataHoje.converte(DataHoje.qtdeDiasDoMes(Integer.valueOf(result.get(0).getReferenciaFinal().substring(0, 2)), Integer.valueOf(result.get(0).getReferenciaFinal().substring(3))) + "/" + result.get(0).getReferenciaFinal());
+
                     Collection<ParametroCertificado> vetor = new ArrayList();
-                    String logoPatronal = "", 
-                           imagemFundo = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/certificado_domingo_fundo.png"),
-                           logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + repis.getPatronal().getId());
+                    String logoPatronal = "",
+                            imagemFundo = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/certificado_domingo_fundo.png"),
+                            logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + repis.getPatronal().getId());
                     if (new File(logoCaminho + ".jpg").exists()) {
                         logoCaminho = logoCaminho + ".jpg";
                     } else if (new File(logoCaminho + ".JPG").exists()) {
@@ -454,16 +453,16 @@ public class WebREPISBean implements Serializable {
                     } else {
                         logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
                     }
-                    
+
                     String cep = AnaliseString.mascaraCep(ee.getEndereco().getCep());
-                    String ende = (ee.getComplemento().isEmpty()) 
-                            ? ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " - "+ee.getEndereco().getBairro().getDescricao() +" - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString()
-                            : ee.getEndereco().getLogradouro().getDescricao()+ " " +ee.getEndereco().getDescricaoEndereco().getDescricao() +", "+ee.getNumero()+ " ( "+ee.getComplemento()+" ) "+ee.getEndereco().getBairro().getDescricao() +" - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString();
+                    String ende = (ee.getComplemento().isEmpty())
+                            ? ee.getEndereco().getLogradouro().getDescricao() + " " + ee.getEndereco().getDescricaoEndereco().getDescricao() + ", " + ee.getNumero() + " - " + ee.getEndereco().getBairro().getDescricao() + " - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString()
+                            : ee.getEndereco().getLogradouro().getDescricao() + " " + ee.getEndereco().getDescricaoEndereco().getDescricao() + ", " + ee.getNumero() + " ( " + ee.getComplemento() + " ) " + ee.getEndereco().getBairro().getDescricao() + " - CEP: " + cep + " - " + ee.getEndereco().getCidade().getCidadeToString();
 
                     CertidaoMensagem certidaoMensagem = null;
                     File file = null;
-                    
-                    switch(repis.getCertidaoTipo().getId()){
+
+                    switch (repis.getCertidaoTipo().getId()) {
                         case 1:
                             file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS.jasper"));
                             break;
@@ -475,7 +474,7 @@ public class WebREPISBean implements Serializable {
                             certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
                             break;
                         case 4:
-                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));                            
+                            file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIFICADO_DOMINGOS.jasper"));
                             break;
                         case 5:
                             file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/REPIS_AUXILIAR.jasper"));
@@ -486,12 +485,11 @@ public class WebREPISBean implements Serializable {
                         case 7:
                             file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CERTIDAO_FERIADOS_AUXILIAR.jasper"));
                             certidaoMensagem = dbw.pesquisaCertidaoMensagem(ee.getEndereco().getCidade().getId(), 3);
-                            break;                            
+                            break;
                     }
 
-                    JasperReport jasper = (JasperReport) JRLoader.loadObject(file);   
-                        
-                    
+                    JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
+
                     for (PisoSalarial piso : listapiso) {
                         BigDecimal valor = new BigDecimal(piso.getValor());
                         if (valor.toString().equals("0")) {
@@ -525,20 +523,20 @@ public class WebREPISBean implements Serializable {
                                 )
                         );
                     }
-                    
+
                     JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
                     lista_jasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
-                    
-                    if (repis.getDataImpressao() == null){
-                        RepisMovimento repisx = (RepisMovimento)di.find(new RepisMovimento(), repis.getId());
+
+                    if (repis.getDataImpressao() == null) {
+                        RepisMovimento repisx = (RepisMovimento) di.find(new RepisMovimento(), repis.getId());
                         repisx.setDataImpressao(DataHoje.dataHoje());
 
                         di.save(repisx);
                     }
                 }
             }
-            
-            if (!lista_jasper.isEmpty()){
+
+            if (!lista_jasper.isEmpty()) {
                 di.commit();
                 JRPdfExporter exporter = new JRPdfExporter();
 
@@ -546,7 +544,7 @@ public class WebREPISBean implements Serializable {
                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
 
                 exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
-                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta + "/" + nomeDownload));
 
                 SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
 
@@ -558,7 +556,7 @@ public class WebREPISBean implements Serializable {
 
                 File fl = new File(pathPasta);
 
-                if (fl.exists()){
+                if (fl.exists()) {
                     Download download = new Download(
                             nomeDownload,
                             pathPasta,
@@ -569,15 +567,15 @@ public class WebREPISBean implements Serializable {
                     download.remover();
                 }
                 listRepisMovimentoPatronal.clear();
-            }else{
+            } else {
                 di.rollback();
                 GenericaMensagem.warn("Atenção", "O Status da Certidão não pode impresso!");
             }
         } catch (NumberFormatException | JRException e) {
             di.rollback();
             e.getMessage();
-            GenericaMensagem.error("Erro", "Arquivo de Certidão não encontrado! "+e.getMessage());
-        } 
+            GenericaMensagem.error("Erro", "Arquivo de Certidão não encontrado! " + e.getMessage());
+        }
         return null;
     }
 
@@ -649,15 +647,16 @@ public class WebREPISBean implements Serializable {
     public int getAnoAtual() {
         return Integer.parseInt(DataHoje.livre(DataHoje.dataHoje(), "yyyy"));
     }
-    
+
     public int getAnoConvencao() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         CertidaoDisponivel cd = (CertidaoDisponivel) new Dao().find(new CertidaoDisponivel(), Integer.valueOf(listComboCertidaoDisponivel.get(indexCertidaoDisponivel).getDescription()));
         List<ConvencaoPeriodo> result = wsrepisdb.listaConvencaoPeriodo(cd.getCidade().getId(), cd.getConvencao().getId());
-        if (result.isEmpty())
+        if (result.isEmpty()) {
             return getAnoAtual();
-        else
+        } else {
             return Integer.parseInt(result.get(0).getReferenciaFinal().substring(3));
+        }
     }
 
     public boolean isShowProtocolo() {
@@ -762,10 +761,11 @@ public class WebREPISBean implements Serializable {
         if (listRepisMovimentoPatronal.isEmpty()) {
             WebREPISDB wsrepisdb = new WebREPISDBToplink();
             Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
-            if (tipoPesquisa.equals("status"))
+            if (tipoPesquisa.equals("status")) {
                 listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("status", listaStatus.get(indexStatus).getDescription(), patro.getId(), valueLenght);
-            else
+            } else {
                 listRepisMovimentoPatronal = wsrepisdb.pesquisarListaLiberacao("", "", patro.getId(), valueLenght);
+            }
         }
         return listRepisMovimentoPatronal;
     }
@@ -937,10 +937,10 @@ public class WebREPISBean implements Serializable {
     }
 
     public List<SelectItem> getListaTipoCertidao() {
-        if (listaTipoCertidao.isEmpty()){
+        if (listaTipoCertidao.isEmpty()) {
             Dao di = new Dao();
             List<CertidaoTipo> result = di.list("CertidaoTipo");
-            for (int i = 0; i < result.size(); i++){
+            for (int i = 0; i < result.size(); i++) {
                 listaTipoCertidao.add(new SelectItem(
                         i, result.get(i).getDescricao(), Integer.toString(result.get(i).getId()))
                 );
@@ -962,17 +962,17 @@ public class WebREPISBean implements Serializable {
     }
 
     public List<SelectItem> getListaStatus() {
-        if (listaStatus.isEmpty()){
+        if (listaStatus.isEmpty()) {
             Dao di = new Dao();
-            
+
             List<RepisStatus> result = di.list(new RepisStatus());
             listaStatus.add(new SelectItem(
                     0, "Todos", "0")
-            );            
-            
-            for (int i = 0; i < result.size(); i++){
+            );
+
+            for (int i = 0; i < result.size(); i++) {
                 listaStatus.add(new SelectItem(
-                        i+1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId()))
+                        i + 1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId()))
                 );
             }
         }
@@ -1008,17 +1008,17 @@ public class WebREPISBean implements Serializable {
     }
 
     public List<SelectItem> getListaCidade() {
-        if (listaCidade.isEmpty()){
+        if (listaCidade.isEmpty()) {
             CidadeDB db = new CidadeDBToplink();
-            
+
             List<Cidade> result = db.listaCidadeParaREPIS();
-            
-            if (result.isEmpty()){
+
+            if (result.isEmpty()) {
                 listaCidade.add(new SelectItem(0, "Nenhuma Cidade encontrada", "0"));
                 return listaCidade;
             }
-            
-            for(int i = 0; i < result.size(); i++){
+
+            for (int i = 0; i < result.size(); i++) {
                 listaCidade.add(
                         new SelectItem(i, result.get(i).getCidadeToString(), Integer.toString(result.get(i).getId()))
                 );
