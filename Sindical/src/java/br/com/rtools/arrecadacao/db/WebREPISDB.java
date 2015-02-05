@@ -22,7 +22,7 @@ public interface WebREPISDB {
 
     public List validaPessoaRepisAno(int idPessoa, int ano);
     
-    public List validaPessoaRepisAnoTipo(int idPessoa, int ano, int id_tipo_certidao);
+    public List validaPessoaRepisAnoTipoPatronal(int idPessoa, int ano, int id_tipo_certidao, int id_patronal);
 
     public List listaProtocolosPorContabilidade(int idPessoa, int ano);
 
