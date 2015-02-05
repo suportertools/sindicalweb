@@ -84,20 +84,22 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     }
 
     @Override
-    public List validaPessoaRepisAnoTipo(int idPessoa, int ano, int id_tipo_certidao) {
+    public List validaPessoaRepisAnoTipoPatronal(int idPessoa, int ano, int id_tipo_certidao, int id_patronal) {
         List result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select rm "
-                    + "  from RepisMovimento rm "
-                    + " where rm.pessoa.id = :idPessoa "
-                    + "   and rm.ano = :ano "
-                    + "   and rm.certidaoTipo.id = :idTipo "
+            Query query = getEntityManager().createQuery(
+                    "   SELECT RM                                               "
+                    + "   FROM RepisMovimento AS RM                             "
+                    + "  WHERE RM.pessoa.id         = :pessoa                   "
+                    + "    AND RM.ano               = :ano                      "
+                    + "    AND RM.patronal.id       = :patronal                 "
+                    + "    AND RM.certidaoTipo.id   = :tipo                     "
             );
-            qry.setParameter("idPessoa", idPessoa);
-            qry.setParameter("ano", ano);
-            qry.setParameter("idTipo", id_tipo_certidao);
-            result = qry.getResultList();
+            query.setParameter("pessoa", idPessoa);
+            query.setParameter("ano", ano);
+            query.setParameter("tipo", id_tipo_certidao);
+            query.setParameter("patronal", id_patronal);
+            result = query.getResultList();
             return result;
         } catch (Exception e) {
             return result;

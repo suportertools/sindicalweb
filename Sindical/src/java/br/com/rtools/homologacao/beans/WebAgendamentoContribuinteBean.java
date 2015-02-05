@@ -343,8 +343,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
             return;
         }
-
-        if (!strContribuinte.isEmpty()) {
+        
+        if (!getStrContribuinte().isEmpty()) {
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
         }

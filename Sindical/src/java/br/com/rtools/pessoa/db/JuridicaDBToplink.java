@@ -349,8 +349,20 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
 
         try {
             // QUERY QUANTIDADE DE MESES INADIMPLENTES -------------------
-            String textQry = "select extract(month from  dt_vencimento),extract(year from  dt_vencimento) from fin_movimento where is_ativo=true and id_baixa is null and id_pessoa=" + id_juridica + " and dt_vencimento < '" + DataHoje.data() + "'"
-                    + " group by extract(month from  dt_vencimento),extract(year from  dt_vencimento)";
+            String textQry = "SELECT extract(month FROM dt_vencimento),         "
+                    + "              extract(year  FROM dt_vencimento)          "
+                    + "         FROM fin_movimento                              "
+                    + "        WHERE is_ativo = true                            "
+                    + "          AND id_baixa IS NULL                           "
+                    + "          AND id_pessoa = " + id_juridica + "            "
+                    + "          AND dt_vencimento < '" + DataHoje.data() + "'  "
+                    + "          AND id_servicos IN(                            "
+                    + "              SELECT id_servicos                         "
+                    + "                FROM fin_servico_rotina                  "
+                    + "               WHERE id_rotina = 4                       "
+                    + "   )                                                     "
+                    + "     GROUP BY extract(month FROM dt_vencimento),         "
+                    + "              extract(year  FROM dt_vencimento)          ";
 
             Query qry = getEntityManager().createNativeQuery(textQry);
             vetor = qry.getResultList();
@@ -365,7 +377,17 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             // ----------------------------------------------------------
 
             // QUANTIDADE DE PARCELAS INADIMPLENTES ---------------------
-            textQry = "select count(*) from fin_movimento where  is_ativo=true and id_baixa is null and id_pessoa=" + id_juridica + " and dt_vencimento < '" + DataHoje.data() + "'";
+            textQry = "     SELECT count(*)                                     "
+                    + "       FROM fin_movimento                                "
+                    + "      WHERE is_ativo = true                              "
+                    + "        AND id_baixa IS NULL                             "
+                    + "        AND id_pessoa = " + id_juridica + "              "
+                    + "        AND dt_vencimento < '" + DataHoje.data() + "'    "
+                    + "        AND id_servicos IN(                              "
+                    + "             SELECT id_servicos                          "
+                    + "               FROM fin_servico_rotina                   "
+                    + "              WHERE id_rotina = 4                        "
+                    + "   )                                                     ";
 
             qry = getEntityManager().createNativeQuery(textQry);
             vetor = qry.getResultList();
