@@ -537,7 +537,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
             return;
         }
-        if (!strContribuinte.isEmpty()) {
+        if (!getStrContribuinte().isEmpty()) {
             GenericaMensagem.warn("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
         }
