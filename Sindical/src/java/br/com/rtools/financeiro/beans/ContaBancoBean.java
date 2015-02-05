@@ -42,6 +42,8 @@ public class ContaBancoBean implements Serializable {
     private Plano5 plano5;
     private boolean salvar;
     private List<ContaBanco> listaContaBanco;
+    private List<SelectItem> listaBancoCompleta;
+    private List<SelectItem> listaFilial;
 
     @PostConstruct
     public void init() {
@@ -57,7 +59,9 @@ public class ContaBancoBean implements Serializable {
         Sbanco = null;
         plano5 = new Plano5();
         salvar = false;
-        listaContaBanco = new ArrayList<ContaBanco>();
+        listaContaBanco = new ArrayList();
+        listaBancoCompleta = new ArrayList();
+        listaFilial = new ArrayList();
     }
 
     @PreDestroy
@@ -73,7 +77,7 @@ public class ContaBancoBean implements Serializable {
 
     public String salvar() {
         DaoInterface di = new Dao();
-        Filial filial = (Filial) di.find(new Filial(), Integer.parseInt(getListaFilial().get(idFilial).getDescription()));
+        Filial filial = (Filial) di.find(new Filial(), Integer.parseInt(listaFilial.get(idFilial).getDescription()));
         contaBanco.setFilial(filial);
         if (cidade == null) {
             msgConfirma = "Pesquise uma Cidade!";
@@ -87,7 +91,7 @@ public class ContaBancoBean implements Serializable {
             return null;
         }
 
-        Sbanco = (Banco) di.find(new Banco(), Integer.parseInt(getListaBancoCompleta().get(idBanco).getDescription()));
+        Sbanco = (Banco) di.find(new Banco(), Integer.parseInt(listaBancoCompleta.get(idBanco).getDescription()));
         contaBanco.setCidade(cidade);
         contaBanco.setBanco(Sbanco);
 
@@ -240,9 +244,9 @@ public class ContaBancoBean implements Serializable {
         }
 
         if (contaBanco != null && contaBanco.getBanco().getId() != -1) {
-            int qnt = getListaBancoCompleta().size();
+            int qnt = listaBancoCompleta.size();
             for (int i = 0; i < qnt; i++) {
-                if (Integer.valueOf(getListaBancoCompleta().get(i).getDescription()) == contaBanco.getBanco().getId()) {
+                if (Integer.valueOf(listaBancoCompleta.get(i).getDescription()) == contaBanco.getBanco().getId()) {
                     idBanco = i;
                 }
             }
@@ -257,45 +261,46 @@ public class ContaBancoBean implements Serializable {
     }
 
     public List<SelectItem> getListaBancoCompleta() {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        DaoInterface di = new Dao();
-        List<Banco> list = (List<Banco>) di.list(new Banco());
-        int i = 0;
-        selectItems.add(new SelectItem(i, "Nenhum", "0"));
-        for (Banco b : list) {
-            selectItems.add(new SelectItem(i + 1, b.getNumero() + " - " + b.getBanco(), Integer.toString(b.getId())));
-            i++;
+        if (listaBancoCompleta.isEmpty()){
+            DaoInterface di = new Dao();
+            List<Banco> list = (List<Banco>) di.list(new Banco());
+            int i = 0;
+            listaBancoCompleta.add(new SelectItem(i, "Nenhum", "0"));
+            for (Banco b : list) {
+                listaBancoCompleta.add(new SelectItem(i + 1, b.getNumero() + " - " + b.getBanco(), Integer.toString(b.getId())));
+                i++;
+            }
         }
-        return selectItems;
+        return listaBancoCompleta;
     }
 
     public List<SelectItem> getListaFilial() {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>();
-        DaoInterface di = new Dao();
-        List<Filial> listaFilial = (List<Filial>) di.list(new Filial(), true);
-        int i = 0;
-        while (i < listaFilial.size()) {
-            selectItems.add(new SelectItem(
-                    i,
-                    listaFilial.get(i).getFilial().getPessoa().getNome(),
-                    Integer.toString(listaFilial.get(i).getId())));
-            i++;
+        if (listaFilial.isEmpty()){
+            DaoInterface di = new Dao();
+            List<Filial> result = (List<Filial>) di.list(new Filial(), true);
+            for (int i = 0; i < result.size(); i++) {
+                listaFilial.add(new SelectItem(
+                        i,
+                        result.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(result.get(i).getId())));
+            }
         }
+        
         if (contaBanco != null) {
             if (contaBanco.getFilial().getId() != -1) {
-                for (i = 0; i < selectItems.size(); i++) {
-                    if (Integer.parseInt(selectItems.get(i).getDescription()) == contaBanco.getFilial().getId()) {
+                for (int i = 0; i < listaFilial.size(); i++) {
+                    if (Integer.parseInt(listaFilial.get(i).getDescription()) == contaBanco.getFilial().getId()) {
                         setIdFilial(i);
                     }
                 }
             }
         }
-        return selectItems;
+        return listaFilial;
     }
 
     public List<SelectItem> getListaPlano5Conta() {
         ContaBancoDB contaBancoDB = new ContaBancoDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
+        List<SelectItem> result = new ArrayList();
         List planoContas;
         if ((contaBanco != null) && (contaBanco.getId() != -1) && salvar == false) {
             planoContas = contaBancoDB.pesquisaPlano5ContaComID(contaBanco.getId());
