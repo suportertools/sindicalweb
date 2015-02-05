@@ -15,11 +15,11 @@ public class PhotoCam {
         oncapture(captureEvent, photo, "");
     }
 
-    public static void oncapture(CaptureEvent captureEvent, String photo, String caminhoTemporario) {
+    public static synchronized void oncapture(CaptureEvent captureEvent, String photo, String caminhoTemporario) {
         oncapture(captureEvent, photo, "", false);
     }
 
-    public static boolean oncapture(CaptureEvent captureEvent, String photo, String caminhoTemporario, boolean diretorio) {
+    public static synchronized boolean oncapture(CaptureEvent captureEvent, String photo, String caminhoTemporario, boolean diretorio) {
         if (photo.equals("")) {
             Date date = new Date();
             photo = date.toGMTString();
@@ -34,9 +34,9 @@ public class PhotoCam {
         String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + caminho +"/"+ photo +".png");
         File f = new File(newFileName);
 
-        if (f.exists()) {
-            f.delete();
-        }
+//        if (f.exists()) {
+//            f.delete();
+//        }
         FileImageOutputStream imageOutput;
         try {
             imageOutput = new FileImageOutputStream(new File(newFileName));

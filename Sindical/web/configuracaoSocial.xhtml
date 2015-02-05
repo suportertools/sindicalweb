@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Configuração Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <f:metadata>  
+                        <f:event type="preRenderView" listener="${configuracaoSocialBean.load()}"/>  
+                    </f:metadata>   
+
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Configuração Social" styleClass="fonteHeader" />
+                        <h:form id="formConfiguracaoSocial">
+                            <c:set scope="request" var="object" value="${configuracaoSocialBean.configuracaoSocial}"/>
+                            <div style="clear:both"></div>
+                            <p:messages id="id_messages" showDetail="true" closable="true" />
+                            <p:growl id="id_messages_growl" showDetail="true"  />
+
+                            <p:panel styleClass="fundoCinza">
+                                <p:outputLabel value="Inativar Sócio Automaticamente" style="font-weight: bold; font-size: 11pt!important"/>
+                                <h:panelGrid id="i_panel_inativar_demissionado"  columns="4">
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{configuracaoSocialBean.configuracaoSocial.inativaDemissionado }" itemLabel="Inativar Sócios Demissionados?" style="margin-right: 20px">
+                                            <p:ajax event="change" update="i_panel_inativar_demissionado" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+                                    
+                                    <h:column rendered="false">
+                                        <p:outputLabel value="Data Inativação" /><br />
+                                        <p:inputText value="#{configuracaoSocialBean.configuracaoSocial.dataInativacaoDemissionadoString}" disabled="true" style="width: 80px; "/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:outputLabel value="Qntd dias para inativação" /><br />
+                                        <p:inputText value="#{configuracaoSocialBean.configuracaoSocial.diasInativaDemissionado}" disabled="#{!configuracaoSocialBean.configuracaoSocial.inativaDemissionado}" style="margin-right: 20px; text-align: right"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:outputLabel value="Grupo Categoria" /><br />
+                                        <p:selectOneMenu value="#{configuracaoSocialBean.idGrupoCategoria}" style="width: 380px" disabled="#{!configuracaoSocialBean.configuracaoSocial.inativaDemissionado}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{configuracaoSocialBean.listaGrupoCategoria}"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:commandButton value="Atualizar" action="#{configuracaoSocialBean.update()}" update="formConfiguracaoSocial"/>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

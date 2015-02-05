@@ -239,17 +239,17 @@
                                                     </h:column>
 
                                                     <h:column rendered="#{!fisicaBean.fotoTempPerfil.equals('')}" >
-                                                        <p:graphicImage value="#{fisicaBean.fotoTempPerfil}" id="i_perfil_temp" style="max-width: 300px; max-height: 395px"/>
+                                                        <p:graphicImage value="#{fisicaBean.fotoTempPerfil}" id="i_perfil_temp" style="max-width: 300px; max-height: 395px" cache="false"/>
                                                         <div class="clear"></div>
                                                     </h:column>
 
                                                     <h:column rendered="#{!fisicaBean.fotoPerfil.equals('')}" >
-                                                        <p:graphicImage value="#{fisicaBean.fotoPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px"/>
+                                                        <p:graphicImage value="#{fisicaBean.fotoPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>
                                                         <div class="clear"></div>
                                                     </h:column>                                        
                                                 </p:panel>
 
-                                                <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" style="float: right" rendered="#{!fisicaBean.fotoTempPerfil.equals('') or !fisicaBean.fotoPerfil.equals('')}" update=":form_pessoa_fisica"/>
+                                                <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" style="float: right" rendered="#{!fisicaBean.fotoTempPerfil.equals('') or !fisicaBean.fotoPerfil.equals('')}" update="i_panel_imagens"/>
                                                 <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
                                                 <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />
                                             </p:column>
@@ -257,13 +257,20 @@
 
                                         <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
                                             <h:panelGrid id="i_panel_imagem" columns="1">
-                                                <p:photoCam widgetVar="pc" listener="#{fisicaBean.capturar}" update=":form_pessoa_fisica:i_tabview_fisica:i_panel_imagens"/>
+                                                <p:photoCam widgetVar="pc" listener="#{fisicaBean.capturar}" />
                                                 <h:column>
                                                     <h:panelGrid columns="2">
-                                                        <p:commandButton type="button" value="Capturar Foto" onclick="PF('pc').capture();" />
+                                                        <p:commandButton value="Capturar Foto" onclick="PF('pc').capture(); PF('dlg_loading_image').show()" actionListener="#{fisicaBean.loadingImage()}" />
                                                     </h:panelGrid>
                                                 </h:column>
                                             </h:panelGrid>                        
+                                        </p:dialog>
+                                        
+                                        <p:dialog widgetVar="dlg_loading_image" modal="true" header="Carregando Imagem">
+                                            <p:ajax event="close" update="i_panel_imagens" />
+                                            <h:panelGrid style="width: 100%; text-align: center">
+                                                <p:outputLabel value="Capturando e Processando Imagem" />
+                                            </h:panelGrid>
                                         </p:dialog>
 
                                         <h:column rendered="#{fisicaBean.fisica.id != -1}">
@@ -722,9 +729,8 @@
                                           mode="advanced"                                          
                                           multiple="false"
                                           sizeLimit="204800"
-                                          update=":form_pessoa_fisica:"
                                           fileUploadListener="#{fisicaBean.upload}"
-                                          oncomplete="PF('dgl_upload').hide()" />
+                                          oncomplete="PF('dgl_upload').hide()" onstart="PF('dlg_loading_image').show()"/>
                         </p:dialog>
                     </h:form>
                 </f:view>

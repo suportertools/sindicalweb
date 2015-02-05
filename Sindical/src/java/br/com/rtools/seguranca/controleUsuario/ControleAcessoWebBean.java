@@ -215,9 +215,48 @@ public class ControleAcessoWebBean implements Serializable {
         }
 
         Juridica juridica = new Juridica();
+        jr.getPessoa().setNome(jr.getPessoa().getNome().toUpperCase());
         juridica.setPessoa(jr.getPessoa());
-        juridica.setFantasia(jr.getNome());
+        juridica.setFantasia(jr.getNome().toUpperCase());
 
+        String emails[] = (jr.getEmail() == null) ? "".split("") : jr.getEmail().toLowerCase().split(" ");
+        String telefones[] = (jr.getTelefone() == null) ? "".split("") : jr.getTelefone().split(" / ");
+        
+        JuridicaDB dbj = new JuridicaDBToplink();
+        if (!emails[0].isEmpty()){
+            juridica.setContabilidade(dbj.pesquisaContabilidadePorEmail(emails[0]));
+        }
+        
+        switch (emails.length) {
+            case 1:
+                juridica.getPessoa().setEmail1(emails[0]);
+                break;
+            case 2:
+                juridica.getPessoa().setEmail1(emails[0]);
+                juridica.getPessoa().setEmail2(emails[1]);
+                break;
+            case 3:
+                juridica.getPessoa().setEmail1(emails[0]);
+                juridica.getPessoa().setEmail2(emails[1]);
+                juridica.getPessoa().setEmail3(emails[2]);
+                break;
+        }
+        
+        switch (telefones.length) {
+            case 1:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                break;
+            case 2:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                juridica.getPessoa().setTelefone2(telefones[1]);
+                break;
+            case 3:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                juridica.getPessoa().setTelefone2(telefones[1]);
+                juridica.getPessoa().setTelefone3(telefones[2]);
+                break;
+        }
+        
         String result[] = jr.getCnae().split(" ");
         CnaeDB dbc = new CnaeDBToplink();
         String cnaex = result[result.length - 1].replace("(", "").replace(")", "");
@@ -343,12 +382,12 @@ public class ControleAcessoWebBean implements Serializable {
                 ConfiguracaoCnpj configuracaoCnpj = (ConfiguracaoCnpj) dao.find(new ConfiguracaoCnpj(), 1);
                 URL url = null;
                 if (configuracaoCnpj == null) {
-                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=rogerio@rtools.com.br&senha=989899");
+                    url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&dias="+configuracaoCnpj.getDias()+"&usuario=rogerio@rtools.com.br&senha=989899");
                 } else {
                     if (configuracaoCnpj.getEmail().isEmpty() || configuracaoCnpj.getSenha().isEmpty()) {
-                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=rogerio@rtools.com.br&senha=989899");
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&dias="+configuracaoCnpj.getDias()+"&usuario=rogerio@rtools.com.br&senha=989899");
                     } else {
-                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
+                        url = new URL("https://wooki.com.br/api/v1/cnpj/receitafederal?numero=" + documentox + "&dias="+configuracaoCnpj.getDias()+"&usuario=" + configuracaoCnpj.getEmail() + "&senha=" + configuracaoCnpj.getSenha());
                     }
                 }                
                 
@@ -392,7 +431,9 @@ public class ControleAcessoWebBean implements Serializable {
                     jr.setCnaeSegundario(obj.getString("atividades_secundarias"));
                     jr.setCidade(obj.getString("municipio"));
                     jr.setUf(obj.getString("uf"));
-                                        
+                    jr.setEmail(obj.getString("email_rf"));
+                    jr.setTelefone(obj.getString("telefone_rf"));
+                    
                     Dao di = new Dao();
                     di.openTransaction();
                     if (!di.save(jr)) {
@@ -425,9 +466,49 @@ public class ControleAcessoWebBean implements Serializable {
         }
 
         Juridica juridica = new Juridica();
+        jr.getPessoa().setNome(jr.getPessoa().getNome().toUpperCase());
         juridica.setPessoa(jr.getPessoa());
-        juridica.setFantasia(jr.getNome());
+        juridica.setFantasia(jr.getNome().toUpperCase());
 
+
+        String emails[] = (jr.getEmail() == null) ? "".split("") : jr.getEmail().toLowerCase().split(" ");
+        String telefones[] = (jr.getTelefone() == null) ? "".split("") : jr.getTelefone().split(" / ");
+        
+        JuridicaDB dbj = new JuridicaDBToplink();
+        if (!emails[0].isEmpty()){
+            juridica.setContabilidade(dbj.pesquisaContabilidadePorEmail(emails[0]));
+        }
+        
+        switch (emails.length) {
+            case 1:
+                juridica.getPessoa().setEmail1(emails[0]);
+                break;
+            case 2:
+                juridica.getPessoa().setEmail1(emails[0]);
+                juridica.getPessoa().setEmail2(emails[1]);
+                break;
+            case 3:
+                juridica.getPessoa().setEmail1(emails[0]);
+                juridica.getPessoa().setEmail2(emails[1]);
+                juridica.getPessoa().setEmail3(emails[2]);
+                break;
+        }
+        
+        switch (telefones.length) {
+            case 1:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                break;
+            case 2:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                juridica.getPessoa().setTelefone2(telefones[1]);
+                break;
+            case 3:
+                juridica.getPessoa().setTelefone1(telefones[0]);
+                juridica.getPessoa().setTelefone2(telefones[1]);
+                juridica.getPessoa().setTelefone3(telefones[2]);
+                break;
+        }        
+        
         String result[] = jr.getCnae().split(" ");
         CnaeDB dbc = new CnaeDBToplink();
         String cnaex = result[result.length - 1].replace("(", "").replace(")", "");

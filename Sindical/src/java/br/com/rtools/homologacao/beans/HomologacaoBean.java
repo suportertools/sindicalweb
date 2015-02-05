@@ -39,9 +39,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private String tipoAviso = "true";
     private String strData = DataHoje.data();
     private String statusEmpresa = "REGULAR";
-    private boolean renderHomologacao = true;
     private boolean renderHomologar = false;
-    private boolean renderConcluir = false;
     private boolean renderCancelarHorario = false;
     private Date data = DataHoje.dataHoje();
     private int idStatus = 0;
@@ -61,6 +59,9 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private Senha senhaAtendimento = new Senha();
     private List<Senha> listaAtendimentoSimples = new ArrayList();
 
+    private boolean visibleModal = false;
+    private String tipoTelefone = "telefone";
+    
     public HomologacaoBean(){
         macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
         registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
@@ -71,6 +72,14 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
     
+    public void alterarTipoMascara() {
+        if (tipoTelefone.equals("telefone")) {
+            tipoTelefone = "celular";
+        } else {
+            tipoTelefone = "telefone";
+        }
+        agendamento.setTelefone("");
+    }
     
     public String retornaOposicaoPessoa(String documento){
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
@@ -201,13 +210,13 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         Senha senha = homologacaoDB.pesquisaSenhaAgendamento(agendamento.getId());
         if (senha.getId() == -1) {
-            msgConfirma = "Não existe senha para ser excluida!";
+            GenericaMensagem.warn("Atenção", "Não existe senha para ser excluida!");
             return null;
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         if (!sv.deletarObjeto(sv.find("Senha", senha.getId()))) {
-            msgConfirma = "Erro ao excluir senha!";
+            GenericaMensagem.error("Atenção", "Erro ao excluir senha!");
             return null;
         }
         agendamento.setStatus((Status) sv.find("Status", 2));
@@ -217,11 +226,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             GenericaMensagem.error("Erro", "Não foi possível atualizar Agendamento!");
             return null;
         }
-        msgConfirma = "Senha excluída com sucesso";
+        GenericaMensagem.info("Sucesso", "Senha Excluída !");
         sv.comitarTransacao();
         strEndereco = "";
-        renderHomologacao = true;
-        renderConcluir = false;
+        visibleModal = false;
         tipoAviso = "true";
         fisica = new Fisica();
         agendamento = new Agendamento();
@@ -293,16 +301,20 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         senha = dbh.pesquisaAtendimentoIniciado(su.getSessaoUsuario().getId(), macFilial.getMesa(), macFilial.getFilial().getId());
         if (senha.getId() != -1){
             agendamento = senha.getAgendamento();
+            if (agendamento.getTelefone().length() > 14) {
+                tipoTelefone = "celular";
+            } else {
+                tipoTelefone = "telefone";
+            }            
             fisica = senha.getAgendamento().getPessoaEmpresa().getFisica();
             juridica = senha.getAgendamento().getPessoaEmpresa().getJuridica();
             pessoaEmpresa = senha.getAgendamento().getPessoaEmpresa();
             profissao = senha.getAgendamento().getPessoaEmpresa().getFuncao();
             renderHomologar = true;
-            renderConcluir = true;
+            visibleModal = true;
             renderHomologar = true;
             renderCancelarHorario = true;
-            renderHomologacao = false;
-
+            
             GenericaSessao.put("juridicaPesquisa", juridica);
 
             for (int i = 0; i < getListaDemissao().size(); i++) {
@@ -315,14 +327,18 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
             agendamento.setStatus((Status) di.find(new Status(), 5));
             agendamento.setHomologador(su.getSessaoUsuario());                    
-            return "homologacao";
+            
+            PF.update("formConcluirHomologacao");
+            PF.openDialog("dlg_homologacao");
+            
+            return null;
         }
         
         List<Senha> listax = dbh.listaAtendimentoIniciadoSimplesUsuario(macFilial.getFilial().getId(), su.getSessaoUsuario().getId());
 
         if (!listax.isEmpty()){
             senhaAtendimento = listax.get(0);
-            PF.update(":form_cancelar_data_table:tbl_at");
+            PF.update("formHomologacao:tbl_at");
             PF.openDialog("dlg_atendimento_simples");
             return null;
         }
@@ -357,15 +373,19 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 }
                 
                 agendamento = senhax.getAgendamento();
+                if (agendamento.getTelefone().length() > 14) {
+                    tipoTelefone = "celular";
+                } else {
+                    tipoTelefone = "telefone";
+                }                
                 fisica = senhax.getAgendamento().getPessoaEmpresa().getFisica();
                 juridica = senhax.getAgendamento().getPessoaEmpresa().getJuridica();
                 pessoaEmpresa = senhax.getAgendamento().getPessoaEmpresa();
                 profissao = senhax.getAgendamento().getPessoaEmpresa().getFuncao();
                 renderHomologar = true;
-                renderConcluir = true;
+                visibleModal = true;
                 renderHomologar = true;
                 renderCancelarHorario = true;
-                renderHomologacao = false;
                 
                 GenericaSessao.put("juridicaPesquisa", juridica);
                 
@@ -392,7 +412,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                     return null;
                 }
                 di.commit();
-                return "homologacao";
+                
+                PF.update("formConcluirHomologacao");
+                PF.openDialog("dlg_homologacao");
+                
+                return null;
             }
             
             // SENHA DE ATENDIMENTO --------------------------------------------------------------------------------------------------------------------------
@@ -422,7 +446,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                         //listaAtendimentoSimples.clear();
 
                         senhaAtendimento = senhax;
-                        PF.update(":form_cancelar_data_table:tbl_at");
+                        PF.update(":formHomologacao:tbl_at");
                         PF.openDialog("dlg_atendimento_simples");
                         return null;
                     }
@@ -445,7 +469,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                         //listaAtendimentoSimples.clear();
 
                         senhaAtendimento = senhax;
-                        PF.update(":form_cancelar_data_table:tbl_at");
+                        PF.update(":formHomologacao:tbl_at");
                         PF.openDialog("dlg_atendimento_simples");
                         return null;
                     }
@@ -494,7 +518,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             listaAtendimentoSimples.clear();
             
             senhaAtendimento = senhaAtendimentoReserva;
-            PF.update(":form_cancelar_data_table:tbl_at");
+            PF.update(":formHomologacao:tbl_at");
             PF.openDialog("dlg_atendimento_simples");
             return null;
         }
@@ -519,7 +543,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             listaAtendimentoSimples.clear();
 
             senhaAtendimento = senhaAtendimentox;
-            RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
+            RequestContext.getCurrentInstance().update(":formHomologacao:tbl_at");
             RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
             return null;
         }else if (senhaAtendimentox != null && (senhaAtendimentox.getSenha() < senhaHomologacao.getSenha())){
@@ -539,7 +563,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             listaAtendimentoSimples.clear();
 
             senhaAtendimento = senhaAtendimentox;
-            RequestContext.getCurrentInstance().update(":form_cancelar_data_table:tbl_at");
+            RequestContext.getCurrentInstance().update(":formHomologacao:tbl_at");
             RequestContext.getCurrentInstance().execute("PF('dlg_atendimento_simples').show();");
             return null;
         }
@@ -561,10 +585,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         pessoaEmpresa = senhaHomologacao.getAgendamento().getPessoaEmpresa();
         profissao = senhaHomologacao.getAgendamento().getPessoaEmpresa().getFuncao();
         renderHomologar = true;
-        renderConcluir = true;
+        visibleModal = true;
         renderHomologar = true;
         renderCancelarHorario = true;
-        renderHomologacao = false;
+        
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
 
         for (int i = 0; i < getListaDemissao().size(); i++) {
@@ -768,8 +792,9 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 }
             }
         }
-        renderHomologacao = false;
-        renderConcluir = true;
+        
+        visibleModal = true;
+        
         if (nrStatus > 0) {
             fisica = agendamento.getPessoaEmpresa().getFisica();
             juridica = agendamento.getPessoaEmpresa().getJuridica();
@@ -812,23 +837,20 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 case 4: {
                     renderHomologar = false;
                     renderCancelarHorario = true;
-                    renderHomologacao = false;
-                    renderConcluir = true;
+                    visibleModal = true;
                     break;
                 }
                 case 5: {
                     if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == agendamento.getHomologador().getId()) {
                         renderHomologar = true;
                         renderCancelarHorario = true;
-                        renderHomologacao = false;
-                        renderConcluir = true;
+                        visibleModal = true;
                         break;
                     } else {
                         renderHomologar = false;
                         renderCancelarHorario = false;
-                        renderHomologacao = true;
+                        visibleModal = false;
                         agendamento = new Agendamento();
-                        renderConcluir = false;
                         break;
                     }
                 }
@@ -839,38 +861,44 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 }
             }
         }
+        
+        if (agendamento.getTelefone().length() > 14) {
+            tipoTelefone = "celular";
+        } else {
+            tipoTelefone = "telefone";
+        }        
         return "homologacao";
     }
 
     public void salvar() {
         List listDocumento;
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
-            msgConfirma = "Digite o nome do Funcionário!";
+            GenericaMensagem.error("Atenção", "Digite o nome do Funcionário!");
             return;
         }
         // SALVAR FISICA -----------------------------------------------
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-            msgConfirma = "Documento Inválido!";
+            GenericaMensagem.error("Atenção", "Documento Inválido!");
             return;
         }
         FisicaDB fisicaDB = new FisicaDBToplink();
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
             if (!fisicaDB.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(), fisica.getDtNascimento(), fisica.getRg()).isEmpty()) {
-                msgConfirma = "Esta pessoa já esta cadastrada!";
+                GenericaMensagem.error("Atenção", "Esta pessoa já esta cadastrada!");
                 return;
             }
             listDocumento = fisicaDB.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
-                msgConfirma = "Documento já existente!";
+                GenericaMensagem.error("Atenção", "Documento já existente!");
                 return;
             }
             if (sv.inserirObjeto(fisica.getPessoa())) {
                 sv.inserirObjeto(fisica);
             } else {
-                msgConfirma = "Erro ao Inserir pessoa!";
+                GenericaMensagem.error("Atenção", "Erro ao Inserir pessoa!");
                 sv.desfazerTransacao();
                 return;
             }
@@ -878,7 +906,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             listDocumento = fisicaDB.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             for (Object listDocumento1 : listDocumento) {
                 if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
-                    msgConfirma = "Documento já existente!";
+                    GenericaMensagem.error("Atenção", "Documento já existente!");
                     return;
                 }
             }
@@ -886,7 +914,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             if (!fisi.isEmpty()) {
                 for (Fisica fisi1 : fisi) {
                     if (fisi1.getId() != fisica.getId()) {
-                        msgConfirma = "Esta pessoa já esta cadastrada!";
+                        GenericaMensagem.error("Atenção", "Esta pessoa já esta cadastrada!");
                         return;
                     }
                 }
@@ -894,12 +922,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             if (sv.alterarObjeto(fisica.getPessoa())) {
                 if (sv.alterarObjeto(fisica)) {
                 } else {
-                    msgConfirma = "Erro ao alterar Física!";
+                    GenericaMensagem.error("Atenção", "Erro ao alterar Física!");
                     sv.desfazerTransacao();
                     return;
                 }
             } else {
-                msgConfirma = "Erro ao alterar Pessoa!";
+                GenericaMensagem.error("Atenção", "Erro ao alterar Pessoa!");
                 sv.desfazerTransacao();
                 return;
             }
@@ -912,7 +940,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             pessoaEmpresa.setFuncao(this.profissao);            
         }
         if (!sv.alterarObjeto(pessoaEmpresa)) {
-            msgConfirma = "Erro ao alterar Pessoa Empresa!";
+            GenericaMensagem.error("Atenção", "Erro ao alterar Pessoa Empresa!");
             sv.desfazerTransacao();
             return;
         }
@@ -926,7 +954,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 senha.setMesa(0);
                 senha.setHoraChamada("");
                 if (!sv.alterarObjeto(senha)) {
-                    msgConfirma = "Erro ao atualizar Senha!";
+                    GenericaMensagem.error("Atenção", "Erro ao atualizar Senha!");
                     return;
                 }
             }
@@ -949,13 +977,66 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
         if (sv.alterarObjeto(agendamento)) {
             sv.comitarTransacao();
-            msgConfirma = "Registro atualizado com Sucesso!";
-            limpar();
+            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+            //limpar();
         }
         loadListaHomologacao();
     }
-
+    
+    public void closeModal(){
+        HomologacaoDB db = new HomologacaoDBToplink();
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        sv.abrirTransacao();
+        if (registro.isSenhaHomologacao()) {
+            if (nrStatus != 4 && nrStatus != 7) {
+                Senha senha = db.pesquisaSenhaAgendamento(agendamento.getId());
+                senha.setMesa(0);
+                senha.setHoraChamada("");
+                if (!sv.alterarObjeto(senha)) {
+                    msgConfirma = "Erro ao atualizar Senha!";
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
+        }
+        
+        if (nrStatus == 2 || nrStatus == 4) {
+            agendamento.setStatus((Status) sv.find("Status", nrStatus));
+        } else if (nrStatus == 7) {
+            agendamento.setStatus((Status) sv.find("Status", nrStatus));
+            agendamento.setHomologador(null);
+        } else if (nrStatus == 5) {
+            if (DataHoje.converteDataParaInteger(agendamento.getData()) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                agendamento.setStatus((Status) sv.find("Status", 2));
+                agendamento.setHomologador(null);
+            } else {
+                agendamento.setStatus((Status) sv.find("Status", 2));
+                agendamento.setHomologador(null);
+            }
+        }
+        
+        if (sv.alterarObjeto(agendamento)) {
+            sv.comitarTransacao();
+            msgConfirma = "Registro atualizado com Sucesso!";
+            limpar();
+            sv.comitarTransacao();
+        }else{
+            sv.desfazerTransacao();
+        }
+    }
+    
     public void homologar() {
+        if (pessoaEmpresa.getAdmissao().isEmpty()){
+            GenericaMensagem.error("Atenção", "Data de Admissão não pode ser vazio!");
+            return;
+        }
+        
+        if (pessoaEmpresa.getDemissao().isEmpty()){
+            GenericaMensagem.error("Atenção", "Data de Demissão não pode ser vazio!");
+            return;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         agendamento.setHomologador((Usuario) GenericaSessao.getObject("sessaoUsuario"));
         agendamento.setStatus((Status) sv.find(new Status(), 4));
@@ -964,21 +1045,20 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         sv.abrirTransacao();
         if (c != null) {
             if (!sv.deletarObjeto(c)) {
-                msgConfirma = "Erro ao homologar!";
+                GenericaMensagem.error("Atenção", "Erro ao homologar!");
                 sv.desfazerTransacao();
                 return;
             }
         }
-        if (sv.alterarObjeto(agendamento)) {
-            msgConfirma = "Agendamento homologado com sucesso!";
+        if (sv.alterarObjeto(agendamento) && sv.alterarObjeto(pessoaEmpresa)) {
+            GenericaMensagem.info("Sucesso", "Agendamento homologado!");
             sv.comitarTransacao();
         } else {
-            msgConfirma = "Erro ao homologar!";
+            GenericaMensagem.error("Atenção", "Erro ao homologar!");
             sv.desfazerTransacao();
         }
         strEndereco = "";
-        renderHomologacao = true;
-        renderConcluir = false;
+        visibleModal = false;
         tipoAviso = "true";
         fisica = new Fisica();
         agendamento = new Agendamento();
@@ -989,41 +1069,40 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public String cancelarHomologacao() {
         if (cancelamento.getMotivo().isEmpty() || cancelamento.getMotivo().length() <= 5) {
-            msgConfirma = "Motivo de cancelamento inválido";
+            GenericaMensagem.warn("Atenção", "Motivo de cancelamento inválido");
             return null;
         }
         Dao dao = new Dao();
         Status s = agendamento.getStatus();
         dao.openTransaction();
         if (!dao.update(agendamento)) {
-            msgConfirma = "Erro ao cancelar homologagação!";
+            GenericaMensagem.error("Atenção", "Erro ao cancelar homologagação!");
             dao.rollback();
             return null;
         }
         pessoaEmpresa.setDtDemissao(null);
         if (!dao.update(pessoaEmpresa)) {
-            msgConfirma = "Erro ao atualizar Pessoa Empresa";
+            GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa");
             return null;
         }
         cancelamento.setAgendamento(agendamento);
         cancelamento.setDtData(DataHoje.dataHoje());
         cancelamento.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
         if (!dao.save(cancelamento)) {
-            msgConfirma = "Erro ao salvar cancelamento";
+            GenericaMensagem.error("Atenção", "Erro ao salvar cancelamento");
             return null;
         }
         agendamento.setStatus((Status) dao.find(new Status(), 3));
         if (!dao.update(agendamento)) {
             dao.rollback();
             agendamento.setStatus(s);
-            msgConfirma = "Erro ao cancelar homologação!";
+            GenericaMensagem.error("Atenção", "Erro ao cancelar homologação!");
             return null;
         }
         cancelamento = new Cancelamento();
-        msgConfirma = "Homologação cancelada com sucesso";
+        GenericaMensagem.info("Sucesso", "Homologação Cancelada !");
         strEndereco = "";
-        renderHomologacao = true;
-        renderConcluir = false;
+        visibleModal = false;
         tipoAviso = "true";
         fisica = new Fisica();
         agendamento = new Agendamento();
@@ -1036,8 +1115,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public void limpar() {
         strEndereco = "";
-        renderHomologacao = true;
-        renderConcluir = false;
+        visibleModal = false;
         tipoAviso = "true";
         fisica = new Fisica();
         pessoaEmpresa = new PessoaEmpresa();
@@ -1103,28 +1181,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         this.idStatus = idStatus;
     }
 
-    public boolean isRenderHomologacao() {
-        return renderHomologacao;
-    }
-
-    public void setRenderHomologacao(boolean renderHomologacao) {
-        this.renderHomologacao = renderHomologacao;
-    }
-
     public Agendamento getAgendamento() {
         return agendamento;
     }
 
     public void setAgendamento(Agendamento agendamento) {
         this.agendamento = agendamento;
-    }
-
-    public boolean isRenderConcluir() {
-        return renderConcluir;
-    }
-
-    public void setRenderConcluir(boolean renderConcluir) {
-        this.renderConcluir = renderConcluir;
     }
 
     public Juridica getJuridica() {
@@ -1307,6 +1369,22 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setSenhaAtendimento(Senha senhaAtendimento) {
         this.senhaAtendimento = senhaAtendimento;
+    }
+
+    public boolean isVisibleModal() {
+        return visibleModal;
+    }
+
+    public void setVisibleModal(boolean visibleModal) {
+        this.visibleModal = visibleModal;
+    }
+
+    public String getTipoTelefone() {
+        return tipoTelefone;
+    }
+
+    public void setTipoTelefone(String tipoTelefone) {
+        this.tipoTelefone = tipoTelefone;
     }
 
 }

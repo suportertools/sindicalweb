@@ -49,6 +49,10 @@ public class JuridicaReceita implements Serializable {
     private String cidade;
     @Column(name = "ds_uf", length = 2)
     private String uf;
+    @Column(name = "ds_email", length = 1000)
+    private String email;
+    @Column(name = "ds_telefone", length = 500)
+    private String telefone;
         
     public JuridicaReceita() {
         this.id = -1;
@@ -232,5 +236,21 @@ public class JuridicaReceita implements Serializable {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 }

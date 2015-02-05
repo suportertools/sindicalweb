@@ -1047,7 +1047,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 //msgConfirma = "CPF verificado com sucesso";
                 pessoaEmpresa = pem;
                 fisica = pessoaEmpresa.getFisica();
-                profissao = pessoaEmpresa.getFuncao();
+                profissao = (pessoaEmpresa.getFuncao() == null) ? new Profissao() : pessoaEmpresa.getFuncao();
                 GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
@@ -1067,7 +1067,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 pessoaEmpresa = pem;
                 fisica = pessoaEmpresa.getFisica();
-                profissao = pessoaEmpresa.getFuncao();
+                profissao = (pessoaEmpresa.getFuncao() == null) ? new Profissao() : pessoaEmpresa.getFuncao();
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
                 // FUNCIONARIO JA FOI AGENDADO

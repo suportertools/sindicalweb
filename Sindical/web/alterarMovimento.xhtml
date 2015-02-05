@@ -1,229 +1,202 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Alterar Movimento</title>
+        <title>Sindical - Alterar Movimento</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formAlterarMovimento">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Alterar Movimento" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                </center>
-                <br /><br />
-                <h:panelGrid styleClass="divMae" style="width: 1024px; margin: 0 auto;" rendered="#{alterarMovimentoBean.movimento.id != -1}">
-                    <rich:dataTable value="#{alterarMovimentoBean.listaMovimento}" var="linha" style="width:100%" id="tbl" rendered="false">
-                        <rich:column styleClass="coluna">
-                            <f:facet name="header"><h:outputText value="#"/></f:facet>
-                            <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                <a4j:ajax event="change" render="this" />
-                            </h:selectBooleanCheckbox>
-                        </rich:column> 
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Alterar Movimento" styleClass="fonteHeader" />
+                        <div style="clear: both"></div>
+                        <h:form id="formAlterarMovimento">
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="3" style="width: 400px">
+                                    <h:column>
+                                        <p:outputLabel value="ID" /><br />
+                                        <p:outputLabel value="#{alterarMovimentoBean.movimento.id}" style="font-weight: bold;"/>
+                                    </h:column>
 
-                        <rich:column>
-                            <f:facet name="header"><h:outputText value="Documento"/></f:facet>
-                            <h:outputLabel value="#{linha.argumento1.documento}" />
-                        </rich:column> 
-                    </rich:dataTable>
+                                    <h:column>
+                                        <p:outputLabel value="Nome" /><br />
+                                        <p:outputLabel value="#{alterarMovimentoBean.movimento.pessoa.nome}" style="font-weight: bold;"/>
+                                    </h:column>
 
-                    <h:panelGrid columns="3">
-                        <h:column>
-                            <h:outputLabel value="ID: " styleClass="fontePadrao"/>
-                            <h:outputLabel value="#{alterarMovimentoBean.movimento.id}" styleClass="fontePadraoNegrito"/>
-                        </h:column>
-                        <h:column>
-                            <h:outputLabel value="Nome: " styleClass="fontePadrao" style="margin-left: 15px"/>
-                            <h:outputLabel value="#{alterarMovimentoBean.movimento.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                        </h:column>
-                        <h:column rendered="#{alterarMovimentoBean.baixa == null and alterarMovimentoBean.movimento.acordo == null}">
-                            <h:outputLabel value="Status: " styleClass="fontePadrao" style="margin-left: 15px"/>
-                            <h:selectBooleanCheckbox id="i_status" value="#{alterarMovimentoBean.movimento.ativo}"/>
-                            <h:outputLabel value=" Ativo " styleClass="fontePadrao" for="i_status" style="cursor: pointer"/>
-                        </h:column>
-                    </h:panelGrid>
-                <br />
-                </h:panelGrid>
-                
-                <h:panelGrid styleClass="divMae" style="background: #efefef; width: 1024px;  margin: 0 auto; clear: both;" rendered="#{alterarMovimentoBean.movimento.id != -1}">
-                    <h:panelGrid columns="4">
-                        <h:column>
-                            <h:outputLabel value="Serviço: " styleClass="fontePadraoNegrito" />
-                            <h:selectOneMenu value="#{alterarMovimentoBean.idServicos}">
-                                <a4j:ajax event="change" render="this" />
-                                <f:selectItems value="#{alterarMovimentoBean.listaServico}" />
-                            </h:selectOneMenu>
-                            <!-- <h:outputLabel value="# {alterarMovimentoBean.movimento.servicos.descricao}" /> -->
-                        </h:column>
-                        
-                        <h:column>
-                            <h:outputLabel value="Tipo Serviço: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:selectOneMenu style="margin-right: 30px" value="#{alterarMovimentoBean.idTipoServicos}">
-                                <a4j:ajax event="change" render="this" />
-                                <f:selectItems value="#{alterarMovimentoBean.listaTipoServico}" />
-                            </h:selectOneMenu>
-                            <!-- <h:outputLabel value="# {alterarMovimentoBean.movimento.tipoServico.descricao}" /> -->
-                        </h:column>
-                        
-                        <h:column>
-                            <h:outputLabel value="Referência: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:inputText value="#{alterarMovimentoBean.movimento.referencia}" styleClass="referencia" size="4"/>
-                        </h:column>
-                        
-                        <h:column>
-                            <h:outputLabel value="Vencimento: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:inputText value="#{alterarMovimentoBean.movimento.vencimento}" rendered="#{alterarMovimentoBean.baixa == null}"  styleClass="data" size="8"/>
-                            <h:outputText value="#{alterarMovimentoBean.movimento.vencimento}" rendered="#{alterarMovimentoBean.baixa != null}" styleClass="fontePadrao"/>
-                        </h:column>
-                    <br />
-                    </h:panelGrid>
-                    
-                    
-                    <h:panelGrid columns="3">
-                        <h:column>
-                            <h:outputLabel value="Valor: " styleClass="fontePadraoNegrito"/>
-                            <h:inputText value="#{alterarMovimentoBean.movimento.valor}" rendered="#{alterarMovimentoBean.baixa == null}" size="8"/>
-                            <h:outputText value="R$ #{alterarMovimentoBean.movimento.valor}" rendered="#{alterarMovimentoBean.baixa != null}" styleClass="fontePadrao"/>
-                        </h:column>
-                        
-                        <h:column>
-                            <h:outputLabel value="Desconto até o Vencimento: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:inputText value="#{alterarMovimentoBean.movimento.descontoAteVencimento}" rendered="#{alterarMovimentoBean.baixa == null}" size="8"/>
-                            <h:outputText value="R$ #{alterarMovimentoBean.movimento.descontoAteVencimento}" rendered="#{alterarMovimentoBean.baixa != null}" styleClass="fontePadrao"/>
-                        </h:column>
-                        
-                        <h:column>
-                            <h:outputLabel value="Quantidade: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:inputText value="#{alterarMovimentoBean.movimento.quantidade}" rendered="#{alterarMovimentoBean.baixa == null}" size="1"/>
-                            <h:outputText value="#{alterarMovimentoBean.movimento.quantidade}" rendered="#{alterarMovimentoBean.baixa != null}" styleClass="fontePadrao"/>
-                        </h:column>
-                    
-                    <br />
-                    </h:panelGrid>
-                    
-                    <h:panelGrid columns="1">
-                        <h:outputLabel value="Histórico: " styleClass="fontePadraoNegrito"/>
-                        <h:column>
-                            <h:inputTextarea value="#{alterarMovimentoBean.lote.historico}" rows="3" cols="70"/>
-                        </h:column>
-                    <br />
-                    </h:panelGrid>
-                    
-                    
-                    <h:panelGrid columns="1">
-                        
-                        <h:column rendered="#{alterarMovimentoBean.lote.condicaoPagamento != null}">
-                            <h:outputLabel value="Condição de Pagamento: " styleClass="fontePadraoNegrito" />
-                            <!-- SERA ALTERADO AUTOMATICAMENTE SEGUNDO O ROGERIO
-                            <h:selectOneMenu value="# {alterarMovimentoBean.idCondicaoPagamento}" rendered="# {alterarMovimentoBean.baixa == null}">
-                                <a4j:ajax event="change" render="this" />
-                                <f:selectItems value="# {alterarMovimentoBean.listaCondicao}" />
-                            </h:selectOneMenu> -->
+                                    <h:column rendered="#{alterarMovimentoBean.baixa == null and alterarMovimentoBean.movimento.acordo == null}">
+                                        <p:outputLabel value="Status"/><br />
+                                        <p:selectBooleanCheckbox value="#{alterarMovimentoBean.movimento.ativo}" itemLabel="Ativo"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
                             
-                            <h:outputText value="#{alterarMovimentoBean.lote.condicaoPagamento.descricao}" styleClass="fontePadrao"/>
-                        </h:column>
-                        
-                    <br />
-                    </h:panelGrid>
-                    
-                    <rich:panel>
-                        <h:panelGrid columns="5">
-                            <!-- <h:column>
-                                <h:selectBooleanCheckbox id="i_obrigacao" value="# {alterarMovimentoBean.movimento.obrigacao}"/>
-                                <h:outputLabel value=" Obrigação " styleClass="fontePadrao" for="i_obrigacao" style="cursor: pointer"/>    
-                            </h:column> --> 
+                            <p:messages showDetail="true" closable="true" />
+                            <p:growl showDetail="true" />
                             
-                            <h:column>
-                                <h:selectBooleanCheckbox id="i_desconto_folha" value="#{alterarMovimentoBean.lote.descontoFolha}" disabled="#{alterarMovimentoBean.baixa == null}" style="margin-left: 15px"/>
-                                <h:outputLabel value=" Desconto em Folha " styleClass="fontePadrao" for="i_desconto_folha" style="cursor: pointer"/>    
-                            </h:column>
-                        </h:panelGrid>
-                    
-                    <br />
-                    </rich:panel>
-                    <hr />
-                    
-                    <h:panelGrid rendered="#{alterarMovimentoBean.baixa != null}">
-                        <h:outputLabel value="Baixado" styleClass="fonteFranklinNegrito" style="font-size: 20pt"/>
-                        <h:column>
-                            <h:outputLabel value="Pagamento: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:inputText value="#{alterarMovimentoBean.baixa.baixa}" styleClass="data" size="8"/>
-                        </h:column>
-                    </h:panelGrid>
-                        
-                    <h:panelGrid rendered="#{alterarMovimentoBean.baixa != null}">
-                        <h:column>
-                            <h:outputLabel value="Usuário que Baixou: " styleClass="fontePadraoNegrito" style="margin-left: 15px"/>
-                            <h:outputText value="#{alterarMovimentoBean.baixa.usuario.login}" />
-                            <h:commandButton value="Alterar Usuário" action="#{chamadaPaginaBean.pesquisaUsuario()}"/> 
-                        </h:column>
-                    </h:panelGrid>
-                </h:panelGrid>
-                
-                <br />
-                <h:panelGrid styleClass="divMae" style="width: 1024px; margin: 0 auto; clear: both" rendered="#{alterarMovimentoBean.movimento.id != -1}" columns="1">
-                    <h:column>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Alterar" title="Confirma Alterar Dados" action="#{alterarMovimentoBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');"  styleClass="idExcluir iLink" value="Excluir" title="Excluir este Movimento" />
-                    </h:column>
-                </h:panelGrid>
-                
-                <h:panelGrid styleClass="divMae" style="width: 1024px; margin: 0 auto; clear: both" rendered="#{alterarMovimentoBean.movimento.id == -1}">
-                    <h:outputLabel value="Este movimento foi excluído! " styleClass="fontePadraoNegrito" style="font-size: 15px"/><br /><br />
-                    <h:commandLink styleClass="idNovo iLink" value="Voltar" title="Voltar para tela anterior" action="#{alterarMovimentoBean.voltar()}" />
-                </h:panelGrid>
-                
-                <div id="boxes">
-                    <div id="divExcluir" class="window" style="height: 250px;">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir este movimento?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            <h:panelGrid columns="4" style="margin-top: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Serviço" /><br />
+                                    <p:selectOneMenu value="#{alterarMovimentoBean.idServicos}" style="margin-right: 20px; padding-right: 20px">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{alterarMovimentoBean.listaServico}" />
+                                    </p:selectOneMenu>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Tipo Serviço" /><br />
+                                    <p:selectOneMenu  value="#{alterarMovimentoBean.idTipoServicos}" style="margin-right: 20px; padding-right: 20px">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{alterarMovimentoBean.listaTipoServico}" />
+                                    </p:selectOneMenu>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Referência" /><br />
+                                    <p:inputMask value="#{alterarMovimentoBean.movimento.referencia}" size="6" mask="99/9999" style="margin-right: 20px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Vencimento" /><br />
+                                    <p:inputMask value="#{alterarMovimentoBean.movimento.vencimento}" rendered="#{alterarMovimentoBean.baixa == null}" mask="99/99/9999" size="8"/>
+                                    <p:inputMask value="#{alterarMovimentoBean.movimento.vencimento}" rendered="#{alterarMovimentoBean.baixa != null}" mask="99/99/9999" size="8" disabled="true"/>
+                                </h:column>
                             </h:panelGrid>
-                            <br />
-                            <div style="float: left">
-                                <h:outputLabel value="Digite o motivo para Exclusão: " style="font-weight: bold"/>
-                                <h:inputTextarea value="#{alterarMovimentoBean.historico}" cols="30" rows="5"> 
 
-                                </h:inputTextarea>
-                            </div>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{alterarMovimentoBean.inativarBoleto}" title="Excluir" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{alterarMovimentoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-            </h:form>
-        </f:view>
+                            <h:panelGrid columns="5" style="margin-top: 10px; width: 700px">
+                                <h:column>
+                                    <p:outputLabel value="Valor" /><br />
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.valorString}" rendered="#{alterarMovimentoBean.baixa == null}" size="8" style="text-align: right">
+                                        <p:ajax event="change" update="@this"/>
+                                    </p:inputText>
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.valorString}" rendered="#{alterarMovimentoBean.baixa != null}" size="8" style="text-align: right" disabled="true"/>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Desconto até o Vencimento" /><br />
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.descontoAteVencimento}" rendered="#{alterarMovimentoBean.baixa == null}" size="18" style="text-align: right"/>
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.descontoAteVencimento}" rendered="#{alterarMovimentoBean.baixa != null}" size="18" style="text-align: right" disabled="true"/>
+                                </h:column>
+
+                                <h:column>
+                                    <p:outputLabel value="Quantidade" /><br />
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.quantidade}" rendered="#{alterarMovimentoBean.baixa == null}" size="6" style="text-align: right"/>
+                                    <p:inputText value="#{alterarMovimentoBean.movimento.quantidade}" rendered="#{alterarMovimentoBean.baixa != null}"  size="6" style="text-align: right" disabled="true"/>
+                                </h:column>
+                                
+                                <h:column rendered="#{alterarMovimentoBean.lote.condicaoPagamento != null}">
+                                    <p:outputLabel value="Condição de Pagamento" /><br />
+                                    <!-- SERA ALTERADO AUTOMATICAMENTE SEGUNDO O ROGERIO
+                                    <h:selectOneMenu value="# {alterarMovimentoBean.idCondicaoPagamento}" rendered="# {alterarMovimentoBean.baixa == null}">
+                                        <a4j:ajax event="change" render="this" />
+                                        <f:selectItems value="# {alterarMovimentoBean.listaCondicao}" />
+                                    </h:selectOneMenu> -->
+
+                                    <p:inputText value="#{alterarMovimentoBean.lote.condicaoPagamento.descricao}" size="16" disabled="true"/>
+                                </h:column> 
+                                
+                                <h:column>                                
+                                    <!-- <h:column>
+                                        <h:selectBooleanCheckbox id="i_obrigacao" value="# {alterarMovimentoBean.movimento.obrigacao}"/>
+                                        <h:outputLabel value=" Obrigação " styleClass="fontePadrao" for="i_obrigacao" style="cursor: pointer"/>    
+                                    </h:column> --> 
+
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{alterarMovimentoBean.lote.descontoFolha}" disabled="#{alterarMovimentoBean.baixa == null}" itemLabel="Desconto em Folha"/>
+                                    </h:column>
+                                </h:column>                                
+                            </h:panelGrid> 
+                            
+                            <h:panelGrid columns="1" style="width: 100%; margin-top: 10px">
+                                <h:column>
+                                    <p:outputLabel value="Histórico" /><br />
+                                    <p:inputTextarea value="#{alterarMovimentoBean.lote.historico}" rows="3" style="width: 100%"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid rendered="#{alterarMovimentoBean.baixa != null}">
+                                <p:outputLabel value="Baixado" style="font-size: 20pt!important"/>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid rendered="#{alterarMovimentoBean.baixa != null}" columns="2">
+                                <h:column>
+                                    <p:outputLabel value="Pagamento" style="margin-left: 15px"/><br />
+                                    <p:inputMask value="#{alterarMovimentoBean.baixa.baixa}" size="8" mask="99/99/9999" style="margin-right: 20px"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Usuário que Baixou" /><br />
+                                    <p:commandButton value="#{alterarMovimentoBean.baixa.usuario.login}" action="#{chamadaPaginaBean.pesquisaUsuario()}" ajax="false"/> 
+                                </h:column>
+                            </h:panelGrid>
+
+                            <hr />
+                            
+                            <h:panelGrid columns="1">
+                                <h:column>
+                                    <p:commandButton value="Alterar" title="Confirma Alterar Dados" onclick="PF('dlg_salvar').show()"/>
+                                    <p:commandButton value="Excluir" title="Excluir este Movimento" onclick="PF('dlg_excluir').show()"/>
+                                </h:column>
+                            </h:panelGrid> 
+                            
+                            <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Alterações" width="400" resizable="false">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente salvar essas alterações?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-check" value="Sim" title="Salvar" action="#{alterarMovimentoBean.salvar()}" update="formAlterarMovimento" />
+                                    <p:commandButton icon="ui-icon-close" value="Não" title="Cancelar" oncomplete="PF('dlg_salvar').hide();"/>
+                                </h:panelGrid>
+                            </p:dialog>  
+                            
+                            <p:dialog widgetVar="dlg_excluir" modal="true" header="Exclusão de Movimento" width="400" resizable="false">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente EXCLUIR esse movimento?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid>
+                                    <p:outputLabel value="Digite um motivo para exclusão" style="font-size: 10pt!important; font-weight: bold"/>
+                                    <p:inputTextarea value="#{alterarMovimentoBean.historico}" style="width: 100%"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-check" value="Sim" title="Excluir" action="#{alterarMovimentoBean.inativarBoleto()}" update="formAlterarMovimento" />
+                                    <p:commandButton icon="ui-icon-close" value="Não" title="Cancelar" oncomplete="PF('dlg_excluir').hide();"/>
+                                </h:panelGrid>
+                            </p:dialog>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

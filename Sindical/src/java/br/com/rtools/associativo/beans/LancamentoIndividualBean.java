@@ -58,7 +58,6 @@ public class LancamentoIndividualBean {
     private String entrada = "sim";
     private String descontoFolha = "nao";
     private String totalPagar = "";
-    private String msgConfirma = "";
     private Pessoa responsavel = new Pessoa();
     private Lote lote = new Lote();
     private ServicoPessoa servicoPessoa = new ServicoPessoa();
@@ -169,12 +168,12 @@ public class LancamentoIndividualBean {
         }
         
         if (Moeda.converteFloatR$Float(valor) !=  Moeda.converteUS$(totalPagar)){
-            msgConfirma = " Os valores da parcela não corresponde ao Total do Serviço, verifique!";
+            GenericaMensagem.warn("Atenção", "Os valores da parcela não corresponde ao Total do Serviço, verifique!");
             return null;
         }
         
         if ((listaJuridica.get(idJuridica).getDescription().equals("0"))){
-            msgConfirma = "Empresa Conveniada não encontrada!";
+            GenericaMensagem.warn("Atenção", "Empresa Conveniada não encontrada!");
             return null;
         }
         
@@ -217,7 +216,7 @@ public class LancamentoIndividualBean {
         
         sv.abrirTransacao();
         if (!sv.inserirObjeto(lote) ){
-            msgConfirma = " Erro ao salvar Lote!";
+            GenericaMensagem.error("Atenção", "Erro ao salvar Lote!");
             sv.desfazerTransacao();
             return null;
         }
@@ -228,7 +227,7 @@ public class LancamentoIndividualBean {
             pessoaComplemento.setPessoa(fisica.getPessoa());
             
             if (!sv.inserirObjeto(pessoaComplemento)){
-                msgConfirma = " Erro ao salvar Pessoa Complemento!";
+                GenericaMensagem.error("Atenção", "Erro ao salvar Pessoa Complemento!");
                 sv.desfazerTransacao();
                 return null;
             }
@@ -236,8 +235,8 @@ public class LancamentoIndividualBean {
         for (int i = 0; i < listaMovimento.size(); i++){
             ((Movimento)listaMovimento.get(i).getArgumento0()).setLote(lote);
             if (!sv.inserirObjeto((Movimento)listaMovimento.get(i).getArgumento0())){
-                msgConfirma = " Erro ao salvar Movimento!";
-                sv.desfazerTransacao();
+                GenericaMensagem.error("Atenção", "Erro ao salvar Movimento!");
+                sv.desfazerTransacao();                
                 return null;
             }
         }
@@ -252,12 +251,12 @@ public class LancamentoIndividualBean {
         );
         
         if (!sv.inserirObjeto(guias)){
-            msgConfirma = " Erro ao salvar Guias!";
+            GenericaMensagem.error("Atenção", "Erro ao salvar Guias!");
             sv.desfazerTransacao();
             return null;
         }
         sv.comitarTransacao();
-        msgConfirma = " Lançamento efetuado com Sucesso!";
+        GenericaMensagem.info("OK", "Lançamento efetuado com Sucesso!");
         return null;
     }
     
@@ -356,7 +355,7 @@ public class LancamentoIndividualBean {
                 return listaJuridica;
             }
             
-            if(result.isEmpty()){
+            if(!result.isEmpty()){
                 for (int i = 0; i < result.size(); i++){
                     listaJuridica.add(new SelectItem(i,
                                       result.get(i).getPessoa().getNome(),
@@ -451,7 +450,7 @@ public class LancamentoIndividualBean {
             
             // PESQUISA NA TABELA DO SERASA tanto pessoa fisica quanto juridica ----
             if (!dbl.listaSerasa(responsavel.getId()).isEmpty()){
-                msgConfirma = "Esta pessoa contém o nome no Serasa, não poderá ser responsável!";
+                GenericaMensagem.warn("Atenção", "Esta pessoa contém o nome no Serasa, não poderá ser responsável!");
                 return responsavel = new Pessoa();
             }
             
@@ -460,14 +459,14 @@ public class LancamentoIndividualBean {
                 // VERIFICA SE É CONTRIBUINTE --------------
                 List contribuintes = dbl.pesquisaContribuinteLancamento(responsavel.getId());
                 if (!contribuintes.isEmpty()){
-                    msgConfirma = "Esta empresa foi fechada, não poderá ser responsável!";
+                    GenericaMensagem.warn("Atenção", "Esta empresa foi fechada, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
                 // VERIFICA SE A EMPRESA CONTEM LISTA DE ENDERECO -------
                 List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
                 if (lista_pe.isEmpty()){
-                    msgConfirma = "Esta empresa não possui endereço cadastrado, não poderá ser responsável!";
+                    GenericaMensagem.warn("Atenção", "Esta empresa não possui endereço cadastrado, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
@@ -481,7 +480,7 @@ public class LancamentoIndividualBean {
                 // VERIFICA SE TEM MOVIMENTO EM ABERTO (DEVEDORES)
                 List listam = dbl.pesquisaMovimentoFisica(responsavel.getId());
                 if (!listam.isEmpty()){
-                    msgConfirma = "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!";
+                    GenericaMensagem.warn("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
@@ -489,14 +488,14 @@ public class LancamentoIndividualBean {
                 DataHoje dh = new DataHoje();
                 int idade = dh.calcularIdade(fi.getNascimento());
                 if (idade < 18){
-                    msgConfirma = "Esta pessoa não é maior de idade, não poderá ser responsável!";
+                    GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
                 // VERIFICA SE A PESSOA CONTEM LISTA DE ENDERECO -------
                 List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
                 if (lista_pe.isEmpty()){
-                    msgConfirma = "Esta pessoa não possui endereço cadastrado, não poderá ser responsável!";
+                    GenericaMensagem.warn("Atenção", "Esta pessoa não possui endereço cadastrado, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
@@ -512,8 +511,7 @@ public class LancamentoIndividualBean {
                 // VERIFICA SE TEM MOVIMENTO EM ABERTO (DEVEDORES)
                 List listam = dbl.pesquisaMovimentoFisica(fisica.getPessoa().getId());
                 if (!listam.isEmpty()){
-                    msgConfirma = "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!";
-                    GenericaMensagem.error(msgConfirma, null);
+                    GenericaMensagem.warn("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
@@ -521,16 +519,14 @@ public class LancamentoIndividualBean {
                 DataHoje dh = new DataHoje();
                 int idade = dh.calcularIdade(fisica.getNascimento());
                 if (idade < 18){
-                    msgConfirma = "Esta pessoa não é maior de idade, não poderá ser responsável!";
-                    GenericaMensagem.error(msgConfirma, null);
+                    GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 
                 // VERIFICA SE A PESSOA CONTEM LISTA DE ENDERECO -------
                 List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(fisica.getPessoa().getId());
                 if (lista_pe.isEmpty()){
-                    msgConfirma = "Esta pessoa não possui endereço cadastrado, não poderá ser responsável!";
-                    GenericaMensagem.error(msgConfirma, null);
+                    GenericaMensagem.warn("Atenção", "Esta pessoa não possui endereço cadastrado, não poderá ser responsável!");
                     return responsavel = new Pessoa();
                 }
                 return responsavel = fisica.getPessoa();
@@ -549,14 +545,6 @@ public class LancamentoIndividualBean {
 
     public void setDescontoFolha(String descontoFolha) {
         this.descontoFolha = descontoFolha;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
     }
 
     public List<SelectItem> getListaParcelas() {
