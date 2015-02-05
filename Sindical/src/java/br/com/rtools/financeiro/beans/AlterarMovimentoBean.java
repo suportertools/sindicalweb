@@ -43,12 +43,12 @@ public final class AlterarMovimentoBean implements Serializable{
     private int idServicos = 0;
     private int idTipoServicos = 0;
     private int idCondicaoPagamento = 0;
-    private List<SelectItem> listaServico = new ArrayList<SelectItem>();
+    private List<SelectItem> listaServico = new ArrayList();
     private List<Servicos> selectServico = new ArrayList();
-    private List<SelectItem> listaTipoServico = new ArrayList<SelectItem>();
+    private List<SelectItem> listaTipoServico = new ArrayList();
     private List<TipoServico> selectTipoServico = new ArrayList();
     private List<CondicaoPagamento> selectCondicao = new ArrayList();
-    private List<SelectItem> listaCondicao = new ArrayList<SelectItem>();
+    private List<SelectItem> listaCondicao = new ArrayList();
     private String historico = "";
     
     public AlterarMovimentoBean(){
