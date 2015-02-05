@@ -31,6 +31,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -67,7 +68,7 @@ public class AcordoBean {
     private List<int[]> quantidade = new ArrayList<int[]>();
     List<Boolean> listaMarcados = new ArrayList<Boolean>();
     private String ultimaData = "";
-    private String mensagem = "";
+    //private String mensagem = "";
     private boolean imprimeVerso = false;
     private Historico historico = new Historico();
     private boolean imprimir = true;
@@ -79,19 +80,23 @@ public class AcordoBean {
     
     private String emailContato = "";
     
+    public String converteValorString(String valor){
+        return Moeda.converteR$(valor);
+    }
+    
     public void verificaEmail() {
         Juridica jur = new Juridica();
         JuridicaDB db = new JuridicaDBToplink();
         jur = db.pesquisaJuridicaPorPessoa(pessoa.getId());
         if (pessoaEnvio.getEmail1().isEmpty()) {
-            mensagem = "Digite um email válido!";
+            GenericaMensagem.warn("Atenção", "Digite um email válido!");
             pessoaEnvio = new Pessoa();
             return;
         }
 
         if (emailPara.equals("contabilidade")) {
             if (jur.getContabilidade() == null) {
-                mensagem = "Empresa sem contabilidade vinculada!";
+                GenericaMensagem.warn("Atenção", "Empresa sem contabilidade vinculada!");
                 pessoaEnvio = new Pessoa();
                 return;
             }
@@ -127,7 +132,7 @@ public class AcordoBean {
 
                 pessoaEnvio = jur.getContabilidade().getPessoa();
             } else {
-                mensagem = "Digite um email válido!";
+                GenericaMensagem.warn("Atenção", "Digite um email válido!");
                 pessoaEnvio = new Pessoa();
             }
         } else {
@@ -151,7 +156,7 @@ public class AcordoBean {
                 pessoaEnvio = jur.getPessoa();
             } else if (!pessoaEnvio.getEmail1().isEmpty()) {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-                jur.getContabilidade().getPessoa().setEmail1(pessoaEnvio.getEmail1());
+                jur.getPessoa().setEmail1(pessoaEnvio.getEmail1());
                 sv.abrirTransacao();
 
                 if (sv.alterarObjeto(jur.getPessoa())) {
@@ -162,7 +167,7 @@ public class AcordoBean {
 
                 pessoaEnvio = jur.getPessoa();
             } else {
-                mensagem = "Digite um email válido!";
+                GenericaMensagem.warn("Atenção", "Digite um email válido!");
                 pessoaEnvio = new Pessoa();
             }
         }
@@ -229,10 +234,9 @@ public class AcordoBean {
                     );
                 }
                 if (!ret[1].isEmpty()) {
-                    mensagem = ret[1];
-
+                    GenericaMensagem.warn("Atenção", ret[1]);
                 } else {
-                    mensagem = ret[0];
+                    GenericaMensagem.info("OK", ret[0]);
 
                 }
                 listaImp.clear();
@@ -365,23 +369,23 @@ public class AcordoBean {
 
     public synchronized void efetuarAcordo() {
         if (listaOperado.isEmpty()) {
-            mensagem = "Acordo não foi gerado";
+            GenericaMensagem.error("Atenção", "Acordo não foi gerado!");
             return;
         }
-        List<Movimento> listaAcordo = new ArrayList<Movimento>();
+        List<Movimento> listaAcordo = new ArrayList();
         List<String> listaHistorico = new ArrayList();
 
-        for (int i = 0; i < listaOperado.size(); i++) {
-            listaAcordo.add((Movimento) listaOperado.get(i).getArgumento2());
-            listaHistorico.add((String) listaOperado.get(i).getArgumento3());
+        for (DataObject listaOperado1 : listaOperado) {
+            listaAcordo.add((Movimento) listaOperado1.getArgumento2());
+            listaHistorico.add((String) listaOperado1.getArgumento3());
         }
 
         try {
             // 07-11-2011 dep arrecad. secrp rogerio afirmou que o nr_ctr_boleto dos acordados tem que ser zerados,
             // para que nao haja conflito com os novos boletos gerados (* (nr_num_documento, nr_ctr_boleto, id_conta_cobranca) *)
-            mensagem = GerarMovimento.salvarListaAcordo(acordo, listaAcordo, listaMovs, listaHistorico);
+            String mensagem = GerarMovimento.salvarListaAcordo(acordo, listaAcordo, listaMovs, listaHistorico);
             if (mensagem.isEmpty()) {
-                mensagem = "Acordo concluído com sucesso!";
+                GenericaMensagem.info("Sucesso", "Acordo Concluído!");
             }
 
             imprimir = false;
@@ -396,8 +400,11 @@ public class AcordoBean {
                     ((MovimentosReceberSocialJSFBean) GenericaSessao.getObject("movimentosSocialBean")).getListaMovimento().clear();
                     break;
             }
+            if (!mensagem.isEmpty())
+                GenericaMensagem.error("Atenção", mensagem);
         } catch (Exception e) {
-            mensagem = "Acordo não foi gerado";
+            GenericaMensagem.error("Atenção", "Acordo não foi gerado");
+            
         }
     }
 
@@ -411,7 +418,7 @@ public class AcordoBean {
         int i = 0;
         int j = 0;
         List listas = new ArrayList();
-        List<Integer> subLista = new ArrayList<Integer>();
+        List<Integer> subLista = new ArrayList();
         DataHoje data = new DataHoje();
         String dataPrincipal = "";
         String referencia = "";
@@ -421,7 +428,7 @@ public class AcordoBean {
             } else {
                 if (!(subLista.isEmpty())) {
                     listas.add(subLista);
-                    subLista = new ArrayList<Integer>();
+                    subLista = new ArrayList();
                 }
                 while (i < listaOperado.size()) {
                     if (listaOperado.size() > (i + 1)) {
@@ -436,7 +443,7 @@ public class AcordoBean {
         }
         if (!(subLista.isEmpty())) {
             listas.add(subLista);
-            subLista = new ArrayList<Integer>();
+            subLista = new ArrayList();
         }
         i = 0;
         j = 0;
@@ -686,7 +693,7 @@ public class AcordoBean {
                                     0,
                                     0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
 
-                            listaOperado.add(new DataObject(new Boolean(false), new Integer(++k), mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
+                            listaOperado.add(new DataObject(false, ++k, mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
 
                             if (j == 0) {
                                 ultimoVencimento = acordo.getData();
@@ -694,6 +701,9 @@ public class AcordoBean {
 
                             if (frequencia == 30) {
                                 ultimoVencimento = data.incrementarMeses(1, ultimoVencimento);
+                                if (ultimoVencimento.substring(3,5).equals("02")){
+                                    ultimoVencimento = acordo.getData().substring(0, 2) + ultimoVencimento.substring(2);
+                                }
                             } else if (frequencia == 7) {
                                 ultimoVencimento = data.incrementarSemanas(1, ultimoVencimento);
                             }
@@ -725,7 +735,7 @@ public class AcordoBean {
                                 0,
                                 0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
 
-                        listaOperado.add(new DataObject(new Boolean(false), new Integer(++k), mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
+                        listaOperado.add(new DataObject(false, ++k, mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
 
                         if (parcela > 1) {
                             if (frequenciaSind == 30) {
@@ -1035,14 +1045,6 @@ public class AcordoBean {
 
     public void setFrequenciaSind(int frequenciaSind) {
         this.frequenciaSind = frequenciaSind;
-    }
-
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
     }
 
     public boolean isImprimeVerso() {

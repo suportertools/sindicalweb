@@ -8,6 +8,7 @@ import br.com.rtools.retornos.CaixaFederal;
 import br.com.rtools.retornos.Itau;
 import br.com.rtools.retornos.Real;
 import br.com.rtools.retornos.Santander;
+import br.com.rtools.retornos.Sicoob;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.ArquivoRetorno;
@@ -115,6 +116,15 @@ public class RetornoSocialBean {
                 } else if (ArquivoRetorno.SANTANDER == contaCobranca.getContaBanco().getBanco().getId()) {
                     if (ArquivoRetorno.SICOB == contaCobranca.getLayout().getId()) {
                         arquivoRetorno = new Santander(contaCobranca);
+                        result = arquivoRetorno.darBaixaSicobSocial(caminhoCompleto, usuario);
+                    } else if (ArquivoRetorno.SINDICAL == contaCobranca.getLayout().getId()) {
+                        result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
+                    } else if (ArquivoRetorno.SIGCB == contaCobranca.getLayout().getId()) {
+                        result = "NÃO EXISTE SIGCB PARA ESTA CONTA!";
+                    }
+                } else if (ArquivoRetorno.SICOOB == contaCobranca.getContaBanco().getBanco().getId()) {
+                    if (ArquivoRetorno.SICOB == contaCobranca.getLayout().getId()) {
+                        arquivoRetorno = new Sicoob(contaCobranca);
                         result = arquivoRetorno.darBaixaSicobSocial(caminhoCompleto, usuario);
                     } else if (ArquivoRetorno.SINDICAL == contaCobranca.getLayout().getId()) {
                         result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
@@ -253,6 +263,16 @@ public class RetornoSocialBean {
             } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
                 if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
                     int codc = Integer.valueOf(linha.substring(53, 61));
+                    int compara = Integer.valueOf(scc.getCodCedente());
+                    return codc == compara;
+                } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                    return false;
+                } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                    return false;
+                }
+            } else if (ArquivoRetorno.SICOOB == scc.getContaBanco().getBanco().getId()) {
+                if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                    int codc = Integer.valueOf(linha.substring(31, 40));
                     int compara = Integer.valueOf(scc.getCodCedente());
                     return codc == compara;
                 } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {

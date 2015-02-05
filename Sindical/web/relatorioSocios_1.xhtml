@@ -1,0 +1,406 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Relatório de Sócios</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            #formRelatorioSocios td{
+                vertical-align: top;
+            }
+        </style>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/template.xhtml"/>
+            <ui:include src="templates/templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formRelatorioSocios">
+                <rich:panel style="width: 99%; border: 0px">
+                    <rich:panel styleClass="headerPanel" style="width: 1024px; text-align: center; margin: 0 auto">
+                        <h:outputText value="Relatórios Sócios" styleClass="fontePanel"/>
+                    </rich:panel>
+
+                    <br />
+                    <rich:panel style="width: 1024px;  margin: 0 auto; border: 0">
+                        <rich:panel style="border: 0">
+                            <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idTipoRelatorio" value="#{relatorioSociosBean.idRelatorio}">
+                                <a4j:ajax event="change" render="idTipoRelatorio"/>
+                                <f:selectItems value="#{relatorioSociosBean.listaTipoRelatorios}"/>
+                            </h:selectOneMenu>
+                        </rich:panel>
+
+                        <rich:panel style="float: left; border: 0">
+                            <rich:accordion switchType="client" width="250" activeItem="#{relatorioSociosBean.selectAccordion}">
+                                <rich:accordionItem header="Simples" name="simples">
+                                    <h:outputLabel value="Pesquisando por " styleClass="fontePadraoNegrito"/>
+                                    <br /><br />
+                                    <h:outputLabel value="* Todos sócios" />
+                                </rich:accordionItem>
+                                <rich:accordionItem header="Personalizado" name="personalizado">
+                                    <h:outputLabel value="Pesquisando por " styleClass="fontePadraoNegrito"/>
+
+                                    <rich:list value="#{relatorioSociosBean.listaMenuRSocial}" var="linha" rowKeyVar="it" style="list-style: none; padding: 0px">
+                                        <h:outputLabel value="#{linha.argumento0}" /><a4j:commandLink value="#{linha.argumento1}" action="#{relatorioSociosBean.editarOpcao(it)}"/>
+                                        <br /><br />
+                                    </rich:list>
+                                </rich:accordionItem>
+                            </rich:accordion>
+                        </rich:panel>
+
+                        <rich:panel style="float: right; width: 650px; border: 0" styleClass="divFundo"> 
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booMatricula}" style="float: left; margin: 10px ">
+                                <h:column>
+                                    <h:outputLabel value="Número da Matricula " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:inputText value="#{relatorioSociosBean.matriculaInicial}" size="8"/><h:outputLabel value=" Até " styleClass="fontePadraoNegrito"/>
+                                    <h:inputText value="#{relatorioSociosBean.matriculaFinal}" size="8"/>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booIdade}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Idade " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:inputText value="#{relatorioSociosBean.idadeInicial}" size="8"/><h:outputLabel value=" Até " styleClass="fontePadraoNegrito"/>
+                                    <h:inputText value="#{relatorioSociosBean.idadeFinal}" size="8"/>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booGrupoCategoria}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Lista Grupos " styleClass="fontePadrao"/>
+                                    <div style="height: 150px; overflow: auto">
+                                        <rich:dataTable id="tbl1" value="#{relatorioSociosBean.listaGrupo}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox id="c_grupo" value="#{relatorioSociosBean.chkGrupo}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarGrupos}" render="c_grupo tbl1 tbl2"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao">
+                                                    <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarUmGrupo()}" render="tbl2"/>
+                                                </h:selectBooleanCheckbox>
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Grupo" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.grupoCategoria}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Lista Categorias " styleClass="fontePadrao" style="margin-left: 20px;" />
+                                    <div style="height: 150px; overflow: auto">
+                                        <rich:dataTable id="tbl2" value="#{relatorioSociosBean.listaCategoria}" var="linha" style="margin-left: 20px">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkCategoria}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarCategorias()}" render="tbl2"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao">
+
+                                                </h:selectBooleanCheckbox>
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Categoria" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.categoria}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booTipoCobranca}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Tipos de Pagamento" styleClass="fontePadrao"/>
+                                    <div style="height: 150px; overflow: auto"> 
+                                        <rich:dataTable id="tbl3" value="#{relatorioSociosBean.listaTipoCobranca}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkTipoCobranca}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarTipos()}" render="tbl3"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Tipo" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.descricao}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+                            </h:panelGrid>   
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCidadeSocio}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Cidade dos Sócios" styleClass="fontePadrao"/>
+                                    <div style="height: 150px; width: 200px; overflow: auto"> 
+                                        <rich:dataTable id="tbl4" value="#{relatorioSociosBean.listaCidadesSocio}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkCidadesSocio}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarCidadesSocio}" render="tbl4"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Cidade" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.cidade}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCidadeEmpresa}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Cidade das Empresas" styleClass="fontePadrao"/>
+                                    <div style="height: 150px; width: 200px; overflow: auto"> 
+                                        <rich:dataTable id="tbl5" value="#{relatorioSociosBean.listaCidadesEmpresa}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkCidadesEmpresa}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarCidadesEmpresa}" render="tbl5"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Cidade" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.cidade}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booAniversario}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Data de Aniversário" styleClass="fontePadrao"/>
+                                    <div style="height: 150px; overflow: auto"> 
+                                        <rich:dataTable id="tbl6" value="#{relatorioSociosBean.listaMeses}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkMeses}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarMeses}" render="tbl6"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Mês" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                    <h:inputText value="#{relatorioSociosBean.diaInicial}" size="2"/><h:outputLabel value=" Até " styleClass="fontePadraoNegrito"/>
+                                    <h:inputText value="#{relatorioSociosBean.diaFinal}" size="2"/>
+                                </h:column>
+                            </h:panelGrid>   
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booGrau}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Parentescos" styleClass="fontePadrao"/>
+                                    <div style="height: 150px; width: 130px; overflow: auto"> 
+                                        <rich:dataTable id="tbl7" value="#{relatorioSociosBean.listaParentesco}" var="linha">
+                                            <rich:column styleClass="centralizar">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioSociosBean.chkGrau}">
+                                                        <a4j:ajax event="change" listener="#{relatorioSociosBean.marcarGrau}" render="tbl7"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" styleClass="fontePadrao" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Grau" style="font-size:8pt"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.parentesco}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </h:column>
+                            </h:panelGrid>
+
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booSexo}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Sexo: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoSexo}">
+                                        <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                        <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booFotos}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Fotos: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoFotos}">
+                                        <f:selectItem itemValue="com" itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem" itemLabel="Sem"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCarteirinha}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Carteirinha: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoCarteirinha}">
+                                        <f:selectItem itemValue="com" itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem" itemLabel="Sem"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booVotante}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Votante: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoEleicao}">
+                                        <f:selectItem itemValue="votante" itemLabel="Votantes"/>
+                                        <f:selectItem itemValue="naoVotante" itemLabel="Não Votantes"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmail}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Email: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoEmail}">
+                                        <f:selectItem itemValue="com" itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem" itemLabel="Sem"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booTelefone}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Telefone: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoTelefone}">
+                                        <f:selectItem itemValue="com" itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem" itemLabel="Sem"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="10" rendered="#{relatorioSociosBean.booData}" style="float: left; margin: 10px ">
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="Cadastro" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataCadastro}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataCadastroFim}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="Recadastro" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataRecadastro}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataRecadastroFim}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="Demissão" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataDemissao}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataDemissaoFim}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="Filiação" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataAdmissaoSocio}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataAdmissaoSocioFim}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="Admissão Empresa" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataAdmissaoEmpresa}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioSociosBean.dataAdmissaoEmpresaFim}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+                            </h:panelGrid>  
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEstadoCivil}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Estado Civil: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioSociosBean.tipoEstadoCivil}">
+                                        <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                        <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                        <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                        <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                        <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                        <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                        <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                        <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmpresa}" style="float: left; margin: 10px">
+                                <h:column><h:outputLabel value="Empresas: " styleClass="fontePadrao"/></h:column>
+                                <h:column>
+
+                                    <h:selectOneMenu id="idEmpresas" value="#{relatorioSociosBean.idEmpresas}">
+                                        <f:selectItems value="#{relatorioSociosBean.listaEmpresas}"/>
+                                    </h:selectOneMenu>
+                                    <h:selectOneRadio id="idRadioEmpresas" value="#{relatorioSociosBean.tipoEmpresas}" styleClass="fontePadrao">
+                                        <a4j:ajax event="change" render="idRadioEmpresas idEmpresas"/>
+                                        <f:selectItem itemValue="com"         itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem"         itemLabel="Sem"/>
+                                        <f:selectItem itemValue="especificas" itemLabel="Específicas"/>
+                                    </h:selectOneRadio>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid  style="float: left">
+                                <rich:panel>
+                                    <h:outputLabel value="Ordenar por " styleClass="fonteFranklinNegrito"/>
+                                    <h:selectOneRadio id="idOrdem" value="#{relatorioSociosBean.tipoOrdem}" styleClass="fontePadrao">
+                                        <f:selectItem itemValue="nome"      itemLabel="Nome"/>
+                                        <f:selectItem itemValue="matricula" itemLabel="Matricula"/>
+                                        <f:selectItem itemValue="endereco"  itemLabel="Endereço"/>
+                                        <f:selectItem itemValue="cep"       itemLabel="Cep"/>
+                                    </h:selectOneRadio>
+                                </rich:panel>
+                            </h:panelGrid>
+
+                        </rich:panel>
+                        <h:commandLink styleClass="idPesquisar iLink" action="#{relatorioSociosBean.visualizarRelatorio()}" value="Visualizar" target="_blank" title="Visualizar Relatório" style="margin-left: 20px"/>
+                    </rich:panel>
+                </rich:panel>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

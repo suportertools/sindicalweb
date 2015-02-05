@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -1697,6 +1699,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+    
+    public void loadingImage() throws InterruptedException{
+        Thread.sleep(5000);
+        
+        PF.closeDialog("dlg_loading_image");
+    }
 
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
@@ -1709,35 +1717,39 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 fotoTempPerfil = "";
             }
         }
-        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
-        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
+//        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
+//        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
     }
 
     public void upload(FileUploadEvent event) {
-        String fotoTempCaminho = "foto/" + getUsuario().getId();
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
-        if (f.exists()) {
-            boolean delete = f.delete();
-        } else {
-            fotoTempPerfil = "";
+        try {
+            String fotoTempCaminho = "foto/" + getUsuario().getId();
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
+            if (f.exists()) {
+                boolean delete = f.delete();
+            } else {
+                fotoTempPerfil = "";
+            }
+            // Diretorio.criar("temp/foto/" + getUsuario().getId(), true);
+            ConfiguracaoUpload cu = new ConfiguracaoUpload();
+            cu.setArquivo(event.getFile().getFileName());
+            cu.setDiretorio("temp/foto/" + getUsuario().getId());
+            cu.setArquivo("perfil.png");
+            cu.setSubstituir(true);
+            cu.setRenomear("perfil.png");
+            cu.setEvent(event);
+            if (Upload.enviar(cu, true)) {
+                fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
+                fotoPerfil = "";
+            } else {
+                fotoTempPerfil = "";
+                fotoPerfil = "";
+            }
+            loadingImage();
+            //RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Diretorio.criar("temp/foto/" + getUsuario().getId(), true);
-        ConfiguracaoUpload cu = new ConfiguracaoUpload();
-        cu.setArquivo(event.getFile().getFileName());
-        cu.setDiretorio("temp/foto/" + getUsuario().getId());
-        cu.setArquivo("perfil.png");
-        cu.setSubstituir(true);
-        cu.setRenomear("perfil.png");
-        cu.setEvent(event);
-        if (Upload.enviar(cu, true)) {
-            fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
-            fotoPerfil = "";
-        } else {
-            fotoTempPerfil = "";
-            fotoPerfil = "";
-        }
-        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
-
     }
 
     public void apagarImagem() {

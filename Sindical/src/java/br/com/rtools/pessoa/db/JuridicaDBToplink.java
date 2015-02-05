@@ -421,4 +421,24 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         }
         return null;
     }
+    
+    public Juridica pesquisaContabilidadePorEmail(String email){
+        String text_qry = "select j.* from pes_juridica j where j.id in ( "+
+                            "select jc.id_contabilidade " +
+                            "  from pes_pessoa p " +
+                            " inner join pes_juridica j ON j.id_pessoa = p.id " +
+                            " inner join pes_juridica jc ON j.id = jc.id_contabilidade " +
+                            " where p.ds_email1 like '"+email.toLowerCase()+"' " +
+                            " group by jc.id_contabilidade " +
+                          ") limit 1";
+        
+        Query qry = getEntityManager().createNativeQuery(text_qry, Juridica.class);
+        
+        try{
+            return (Juridica) qry.getSingleResult();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return null;
+    }
 }

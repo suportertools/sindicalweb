@@ -124,4 +124,18 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return vagas;
     }
+    
+    public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias){
+        try {
+            Query query = getEntityManager().createNativeQuery(
+                    "SELECT func_demissiona_socios("+id_grupo_cidade+", "+nr_quantidade_dias+");");
+            List list = query.getResultList();
+            boolean xbo;
+            if(!list.isEmpty())
+                xbo = (Boolean)((List)query.getSingleResult()).get(0);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }    
 }

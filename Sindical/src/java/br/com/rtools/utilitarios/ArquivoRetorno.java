@@ -30,6 +30,7 @@ public abstract class ArquivoRetorno {
     public final static int BANCO_BRASIL = 36;
     public final static int ITAU = 63;
     public final static int SANTANDER = 88;
+    public final static int SICOOB = 26;
 
     public abstract List<GenericaRetorno> sicob(boolean baixar, String host);
 
@@ -487,7 +488,7 @@ public abstract class ArquivoRetorno {
                         log[2] = "Boleto não Encontrado - "+ listaParametros.get(u).getNossoNumero() + 
                                  " - Data de Vencimento: "+DataHoje.colocarBarras(listaParametros.get(u).getDataVencimento())+
                                  " - Data de Pagamento: "+DataHoje.colocarBarras(listaParametros.get(u).getDataPagamento())+
-                                 " - Valor Pago: "+Moeda.converteR$(listaParametros.get(u).getValorPago());
+                                 " - Valor Pago: "+Moeda.converteR$Float(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(((GenericaRetorno)listaParametros.get(u)).getValorPago())), 100));
                         lista_logs.add(log);
                     }
                 }

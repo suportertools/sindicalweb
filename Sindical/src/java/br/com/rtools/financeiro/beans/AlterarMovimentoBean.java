@@ -21,6 +21,7 @@ import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -145,7 +146,7 @@ public final class AlterarMovimentoBean implements Serializable{
 
     public String salvar(){
         if (movimento.getId() == -1){
-            msgConfirma = "Nenhum movimento encontrado para ser alterado!";
+            GenericaMensagem.warn("Atenção", "Nenhum movimento encontrado para ser alterado!");
             return null;
         }
         
@@ -183,10 +184,10 @@ public final class AlterarMovimentoBean implements Serializable{
         }
         
         if (sv.alterarObjeto(movimento) ){
-            msgConfirma = "Movimento atualizado com Sucesso!";
+            GenericaMensagem.info("OK", "Movimento atualizado com Sucesso!");
             sv.comitarTransacao();
         }else{
-            msgConfirma = "Erro ao atualizar Movimento!";
+            GenericaMensagem.error("Atenção", "Erro ao atualizar Movimento!");
             sv.desfazerTransacao();
         }
         
@@ -201,27 +202,27 @@ public final class AlterarMovimentoBean implements Serializable{
         MovimentoDB db = new MovimentoDBToplink();
         
         if (movimento.getBaixa() != null) {
-            msgConfirma = "Boletos quitados não podem ser Excluídos!";
+            GenericaMensagem.warn("Atenção", "Boletos quitados não podem ser Excluídos!");
             return null;
         }
         
         if (movimento.getAcordo() != null) {
-            msgConfirma = "Boletos do tipo acordo não podem ser Excluídos";
+            GenericaMensagem.warn("Atenção", "Boletos do tipo acordo não podem ser Excluídos");
             return null;
         }
 
         if (historico.isEmpty()) {
-            msgConfirma = "Digite um motivo para exclusão!";
+            GenericaMensagem.warn("Atenção", "Digite um motivo para exclusão!");
             return null;
         } else if (historico.length() < 6) {
-            msgConfirma = "Motivo de exclusão inválido!";
+            GenericaMensagem.warn("Atenção", "Motivo de exclusão inválido!");
             return null;
         }
         
         if (!GerarMovimento.inativarUmMovimento(db.pesquisaCodigo(movimento.getId()), historico).isEmpty()) {
-            msgConfirma = "Ocorreu um erro em uma das exclusões, verifique o log!";
+            GenericaMensagem.error("Atenção", "Ocorreu um erro em uma das exclusões, verifique o log!");
         }else{
-            msgConfirma = "Boleto excluído com sucesso!";
+            GenericaMensagem.info("Atenção", "Boleto excluído com sucesso!");
         }
         
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
@@ -233,7 +234,7 @@ public final class AlterarMovimentoBean implements Serializable{
         movimento = new Movimento();
         lote = new Lote();
         baixa = new Baixa();
-        return null;
+        return voltar();
     }    
     
     public Movimento getMovimento() {

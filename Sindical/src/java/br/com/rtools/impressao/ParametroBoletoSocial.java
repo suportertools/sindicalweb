@@ -37,8 +37,10 @@ public class ParametroBoletoSocial {
     private String logoVerso;
     private String localPagamento;
     private String informativo;
+    private String documentoResponsavel;
+    private String quantidadeItens;    
 
-    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo) {
+    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens) {
         this.sindicatoLogo = sindicatoLogo;
         this.sindicatoNome = sindicatoNome;
         this.codigo = codigo;
@@ -75,6 +77,8 @@ public class ParametroBoletoSocial {
         this.logoVerso = logoVerso;
         this.localPagamento = localPagamento;
         this.informativo = informativo;
+        this.documentoResponsavel = documentoResponsavel;
+        this.quantidadeItens = quantidadeItens;        
     }
    
     public String getSindicatoLogo() {
@@ -363,6 +367,22 @@ public class ParametroBoletoSocial {
 
     public void setInformativo(String informativo) {
         this.informativo = informativo;
+    }
+
+    public String getDocumentoResponsavel() {
+        return documentoResponsavel;
+    }
+
+    public void setDocumentoResponsavel(String documentoResponsavel) {
+        this.documentoResponsavel = documentoResponsavel;
+    }
+
+    public String getQuantidadeItens() {
+        return quantidadeItens;
+    }
+
+    public void setQuantidadeItens(String quantidadeItens) {
+        this.quantidadeItens = quantidadeItens;
     }
     
     

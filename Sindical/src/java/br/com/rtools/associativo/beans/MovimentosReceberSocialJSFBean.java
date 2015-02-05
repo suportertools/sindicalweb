@@ -100,7 +100,7 @@ public class MovimentosReceberSocialJSFBean {
     public Guia pesquisaGuia(int id_lote){
         MovimentoDB db = new MovimentoDBToplink();
         Guia gu = db.pesquisaGuias(id_lote);
-        if (gu.getId() != -1) {
+        if (gu.getId() != -1 && gu.getSubGrupoConvenio() != null) {
             LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
             List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
             String conveniada = "";

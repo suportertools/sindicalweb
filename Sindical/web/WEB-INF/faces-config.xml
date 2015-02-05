@@ -1650,6 +1650,12 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>configuracaoSocial</from-outcome>
+            <to-view-id>/configuracaoSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

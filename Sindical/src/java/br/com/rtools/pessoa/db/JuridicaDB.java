@@ -64,4 +64,6 @@ public interface JuridicaDB {
     public boolean empresaInativa(Integer pessoa);
 
     public Empregados pesquisaEmpregados(int id_juridica);
+    
+    public Juridica pesquisaContabilidadePorEmail(String email);
 }

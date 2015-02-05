@@ -529,7 +529,7 @@ public class Movimento implements Serializable {
         return Moeda.converteR$Float(valor);
     }
 
-    public void setValor(String valorString) {
+    public void setValorString(String valorString) {
         this.valor = Moeda.converteUS$(valorString);
     }
 

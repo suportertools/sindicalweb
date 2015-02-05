@@ -92,11 +92,26 @@ public class ImpressaoBoletoSocialBean {
     
     private List<Pessoa> listaPessoaSemEndereco = new ArrayList();
     private boolean atualizaListaPessoaSemEndereco = true;
+    private Integer qntPessoasSelecionadas = 0;
+    private String valorTotal = "0,00";
+    
     @PostConstruct
     public void init(){
         UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
     }
+    
+    public void atualizaValores(){
+        float soma_valor = 0;
+        qntPessoasSelecionadas = 0;
+        for(DataObject ldo : listaGrid){
+            if((Boolean)ldo.getArgumento1()){
+                soma_valor = Moeda.somaValores(soma_valor, Moeda.converteUS$(ldo.getArgumento3().toString()));
+                qntPessoasSelecionadas++;
+            }
+        }
+        valorTotal = Moeda.converteR$Float(soma_valor);
+    }    
     
     public String editarPessoaSemEndereco(Pessoa pessoa){
         ChamadaPaginaBean cp = (ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean");
@@ -174,6 +189,7 @@ public class ImpressaoBoletoSocialBean {
                     setAtualizaListaPessoaSemEndereco(false);
                 }
             }
+            atualizaValores();
         }
     }
     
@@ -217,12 +233,16 @@ public class ImpressaoBoletoSocialBean {
             else
                 listaGrid.get(i).setArgumento1(false);
         }
+        
+        atualizaValores();
     }
     
     public void desmarcarTudo(){
         for (int i = 0; i < listaGrid.size(); i++){
             listaGrid.get(i).setArgumento1(false);
         }
+        
+        atualizaValores();
     }
     
     public void imprimir(){
@@ -261,6 +281,7 @@ public class ImpressaoBoletoSocialBean {
             
             for (int i = 0; i < listaGrid.size(); i++){
                 if ((Boolean)listaGrid.get(i).getArgumento1()){
+                    Pessoa pessoa = (Pessoa)(new Dao()).find(new Pessoa(), (Integer)((Vector)((DataObject)listaGrid.get(i)).getArgumento2()).get(8));
                     List<Vector> lista_socio = null;
                     if (tipo.equals("fisica"))
                         lista_socio = db.listaBoletoSocioFisica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
@@ -336,7 +357,9 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(23).toString(), // SITE FILIAL
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoBoletoVersoSocial.png"), // LOGO BOLETO VERSO SOCIAL
                                 lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
-                                lista_socio.get(w).get(36).toString() // INFORMATIVO
+                                lista_socio.get(w).get(36).toString(), // INFORMATIVO
+                                pessoa.getTipoDocumento().getDescricao()+": "+pessoa.getDocumento(), 
+                                String.valueOf(lista_socio.size())
                         ));
                     }
                 
@@ -555,5 +578,21 @@ public class ImpressaoBoletoSocialBean {
 
     public void setAtualizaListaPessoaSemEndereco(boolean atualizaListaPessoaSemEndereco) {
         this.atualizaListaPessoaSemEndereco = atualizaListaPessoaSemEndereco;
+    }
+
+    public Integer getQntPessoasSelecionadas() {
+        return qntPessoasSelecionadas;
+    }
+
+    public void setQntPessoasSelecionadas(Integer qntPessoasSelecionadas) {
+        this.qntPessoasSelecionadas = qntPessoasSelecionadas;
+    }
+
+    public String getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(String valorTotal) {
+        this.valorTotal = valorTotal;
     }
 }

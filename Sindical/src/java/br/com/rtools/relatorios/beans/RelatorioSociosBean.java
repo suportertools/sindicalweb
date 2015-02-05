@@ -25,6 +25,8 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -41,6 +43,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -125,7 +128,52 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booEstadoCivil = false;
     private boolean booEmpresa = false;
 
-    public String editarOpcao(int index) {
+    public void limparFiltro(){
+//        listaMenuRSocial.clear();
+//        booMatricula = false;
+//        booIdade = false;
+//        booGrupoCategoria = false;
+//        booSexo = false;
+//        booGrau = false;
+//        booFotos = false;
+//        booCarteirinha = false;
+//        booTipoCobranca = false;
+//        booCidadeSocio = false;
+//        booCidadeEmpresa = false;
+//        booAniversario = false;
+//        booData = false;
+//        booVotante = false;
+//        booEmail = false;
+//        booTelefone = false;
+//        booEstadoCivil = false;
+//        booEmpresa = false;
+        GenericaSessao.put("relatorioSociosBean", new RelatorioSociosBean());
+    }
+    
+    public boolean validaFiltro(){
+        if (!booMatricula && 
+            !booIdade && 
+            !booGrupoCategoria && 
+            !booSexo && 
+            !booGrau && 
+            !booFotos && 
+            !booCarteirinha && 
+            !booTipoCobranca && 
+            !booCidadeSocio && 
+            !booCidadeEmpresa && 
+            !booAniversario && 
+            !booData && 
+            !booVotante && 
+            !booEmail && 
+            !booTelefone && 
+            !booEstadoCivil && 
+            !booEmpresa){
+            return false;
+        }
+        return true;
+    }
+    
+    public void editarOpcao(int index) {
         if (listaMenuRSocial.get(index).getArgumento1().equals("Remover")) {
             listaMenuRSocial.get(index).setArgumento1("Editar");
         } else {
@@ -235,28 +283,27 @@ public class RelatorioSociosBean implements Serializable {
                 booEmpresa = true;
             }
         }
-        return "relatorioSocios";
     }
 
     public List<DataObject> getListaMenuRSocial() {
         if (listaMenuRSocial.isEmpty()) {
-            listaMenuRSocial.add(new DataObject("* Número da Matricula ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Idade ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Grupo / Categoria ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Sexo ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Grau ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Fotos ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Carteirinha ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Tipo de Pagamento ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Cidade do Sócio ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Cidade do Empresa ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Aniversário ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Pesquisa por Datas ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Votante ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Email ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Telefone ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Estado Civil ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("* Empresas ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Número da Matricula ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Idade ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Grupo / Categoria ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Sexo ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Grau ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Fotos ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Carteirinha ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Tipo de Pagamento ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Cidade do Sócio ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Cidade do Empresa ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Aniversário ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Pesquisa por Datas ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Votante ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Email ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Telefone ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Estado Civil ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Empresas ", "Editar", null, null, null, null));
         }
         return listaMenuRSocial;
     }
@@ -280,6 +327,12 @@ public class RelatorioSociosBean implements Serializable {
     }
 
     public String visualizarRelatorio() {
+        // ESTA TRAZENDO TODOS REGISTRO DO BANCO -- rogério pediu
+//        if (!validaFiltro()){
+//            GenericaMensagem.warn("Atenção", "Selecione algum filtro para esta pesquisa!");
+//            return null;
+//        }
+                
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioSociosDB dbS = new RelatorioSociosDBToplink();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
@@ -377,9 +430,11 @@ public class RelatorioSociosBean implements Serializable {
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
                 booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, tipoOrdem);
 
-        Collection lista = new ArrayList<ParametroSocios>();
-
+        Collection lista = new ArrayList();
         for (int i = 0; i < result.size(); i++) {
+//            if (i == 762 || i == 2392){
+//                continue;
+//            }
             lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     getConverteNullString(result.get(i).get(1)), // SITE
                     getConverteNullString(result.get(i).get(2)), // SIN NOME
@@ -456,7 +511,9 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(73)),// TELEFONE2
                     getConverteNullString(result.get(i).get(74)) // TELEFONE3                                          
             ));
-
+//            if (i == 2392){
+//                break;
+//            }
         }
         try {
 
@@ -476,7 +533,7 @@ public class RelatorioSociosBean implements Serializable {
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
             download.remover();
-        } catch (Exception e) {
+        } catch (JRException e) {
             System.err.println(e);
         }
         return null;
