@@ -95,8 +95,17 @@ public class Jasper {
                 } else {
                     b = BYTES;
                 }
-                String downloadName = PART_NAME + "_" + fileName + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/");
+                if (!Jasper.PART_NAME.isEmpty()) {
+                    Jasper.PART_NAME = "-" + Jasper.PART_NAME;
+                }
+                String downloadName = PART_NAME + fileName + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                String realPath;
+                if (Jasper.PATH.isEmpty()) {
+                    realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
+                } else {
+                    realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/";
+                }
+                String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(realPath);
                 try {
                     File file = new File(dirPath + "/" + downloadName);
                     try (FileOutputStream out = new FileOutputStream(file)) {
@@ -125,66 +134,65 @@ public class Jasper {
     // USAR - ADICIONAR AO JASPER NO XML
     /**
      *
-      <parameter name="sindicato_nome" class="java.lang.String"/>
-      <parameter name="sindicato_documento" class="java.lang.String"/>
-      <parameter name="sindicato_site" class="java.lang.String"/>
-      <parameter name="sindicato_logradouro" class="java.lang.String"/>
-      <parameter name="sindicato_endereco" class="java.lang.String"/>
-      <parameter name="sindicato_numero" class="java.lang.String"/>
-      <parameter name="sindicato_complemento" class="java.lang.String"/>
-      <parameter name="sindicato_bairro" class="java.lang.String"/>
-      <parameter name="sindicato_cidade" class="java.lang.String"/>
-      <parameter name="sindicato_uf" class="java.lang.String"/>
-      <parameter name="sindicato_cep" class="java.lang.String"/>
-      <parameter name="sindicato_logo" class="java.lang.String"/>
-      <parameter name="template_dir" class="java.lang.String"/>
+     * <parameter name="sindicato_nome" class="java.lang.String"/>
+     * <parameter name="sindicato_documento" class="java.lang.String"/>
+     * <parameter name="sindicato_site" class="java.lang.String"/>
+     * <parameter name="sindicato_logradouro" class="java.lang.String"/>
+     * <parameter name="sindicato_endereco" class="java.lang.String"/>
+     * <parameter name="sindicato_numero" class="java.lang.String"/>
+     * <parameter name="sindicato_complemento" class="java.lang.String"/>
+     * <parameter name="sindicato_bairro" class="java.lang.String"/>
+     * <parameter name="sindicato_cidade" class="java.lang.String"/>
+     * <parameter name="sindicato_uf" class="java.lang.String"/>
+     * <parameter name="sindicato_cep" class="java.lang.String"/>
+     * <parameter name="sindicato_logo" class="java.lang.String"/>
+     * <parameter name="template_dir" class="java.lang.String"/>
      */
-    
     /**
-	<pageHeader>
-		<band height="66">
-			<subreport>
-				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="200" height="66" isRemoveLineWhenBlank="true" uuid="f01fa284-50bd-4581-997b-00977d4362c4"/>
-				<subreportParameter name="sindicato_nome">
-					<subreportParameterExpression><![CDATA[$P{sindicato_nome}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_documento">
-					<subreportParameterExpression><![CDATA[$P{sindicato_documento}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_site">
-					<subreportParameterExpression><![CDATA[$P{sindicato_site}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_logradouro">
-					<subreportParameterExpression><![CDATA[$P{sindicato_logradouro}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_endereco">
-					<subreportParameterExpression><![CDATA[$P{sindicato_endereco}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_numero">
-					<subreportParameterExpression><![CDATA[$P{sindicato_numero}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_complemento">
-					<subreportParameterExpression><![CDATA[$P{sindicato_complemento}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_bairro">
-					<subreportParameterExpression><![CDATA[$P{sindicato_bairro}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_cidade">
-					<subreportParameterExpression><![CDATA[$P{sindicato_cidade}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_uf">
-					<subreportParameterExpression><![CDATA[$P{sindicato_uf}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_cep">
-					<subreportParameterExpression><![CDATA[$P{sindicato_cep}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="sindicato_logo">
-					<subreportParameterExpression><![CDATA[$P{sindicato_logo}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{template_dir}]]></subreportExpression>
-			</subreport>
-		</band>
-	</pageHeader>
+     * <pageHeader>
+     * <band height="66">
+     * <subreport>
+     * <reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="200" height="66" isRemoveLineWhenBlank="true" uuid="f01fa284-50bd-4581-997b-00977d4362c4"/>
+     * <subreportParameter name="sindicato_nome">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_nome}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_documento">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_documento}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_site">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_site}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_logradouro">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_logradouro}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_endereco">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_endereco}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_numero">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_numero}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_complemento">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_complemento}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_bairro">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_bairro}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_cidade">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_cidade}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_uf">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_uf}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_cep">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_cep}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <subreportParameter name="sindicato_logo">
+     * <subreportParameterExpression><![CDATA[$P{sindicato_logo}]]></subreportParameterExpression>
+     * </subreportParameter>
+     * <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+     * <subreportExpression><![CDATA[$P{template_dir}]]></subreportExpression>
+     * </subreport>
+     * </band>
+     * </pageHeader>
      */
 }
