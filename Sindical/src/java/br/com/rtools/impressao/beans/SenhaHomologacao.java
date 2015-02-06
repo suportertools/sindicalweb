@@ -11,11 +11,9 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Jasper;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,65 +22,27 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @ViewScoped
 public class SenhaHomologacao implements Serializable {
 
     public void imprimir(Agendamento a) {
-//        try {
         Collection lista = parametros(a);
         imprimir(lista);
-//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
-//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-//            JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
-//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//            String nomeDownload = "senha_" + DataHoje.hora().replace(":", "") + ".pdf";
-//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
-//            Diretorio.criar("Arquivos/senhas");
-//            if (!new File(pathPasta).exists()) {
-//                File file = new File(pathPasta);
-//                file.mkdir();
-//            }
-//            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-//            salvaArquivos.salvaNaPasta(pathPasta);
-//            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-//            download.baixar();
-//            download.remover();
-//        } catch (JRException e) {
-//        }
     }
 
     public void imprimir(Collection lista) {
-        try {
-            Jasper jasper = new Jasper();
-            Jasper.IS_DOWNLOAD = true;
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            String nomeDownload = "senha_" + DataHoje.hora().replace(":", "") + ".pdf";
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
-            Diretorio.criar("Arquivos/senhas");
-            if (!new File(pathPasta).exists()) {
-                File file = new File(pathPasta);
-                file.mkdir();
-            }
-            Jasper.printReports(nomeDownload, "Arquivos/senhas", lista);
-//            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-//            salvaArquivos.salvaNaPasta(pathPasta);
-//            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-//            download.baixar();
-//            download.remover();
-        } catch (JRException e) {
+        Jasper.IS_DOWNLOAD = true;
+        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
+        Diretorio.criar("");
+        if (!new File(pathPasta).exists()) {
+            File file = new File(pathPasta);
+            file.mkdir();
         }
+        Jasper.PATH = "";
+        Jasper.PART_NAME = "";
+        Jasper.printReports("/Relatorios/HOM_SENHA.jasper", "senhas", lista);
     }
 
     public Collection<ParametroSenha> parametros(Agendamento a) {
