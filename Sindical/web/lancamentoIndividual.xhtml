@@ -148,12 +148,18 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:commandButton value="Gerar Parcelas" action="#{lancamentoIndividualBean.adicionarParcelas}" update="i_panel_grid i_panel_botao" title="Gerar parcelas para Pessoa"/>
+                                    <p:commandButton value="Gerar Parcelas" action="#{lancamentoIndividualBean.adicionarParcelas}" update="i_panel_grid i_panel_botao i_panel_botao2" title="Gerar parcelas para Pessoa"/>
                                 </h:column>
                             </h:panelGrid>
 
+                            <h:panelGrid id="i_panel_botao" columns="3">
+                                <p:commandButton onclick="PF('dlg_salvar').show()" value="Salvar" title="Salvar / Atualizar" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}" disabled="#{lancamentoIndividualBean.lote.id != -1}"/>
+                                <p:commandButton value="Novo" action="#{lancamentoIndividualBean.novo()}" title="Novo" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}" ajax="false"/>
+                                <p:commandButton onclick="PF('dlg_excluir').show()" value="Excluir" title="Excluir" rendered="false" />
+                            </h:panelGrid>
+                            
                             <h:panelGrid id="i_panel_grid">
-                                <p:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" emptyMessage="" rows="13">
+                                <p:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" emptyMessage="" scrollRows="10">
                                     <p:column headerText="Vencimento" style="text-align: center;">
                                         <h:outputText value="#{linha.argumento0.vencimento}" />
                                     </p:column>
@@ -170,8 +176,8 @@
                                 </p:dataTable>
                             </h:panelGrid>
                             
-                            <h:panelGrid id="i_panel_botao" columns="3">
-                                <p:commandButton onclick="PF('dlg_salvar').show()" value="Salvar" title="Salvar / Atualizar" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}" disabled="#{controleAcessoBean.botaoSalvar or lancamentoIndividualBean.lote.id != -1}"/>
+                            <h:panelGrid id="i_panel_botao2" columns="3">
+                                <p:commandButton onclick="PF('dlg_salvar').show()" value="Salvar" title="Salvar / Atualizar" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}" disabled="#{lancamentoIndividualBean.lote.id != -1}"/>
                                 <p:commandButton value="Novo" action="#{lancamentoIndividualBean.novo()}" title="Novo" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}" ajax="false"/>
                                 <p:commandButton onclick="PF('dlg_excluir').show()" value="Excluir" title="Excluir" rendered="false" />
                             </h:panelGrid>

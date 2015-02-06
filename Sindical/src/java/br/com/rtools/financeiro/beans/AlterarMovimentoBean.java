@@ -1,6 +1,6 @@
 package br.com.rtools.financeiro.beans;
 
-import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
+import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.Lote;
@@ -193,7 +193,7 @@ public final class AlterarMovimentoBean implements Serializable{
         
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         if (url.equals("movimentosReceberSocial")) {
-            ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            ((MovimentosReceberSocialBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberSocialBean")).getListaMovimento().clear();
         }
         return null;
     }
@@ -227,7 +227,7 @@ public final class AlterarMovimentoBean implements Serializable{
         
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         if (url.equals("movimentosReceberSocial")) {
-            ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            ((MovimentosReceberSocialBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberSocialBean")).getListaMovimento().clear();
             //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocial();
         }
         

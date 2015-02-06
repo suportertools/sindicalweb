@@ -42,7 +42,9 @@ public class CaixaBean implements Serializable {
     public void salvar() {
         if (caixa.getCaixa() == 1){
             Caixa caixaUm = (new FinanceiroDBToplink()).pesquisaCaixaUm();
-            if (caixaUm.getId() != -1){
+            Caixa caixa_antigo = (Caixa) (new Dao().find(caixa));
+            if (caixaUm.getId() != -1 && caixaUm.getId() != caixa.getId()){
+                caixa.setCaixa(caixa_antigo.getCaixa());
                 GenericaMensagem.error("Atenção", "Já existe um caixa 01 cadastrado!");
                 return;
             }

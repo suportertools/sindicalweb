@@ -32,6 +32,8 @@ public class ConfiguracaoSocial implements Serializable {
     private GrupoCategoria grupoCategoriaInativaDemissionado;
     @Column(name = "is_inativa_demissionado", columnDefinition = "boolean default false")
     private boolean inativaDemissionado;    
+    @Column(name = "is_recebe_atrasado", columnDefinition = "boolean default false")
+    private boolean recebeAtrasado;    
 
     public int getId() {
         return id;
@@ -79,5 +81,13 @@ public class ConfiguracaoSocial implements Serializable {
 
     public void setInativaDemissionado(boolean inativaDemissionado) {
         this.inativaDemissionado = inativaDemissionado;
+    }
+
+    public boolean isRecebeAtrasado() {
+        return recebeAtrasado;
+    }
+
+    public void setRecebeAtrasado(boolean recebeAtrasado) {
+        this.recebeAtrasado = recebeAtrasado;
     }
 }

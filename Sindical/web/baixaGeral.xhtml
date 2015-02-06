@@ -147,23 +147,19 @@
                                 <p:commandButton value="Salvar Baixa" title="Baixar todos os valores da grid" action="#{baixaGeralBean.baixar}" oncomplete="PF('i_dlg_s').show()" update="i_mensagem"/>
                             </h:panelGrid>
 
-                            <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true" closable="false">
+                            <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true" closable="false" visible="#{baixaGeralBean.visibleModal}">
                                 <h:panelGrid id="i_mensagem" style="width: 100%">
                                     <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
                                     <h:panelGrid columns="2" style="width: 100%; margin-top: 20px">
-                                        <p:commandLink action="#{baixaGeralBean.imprimirRecibo()}" style="float: left" target="_blank" ajax="false">
+                                        <p:commandLink action="#{baixaGeralBean.imprimirRecibo()}" style="float: left" target="_blank" ajax="false" onclick="PF('i_dlg_s').show()">
                                             <p:button icon="ui-icon-print" value="Imprimir Recibo" />
                                         </p:commandLink>  
+                                        
                                         <p:commandLink action="#{baixaGeralBean.retorno}" style="float: right" target="_self" ajax="false" >
                                             <p:button icon="ui-icon-close" value="Sair" />
                                         </p:commandLink>
                                     </h:panelGrid>
                                 </h:panelGrid>
-                            </p:dialog>
-
-                            <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
-                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                                <h:outputLabel value="Carregando ... Aguarde" />
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_cheque" header="Dados do Cheque" resizable="false" width="400" modal="true">

@@ -1,15 +1,12 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.Socios;
-import br.com.rtools.associativo.db.LancamentoIndividualDB;
-import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.ContaCobranca;
-import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -17,15 +14,19 @@ import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.impressao.ParametroEncaminhamento;
-import br.com.rtools.impressao.ParametroRecibo;
 import br.com.rtools.movimento.GerarMovimento;
+import br.com.rtools.movimento.ImprimirRecibo;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.db.JuridicaDB;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -33,14 +34,12 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.ByteArrayOutputStream;
+import br.com.rtools.utilitarios.PF;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,14 +47,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -66,8 +65,9 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
-public class MovimentosReceberSocialJSFBean {
-
+@ManagedBean
+@SessionScoped
+public class MovimentosReceberSocialBean {
     private String porPesquisa = "abertos";
     private List<DataObject> listaMovimento = new ArrayList();
     private String titular = "";
@@ -96,18 +96,46 @@ public class MovimentosReceberSocialJSFBean {
     private String descPesquisaBoleto = "";
     private List<SelectItem> listaContas = new ArrayList();
     private int indexConta = 0;
+    private final ConfiguracaoSocialBean csb = new ConfiguracaoSocialBean();
+    
+    private boolean pessoaJuridicaNaLista = false;
+    
+    @PostConstruct
+    public void init() {
+        
+        csb.init();
+    }
+    
+    @PreDestroy
+    public void destroy() {
+        //GenericaSessao.remove("movimentosReceberSocialBean");
+    }    
+    
+    public void pessoaJuridicaNaListaxx(){
+        JuridicaDB db = new JuridicaDBToplink();
+        for (Pessoa p : listaPessoa){
+            Juridica j = db.pesquisaJuridicaPorPessoa(p.getId());
+            
+            if (j != null){
+                pessoaJuridicaNaLista = true;
+                return;
+            }
+        }
+        pessoaJuridicaNaLista = false;
+    }
     
     public Guia pesquisaGuia(int id_lote){
         MovimentoDB db = new MovimentoDBToplink();
         Guia gu = db.pesquisaGuias(id_lote);
-        if (gu.getId() != -1 && gu.getSubGrupoConvenio() != null) {
-            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-            List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
-            String conveniada = "";
-            if (!list.isEmpty()) {
-                conveniada = list.get(0).getFantasia();
-            }
-        }
+        // gu.id_pessoa NA VERDADE É A EMPRESA CONVENIADA, ANALISAR DEPOIS
+//        if (gu.getId() != -1 && gu.getSubGrupoConvenio() != null) {
+//            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+//            List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
+//            String conveniada = "";
+//            if (!list.isEmpty()) {
+//                conveniada = list.get(0).getFantasia();
+//            }
+//        }
         return gu;
     }
     
@@ -161,6 +189,7 @@ public class MovimentosReceberSocialJSFBean {
             if (p != null){
                 pessoa = p;
                 listaPessoa.add(p);
+                pessoaJuridicaNaListaxx();
             }
             porPesquisa = "todos";
             listaMovimento.clear();
@@ -200,109 +229,9 @@ public class MovimentosReceberSocialJSFBean {
     }
 
     public String recibo(int id_movimento) {
-
-        MovimentoDB db = new MovimentoDBToplink();
-        Movimento movimento = new Movimento();
-
-        movimento = db.pesquisaCodigo(id_movimento);
-        try {
-            Collection vetor = new ArrayList();
-            Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
-            PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-                //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
-
-            PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
-            String formas[] = new String[10];
-
-            // PESQUISA FORMA DE PAGAMENTO
-            List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
-
-            for (int i = 0; i < fp.size(); i++) {
-                // 4 - CHEQUE    
-                if (fp.get(i).getTipoPagamento().getId() == 4) {
-                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor()) + " (B: " + fp.get(i).getChequeRec().getBanco() + " Ag: " + fp.get(i).getChequeRec().getAgencia() + " C: " + fp.get(i).getChequeRec().getConta() + " CH: " + fp.get(i).getChequeRec().getCheque();
-                    // 5 - CHEQUE PRÉ
-                } else if (fp.get(i).getTipoPagamento().getId() == 5) {
-                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor()) + " (B: " + fp.get(i).getChequeRec().getBanco() + " Ag: " + fp.get(i).getChequeRec().getAgencia() + " C: " + fp.get(i).getChequeRec().getConta() + " CH: " + fp.get(i).getChequeRec().getCheque() + " P: " + fp.get(i).getChequeRec().getVencimento() + ")";
-                    // QUALQUER OUTRO    
-                } else {
-                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
-                }
-            }
-
-            List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
-            for (int i = 0; i < lista.size(); i++) {
-                String conveniada = "";
-                if (lista.get(i).getLote().getRotina().getId() == 132) {
-                    Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
-                    if (gu.getId() != -1) {
-                        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-                        List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
-                        if (!list.isEmpty()) {
-                            conveniada = list.get(0).getFantasia();
-                        }
-                    }
-                }
-
-                vetor.add(new ParametroRecibo(
-                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                        sindicato.getPessoa().getNome(),
-                        pe.getEndereco().getDescricaoEndereco().getDescricao(),
-                        pe.getEndereco().getLogradouro().getDescricao(),
-                        pe.getNumero(),
-                        pe.getComplemento(),
-                        pe.getEndereco().getBairro().getDescricao(),
-                        pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
-                        pe.getEndereco().getCidade().getCidade(),
-                        pe.getEndereco().getCidade().getUf(),
-                        sindicato.getPessoa().getTelefone1(),
-                        sindicato.getPessoa().getEmail1(),
-                        sindicato.getPessoa().getSite(),
-                        sindicato.getPessoa().getDocumento(),
-                        lista.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
-                        String.valueOf(lista.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
-                        String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
-                        lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
-                        lista.get(i).getServicos().getDescricao(), // SERVICO
-                        lista.get(i).getVencimento(), // VENCIMENTO
-                        new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
-                        lista.get(i).getBaixa().getUsuario().getLogin(),
-                        lista.get(i).getBaixa().getBaixa(),
-                        DataHoje.horaMinuto(),
-                        formas[0],
-                        formas[1],
-                        formas[2],
-                        formas[3],
-                        formas[4],
-                        formas[5],
-                        formas[6],
-                        formas[7],
-                        formas[8],
-                        formas[9],
-                        ( conveniada.isEmpty() ) ? "" : "Empresa Conveniada: " + conveniada
-                )
-                );
-            }
-            
-            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            salvarRecibo(arquivo, lista.get(0).getBaixa());
-
-            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            res.setContentType("application/pdf");
-            res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
-            res.getOutputStream().write(arquivo);
-            res.getCharacterEncoding();
-
-            FacesContext.getCurrentInstance().responseComplete();
-        } catch (JRException | IOException ex) {
-            Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ImprimirRecibo ir = new ImprimirRecibo();
+        
+        ir.recibo(id_movimento);
 
         return null;
     }
@@ -541,11 +470,21 @@ public class MovimentosReceberSocialJSFBean {
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-
+        
+        ControleAcessoBean cab = new ControleAcessoBean();
+        
         if (!baixado()) {
             msgConfirma = "Existem boletos que não foram pagos para estornar!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
+        }
+        
+        Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        if (mov.getBaixa().getUsuario().getId() != user.getId()){
+            if (cab.getBotaoEstornarMensalidadesOutrosUsuarios()){
+                GenericaMensagem.error("Atenção", "Você não tem permissão para estornar esse movimento!");
+                return null;
+            }
         }
 
         boolean est = true;
@@ -576,7 +515,7 @@ public class MovimentosReceberSocialJSFBean {
         return null;
     }
 
-    public String telaBaixa() {
+    public String telaBaixa(String caixa_banco) {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
@@ -585,24 +524,32 @@ public class MovimentosReceberSocialJSFBean {
         if (macFilial == null) {
             msgConfirma = "Não existe filial na sessão!";
             GenericaMensagem.warn("Erro", msgConfirma);
+            PF.closeDialog("dlg_caixa_banco");
+            PF.update("formMovimentosReceber");
             return null;
         }
 
         if (macFilial.getCaixa() == null) {
             msgConfirma = "Configurar Caixa nesta estação de trabalho!";
             GenericaMensagem.warn("Erro", msgConfirma);
+            PF.closeDialog("dlg_caixa_banco");
+            PF.update("formMovimentosReceber");            
             return null;
         }
 
         if (baixado()) {
             msgConfirma = "Existem boletos baixados na lista!";
             GenericaMensagem.warn("Erro", msgConfirma);
+            PF.closeDialog("dlg_caixa_banco");
+            PF.update("formMovimentosReceber");            
             return null;
         }
 
         if (semValor()) {
             msgConfirma = "Boletos sem valor não podem ser Baixados!";
             GenericaMensagem.warn("Erro", msgConfirma);
+            PF.closeDialog("dlg_caixa_banco");
+            PF.update("formMovimentosReceber");            
             return null;
         }
 
@@ -627,14 +574,20 @@ public class MovimentosReceberSocialJSFBean {
             }
             if (!lista.isEmpty()) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
+                
+                GenericaSessao.put("caixa_banco", caixa_banco);
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
             } else {
                 msgConfirma = "Nenhum boleto foi selecionado";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Atenção", msgConfirma);
+                PF.closeDialog("dlg_caixa_banco");
+                PF.update("formMovimentosReceber");
             }
         } else {
             msgConfirma = "Lista vazia!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Atenção", msgConfirma);
+            PF.closeDialog("dlg_caixa_banco");
+            PF.update("formMovimentosReceber");
         }
         return null;
     }
@@ -808,7 +761,7 @@ public class MovimentosReceberSocialJSFBean {
         //titular = (String) linha.getArgumento15(); // 13 - TITULAR
         tipo = (String) linha.getArgumento3(); // 1 - TIPO SERVIÇO
         referencia = (String) linha.getArgumento4(); // 2 - REFERENCIA
-        id_baixa = linha.getArgumento26().toString(); // 23 - ID_BAIXA
+        id_baixa = (linha.getArgumento26() == null) ? "" : linha.getArgumento26().toString(); // 23 - ID_BAIXA
 
         beneficiario = (String) linha.getArgumento14(); // 12 - BENEFICIARIO
         data = linha.getArgumento16().toString(); // 16 - CRIACAO
@@ -868,7 +821,7 @@ public class MovimentosReceberSocialJSFBean {
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
-
+            
             for (int i = 0; i < lista.size(); i++) {
                 if (lista.get(i).get(8) != null) {
                     dataBaixa = DataHoje.converteData((Date) lista.get(i).get(8));
@@ -887,8 +840,15 @@ public class MovimentosReceberSocialJSFBean {
 
                 // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
                 if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
-                        < DataHoje.converteDataParaInteger(DataHoje.data()) && dataBaixa.isEmpty()) {
-                    disabled = true;
+                        < DataHoje.converteDataParaInteger(DataHoje.data()) 
+                        && dataBaixa.isEmpty() ) {
+                    
+                    if (csb.getConfiguracaoSocial().isRecebeAtrasado()){
+                        disabled = true;
+                    }else{
+                        disabled = false    ;
+                    }
+                    
                 } else {
                     disabled = false;
                 }
@@ -1067,6 +1027,7 @@ public class MovimentosReceberSocialJSFBean {
                 addMais = false;
             }
             calculoDesconto();
+            pessoaJuridicaNaListaxx();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         }
         return pessoa;
@@ -1169,5 +1130,13 @@ public class MovimentosReceberSocialJSFBean {
 
     public void setIndexConta(int indexConta) {
         this.indexConta = indexConta;
+    }
+
+    public boolean isPessoaJuridicaNaLista() {
+        return pessoaJuridicaNaLista;
+    }
+
+    public void setPessoaJuridicaNaLista(boolean pessoaJuridicaNaLista) {
+        this.pessoaJuridicaNaLista = pessoaJuridicaNaLista;
     }
 }
