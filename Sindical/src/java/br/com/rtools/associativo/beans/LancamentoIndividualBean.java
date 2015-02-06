@@ -115,8 +115,18 @@ public class LancamentoIndividualBean {
         
         Servicos serv = (Servicos)sv.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()),"Servicos");
         
+        float totalpagar = Moeda.converteUS$(totalPagar);
+        float valor = Moeda.converteFloatR$Float(Moeda.divisaoValores(totalpagar, parcelas));
+        
         for (int i = 0; i < parcelas; i++){
-            float valor = Moeda.divisaoValores(Moeda.converteUS$(totalPagar), parcelas);
+            float valorswap = 0;
+            //if ((Moeda.subtracaoValores(totalpagar, valor) != 0) && ( (i+1) == parcelas)) {
+            if ( (i+1) == parcelas) {
+                valor = totalpagar;
+            } else {
+                totalpagar = Moeda.subtracaoValores(totalpagar, valor);
+            }
+            
             
             listaMovimento.add(new DataObject(
                     new Movimento(
@@ -128,7 +138,7 @@ public class LancamentoIndividualBean {
                     null, // BAIXA
                     (TipoServico)sv.pesquisaCodigo(1, "TipoServico"), // TIPO SERVICO
                     null, // ACORDO
-                    Moeda.converteFloatR$Float(valor), // VALOR
+                    valor, // VALOR
                     DataHoje.data().substring(3), // REFERENCIA
                     vencto_ini, // VENCIMENTO
                     1, // QUANTIDADE
@@ -168,11 +178,17 @@ public class LancamentoIndividualBean {
         }
         
         if (Moeda.converteFloatR$Float(valor) !=  Moeda.converteUS$(totalPagar)){
-            GenericaMensagem.warn("Atenção", "Os valores da parcela não corresponde ao Total do Serviço, verifique!");
+            float valordif1 = Moeda.converteFloatR$Float(valor), valordif2 = Moeda.converteUS$(totalPagar);
+            if (valordif1 > valordif2){
+                GenericaMensagem.warn("Atenção", "O valor total da parcela foi MAIOR em R$ "+Moeda.converteR$Float(Moeda.subtracaoValores(valordif1, valordif2)));
+            }else 
+                GenericaMensagem.warn("Atenção", "O valor total da parcela foi MENOR em R$ "+Moeda.converteR$Float(Moeda.subtracaoValores(valordif2, valordif1)));
+            
+            //GenericaMensagem.warn("Atenção", "Os valores da parcela não corresponde ao Total do Serviço, verifique!");
             return null;
         }
         
-        if ((listaJuridica.get(idJuridica).getDescription().equals("0"))){
+        if (listaJuridica.size() == 1 && listaJuridica.get(idJuridica).getDescription().equals("0")){
             GenericaMensagem.warn("Atenção", "Empresa Conveniada não encontrada!");
             return null;
         }

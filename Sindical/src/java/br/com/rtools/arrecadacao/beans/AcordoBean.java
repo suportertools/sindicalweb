@@ -3,7 +3,7 @@ package br.com.rtools.arrecadacao.beans;
 import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.db.AcordoDB;
 import br.com.rtools.arrecadacao.db.AcordoDBToplink;
-import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
+import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Movimento;
@@ -397,7 +397,7 @@ public class AcordoBean {
                     ((MovimentosReceberBean) GenericaSessao.getObject("movimentosReceberBean")).setDesconto("0");
                     break;
                 case "movimentosReceberSocial":
-                    ((MovimentosReceberSocialJSFBean) GenericaSessao.getObject("movimentosSocialBean")).getListaMovimento().clear();
+                    ((MovimentosReceberSocialBean) GenericaSessao.getObject("movimentosReceberSocialBean")).getListaMovimento().clear();
                     break;
             }
             if (!mensagem.isEmpty())
@@ -740,6 +740,9 @@ public class AcordoBean {
                         if (parcela > 1) {
                             if (frequenciaSind == 30) {
                                 ultimoVencimentoSind = data.incrementarMeses(1, ultimoVencimentoSind);
+                                if (ultimoVencimentoSind.substring(3,5).equals("02")){
+                                    ultimoVencimentoSind = acordo.getData().substring(0, 2) + ultimoVencimentoSind.substring(2);
+                                }                                
                             } else if (frequenciaSind == 7) {
                                 ultimoVencimentoSind = data.incrementarSemanas(1, ultimoVencimentoSind);
                             }

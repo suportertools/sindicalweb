@@ -190,13 +190,13 @@ public class EmissaoGuiasBean implements Serializable {
     
  
     public Guia pesquisaGuia(int id_lote){
-        MovimentosReceberSocialJSFBean mr = new MovimentosReceberSocialJSFBean();
+        MovimentosReceberSocialBean mr = new MovimentosReceberSocialBean();
         Guia gu = mr.pesquisaGuia(id_lote);
         return gu;
     }
     
     public void imprimirEncaminhamento(){
-        MovimentosReceberSocialJSFBean mr = new MovimentosReceberSocialJSFBean();
+        MovimentosReceberSocialBean mr = new MovimentosReceberSocialBean();
         
         mr.encaminhamento(lote.getId());
     }

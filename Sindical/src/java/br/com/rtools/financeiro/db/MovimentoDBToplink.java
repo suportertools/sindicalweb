@@ -2146,11 +2146,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List<Movimento> listaMovimentoBaixaOrder(int id_baixa) {
         try {
-            String textoQuery = " select m "
-                    + "   from Movimento m "
-                    + "  where m.baixa.id = :pid order by m.pessoa.id ASC";
-            Query qry = getEntityManager().createQuery(textoQuery);
-            qry.setParameter("pid", id_baixa);
+            String textoQuery = 
+                    "   SELECT m.* " +
+                    "  FROM fin_movimento m " +
+                    " WHERE m.id_baixa = " + id_baixa +
+                    " ORDER BY m.id_pessoa, m.id_titular, m.dt_vencimento, m.id_beneficiario";
+            Query qry = getEntityManager().createNativeQuery(textoQuery, Movimento.class);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();

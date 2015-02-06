@@ -899,6 +899,134 @@ public class ControleAcessoBean implements Serializable {
         return retorno;
     }
 
+
+    public boolean getBotaoEstornarMensalidades() {
+        //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
+        boolean retorno = false;
+        if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+            Permissao permissao;
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            if (user.getId() == 1) {
+                return false;
+            }
+            
+            permissao = db.pesquisaPermissao(2, 285, 3);
+            
+            if (permissao.getId() != -1) {
+                List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
+                for (PermissaoUsuario permissaoUsuario : permissaoUsuarios) {
+                    PermissaoDepartamento permissaoDepartamento = db.pesquisaPermissaoDepartamento(permissaoUsuario.getDepartamento().getId(), permissaoUsuario.getNivel().getId(), permissao.getId());
+                    if (permissaoDepartamento.getId() == -1) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
+                        break;
+                    }
+                }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
+                    }
+                }
+            } else {
+                retorno = true;
+            }
+        } else {
+            retorno = true;
+        }
+        return retorno;
+    }    
+    
+    public boolean getBotaoEstornarMensalidadesOutrosUsuarios() {
+        //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
+        boolean retorno = false;
+        if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+            Permissao permissao;
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            if (user.getId() == 1) {
+                return false;
+            }
+            
+            permissao = db.pesquisaPermissao(2, 286, 3);
+
+            if (permissao.getId() != -1) {
+                List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
+                for (PermissaoUsuario permissaoUsuario : permissaoUsuarios) {
+                    PermissaoDepartamento permissaoDepartamento = db.pesquisaPermissaoDepartamento(permissaoUsuario.getDepartamento().getId(), permissaoUsuario.getNivel().getId(), permissao.getId());
+                    if (permissaoDepartamento.getId() == -1) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
+                        break;
+                    }
+                }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
+                    }
+                }
+            } else {
+                retorno = true;
+            }
+        } else {
+            retorno = true;
+        }
+        return retorno;
+    }    
+    
+    public boolean getBotaoAlterarMovimento() {
+        //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
+        boolean retorno = false;
+        if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+            Permissao permissao;
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            if (user.getId() == 1) {
+                return false;
+            }
+            
+            if (modulo.getId() != -1) {
+                permissao = db.pesquisaPermissao(modulo.getId(), 190, 3);
+            } else {
+                permissao = db.pesquisaPermissao(2, 190, 3);
+            }
+
+            if (permissao.getId() != -1) {
+                List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
+                for (PermissaoUsuario permissaoUsuario : permissaoUsuarios) {
+                    PermissaoDepartamento permissaoDepartamento = db.pesquisaPermissaoDepartamento(permissaoUsuario.getDepartamento().getId(), permissaoUsuario.getNivel().getId(), permissao.getId());
+                    if (permissaoDepartamento.getId() == -1) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
+                        break;
+                    }
+                }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
+                    }
+                }
+            } else {
+                retorno = true;
+            }
+        } else {
+            retorno = true;
+        }
+        return retorno;
+    }    
+        
     public boolean verificarUsuario() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             login = ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getLogin();
