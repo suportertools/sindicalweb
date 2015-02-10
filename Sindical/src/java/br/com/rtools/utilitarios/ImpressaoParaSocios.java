@@ -138,7 +138,12 @@ public class ImpressaoParaSocios {
                             getConverteNullString(((List) (listaCartao.get(i))).get(31)), // ESTADOCIVIL
                             getConverteNullString(((List) (listaCartao.get(i))).get(32)), // CARTEIRA
                             getConverteNullString(((List) (listaCartao.get(i))).get(33)), // SERIE
-                            caminho_img // IMAGEMFUNDO
+                            caminho_img, // IMAGEMFUNDO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(35)), // CÓDIGO FUNCIONAL
+                            getConverteNullString(((List) (listaCartao.get(i))).get(34)), // ÓRGÃO EXPEDITOR
+                            getConverteNullString(((List) (listaCartao.get(i))).get(36)), // PARENTESCO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(37)),  // CATEGORIA
+                            getConverteNullString(((List) (listaCartao.get(i))).get(9))  // FANTASIA
                     )
             );
 
@@ -171,7 +176,6 @@ public class ImpressaoParaSocios {
             for (Entry<Integer, List> entry : hash.entrySet()) {
                 modelo = (ModeloCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo(entry.getKey(), "ModeloCarteirinha");
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
-
                 if (caminho == null) {
                     GenericaMensagem.error("Erro jasper: " + modelo.getJasper(), "Modelo não encontrado na pasta Relatório!");
                     continue;
