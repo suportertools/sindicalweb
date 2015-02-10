@@ -128,7 +128,7 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booEstadoCivil = false;
     private boolean booEmpresa = false;
 
-    public void limparFiltro(){
+    public void limparFiltro() {
 //        listaMenuRSocial.clear();
 //        booMatricula = false;
 //        booIdade = false;
@@ -149,30 +149,30 @@ public class RelatorioSociosBean implements Serializable {
 //        booEmpresa = false;
         GenericaSessao.put("relatorioSociosBean", new RelatorioSociosBean());
     }
-    
-    public boolean validaFiltro(){
-        if (!booMatricula && 
-            !booIdade && 
-            !booGrupoCategoria && 
-            !booSexo && 
-            !booGrau && 
-            !booFotos && 
-            !booCarteirinha && 
-            !booTipoCobranca && 
-            !booCidadeSocio && 
-            !booCidadeEmpresa && 
-            !booAniversario && 
-            !booData && 
-            !booVotante && 
-            !booEmail && 
-            !booTelefone && 
-            !booEstadoCivil && 
-            !booEmpresa){
+
+    public boolean validaFiltro() {
+        if (!booMatricula
+                && !booIdade
+                && !booGrupoCategoria
+                && !booSexo
+                && !booGrau
+                && !booFotos
+                && !booCarteirinha
+                && !booTipoCobranca
+                && !booCidadeSocio
+                && !booCidadeEmpresa
+                && !booAniversario
+                && !booData
+                && !booVotante
+                && !booEmail
+                && !booTelefone
+                && !booEstadoCivil
+                && !booEmpresa) {
             return false;
         }
         return true;
     }
-    
+
     public void editarOpcao(int index) {
         if (listaMenuRSocial.get(index).getArgumento1().equals("Remover")) {
             listaMenuRSocial.get(index).setArgumento1("Editar");
@@ -332,7 +332,7 @@ public class RelatorioSociosBean implements Serializable {
 //            GenericaMensagem.warn("Atenção", "Selecione algum filtro para esta pesquisa!");
 //            return null;
 //        }
-                
+
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioSociosDB dbS = new RelatorioSociosDBToplink();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
@@ -509,11 +509,16 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(71)),// TIPO COBRANCA
                     getConverteNullInt(result.get(i).get(72)),// COD TIPO COBRANCA
                     getConverteNullString(result.get(i).get(73)),// TELEFONE2
-                    getConverteNullString(result.get(i).get(74)) // TELEFONE3                                          
+                    getConverteNullString(result.get(i).get(74)), // TELEFONE3                                          
+                    getConverteNullString(result.get(i).get(75)) // EMAIL 1
             ));
 //            if (i == 2392){
 //                break;
 //            }
+        }
+        if(lista.isEmpty()) {
+            GenericaMensagem.warn("Sistema", "Nenhum registro encontrado!");
+            return null;
         }
         try {
 

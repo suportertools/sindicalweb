@@ -127,7 +127,6 @@ public class DB {
         }
         return configuracao;
     }
-
     // COMÉRCIO LIMEIRA
 //    public Configuracao servidor(String cliente) {
 //        Configuracao configuracao = new Configuracao();
@@ -139,13 +138,12 @@ public class DB {
 //        configuracao.setSenha("r#@tools");
 //        return configuracao;
 //    }
-    
     // COMÉRCIO RIBEIRÃO
 //    public Configuracao servidor(String cliente) {
 //        Configuracao configuracao = new Configuracao();
 //        configuracao.setCaminhoSistema("Sindical");
-//        configuracao.setHost("192.168.1.102");
-//        configuracao.setSenha("r#@tools");
+//        configuracao.setHost("localhost");
+//        configuracao.setSenha("989899");
 //        configuracao.setPersistence(cliente);
 //        return configuracao;
 //    }
