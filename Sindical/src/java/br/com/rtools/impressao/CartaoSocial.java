@@ -9,8 +9,8 @@ public class CartaoSocial {
     private String cnpj;
     private String admissao;
     private String validade;
-    private String e_cidade;
-    private String e_uf;
+    private String empresa_cidade;
+    private String empresa_uf;
     private String logo;
     private String imagem;
     private String filiacao;
@@ -22,10 +22,15 @@ public class CartaoSocial {
     private String cidade;
     private String nacionalidade;
     private String nascimento;
-    private String estadocivil;
+    private String estado_civil;
     private String carteira;
     private String serie;
-    private String imagemfundo;
+    private String imagem_fundo;
+    private String codigo_funcional;
+    private String orgao_expeditor;
+    private String parentesco;
+    private String categoria;
+    private String fantasia;
 
     public CartaoSocial() {
         this.matricula = "";
@@ -35,8 +40,8 @@ public class CartaoSocial {
         this.cnpj = "";
         this.admissao = "";
         this.validade = "";
-        this.e_cidade = "";
-        this.e_uf = "";
+        this.empresa_cidade = "";
+        this.empresa_uf = "";
         this.logo = "";
         this.imagem = "";
         this.filiacao = "";
@@ -48,13 +53,18 @@ public class CartaoSocial {
         this.cidade = "";
         this.nacionalidade = "";
         this.nascimento = "";
-        this.estadocivil = "";
+        this.estado_civil = "";
         this.carteira = "";
         this.serie = "";
-        this.imagemfundo = "";
+        this.imagem_fundo = "";
+        this.codigo_funcional = "";
+        this.orgao_expeditor = "";
+        this.parentesco = "";
+        this.categoria = "";
+        this.fantasia = "";
     }
-        
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estadocivil, String carteira, String serie, String imagemfundo) {
+
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -62,8 +72,8 @@ public class CartaoSocial {
         this.cnpj = cnpj;
         this.admissao = admissao;
         this.validade = validade;
-        this.e_cidade = e_cidade;
-        this.e_uf = e_uf;
+        this.empresa_cidade = empresa_cidade;
+        this.empresa_uf = empresa_uf;
         this.logo = logo;
         this.imagem = imagem;
         this.filiacao = filiacao;
@@ -75,12 +85,17 @@ public class CartaoSocial {
         this.cidade = cidade;
         this.nacionalidade = nacionalidade;
         this.nascimento = nascimento;
-        this.estadocivil = estadocivil;
+        this.estado_civil = estado_civil;
         this.carteira = carteira;
         this.serie = serie;
-        this.imagemfundo = imagemfundo;
+        this.imagem_fundo = imagem_fundo;
+        this.codigo_funcional = codigo_funcional;
+        this.orgao_expeditor = orgao_expeditor;
+        this.parentesco = parentesco;
+        this.categoria = categoria;
+        this.fantasia = fantasia;
     }
-    
+
     public String getMatricula() {
         return matricula;
     }
@@ -137,20 +152,20 @@ public class CartaoSocial {
         this.validade = validade;
     }
 
-    public String getE_cidade() {
-        return e_cidade;
+    public String getEmpresa_cidade() {
+        return empresa_cidade;
     }
 
-    public void setE_cidade(String e_cidade) {
-        this.e_cidade = e_cidade;
+    public void setEmpresa_cidade(String empresa_cidade) {
+        this.empresa_cidade = empresa_cidade;
     }
 
-    public String getE_uf() {
-        return e_uf;
+    public String getEmpresa_uf() {
+        return empresa_uf;
     }
 
-    public void setE_uf(String e_uf) {
-        this.e_uf = e_uf;
+    public void setEmpresa_uf(String empresa_uf) {
+        this.empresa_uf = empresa_uf;
     }
 
     public String getLogo() {
@@ -199,7 +214,7 @@ public class CartaoSocial {
 
     public void setRg(String rg) {
         this.rg = rg;
-    }    
+    }
 
     public int getId_pessoa() {
         return id_pessoa;
@@ -241,12 +256,12 @@ public class CartaoSocial {
         this.nascimento = nascimento;
     }
 
-    public String getEstadocivil() {
-        return estadocivil;
+    public String getEstado_civil() {
+        return estado_civil;
     }
 
-    public void setEstadocivil(String estadocivil) {
-        this.estadocivil = estadocivil;
+    public void setEstado_civil(String estado_civil) {
+        this.estado_civil = estado_civil;
     }
 
     public String getCarteira() {
@@ -265,11 +280,52 @@ public class CartaoSocial {
         this.serie = serie;
     }
 
-    public String getImagemfundo() {
-        return imagemfundo;
+    public String getImagem_fundo() {
+        return imagem_fundo;
     }
 
-    public void setImagemfundo(String imagemfundo) {
-        this.imagemfundo = imagemfundo;
+    public void setImagem_fundo(String imagem_fundo) {
+        this.imagem_fundo = imagem_fundo;
     }
+
+    public String getCodigo_funcional() {
+        return codigo_funcional;
+    }
+
+    public void setCodigo_funcional(String codigo_funcional) {
+        this.codigo_funcional = codigo_funcional;
+    }
+
+    public String getOrgao_expeditor() {
+        return orgao_expeditor;
+    }
+
+    public void setOrgao_expeditor(String orgao_expeditor) {
+        this.orgao_expeditor = orgao_expeditor;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getParentesco() {
+        return parentesco;
+    }
+
+    public void setParentesco(String parentesco) {
+        this.parentesco = parentesco;
+    }
+
+    public String getFantasia() {
+        return fantasia;
+    }
+
+    public void setFantasia(String fantasia) {
+        this.fantasia = fantasia;
+    }
+
 }
