@@ -4,6 +4,9 @@ import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.dao.SociosDao;
+import br.com.rtools.associativo.db.MatriculaSociosDB;
+import br.com.rtools.associativo.db.MatriculaSociosDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.impressao.CartaoSocial;
@@ -45,9 +48,14 @@ public class ImpressaoParaSocios {
 
         File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
         File listFile[] = files.listFiles();
-        List<ModeloCarteirinha> listaModelo = new SalvarAcumuladoDBToplink().listaObjeto("ModeloCarteirinha");
+        List<ModeloCarteirinha> listaModelo = new Dao().list(new ModeloCarteirinha());
         Map<Integer, List> hash = new HashMap();
-
+        SociosDao sociosDao = new SociosDao();
+        String titular = "";
+        String dependente = "";
+        String orgaoOrigem = "";
+        String codigoFuncional = "";
+        Socios socioDependente = new Socios();
         for (int i = 0; i < listaCartao.size(); i++) {
             String imagem = "semFoto.jpg";
             for (int j = 0; j < listFile.length; j++) {
@@ -74,7 +82,7 @@ public class ImpressaoParaSocios {
             }
 
             Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-            String bc = ((List) (listaCartao.get(i))).get(18).toString() + via; //             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via; // id_pessoa
+            String bc = getConverteNullString(((List) (listaCartao.get(i))).get(18)) + via; //             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via; // id_pessoa
             String barras = "";
 
             if (reg.isValidadeBarras() && ((List) (listaCartao.get(i))).get(6) != null) {
@@ -94,10 +102,8 @@ public class ImpressaoParaSocios {
             }
             //String barras = "0000000000".substring(0, 10 - bc.length()) + bc;
 
-            SocioCarteirinha carteirinha = new SocioCarteirinha();
-            carteirinha = (SocioCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaCartao.get(i)).get(19), "SocioCarteirinha");
+            SocioCarteirinha carteirinha = (SocioCarteirinha) new Dao().find(new SocioCarteirinha(), (Integer) ((List) listaCartao.get(i)).get(19));
 
-            ModeloCarteirinha[] mod_obj = new ModeloCarteirinha[listaModelo.size()];
             File file_img = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg"));
 
             String caminho_img = "";
@@ -113,37 +119,51 @@ public class ImpressaoParaSocios {
                     + getConverteNullString(((List) (listaCartao.get(i))).get(25));
 
             String cidade_uf = getConverteNullString(((List) (listaCartao.get(i))).get(26)) + " - " + getConverteNullString(((List) (listaCartao.get(i))).get(27));
+            if (getConverteNullString(((List) (listaCartao.get(i))).get(36)).equals("TITULAR")) {
+                titular = getConverteNullString(((List) (listaCartao.get(i))).get(1));
+                dependente = "";
+                orgaoOrigem = getConverteNullString(((List) (listaCartao.get(i))).get(9));
+                codigoFuncional = getConverteNullString(((List) (listaCartao.get(i))).get(35));
+            } else {
+                socioDependente = sociosDao.pesquisaTitularPorDependente(Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()));
+                titular = socioDependente.getMatriculaSocios().getTitular().getNome();
+                dependente = getConverteNullString(((List) (listaCartao.get(i))).get(1));
+            }
             listax.add(
                     new CartaoSocial(
-                            matr, // CODIGO
-                            barras, // BARRAS 
-                            getConverteNullString(((List) (listaCartao.get(i))).get(1)), // NOME
-                            getConverteNullString(((List) (listaCartao.get(i))).get(3)), // EMPRESA
-                            getConverteNullString(((List) (listaCartao.get(i))).get(2)), // CNPJ
-                            getConverteNullString(((List) (listaCartao.get(i))).get(8)), // DATA ADMISSAO
-                            getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
-                            getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
-                            getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
+                            matr, //                                                         CODIGO
+                            barras, //                                                       BARRAS 
+                            getConverteNullString(((List) (listaCartao.get(i))).get(1)), //  NOME
+                            getConverteNullString(((List) (listaCartao.get(i))).get(3)), //  EMPRESA
+                            getConverteNullString(((List) (listaCartao.get(i))).get(2)), //  CNPJ
+                            getConverteNullString(((List) (listaCartao.get(i))).get(8)), //  DATA ADMISSAO
+                            getConverteNullString(((List) (listaCartao.get(i))).get(6)), //  DATA VALIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(5)), //  CIDADE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(7)), //  UF
                             ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO
                             ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
                             getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
                             getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
                             getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
                             getConverteNullString(((List) (listaCartao.get(i))).get(16)), // RG
-                            Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()), // ID_PESSOA
-                            endereco, // ENDERECO
-                            cidade_uf, // CIDADE
+                            Integer.valueOf(((List) (listaCartao.get(i))).get(0).toString()), //    ID_PESSOA
+                            endereco, //                                                     ENDERECO
+                            cidade_uf, //                                                    CIDADE
                             getConverteNullString(((List) (listaCartao.get(i))).get(29)), // NACIONALIDADE
                             getConverteNullString(((List) (listaCartao.get(i))).get(30)), // NASCIMENTO
-                            getConverteNullString(((List) (listaCartao.get(i))).get(31)), // ESTADOCIVIL
+                            getConverteNullString(((List) (listaCartao.get(i))).get(31)), // ESTADO CIVIL
                             getConverteNullString(((List) (listaCartao.get(i))).get(32)), // CARTEIRA
                             getConverteNullString(((List) (listaCartao.get(i))).get(33)), // SERIE
-                            caminho_img, // IMAGEMFUNDO
-                            getConverteNullString(((List) (listaCartao.get(i))).get(35)), // CÓDIGO FUNCIONAL
-                            getConverteNullString(((List) (listaCartao.get(i))).get(34)), // ÓRGÃO EXPEDITOR
+                            caminho_img, //                                                  IMAGEM FUNDO
+                            codigoFuncional, //                                              CÓDIGO FUNCIONAL
+                            getConverteNullString(((List) (listaCartao.get(i))).get(36)), // ÓRGÃO EXPEDITOR
                             getConverteNullString(((List) (listaCartao.get(i))).get(36)), // PARENTESCO
-                            getConverteNullString(((List) (listaCartao.get(i))).get(37)),  // CATEGORIA
-                            getConverteNullString(((List) (listaCartao.get(i))).get(9))  // FANTASIA
+                            getConverteNullString(((List) (listaCartao.get(i))).get(37)), // CATEGORIA
+                            orgaoOrigem, //  FANTASIA
+                            titular, //                                                      TITULAR
+                            dependente, //                                                   DEPENDENTE
+                            getConverteNullString(((List) (listaCartao.get(i))).get(38)), // FANTASIA EMPRESA - TITULAR
+                            getConverteNullString(((List) (listaCartao.get(i))).get(39)) //  CÓDIGO FUNCIONAL - TITULAR
                     )
             );
 
@@ -160,21 +180,13 @@ public class ImpressaoParaSocios {
 
         try {
             String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
-            File fileA = new File(patch + "/downloads");
-            if (!fileA.exists()) {
-                fileA.mkdir();
-            }
-            File fileB = new File(patch + "/downloads/carteirinhas");
-            if (!fileB.exists()) {
-                fileB.mkdir();
-            }
-
-            ModeloCarteirinha modelo = new ModeloCarteirinha();
+            Diretorio.criar("downloads/carteirinhas");
+            ModeloCarteirinha modelo;
             List ljasper = new ArrayList();
             JasperReport jasper;
 
             for (Entry<Integer, List> entry : hash.entrySet()) {
-                modelo = (ModeloCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo(entry.getKey(), "ModeloCarteirinha");
+                modelo = (ModeloCarteirinha) new Dao().find(new ModeloCarteirinha(), entry.getKey());
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
                 if (caminho == null) {
                     GenericaMensagem.error("Erro jasper: " + modelo.getJasper(), "Modelo não encontrado na pasta Relatório!");

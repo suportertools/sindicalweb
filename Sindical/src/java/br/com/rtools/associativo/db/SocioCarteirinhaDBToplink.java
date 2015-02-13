@@ -133,23 +133,26 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "            px.ds_orgao_emissao_rg AS orgao_expeditor,               " // 34 ORGÃO EMISSÃO RG
                     + "            pe.ds_codigo as codigo_funcional,                        " // 35 CÓDIGO FUNCIONAL
                     + "            s.parentesco,                                            " // 36 PARENTESCO
-                    + "            s.categoria                                              " // 37 CATEGORIA
-                    + "       FROM pes_fisica f                                             "
-                    + " INNER JOIN pes_pessoa p on p.id = f.id_pessoa                       "
-                    + " INNER JOIN pes_pessoa_vw px on p.id = px.codigo                     "
-                    + "  LEFT JOIN soc_socios_vw s on s.codsocio = f.id_pessoa AND s.inativacao IS NULL "
-                    + "  LEFT JOIN pes_pessoa_empresa pe on f.id = pe.id_fisica AND pe.dt_demissao IS NULL "
-                    + "  LEFT JOIN pes_profissao as pr on pr.id = pe.id_funcao  "
-                    + "  LEFT JOIN pes_juridica j on j.id = pe.id_juridica      "
-                    + "  LEFT JOIN pes_pessoa pj on pj.id = j.id_pessoa       "
-                    + "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2" // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
+                    + "            s.categoria,                                             " // 37 CATEGORIA
+                    + "            pt.fantasia AS fantasia_titular,                         " // 38 FANTASIA EMPRESA - TITULAR
+                    + "            pt.codigo_funcional AS codigo_funcional_titular          " // 39 CÓDIGO FUNCIONAL - TITULAR                    
+                    + "       FROM pes_fisica           AS f                                                                "
+                    + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               "
+                    + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 "
+                    + "  LEFT JOIN soc_socios_vw        AS s    ON s.codsocio   = f.id_pessoa AND s.inativacao IS NULL      "
+                    + "  LEFT JOIN pes_pessoa_vw        AS pt   ON pt.codigo    = s.titular                                 "
+                    + "  LEFT JOIN pes_pessoa_empresa   AS pe   ON f.id         = pe.id_fisica AND pe.dt_demissao IS NULL   "
+                    + "  LEFT JOIN pes_profissao        AS pr   ON pr.id        = pe.id_funcao                              "
+                    + "  LEFT JOIN pes_juridica         AS j    ON j.id         = pe.id_juridica                            "
+                    + "  LEFT JOIN pes_pessoa           AS pj   ON pj.id        = j.id_pessoa                               "
+                    + "  LEFT JOIN pes_pessoa_endereco  AS pend ON pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2     " // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
                     //"  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" + // ENDEREÇO DO SÓCIO
-                    + "  LEFT JOIN end_endereco ende on ende.id = pend.id_endereco   "
-                    + "  LEFT JOIN end_cidade c on c.id = ende.id_cidade      "
-                    + " INNER JOIN soc_carteirinha sc on sc.id_pessoa = p.id  "
-                    + "  LEFT JOIN fin_movimento m on m.id_pessoa = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
-                    + "  LEFT JOIN soc_historico_carteirinha sh on sh.id_movimento = m.id "
-                    + " INNER JOIN soc_modelo_carteirinha mc on mc.id = sc.id_modelo_carteirinha ";
+                    + "  LEFT JOIN end_endereco         AS ende ON ende.id      = pend.id_endereco                          "
+                    + "  LEFT JOIN end_cidade           AS c    ON c.id         = ende.id_cidade                            "
+                    + " INNER JOIN soc_carteirinha      AS sc   ON sc.id_pessoa = p.id                                      "
+                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
+                    + "  LEFT JOIN soc_historico_carteirinha sh ON sh.id_movimento = m.id                                   "
+                    + " INNER JOIN soc_modelo_carteirinha AS mc ON mc.id        = sc.id_modelo_carteirinha                  ";
 
             // NÃO IMPRESSOS / EMPRESAS
             if (tipo.equals("niEmpresa")) {
@@ -311,7 +314,9 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          px.ds_orgao_emissao_rg,                     "
                     + "          pe.ds_codigo,                               "
                     + "          s.parentesco,                               "
-                    + "          s.categoria                                 ";
+                    + "          s.categoria,                                "
+                    + "          pt.fantasia,                                "
+                    + "          pt.codigo_funcional                         ";
 
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {
@@ -494,7 +499,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     public List filtroCartao(int id_pessoa) {
         List lista = new ArrayList();
         String textqry
-                = "   SELECT p.codigo AS codigo,                                        " // 0 CÓDIGO
+                = "     SELECT p.codigo AS codigo,                                        " // 0 CÓDIGO
                 + "            p.nome AS nome,                                            " // 1 NOME
                 + "            p.cnpj AS cnpj,                                            " // 2 CNPJ
                 + "            p.empresa AS empresa,                                      " // 3 EMPRESA
@@ -531,17 +536,20 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 + "            p.ds_orgao_emissao_rg AS orgao_expeditor,                  " // 34 ÓRGÃO EXPEDITOR
                 + "            p.codigo_funcional,                                        " // 35 CÓDIGO FUNCIONAL
                 + "            s.parentesco,                                              " // 36 PARENTESCO
-                + "            s.categoria                                                " // 37 CATEGORIA
+                + "            s.categoria,                                               " // 37 CATEGORIA
+                + "            pt.fantasia AS fantasia_titular,                           " // 38 FANTASIA EMPRESA - TITULAR
+                + "            pt.codigo_funcional AS codigo_funcional_titular            " // 39 CÓDIGO FUNCIONAL - TITULAR
                 + "       FROM pes_pessoa_vw                    AS p                                                "
                 + " INNER JOIN soc_socios_vw                    AS s  ON s.codsocio     = p.codigo                  "
                 + " INNER JOIN soc_carteirinha                  AS c  ON c.id_pessoa    = s.codsocio                "
                 + " INNER JOIN soc_modelo_carteirinha_categoria AS cc ON s.id_categoria = cc.id_categoria           "
                 + " INNER JOIN soc_modelo_carteirinha           AS mc ON mc.id          = cc.id_modelo_carteirinha  "
-                + "  LEFT JOIN fin_movimento                    AS m  ON m.id_pessoa    = c.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina WHERE id_rotina = 120) "
+                + "  LEFT JOIN pes_pessoa_vw                    AS pt ON pt.codigo      = s.titular                 "
+                + "  LEFT JOIN fin_movimento                    AS m  ON m.id_pessoa    = c.id_pessoa AND m.id_servicos IN(SELECT id_servicos FROM fin_servico_rotina WHERE id_rotina = 120) "
                 + "      WHERE s.codsocio = " + id_pessoa;
 
         textqry += " GROUP BY "
-                + " p.codigo,                                               " + // 0 CÓDIGO
+                + "          p.codigo,                                      " + // 0 CÓDIGO
                 "            p.nome,                                        " + // 1 NOME
                 "            p.cnpj,                                        " + // 2 CNPJ
                 "            p.empresa,                                     " + // 3 EMPRESA
@@ -554,13 +562,13 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.matricula,                                   " + // 10 MATRICULA
                 "            s.nr_via,                                      " + // 11 VIA
                 "            s.id_socio,                                    " + // 12 CÓDIGO SÓCIO
-                "            to_char(s.filiacao, 'DD/MM/YYYY'),             " +
+                "            to_char(s.filiacao, 'DD/MM/YYYY'),             " + // 13 FILIAÇÃO
                 "            p.profissao,                                   " + // 14 PROFISSÃO
                 "            p.cpf,                                         " + // 15 CPF
                 "            p.ds_rg,                                       " + // 16 RG 
-                "            c.nr_cartao,                                   " +
-                "            c.id,                                          " +
-                "            mc.ds_descricao,                               " +
+                "            c.nr_cartao,                                   " + // 17 NÚMERO CARTÃO
+                "            c.id,                                          " + // 18
+                "            mc.ds_descricao,                               " + // 19 MODELO CARTEIRINHA
                 "            p.logradouro,                                  " + // 20
                 "            p.endereco,                                    " + // 21
                 "            p.numero,                                      " + // 22
@@ -577,7 +585,9 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            p.ds_orgao_emissao_rg,                         " + // 34
                 "            p.codigo_funcional,                            " + // 35
                 "            s.parentesco,                                  " + // 36
-                "            s.categoria                                    ";  // 37
+                "            s.categoria,                                   " + // 37
+                "            pt.fantasia,                                   " + // 38
+                "            pt.codigo_funcional                            ";  // 39
         try {
             Query qry = getEntityManager().createNativeQuery(textqry);
             if (!qry.getResultList().isEmpty()) {

@@ -54,6 +54,7 @@ public class PessoaCardBean implements Serializable {
         close();
         FisicaDB fisicaDB = new FisicaDBToplink();
         fisica = (Fisica) fisicaDB.pesquisaFisicaPorPessoa(idPessoa);
+        pessoa = fisica.getPessoa();
     }
 
     public void cardJuridica(int idPessoa) {
