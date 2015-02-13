@@ -38,7 +38,7 @@
                                     </h:column>
                                     <h:column>
                                         <h:panelGrid columns="8">
-                                            <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" pattern="dd/MM/yyyy" mask="99/99/9999">
+                                            <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt">
                                                 <p:ajax event="dateSelect" update="@this i_panel_salvar_movimento" listener="#{matriculaEscolaBean.onDateSelect}" />
                                             </p:calendar>
                                             <p:outputLabel value=" Status: " />

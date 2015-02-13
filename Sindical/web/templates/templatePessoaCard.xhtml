@@ -5,6 +5,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core">
     <f:view>
+        <f:metadata>  
+            <f:event type="preRenderView" listener="${sociosCardBean.load(pessoaCardBean.pessoa.id)}"/>  
+        </f:metadata>
         <center>
             <h:column rendered="#{!pessoaCardBean.getImagemPessoa('Imagens/Fotos').equals('')}">
                 <p:graphicImage value="#{pessoaCardBean.getImagemPessoa('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
@@ -27,7 +30,6 @@
             <h:outputLabel value="Email:"  />
             <h:commandLink value="#{pessoaCardBean.pessoa.email1}" action="#{pessoaCardBean.enviaEmail(pessoaCardBean.pessoa.id)}" styleClass="font-color-blue" title="Enviar email"/>
         </h:panelGrid>
-        <h:column rendered="#{!sociosCardBean.setIdPessoa(pessoaCardBean.pessoa.id)}"></h:column>
         <p:panel header="Associado" style="background: #ccffcc;" styleClass="no-border margin-top-max" rendered="#{sociosCardBean.socios.id != -1}">
             <ui:include src="templateSociosCard.xhtml" />
         </p:panel>        
