@@ -5,16 +5,29 @@
     <f:view>
         <h:panelGrid columns="2">
             <h:outputText value="Categoria: " />
-            <h:outputText value="#{matriculaAcademiaBean.socios.matriculaSocios.categoria.categoria}" />
+            <h:outputText value="#{sociosCardBean.socios.matriculaSocios.categoria.categoria}" />
             <h:outputText value="Matrícula: " />
-            <h:outputText value="#{matriculaAcademiaBean.socios.matriculaSocios.nrMatricula}" />
+            <h:outputText value="#{sociosCardBean.socios.matriculaSocios.nrMatricula}" />
             <h:outputText value="Parentesco:"/>
-            <h:outputText value="#{matriculaAcademiaBean.socios.parentesco.parentesco}"/>
+            <h:outputText value="#{sociosCardBean.socios.parentesco.parentesco}"/>
             <h:outputText value="Situação: " />
             <h:column>
-                <h:outputText value="Ativo" rendered="#{matriculaAcademiaBean.socios.matriculaSocios.inativo.equals('')}" />
-                <h:outputText value="Inativo" rendered="#{!matriculaAcademiaBean.socios.matriculaSocios.inativo.equals('')}" />
+                <h:outputText value="Ativo" rendered="#{sociosCardBean.socios.matriculaSocios.inativo eq ''}" />
+                <h:outputText value="Inativo" rendered="#{!sociosCardBean.socios.matriculaSocios.inativo eq ''}" />
             </h:column>
+        </h:panelGrid>
+        <h:panelGrid columns="2" styleClass="margin-top-max" rendered="#{sociosCardBean.sociosTitular.id != -1}">
+            <h:outputText value="Titular" styleClass="bold" style="text-decoration: underline"/>
+            <h:column />
+            <h:outputText value="Nome: " />
+            <h:outputText value="#{sociosCardBean.sociosTitular.servicoPessoa.pessoa.nome}" />
+            <h:outputText value="Matrícula: " />
+            <h:outputText value="#{sociosCardBean.sociosTitular.matriculaSocios.nrMatricula}" />
+            <h:outputText value="Situação: " />
+            <h:column>
+                <h:outputText value="Ativo" rendered="#{sociosCardBean.sociosTitular.matriculaSocios.inativo eq ''}" />
+                <h:outputText value="Inativo" rendered="#{!sociosCardBean.sociosTitular.matriculaSocios.inativo eq ''}" />
+            </h:column>                
         </h:panelGrid>
     </f:view>
 </ui:composition>

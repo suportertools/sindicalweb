@@ -42,7 +42,7 @@
                         <h:outputText value="Cadastro do Sócio" styleClass="fonteHeader" />
                         <h:form id="formSocios">
                             <c:set scope="request" var="object" value="${sociosBean.socios}"/>
-
+                            <p:growl id="i_growl" showDetail="true" showSummary="true"  />
                             <p:dialog widgetVar="i_dlg_c" header="Mensagem" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
@@ -303,11 +303,11 @@
 
                             <p:panel id="i_panel_dependente" header="Dependentes" style="margin-top: 10px">
                                 <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente i_msg" icon="ui-icon-circle-plus"/>
-                                <p:commandLink value="Sócio com Dependentes Inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()"/>
+                                <p:commandLink value="Sócio com Dependentes Inativos" id="id_dependente_inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()" styleClass="font-color-red bold" update="i_l_d_i"/>
 
                                 <p:dataTable var="linha" id="tbl" value="#{sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
                                     <p:column width="30">
-                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update="tbl" />
+                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" />
                                     </p:column>
 
                                     <p:column headerText="Nome" width="200">
@@ -317,7 +317,7 @@
                                     
                                     <p:column headerText="Parentesco" >
                                         <p:selectOneMenu value="#{linha.argumento1}" style="width: 120px">
-                                            <p:ajax event="change" update="i_validade_dependente" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
+                                            <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
                                             <!-- <f:selectItems value="# {sociosBean.listaParentesco}"/> -->
                                             <f:selectItems value="#{linha.argumento6}"/>
                                         </p:selectOneMenu>
@@ -328,7 +328,7 @@
                                     </p:column>
 
                                     <p:column headerText="Validade Carteirinha" style="text-align: center">
-                                        <p:inputMask value="#{linha.argumento3}" size="8" mask="99/99/9999" readonly="true"/>
+                                        <p:inputMask value="#{linha.argumento3}" size="8" mask="99/99/9999" readonly="true" id="i_validade_dependente2"/>
                                     </p:column>
 
                                     <p:column headerText="Val. Dependente" style="text-align: center">
@@ -341,20 +341,26 @@
                                 </p:dataTable>
                             </p:panel>
 
-                            <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="400" modal="true">
-                                <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
-                                    <p:column headerText="Nome">
-                                        <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
-                                    </p:column>
-
-                                    <p:column headerText="Validade Dependente" style="text-align: center">
-                                        <p:inputMask id="i_validade_dependente_inativo" value="#{linha.argumento4}" size="5" mask="99/9999"/>
-                                    </p:column>
-                                </p:dataTable>
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="OK" action="#{sociosBean.reativarDependente()}" styleClass="ui-confirmdialog-no" oncomplete="PF('i_dlg_deps').hide()" style="float: left" icon="ui-icon-check" update="i_panel_dependente"/>
-                                    <h:outputLabel value=" * Clique em ALTERAR para CONFIRMAR as alterações" style="color: red"/>
+                            <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="600" modal="true" closeOnEscape="true">
+                                <h:panelGrid id="i_l_d_i">
+                                    <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
+                                        <p:column headerText="Nome">
+                                            <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
+                                        </p:column>
+                                        <p:column headerText="Validade Dependente" style="text-align: center" width="150">
+                                            <p:inputMask id="i_validade_dependente_inativo" value="#{linha.argumento4}" size="5" mask="99/9999"/>
+                                        </p:column>
+                                        <p:column style="text-align: center" width="100">
+                                            <p:commandButton value="Reativar" icon="ui-icon-check" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.reativarDependente(index)}"/>
+                                        </p:column>
+                                    </p:dataTable>
                                 </h:panelGrid>
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sair" styleClass="ui-confirmdialog-no" oncomplete="PF('i_dlg_deps').hide()" update="i_panel_dependente"/>
+                                        <h:outputLabel value=" * Clique em ALTERAR para CONFIRMAR as alterações" style="color: red"/>
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
 
                             <h:panelGrid columns="10">

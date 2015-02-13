@@ -52,6 +52,10 @@
                                 </center>
                             </p:panel>
                             <h:panelGrid columns="3" styleClass="margin-top-max" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop">
+                                <f:facet name="footer">
+                                    <br />
+                                    <h:commandLink action="#{chamadaPaginaBean.permissao()}" value="Adicionar - Módulo / Rotina" />
+                                </f:facet>
                                 <h:column>
                                     <p:panel header="Permissões Disponíveis" style="width: 99%;">
                                         <p:dataTable var="lista" id="tbl" value="#{permissaoBean.listaPermissoesDisponiveis}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!" paginator="true" rows="30" caseSensitiveSort="true" widgetVar="ipermissaodisponivel">
@@ -96,7 +100,7 @@
                                                 <p:outputLabel value="#{lista.permissaoDepartamento.permissao.evento.descricao}"/>
                                             </p:column>
                                         </p:dataTable>
-                                    </p:panel>                            
+                                    </p:panel>
                                 </h:column>
                             </h:panelGrid>
                             <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
