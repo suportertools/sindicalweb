@@ -523,6 +523,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 showImagemFisica();
             }
             existePessoaOposicaoPorPessoa();
+            PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
+            pessoaProfissao = dbp.pesquisaProfPorFisica(fisica.getId());
+            if (pessoaProfissao.getId() != -1) {
+                for (int i = 0; i < listaProfissoes.size(); i++) {
+                    if (Objects.equals(Integer.valueOf(listaProfissoes.get(i).getDescription()), pessoaProfissao.getProfissao().getId())) {
+                        idProfissao = i;
+                        break;
+                    }
+                }
+            }
             RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_p_o");
         }
     }
@@ -1237,7 +1247,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             msgSocio = "";
 //            GenericaSessao.put("fisicaPesquisa", fisica);
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
-            
+
             if (socios.getMatriculaSocios().getMotivoInativacao() == null) {
                 reativar = true;
                 //GenericaSessao.put("reativarSocio", true);
@@ -1247,13 +1257,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
 
         }
-        
+
         String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
-        
+
         GenericaSessao.put("sociosBean", new SociosBean());
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
         sb.loadSocio(fisica.getPessoa(), reativar);
-        
+
         return retorno;
     }
 
@@ -1262,15 +1272,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 //        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
 //        GenericaSessao.put("reativarSocio", true);
 //        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
-        
-            String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
-            GenericaSessao.put("pessoaEmpresaPesquisa",  (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
-            GenericaSessao.put("sociosBean", new SociosBean());
-            
-            SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
-            sb.loadSocio(fisica.getPessoa(), true);
 
-            return retorno;
+        String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
+        GenericaSessao.put("sociosBean", new SociosBean());
+
+        SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
+        sb.loadSocio(fisica.getPessoa(), true);
+
+        return retorno;
     }
 
     public String hojeRecadastro() {
@@ -1699,10 +1709,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
-    public void loadingImage() throws InterruptedException{
+
+    public void loadingImage() throws InterruptedException {
         Thread.sleep(5000);
-        
+
         PF.closeDialog("dlg_loading_image");
     }
 

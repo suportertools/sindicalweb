@@ -95,8 +95,8 @@ public class SociosDBToplink extends DB implements SociosDB {
             Query qry = getEntityManager().createQuery("select s "
                     + "  from Socios s "
                     + " where s.parentesco.id <> 1 "
-                    + "   and s.matriculaSocios.id = " + id_matricula +
-                      "   and s.servicoPessoa.ativo = true"
+                    + "   and s.matriculaSocios.id = " + id_matricula
+                    + "   and s.servicoPessoa.ativo = true"
                     + " order by s.servicoPessoa.pessoa.nome");
             return (qry.getResultList());
         } catch (Exception e) {
@@ -104,14 +104,14 @@ public class SociosDBToplink extends DB implements SociosDB {
             return new ArrayList<Socios>();
         }
     }
-    
+
     public List<Socios> listaDependentesInativos(int id_matricula) {
         try {
             Query qry = getEntityManager().createQuery("select s "
                     + "  from Socios s "
                     + " where s.parentesco.id <> 1 "
-                    + "   and s.matriculaSocios.id = " + id_matricula +
-                      "   and s.servicoPessoa.ativo = false"
+                    + "   and s.matriculaSocios.id = " + id_matricula
+                    + "   and s.servicoPessoa.ativo = false"
                     + " order by s.servicoPessoa.pessoa.nome");
             return (qry.getResultList());
         } catch (Exception e) {
@@ -141,8 +141,8 @@ public class SociosDBToplink extends DB implements SociosDB {
         try {
             Query qry = getEntityManager().createQuery("select s from Socios s "
                     + " where s.parentesco.id <> 1 "
-                    + "   and s.matriculaSocios.id = " + idMatricula +
-                      "   and s.servicoPessoa.ativo = true "
+                    + "   and s.matriculaSocios.id = " + idMatricula
+                    + "   and s.servicoPessoa.ativo = true "
                     + " order by s.parentesco.id");
             return (qry.getResultList());
         } catch (Exception e) {
@@ -171,31 +171,29 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public Socios pesquisaSocioPorPessoa(int idPessoa) {
         Socios socio = new Socios();
-        
+
         try {
-            
-            
+
             Query qry = getEntityManager().createNativeQuery(
-                    "SELECT s.id " +
-                    "  FROM soc_socios s " +
-                    " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa" +
-                    " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa" +
-                    " WHERE sp.id_pessoa = " + idPessoa +
-                    " ORDER BY sp.id");
-            
+                    "SELECT s.id "
+                    + "  FROM soc_socios s "
+                    + " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa"
+                    + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa"
+                    + " WHERE sp.id_pessoa = " + idPessoa
+                    + " ORDER BY sp.id");
+
             List<Vector> lista = qry.getResultList();
-            
-            for (int i = 0; i < lista.size(); i++){
-                socio = (Socios)(new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) lista.get(i).get(0), "Socios");
+
+            for (int i = 0; i < lista.size(); i++) {
+                socio = (Socios) (new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) lista.get(i).get(0), "Socios");
             }
-            
+
 //            Query qry = getEntityManager().createQuery(""
 //                    + " SELECT s "
 //                    + "   FROM Socios s "
 //                    + "  WHERE s.servicoPessoa.pessoa.id = :pid "
 //                    + "  ORDER BY s.servicoPessoa.id DESC");
 //            qry.setParameter("pid", idPessoa);
-            
             //soc = (Socios) qry.setMaxResults(1).getSingleResult();
 //            soc = (Socios) qry.getSingleResult();
         } catch (EJBQLException e) {
@@ -376,7 +374,7 @@ public class SociosDBToplink extends DB implements SociosDB {
                     " SELECT sc "
                     + " FROM SocioCarteirinha sc "
                     + "WHERE sc.pessoa.id = " + id_pessoa
-                    + "  AND sc.modeloCarteirinha.id = "+id_modelo);
+                    + "  AND sc.modeloCarteirinha.id = " + id_modelo);
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();
@@ -416,14 +414,14 @@ public class SociosDBToplink extends DB implements SociosDB {
         }
         return false;
     }
-    
+
     @Override
     public List<DescontoSocial> listaDescontoSocial(int id_categoria) {
         try {
             Query query = getEntityManager().createQuery(
                     "SELECT ds FROM DescontoSocial ds WHERE ds.categoria.id = :id_categoria"
             );
-            
+
             query.setParameter("id_categoria", id_categoria);
             return query.getResultList();
         } catch (Exception e) {
@@ -431,19 +429,17 @@ public class SociosDBToplink extends DB implements SociosDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<ServicoPessoa> listaServicoPessoaPorDescontoSocial(Integer id_desconto_social, Integer id_pessoa) {
         try {
-            String text_qry = "SELECT sp FROM ServicoPessoa sp WHERE sp.descontoSocial.id = "+id_desconto_social;
-            if (id_pessoa != null){
-                text_qry += " AND sp.pessoa.id <> "+id_pessoa;
+            String text_qry = "SELECT sp FROM ServicoPessoa sp WHERE sp.descontoSocial.id = " + id_desconto_social;
+            if (id_pessoa != null) {
+                text_qry += " AND sp.pessoa.id <> " + id_pessoa;
             }
-                
-            
-            
+
             Query query = getEntityManager().createQuery(text_qry);
-            
+
             return query.getResultList();
         } catch (Exception e) {
             e.getMessage();

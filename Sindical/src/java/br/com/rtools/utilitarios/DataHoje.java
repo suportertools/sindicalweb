@@ -633,10 +633,14 @@ public class DataHoje {
     }
 
     public static int converteDataParaRefInteger(String data) {
-        if (isDataValida(data)) {
-            return Integer.parseInt(DataHoje.DataToArrayString(data)[2] + DataHoje.DataToArrayString(data)[1]);
+        try {
+            String part1 = data.substring(0, 2);
+            String part2 = data.substring(3, 7);
+            int novaData = Integer.parseInt(part1 + part2);            
+            return novaData;
+        } catch (Exception e) {
+            return 0;
         }
-        return 0;
     }
 
     public boolean faixaCincoAnosApos(String data) {

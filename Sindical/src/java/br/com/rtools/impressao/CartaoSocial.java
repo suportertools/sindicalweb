@@ -31,6 +31,10 @@ public class CartaoSocial {
     private String parentesco;
     private String categoria;
     private String fantasia;
+    private String titular;
+    private String dependente;
+    private String fantasia_titular;
+    private String codigo_funcional_titular;
 
     public CartaoSocial() {
         this.matricula = "";
@@ -62,9 +66,13 @@ public class CartaoSocial {
         this.parentesco = "";
         this.categoria = "";
         this.fantasia = "";
+        this.titular = "";
+        this.dependente = "";
+        this.fantasia_titular = "";
+        this.codigo_funcional_titular = "";
     }
 
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia) {
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia, String titular, String dependente, String fantasia_titular, String codigo_funcional_titular) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -94,6 +102,10 @@ public class CartaoSocial {
         this.parentesco = parentesco;
         this.categoria = categoria;
         this.fantasia = fantasia;
+        this.titular = titular;
+        this.dependente = dependente;
+        this.fantasia_titular = fantasia_titular;
+        this.codigo_funcional_titular = codigo_funcional_titular;
     }
 
     public String getMatricula() {
@@ -326,6 +338,38 @@ public class CartaoSocial {
 
     public void setFantasia(String fantasia) {
         this.fantasia = fantasia;
+    }
+
+    public String getTitular() {
+        return titular;
+    }
+
+    public void setTitular(String titular) {
+        this.titular = titular;
+    }
+
+    public String getDependente() {
+        return dependente;
+    }
+
+    public void setDependente(String dependente) {
+        this.dependente = dependente;
+    }
+
+    public String getCodigo_funcional_titular() {
+        return codigo_funcional_titular;
+    }
+
+    public void setCodigo_funcional_titular(String codigo_funcional_titular) {
+        this.codigo_funcional_titular = codigo_funcional_titular;
+    }
+
+    public String getFantasia_titular() {
+        return fantasia_titular;
+    }
+
+    public void setFantasia_titular(String fantasia_titular) {
+        this.fantasia_titular = fantasia_titular;
     }
 
 }
