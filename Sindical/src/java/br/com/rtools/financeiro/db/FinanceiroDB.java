@@ -41,9 +41,9 @@ public interface FinanceiroDB {
     public List<Movimento> pesquisaMovimentoPorLote(int id_lote);
     public ContaSaldo pesquisaSaldoInicial(int id_caixa);
     public List<Caixa> listaCaixa();
-    public List listaMovimentoCaixa(int id_caixa, String es);
-    public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa);
-    public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa);
+    public List listaMovimentoCaixa(int id_caixa, String es, Integer id_usuario);
+    public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa, Integer id_usuario);
+    public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa, Integer id_usuario);
     public List<Baixa> listaBaixa(int id_fechamento_caixa);
     public List listaFechamentoCaixaTransferencia(int id_caixa);
     public List listaFechamentoCaixa(int id_caixa);
@@ -66,6 +66,8 @@ public interface FinanceiroDB {
     public List<Vector> listaQntPorFisica(String nrCtrBoleto);
     public List<Vector> listaServicosSemCobranca();
     public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao);
+    public List<Vector> listaRelatorioAnalitico(Integer id_fechamento_caixa);
+    public List<Vector> listaResumoFechamentoCaixa(String data);
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015    
 //    public List<Vector> listaPessoaFisicaSemEndereco(int mes, int ano);
 //    public List<Vector> listaPessoaJuridicaSemEndereco(int mes, int ano);

@@ -99,17 +99,51 @@ public class MovimentosReceberSocialBean {
     private final ConfiguracaoSocialBean csb = new ConfiguracaoSocialBean();
     
     private boolean pessoaJuridicaNaLista = false;
+    private List<DataObject> listaMesclar = new ArrayList();
+    private String boletoSelecionadoMesclar = "";
     
     @PostConstruct
     public void init() {
         
         csb.init();
+        
+        listaMesclar.add(new DataObject(0, "001"));
+        listaMesclar.add(new DataObject(1, "002"));
+        listaMesclar.add(new DataObject(2, "003"));
     }
     
     @PreDestroy
     public void destroy() {
         //GenericaSessao.remove("movimentosReceberSocialBean");
     }    
+    
+    public void mesclar(){
+        for (DataObject dh : listaMovimento) {
+            
+            boleto = (String) dh.getArgumento17();
+            int id_lote = Integer.valueOf(dh.getArgumento27().toString());
+            
+        }
+        
+        PF.openDialog("i_dlg_mesclar");
+    }
+    
+    public void concluirMescla(){
+        boletoSelecionadoMesclar = boletoSelecionadoMesclar;
+    }
+    
+    public String caixaOuBanco(){
+                
+        ControleAcessoBean cab = new ControleAcessoBean();
+        //Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        
+        if (!cab.getBotaoBaixaBanco()){
+            PF.openDialog("dlg_caixa_banco");
+            return null;
+        }
+        
+        return telaBaixa("caixa");
+    }
     
     public void pessoaJuridicaNaListaxx(){
         JuridicaDB db = new JuridicaDBToplink();
@@ -846,7 +880,7 @@ public class MovimentosReceberSocialBean {
                     if (csb.getConfiguracaoSocial().isRecebeAtrasado()){
                         disabled = true;
                     }else{
-                        disabled = false    ;
+                        disabled = false;
                     }
                     
                 } else {
@@ -1138,5 +1172,21 @@ public class MovimentosReceberSocialBean {
 
     public void setPessoaJuridicaNaLista(boolean pessoaJuridicaNaLista) {
         this.pessoaJuridicaNaLista = pessoaJuridicaNaLista;
+    }
+
+    public List<DataObject> getListaMesclar() {
+        return listaMesclar;
+    }
+
+    public void setListaMesclar(List<DataObject> listaMesclar) {
+        this.listaMesclar = listaMesclar;
+    }
+
+    public String getBoletoSelecionadoMesclar() {
+        return boletoSelecionadoMesclar;
+    }
+
+    public void setBoletoSelecionadoMesclar(String boletoSelecionadoMesclar) {
+        this.boletoSelecionadoMesclar = boletoSelecionadoMesclar;
     }
 }

@@ -161,7 +161,9 @@
                             <h:panelGrid id="i_panel_grid">
                                 <p:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" emptyMessage="" scrollRows="10">
                                     <p:column headerText="Vencimento" style="text-align: center;">
-                                        <h:outputText value="#{linha.argumento0.vencimento}" />
+                                        <p:inputMask value="#{linha.argumento0.vencimento}" mask="99/99/9999" style="width: 80px; text-align: center">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputMask>
                                     </p:column>
 
                                     <p:column headerText="Valor" style="text-align: center">

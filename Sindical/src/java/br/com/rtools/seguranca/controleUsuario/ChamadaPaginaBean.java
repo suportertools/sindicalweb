@@ -808,6 +808,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String recepcao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("recepcaoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         return metodoGenerico(2, "recepcao");
     }
 

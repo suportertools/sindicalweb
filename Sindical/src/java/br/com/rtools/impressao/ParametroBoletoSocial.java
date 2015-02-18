@@ -39,8 +39,9 @@ public class ParametroBoletoSocial {
     private String informativo;
     private String documentoResponsavel;
     private String quantidadeItens;    
+    private String banco;    
 
-    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens) {
+    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens, String banco) {
         this.sindicatoLogo = sindicatoLogo;
         this.sindicatoNome = sindicatoNome;
         this.codigo = codigo;
@@ -79,6 +80,7 @@ public class ParametroBoletoSocial {
         this.informativo = informativo;
         this.documentoResponsavel = documentoResponsavel;
         this.quantidadeItens = quantidadeItens;        
+        this.banco = banco;        
     }
    
     public String getSindicatoLogo() {
@@ -383,6 +385,14 @@ public class ParametroBoletoSocial {
 
     public void setQuantidadeItens(String quantidadeItens) {
         this.quantidadeItens = quantidadeItens;
+    }
+
+    public String getBanco() {
+        return banco;
+    }
+
+    public void setBanco(String banco) {
+        this.banco = banco;
     }
     
     

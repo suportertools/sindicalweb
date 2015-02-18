@@ -10,9 +10,11 @@ import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.impressao.ParametroFechamentoCaixa;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -35,7 +37,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
 
 @ManagedBean
 @SessionScoped
@@ -333,8 +334,9 @@ public class CaixaFechadoBean implements Serializable{
                 (new FinanceiroDBToplink()).pesquisaCaixaUm(),
                 DataHoje.dataHoje(),
                 (FStatus) new SalvarAcumuladoDBToplink().pesquisaCodigo(12, "FStatus"),
+                null,
                 fechamentoCaixa,
-                null
+                (Usuario) GenericaSessao.getObject("sessaoUsuario")
         );
         
         if (!sv.inserirObjeto(tc)){

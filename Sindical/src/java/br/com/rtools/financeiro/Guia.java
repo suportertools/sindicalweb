@@ -16,7 +16,7 @@ public class Guia implements java.io.Serializable {
     @JoinColumn(name = "id_lote", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Lote lote;
-    @JoinColumn(name = "id_convenio", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_convenio", referencedColumnName = "id")
     @ManyToOne
     private Pessoa pessoa;
     @JoinColumn(name = "id_convenio_sub_grupo", referencedColumnName = "id")
