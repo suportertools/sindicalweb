@@ -188,12 +188,16 @@ public class LancamentoIndividualBean {
             return null;
         }
         
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Pessoa empresaConveniada = null;
+        
         if (listaJuridica.size() == 1 && listaJuridica.get(idJuridica).getDescription().equals("0")){
-            GenericaMensagem.warn("Atenção", "Empresa Conveniada não encontrada!");
-            return null;
+//            GenericaMensagem.warn("Atenção", "Empresa Conveniada não encontrada!");
+//            return null;
+        }else{
+            empresaConveniada = ((Juridica) sv.pesquisaCodigo(Integer.valueOf(listaJuridica.get(idJuridica).getDescription()), "Juridica")).getPessoa();
         }
         
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
         // CODICAO DE PAGAMENTO
         CondicaoPagamento cp = new CondicaoPagamento();
@@ -257,7 +261,7 @@ public class LancamentoIndividualBean {
             }
         }
         
-        Pessoa empresaConveniada = (listaJuridica.get(idJuridica).getDescription().equals("0")) ? null : ((Juridica) sv.pesquisaCodigo(Integer.valueOf(listaJuridica.get(idJuridica).getDescription()), "Juridica")).getPessoa();
+        
         Guia guias = new Guia(
                 -1,
                 lote, 

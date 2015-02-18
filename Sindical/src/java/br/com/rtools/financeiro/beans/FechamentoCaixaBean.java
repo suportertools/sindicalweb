@@ -10,17 +10,23 @@ import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
+import br.com.rtools.impressao.ParametroCaixaAnalitico;
 import br.com.rtools.impressao.ParametroFechamentoCaixa;
+import br.com.rtools.impressao.ResumoFechamentoCaixa;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,6 +38,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -58,6 +65,103 @@ public final class FechamentoCaixaBean implements Serializable {
 
     public FechamentoCaixaBean() {
         getListaCaixa();
+    }
+    
+    public boolean permissaoFechamentoCaixa(){
+        ControleAcessoBean cab = new ControleAcessoBean();
+        MacFilial mac = MacFilial.getAcessoFilial();
+        
+        if (mac != null && mac.getId() != -1 && mac.getCaixa() != null){
+            if ( Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != mac.getCaixa().getId() && cab.getBotaoFecharCaixaOutroUsuario()){
+                return true;
+            }else
+                return false;
+        }
+        return true;
+    }
+    
+    public void analitico(DataObject linha){
+        FinanceiroDB db = new FinanceiroDBToplink();
+        
+        // id_fechamento_caixa
+        List<Vector> result = db.listaRelatorioAnalitico((Integer) ((Vector) linha.getArgumento0()).get(1));
+        Collection lista = new ArrayList();
+        
+        for (int i = 0; i < result.size(); i++){
+            lista.add(new ParametroCaixaAnalitico(
+                    result.get(i).get(0).toString(), 
+                    DataHoje.converteData((Date)result.get(i).get(1)), 
+                    (result.get(i).get(2) == null) ? "" : result.get(i).get(2).toString(), 
+                    (result.get(i).get(3) == null) ? "" : result.get(i).get(3).toString(), 
+                    (result.get(i).get(4) == null) ? "" : result.get(i).get(4).toString(), 
+                    (result.get(i).get(5) == null) ? "" : result.get(i).get(5).toString(), 
+                    (result.get(i).get(6) == null) ? "" : result.get(i).get(6).toString(), 
+                    (result.get(i).get(7) == null) ? "" : result.get(i).get(7).toString(), 
+                    (result.get(i).get(8) == null) ? "" : result.get(i).get(8).toString(), 
+                    BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(9).toString())))), 
+                    BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(10).toString()))))
+            )
+            );
+        }
+        
+        try {
+            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CAIXA_ANALITICO.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+            
+            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            res.setContentType("application/pdf");
+            res.setHeader("Content-disposition", "inline; filename=\"Relatório Caixa Analítico.pdf\"");
+            res.getOutputStream().write(arquivo);
+            res.getCharacterEncoding();
+            FacesContext.getCurrentInstance().responseComplete();
+
+        } catch (JRException | IOException e) {
+            e.getMessage();
+        }        
+    }
+    
+    public void resumoFechamentoCaixa(String data){
+        FinanceiroDB db = new FinanceiroDBToplink();
+        
+        // data do fechamento
+        List<Vector> result = db.listaResumoFechamentoCaixa("18/02/2015");
+        //result.addAll(db.listaResumoFechamentoCaixa("09/02/2015"));
+        Collection lista = new ArrayList();
+        
+        for (int i = 0; i < result.size(); i++){
+            lista.add(new ResumoFechamentoCaixa(
+                    DataHoje.converteData((Date)result.get(i).get(0)), 
+                    (result.get(i).get(1) == null) ? "" : result.get(i).get(1).toString(), 
+                    (result.get(i).get(2) == null) ? "" : result.get(i).get(2).toString(), 
+                    (result.get(i).get(3) == null) ? "" : result.get(i).get(3).toString(), 
+                    (result.get(i).get(4) == null) ? "" : result.get(i).get(4).toString(), 
+                    BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(5).toString()))))
+            )
+            );
+        }
+        
+        try {
+            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper"));
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+            
+            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            res.setContentType("application/pdf");
+            res.setHeader("Content-disposition", "inline; filename=\"Resumo Fechamento Caixa.pdf\"");
+            res.getOutputStream().write(arquivo);
+            res.getCharacterEncoding();
+            FacesContext.getCurrentInstance().responseComplete();
+
+        } catch (JRException | IOException e) {
+            e.getMessage();
+        }        
     }
 
     public void imprimir(DataObject linha) {
@@ -222,8 +326,8 @@ public final class FechamentoCaixaBean implements Serializable {
 //            JasperViewer jrviewer = new JasperViewer(jasperPrint, false);
 //            jrviewer.setTitle("Relatório Fechamento Caixa");
 //            jrviewer.setVisible(true);
-        } catch (Exception e) {
-
+        } catch (JRException | IOException e) {
+            e.getMessage();
         }
     }
 
@@ -233,8 +337,8 @@ public final class FechamentoCaixaBean implements Serializable {
         Caixa caixa_destino = (Caixa) sv.pesquisaCodigo(Integer.valueOf(listaCaixaDestino.get(idCaixaDestino).getDescription()), "Caixa");
 
         FinanceiroDB db = new FinanceiroDBToplink();
-        List<Vector> result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E");
-        List<TransferenciaCaixa> lEntrada = db.listaTransferenciaEntrada(caixa.getId());
+        List<Vector> result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", null);
+        List<TransferenciaCaixa> lEntrada = db.listaTransferenciaEntrada(caixa.getId(), null);
 
         if (result_entrada.isEmpty() && lEntrada.isEmpty()) {
             GenericaMensagem.warn("Erro", "Não existe movimentos para este Caixa!");
@@ -251,7 +355,8 @@ public final class FechamentoCaixaBean implements Serializable {
                 DataHoje.dataHoje(),
                 (FStatus) sv.pesquisaCodigo(13, "FStatus"),
                 null,
-                null
+                null,
+                (Usuario) GenericaSessao.getObject("sessaoUsuario")
         );
 
         if (!sv.inserirObjeto(tc)) {
@@ -272,7 +377,7 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public void salvar() {
-        Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
 
         if (usuario == null) {
             GenericaMensagem.warn("Erro", "Faça o login novamente!");
@@ -288,12 +393,30 @@ public final class FechamentoCaixaBean implements Serializable {
             return;
         }
 
-        List<Vector> result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E");
-        List<Vector> result_saida = db.listaMovimentoCaixa(caixa.getId(), "S");
-        List<TransferenciaCaixa> lEntrada = db.listaTransferenciaEntrada(caixa.getId());
-        List<TransferenciaCaixa> lSaida = db.listaTransferenciaSaida(caixa.getId());
-
-        if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()) {
+        ControleAcessoBean cab = new ControleAcessoBean();
+        List<Vector> result_entrada;
+        List<Vector> result_saida;
+        List<TransferenciaCaixa> lEntrada;
+        List<TransferenciaCaixa> lSaida;
+        
+        // true NÃO TEM PERMISSÃO
+        boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
+        if (permissao){
+            result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", usuario.getId());
+            result_saida = db.listaMovimentoCaixa(caixa.getId(), "S", usuario.getId());
+            lEntrada = db.listaTransferenciaEntrada(caixa.getId(), usuario.getId());
+            lSaida = db.listaTransferenciaSaida(caixa.getId(), usuario.getId());
+        }else{
+            result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", null);
+            result_saida = db.listaMovimentoCaixa(caixa.getId(), "S", null);
+            lEntrada = db.listaTransferenciaEntrada(caixa.getId(), null);
+            lSaida = db.listaTransferenciaSaida(caixa.getId(), null);
+        }
+        
+        if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty() && permissao) {
+            GenericaMensagem.warn("Erro", "Usuário não efetuou recebimento neste Caixa!");
+            return;
+        }else if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()){
             GenericaMensagem.warn("Erro", "Não existe movimentos para este Caixa!");
             return;
         }
@@ -397,23 +520,44 @@ public final class FechamentoCaixaBean implements Serializable {
 
     public List<SelectItem> getListaCaixa() {
         if (listaCaixa.isEmpty()) {
-            List<Caixa> list = (new FinanceiroDBToplink()).listaCaixa();
-            if (!list.isEmpty()){
-                for (int i = 0; i < list.size(); i++) {
-                    listaCaixa.add(new SelectItem(i,
-                            list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
-                            Integer.toString(list.get(i).getId())));
-                }
-            }else{
+            ControleAcessoBean cab = new ControleAcessoBean();
+            boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
+            MacFilial mac = MacFilial.getAcessoFilial();
+            
+            if (mac.getCaixa() == null){
                 listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                return listaCaixa;
             }
+            
+            // TRUE é igual NÃO ter permissão
+            if (permissao){
+                listaCaixa.add(
+                    new SelectItem(
+                            0,
+                            mac.getCaixa().getCaixa() + " - " + mac.getCaixa().getDescricao(),
+                            Integer.toString(mac.getCaixa().getId())
+                    )
+                
+                );
+            }else{
+                List<Caixa> list = (new FinanceiroDBToplink()).listaCaixa();
+                if (!list.isEmpty()){
 
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null
-                    && ((MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial")).getCaixa() != null) {
+                    // TRUE é igual não ter permissão
 
-                Caixa caixa = ((MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial")).getCaixa();
+                    for (int i = 0; i < list.size(); i++) {
+                        
+                        listaCaixa.add(
+                                new SelectItem(i,
+                                list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
+                                Integer.toString(list.get(i).getId())));
+                    }
+                }else{
+                    listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                }
+                    
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getId() == caixa.getId()) {
+                    if (list.get(i).getId() == mac.getCaixa().getId()) {
                         idCaixa = i;
                     }
                 }

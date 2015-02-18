@@ -132,7 +132,13 @@
         <properties>
         </properties>
     </persistence-unit>
-    <persistence-unit name="c_limeira_base">
+    <persistence-unit name="GraficosRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="comerciorp">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
@@ -144,7 +150,7 @@
         <properties>
         </properties>
     </persistence-unit>
-    <persistence-unit name="c_itapetininga">
+    <persistence-unit name="hoteleirorp">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

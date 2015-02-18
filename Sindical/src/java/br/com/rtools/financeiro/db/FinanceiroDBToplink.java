@@ -280,8 +280,9 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List listaMovimentoCaixa(int id_caixa, String es) {
+    public List listaMovimentoCaixa(int id_caixa, String es, Integer id_usuario) {
         try {
+            String and = (id_usuario == null) ? "" : " and u.id = "+id_usuario;
             Query qry = getEntityManager().createNativeQuery("select distinct(tp.id), " +
                                                         "       m.ds_es, " +
                                                         "	b.dt_baixa, " +
@@ -299,7 +300,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                                                         " inner join fin_tipo_pagamento tp on tp.id = f.id_tipo_pagamento " +
                                                         " inner join fin_caixa as cx on cx.id = b.id_caixa " +
                                                         " where b.id_caixa = "+id_caixa+" and b.id_fechamento_caixa is null " +
-                                                        "   and m.ds_es = '"+es+"'");
+                                                        "   and m.ds_es = '"+es+"' "+ and);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -307,9 +308,10 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa) {
+    public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa, Integer id_usuario) {
+        String and = (id_usuario == null) ? "" : " and tc.usuario.id = "+id_usuario;
         try {
-            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaEntrada.id = "+id_caixa+" AND tc.fechamentoEntrada is null");
+            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaEntrada.id = "+id_caixa+" AND tc.fechamentoEntrada is null "+and);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -317,9 +319,10 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa) {
+    public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa, Integer id_usuario) {
+        String and = (id_usuario == null) ? "" : " and tc.usuario.id = "+id_usuario;
         try {
-            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND (tc.caixaEntrada.caixa <> 1) AND tc.fechamentoSaida is null");
+            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND (tc.caixaEntrada.caixa <> 1) AND tc.fechamentoSaida is null "+ id_usuario);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -685,25 +688,28 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }else if (tipo.equals("juridica")){
             inner_join = " INNER JOIN pes_juridica j ON j.id_pessoa = b.codigo ";
         }
-        
+
+        // RESPONSAVEL --
         if (!responsavel.isEmpty()){
             responsavel = AnaliseString.normalizeLower(responsavel);
             where = " WHERE TRANSLATE(LOWER(b.responsavel)) like '%"+responsavel+"%'";
         }
-        if (!lote.isEmpty() && responsavel.isEmpty())
-            where += " WHERE b.id_lote_boleto = "+Integer.valueOf(lote);
-        else if (!lote.isEmpty())
-            where += " AND b.id_lote_boleto = "+Integer.valueOf(lote);
+        
+        // LOTE --
+        if (!lote.isEmpty()){
+            where += (where.isEmpty()) ? " WHERE " : " AND "; where += " b.id_lote_boleto = "+Integer.valueOf(lote);
             
-        if (!data.isEmpty()  && responsavel.isEmpty() && lote.isEmpty())
-            where += " WHERE b.processamento = '"+data+"'";
-        else if (!data.isEmpty())
-            where += " AND b.processamento = '"+data+"'";
-            
-        text_qry = "SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor, b.endereco_responsavel, b.codigo " +
-                   "  FROM soc_boletos_vw b " + inner_join + where +
-                   " GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento, b.endereco_responsavel, b.codigo "+
-                  "  ORDER BY b.responsavel, b.vencimento desc";
+        }
+        
+        // DATA --
+        if (!data.isEmpty()){
+            where += (where.isEmpty()) ? " WHERE " : " AND "; where += " b.processamento = '"+data+"'";
+        }
+        
+        text_qry = " SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor, b.endereco_responsavel, b.codigo " +
+                   "   FROM soc_boletos_vw b " + inner_join + where +
+                   "  GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento, b.endereco_responsavel, b.codigo "+
+                   "  ORDER BY b.responsavel, b.vencimento desc";
         
         try {
             Query qry = getEntityManager().createNativeQuery(text_qry);
@@ -935,6 +941,166 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "   ) "+
                     ") "+
                     " GROUP BY p.id, p.ds_nome "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }  
+    
+    @Override
+    public List<Vector> listaRelatorioAnalitico(Integer id_fechamento_caixa) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT " +
+                    "cx.ds_descricao caixa, \n" +
+                    "b.dt_baixa, \n" +
+                    "b.id as lote_baixa, \n" +
+                    "pu.ds_nome as operador, \n" +
+                    "pr.ds_nome as responsavel, \n" +
+                    "pt.ds_nome as titular, \n" +
+                    "pb.ds_nome as beneficiario, \n" +
+                    "se.ds_descricao as servico, \n" +
+                    "m.ds_es AS operacao, \n" +
+                    "func_es(m.ds_es,m.nr_valor) as valor, \n" +
+                    "func_es(m.ds_es,m.nr_valor_baixa) valor_baixa, \n" +
+                    "m.id \n " +
+                    "from fin_movimento as m \n" +
+                    "inner join fin_baixa as b on b.id=m.id_baixa \n" +
+                    "inner join fin_caixa as cx on cx.id=b.id_caixa \n" +
+                    "inner join fin_servicos as se on se.id=m.id_servicos \n" +
+                    "inner join pes_pessoa as pr on pr.id=m.id_pessoa \n" +
+                    "inner join pes_pessoa as pt on pt.id=m.id_titular \n" +
+                    "inner join pes_pessoa as pb on pb.id=m.id_beneficiario \n" +
+                    "inner join seg_usuario as u on u.id = b.id_usuario \n" +
+                    "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "where b.id_fechamento_caixa= "+id_fechamento_caixa+" \n" +
+                    "\n" +
+                    "---transferencia entrada \n" +
+                    "union \n" +
+                    "\n" +
+                    "select \n" +
+                    "cxe.ds_descricao as caixa, \n" +
+                    "t.dt_lancamento as dt_baixa, \n" +
+                    "null as lote_baixa, \n" +
+                    "pu.ds_nome as operador, \n" +
+                    "'' as responsavel, \n" +
+                    "'' as titular, \n" +
+                    "cxs.ds_descricao||' para '||cxe.ds_descricao  as beneficiario, \n" +
+                    "'TRANSFERÊNCIA ENTRE CAIXAS' as servico, \n" +
+                    "'E' AS operacao, \n" +
+                    "t.nr_valor as valor, \n" +
+                    "t.nr_valor as valor_baixa, \n" +
+                    "0 \n" +
+                    "from fin_transferencia_caixa as t \n" +
+                    "inner join fin_caixa as cxs on cxs.id=id_caixa_saida \n" +
+                    "inner join fin_caixa as cxe on cxe.id=id_caixa_entrada \n" +
+                    "inner join seg_usuario as u on u.id=t.id_usuario \n" +
+                    "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "where t.id_fechamento_entrada="+id_fechamento_caixa+" \n" +
+                    "\n" +
+                    "---transferencia saida \n" +
+                    "\n" +
+                    "union \n" +
+                    "\n" +
+                    "select \n" +
+                    "cxs.ds_descricao as caixa, \n" +
+                    "t.dt_lancamento as dt_baixa, \n" +
+                    "null as lote_baixa, \n" +
+                    "pu.ds_nome as operador, \n" +
+                    "'' as responsavel, \n" +
+                    "'' as titular, \n" +
+                    "cxs.ds_descricao||' para '||cxe.ds_descricao  as beneficiario, \n" +
+                    "'TRANSFERÊNCIA ENTRE CAIXAS' as servico, \n" +
+                    "'S' AS operacao, \n" +
+                    "func_es('S',t.nr_valor) as valor, \n" +
+                    "func_es('S',t.nr_valor) as valor_baixa, \n" +
+                    "0 \n" +
+                    "from fin_transferencia_caixa as t \n" +
+                    "inner join fin_caixa as cxs on cxs.id=id_caixa_saida \n" +
+                    "inner join fin_caixa as cxe on cxe.id=id_caixa_entrada \n" +
+                    "inner join seg_usuario as u on u.id=t.id_usuario \n" +
+                    "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "where t.id_fechamento_saida="+id_fechamento_caixa+" \n" +
+                    "order by 3,4,5,6 "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }    
+    
+    @Override
+    public List<Vector> listaResumoFechamentoCaixa(String data) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "select \n " +
+                    "f.dt_data, \n " +
+                    "m.ds_es AS operacao, \n " +
+                    "g.ds_descricao as grupo, \n " +
+                    "sg.ds_descricao as subgrupo, \n " +
+                    "se.ds_descricao as servico, \n " +
+                    "SUM(func_es(m.ds_es,m.nr_valor_baixa)) valor_baixa \n " +
+                    "from fin_movimento as m \n " +
+                    "inner join fin_baixa as b on b.id = m.id_baixa \n " +
+                    "inner join fin_caixa as cx on cx.id = b.id_caixa \n " +
+                    "inner join fin_servicos as se on se.id = m.id_servicos \n " +
+                    "left  join fin_subgrupo as sg on sg.id = se.id_subgrupo \n " +
+                    "left  join fin_grupo as g on g.id = sg.id_grupo \n " +
+                    "inner join pes_pessoa as pr on pr.id = m.id_pessoa \n " +
+                    "inner join pes_pessoa as pt on pt.id = m.id_titular \n " +
+                    "inner join pes_pessoa as pb on pb.id = m.id_beneficiario \n " +
+                    "inner join seg_usuario as u on u.id = b.id_usuario \n " +
+                    "inner join pes_pessoa as pu on pu.id = u.id_pessoa \n " +
+                    "inner join fin_fechamento_caixa as f on f.id = b.id_fechamento_caixa \n " +
+                    "where f.dt_data='"+data+"' \n " +
+                    "group by \n " +
+                    "f.dt_data, \n " +
+                    "m.ds_es, \n " +
+                    "g.ds_descricao, \n " +
+                    "sg.ds_descricao, \n " +
+                    "se.ds_descricao \n " +
+                    " \n " +
+                    " ---transferencia entrada \n " +
+                    "union \n" +
+                    " \n " +
+                    "select \n " +
+                    "f.dt_data, \n " +
+                    "'E', \n " +
+                    "'', \n " +
+                    "'', \n " +
+                    "'TRANSFERÊNCIA ENTRE CAIXAS', \n " +
+                    "SUM(t.nr_valor) as valor_baixa \n " +
+                    "from fin_transferencia_caixa as t \n " +
+                    "inner join fin_caixa as cxs on cxs.id = id_caixa_saida \n " +
+                    "inner join fin_caixa as cxe on cxe.id = id_caixa_entrada \n " +
+                    "inner join seg_usuario as u on u.id = t.id_usuario \n " +
+                    "inner join pes_pessoa as pu on pu.id = u.id_pessoa \n " +
+                    "inner join fin_fechamento_caixa as f on f.id=t.id_fechamento_entrada \n " +
+                    "where f.dt_data='"+data+"' \n " +
+                    "group by f.dt_data \n " +
+                    " \n " +
+                    "---transferencia saida \n " +
+                    " \n " +
+                    "union \n " +
+                    " \n " +
+                    "select \n " +
+                    " \n " +
+                    "f.dt_data, \n " +
+                    "'S', \n " +
+                    "'', \n " +
+                    "'', \n " +
+                    "'TRANSFERÊNCIA ENTRE CAIXAS', \n " +
+                    "SUM(t.nr_valor) as valor_baixa \n " +
+                    "from fin_transferencia_caixa as t \n " +
+                    "inner join fin_caixa as cxs on cxs.id = id_caixa_saida \n " +
+                    "inner join fin_caixa as cxe on cxe.id = id_caixa_entrada \n " +
+                    "inner join seg_usuario as u on u.id = t.id_usuario \n" +
+                    "inner join pes_pessoa as pu on pu.id = u.id_pessoa \n" +
+                    "inner join fin_fechamento_caixa as f on f.id = t.id_fechamento_saida \n" +
+                    "where f.dt_data='"+data+"' and f.id <> 1 \n" +
+                    "group by f.dt_data \n " +
+                    "order by 1,2,3,4,5 "
             );
             return qry.getResultList();
         } catch (Exception e) {

@@ -27,6 +27,7 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateAcessoFilial.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
@@ -69,6 +70,11 @@
                                         <p:commandButton value="Concluir Fechamento" onclick="PF('i_dlg_s').show()" />
                                     </p:column>
                                     
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Resumo Fechamento" action="#{fechamentoCaixaBean.resumoFechamentoCaixa('10/02/2015')}" ajax="false"/>
+                                    </p:column>
+                                    
                                 </h:panelGrid>
                             </p:panel>
                             
@@ -100,7 +106,10 @@
                                         <p:commandLink ajax="false" value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(linha)}" title="Imprimir Relatório de Movimentação" target="_BLANK" style="font-weight: bold"/>
                                     </h:panelGrid>
                                 </p:column>
-
+                                
+                                <p:column headerText="" style="text-align: center">
+                                    <p:commandButton icon="ui-icon-print" ajax="false" value="Relatório Analítico" action="#{fechamentoCaixaBean.analitico(linha)}" title="Imprimir Relatório Analítivo" onclick="this.form.target'_blank'" />
+                                </p:column>
                             </p:dataTable>
                             
                             <p:dialog widgetVar="i_dlg_s" header="Deseja concluir este Fechamento" resizable="false" width="400" modal="true">

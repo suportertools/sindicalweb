@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import org.hsqldb.Trace;
 
 @ManagedBean
 @SessionScoped
@@ -28,8 +27,8 @@ public class GerarBoletoBean {
     private List<DataObject> listaGeradosSelecionado = new ArrayList();
     private boolean imprimeVerso = true;
     
-    private String ano = DataHoje.DataToArrayString(DataHoje.data())[2];
-    private String mes = DataHoje.DataToArrayString(DataHoje.data())[1];
+    private String ano;
+    private String mes;
     private List listaData = new ArrayList();
     
     private List<Vector> listaServicoSemCobranca = new ArrayList();
@@ -39,6 +38,11 @@ public class GerarBoletoBean {
     private List<Vector> listaPessoaJuridicaSemEndereco = new ArrayList();
     
     public GerarBoletoBean(){
+        DataHoje dh = new DataHoje();
+        
+        ano = DataHoje.DataToArrayString(DataHoje.data())[2];
+        mes = DataHoje.DataToArrayString(dh.incrementarMeses(1, DataHoje.data()))[1];
+        
         getListaServicoSemCobranca();
         getListaPessoaSemComplemento();
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015

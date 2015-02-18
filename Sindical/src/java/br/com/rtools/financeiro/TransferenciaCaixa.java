@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.Column;
@@ -43,7 +44,10 @@ public class TransferenciaCaixa implements java.io.Serializable {
     @JoinColumn(name = "id_fechamento_saida", referencedColumnName = "id")
     @ManyToOne
     private FechamentoCaixa fechamentoSaida;
-
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario usuario;
+    
     public TransferenciaCaixa() {
         this.id = -1;
         this.caixaSaida = new Caixa();
@@ -53,9 +57,10 @@ public class TransferenciaCaixa implements java.io.Serializable {
         this.status = new FStatus();
         this.fechamentoEntrada = new FechamentoCaixa();
         this.fechamentoSaida = new FechamentoCaixa();
+        this.usuario = null;
     }
 
-    public TransferenciaCaixa(int id, Caixa caixaSaida, float valor, Caixa caixaEntrada, Date dtLancamento, FStatus status, FechamentoCaixa fechamentoEntrada, FechamentoCaixa fechamentoSaida) {
+    public TransferenciaCaixa(int id, Caixa caixaSaida, float valor, Caixa caixaEntrada, Date dtLancamento, FStatus status, FechamentoCaixa fechamentoEntrada, FechamentoCaixa fechamentoSaida, Usuario usuario) {
         this.id = id;
         this.caixaSaida = caixaSaida;
         this.valor = valor;
@@ -64,6 +69,7 @@ public class TransferenciaCaixa implements java.io.Serializable {
         this.status = status;
         this.fechamentoEntrada = fechamentoEntrada;
         this.fechamentoSaida = fechamentoSaida;
+        this.usuario = usuario;
     }
 
     public int getId() {
@@ -130,4 +136,11 @@ public class TransferenciaCaixa implements java.io.Serializable {
         this.fechamentoSaida = fechamentoSaida;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }

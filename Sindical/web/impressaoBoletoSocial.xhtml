@@ -15,7 +15,15 @@
         </style>
         
         <script type="text/javascript">
-            
+            function stopRKey(evt) {
+                var evt = (evt) ? evt : ((event) ? event : null);
+                //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+                if (evt.keyCode === 13) {
+                    return false;
+                }
+            }
+
+            document.onkeypress = stopRKey;
         </script>
     </h:head>
     <h:body>
@@ -165,9 +173,9 @@
                             </p:dataTable>
                             
                             <h:panelGrid columns="3">
-                                <p:commandButton ajax="false" value="Imprimir" action="#{impressaoBoletoSocialBean.imprimir()}"/>
+                                <p:commandButton ajax="false" value="Imprimir" action="#{impressaoBoletoSocialBean.imprimir()}" onclick="this.form.target='_blank'"/>
                                 <p:selectBooleanCheckbox value="#{impressaoBoletoSocialBean.imprimeVerso}" style="margin-left: 30px" itemLabel="Imprimir Verso"/>
-                                <p:commandButton ajax="false" value="Etiquetas" action="#{impressaoBoletoSocialBean.etiqueta()}" style="margin-left: 30px"/>
+                                <p:commandButton ajax="false" value="Etiquetas" action="#{impressaoBoletoSocialBean.etiqueta()}" style="margin-left: 30px" onclick="this.form.target='_blank'"/>
                             </h:panelGrid>
                         </h:form>
                     </p:panel>

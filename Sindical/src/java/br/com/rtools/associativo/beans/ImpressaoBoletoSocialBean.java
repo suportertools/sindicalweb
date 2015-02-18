@@ -153,7 +153,13 @@ public class ImpressaoBoletoSocialBean {
     public void loadLista(){
         listaGrid.clear();
         listaPessoaSemEndereco.clear();
-        if (!strData.isEmpty()){
+        
+        if (strResponsavel.length() == 1 && strLote.isEmpty() && strData.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Muitos resultatos na pesquisa pode gerar lentidão!");
+            return;
+        }
+        
+        if (!strResponsavel.isEmpty() || !strLote.isEmpty() || !strData.isEmpty()){
             FinanceiroDB db = new FinanceiroDBToplink();
             List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData, tipo);
             
@@ -186,9 +192,9 @@ public class ImpressaoBoletoSocialBean {
                 // FILTRA PESSOAS SEM ENDERECO ---
                 if (lista_agrupado.get(i).get(7) == null || lista_agrupado.get(i).get(7).toString().isEmpty()){
                     listaPessoaSemEndereco.add((Pessoa)new Dao().find(new Pessoa(), Integer.valueOf(lista_agrupado.get(i).get(8).toString())));
-                    setAtualizaListaPessoaSemEndereco(false);
                 }
             }
+            setAtualizaListaPessoaSemEndereco(false);
             atualizaValores();
         }
     }
@@ -293,6 +299,13 @@ public class ImpressaoBoletoSocialBean {
                         //Movimento mov = (Movimento)sv.pesquisaCodigo((Integer)lista_socio.get(w).get(1), "Movimento");
                         List<Movimento> list_mov = movDB.listaMovimentoPorNrCtrBoleto(boletox.getNrCtrBoleto());
                         
+                        valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
+                        valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(14).toString()));
+                        
+                        // ALTERO O VALOR DO MOVIMENTO PARA QUE NA SOMA FINAL DE O VALOR TOTAL DAS GUIAS
+                        // O MÉTODO PADRÃO PEGA O VALOR DE UM MOVIMENTO APENAS
+                        list_mov.get(0).setValor(valor_total);
+        
                         if (boletox.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
                             cobranca = new CaixaFederalSindical(list_mov.get(0), boletox);
                             //swap[43] = "EXERC " + lista.get(i).getReferencia().substring(3);
@@ -316,10 +329,7 @@ public class ImpressaoBoletoSocialBean {
                         } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.sicoob)) {
                             cobranca = new Sicoob(list_mov.get(0), boletox);
                         }
-
-                        valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
-                        valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(14).toString()));
-
+                        
                         lista.add(new ParametroBoletoSocial(
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO SINDICATO
                                 filial.getFilial().getPessoa().getNome(), 
@@ -359,7 +369,8 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
                                 lista_socio.get(w).get(36).toString(), // INFORMATIVO
                                 pessoa.getTipoDocumento().getDescricao()+": "+pessoa.getDocumento(), 
-                                String.valueOf(lista_socio.size())
+                                String.valueOf(lista_socio.size()),
+                                boletox.getContaCobranca().getContaBanco().getBanco().getNumero()
                         ));
                     }
                 
