@@ -389,7 +389,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             } else if (tipo_empresa.equals("com")) {
                 filtro += " AND p.empresa <> '' ";
             } else if (tipo_empresa.equals("sem")) {
-                filtro += " AND p.empresa == '' ";
+                filtro += " AND (p.empresa = '' OR p.empresa IS NULL) ";
             }
         }
 

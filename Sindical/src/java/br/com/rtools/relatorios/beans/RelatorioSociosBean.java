@@ -91,7 +91,7 @@ public class RelatorioSociosBean implements Serializable {
     private boolean chkConvênioMedico = false;
     private boolean chkServicos = false;
     private boolean chkEmpresa = false;
-    private int idEmpresas = 0;
+    private Integer idEmpresas = null;
     private int idDias = 0;
     private int matriculaInicial = 0;
     private int matriculaFinal = 9999999;
@@ -99,7 +99,7 @@ public class RelatorioSociosBean implements Serializable {
     private int idadeFinal = 500;
     private int diaInicial = 1;
     private int diaFinal = 31;
-    private int idRelatorio = 0;
+    private Integer idRelatorio = null;
     private List<DataObject> listaTipoCobranca = new ArrayList();
     private List<DataObject> listaCidadesSocio = new ArrayList();
     private List<DataObject> listaCidadesEmpresa = new ArrayList();
@@ -114,7 +114,7 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booIdade = false;
     private boolean booGrupoCategoria = false;
     private boolean booSexo = false;
-    private boolean booGrau = false;
+    private boolean booGrau = true;
     private boolean booFotos = false;
     private boolean booCarteirinha = false;
     private boolean booTipoCobranca = false;
@@ -291,7 +291,7 @@ public class RelatorioSociosBean implements Serializable {
             listaMenuRSocial.add(new DataObject("Idade ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Grupo / Categoria ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Sexo ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("Grau ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Grau ", "Remover", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Fotos ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Carteirinha ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Tipo de Pagamento ", "Editar", null, null, null, null));
@@ -516,7 +516,7 @@ public class RelatorioSociosBean implements Serializable {
 //                break;
 //            }
         }
-        if(lista.isEmpty()) {
+        if (lista.isEmpty()) {
             GenericaMensagem.warn("Sistema", "Nenhum registro encontrado!");
             return null;
         }
@@ -579,11 +579,13 @@ public class RelatorioSociosBean implements Serializable {
             int i = 0;
             RelatorioSociosDB db = new RelatorioSociosDBToplink();
             List<Juridica> select = db.listaEmpresaDoSocio();
-            while (i < select.size()) {
-                empresas.add(new SelectItem(new Integer(i),
-                        (String) ((Juridica) select.get(i)).getPessoa().getNome(),
-                        Integer.toString(((Juridica) select.get(i)).getId())));
-                i++;
+            if (!select.isEmpty()) {
+                while (i < select.size()) {
+                    empresas.add(new SelectItem(new Integer(i),
+                            (String) ((Juridica) select.get(i)).getPessoa().getNome(),
+                            Integer.toString(((Juridica) select.get(i)).getId())));
+                    i++;
+                }
             }
         }
         return empresas;
@@ -890,11 +892,11 @@ public class RelatorioSociosBean implements Serializable {
         this.tipoEmpresas = tipoEmpresas;
     }
 
-    public int getIdEmpresas() {
+    public Integer getIdEmpresas() {
         return idEmpresas;
     }
 
-    public void setIdEmpresas(int idEmpresas) {
+    public void setIdEmpresas(Integer idEmpresas) {
         this.idEmpresas = idEmpresas;
     }
 
@@ -1010,11 +1012,11 @@ public class RelatorioSociosBean implements Serializable {
         this.chkServicos = chkServicos;
     }
 
-    public int getIdRelatorio() {
+    public Integer getIdRelatorio() {
         return idRelatorio;
     }
 
-    public void setIdRelatorio(int idRelatorio) {
+    public void setIdRelatorio(Integer idRelatorio) {
         this.idRelatorio = idRelatorio;
     }
 
@@ -1223,7 +1225,13 @@ public class RelatorioSociosBean implements Serializable {
             ParentescoDB db = new ParentescoDBToplink();
             List select = db.pesquisaTodos();
             for (int i = 0; i < select.size(); i++) {
-                listaParentesco.add(new DataObject(false, ((Parentesco) select.get(i))));
+                boolean b = false;
+                if (i == 0) {
+                    b = true;
+                } else {
+                    b = false;
+                }
+                listaParentesco.add(new DataObject(b, ((Parentesco) select.get(i))));
             }
         }
         return listaParentesco;
