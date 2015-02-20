@@ -26,7 +26,7 @@
                 <f:view>
                     <ui:include src="templates/templateStatus.xhtml"/>
                     <h:form id="form_movimento_receber">
-                        <p:panel styleClass="wrapper no-border">
+                        <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                             <p:messages autoUpdate="true" closable="true" showDetail="true" showSummary="true" />
                             <p:growl id="id_messages_growl" showDetail="true" showSummary="true" autoUpdate="true" />
                             <h:outputText value="Movimentos a Receber" styleClass="fonteHeader"/>

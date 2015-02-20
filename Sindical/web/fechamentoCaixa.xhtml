@@ -17,7 +17,19 @@
         </style>
         
         <script type="text/javascript">
-            
+                        // BLOQUEIA ENTER
+            // DESABILITA ENTER
+            // DISABLED ENTER
+            // VERIFICA SE OQ ESTOU DIGITANDO É STRING
+            function stopRKey(evt) {
+                var evt = (evt) ? evt : ((event) ? event : null);
+                //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+                if (evt.keyCode === 13) {
+                    return false;
+                }
+            }
+
+            document.onkeypress = stopRKey;
         </script>
     </h:head>
     <h:body>
@@ -72,7 +84,7 @@
                                     
                                     <p:column>
                                         <br />
-                                        <p:commandButton value="Resumo Fechamento" action="#{fechamentoCaixaBean.resumoFechamentoCaixa('10/02/2015')}" ajax="false"/>
+                                        <p:commandButton value="Resumo do Fechamento de Todos os Caixas" onclick="PF('dlg_resumo_fechamento').show()"/>
                                     </p:column>
                                     
                                 </h:panelGrid>
@@ -123,6 +135,26 @@
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
                                     <p:commandButton value="OK" onclick="PF('i_dlg_c').hide()" style="float: left" icon="ui-icon-check"/>  
                                     <h:commandLink value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(null)}" rendered="#{fechamentoCaixaBean.fechamento.id != -1}" style="float: right; font-size: 10pt!important; font-weight: bold"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_resumo_fechamento" header="Resumo do Fechamento dos Caixas" resizable="false" modal="true">
+                                <h:panelGrid style="clear: both; width: 100%" columns="3">
+                                    <h:column>
+                                        <p:outputLabel value="Data para o resumo" /><br />
+                                        <p:inputMask value="#{fechamentoCaixaBean.dataResumoFechamento}" mask="99/99/9999" style="width: 110px">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputMask>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="OK" action="#{fechamentoCaixaBean.resumoFechamentoCaixa()}" onclick="PF('dlg_resumo_fechamento').hide()" icon="ui-icon-check" ajax="false"/>  
+                                    </h:column>
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Cancelar" onclick="PF('dlg_resumo_fechamento').hide()" icon="ui-icon-close" />  
+                                    </h:column>
                                 </h:panelGrid>
                             </p:dialog>
                             

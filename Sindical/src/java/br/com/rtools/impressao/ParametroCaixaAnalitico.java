@@ -14,8 +14,9 @@ public class ParametroCaixaAnalitico {
     private String operacao;
     private BigDecimal valor;
     private BigDecimal valor_baixa;
-
-    public ParametroCaixaAnalitico(String caixa, String dt_baixa, String lote_baixa, String operador, String responsavel, String titular, String beneficiario, String servico, String operacao, BigDecimal valor, BigDecimal valor_baixa) {
+    private String dt_fechamento;
+    
+    public ParametroCaixaAnalitico(String caixa, String dt_baixa, String lote_baixa, String operador, String responsavel, String titular, String beneficiario, String servico, String operacao, BigDecimal valor, BigDecimal valor_baixa, String dt_fechamento) {
         this.caixa = caixa;
         this.dt_baixa = dt_baixa;
         this.lote_baixa = lote_baixa;
@@ -27,6 +28,7 @@ public class ParametroCaixaAnalitico {
         this.operacao = operacao;
         this.valor = valor;
         this.valor_baixa = valor_baixa;
+        this.dt_fechamento = dt_fechamento;
     }
 
     public String getCaixa() {
@@ -115,5 +117,13 @@ public class ParametroCaixaAnalitico {
 
     public void setValor_baixa(BigDecimal valor_baixa) {
         this.valor_baixa = valor_baixa;
+    }
+
+    public String getDt_fechamento() {
+        return dt_fechamento;
+    }
+
+    public void setDt_fechamento(String dt_fechamento) {
+        this.dt_fechamento = dt_fechamento;
     }
 }

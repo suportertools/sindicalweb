@@ -1065,6 +1065,9 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
                 if (((Integer) ((List) lista.get(i)).get(13)) < 0) {
                     ((List) lista.get(i)).set(13, 0);
                 }
+                if (((List) lista.get(i)).get(14) == null) {
+                    ((List) lista.get(i)).set(14, "");
+                }
                 listMovimentoReceber.add(new ListMovimentoReceber(
                         false,
                         ((List) lista.get(i)).get(0).toString(), // boleto

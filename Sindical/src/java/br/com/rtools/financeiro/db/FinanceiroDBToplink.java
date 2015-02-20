@@ -322,7 +322,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa, Integer id_usuario) {
         String and = (id_usuario == null) ? "" : " and tc.usuario.id = "+id_usuario;
         try {
-            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND (tc.caixaEntrada.caixa <> 1) AND tc.fechamentoSaida is null "+ id_usuario);
+            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND (tc.caixaEntrada.caixa <> 1) AND tc.fechamentoSaida is null "+ and);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -951,8 +951,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List<Vector> listaRelatorioAnalitico(Integer id_fechamento_caixa) {
         try {
-            Query qry = getEntityManager().createNativeQuery(
-                    "SELECT " +
+            String text = "SELECT " +
                     "cx.ds_descricao caixa, \n" +
                     "b.dt_baixa, \n" +
                     "b.id as lote_baixa, \n" +
@@ -964,7 +963,8 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "m.ds_es AS operacao, \n" +
                     "func_es(m.ds_es,m.nr_valor) as valor, \n" +
                     "func_es(m.ds_es,m.nr_valor_baixa) valor_baixa, \n" +
-                    "m.id \n " +
+                    "m.id, \n " +
+                    "f.dt_data as fechamento \n " +
                     "from fin_movimento as m \n" +
                     "inner join fin_baixa as b on b.id=m.id_baixa \n" +
                     "inner join fin_caixa as cx on cx.id=b.id_caixa \n" +
@@ -973,7 +973,8 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "inner join pes_pessoa as pt on pt.id=m.id_titular \n" +
                     "inner join pes_pessoa as pb on pb.id=m.id_beneficiario \n" +
                     "inner join seg_usuario as u on u.id = b.id_usuario \n" +
-                    "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n " +
+                    "inner join fin_fechamento_caixa as f on f.id = b.id_fechamento_caixa  \n " +
                     "where b.id_fechamento_caixa= "+id_fechamento_caixa+" \n" +
                     "\n" +
                     "---transferencia entrada \n" +
@@ -991,12 +992,14 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "'E' AS operacao, \n" +
                     "t.nr_valor as valor, \n" +
                     "t.nr_valor as valor_baixa, \n" +
-                    "0 \n" +
+                    "0, \n" +
+                    "f.dt_data as fechamento \n" +
                     "from fin_transferencia_caixa as t \n" +
                     "inner join fin_caixa as cxs on cxs.id=id_caixa_saida \n" +
                     "inner join fin_caixa as cxe on cxe.id=id_caixa_entrada \n" +
                     "inner join seg_usuario as u on u.id=t.id_usuario \n" +
                     "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "inner join fin_fechamento_caixa as f on f.id = t.id_fechamento_entrada \n" +
                     "where t.id_fechamento_entrada="+id_fechamento_caixa+" \n" +
                     "\n" +
                     "---transferencia saida \n" +
@@ -1015,15 +1018,18 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "'S' AS operacao, \n" +
                     "func_es('S',t.nr_valor) as valor, \n" +
                     "func_es('S',t.nr_valor) as valor_baixa, \n" +
-                    "0 \n" +
+                    "0, \n" +
+                    "f.dt_data as fechamento \n" +
                     "from fin_transferencia_caixa as t \n" +
                     "inner join fin_caixa as cxs on cxs.id=id_caixa_saida \n" +
                     "inner join fin_caixa as cxe on cxe.id=id_caixa_entrada \n" +
                     "inner join seg_usuario as u on u.id=t.id_usuario \n" +
                     "inner join pes_pessoa as pu on pu.id=u.id_pessoa \n" +
+                    "inner join fin_fechamento_caixa as f on f.id = t.id_fechamento_saida \n" +
                     "where t.id_fechamento_saida="+id_fechamento_caixa+" \n" +
-                    "order by 3,4,5,6 "
-            );
+                    "order by 3,4,5,6 ";
+            
+            Query qry = getEntityManager().createNativeQuery(text);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -1070,7 +1076,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "'', \n " +
                     "'', \n " +
                     "'TRANSFERÊNCIA ENTRE CAIXAS', \n " +
-                    "SUM(t.nr_valor) as valor_baixa \n " +
+                    "SUM(func_es('E', t.nr_valor)) as valor_baixa \n " +
                     "from fin_transferencia_caixa as t \n " +
                     "inner join fin_caixa as cxs on cxs.id = id_caixa_saida \n " +
                     "inner join fin_caixa as cxe on cxe.id = id_caixa_entrada \n " +
@@ -1091,7 +1097,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "'', \n " +
                     "'', \n " +
                     "'TRANSFERÊNCIA ENTRE CAIXAS', \n " +
-                    "SUM(t.nr_valor) as valor_baixa \n " +
+                    "SUM(func_es('S', t.nr_valor)) as valor_baixa \n " +
                     "from fin_transferencia_caixa as t \n " +
                     "inner join fin_caixa as cxs on cxs.id = id_caixa_saida \n " +
                     "inner join fin_caixa as cxe on cxe.id = id_caixa_entrada \n " +

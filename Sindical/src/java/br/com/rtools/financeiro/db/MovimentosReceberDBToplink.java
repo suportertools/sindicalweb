@@ -40,6 +40,7 @@ public class MovimentosReceberDBToplink extends DB implements MovimentosReceberD
                     + "      WHERE m.id_pessoa = " + id_juridica
                     + "        AND m.is_ativo IS TRUE "
                     + "        AND m.id_baixa IS NULL "
+                    + "        AND m.id_servicos IN (SELECT sr.id_servicos FROM fin_servico_rotina sr WHERE sr.id_rotina = 4)"
                     + "   ORDER BY m.dt_vencimento";
 
             Query qry = getEntityManager().createNativeQuery(textoQuery);

@@ -41,7 +41,7 @@
                 </f:subview>
 
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="formCidade">
                             <c:set scope="request" var="object" value="${cidadeBean.cidade}"/>
                             <h:outputText value="Cidades" styleClass="fonteHeader" />

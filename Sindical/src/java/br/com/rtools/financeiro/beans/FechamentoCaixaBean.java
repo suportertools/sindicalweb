@@ -62,6 +62,7 @@ public final class FechamentoCaixaBean implements Serializable {
     private String dataSaldo = "";
     private ContaSaldo contaSaldo = new ContaSaldo();
     private List<DataObject> listaFechamento = new ArrayList();
+    private String dataResumoFechamento = DataHoje.data();
 
     public FechamentoCaixaBean() {
         getListaCaixa();
@@ -99,7 +100,8 @@ public final class FechamentoCaixaBean implements Serializable {
                     (result.get(i).get(7) == null) ? "" : result.get(i).get(7).toString(), 
                     (result.get(i).get(8) == null) ? "" : result.get(i).get(8).toString(), 
                     BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(9).toString())))), 
-                    BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(10).toString()))))
+                    BigDecimal.valueOf(Double.valueOf(String.valueOf(Moeda.converteUS$(result.get(i).get(10).toString())))),
+                    DataHoje.converteData((Date)result.get(i).get(12))
             )
             );
         }
@@ -124,11 +126,15 @@ public final class FechamentoCaixaBean implements Serializable {
         }        
     }
     
-    public void resumoFechamentoCaixa(String data){
+    public void resumoFechamentoCaixa(){
+        if (dataResumoFechamento.isEmpty()){
+            return;
+        }
+        
         FinanceiroDB db = new FinanceiroDBToplink();
         
         // data do fechamento
-        List<Vector> result = db.listaResumoFechamentoCaixa("18/02/2015");
+        List<Vector> result = db.listaResumoFechamentoCaixa(dataResumoFechamento);
         //result.addAll(db.listaResumoFechamentoCaixa("09/02/2015"));
         Collection lista = new ArrayList();
         
@@ -519,12 +525,12 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public List<SelectItem> getListaCaixa() {
-        if (listaCaixa.isEmpty()) {
+        if (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != 0) {
             ControleAcessoBean cab = new ControleAcessoBean();
             boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
             MacFilial mac = MacFilial.getAcessoFilial();
             
-            if (mac.getCaixa() == null){
+            if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){
                 listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
                 return listaCaixa;
             }
@@ -622,13 +628,13 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public List<SelectItem> getListaCaixaDestino() {
-        if (listaCaixaDestino.isEmpty() && !listaCaixa.isEmpty()) {
+        if (listaCaixaDestino.isEmpty() && (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != 0)) {
             List<Caixa> list = (new SalvarAcumuladoDBToplink()).listaObjeto("Caixa");
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
             
             if (!list.isEmpty()){
                 for (int i = 0; i < list.size(); i++) {
-                    listaCaixaDestino.add(new SelectItem(new Integer(i),
+                    listaCaixaDestino.add(new SelectItem(i,
                             list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
                             Integer.toString(list.get(i).getId())));
                     if (list.get(i).getId() == caixa.getId()) {
@@ -647,7 +653,7 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public List<DataObject> getListaFechamento() {
-        if (listaFechamento.isEmpty() && !listaCaixa.isEmpty()) {
+        if (listaFechamento.isEmpty() && (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != 0)) {
             FinanceiroDB db = new FinanceiroDBToplink();
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
             if (caixa == null)
@@ -687,7 +693,7 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public String getSaldoAtual() {
-        if (!listaCaixa.isEmpty()) {
+        if (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != 0) {
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
             if (caixa == null)
                 return saldoAtual = "0,00";
@@ -716,5 +722,13 @@ public final class FechamentoCaixaBean implements Serializable {
 
     public void setDataSaldo(String dataSaldo) {
         this.dataSaldo = dataSaldo;
+    }
+
+    public String getDataResumoFechamento() {
+        return dataResumoFechamento;
+    }
+
+    public void setDataResumoFechamento(String dataResumoFechamento) {
+        this.dataResumoFechamento = dataResumoFechamento;
     }
 }

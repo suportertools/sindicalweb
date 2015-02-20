@@ -32,8 +32,11 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -42,9 +45,9 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Upload;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +77,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
 @SessionScoped
@@ -100,6 +104,19 @@ public class ImpressaoBoletoSocialBean {
         UploadFilesBean uploadFilesBean = new UploadFilesBean("Imagens/");
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
     }
+    
+    public void upload(FileUploadEvent event) {
+        ConfiguracaoUpload cu = new ConfiguracaoUpload();
+        cu.setArquivo(event.getFile().getFileName());
+        cu.setDiretorio("Imagens/");
+        cu.setArquivo("BannerPromoBoleto.png");
+        cu.setSubstituir(true);
+        cu.setRenomear("BannerPromoBoleto.png");
+        cu.setEvent(event);
+        if (Upload.enviar(cu, false)) {
+            
+        }
+    }    
     
     public void atualizaValores(){
         float soma_valor = 0;
@@ -277,9 +294,13 @@ public class ImpressaoBoletoSocialBean {
             
             List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
             File file_promo = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/BannerPromoBoleto.png"));
-            
             if (!file_promo.exists())
                 file_promo = null;
+            
+            File file_promo_verso = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoBoletoVersoSocial.png"));
+            if (!file_promo_verso.exists())
+                file_promo_verso = null;
+            
             
             MovimentoDB movDB = new MovimentoDBToplink();
             Cobranca cobranca = null;
@@ -365,7 +386,7 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(25).toString(), // TELEFONE FILIAL
                                 lista_socio.get(w).get(21).toString(), // EMAIL FILIAL
                                 lista_socio.get(w).get(23).toString(), // SITE FILIAL
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoBoletoVersoSocial.png"), // LOGO BOLETO VERSO SOCIAL
+                                file_promo_verso == null ? null : file_promo_verso.getAbsolutePath(), // LOGO BOLETO VERSO SOCIAL
                                 lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
                                 lista_socio.get(w).get(36).toString(), // INFORMATIVO
                                 pessoa.getTipoDocumento().getDescricao()+": "+pessoa.getDocumento(), 
