@@ -3,6 +3,7 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.arrecadacao.GrupoCidades;
 import br.com.rtools.associativo.*;
 import br.com.rtools.associativo.dao.SocioCarteirinhaDao;
+import br.com.rtools.associativo.dao.SociosDao;
 import br.com.rtools.associativo.db.*;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.FTipoDocumento;
@@ -1285,34 +1286,42 @@ public class SociosBean implements Serializable {
         }
 
         if (novoDependente.getNascimento().isEmpty() || novoDependente.getNascimento().length() < 10) {
-            GenericaMensagem.fatal("Erro", "Data de Nascimento inválida!");
+            GenericaMensagem.fatal("Validação", "Data de Nascimento inválida!");
             return false;
         }
 
         if (novoDependente.getPessoa().getNome().equals("")) {
-            GenericaMensagem.error("Erro", "O campo nome não pode ser nulo!");
+            GenericaMensagem.error("Validação", "O campo nome não pode ser nulo!");
             return false;
         }
 
         if (!novoDependente.getPessoa().getDocumento().isEmpty() && !novoDependente.getPessoa().getDocumento().equals("0")) {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(novoDependente.getPessoa().getDocumento()))) {
-                GenericaMensagem.error("Erro", "Documento Inválido!");
+                GenericaMensagem.error("Validação", "Documento Inválido!");
                 return false;
             }
         }
 
         for (DataObject linha : listaDependentesInativos) {
             if (((Fisica) linha.getArgumento0()).getId() == novoDependente.getId()) {
-                GenericaMensagem.warn("Erro", "Este dependente esta inativado nesta matrícula!");
+                GenericaMensagem.warn("Validação", "Este dependente esta inativado nesta matrícula!");
                 return false;
             }
         }
 
         SociosDB dbs = new SociosDBToplink();
+        SociosDao sociosDao = new SociosDao();
+        List<Socios> list = sociosDao.listaPorPessoa(novoDependente.getPessoa().getId());
         Socios soc_dep = dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId());
         if (soc_dep.getId() != -1 && (soc_dep.getMatriculaSocios().getId() != socios.getMatriculaSocios().getId())) {
-            GenericaMensagem.error("Erro", "Esta pessoa já um Dependente Cadastrado!");
-            return false;
+            for (int i = 0; i < list.size(); i++) {
+                if(soc_dep.getMatriculaSocios().getNrMatricula() == list.get(i).getMatriculaSocios().getNrMatricula()) {
+                    if(list.get(i).getServicoPessoa().isAtivo()) {
+                        GenericaMensagem.error("Validação", "Esta pessoa já um Dependente Cadastrado!");
+                        return false;                        
+                    }
+                }
+            }
         }
 
         return true;
@@ -1612,12 +1621,20 @@ public class SociosBean implements Serializable {
     public void reativarDependente(int index) {
         String dataRef = DataHoje.dataReferencia(DataHoje.data());
         int dataHoje = DataHoje.converteDataParaRefInteger(dataRef);
+        ServicoPessoaDB spdb = new ServicoPessoaDBToplink();
+        List<ServicoPessoa> list = spdb.listByPessoa(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).isAtivo()) {
+                GenericaMensagem.warn("Validação", "Pessoa já esta ativa em outra matrícula!");
+                return;
+            }
+        }
         int dataValidade = 0;
-        if(!listaDependentesInativos.get(index).getArgumento4().toString().isEmpty()) {
+        if (!listaDependentesInativos.get(index).getArgumento4().toString().isEmpty()) {
             dataValidade = DataHoje.converteDataParaRefInteger(listaDependentesInativos.get(index).getArgumento4().toString());
         }
         if (dataValidade != 0 && dataValidade < dataHoje) {
-            GenericaMensagem.warn("Validação", "Data de validade do dependente vencida!");
+            GenericaMensagem.warn("Validação", "Não reativa com validade vencida!");
             return;
         }
         listaDependentes.add(listaDependentesInativos.get(index));
@@ -2116,7 +2133,7 @@ public class SociosBean implements Serializable {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         List<GrupoCidades> cids = (List<GrupoCidades>) salvarAcumuladoDB.listaObjeto("GrupoCidades", true);
-        if (socios.getId() == -1 && matriculaSocios.getId() == -1) {            
+        if (socios.getId() == -1 && matriculaSocios.getId() == -1) {
             PessoaEndereco ende = db.pesquisaEndPorPessoaTipo(servicoPessoa.getPessoa().getId(), 3);
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
                 matriculaSocios.setCidade((Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa"));
