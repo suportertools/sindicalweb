@@ -35,7 +35,7 @@
                     <p:outputLabel value="Homologação" styleClass="fonteHeader"/>
                     <div class="clear"></div>
                     <h:outputScript name="tradutor_primefaces.js" library="js" />
-                    
+
                     <p:dialog widgetVar="dlg_profissao" header="Pesquisar Profissão" resizable="false" modal="true" height="550" width="900">
                         <h:panelGrid id="i_panel_profissao">
 
@@ -88,7 +88,7 @@
                             <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_excluir').hide()" icon="ui-icon-close"/>
                         </h:panelGrid>
                     </p:dialog>
-            
+
                 </h:form>
             </p:panel>
 
@@ -158,11 +158,11 @@
 
                         <h:column>
                             <h:outputText value="Sexo"/><br />
-                            <p:selectOneButton value="#{homologacaoBean.fisica.sexo}" style="width: 200px">
+                            <p:selectOneRadio value="#{homologacaoBean.fisica.sexo}" style="width: 200px">
                                 <p:ajax event="change" update="@this" global="false"/>
                                 <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                 <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                            </p:selectOneButton>
+                            </p:selectOneRadio>
                         </h:column>
                     </h:panelGrid>
 
@@ -307,14 +307,31 @@
                     </p:panel>
 
                     <h:panelGrid id="i_panel_button">
-                        <h:panelGrid columns="4" rendered="#{homologacaoBean.visibleModal}">
+                        <h:panelGrid columns="6" rendered="#{homologacaoBean.visibleModal}">
                             <p:commandButton value="Atualizar" actionListener="#{homologacaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" update="msg_dialog1 msg_dialog2" />
                             <p:commandButton value="Homologar" actionListener="#{homologacaoBean.homologar}" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{homologacaoBean.renderHomologar}" update="msg_dialog1 msg_dialog2 i_panel_button"/>
                             <p:commandButton value="Cancelar Homologação" rendered="#{homologacaoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_painel_excluir').show()" type="button" />
                             <p:commandButton value="Excluir Senha" actionListener="#{homologacaoBean.excluirSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoExcluir}" update="msg_dialog1 msg_dialog2 i_panel_button"/>
+                            <p:commandButton value="Anexar documentos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
+                            <p:commandButton value="Anexos (#{homologacaoBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo" update="id_grid_uploads"/> 
                         </h:panelGrid>
                     </h:panelGrid>                    
                 </p:dialog>
+                <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true" >
+                    <h:panelGrid id="id_grid_uploads" style="width: 350px">
+                        <p:dataTable value="#{homologacaoBean.listFiles}" var="lista" emptyMessage="Nenhum arquivo encontrado">
+                            <f:facet name="header">Documentos anexados (#{homologacaoBean.listFiles.size()})</f:facet>
+                            <p:column headerText="Nome arquivo" width="300">
+                                <a href="#{facesContext.externalContext.requestContextPath}/Cliente/#{controleUsuarioBean.clienteString}/Arquivos/homologacao/#{homologacaoBean.agendamento.id}/#{lista.argumento1}" target="_blank"  style="float: right">
+                                    #{lista.argumento1}
+                                </a>
+                            </p:column>
+                            <p:column width="25">
+                                <p:commandButton action="#{homologacaoBean.deleteFiles(lista.argumento2)}" icon="ui-icon-trash" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </p:dialog>                 
             </h:form>
 
             <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
@@ -502,7 +519,7 @@
                             <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()" />
                             <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" />
                             <p:commandButton value="Cancelar" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" />
-                            <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()" rendered="false"/>
+                            <p:commandButton value="Excluir Senha" onclick="PF('dlg_excluir_senha_atendimento').show()" rendered="false"/>                                  
                         </h:panelGrid>
                     </p:dialog> 
 
@@ -547,9 +564,21 @@
                                 </h:commandLink>
                             </h:panelGrid>
                         </f:facet>
-                    </p:dialog> 
-                </h:form>            
-            </p:panel>                    
+                    </p:dialog>                                
+                </h:form>
+            </p:panel>
+            <h:form id="form_homologacao_files" enctype="multipart/form-data" acceptcharset="UTF-8">
+                <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true" width="500" height="400" header="Anexar arquivos" closable="true">
+                    <p:fileUpload label="Procurar"
+                                  cancelLabel="Cancelar"
+                                  uploadLabel="Anexar"
+                                  mode="advanced"                                          
+                                  dragDropSupport="true"
+                                  multiple="false"
+                                  fileUploadListener="#{homologacaoBean.upload}" update=":formConcluirHomologacao:id_grid_uploads :formConcluirHomologacao:id_btn_anexo"
+                                  oncomplete="PF('dgl_upload').hide()" />
+                </p:dialog>
+            </h:form>
         </f:view>
     </h:body>
 </ui:composition>
