@@ -2,6 +2,7 @@ package br.com.rtools.associativo.dao;
 
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -9,6 +10,7 @@ public class SociosDao extends DB {
 
     /**
      * Retorna o sócio somente se o mesmo estiver ativo e serviço pessoa ativo
+     *
      * @param id Pessoa do serviço pessoa
      * @return
      */
@@ -24,6 +26,26 @@ public class SociosDao extends DB {
 
         }
         return null;
+    }
+
+    /**
+     * Retorna o sócio somente se o mesmo estiver ativo e serviço pessoa ativo
+     *
+     * @param pessoa (id) Pessoa
+     * @return
+     */
+    public List listaPorPessoa(Integer pessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa");
+            query.setParameter("pessoa", pessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
     }
 
 }
