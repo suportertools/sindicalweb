@@ -24,6 +24,9 @@
                         <div class="clear"></div>
                         <h:form id="form_pesquisa_conta_cobranca">
                             <p:dataTable value="#{contaCobrancaBean.listaContaCobranca}" var="contaCobranca" rows="15" paginator="true" emptyMessage="Nenhum registro encontrado!">
+                                <p:column style="width:20px">  
+                                    <p:rowToggler />  
+                                </p:column>  
                                 <p:column width="25" styleClass="text-center">
                                     <p:commandButton icon="ui-icon-link"  action="#{contaCobrancaBean.editar(contaCobranca)}" title="Editar registro nº #{contaCobranca.id}" />
                                 </p:column>
@@ -39,6 +42,9 @@
                                 <p:column headerText="Código - Cedente">
                                     <h:outputText value="#{contaCobranca.codCedente} - #{contaCobranca.cedente}"/>
                                 </p:column>
+                                <p:rowExpansion>
+                                    <h:outputText value="Serviço: #{contaCobranca.apelido}"/>                                    
+                                </p:rowExpansion>
                             </p:dataTable>                            
                         </h:form>
                     </p:panel>
