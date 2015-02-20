@@ -636,7 +636,7 @@ public class DataHoje {
         try {
             String part1 = data.substring(0, 2);
             String part2 = data.substring(3, 7);
-            int novaData = Integer.parseInt(part1 + part2);            
+            int novaData = Integer.parseInt(part2 + part1);
             return novaData;
         } catch (Exception e) {
             return 0;
