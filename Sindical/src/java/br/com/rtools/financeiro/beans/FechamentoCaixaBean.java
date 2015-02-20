@@ -338,6 +338,16 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public void transferir() {
+        if (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) == 0){
+            GenericaMensagem.error("Erro", "Lista de Caixa incompleta!");
+            return;
+        }
+        
+        if (!listaCaixaDestino.isEmpty() && Integer.valueOf(listaCaixaDestino.get(idCaixa).getDescription()) == 0){
+            GenericaMensagem.error("Erro", "Lista de Caixa Destino incompleta!");
+            return;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
         Caixa caixa_destino = (Caixa) sv.pesquisaCodigo(Integer.valueOf(listaCaixaDestino.get(idCaixaDestino).getDescription()), "Caixa");
@@ -644,6 +654,8 @@ public final class FechamentoCaixaBean implements Serializable {
             }else{
                 listaCaixaDestino.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
             }
+        }else if (listaCaixaDestino.isEmpty()) {
+            listaCaixaDestino.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
         }
         return listaCaixaDestino;
     }
