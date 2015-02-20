@@ -12,8 +12,21 @@
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
+            
+            .ui-fileupload-buttonbar {
+                background: transparent none;
+                border: none;
+            }
+
+            .ui-fileupload-content {
+                display: none;
+            }
+
+            .ui-fileupload-buttonbar .ui-fileupload-choose {
+                background-color: rgba(142, 103, 64, 0.98);
+            }
         </style>
-        
+
         <script type="text/javascript">
             function stopRKey(evt) {
                 var evt = (evt) ? evt : ((event) ? event : null);
@@ -66,7 +79,7 @@
                                         <h:outputLabel value="Responsável" style="margin-left: 10px"/><br />
                                         <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="30" style="margin-left: 10px"/>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <br />
                                         <p:selectOneMenu value="#{impressaoBoletoSocialBean.tipo}" style="padding-right: 20px">
@@ -80,7 +93,7 @@
                                         <h:outputLabel value="Lote" /><br />
                                         <p:inputText value="#{impressaoBoletoSocialBean.strLote}" size="10"/>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <h:outputLabel value="Qnt. Páginas" /><br />
                                         <p:selectOneMenu value="#{impressaoBoletoSocialBean.qntFolhas}" style="padding-right: 20px">
@@ -109,41 +122,41 @@
                                 <p:column headerText="" style="text-align: center; width: 40px">
                                     <p:commandLink value="#{linha.argumento0}" />
                                 </p:column>
-                                
+
                                 <p:column headerText=""  width="15" style="text-align: center">
                                     <p:selectBooleanCheckbox value="#{linha.argumento1}">
                                         <p:ajax event="change" update=":formImpressaoBoletoSocial:i_panel_quantidade" listener="#{impressaoBoletoSocialBean.atualizaValores}"/>
                                     </p:selectBooleanCheckbox>
                                 </p:column>
-                                
+
                                 <p:column headerText="Lote" style="text-align: center" width="30">
                                     <p:commandLink value="#{linha.argumento2[1]}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Responsável">
                                     <p:commandLink value="#{linha.argumento2[2]}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="N Boleto" style="text-align: center" width="120">
                                     <p:commandLink value="#{linha.argumento2[3]}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Proc." style="text-align: center" width="65">
                                     <p:commandLink value="#{linha.argumento2[5]}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Vencto" style="text-align: center" width="65">
                                     <p:commandLink value="#{linha.argumento2[4]}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Valor Total" width="65" >
                                     <p:commandLink value="#{linha.argumento3}" style="float: right"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="Pag." style="width: 40px; text-align: center">
                                     <p:commandLink value="#{linha.argumento4}" />
                                 </p:column>
-                                
+
                                 <f:facet name="footer">
                                     <p:outputLabel value="O total de páginas não conta o verso" style="color: red"/>
                                 </f:facet>
@@ -154,12 +167,12 @@
                                         <p:outputLabel value="Linhas Selecionadas" /><br />
                                         <p:outputLabel value="#{impressaoBoletoSocialBean.qntPessoasSelecionadas}" style="font-weight: bold; font-size: 11pt!important"/> 
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Total de #{impressaoBoletoSocialBean.tipo == 'fisica' ? 'Físicas' : 'Empresas'}" /><br />
                                         <p:outputLabel value="#{impressaoBoletoSocialBean.listaGrid.size()}" style="font-weight: bold; font-size: 11pt!important"/> 
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Valor Total R$" /><br />
                                         <p:outputLabel value="#{impressaoBoletoSocialBean.valorTotal}" style="font-weight: bold; font-size: 11pt!important"/> 
@@ -171,12 +184,31 @@
                                     <p:commandLink value="#{linha.nome}" action="#{impressaoBoletoSocialBean.editarPessoaSemEndereco(linha)}"/>
                                 </p:column>
                             </p:dataTable>
-                            
-                            <h:panelGrid columns="3">
-                                <p:commandButton ajax="false" value="Imprimir" action="#{impressaoBoletoSocialBean.imprimir()}" onclick="this.form.target='_blank'"/>
+
+                            <h:panelGrid columns="4">
+                                <p:commandButton ajax="false" value="Imprimir" action="#{impressaoBoletoSocialBean.imprimir()}" onclick="this.form.target = '_blank'"/>
                                 <p:selectBooleanCheckbox value="#{impressaoBoletoSocialBean.imprimeVerso}" style="margin-left: 30px" itemLabel="Imprimir Verso"/>
-                                <p:commandButton ajax="false" value="Etiquetas" action="#{impressaoBoletoSocialBean.etiqueta()}" style="margin-left: 30px" onclick="this.form.target='_blank'"/>
+                                <p:commandButton ajax="false" value="Etiquetas" action="#{impressaoBoletoSocialBean.etiqueta()}" style="margin-left: 30px" onclick="this.form.target = '_blank'"/>
+                                <p:commandButton value="Alterar imagem do Boleto" onclick="PF('dlg_imagem').show()" style="float: right; margin-left: 20px" />
                             </h:panelGrid>
+
+
+                        </h:form>
+
+                        <h:form id="formUploadImagem" enctype="multipart/form-data" acceptcharset="UTF-8">
+                            <p:dialog id="dlg_imagem" widgetVar="dlg_imagem" header="Imagem do Boleto" resizable="false" modal="true">
+                                <p:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/BannerPromoBoleto.png" style="max-width: 500px" cache="false"/>
+
+                                <h:panelGrid columns="3">
+                                    <p:fileUpload label ="Alterar Imagem" 
+                                                  mode="advanced" 
+                                                  fileUploadListener="#{impressaoBoletoSocialBean.upload}" 
+                                                  multiple="false" 
+                                                  auto="true" 
+                                                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                                                  update="formUploadImagem"/>
+                                </h:panelGrid>
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                 </f:view>
