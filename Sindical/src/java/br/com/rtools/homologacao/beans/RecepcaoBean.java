@@ -28,17 +28,22 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Upload;
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +53,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import org.primefaces.component.tabview.TabView;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultScheduleEvent;
@@ -117,86 +124,86 @@ public class RecepcaoBean implements Serializable {
     private String descricaoFisica;
     private String tipoPesquisaAtendimento;
     private String tipoFisicaPesquisa;
-    
-/*    @PostConstruct
-    public void init() {
-        agendamento = new Agendamento();
-        agendamentoEdit = new Agendamento();
-        idStatus = 0;
-        ocultaData = true;
-        ocultaSenha = false;
-        ocultaStatus = true;
-        ocultaPreposto = false;
-        ocultaHomologador = false;
-        ocultaDatapesquisa = false;
-        ocultaColunaEmpresa = false;
-        ocultaColunaPessoaFisica = false;
-        isPesquisarPessoaFisicaFiltro = false;
-        isPesquisarPessoaJuridicaFiltro = false;
-        desabilitaAtualizacaoAutomatica = false;
-        desabilitaPesquisaProtocolo = false;
-        dataPesquisaTodas = false;
-        isCaso = 0;
-        macFilial = null;
-        strData = DataHoje.data();
-        strDataFinal = DataHoje.data();
-        strEndereco = "";
-        msgRecepcao = "";
-        msgConfirma = "";
-        statusEmpresa = "";
-        data = DataHoje.dataHoje();
-        dataInicial = DataHoje.dataHoje();
-        dataFinal = DataHoje.dataHoje();
-        fisica = new Fisica();
-        juridica = new Juridica();
-        recepcao = new Recepcao();
-        registro = new Registro();
-        profissao = new Profissao();
-        idMotivoDemissao = 0;
-        tipoPesquisa = "";
-        dataPesquisa = "hoje";
-        cancelamento = new Cancelamento();
-        id_protocolo = -1;
-        numeroProtocolo = "";
-        listaRecepcaos = new ArrayList();
-        macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
-        dataInicialString = DataHoje.data();
-        dataFinalString = DataHoje.data();
-        openDialog = false;
-        listaAtendimentoSimples = new ArrayList();
-        listaStatus = new ArrayList();
-        listaMotivoDemissao = new ArrayList();
-        listaHorarios = new ArrayList();
-        progressUpdate = 100;
-        progressLabel = 10;
-        startPooling = true;
-        
-        idStatusAtendimento = 0;
-        listaStatus = new ArrayList();
-        dataPesquisaAtendimento = "hoje";
-        listaStatusAtendimento = new ArrayList();
-        tipoPesquisaAtendimento = "juridica";
-        
-        getListaStatusAtendimento();
-        loadListHorarios();
-        loadListaAtendimentoSimples();
-        
-        dataInicialAtendimento = DataHoje.data();
-        dataFinalAtendimento = DataHoje.data();
-        
-        descricaoFisica = "";
-        tipoFisicaPesquisa = "";
-    }
+    private List listFiles;
 
-    @PreDestroy
-    public void destroy() {
-        GenericaSessao.remove("recepcaoBean");
-        GenericaSessao.remove("juridicaPesquisa");
-        GenericaSessao.remove("fisicaPesquisa");
-    }
-*/
-    
-    public RecepcaoBean(){
+    /*    @PostConstruct
+     public void init() {
+     agendamento = new Agendamento();
+     agendamentoEdit = new Agendamento();
+     idStatus = 0;
+     ocultaData = true;
+     ocultaSenha = false;
+     ocultaStatus = true;
+     ocultaPreposto = false;
+     ocultaHomologador = false;
+     ocultaDatapesquisa = false;
+     ocultaColunaEmpresa = false;
+     ocultaColunaPessoaFisica = false;
+     isPesquisarPessoaFisicaFiltro = false;
+     isPesquisarPessoaJuridicaFiltro = false;
+     desabilitaAtualizacaoAutomatica = false;
+     desabilitaPesquisaProtocolo = false;
+     dataPesquisaTodas = false;
+     isCaso = 0;
+     macFilial = null;
+     strData = DataHoje.data();
+     strDataFinal = DataHoje.data();
+     strEndereco = "";
+     msgRecepcao = "";
+     msgConfirma = "";
+     statusEmpresa = "";
+     data = DataHoje.dataHoje();
+     dataInicial = DataHoje.dataHoje();
+     dataFinal = DataHoje.dataHoje();
+     fisica = new Fisica();
+     juridica = new Juridica();
+     recepcao = new Recepcao();
+     registro = new Registro();
+     profissao = new Profissao();
+     idMotivoDemissao = 0;
+     tipoPesquisa = "";
+     dataPesquisa = "hoje";
+     cancelamento = new Cancelamento();
+     id_protocolo = -1;
+     numeroProtocolo = "";
+     listaRecepcaos = new ArrayList();
+     macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
+     dataInicialString = DataHoje.data();
+     dataFinalString = DataHoje.data();
+     openDialog = false;
+     listaAtendimentoSimples = new ArrayList();
+     listaStatus = new ArrayList();
+     listaMotivoDemissao = new ArrayList();
+     listaHorarios = new ArrayList();
+     progressUpdate = 100;
+     progressLabel = 10;
+     startPooling = true;
+        
+     idStatusAtendimento = 0;
+     listaStatus = new ArrayList();
+     dataPesquisaAtendimento = "hoje";
+     listaStatusAtendimento = new ArrayList();
+     tipoPesquisaAtendimento = "juridica";
+        
+     getListaStatusAtendimento();
+     loadListHorarios();
+     loadListaAtendimentoSimples();
+        
+     dataInicialAtendimento = DataHoje.data();
+     dataFinalAtendimento = DataHoje.data();
+        
+     descricaoFisica = "";
+     tipoFisicaPesquisa = "";
+     }
+
+     @PreDestroy
+     public void destroy() {
+     GenericaSessao.remove("recepcaoBean");
+     GenericaSessao.remove("juridicaPesquisa");
+     GenericaSessao.remove("fisicaPesquisa");
+     }
+     */
+    public RecepcaoBean() {
         agendamento = new Agendamento();
         agendamentoEdit = new Agendamento();
         idStatus = 0;
@@ -247,35 +254,37 @@ public class RecepcaoBean implements Serializable {
         progressUpdate = 100;
         progressLabel = 10;
         startPooling = true;
-        
+
         idStatusAtendimento = 0;
         listaStatus = new ArrayList();
         dataPesquisaAtendimento = "hoje";
         listaStatusAtendimento = new ArrayList();
         tipoPesquisaAtendimento = "juridica";
-        
+
         descricaoFisica = "";
         tipoFisicaPesquisa = "cpf";
-        
+
         dataInicialAtendimento = DataHoje.data();
         dataFinalAtendimento = DataHoje.data();
-        
+
+        listFiles = new ArrayList();
+                
         getListaStatusAtendimento();
         loadListHorarios();
         loadListaAtendimentoSimples();
     }
-    
+
     public void alterTab(TabChangeEvent event) {
         indexTab = ((TabView) event.getComponent()).getActiveIndex();
     }
-    
-    public void startStopPolling(){
+
+    public void startStopPolling() {
 //        if (startPooling)
 //            setStartPooling(false);
 //        else
 //            setStartPooling(true);
     }
-    
+
     public void progress() {
         progressUpdate = progressUpdate - 10;
         progressLabel--;
@@ -298,6 +307,7 @@ public class RecepcaoBean implements Serializable {
         agendamentoEdit = new Agendamento();
         openDialog = false;
         recepcao = new Recepcao();
+        listFiles.clear();
     }
 
     public void gerarSenha() {
@@ -375,14 +385,14 @@ public class RecepcaoBean implements Serializable {
             return;
         }
         agendamentoEdit.getPessoaEmpresa().setDtDemissao(null);
-        
+
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaEmpresa pem = db.pesquisaPessoaEmpresaPorFisica(agendamentoEdit.getPessoaEmpresa().getFisica().getId());
-        
-        if (pem.getId() == -1){
+
+        if (pem.getId() == -1) {
             agendamentoEdit.getPessoaEmpresa().setPrincipal(true);
         }
-        
+
         if (!di.update(agendamentoEdit.getPessoaEmpresa())) {
             di.rollback();
             GenericaMensagem.error("Erro", "Erro ao atualizar Pessoa Empresa");
@@ -427,9 +437,9 @@ public class RecepcaoBean implements Serializable {
         isPesquisarPessoaFisicaFiltro = false;
         isPesquisarPessoaJuridicaFiltro = false;
         desabilitaPesquisaProtocolo = false;
-        if (indexTab == 0){
+        if (indexTab == 0) {
             loadListHorarios();
-        }else{
+        } else {
             loadListaAtendimentoSimples();
         }
         return null;
@@ -476,20 +486,20 @@ public class RecepcaoBean implements Serializable {
             }
 
             //if (!recepcao.getHoraInicialFuncionario().isEmpty()) {
-                if (recepcao.getId() == -1) {
-                    if (!di.save(recepcao)) {
-                        GenericaMensagem.error("Erro", "Erro ao salvar Recepção!");
-                        di.rollback();
-                        return;
-                    }
-                } else {
-                    if (!di.update(recepcao)) {
-                        GenericaMensagem.error("Erro", "Erro ao atualizar Recepção!");
-                        di.rollback();
-                        return;
-                    }
+            if (recepcao.getId() == -1) {
+                if (!di.save(recepcao)) {
+                    GenericaMensagem.error("Erro", "Erro ao salvar Recepção!");
+                    di.rollback();
+                    return;
                 }
-                agendamentoEdit.setRecepcao(recepcao);
+            } else {
+                if (!di.update(recepcao)) {
+                    GenericaMensagem.error("Erro", "Erro ao atualizar Recepção!");
+                    di.rollback();
+                    return;
+                }
+            }
+            agendamentoEdit.setRecepcao(recepcao);
             //}
         }
 
@@ -631,10 +641,11 @@ public class RecepcaoBean implements Serializable {
             GenericaSessao.remove("fisicaPesquisa");
             GenericaSessao.remove("juridicaPesquisa");
             dataPesquisaTodas = true;
-            if (indexTab == 0)
+            if (indexTab == 0) {
                 loadListHorarios();
-            else
+            } else {
                 loadListaAtendimentoSimples();
+            }
         }
         return juridica;
     }
@@ -697,10 +708,11 @@ public class RecepcaoBean implements Serializable {
             GenericaSessao.remove("juridicaPesquisa");
             dataPesquisaTodas = true;
             idStatus = 5;
-            if (indexTab == 0)
+            if (indexTab == 0) {
                 loadListHorarios();
-            else
+            } else {
                 loadListaAtendimentoSimples();
+            }
         }
         return fisica;
     }
@@ -1129,20 +1141,19 @@ public class RecepcaoBean implements Serializable {
                 isOposicao = true;
             }
 
-            
-            if (senha != null && senha.getId() != -1){
+            if (senha != null && senha.getId() != -1) {
                 senhaString = ((Integer) senha.getSenha()).toString();
-                senhaString = (senhaString.length() == 1) ? "0"+senhaString : senhaString;
+                senhaString = (senhaString.length() == 1) ? "0" + senhaString : senhaString;
             }
-            
+
             if (!isOposicao) {
                 Cancelamento can = (Cancelamento) db.pesquisaCancelamentoPorAgendanto(ag.get(i).getId());
                 if (senha.getId() != -1 && can == null) {
                     senhaId = "tblListaRecepcaox";
-                } 
+                }
             } else {
                 senhaId = "tblAgendamentoOposicaox";
-                
+
             }
 
             listaHorarios.add(new DataObject(
@@ -1173,11 +1184,11 @@ public class RecepcaoBean implements Serializable {
             SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
 
             listaAtendimentoSimples = db.listaAtendimentoIniciadoSimplesPesquisa(
-                    macFilial.getFilial().getId(), 
-                    su.getSessaoUsuario().getId(), 
-                    Integer.valueOf(listaStatusAtendimento.get(idStatusAtendimento).getDescription()), 
-                    dataPesquisaAtendimento, 
-                    dataInicialAtendimento, 
+                    macFilial.getFilial().getId(),
+                    su.getSessaoUsuario().getId(),
+                    Integer.valueOf(listaStatusAtendimento.get(idStatusAtendimento).getDescription()),
+                    dataPesquisaAtendimento,
+                    dataInicialAtendimento,
                     dataFinalAtendimento,
                     juridica.getId(),
                     descricaoFisica,
@@ -1185,25 +1196,25 @@ public class RecepcaoBean implements Serializable {
             );
         }
     }
-    
-    public void clearDescricaoFisica(){
+
+    public void clearDescricaoFisica() {
         descricaoFisica = "";
         loadListaAtendimentoSimples();
     }
-    
-    public void cleanTipoFisica(){
+
+    public void cleanTipoFisica() {
         getTipoFisicaPesquisa();
         loadListaAtendimentoSimples();
     }
-    
-    public boolean renderedInput(String tipo){
+
+    public boolean renderedInput(String tipo) {
         return (tipoFisicaPesquisa.equals(tipo));
     }
-    
-    public String estiloLinha(AteMovimento atm){
-        if (atm.getStatus().getId() == 1){
+
+    public String estiloLinha(AteMovimento atm) {
+        if (atm.getStatus().getId() == 1) {
             return "tblListaRecepcaox";
-        }else{
+        } else {
             return "";
         }
     }
@@ -1273,11 +1284,11 @@ public class RecepcaoBean implements Serializable {
     }
 
     public List<SelectItem> getListaStatusAtendimento() {
-        if (listaStatusAtendimento.isEmpty()){
+        if (listaStatusAtendimento.isEmpty()) {
             List<AteStatus> result = new Dao().list("AteStatus");
             listaStatusAtendimento.add(new SelectItem(0, "Todos", "0"));
-            for (int i = 0; i < result.size(); i++){
-                listaStatusAtendimento.add(new SelectItem(i+1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId())));
+            for (int i = 0; i < result.size(); i++) {
+                listaStatusAtendimento.add(new SelectItem(i + 1, result.get(i).getDescricao(), Integer.toString(result.get(i).getId())));
             }
         }
         return listaStatusAtendimento;
@@ -1341,6 +1352,37 @@ public class RecepcaoBean implements Serializable {
 
     public void setTipoFisicaPesquisa(String tipoFisicaPesquisa) {
         this.tipoFisicaPesquisa = tipoFisicaPesquisa;
+    }
+
+    // ARQUIVOS
+    public List getListFiles() {
+        listFiles.clear();
+        listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamentoEdit.getId());
+        return listFiles;
+    }
+
+    public void upload(FileUploadEvent event) {
+        ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
+        configuracaoUpload.setArquivo(event.getFile().getFileName());
+        configuracaoUpload.setDiretorio("Arquivos/homologacao/" + agendamentoEdit.getId());
+        configuracaoUpload.setEvent(event);
+        if (Upload.enviar(configuracaoUpload, true)) {
+            listFiles.clear();
+        }
+        getListFiles();
+    }
+
+    public void deleteFiles(int index) {
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/homologacao/" + agendamentoEdit.getId() + "/" + (String) ((DataObject) listFiles.get(index)).getArgumento1());
+        File fl = new File(caminho);
+        fl.delete();
+        listFiles.remove(index);
+        listFiles.clear();
+        getListFiles();
+        PF.update("formConcluirHomolocagao:id_grid_uploads");
+        PF.update("formConcluirHomolocagao:id_btn_anexo");
+        PF.update("form_recepcao_upload:id_grid_uploads");
+        PF.update("formRecepcao:id_btn_anexo");
     }
 }
 
