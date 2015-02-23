@@ -43,6 +43,7 @@ public class MensagemConvencaoBean {
     private boolean gerarAno = false;
     private String vencimento = DataHoje.data();
     private String replicaPara = "";
+    private List<SelectItem> listaTipoServico = new ArrayList();
 
     public MensagemConvencaoBean() {
         mensagemConvencao.setReferencia(DataHoje.data().substring(3));
@@ -622,18 +623,25 @@ public class MensagemConvencaoBean {
     }
 
     public List<SelectItem> getListaTipoServico() {
-        List<SelectItem> tipoServico = new ArrayList<SelectItem>();
-        int i = 0;
-        TipoServicoDB db = new TipoServicoDBToplink();
-        List select = db.pesquisaTodosPeloContaCobranca();
-        while (i < select.size()) {
-            tipoServico.add(new SelectItem(
-                    i,
-                    (String) ((TipoServico) select.get(i)).getDescricao(),
-                    Integer.toString(((TipoServico) select.get(i)).getId())));
-            i++;
+        if (listaTipoServico.isEmpty()){
+            TipoServicoDB db = new TipoServicoDBToplink();
+            List<TipoServico> select = db.pesquisaTodosPeloContaCobranca();
+            
+            if (select.isEmpty()){
+                GenericaMensagem.error("Atenção", "Serviço Conta Cobrança não encontrado!");
+                return listaTipoServico;
+            }
+            
+            for (int i = 0; i < select.size(); i++){
+                listaTipoServico.add(new SelectItem(
+                        i,
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())
+                )
+                );
+            }
         }
-        return tipoServico;
+        return listaTipoServico;
     }
 
     public List<SelectItem> getListaServico() {
@@ -765,5 +773,9 @@ public class MensagemConvencaoBean {
 
     public void setReplicaPara(String replicaPara) {
         this.replicaPara = replicaPara;
+    }
+
+    public void setListaTipoServico(List<SelectItem> listaTipoServico) {
+        this.listaTipoServico = listaTipoServico;
     }
 }
