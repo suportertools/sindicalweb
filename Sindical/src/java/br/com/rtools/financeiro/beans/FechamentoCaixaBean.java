@@ -535,7 +535,7 @@ public final class FechamentoCaixaBean implements Serializable {
     }
 
     public List<SelectItem> getListaCaixa() {
-        if (!listaCaixa.isEmpty() && Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) != 0) {
+        if (listaCaixa.isEmpty()) {
             ControleAcessoBean cab = new ControleAcessoBean();
             boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
             MacFilial mac = MacFilial.getAcessoFilial();
