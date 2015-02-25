@@ -18,6 +18,8 @@ public class Rotina implements java.io.Serializable {
     private String rotina;
     @Column(name = "ds_nome_pagina", length = 100, nullable = false)
     private String pagina;
+    @Column(name = "ds_acao", length = 100, nullable = false)
+    private String acao;
     @Column(name = "ds_classe", length = 100)
     private String classe;
     @Column(name = "is_ativo")
@@ -27,14 +29,16 @@ public class Rotina implements java.io.Serializable {
         this.id = -1;
         this.rotina = "";
         this.pagina = "";
+        this.acao = "";
         this.classe = "";
         this.ativo = false;
     }
 
-    public Rotina(int id, String rotina, String pagina, String classe, boolean ativo) {
+    public Rotina(int id, String rotina, String pagina, String acao, String classe, boolean ativo) {
         this.id = id;
         this.rotina = rotina;
         this.pagina = pagina;
+        this.acao = acao;
         this.classe = classe;
         this.ativo = ativo;
 
@@ -78,5 +82,13 @@ public class Rotina implements java.io.Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getAcao() {
+        return acao;
+    }
+
+    public void setAcao(String acao) {
+        this.acao = acao;
     }
 }
