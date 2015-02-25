@@ -80,7 +80,9 @@ public class ImprimirRecibo {
                 Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
                 String conveniada = "";
                 if (gu.getId() != -1){
-                    conveniada = gu.getPessoa().getNome();
+                    if(gu.getPessoa() != null) {
+                        conveniada = gu.getPessoa().getNome();                        
+                    }
                 }
                 // ANTIGA EMPRESA CONVENIADA qry com id_sub_grupo_convenio
 //                if (lista.get(i).getLote().getRotina().getId() == 132) {
