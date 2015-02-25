@@ -153,7 +153,6 @@ public class RotinaDBToplink extends DB implements RotinaDB {
 
     @Override
     public Rotina pesquisaRotinaPorPagina(String pagina) {
-        Rotina rotina = new Rotina();
         try {
             Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE (ROT.pagina LIKE 'Sindical/" + pagina + ".jsf' OR ROT.pagina LIKE '\"/Sindical/" + pagina + ".jsf\"')");
             List list = query.getResultList();
@@ -162,7 +161,21 @@ public class RotinaDBToplink extends DB implements RotinaDB {
             }
         } catch (Exception e) {
         }
-        return rotina;
+        return null;
+    }
+
+    @Override
+    public Rotina pesquisaRotinaPorAcao(String acao) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE ROT.acao LIKE :acao");
+            query.setParameter("acao", acao);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Rotina) query.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     @Override

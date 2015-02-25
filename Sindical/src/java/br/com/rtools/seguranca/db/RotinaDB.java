@@ -20,6 +20,8 @@ public interface RotinaDB {
 
     public Rotina pesquisaPaginaRotina(String pagina);
 
+    public Rotina pesquisaRotinaPorAcao(String acao);
+
     public List<Rotina> pesquisaRotina(String rotina);
 
     public Rotina pesquisaAcesso(String pagina);
@@ -29,8 +31,8 @@ public interface RotinaDB {
     public List pesquisaRotinasDisponiveisModulo(int idModulo);
 
     public Rotina pesquisaRotinaPorPagina(String pagina);
-    
+
     public Rotina pesquisaRotinaPorClasse(String classe);
-    
+
     public List<Rotina> pesquisaRotinaPorDescricao(String descricaoRotina);
 }
