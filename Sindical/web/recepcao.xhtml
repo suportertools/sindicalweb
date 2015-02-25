@@ -531,7 +531,7 @@
                                             <h:outputLabel value="MOTIVO DO CANCELAMENTO: " rendered="#{recepcaoBean.agendamentoEdit.status.id == 3}" style="margin-left: 20px; font-size: 11pt!important; color: red"/>
                                             <h:outputLabel value="#{recepcaoBean.cancelamento.motivo}" rendered="#{recepcaoBean.agendamentoEdit.status.id == 3}" style="margin-left: 10px; font-size: 10pt!important"/>
                                             <p:commandButton value="Anexar documentos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
-                                            <p:commandButton value="Anexos (#{recepcaoBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo" update="form_recepcao_upload:id_grid_uploads"/>
+                                            <p:commandButton value="Anexos (#{recepcaoBean.listFiles.size()})" oncomplete="PF('dgl_anexos').show();" id="id_btn_anexo" update=":form_recepcao_upload:" />
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </p:dialog>
@@ -559,7 +559,7 @@
                                 </p:dialog>
                             </h:form>
                             <h:form id="form_recepcao_upload">
-                                <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true" >
+                                <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true" dynamic="true">
                                     <h:panelGrid id="id_grid_uploads" style="width: 350px">
                                         <p:dataTable value="#{recepcaoBean.listFiles}" var="lista" emptyMessage="Nenhum arquivo encontrado">
                                             <f:facet name="header">Documentos anexados (#{recepcaoBean.listFiles.size()})</f:facet>
