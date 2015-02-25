@@ -444,6 +444,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         return null;
     }
     
+    @Override
     public Juridica pesquisaContabilidadePorEmail(String email){
         String text_qry = "select j.* from pes_juridica j where j.id in ( "+
                             "select jc.id_contabilidade " +

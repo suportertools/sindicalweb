@@ -14,4 +14,6 @@ public interface PessoaEnderecoDB {
     public PessoaEndereco pesquisaEndPorPessoaTipo(int idPessoa, int idTipoEndereco);
 
     public Endereco enderecoReceita(String cep, String[] descricao, String[] bairro);
+    
+    public List<PessoaEndereco> listaEnderecoContabilidadeDaEmpresa(Integer id_empresa, Integer id_tipo_endereco);
 }

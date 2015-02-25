@@ -5,6 +5,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -90,4 +91,27 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
             return null;
         }
     }
+    
+    @Override
+    public List<PessoaEndereco> listaEnderecoContabilidadeDaEmpresa(Integer id_empresa, Integer id_tipo_endereco){
+        String text_qry =
+                "SELECT pe.* \n " +
+                "  FROM pes_pessoa_endereco pe \n " +
+                " INNER JOIN pes_juridica jc ON jc.id_pessoa = pe.id_pessoa \n " +
+                " INNER JOIN pes_juridica j ON j.id_contabilidade = jc.id \n " +
+                " WHERE j.id = " + id_empresa;
+        String and = "";
+        if(id_tipo_endereco != null){
+            and = " AND pe.id_tipo_endereco = " + id_tipo_endereco;
+        }
+        
+        Query qry = getEntityManager().createNativeQuery(text_qry + and, PessoaEndereco.class);
+        
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }    
 }
