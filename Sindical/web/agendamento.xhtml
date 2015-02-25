@@ -220,11 +220,11 @@
 
                                 <h:column>
                                     <h:outputText value="Sexo"/><br />
-                                    <p:selectOneButton value="#{agendamentoBean.fisica.sexo}" style="width: 200px">
+                                    <p:selectOneRadio value="#{agendamentoBean.fisica.sexo}" style="width: 200px">
                                         <p:ajax event="change" update="@this" global="false"/>
                                         <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                         <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                    </p:selectOneButton>
+                                    </p:selectOneRadio>
                                 </h:column>
                             </h:panelGrid>
 
