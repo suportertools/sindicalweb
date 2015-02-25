@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -431,6 +432,153 @@ public class ImpressaoBoletoSocialBean {
         }
     }    
     
+    public void etiquetaParaContabilidade(){
+        if (!listaPessoaSemEndereco.isEmpty()){
+            GenericaMensagem.fatal("Atenção", "Existem pessoas sem endereço, favor cadastra-las!");
+            return;
+        }
+        
+        List lista = new ArrayList();
+        
+        FinanceiroDB db = new FinanceiroDBToplink();
+        
+        try {
+            Map<Integer, PessoaEndereco> hash = new LinkedHashMap();
+            
+            PessoaEnderecoDB dbpe = new PessoaEnderecoDBToplink();
+            PessoaEndereco pe;
+
+            JuridicaDB dbj = new JuridicaDBToplink();
+            
+            for (DataObject linha : listaGrid) {
+                if ((Boolean) linha.getArgumento1()) {
+                    
+                    List<PessoaEndereco> result_list = dbpe.listaEnderecoContabilidadeDaEmpresa(
+                        dbj.pesquisaJuridicaPorPessoa(
+                                (Integer)((Vector)linha.getArgumento2()).get(8)).getId(),  // id_responsavel *nesse caso da empresa
+                                5                                                          // id_tipo_endereco
+                    );
+                    if (!result_list.isEmpty()){
+                        hash.put(result_list.get(0).getId(), result_list.get(0));
+                    }
+                }
+            }
+            
+            
+            for (Map.Entry<Integer, PessoaEndereco> entry : hash.entrySet()) {
+                lista.add(
+                        new Etiquetas(
+                                entry.getValue().getPessoa().getNome(), // NOME
+                                entry.getValue().getEndereco().getLogradouro().getDescricao(), // LOGRADOURO
+                                entry.getValue().getEndereco().getDescricaoEndereco().getDescricao(), // ENDERECO
+                                entry.getValue().getNumero(), // NÚMERO
+                                entry.getValue().getEndereco().getBairro().getDescricao(), // BAIRRO
+                                entry.getValue().getEndereco().getCidade().getCidade(), // CIDADE
+                                entry.getValue().getEndereco().getCidade().getUf(), // UF
+                                entry.getValue().getEndereco().getCep(), // CEP
+                                entry.getValue().getComplemento() // COMPLEMENTO
+                        )
+                );
+            }   
+                
+//                for (Vector vector : lista_socio) {
+//                    List<PessoaEndereco> result_list = dbpe.listaEnderecoContabilidadeDaEmpresa(dbj.pesquisaJuridicaPorPessoa(Integer.valueOf(vector.get(0).toString())).getId(), 5);
+//                    if (!result_list.isEmpty()){
+//                        lista.add(
+//                                new Etiquetas(
+//                                        result_list.get(0).getPessoa().getNome(), // NOME
+//                                        result_list.get(0).getEndereco().getLogradouro().getDescricao(), // LOGRADOURO
+//                                        result_list.get(0).getEndereco().getDescricaoEndereco().getDescricao(), // ENDERECO
+//                                        result_list.get(0).getNumero(), // NÚMERO
+//                                        result_list.get(0).getEndereco().getBairro().getDescricao(), // BAIRRO
+//                                        result_list.get(0).getEndereco().getCidade().getCidade(), // CIDADE
+//                                        result_list.get(0).getEndereco().getCidade().getUf(), // UF
+//                                        result_list.get(0).getEndereco().getCep(), // CEP
+//                                        result_list.get(0).getComplemento() // COMPLEMENTO
+//                                )
+//                        );
+//                    }
+//                }
+            
+            
+            
+//            for (int i = 0; i < listaGrid.size(); i++){
+//                if ((Boolean)listaGrid.get(i).getArgumento1()){
+//                    List<Vector> lista_socio;
+//                    PessoaEnderecoDB dbpe = new PessoaEnderecoDBToplink();
+//                    PessoaEndereco pe;
+//                        
+//                    JuridicaDB dbj = new JuridicaDBToplink();
+//                    
+//                    
+//                    lista_socio = db.listaBoletoSocioJuridicaAgrupado((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
+//                    
+//                       
+//                    for (int w = 0; w < lista_socio.size(); w++){
+//                        List<PessoaEndereco> result_list = dbpe.listaEnderecoContabilidadeDaEmpresa(
+//                                dbj.pesquisaJuridicaPorPessoa(Integer.valueOf(lista_socio.get(w).get(0).toString())).getId(), 5
+//                        );
+//                        
+//                        if (!result_list.isEmpty()){
+//                            lista.add(
+//                                    new Etiquetas(
+//                                            result_list.get(0).getPessoa().getNome(), // NOME
+//                                            result_list.get(0).getEndereco().getLogradouro().getDescricao(), // LOGRADOURO
+//                                            result_list.get(0).getEndereco().getDescricaoEndereco().getDescricao(), // ENDERECO
+//                                            result_list.get(0).getNumero(), // NÚMERO
+//                                            result_list.get(0).getEndereco().getBairro().getDescricao(), // BAIRRO
+//                                            result_list.get(0).getEndereco().getCidade().getCidade(), // CIDADE
+//                                            result_list.get(0).getEndereco().getCidade().getUf(), // UF
+//                                            result_list.get(0).getEndereco().getCep(), // CEP
+//                                            result_list.get(0).getComplemento() // COMPLEMENTO
+//                                    ) 
+//                            );
+//                        }
+//                    }
+//                }
+//            }
+            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_SOCIO.jasper"));
+            
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+            
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+            
+            List<JasperPrint> lista_jasper = new ArrayList();
+            lista_jasper.add(JasperFillManager.fillReport(jasperReport, null, dtSource));
+            
+            JRPdfExporter exporter = new JRPdfExporter();
+            
+            String nomeDownload = "etiqueta_" + DataHoje.livre(DataHoje.dataHoje(), "yyyyMMdd-HHmmss") + ".pdf";
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
+            
+            exporter.setExporterInput(SimpleExporterInput.getInstance(lista_jasper));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pathPasta+"/"+nomeDownload));
+            
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            
+            configuration.setCreatingBatchModeBookmarks(true);
+            
+            exporter.setConfiguration(configuration);
+            
+            exporter.exportReport();
+
+            File fl = new File(pathPasta);
+            
+            if (fl.exists()){
+                Download download = new Download(
+                        nomeDownload,
+                        pathPasta,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance()
+                );
+                download.baixar();
+                download.remover();
+            }
+        } catch (JRException e) {
+            e.getMessage();
+        } 
+    }
+    
     public void etiqueta(){
         if (!listaPessoaSemEndereco.isEmpty()){
             GenericaMensagem.fatal("Atenção", "Existem pessoas sem endereço, favor cadastra-las!");
@@ -448,17 +596,13 @@ public class ImpressaoBoletoSocialBean {
                     PessoaEnderecoDB dbpe = new PessoaEnderecoDBToplink();
                     PessoaEndereco pe;
                         
-                    if (tipo.equals("fisica")){
-                        lista_socio = db.listaBoletoSocioFisica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
-                    }else {
-                        lista_socio = db.listaBoletoSocioJuridica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
-                    }
+                    lista_socio = db.listaBoletoSocioJuridicaAgrupado((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
                     
                     for (int w = 0; w < lista_socio.size(); w++){
                         if (tipo.equals("fisica")){
-                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(5).toString()), 1);
+                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(0).toString()), 1);
                         } else {
-                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(5).toString()), 5);
+                            pe = dbpe.pesquisaEndPorPessoaTipo(Integer.valueOf(lista_socio.get(w).get(0).toString()), 5);
                         }
                         
                         if (pe != null){

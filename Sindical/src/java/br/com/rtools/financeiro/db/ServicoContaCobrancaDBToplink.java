@@ -72,7 +72,7 @@ public class ServicoContaCobrancaDBToplink extends DB implements ServicoContaCob
     @Override
     public List pesquisaTodosTipoUm() {
         try {
-            Query qry = getEntityManager().createQuery("SELECT s FROM ServicoContaCobranca s WHERE s.tipoServico.id = 1");
+            Query qry = getEntityManager().createQuery("SELECT s FROM ServicoContaCobranca s WHERE s.tipoServico.id = 1 AND s.servicos.id IN (SELECT sx.servicos.id FROM ServicoRotina sx WHERE sx.rotina.id = 4)");
             return (qry.getResultList());
         } catch (Exception e) {
             return null;

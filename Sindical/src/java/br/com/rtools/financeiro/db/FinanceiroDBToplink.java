@@ -866,6 +866,22 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
+    public List<Vector> listaBoletoSocioJuridicaAgrupado(String nr_ctr_boleto) {
+        try {
+            String text_qry = 
+                    " SELECT codigo " +
+                    "   FROM soc_boletos_vw " +
+                    "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
+                    "  GROUP BY codigo";
+            
+            Query qry = getEntityManager().createNativeQuery(text_qry);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
     public List<Vector> listaQntPorJuridica(String nrCtrBoleto){
         Query qry = getEntityManager().createNativeQuery(
                 "select j.id_pessoa, m.id_titular " +
