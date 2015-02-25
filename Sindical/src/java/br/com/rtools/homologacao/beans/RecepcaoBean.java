@@ -1357,7 +1357,9 @@ public class RecepcaoBean implements Serializable {
     // ARQUIVOS
     public List getListFiles() {
         listFiles.clear();
-        listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamentoEdit.getId());
+        if(agendamentoEdit.getId() != -1) {
+            listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamentoEdit.getId());            
+        }
         return listFiles;
     }
 
