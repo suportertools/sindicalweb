@@ -49,7 +49,7 @@
                                             </p:selectBooleanCheckbox>
                                         </f:facet>
                                         <p:selectBooleanCheckbox value="#{listMovimentoReceber.selected}" >
-                                            <p:ajax event="change" update="@this :form_movimento_receber:i_grid_calculo" global="false" listener="#{movimentosReceberBean.calcula()}"/>
+                                            <p:ajax event="change" update="@this :form_movimento_receber:" global="false" listener="#{movimentosReceberBean.blockAcordo()}"/>
                                         </p:selectBooleanCheckbox>
                                     </p:column>
                                     <p:column headerText="Boleto" width="120" styleClass="font">
