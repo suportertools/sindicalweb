@@ -64,14 +64,14 @@
                     </h:panelGroup>
                 </h:panelGrid>
 
-                <p:poll id="poolMonitor" interval="5000" update="tbl" />
+                <p:poll id="poolMonitor" interval="5" update="poolMonitor tbl" listener="#{webAgendamentoContabilidadeBean.loadListHorarios()}" global="false"/>
 
                 <h:panelGrid style="margin: 0 auto; width: 1024px">
                     <p:messages autoUpdate="true" closable="true" showDetail="true"/>
                 </h:panelGrid>
 
-                <h:panelGrid style="margin: 0 auto; width: 1024px">
-                    <p:dataTable value="#{webAgendamentoContabilidadeBean.listaHorarios}" var="linha" id="tbl" emptyMessage="Nenhum horário para esta data!">
+                <h:panelGrid style="margin: 0 auto; width: 1024px" id="tbl">
+                    <p:dataTable value="#{webAgendamentoContabilidadeBean.listaHorarios}" var="linha" emptyMessage="Nenhum horário para esta data!">
                         <p:column width="15">  
                             <p:rowToggler />  
                         </p:column> 
@@ -134,6 +134,7 @@
                 <p:commandLink styleClass="idNovo iLink" style="width: 200px;" value="Agendar sem Horário" action="#{webAgendamentoContabilidadeBean.novoProtocolo()}" rendered="#{webAgendamentoContabilidadeBean.registro.agendarSemHorarioWeb}"/>
 
                 <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" height="550" width="870">
+                    <p:ajax event="close" listener="#{webAgendamentoContabilidadeBean.loadListHorarios()}" global="false" /> 
                     <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                     <h:panelGrid id="i_panel_agendamento">
                         <p:panel styleClass="fundoCinza" style="width: 810px">
@@ -172,7 +173,7 @@
                             <h:column>
                                 <h:outputLabel value="CPF" style="color: red; font-weight: bold"/><br />
                                 <p:inputMask value="#{webAgendamentoContabilidadeBean.fisica.pessoa.documento}" mask="999.999.999-99" size="13" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
-                                    <p:ajax event="blur" listener="#{webAgendamentoContabilidadeBean.pesquisarFuncionarioCPF}" update="i_panel_agendamento" />
+                                    <p:ajax event="change" listener="#{webAgendamentoContabilidadeBean.pesquisarFuncionarioCPF}" update="i_panel_agendamento" />
                                 </p:inputMask>
                             </h:column>
 
@@ -369,8 +370,8 @@
 
                         <h:panelGrid columns="2" style="width: 100%">
                             <h:column>
-                                <p:commandButton value="Agendar" action="#{webAgendamentoContabilidadeBean.salvar}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update=":formAgendamentoContabilidade:tbl :formAgendamentoContabilidade:i_panel_agendamento"/>
-                                <p:commandButton value="Novo" action="#{webAgendamentoContabilidadeBean.limpar()}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update=":formAgendamentoContabilidade:i_panel_agendamento"/>
+                                <p:commandButton value="Agendar" action="#{webAgendamentoContabilidadeBean.salvar}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update="formAgendamentoContabilidade:tbl formAgendamentoContabilidade:i_panel_agendamento"/>
+                                <p:commandButton value="Novo" action="#{webAgendamentoContabilidadeBean.limpar()}" rendered="#{webAgendamentoContabilidadeBean.agendamento.id == -1}" update="formAgendamentoContabilidade:i_panel_agendamento"/>
                                 <p:commandButton value="Fechar" onclick="PF('dlg_agendamento').hide()"/>
                             </h:column>
 
