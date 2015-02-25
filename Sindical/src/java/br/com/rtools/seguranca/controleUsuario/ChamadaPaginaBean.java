@@ -1474,7 +1474,7 @@ public class ChamadaPaginaBean implements Serializable {
         RotinaDB rotinaDB = new RotinaDBToplink();
         Rotina r = rotinaDB.pesquisaRotinaPorPagina(strURLNome);
         String nomePagina = " Menu ";
-        if (r.getId() != -1) {
+        if (r != null) {
             if (!r.getRotina().equals("")) {
                 nomePagina = AnaliseString.converterCapitalize(r.getRotina());
                 return nomePagina;
