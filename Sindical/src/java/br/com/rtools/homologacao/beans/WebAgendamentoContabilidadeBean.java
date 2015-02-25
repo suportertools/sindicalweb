@@ -672,6 +672,8 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 if (dao.save(agendamento)) {
                     agendamentoProtocolo = agendamento;
                     GenericaMensagem.info("Sucesso", "Agendamento Salvo!");
+                    listaHorarios.clear();
+                    loadListHorarios();
                 } else {
                     GenericaMensagem.error("Erro", "Não foi possível salvar protocolo!");
                     dao.rollback();
