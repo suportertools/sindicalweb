@@ -702,14 +702,16 @@ public class MensagemConvencaoBean {
     }
 
     public boolean isDisAcordo() {
-        if (Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()) == 4) {
-            disAcordo = true;
-            mensagemConvencao.setDtVencimento(new Date());
-            mensagemConvencao.setReferencia("");
-            mensagemConvencao.setMensagemContribuinte("");
-            mensagemConvencao.setVencimento("");
-        } else {
-            disAcordo = false;
+        if(!getListaTipoServico().isEmpty()) {
+            if (Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()) == 4) {
+                disAcordo = true;
+                mensagemConvencao.setDtVencimento(new Date());
+                mensagemConvencao.setReferencia("");
+                mensagemConvencao.setMensagemContribuinte("");
+                mensagemConvencao.setVencimento("");
+            } else {
+                disAcordo = false;
+            }            
         }
         return disAcordo;
     }
