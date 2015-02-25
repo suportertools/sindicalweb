@@ -366,8 +366,8 @@
                                 </p:column>
 
                                 <p:column>
-                                    <p:commandLink value="Clique para INATIVAR Empresa" onclick="PF('i_dlg_inativar').show()" rendered="#{ (juridicaBean.juridica.id != -1) and (juridicaBean.renderAtivoInativo) }" style="margin-left: 20px"/>
-                                    <p:commandLink value="Clique para ATIVAR Empresa"   action="#{juridicaBean.reativarContribuintes}" rendered="#{ (juridicaBean.juridica.id != -1) and (!juridicaBean.renderAtivoInativo) }" style="margin-left: 20px" update="i_msg i_msg_m i_status_contribuinte"/>
+                                    <p:commandLink value="Clique para INATIVAR Empresa" onclick="PF('i_dlg_inativar').show()" rendered="#{ (juridicaBean.juridica.id != -1) and (juridicaBean.renderAtivoInativo) }" style="margin-left: 20px" disabled="#{controleAcessoBean.verificarPermissao('linkContribuinte', 2)}"/>
+                                    <p:commandLink value="Clique para ATIVAR Empresa"   action="#{juridicaBean.reativarContribuintes}" rendered="#{ (juridicaBean.juridica.id != -1) and (!juridicaBean.renderAtivoInativo) }" style="margin-left: 20px" update="i_msg i_msg_m i_status_contribuinte" disabled="#{controleAcessoBean.verificarPermissao('linkContribuinte', 1)}"/>
                                 </p:column>
 
                                 <p:column>
