@@ -271,7 +271,7 @@ public class NovoLog extends salvaLogs {
             RotinaDB rotinaDB = new RotinaDBToplink();
             Rotina rotina = rotinaDB.pesquisaRotinaPorPagina(nomePagina);
             try {
-                if (rotina.getId() != -1) {
+                if (rotina != null) {
                     return rotina;
                 }
             } catch (Exception e) {
