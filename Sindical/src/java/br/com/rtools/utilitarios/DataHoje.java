@@ -643,6 +643,39 @@ public class DataHoje {
         }
     }
 
+    /**
+     *
+     * @param dataMaior
+     * @param dataMenor
+     * @return String[] {[0]dias, [1]meses, [2]anos}
+     */
+    public Integer[] diferencaEntreDatas(String dataMaior, String dataMenor) {
+        try {
+            Integer[] integers = new Integer[3];
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            GregorianCalendar maior = new GregorianCalendar();
+            maior.setTime(dateFormat.parse(dataMenor));
+
+            GregorianCalendar menor = new GregorianCalendar();
+            menor.setTime(dateFormat.parse(dataMaior));
+
+            GregorianCalendar dif = new GregorianCalendar();
+            dif.setTimeInMillis(maior.getTimeInMillis() - menor.getTimeInMillis());
+            integers[0] = dif.get(GregorianCalendar.DAY_OF_MONTH);
+            integers[1] = dif.get(GregorianCalendar.MONTH) + 1;
+            integers[2] = maior.get(GregorianCalendar.YEAR) - menor.get(GregorianCalendar.YEAR);
+//            System.out.println(maior.get(GregorianCalendar.YEAR));
+//            System.out.println(menor.get(GregorianCalendar.YEAR));
+//            System.out.println("Diferença: " + (maior.get(GregorianCalendar.YEAR) - menor.get(GregorianCalendar.YEAR)) + " ano(s), "
+//                    + (dif.get(GregorianCalendar.MONTH) + 1) + " mes(es), "
+//                    + dif.get(GregorianCalendar.DAY_OF_MONTH) + " dia(s)");
+            return integers;
+        } catch (ParseException ex) { //Lança exceção caso a data informada não esteja no formato "dd/MM/yyyy"    
+            ex.printStackTrace(System.err);
+            return null;
+        }
+    }
+
     public boolean faixaCincoAnosApos(String data) {
         int dataHoje = DataHoje.converteDataParaRefInteger(DataHoje.data());
         int dataAntes = DataHoje.converteDataParaRefInteger(decrementarMeses(60, DataHoje.data()));
@@ -999,7 +1032,7 @@ public class DataHoje {
         }
         return null;
     }
-    
+
     public String ultimoDiaDoMes(String data) {
         if (isDataValida(data)) {
             try {
