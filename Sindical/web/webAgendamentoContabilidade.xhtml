@@ -193,11 +193,11 @@
 
                             <h:column>
                                 <h:outputText value="Sexo"/><br />
-                                <p:selectOneButton value="#{webAgendamentoContabilidadeBean.fisica.sexo}">
+                                <p:selectOneRadio value="#{webAgendamentoContabilidadeBean.fisica.sexo}">
                                     <p:ajax event="change" update="@this" global="false"/>
                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                     <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                </p:selectOneButton>
+                                </p:selectOneRadio>
                             </h:column>
                         </h:panelGrid>
 
