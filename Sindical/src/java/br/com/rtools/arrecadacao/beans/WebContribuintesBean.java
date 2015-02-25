@@ -74,7 +74,7 @@ public class WebContribuintesBean extends MovimentoValorBean {
         FilialDB filDB = new FilialDBToplink();
         registro = filDB.pesquisaRegistroPorFilial(1);
         pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb");
-        
+
         loadList();
     }
 
@@ -243,8 +243,8 @@ public class WebContribuintesBean extends MovimentoValorBean {
             for (int x = 0; x < select.size(); x++) {
                 listaTipoServico.add(new SelectItem(
                         x,
-                        select.get(i).getDescricao(),
-                        Integer.toString(select.get(i).getId())));
+                        select.get(x).getDescricao(),
+                        Integer.toString(select.get(x).getId())));
             }
         } else {
             listaTipoServico.add(new SelectItem(0, "Selecionar um Tipo Serviço", "0"));
@@ -340,7 +340,7 @@ public class WebContribuintesBean extends MovimentoValorBean {
         lista = imp.atualizaContaCobrancaMovimento(lista);
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, impVerso);
         imp.visualizar(null);
-        
+
         loadList();
     }
 
@@ -365,11 +365,11 @@ public class WebContribuintesBean extends MovimentoValorBean {
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
         for (int i = 0; i < listaMovimentoSelecionado.size(); i++) {
-                movimento = (Movimento) listaMovimentoSelecionado.get(i).getArgumento1();
-                lista.add(movimento);
-                listaValores.add(movimento.getValor());
-                listaVencimentos.add(movimento.getVencimento());
-            
+            movimento = (Movimento) listaMovimentoSelecionado.get(i).getArgumento1();
+            lista.add(movimento);
+            listaValores.add(movimento.getValor());
+            listaVencimentos.add(movimento.getVencimento());
+
         }
         ImprimirBoleto imp = new ImprimirBoleto();
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, impVerso);
@@ -472,7 +472,7 @@ public class WebContribuintesBean extends MovimentoValorBean {
                         GenericaMensagem.error("Erro", "Erro ao Gerar boletos, tente novamente!");
                     }
                 } else {
-                    GenericaMensagem.warn("Atenção", "Entrar em contato com seu Sindicato para permitir a criação desta referência!");
+                    GenericaMensagem.warn("Atenção", "Mensagem Convenção não existe. Entrar em contato com seu Sindicato para permitir a criação desta referência!");
                 }
             } else {
                 msgConfirma = " Referência não esta válida!";
@@ -493,12 +493,25 @@ public class WebContribuintesBean extends MovimentoValorBean {
     }
 
     public void validaReferencia() {
-        DataHoje data = new DataHoje();
-        if (data.integridadeReferencia(strReferencia)) {
+        DataHoje dataHoje = new DataHoje();
+        if (dataHoje.integridadeReferencia(strReferencia)) {
             String dataS = "01/" + strReferencia;
-            if (!(data.faixaCincoAnosApos(dataS))) {
+            // A diferença é de no máximo 5 anos para geração de boletos
+            String dataLimite = dataHoje.decrementarMeses(60, DataHoje.data());
+            Integer[] integer = dataHoje.diferencaEntreDatas(dataLimite, dataS);
+            if (integer == null) {
                 strReferencia = "";
-                GenericaMensagem.warn("Atenção", "Essa referência não é válida, faixa de 5 anos após!");
+                GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
+                return;
+            }
+            if (integer[2] < 0) {
+                strReferencia = "";
+                GenericaMensagem.warn("Atenção", "Não é permitido emitir boletos com período superior a 5 anos atras!");
+                return;
+            }
+            if (integer[2] > 5) {
+                strReferencia = "";
+                GenericaMensagem.warn("Atenção", "Não é permitido emitir boletos com períodos futuros que excedem a faixa do ano atual! Ex. Não é possível emitir um boleto de referência superior ao ano corrente.");
             }
         } else {
             strReferencia = "";

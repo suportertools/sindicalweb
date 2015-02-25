@@ -49,6 +49,7 @@ import javax.faces.model.SelectItem;
 @ManagedBean
 @SessionScoped
 public class WebContabilidadeBean extends MovimentoValorBean {
+
     private Pessoa pessoa = null;
     private Juridica juridica = new Juridica();
     private Servicos servico = new Servicos();
@@ -79,7 +80,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
         listaEmpresa = db.listaEmpresasPertContabilidade(juridica.getId());
 
     }
-    
+
     public void loadList() {
         try {
             listaMovimento.clear();
@@ -137,7 +138,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
                         hvalor = true;
                     }
                     listaMovimento.add(new DataObject(
-                            false, 
+                            false,
                             ((Vector) linha).get(0), // boleto
                             sv.pesquisaCodigo((Integer) ((Vector) linha).get(1), "Servicos"), // servico
                             sv.pesquisaCodigo((Integer) ((Vector) linha).get(2), "TipoServico"), // tipo
@@ -183,11 +184,11 @@ public class WebContabilidadeBean extends MovimentoValorBean {
 
     public void adicionarBoleto() {
         try {
-            if (listaEmpresaSelecionada.isEmpty()){
+            if (listaEmpresaSelecionada.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Selecione uma empresa para gerar Boletos!");
                 return;
             }
-            
+
             MensagemConvencao mc = new MensagemConvencao();
             MensagemConvencaoDB menDB = new MensagemConvencaoDBToplink();
             ServicosDB dbSer = new ServicosDBToplink();
@@ -225,61 +226,61 @@ public class WebContabilidadeBean extends MovimentoValorBean {
             }
 
             if ((new DataHoje()).integridadeReferencia(strReferencia)) {
-                    for (int i = 0; i < listaEmpresaSelecionada.size(); i++) {
-                        juri = listaEmpresaSelecionada.get(i);
-                        if (dbm.pesquisaMovimentos(juri.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
-                            GenericaMensagem.warn("Atenção", "Este boleto já existe para " + juri.getPessoa().getNome());
-                            continue;
+                for (int i = 0; i < listaEmpresaSelecionada.size(); i++) {
+                    juri = listaEmpresaSelecionada.get(i);
+                    if (dbm.pesquisaMovimentos(juri.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
+                        GenericaMensagem.warn("Atenção", "Este boleto já existe para " + juri.getPessoa().getNome());
+                        continue;
+                    }
+
+                    String dataValida = "";
+                    DataHoje dh = new DataHoje();
+                    mc = menDB.retornaDiaString(juri.getId(), strReferencia, tipoServico.getId(), servico.getId());
+
+                    if (mc != null) {
+                        if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
+                            strVencimento = mc.getVencimento();
+                            dataValida = strVencimento;
+                        } else {
+                            strVencimento = mc.getVencimento();
+                            dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), strVencimento);
                         }
 
-                        String dataValida = "";
-                        DataHoje dh = new DataHoje();
-                        mc = menDB.retornaDiaString(juri.getId(), strReferencia, tipoServico.getId(), servico.getId());
-
-                        if (mc != null) {
-                            if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
-                                strVencimento = mc.getVencimento();
-                                dataValida = strVencimento;
-                            } else {
-                                strVencimento = mc.getVencimento();
-                                dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), strVencimento);
-                            }
-
-                            if (getValidaBloqueio(dataValida)) {
-                                GenericaMensagem.warn("Atenção", "Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb());
-                                return;
-                            }
-
-                            Movimento movi = new Movimento(-1,
-                                    null,
-                                    servico.getPlano5(),
-                                    juri.getPessoa(),
-                                    servico,
-                                    null,
-                                    tipoServico,
-                                    null,
-                                    Moeda.converteFloatR$Float(super.carregarValor(servico.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
-                                    strReferencia,
-                                    strVencimento,
-                                    1,
-                                    true,
-                                    "E",
-                                    false,
-                                    juri.getPessoa(),
-                                    juri.getPessoa(),
-                                    "",
-                                    "",
-                                    strVencimento,
-                                    0,
-                                    0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0, null);
-
-                            GerarMovimento.salvarUmMovimento(new Lote(), movi);
-                        } else {
-                            GenericaMensagem.warn("Atenção", "Entrar em contato com seu Sindicato para permitir a criação desta referencia !");
+                        if (getValidaBloqueio(dataValida)) {
+                            GenericaMensagem.warn("Atenção", "Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb());
                             return;
                         }
+
+                        Movimento movi = new Movimento(-1,
+                                null,
+                                servico.getPlano5(),
+                                juri.getPessoa(),
+                                servico,
+                                null,
+                                tipoServico,
+                                null,
+                                Moeda.converteFloatR$Float(super.carregarValor(servico.getId(), tipoServico.getId(), strReferencia, juridica.getPessoa().getId())),
+                                strReferencia,
+                                strVencimento,
+                                1,
+                                true,
+                                "E",
+                                false,
+                                juri.getPessoa(),
+                                juri.getPessoa(),
+                                "",
+                                "",
+                                strVencimento,
+                                0,
+                                0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0, null);
+
+                        GerarMovimento.salvarUmMovimento(new Lote(), movi);
+                    } else {
+                        GenericaMensagem.warn("Atenção", "Mensagem Convenção não existe. Entrar em contato com seu Sindicato para permitir a criação desta referencia !");
+                        return;
                     }
-                    
+                }
+
                 GenericaMensagem.info("Sucesso", "Boletos adicionados!");
                 loadList();
             } else {
@@ -322,20 +323,47 @@ public class WebContabilidadeBean extends MovimentoValorBean {
         imp.visualizar(null);
         return null;
     }
-    
+
     public void validaReferencia() {
-        DataHoje data = new DataHoje();
-        if (data.integridadeReferencia(strReferencia)) {
+        DataHoje dataHoje = new DataHoje();
+        if (dataHoje.integridadeReferencia(strReferencia)) {
             String dataS = "01/" + strReferencia;
-            if (!(data.faixaCincoAnosApos(dataS))) {
+            // A diferença é de no máximo 5 anos para geração de boletos
+            String dataLimite = dataHoje.decrementarMeses(60, DataHoje.data());
+            Integer[] integer = dataHoje.diferencaEntreDatas(dataLimite, dataS);
+            if (integer == null) {
                 strReferencia = "";
-                GenericaMensagem.warn("Atenção", "Essa referência não é válida, faixa de 5 anos após!");
+                GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
+                return;
             }
-        }else{
+            if (integer[2] < 0) {
+                strReferencia = "";
+                GenericaMensagem.warn("Atenção", "Não é permitido emitir boletos com período superior a 5 anos atras!");
+                return;
+            }
+            if (integer[2] > 5) {
+                strReferencia = "";
+                GenericaMensagem.warn("Atenção", "Não é permitido emitir boletos com períodos futuros que excedem a faixa do ano atual! Ex. Não é possível emitir um boleto de referência superior ao ano corrente.");
+            }
+        } else {
             strReferencia = "";
             GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
         }
     }
+    
+//    public void validaReferencia() {
+//        DataHoje data = new DataHoje();
+//        if (data.integridadeReferencia(strReferencia)) {
+//            String dataS = "01/" + strReferencia;
+//            if (!(data.faixaCincoAnosApos(dataS))) {
+//                strReferencia = "";
+//                GenericaMensagem.warn("Atenção", "Essa referência não é válida, faixa de 5 anos após!");
+//            }
+//        }else{
+//            strReferencia = "";
+//            GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
+//        }
+//    }
 
     public String imprimirComValorCalculado() {
         List<Movimento> lista = new ArrayList<Movimento>();
@@ -352,57 +380,57 @@ public class WebContabilidadeBean extends MovimentoValorBean {
         String dataValida = "";
         DataHoje dh = new DataHoje();
 
-        if (listaMovimentoSelecionado.isEmpty()){
+        if (listaMovimentoSelecionado.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Nenhum boleto foi selecionado!");
             return null;
         }
-        
-        for (int x = 0; x < listaMovimentoSelecionado.size(); x++) {
-                if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
-                    dataValida = (String) ((DataObject) listaMovimentoSelecionado.get(x)).getArgumento5();
-                } else {
-                    dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), (String) ((DataObject) listaMovimentoSelecionado.get(x)).getArgumento5());
-                }
 
-                if (getValidaBloqueio(dataValida)) {
-                    GenericaMensagem.warn("Atenção", "Não é possivel imprimir boletos vencidos! " + registro.getMensagemBloqueioBoletoWeb());
-                    return null;
-                }
+        for (int x = 0; x < listaMovimentoSelecionado.size(); x++) {
+            if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
+                dataValida = (String) ((DataObject) listaMovimentoSelecionado.get(x)).getArgumento5();
+            } else {
+                dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), (String) ((DataObject) listaMovimentoSelecionado.get(x)).getArgumento5());
+            }
+
+            if (getValidaBloqueio(dataValida)) {
+                GenericaMensagem.warn("Atenção", "Não é possivel imprimir boletos vencidos! " + registro.getMensagemBloqueioBoletoWeb());
+                return null;
+            }
         }
 
         for (int i = 0; i < listaMovimentoSelecionado.size(); i++) {
-                movimento = ((Movimento) sv.pesquisaCodigo((Integer) listaMovimentoSelecionado.get(i).getArgumento16(), "Movimento"));
-                // COM VALOR ALTERADO ---------
-                if (Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento12()) != 0) {
-                    listaValores.add(Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento12()));
-                } else {
-                    if (Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento6()) <= 0) {
-                        GenericaMensagem.warn("Atenção", "Valor não pode ser zerado!");
-                        return null;
-                    }
-
-                    listaValores.add(Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento6()));
-                }
-
-                //COM DATA ALTERADA ---------
-                if (movimento.getDtVencimento().before(DataHoje.dataHoje()) && !movimento.getVencimento().equals(DataHoje.data())) {
-                    data = getListaVencimento().get(Integer.parseInt((String) listaMovimentoSelecionado.get(i).getArgumento20())).getDescription();
-                    listaVencimentos.add(data);
-                } else {
-                    listaVencimentos.add(movimento.getVencimento());
-                }
-
-                lista.add(movimento);
-                impressaoWeb = new ImpressaoWeb(-1,
-                        movimento,
-                        pessoa,
-                        DataHoje.dataHoje(), DataHoje.hora());
-                if (!sv.inserirObjeto(impressaoWeb)) {
-                    GenericaMensagem.error("Erro", "Não foi possível salvar impressão web");
-                    sv.desfazerTransacao();
+            movimento = ((Movimento) sv.pesquisaCodigo((Integer) listaMovimentoSelecionado.get(i).getArgumento16(), "Movimento"));
+            // COM VALOR ALTERADO ---------
+            if (Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento12()) != 0) {
+                listaValores.add(Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento12()));
+            } else {
+                if (Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento6()) <= 0) {
+                    GenericaMensagem.warn("Atenção", "Valor não pode ser zerado!");
                     return null;
                 }
+
+                listaValores.add(Moeda.substituiVirgulaFloat((String) listaMovimentoSelecionado.get(i).getArgumento6()));
             }
+
+            //COM DATA ALTERADA ---------
+            if (movimento.getDtVencimento().before(DataHoje.dataHoje()) && !movimento.getVencimento().equals(DataHoje.data())) {
+                data = getListaVencimento().get(Integer.parseInt((String) listaMovimentoSelecionado.get(i).getArgumento20())).getDescription();
+                listaVencimentos.add(data);
+            } else {
+                listaVencimentos.add(movimento.getVencimento());
+            }
+
+            lista.add(movimento);
+            impressaoWeb = new ImpressaoWeb(-1,
+                    movimento,
+                    pessoa,
+                    DataHoje.dataHoje(), DataHoje.hora());
+            if (!sv.inserirObjeto(impressaoWeb)) {
+                GenericaMensagem.error("Erro", "Não foi possível salvar impressão web");
+                sv.desfazerTransacao();
+                return null;
+            }
+        }
         sv.comitarTransacao();
 
         ImprimirBoleto imp = new ImprimirBoleto();
@@ -410,7 +438,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
 
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, impVerso);
         imp.visualizar(null);
-        
+
         loadList();
         return "webContabilidade";
     }
@@ -485,7 +513,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
                         Integer.toString(select.get(i).getId())));
                 i++;
             }
-        }else{
+        } else {
             listaTipoServico.add(new SelectItem(0, "Selecionar um Tipo Serviço", "0"));
         }
         return listaTipoServico;
