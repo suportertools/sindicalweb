@@ -48,4 +48,24 @@ public class SociosDao extends DB {
         return new ArrayList();
     }
 
+    /**
+     * Retorna o sócio somente se o mesmo estiver ativo e serviço pessoa ativo
+     *
+     * @param idServicoPessoa Serviço pessoa
+     * @return
+     */
+    public Socios pesquisaSocioPorServicoPessoa(Integer idServicoPessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.id = :id");
+            query.setParameter("id", idServicoPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (Socios) query.getSingleResult();
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
 }
