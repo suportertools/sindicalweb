@@ -1315,10 +1315,10 @@ public class SociosBean implements Serializable {
         Socios soc_dep = dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId());
         if (soc_dep.getId() != -1 && (soc_dep.getMatriculaSocios().getId() != socios.getMatriculaSocios().getId())) {
             for (int i = 0; i < list.size(); i++) {
-                if(soc_dep.getMatriculaSocios().getNrMatricula() == list.get(i).getMatriculaSocios().getNrMatricula()) {
-                    if(list.get(i).getServicoPessoa().isAtivo()) {
-                        GenericaMensagem.error("Validação", "Esta pessoa já um Dependente Cadastrado!");
-                        return false;                        
+                if (soc_dep.getMatriculaSocios().getNrMatricula() == list.get(i).getMatriculaSocios().getNrMatricula()) {
+                    if (list.get(i).getServicoPessoa().isAtivo()) {
+                        GenericaMensagem.error("Validação", "Esta pessoa já é um Dependente cadastrado para o sócio titular " + list.get(i).getMatriculaSocios().getTitular().getNome());
+                        return false;
                     }
                 }
             }
@@ -1623,6 +1623,10 @@ public class SociosBean implements Serializable {
         int dataHoje = DataHoje.converteDataParaRefInteger(dataRef);
         ServicoPessoaDB spdb = new ServicoPessoaDBToplink();
         List<ServicoPessoa> list = spdb.listByPessoa(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
+        SociosDB sociosDB = new SociosDBToplink();
+        SociosDao sociosDao = new SociosDao();
+        Socios s = null;
+        Dao dao = new Dao();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isAtivo()) {
                 GenericaMensagem.warn("Validação", "Pessoa já esta ativa em outra matrícula!");
@@ -1636,6 +1640,15 @@ public class SociosBean implements Serializable {
         if (dataValidade != 0 && dataValidade < dataHoje) {
             GenericaMensagem.warn("Validação", "Não reativa com validade vencida!");
             return;
+        }
+        list.clear();
+        list = spdb.listByPessoaInativo(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
+        for (int i = 0; i < list.size(); i++) {
+            s = sociosDao.pesquisaSocioPorServicoPessoa(list.get(i).getId());
+            if (s.getMatriculaSocios().getId() == socios.getMatriculaSocios().getId()) {
+                list.get(i).setAtivo(true);
+                dao.update(list.get(i), true);
+            }
         }
         listaDependentes.add(listaDependentesInativos.get(index));
         listaDependentesInativos.remove(index);
