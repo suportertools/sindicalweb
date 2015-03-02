@@ -246,6 +246,7 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
                 return (PermissaoDepartamento) qry.getSingleResult();
             }
         } catch (Exception e) {
+            return permissaoDepartamento;
         }
         return permissaoDepartamento;
     }

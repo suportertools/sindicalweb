@@ -1261,7 +1261,7 @@ public class ControleAcessoBean implements Serializable {
                 List<PermissaoUsuario> permissaoUsuarios = permissaoUsuarioDB.listaPermissaoUsuario(user.getId());
                 for (int i = 0; i < permissaoUsuarios.size(); i++) {
                     PermissaoDepartamento permissaoDepartamento = permissaoUsuarioDB.pesquisaPermissaoDepartamento(permissaoUsuarios.get(i).getDepartamento().getId(), permissaoUsuarios.get(i).getNivel().getId(), permissao.getId());
-                    if (permissaoDepartamento == null) {
+                    if (permissaoDepartamento.getId() == -1) {
                         retorno = true;
                     } else {
                         retorno = false;
@@ -1269,7 +1269,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
                 UsuarioAcesso usuarioAcesso = permissaoUsuarioDB.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                if (usuarioAcesso != null) {
+                if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
                     } else {
