@@ -64,6 +64,21 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
         }
         return new ArrayList();
     }
+    
+    @Override
+    public List listByPessoaInativo(int idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT SP FROM ServicoPessoa AS SP WHERE SP.pessoa.id = :pessoa AND SP.ativo = false");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
 
     @Override
     public List listByCobranca(int idCobranca) {
