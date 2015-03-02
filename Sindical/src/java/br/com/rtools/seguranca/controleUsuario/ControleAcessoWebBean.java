@@ -530,7 +530,12 @@ public class ControleAcessoWebBean implements Serializable {
             // CNAE CONTRIBUINTE
         } else {
             // CNAE NÃO ESTA NA CONVENCAO
-            GenericaMensagem.warn("Atenção", "Empresa não pertence a esta entidade!");
+            if(((Cnae) listac.get(0)).getId() == 1) {
+                GenericaMensagem.warn("Atenção", "CONTABILIDADE, entre com o CNPJ da Empresa!");
+            } else {
+                GenericaMensagem.warn("Atenção", "Empresa não pertence a esta entidade!");
+                
+            }
             di.rollback();
             return null;
         }
