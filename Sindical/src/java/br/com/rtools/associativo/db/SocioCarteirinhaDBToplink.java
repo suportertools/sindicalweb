@@ -135,7 +135,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "            s.parentesco,                                            " // 36 PARENTESCO
                     + "            s.categoria,                                             " // 37 CATEGORIA
                     + "            pt.fantasia AS fantasia_titular,                         " // 38 FANTASIA EMPRESA - TITULAR
-                    + "            pt.codigo_funcional AS codigo_funcional_titular          " // 39 CÓDIGO FUNCIONAL - TITULAR                    
+                    + "            pt.codigo_funcional AS codigo_funcional_titular,         " // 39 CÓDIGO FUNCIONAL - TITULAR
+                    + "            s.titular AS titular_id                                  " // 40 TITULAR ID
                     + "       FROM pes_fisica           AS f                                                                "
                     + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               "
                     + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 "
@@ -316,7 +317,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          s.parentesco,                               "
                     + "          s.categoria,                                "
                     + "          pt.fantasia,                                "
-                    + "          pt.codigo_funcional                         ";
+                    + "          pt.codigo_funcional,                        "
+                    + "          s.titular                                   ";
 
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {
@@ -538,7 +540,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 + "            s.parentesco,                                              " // 36 PARENTESCO
                 + "            s.categoria,                                               " // 37 CATEGORIA
                 + "            pt.fantasia AS fantasia_titular,                           " // 38 FANTASIA EMPRESA - TITULAR
-                + "            pt.codigo_funcional AS codigo_funcional_titular            " // 39 CÓDIGO FUNCIONAL - TITULAR
+                + "            pt.codigo_funcional AS codigo_funcional_titular,           " // 39 CÓDIGO FUNCIONAL - TITULAR
+                + "            s.titular AS titular_id                                    " // 40 TITULAR ID
                 + "       FROM pes_pessoa_vw                    AS p                                                "
                 + " INNER JOIN soc_socios_vw                    AS s  ON s.codsocio     = p.codigo                  "
                 + " INNER JOIN soc_carteirinha                  AS c  ON c.id_pessoa    = s.codsocio                "
