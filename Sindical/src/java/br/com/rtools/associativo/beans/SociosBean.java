@@ -9,6 +9,7 @@ import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.db.*;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
@@ -1470,12 +1471,24 @@ public class SociosBean implements Serializable {
         if (modeloc != null) {
             list = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
         }
-
+        SocioCarteirinhaDB socioCarteirinhaDB = new SocioCarteirinhaDBToplink();
+        List<HistoricoCarteirinha> hcs;
         if (!list.isEmpty()) {
             for (SocioCarteirinha socioCarteirinha : list) {
-                if (!di.delete(di.find(socioCarteirinha))) {
+                hcs = socioCarteirinhaDB.listaHistoricoCarteirinha(socios.getServicoPessoa().getPessoa().getId());
+                for (HistoricoCarteirinha hc : hcs) {
+                    if (!di.delete(hc)) {
+                        GenericaMensagem.error("Erro", "Erro ao Excluir carteirinha do Dependente!");
+                        PF.openDialog("i_dlg_c");
+                        di.rollback();
+                        return null;
+                    }
+                }
+                hcs.clear();
+                if (!di.delete(socioCarteirinha)) {
                     GenericaMensagem.error("Erro", "Erro ao Excluir carteirinha do Dependente!");
                     PF.openDialog("i_dlg_c");
+                    di.rollback();
                     return null;
                 }
             }
@@ -1502,7 +1515,15 @@ public class SociosBean implements Serializable {
             di.rollback();
             return null;
         }
-
+        NovoLog novoLog = new NovoLog();
+        novoLog.delete(
+                " ID: " + socios.getId()
+                + " - Pessoa: (" + socios.getServicoPessoa().getPessoa().getId() + ") - " + socios.getServicoPessoa().getPessoa().getNome()
+                + " - Titular: (" + socios.getMatriculaSocios().getTitular().getId() + ") - " + socios.getMatriculaSocios().getTitular().getNome()
+                + " - Matrícula: " + socios.getMatriculaSocios().getNrMatricula()
+                + " - Categoria: " + socios.getMatriculaSocios().getCategoria().getCategoria()
+                + " - Parentesco: " + socios.getParentesco().getParentesco()
+        );
         GenericaMensagem.info("Sucesso", "Cadastro Deletado!");
         di.commit();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
@@ -1643,11 +1664,20 @@ public class SociosBean implements Serializable {
         }
         list.clear();
         list = spdb.listByPessoaInativo(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
+        NovoLog novoLog = new NovoLog();
         for (int i = 0; i < list.size(); i++) {
             s = sociosDao.pesquisaSocioPorServicoPessoa(list.get(i).getId());
             if (s.getMatriculaSocios().getId() == socios.getMatriculaSocios().getId()) {
                 list.get(i).setAtivo(true);
                 dao.update(list.get(i), true);
+                novoLog.update("Dependente reativado",
+                        " ID:" + list.get(i).getId()
+                        + " - Pessoa: (" + s.getServicoPessoa().getPessoa().getId() + ") - " + s.getServicoPessoa().getPessoa().getNome()
+                        + " - Titular: (" + s.getMatriculaSocios().getTitular().getId() + ") - " + s.getMatriculaSocios().getTitular().getNome()
+                        + " - Matrícula: " + s.getMatriculaSocios().getNrMatricula()
+                        + " - Categoria: " + s.getMatriculaSocios().getCategoria().getCategoria()
+                        + " - Parentesco: " + s.getParentesco().getParentesco()
+                );
             }
         }
         listaDependentes.add(listaDependentesInativos.get(index));
