@@ -16,6 +16,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.ByteArrayOutputStream;
@@ -163,7 +164,8 @@ public class ImpressaoParaSocios {
                             titular, //                                                      TITULAR
                             dependente, //                                                   DEPENDENTE
                             getConverteNullString(((List) (listaCartao.get(i))).get(38)), // FANTASIA EMPRESA - TITULAR
-                            getConverteNullString(((List) (listaCartao.get(i))).get(39)) //  CÓDIGO FUNCIONAL - TITULAR
+                            getConverteNullString(((List) (listaCartao.get(i))).get(39)), //  CÓDIGO FUNCIONAL - TITULAR
+                            Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))) // TITULAR ID
                     )
             );
 
@@ -184,7 +186,16 @@ public class ImpressaoParaSocios {
             ModeloCarteirinha modelo;
             List ljasper = new ArrayList();
             JasperReport jasper;
-
+            JasperReport subJasper;
+            String subreport = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/DEPENDENTES.jasper");
+            DBExternal con = new DBExternal();
+            con.setDatabase(GenericaSessao.getString("sessaoCliente"));
+            Map map = new HashMap();
+            if(!new File(subreport).exists()) {
+                subreport = null;
+            } else {
+                map.put("REPORT_CONNECTION", con.getConnection());
+            }
             for (Entry<Integer, List> entry : hash.entrySet()) {
                 modelo = (ModeloCarteirinha) new Dao().find(new ModeloCarteirinha(), entry.getKey());
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
@@ -197,10 +208,12 @@ public class ImpressaoParaSocios {
                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper())
                 );
                 //* ADD LISTA DE JASPERS *//
-                jasper = (JasperReport) JRLoader.loadObject(file);
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(entry.getValue());
-
-                ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
+                jasper = (JasperReport) JRLoader.loadObject(file);
+                if(subreport != null) {
+                    map.put("template_dir", subreport);
+                }
+                ljasper.add(JasperFillManager.fillReport(jasper, map, dtSource));
             }
 
             JRPdfExporter exporter = new JRPdfExporter();
