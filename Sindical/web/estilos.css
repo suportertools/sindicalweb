@@ -551,12 +551,6 @@ a.iLinkSimples:hover {color: #888; text-decoration:none; }
 .espacoGrande {margin-left: 15px;}
 .espacoExtraGrange {margin-left: 40px;}
 
-
-/* Estilo --> rich:collapsiblePanel 
-.cp-hdr rf-cp-hdr-exp{border: 0}
-.rf-cp-gr{border: 0}
-.rf-cp-lbl-exp {border: 0}*/
- 
 .rf-cp-lbl {font-size: 12px;}
 
 .listaAcesso:hover{font-weight: bold;}

@@ -118,7 +118,7 @@
                                 <p:column>
                                     <h:outputText value="Desconto"/><br />
                                     <p:inputText id="i_desconto" size="10" value="#{movimentosReceberSocialBean.desconto}" style="margin-right: 20px; text-align: right">
-                                        <p:ajax event="blur" update="i_desconto tbl" listener="#{movimentosReceberSocialBean.calculoDesconto()}" />
+                                        <p:ajax event="blur" update="@this i_panel tbl" listener="#{movimentosReceberSocialBean.calculoDesconto()}" />
                                     </p:inputText>
                                 </p:column>
 

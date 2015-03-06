@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Acordo Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+            
+            .column01{
+                width: 200px;
+                vertical-align: top;
+            }
+
+            .column02{
+                width: 100%;
+            }
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Acordo Social" styleClass="fonteHeader" />
+                        <h:form id="formAcordoSocial">
+                            <c:set scope="request" var="object" value="${acordoSocialBean.acordo}"/>
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="1">
+                                    <p:outputLabel value="Empresa: " />
+                                    <p:outputLabel value="#{acordoSocialBean.pessoa.nome} - #{acordoSocialBean.pessoa.documento}" style="font-size: 12pt!important"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:messages showDetail="true" closable="true" />
+                            <p:growl showDetail="true" />
+                            
+                            <h:panelGrid columns="2" style="width: 100%; background: #e8e8e8" columnClasses="column01, column02">
+                                <h:column>
+                                    <p:outputLabel value="Lista de Mensalidades" style="font-size: 11pt!important; font-weight: bold"/>
+                                    <p:dataTable value="#{acordoSocialBean.listaVizualizado}" var="linha" style="width:300px; float: left;" emptyMessage="Nenhuma Mensalidade Adicionada!">
+                                        <p:column headerText="Mensalidade">
+                                            <p:outputLabel value="#{linha.argumento0.descricao}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Valor" style="text-align: right">
+                                            <p:outputLabel value="#{linha.argumento1}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:panelGrid columns="2" id="idBlocoAcordo" columnClasses="coluna1, coluna2" cellpadding="2">
+                                        <p:outputLabel value="Data: " />
+                                        <p:inputMask readonly="true" value="#{acordoSocialBean.acordo.data}" size="8" mask="99/99/9999"/>
+                                        <p:outputLabel value="Total: " />
+                                        <p:inputText readonly="true" value="#{acordoSocialBean.total}" style="text-align: right"/>
+                                        <h:outputLabel value="Contato: " />
+                                        <p:inputText size="50" value="#{acordoSocialBean.acordo.contato}" style="" converter="#{toUpperCase}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>                                   
+                                        <p:outputLabel value="Email: " styleClass="fontePadrao"/>
+                                        <p:inputText size="50" value="#{acordoSocialBean.acordo.email}" converter="#{toLowerCase}">
+                                            <p:ajax event="blur" update="@this" global="false"/>
+                                        </p:inputText>                                   
+                                        <p:outputLabel value="N° de Parcelas: " styleClass="fontePadrao margin-top-maior"/>
+                                        <p:selectOneMenu value="#{acordoSocialBean.parcela}">
+                                            <p:ajax event="change" update="@this idBlocoAcordo" listener="#{acordoSocialBean.limparEntrada}" global="false"/>
+                                            <f:selectItem itemValue="1" itemLabel="1"/>
+                                            <f:selectItem itemValue="2" itemLabel="2"/>
+                                            <f:selectItem itemValue="3" itemLabel="3"/>
+                                            <f:selectItem itemValue="4" itemLabel="4"/>
+                                            <f:selectItem itemValue="5" itemLabel="5"/>
+                                            <f:selectItem itemValue="6" itemLabel="6"/>
+                                            <f:selectItem itemValue="7" itemLabel="7"/>
+                                            <f:selectItem itemValue="8" itemLabel="8"/>
+                                            <f:selectItem itemValue="9" itemLabel="9"/>
+                                            <f:selectItem itemValue="10" itemLabel="10"/>
+                                            <f:selectItem itemValue="11" itemLabel="11"/>
+                                            <f:selectItem itemValue="12" itemLabel="12"/>
+                                            <f:selectItem itemValue="13" itemLabel="13"/>
+                                            <f:selectItem itemValue="14" itemLabel="14"/>
+                                            <f:selectItem itemValue="15" itemLabel="15"/>
+                                            <f:selectItem itemValue="16" itemLabel="16"/>
+                                            <f:selectItem itemValue="17" itemLabel="17"/>
+                                            <f:selectItem itemValue="18" itemLabel="18"/>
+                                            <f:selectItem itemValue="19" itemLabel="19"/>
+                                            <f:selectItem itemValue="20" itemLabel="20"/>
+                                            <f:selectItem itemValue="21" itemLabel="21"/>
+                                            <f:selectItem itemValue="22" itemLabel="22"/>
+                                            <f:selectItem itemValue="23" itemLabel="23"/>
+                                            <f:selectItem itemValue="24" itemLabel="24"/>
+                                        </p:selectOneMenu>
+                                        <p:outputLabel value="Vencimento: " />
+                                        <p:selectOneMenu id="cbVencimento"  value="#{acordoSocialBean.idVencimento}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                            <f:selectItems value="#{acordoSocialBean.listaVencimento}" />
+                                        </p:selectOneMenu>
+                                        <p:outputLabel value="Intervalo: " />
+                                        <p:selectOneMenu value="#{acordoSocialBean.frequencia}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                            <f:selectItem itemValue="30" itemLabel="Mensal"/>
+                                            <f:selectItem itemValue="7" itemLabel="Semanal"/>
+                                        </p:selectOneMenu>
+                                        <h:column rendered="#{acordoSocialBean.parcela != 1}">
+                                            <p:outputLabel value=" Vl. Entrada: " />
+                                        </h:column>
+                                        <h:column rendered="#{acordoSocialBean.parcela != 1}">
+                                            <p:inputText value="#{acordoSocialBean.valorEntrada}" style="text-align: right">
+                                                <p:ajax event="blur" update="@this" global="false"/>
+                                            </p:inputText>                                    
+                                        </h:column>
+                                        <h:column></h:column>
+                                        <h:column>
+                                            <p:commandButton value="Gerar Acordo" action="#{acordoSocialBean.adicionarParcela}" update="tbl"/>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1" style="width: 100%">
+                                <p:outputLabel value="Observação" />
+                                <p:inputTextarea rows="2" value="#{acordoSocialBean.historico.historico}" converter="#{toUpperCase}" style="width: 100%">
+                                    <p:ajax event="blur" update="@this" />
+                                </p:inputTextarea>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2" columnClasses="">
+                                <h:column>
+                                    <p:dataTable id="tbl" value="#{acordoSocialBean.listaOperado}" var="linha" style="width: 100%;" emptyMessage="Clique para Gerar Acordo">
+                                        <p:column style="text-align: center; width: 50px" >
+                                            <h:outputLabel value="#{linha.argumento1} º " />
+                                            <p:selectBooleanCheckbox value="#{linha.argumento0}" >
+                                                <p:ajax event="change" update="tbl"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+
+                                        <p:column headerText="Contribuição">
+                                            <h:outputText value="#{linha.argumento2.servicos.descricao}" />
+                                        </p:column>
+
+                                        <p:column headerText="Vencimento" style="width: 80px; text-align: center">
+                                            <h:outputText value="#{linha.argumento2.vencimento}" />
+                                        </p:column>
+
+                                        <p:column headerText="Referência" style="width: 70px; text-align: center">
+                                            <h:outputText value="#{linha.argumento2.referencia}" />
+                                        </p:column>       
+
+                                        <p:column headerText="Valor" style="text-align: right; width: 70px">
+                                            <h:outputText value="#{linha.argumento2.valor}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:column>
+                                <h:column>
+                                    <p:commandButton icon="ui-icon-circle-arrow-n" action="#{acordoSocialBean.subirData}" update="tbl"/>
+                                    <p:commandButton icon="ui-icon-circle-arrow-s" action="#{acordoSocialBean.descerData}" update="tbl"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

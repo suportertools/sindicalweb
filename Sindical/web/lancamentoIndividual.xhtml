@@ -55,12 +55,20 @@
                             </p:panel>
                             <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                             <p:growl autoUpdate="true" showDetail="true"/>
-                            <h:panelGrid id="i_panel_servicos" columns="2" style="margin-top: 15px">
+                            <h:panelGrid id="i_panel_servicos" columns="3" style="margin-top: 15px">
                                 <h:column>
                                     <p:outputLabel value="Serviços" /><br />
                                     <p:selectOneMenu value="#{lancamentoIndividualBean.idServico}"  style="margin-right: 20px">
                                         <p:ajax event="change" listener="#{lancamentoIndividualBean.limpaEmpresaConvenio()}" update="i_panel_servicos i_panel_valores"/>
                                         <f:selectItems value="#{lancamentoIndividualBean.listaServicos}" />
+                                    </p:selectOneMenu>
+                                </h:column>
+                                
+                                <h:column>
+                                    <p:outputLabel value="Tipo Serviço" /><br />
+                                    <p:selectOneMenu value="#{lancamentoIndividualBean.idTipoServico}"  style="margin-right: 20px">
+                                        <p:ajax event="change" update="i_panel_servicos i_panel_valores"/>
+                                        <f:selectItems value="#{lancamentoIndividualBean.listaTipoServico}" />
                                     </p:selectOneMenu>
                                 </h:column>
 
