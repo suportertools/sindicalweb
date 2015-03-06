@@ -1,191 +1,170 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Baixa Boleto</title>
+        <title>Sindical - Baixa Boleto</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="templates/template.xhtml"/>
-            <ui:include src="templates/templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formBaixaBoleto">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Baixar Boleto" styleClass="fonteHeader" />
+                        <div style="clear: both"></div>
+                        <h:form id="formBaixaBoletoPesquisaEmpresa">
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-search" value="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" ajax="false" rendered="#{baixaBoletoBean.pessoa.id == -1}"/>
+                                    <p:outputLabel value="#{baixaBoletoBean.pessoa.documento} - #{baixaBoletoBean.pessoa.nome}" style="font-weight: bold; font-size: 12pt!important" rendered="#{baixaBoletoBean.pessoa.id != -1}"/>
+                                    <p:commandButton icon="ui-icon-close" action="#{baixaBoletoBean.limparPessoa()}" rendered="#{baixaBoletoBean.pessoa.id != -1}" update="formBaixaBoletoPesquisaEmpresa :formBaixaBoletoPesquisaBoleto :formBaixaBoleto"/>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:form>
 
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Baixa Boleto" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                </center>
-                <div class="divMae">
-                    <div class="fontePadrao divFundo">
-                        <h:panelGrid columns="4">
-                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"/>
-                            <h:outputLabel value="Empresa: " styleClass="fontePadrao"/>
-                            <h:outputLabel id="idNome" value="#{baixaBoletoBean.pessoa.documento} - #{baixaBoletoBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid columns="6">
-                            <h:outputText value="Contribuição: " styleClass="fontePadrao" rendered="false"/>
-                            <h:selectOneMenu style="margin-right: 15px;" value="#{baixaBoletoBean.idServicos}" rendered="false">
-                                <a4j:ajax event="change" render="this"/>
-                                <f:selectItems value="#{baixaBoletoBean.listaServicoCobranca}"/>
-                            </h:selectOneMenu>
-                            
-                            <h:outputLabel value="Número do Boleto: " styleClass="fontePadrao"/>
-                            <h:inputText value="#{baixaBoletoBean.numBoleto}" size="15" maxlength="100" >
-                                <a4j:ajax event="blur" listener="#{baixaBoletoBean.refreshPessoa}" render="idNumBoleto"/>
-                            </h:inputText>
-                                
-                            <h:commandLink value="Pesquisar" styleClass="idPesquisar iLink" action="#{baixaBoletoBean.pesquisarBoleto}"/>
-                            <h:outputText id="outConfirmaTela" value="#{baixaBoletoBean.msgConfirma}" styleClass="corErro" style="margin-left: 20px; font-size: 15pt"/>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid>
-                            <h:selectOneRadio value="#{baixaBoletoBean.caixaBanco}" styleClass="fontePadrao">
-                                <a4j:ajax event="change" render="i_panel i_btn" listener="#{baixaBoletoBean.atualizaCB()}"/>
-                                <f:selectItem itemValue="caixa" itemLabel="Caixa"/>
-                                <f:selectItem itemValue="banco" itemLabel="Banco"/>
-                            </h:selectOneRadio>
-                        </h:panelGrid>
-                        
-                        <h:panelGroup id="i_panel" style="overflow:auto; margin-top: 20px;" layout="block">
-                            <div class="fontePadrao divFundo" style="background: white;">
-                                <rich:dataTable value="#{baixaBoletoBean.listaBoletos}" var="linha" style="width:100%" id="tbl" iterationStatusVar="it">
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column> 
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:selectBooleanCheckbox value="#{baixaBoletoBean.marcarTodos}">
-                                                <a4j:ajax event="change" render="tbl" listener="#{baixaBoletoBean.marcar()}"/>                                            
-                                            </h:selectBooleanCheckbox>
-                                        </f:facet>
-                                        <h:column rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
-                                            <h:selectBooleanCheckbox value="#{linha.argumento8}">
-                                                <a4j:ajax event="change" render="this" />
-                                            </h:selectBooleanCheckbox>
-                                        </h:column>
+                        <h:form id="formBaixaBoletoPesquisaBoleto">
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <p:outputLabel value="Contribuição" rendered="false"/><br />
+                                        <p:selectOneMenu value="#{baixaBoletoBean.idServicos}" rendered="false">
+                                            <f:selectItems value="#{baixaBoletoBean.listaServicoCobranca}"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
 
-                                        <!-- 
-                                        
-                                        <h:column rendered="# {baixaBoletoBean.caixaBanco == 'caixa'}">
-                                            <div style="width: 80px">
-                                                <a4j:commandLink value="( Baixar )" action="# {baixaBoletoBean.baixarBoletos}" styleClass="# {linha.argumento0}" render="tbl outConfirma outConfirmaTela">
-                                                    <a4j:param value="# {it.index}" assignTo="# {baixaBoletoBean.index}"/>
-                                                </a4j:commandLink>
-                                            </div>
-                                        </h:column> -->
-                                        
-                                        <h:column rendered="#{baixaBoletoBean.caixaBanco == 'banco'}">
-                                            <div style="width: 80px">
-                                                <a4j:commandLink value="( Baixar )" action="#{baixaBoletoBean.baixarBoletos}" styleClass="#{linha.argumento0}" render="tbl outConfirma outConfirmaTela">
-                                                    <a4j:param value="#{it.index}" assignTo="#{baixaBoletoBean.index}"/>
-                                                </a4j:commandLink>
-                                            </div>
-                                        </h:column>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="ID"/></f:facet>
-                                        <h:outputText value="#{linha.argumento1.id}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
-                                        <h:outputText value="#{linha.argumento1.documento}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Contribuinção - Tipo"/></f:facet>
-                                        <div style="width: 150px">
-                                            <h:outputText value="#{linha.argumento1.servicos.descricao} - #{linha.argumento1.tipoServico.descricao}"/>
-                                        </div>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Referência"/></f:facet>
-                                        <h:outputText value="#{linha.argumento1.referencia}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                                        <h:outputText value="#{linha.argumento1.vencimento}"/>
-                                    </rich:column>
+                                    <h:column>
+                                        <h:outputLabel value="Número do Boleto" /><br />
+                                        <p:inputText value="#{baixaBoletoBean.numBoleto}" size="30" maxlength="100" style="text-align: right">
+                                            <p:ajax event="change" update=":formBaixaBoleto" listener="#{baixaBoletoBean.setNovoNumero(true)}" />
+                                        </p:inputText>
+                                    </h:column>
 
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                        <h:inputText maxlength="20" size="8" value="#{linha.argumento2}">
-                                            <a4j:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(it.index)}" render="i_valor_pago"/>
-                                        </h:inputText>
-                                    </rich:column>
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Pesquisar" action="#{baixaBoletoBean.loadListaBoleto()}" update=":formBaixaBoleto"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:form>
+
+                        <h:form id="formBaixaBoleto">
+
+                            <h:panelGrid>
+                                <p:selectOneRadio value="#{baixaBoletoBean.caixaBanco}">
+                                    <p:ajax event="change" update="formBaixaBoleto" listener="#{baixaBoletoBean.loadListaBoleto()}"/>
+                                    <f:selectItem itemValue="caixa" itemLabel="Caixa"/>
+                                    <f:selectItem itemValue="banco" itemLabel="Banco"/>
+                                </p:selectOneRadio>
+                            </h:panelGrid>
+
+                            <p:messages autoUpdate="false" showDetail="true" closable="true"/>
+
+                            <p:dataTable value="#{baixaBoletoBean.listBoletos}" var="linha" style="width:100%" id="tbl" emptyMessage="Nenhum Boleto Encontrado">
+                                <p:column style="text-align: center; width: 35px">
+                                    <f:facet name="header">
+                                        <p:selectBooleanCheckbox value="#{baixaBoletoBean.marcarTodos}" rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
+                                            <p:ajax event="change" update="tbl" listener="#{baixaBoletoBean.marcar()}"/>                                            
+                                        </p:selectBooleanCheckbox>
+                                    </f:facet>
                                     
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Multa"/></f:facet>
-                                        <h:inputText id="i_multa" maxlength="20" size="8" value="#{linha.argumento3}">
-                                            <a4j:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(it.index)}" render="i_valor_pago"/>
-                                        </h:inputText>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Juros"/></f:facet>
-                                        <h:inputText maxlength="20" size="8" value="#{linha.argumento4}">
-                                            <a4j:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(it.index)}" render="i_valor_pago"/>
-                                        </h:inputText>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Correção"/></f:facet>
-                                        <h:inputText maxlength="10" size="8" value="#{linha.argumento5}">
-                                            <a4j:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(it.index)}" render="i_valor_pago"/>
-                                        </h:inputText>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Desconto"/></f:facet>
-                                        <h:inputText maxlength="10" size="8" value="#{linha.argumento6}">
-                                            <a4j:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(it.index)}" render="i_valor_pago"/>
-                                        </h:inputText>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Valor Pago"/></f:facet>
-                                        <h:inputText id="i_valor_pago" size="8" readonly="true" styleClass="fontePadraoNegrito" value="#{linha.argumento7}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </div>
-                        </h:panelGroup>
-                    </div>
-                    
-                    <div style="clear: both;"></div>
-                    
-                    <h:panelGrid id="i_btn" style="float: left; margin-top: 15px;">
-                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar Boleto" title="Baixar Boleto" oncomplete="modalMensagem()" action="#{baixaBoletoBean.baixarBoletos}" render="tbl outConfirma outConfirmaTela" style="width: 150px;" rendered="#{!baixaBoletoBean.disBtnBaixar}"/>
-                    </h:panelGrid>
-                </div>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{baixaBoletoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-            </h:form>
-        </f:view>
+                                    <h:column rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
+                                        <p:selectBooleanCheckbox value="#{linha.argumento8}">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+
+                                    <h:column rendered="#{baixaBoletoBean.caixaBanco == 'banco'}">
+                                        <p:commandLink value="Baixar" action="#{baixaBoletoBean.baixarBoletos(linha)}" style="#{linha.argumento0}" ajax="false"/>
+                                    </h:column>
+                                </p:column>
+
+                                <p:column headerText="ID" style="text-align: center; width: 50px" rendered="#{configuracaoBean.resolucao.tipoResolucao.tamanho > 1024}">
+                                    <h:outputText value="#{linha.argumento1.id}" style="font-size: 8pt!important; #{linha.argumento0}"/>
+                                </p:column>
+
+                                <p:column headerText="Boleto"  style="font-size: 8pt!important; text-align: right">
+                                    <h:outputText value="#{linha.argumento1.documento}" style="#{linha.argumento0}"/>
+                                </p:column>
+
+                                <p:column headerText="Contr / Tipo"  style="width: 120px">
+                                    <h:outputText value="#{linha.argumento1.servicos.descricao} #{linha.argumento1.tipoServico.descricao}" style="font-size: 8pt!important; #{linha.argumento0}"/>
+                                </p:column>
+
+                                <p:column headerText="Ref" style="width: 50px">
+                                    <h:outputText value="#{linha.argumento1.referencia}" style="font-size: 8pt!important; #{linha.argumento0}"/>
+                                </p:column>
+
+                                <p:column headerText="Vencto" style="text-align: center; width: 70px">
+                                    <h:outputText value="#{linha.argumento1.vencimento}" style="font-size: 8pt!important; #{linha.argumento0}"/>
+                                </p:column>
+
+                                <p:column headerText="Valor" style="width: 82px">
+                                    <p:inputText size="8" value="#{linha.argumento2}" style="text-align: right">
+                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Multa" style="width: 60px">
+                                    <p:inputText id="i_multa" maxlength="20" size="8" value="#{linha.argumento3}" style="text-align: right; width: 60px">
+                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Juros" style="width: 60px">
+                                    <p:inputText maxlength="20" size="8" value="#{linha.argumento4}" style="text-align: right; width: 60px">
+                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Correção" style="width: 60px">
+                                    <p:inputText maxlength="10" size="8" value="#{linha.argumento5}" style="text-align: right; width: 60px">
+                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Desconto" style="width: 82px">
+                                    <p:inputText maxlength="10" size="8" value="#{linha.argumento6}" style="text-align: right">
+                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Valor Pago" style="width: 82px">
+                                    <p:inputText id="i_valor_pago" size="8" readonly="true" disabled="true" value="#{linha.argumento7}" style="text-align: right; font-weight: bold;  opacity: 0.7;" />
+                                </p:column>
+                            </p:dataTable>
+
+                            <p:commandButton value="Baixar Boleto" title="Baixar Boletos Selecionados" action="#{baixaBoletoBean.baixarBoletos(null)}" rendered="#{!baixaBoletoBean.disBtnBaixar and baixaBoletoBean.listaBoletos.size() != 0}" ajax="false"/>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

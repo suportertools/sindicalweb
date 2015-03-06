@@ -93,11 +93,6 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
     
-    <context-param>
-        <param-name>org.richfaces.enableControlSkinning</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    
     <!-- 
     <servet>
         <servet-name>Push Servlet</servet-name>

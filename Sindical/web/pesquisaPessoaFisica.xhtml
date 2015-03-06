@@ -75,7 +75,7 @@
                                     <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
                                     <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
                                 </h:panelGrid>
-                                <p:focus for="i_panel_pesquisa" />
+                                <p:focus for="id_desc_pesquisa" />
                             </p:panel>
 
                             <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">

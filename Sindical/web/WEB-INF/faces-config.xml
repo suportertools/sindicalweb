@@ -29,18 +29,6 @@
     </managed-bean>
    
     <managed-bean>
-        <managed-bean-name>contribuicaoSocioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoSocioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>contribuicaoPorSocioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoPorSocioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>retornoPadraoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -791,19 +779,7 @@
             <to-view-id>/socios.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-
-        <navigation-case>
-            <from-outcome>contribuicaoSocio</from-outcome>
-            <to-view-id>/contribuicaoSocio.jsf</to-view-id>
-            <redirect/>
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>contribuicaoPorSocio</from-outcome>
-            <to-view-id>/contribuicaoPorSocio.jsf</to-view-id>
-            <redirect/>
-        </navigation-case>
-
+        
         <navigation-case>
             <from-outcome>pesquisaSocios</from-outcome>
             <to-view-id>/pesquisaSocios.jsf</to-view-id>
@@ -867,12 +843,6 @@
         <navigation-case>
             <from-outcome>pesquisaGuiasEmitidas</from-outcome>
             <to-view-id>/pesquisaGuiasEmitidas.jsp</to-view-id>
-            <redirect/>
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>emissaoCarteirinha</from-outcome>
-            <to-view-id>/emissaoCarteirinha.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1647,6 +1617,12 @@
         <navigation-case>
             <from-outcome>configuracaoSocial</from-outcome>
             <to-view-id>/configuracaoSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>acordoSocial</from-outcome>
+            <to-view-id>/acordoSocial.jsf</to-view-id>
             <redirect/>
         </navigation-case>
         
