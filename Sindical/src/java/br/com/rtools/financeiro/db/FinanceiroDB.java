@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.db;
 
+import br.com.rtools.associativo.LoteBoleto;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.BloqueiaServicoPessoa;
 import br.com.rtools.financeiro.Caixa;
@@ -69,6 +70,7 @@ public interface FinanceiroDB {
     public List<Vector> listaPessoaSemComplemento(String referenciaVigoracao);
     public List<Vector> listaRelatorioAnalitico(Integer id_fechamento_caixa);
     public List<Vector> listaResumoFechamentoCaixa(String data);
+    public List<LoteBoleto> listaLoteBoleto();
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015    
 //    public List<Vector> listaPessoaFisicaSemEndereco(int mes, int ano);
 //    public List<Vector> listaPessoaJuridicaSemEndereco(int mes, int ano);

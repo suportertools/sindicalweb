@@ -82,7 +82,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List<Movimento> listaMovimentoPorNrCtrBoleto(String nrCtrBoleto) {
         List<Movimento> result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select m from Movimento m where m.nrCtrBoleto = '" +nrCtrBoleto+"'");
+            Query qry = getEntityManager().createQuery("select m from Movimento m where m.nrCtrBoleto = '" +nrCtrBoleto+"' and m.ativo = true");
             result = qry.getResultList();
         } catch (Exception e) {
             e.getMessage();

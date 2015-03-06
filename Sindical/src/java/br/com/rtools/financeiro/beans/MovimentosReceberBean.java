@@ -139,9 +139,9 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
 
     public String imprimir() {
         MovimentoDB db = new MovimentoDBToplink();
-        List<Movimento> lista = new ArrayList<Movimento>();
-        List<Float> listaValores = new ArrayList<Float>();
-        List<String> listaVencimentos = new ArrayList<String>();
+        List<Movimento> lista = new ArrayList();
+        List<Float> listaValores = new ArrayList();
+        List<String> listaVencimentos = new ArrayList();
 
         if (!listMovimentoReceber.isEmpty()) {
             Movimento mov = new Movimento();
@@ -171,7 +171,8 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
                     lista.add(mov);
                     Impressao impressao = new Impressao();
                     impressao.setUsuario(su.getSessaoUsuario());
-                    impressao.setDtVencimento(mov.getDtVencimento());
+                    //impressao.setDtVencimento(mov.getDtVencimento());
+                    impressao.setDtVencimento( DataHoje.converte(listaVencimentos.get(listaVencimentos.size() - 1)) );
                     impressao.setMovimento(mov);
                     if (!dao.save(impressao)) {
                         dao.rollback();

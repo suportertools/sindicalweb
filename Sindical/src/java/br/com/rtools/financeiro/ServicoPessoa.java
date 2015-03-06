@@ -70,7 +70,7 @@ public class ServicoPessoa implements java.io.Serializable {
         this.banco = false;
         this.nrValorFixo = 0;
         this.descontoSocial = null;
-        this.descontoSocial = null;
+        this.cobrancaMovimento = null;
     }
 
     public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,

@@ -10,6 +10,8 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,29 +25,60 @@ import javax.faces.model.SelectItem;
 public class BaixaBoletoBean {
 
     private int idServicos = 0;
-    private int index = 0;
     private String numBoleto = "";
     private String caixaBanco = "banco";
     private String msgConfirma = "";
     private List<DataObject> listBoletos = new ArrayList();
-    private boolean carregarGrid = false;
+    //private boolean carregarGrid = false;
     private boolean marcarTodos = false;
     private Pessoa pessoa = new Pessoa();
     private boolean novoNumero = false;
     private boolean habPessoa = false;
     private boolean disBtnBaixar = true;
 
-    public void refreshForm() {
-    }
-    
-    public void atualizaCB() {
-        carregarGrid = true;
-    }
-
     public String refreshFormCaixa() {
         return "baixaBoleto";
     }
 
+    public void loadListaBoleto(){
+        DataObject dt = null;
+        List<Movimento> listaQuery = new ArrayList();
+        MovimentoDB db = new MovimentoDBToplink();
+        String pesquisado;
+        
+        getListBoletos().clear();
+        
+        if (caixaBanco.equals("banco"))
+            listaQuery = db.movimentosAberto(getPessoa().getId(), true);
+        else
+            listaQuery = db.movimentosAberto(getPessoa().getId(), false);
+
+        for (int i = 0; i < listaQuery.size(); i++) {
+            if (listaQuery.get(i).getDocumento().equals(numBoleto)) {
+                pesquisado = "font-weight: bold";
+            } else {
+                pesquisado = "";
+            }
+
+            dt = new DataObject(pesquisado,
+                    listaQuery.get(i),
+                    Moeda.converteR$(Float.toString(listaQuery.get(i).getValor())), // valor
+                    Moeda.converteR$(Float.toString(listaQuery.get(i).getMulta())), // multa
+                    Moeda.converteR$(Float.toString(listaQuery.get(i).getJuros())), // juros
+                    Moeda.converteR$(Float.toString(listaQuery.get(i).getCorrecao())), // correcao
+                    Moeda.converteR$(Float.toString(listaQuery.get(i).getDesconto())), // desconto
+                    Moeda.converteR$(somarValorRecebido(Float.toString(listaQuery.get(i).getValor()),
+                    Float.toString(listaQuery.get(i).getMulta()),
+                    Float.toString(listaQuery.get(i).getJuros()),
+                    Float.toString(listaQuery.get(i).getCorrecao()),
+                    Float.toString(listaQuery.get(i).getDesconto()))), // valor pago
+                    false,
+                    null);
+            getListBoletos().add(dt);
+            converteDescontoFora(i, (String) ((DataObject) getListBoletos().get(i)).getArgumento7());
+        }
+    }
+    
     public List<SelectItem> getListaServicoCobranca() {
         List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
         int i = 0;
@@ -74,141 +107,139 @@ public class BaixaBoletoBean {
         }
         return servicoCobranca;
     }
+//
+//    public String pesquisarBoleto() {
+//        carregarGrid = true;
+//        listBoletos.clear();
+//        return "baixaBoleto";
+//    }
 
-    public String pesquisarBoleto() {
-        carregarGrid = true;
-        listBoletos.clear();
-        return "baixaBoleto";
-    }
-
-    public synchronized String baixarBoletos() {
-        if (!listBoletos.isEmpty()) {
-            Movimento mov = null;
-            List<Movimento> lista = new ArrayList();
-
-            // NECESSÁRIO BLOQUEAR PORQ NA BAIXA POR RETORNO ELE FAZ VINCULO COM O DOCUMENTO DA PESSOA NA PESQUISA DO BOLETO CASO SEJA SINDICAL
-//            if (pessoa.getDocumento().isEmpty() || pessoa.getDocumento().equals("0")) {
-//                msgConfirma = "Pessoa não possui documento!";
-//                return null;
-//            }
-
-            // ROGERIO PEDIU PARA DEIXAR CAIXA IGUAL AO BANCO, PORQ pois o campo ds_documento_baixa da tabela fin_baixa está gravando o número do boleto -- EMAIL RECEBIDO
-            if (caixaBanco.equals("caixa")) {
-                for (int i = 0; i < listBoletos.size(); i++) {
-                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
-                        mov = (Movimento) listBoletos.get(i).getArgumento1();
-                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
-
-                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
-                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
-                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
-                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
-
-                        if (mov.getValorBaixa() <= 0) {
-                            msgConfirma = "Valor não pode ser zerado";
-                            return null;
-                        }
-                        lista.add(mov);
+    public synchronized String baixarBoletos(DataObject dob) {
+        Movimento mov;
+        List<Movimento> lista = new ArrayList();
+        
+        if (dob == null){
+            for (DataObject listBoleto : getListBoletos()) {
+                if ((Boolean) listBoleto.getArgumento8() == true) {
+                    mov = (Movimento) listBoleto.getArgumento1();
+                    mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento7())));
+                    mov.setMulta(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento3())));
+                    mov.setJuros(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento4())));
+                    mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento5())));
+                    mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento6())));
+                    if (mov.getValorBaixa() <= 0) {
+                        GenericaMensagem.warn("Atençao", "Nenhum valor não pode estar zerado!");
+                        return null;
                     }
+                    lista.add(mov);
                 }
-            } else {
-                mov = (Movimento) listBoletos.get(index).getArgumento1();
-                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
-
-                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
-                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
-                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
-                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
-
-                if (mov.getValorBaixa() <= 0) {
-                    msgConfirma = "Valor não pode ser zerado";
-                    return null;
-                }
-                lista.add(mov);
             }
-            
-//            mov = (Movimento) listBoletos.get(index).getArgumento1();
-//            mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
-//
-//            mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
-//            mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
-//            mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
-//            mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
-//
-//            if (mov.getValorBaixa() <= 0) {
-//                msgConfirma = "Valor não pode ser zerado";
-//                return null;
-//            }
-//            lista.add(mov);
-            
-            if (!lista.isEmpty()) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
-            } else {
-                msgConfirma = "Nenhum boleto foi selecionado!";
+        }else{
+            mov = (Movimento) dob.getArgumento1();
+            mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento7().toString() )));
+
+            mov.setMulta(Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento3().toString() )));
+            mov.setJuros(Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento4().toString() )));
+            mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento5().toString() )));
+            mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento6().toString() )));
+
+            if (mov.getValorBaixa() <= 0) {
+                GenericaMensagem.warn("Atençao", "Nenhum valor não pode estar zerado!");
                 return null;
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("caixa_banco", caixaBanco);
+            lista.add(mov);
+        }
+        
+        if (!lista.isEmpty()) {
+            GenericaSessao.put("listaMovimento", lista);
         } else {
-            msgConfirma = "Lista vazia";
+            GenericaMensagem.error("Atençao", "Nenhum boleto foi selecionado!");
             return null;
         }
+
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("caixa_banco", caixaBanco);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
     }
+    
+//    public synchronized String baixarBoletos() {
+//        if (!listBoletos.isEmpty()) {
+//            Movimento mov = null;
+//            List<Movimento> lista = new ArrayList();
+//
+//            // NECESSÁRIO BLOQUEAR PORQ NA BAIXA POR RETORNO ELE FAZ VINCULO COM O DOCUMENTO DA PESSOA NA PESQUISA DO BOLETO CASO SEJA SINDICAL
+////            if (pessoa.getDocumento().isEmpty() || pessoa.getDocumento().equals("0")) {
+////                msgConfirma = "Pessoa não possui documento!";
+////                return null;
+////            }
+//
+//            // ROGERIO PEDIU PARA DEIXAR CAIXA IGUAL AO BANCO, PORQ pois o campo ds_documento_baixa da tabela fin_baixa está gravando o número do boleto -- EMAIL RECEBIDO
+//            if (caixaBanco.equals("caixa")) {
+//                for (int i = 0; i < listBoletos.size(); i++) {
+//                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
+//                        mov = (Movimento) listBoletos.get(i).getArgumento1();
+//                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
+//
+//                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
+//                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
+//                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
+//                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
+//
+//                        if (mov.getValorBaixa() <= 0) {
+//                            msgConfirma = "Valor não pode ser zerado";
+//                            return null;
+//                        }
+//                        lista.add(mov);
+//                    }
+//                }
+//            } else {
+//                mov = (Movimento) listBoletos.get(index).getArgumento1();
+//                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+//
+//                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
+//                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
+//                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
+//                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+//
+//                if (mov.getValorBaixa() <= 0) {
+//                    msgConfirma = "Valor não pode ser zerado";
+//                    return null;
+//                }
+//                lista.add(mov);
+//            }
+//            
+//            if (!lista.isEmpty()) {
+//                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
+//            } else {
+//                msgConfirma = "Nenhum boleto foi selecionado!";
+//                return null;
+//            }
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("caixa_banco", caixaBanco);
+//        } else {
+//            msgConfirma = "Lista vazia";
+//            return null;
+//        }
+//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+//        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+//    }
 
-    public List getListaBoletos() {
-        DataObject dt = null;
-        List<Movimento> listaQuery = new ArrayList<Movimento>();
-        MovimentoDB db = new MovimentoDBToplink();
-        String pesquisado = "";
-        if (carregarGrid) {
-            if (caixaBanco.equals("banco"))
-                listaQuery = db.movimentosAberto(getPessoa().getId(), true);
-            else
-                listaQuery = db.movimentosAberto(getPessoa().getId(), false);
-            
-            for (int i = 0; i < listaQuery.size(); i++) {
-                if (listaQuery.get(i).getDocumento().equals(numBoleto)) {
-                    pesquisado = "destaqueBoleto";
-                } else {
-                    pesquisado = "";
-                }
-
-                dt = new DataObject(pesquisado,
-                        listaQuery.get(i),
-                        Moeda.converteR$(Float.toString(listaQuery.get(i).getValor())), // valor
-                        Moeda.converteR$(Float.toString(listaQuery.get(i).getMulta())), // multa
-                        Moeda.converteR$(Float.toString(listaQuery.get(i).getJuros())), // juros
-                        Moeda.converteR$(Float.toString(listaQuery.get(i).getCorrecao())), // correcao
-                        Moeda.converteR$(Float.toString(listaQuery.get(i).getDesconto())), // desconto
-                        Moeda.converteR$(somarValorRecebido(Float.toString(listaQuery.get(i).getValor()),
-                        Float.toString(listaQuery.get(i).getMulta()),
-                        Float.toString(listaQuery.get(i).getJuros()),
-                        Float.toString(listaQuery.get(i).getCorrecao()),
-                        Float.toString(listaQuery.get(i).getDesconto()))), // valor pago
-                        false,
-                        null);
-                listBoletos.add(dt);
-                converteDescontoFora(i, (String) ((DataObject) listBoletos.get(i)).getArgumento7());
-            }
-            carregarGrid = false;
-        }
-        return listBoletos;
-    }
-
-    public void atualizaValoresGrid(int index) {
-        converteDesconto((String) listBoletos.get(index).getArgumento7());
-        listBoletos.get(index).setArgumento7(somarValorRecebido(Moeda.converteR$((String) listBoletos.get(index).getArgumento2()),
-                Moeda.converteR$((String) listBoletos.get(index).getArgumento3()),
-                Moeda.converteR$((String) listBoletos.get(index).getArgumento4()),
-                Moeda.converteR$((String) listBoletos.get(index).getArgumento5()),
-                Moeda.converteR$((String) listBoletos.get(index).getArgumento6())));
-
-        converteValor(index);
-        converteMulta(index);
-        converteJuros(index);
-        converteCorrecao(index);
-        converteValorPago(index);
+    public void atualizaValoresGrid(DataObject dob) {
+        converteDesconto(dob);
+        dob.setArgumento7(
+            somarValorRecebido(
+                Moeda.converteR$(dob.getArgumento2().toString()),
+                Moeda.converteR$(dob.getArgumento3().toString()),
+                Moeda.converteR$(dob.getArgumento4().toString()),
+                Moeda.converteR$(dob.getArgumento5().toString()),
+                Moeda.converteR$(dob.getArgumento6().toString())
+            )
+        );
+// aqui descomentar
+        converteValor(dob);
+        converteMulta(dob);
+        converteJuros(dob);
+        converteCorrecao(dob);
+        converteValorPago(dob);
     }
 
     public String somarValorRecebido(String valor, String multa, String juros, String correcao, String desconto) {
@@ -229,48 +260,51 @@ public class BaixaBoletoBean {
         return Moeda.converteR$(String.valueOf(subtracao));
     }
 
-    public String limpaPessoa() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+    public String limparPessoa() {
         pessoa = new Pessoa();
         habPessoa = false;
         listBoletos.clear();
         return "baixaBoleto";
     }
 
-    public void converteValor(int index) {
-        listBoletos.get(index).setArgumento2(Moeda.converteR$((String) listBoletos.get(index).getArgumento2()));
+    public void converteValor(DataObject dob) {
+        dob.setArgumento2(Moeda.converteR$( dob.getArgumento2().toString()) );
     }
 
-    public void converteMulta(int index) {
-        listBoletos.get(index).setArgumento3(Moeda.converteR$((String) listBoletos.get(index).getArgumento3()));
+    public void converteMulta(DataObject dob) {
+        dob.setArgumento3(Moeda.converteR$( dob.getArgumento3().toString()) );
     }
 
-    public void converteJuros(int index) {
-        listBoletos.get(index).setArgumento4(Moeda.converteR$((String) listBoletos.get(index).getArgumento4()));
+    public void converteJuros(DataObject dob) {
+        dob.setArgumento4(Moeda.converteR$( dob.getArgumento4().toString()) );
     }
 
-    public void converteCorrecao(int index) {
-        listBoletos.get(index).setArgumento5(Moeda.converteR$((String) listBoletos.get(index).getArgumento5()));
+    public void converteCorrecao(DataObject dob) {
+        dob.setArgumento5(Moeda.converteR$( dob.getArgumento5().toString()));
     }
 
-    public void converteDesconto(String soma) {
-        if (Float.parseFloat(Moeda.substituiVirgula(Moeda.converteR$((String) listBoletos.get(index).getArgumento6()))) > Float.parseFloat(Moeda.substituiVirgula(soma))) {
-            listBoletos.get(index).setArgumento6(Moeda.converteR$("0.0"));
+    public void converteDesconto(DataObject dob) {
+        if (Float.parseFloat(Moeda.substituiVirgula(Moeda.converteR$( dob.getArgumento6().toString()))) > Float.parseFloat(Moeda.substituiVirgula( dob.getArgumento7().toString() ))) {
+            dob.setArgumento6(Moeda.converteR$("0.0"));
         } else {
-            listBoletos.get(index).setArgumento6(Moeda.converteR$((String) listBoletos.get(index).getArgumento6()));
+            dob.setArgumento6(Moeda.converteR$( dob.getArgumento6().toString() ));
         }
     }
 
     public void converteDescontoFora(int index, String soma) {
-        if (Float.parseFloat(Moeda.substituiVirgula(Moeda.converteR$((String) listBoletos.get(index).getArgumento6()))) > Float.parseFloat(Moeda.substituiVirgula(soma))) {
-            listBoletos.get(index).setArgumento6(Moeda.converteR$("0.0"));
-        } else {
-            listBoletos.get(index).setArgumento6(Moeda.converteR$((String) listBoletos.get(index).getArgumento6()));
+        try{
+            if (Float.parseFloat(Moeda.substituiVirgula(Moeda.converteR$((String) getListBoletos().get(index).getArgumento6()))) > Float.parseFloat(Moeda.substituiVirgula(soma))) {
+                getListBoletos().get(index).setArgumento6(Moeda.converteR$("0.0"));
+            } else {
+                getListBoletos().get(index).setArgumento6(Moeda.converteR$((String) getListBoletos().get(index).getArgumento6()));
+            }
+        }catch(Exception e){
+            e.getMessage();
         }
     }
 
-    public void converteValorPago(int index) {
-        listBoletos.get(index).setArgumento7(Moeda.converteR$((String) listBoletos.get(index).getArgumento7()));
+    public void converteValorPago(DataObject dob) {
+        dob.setArgumento7(Moeda.converteR$( dob.getArgumento7().toString() ));
     }
 
     public int getIdServicos() {
@@ -290,7 +324,7 @@ public class BaixaBoletoBean {
     }
 
     public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") == null) {
+        if (GenericaSessao.getObject("juridicaPesquisa") == null) {
             if (this.novoNumero) {
                 ServicoContaCobranca scc = new ServicoContaCobranca();
                 ServicoContaCobrancaDB dbS = new ServicoContaCobrancaDBToplink();
@@ -310,17 +344,16 @@ public class BaixaBoletoBean {
                 habPessoa = false;
             }
         } else {
-            pessoa = ((Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa")).getPessoa();
+            pessoa = ((Juridica) GenericaSessao.getObject("juridicaPesquisa", true)).getPessoa();
             habPessoa = true;
-            listBoletos.clear();
-            carregarGrid = true;
+            loadListaBoleto();
         }
         return pessoa;
     }
 
     public void marcar() {
-        for (int i = 0; i < listBoletos.size(); i++) {
-            listBoletos.get(i).setArgumento8(marcarTodos);
+        for (DataObject listBoleto : getListBoletos()) {
+            listBoleto.setArgumento8(marcarTodos);
         }
     }
 
@@ -339,10 +372,6 @@ public class BaixaBoletoBean {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
-    }
-
-    public void refreshPessoa() {
-        novoNumero = true;
     }
 
     public boolean isNovoNumero() {
@@ -382,14 +411,6 @@ public class BaixaBoletoBean {
         this.disBtnBaixar = disBtnBaixar;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public String getMsgConfirma() {
         return msgConfirma;
     }
@@ -406,11 +427,11 @@ public class BaixaBoletoBean {
         this.marcarTodos = marcarTodos;
     }
 
-    public boolean isCarregarGrid() {
-        return carregarGrid;
+    public List<DataObject> getListBoletos() {
+        return listBoletos;
     }
 
-    public void setCarregarGrid(boolean carregarGrid) {
-        this.carregarGrid = carregarGrid;
+    public void setListBoletos(List<DataObject> listBoletos) {
+        this.listBoletos = listBoletos;
     }
 }

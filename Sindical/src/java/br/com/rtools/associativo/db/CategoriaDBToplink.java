@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 public class CategoriaDBToplink extends DB implements CategoriaDB {
 
+    @Override
     public boolean insert(Categoria categoria) {
         try {
             getEntityManager().getTransaction().begin();
@@ -22,6 +23,7 @@ public class CategoriaDBToplink extends DB implements CategoriaDB {
         }
     }
 
+    @Override
     public boolean update(Categoria categoria) {
         try {
             getEntityManager().getTransaction().begin();
@@ -35,6 +37,7 @@ public class CategoriaDBToplink extends DB implements CategoriaDB {
         }
     }
 
+    @Override
     public boolean delete(Categoria categoria) {
         try {
             getEntityManager().getTransaction().begin();
@@ -48,6 +51,7 @@ public class CategoriaDBToplink extends DB implements CategoriaDB {
         }
     }
 
+    @Override
     public Categoria pesquisaCodigo(int id) {
         Categoria result = null;
         try {
@@ -105,6 +109,17 @@ public class CategoriaDBToplink extends DB implements CategoriaDB {
             return ((GrupoCategoria) qry.getSingleResult());
         } catch (Exception e) {
             return null;
+        }
+    }
+    
+    public List<GrupoCategoria> pesquisaGrupoCategoriaOrdenada() {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  select gc from GrupoCategoria gc order by gc.grupoCategoria"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
         }
     }
 }

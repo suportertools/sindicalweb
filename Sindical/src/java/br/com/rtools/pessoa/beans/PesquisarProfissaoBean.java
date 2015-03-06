@@ -6,7 +6,7 @@ import br.com.rtools.pessoa.db.ProfissaoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.richfaces.component.SortOrder;
+//import org.richfaces.component.SortOrder;
 
 public class PesquisarProfissaoBean implements Serializable {
 
@@ -15,7 +15,7 @@ public class PesquisarProfissaoBean implements Serializable {
     private String combo;
     private List<Profissao> listaProfissao;
     private String descricaoProfissao = "";
-    private SortOrder profissaoOrder = SortOrder.unsorted;
+    //private SortOrder profissaoOrder = SortOrder.unsorted;
 
     public PesquisarProfissaoBean() {
         profissao = new Profissao();
@@ -25,7 +25,7 @@ public class PesquisarProfissaoBean implements Serializable {
     }
     
     public void sortByProfissao() {
-        profissaoOrder = SortOrder.unsorted;
+        //profissaoOrder = SortOrder.unsorted;
     }  
 
     public List<Profissao> getListaProfissao() {
@@ -93,12 +93,12 @@ public class PesquisarProfissaoBean implements Serializable {
     public void setDescricaoProfissao(String descricaoProfissao) {
         this.descricaoProfissao = descricaoProfissao;
     }
-
-    public SortOrder getProfissaoOrder() {
-        return profissaoOrder;
-    }
-
-    public void setProfissaoOrder(SortOrder profissaoOrder) {
-        this.profissaoOrder = profissaoOrder;
-    }
+//
+//    public SortOrder getProfissaoOrder() {
+//        return profissaoOrder;
+//    }
+//
+//    public void setProfissaoOrder(SortOrder profissaoOrder) {
+//        this.profissaoOrder = profissaoOrder;
+//    }
 }

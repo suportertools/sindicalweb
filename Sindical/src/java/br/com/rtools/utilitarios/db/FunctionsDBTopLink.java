@@ -40,12 +40,13 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
      * @param date
      * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento
      * (já calculado)), (2 -> Taxa até o vencimento (já calculado))
+     * @param id_categoria
      * @return float valor
      */
     @Override
-    public float valorServico(int idPessoa, int idServico, Date date, int tipo) {
+    public float valorServico(int idPessoa, int idServico, Date date, int tipo, Integer id_categoria) {
         String dataString = DataHoje.converteData(date);
-        String queryString = "SELECT func_valor_servico(" + idPessoa + ", " + idServico + ", '" + dataString + "', " + tipo + ") ";
+        String queryString = "SELECT func_valor_servico(" + idPessoa + ", " + idServico + ", '" + dataString + "', " + tipo + ", "+id_categoria+") ";
         try {
             Query qry = getEntityManager().createNativeQuery(queryString);
             List list = qry.getResultList();
@@ -125,6 +126,7 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         return vagas;
     }
     
+    @Override
     public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias){
         try {
             Query query = getEntityManager().createNativeQuery(

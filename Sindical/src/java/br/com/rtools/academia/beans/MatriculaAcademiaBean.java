@@ -988,7 +988,7 @@ public class MatriculaAcademiaBean implements Serializable {
     public void atualizaValor() {
         valor = "";
         FunctionsDB functionsDB = new FunctionsDBTopLink();
-        valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
+        valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
         DaoInterface di = new Dao();
         AcademiaServicoValor asv = (AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(getListaPeriodosGrade().get(idPeriodoGrade).getDescription()));
         if (!asv.getFormula().isEmpty()) {
@@ -997,7 +997,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 valor = Moeda.converteR$(functionsDB.scriptSimples(calculoFormula));
             }
         }
-        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
+        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null);
     }
 
     public void pesquisaFisica(String tipoPesquisa) {

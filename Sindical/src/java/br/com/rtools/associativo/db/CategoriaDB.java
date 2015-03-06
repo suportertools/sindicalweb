@@ -24,4 +24,6 @@ public interface CategoriaDB {
     public List pesquisaCategoriaPorGrupoIds(String ids);
 
     public GrupoCategoria pesquisaGrupoPorCategoria(int idCategoria);
+    
+    public List<GrupoCategoria> pesquisaGrupoCategoriaOrdenada();
 }

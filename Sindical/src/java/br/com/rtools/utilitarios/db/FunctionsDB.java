@@ -22,7 +22,7 @@ public interface FunctionsDB {
      * (já calculado)), (2 -> Taxa até o vencimento (já calculado))
      * @return float valor
      */
-    public float valorServico(int idPessoa, int idServico, Date date, int tipo);
+    public float valorServico(int idPessoa, int idServico, Date date, int tipo, Integer id_categoria);
 
     /**
      * Retorna a idade da pessoa

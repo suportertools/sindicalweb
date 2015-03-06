@@ -174,7 +174,7 @@ public class BaixaGeralBean {
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
                 GenericaSessao.put("linkClicado", true);
-                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
+                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).loadListaBoleto();
                 //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
                 return "baixaBoleto";
             } else if (url.equals("movimentosReceberSocial")) {
@@ -216,7 +216,9 @@ public class BaixaGeralBean {
         float soma = somaValoresGrid();
         float valorF = Float.parseFloat(Moeda.substituiVirgula(valor));
         float totalF = Float.parseFloat(Moeda.substituiVirgula(total));
-        if ((Moeda.substituiVirgulaFloat(valor) != 0) && (Moeda.somaValores(soma, valorF) <= totalF)) {
+        
+        // VERIFICA SE O VALOR ESTA ZERADO -- chamado 540
+        //if ((Moeda.substituiVirgulaFloat(valor) != 0) && (Moeda.somaValores(soma, valorF) <= totalF)) {
             FTipoDocumentoDB tipoDocDB = new FTipoDocumentoDBToplink();
             if ((Moeda.somaValores(soma, valorF) < totalF) || (soma == 0)) {
                 valorF = Moeda.subtracaoValores(totalF, Moeda.somaValores(soma, valorF));
@@ -293,7 +295,7 @@ public class BaixaGeralBean {
             setValor(Moeda.converteR$Float(valorF));
             desHabilitaConta = true;
             desHabilitaQuitacao = true;
-        }
+        //}
     }
 
     public String remover(int index) {
@@ -462,8 +464,9 @@ public class BaixaGeralBean {
             total = "0.0";
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
-                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
-                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
+//                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
+//                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
+                ((BaixaBoletoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).loadListaBoleto();
             } else if (url.equals("movimentosReceberSocial")) {
                 ((MovimentosReceberSocialBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberSocialBean")).getListaMovimento().clear();
             } else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")) {
