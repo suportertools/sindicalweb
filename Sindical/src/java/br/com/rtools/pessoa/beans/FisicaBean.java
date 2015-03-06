@@ -1216,6 +1216,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         Dao di = new Dao();
         di.openTransaction();
 
+        if (!pe.getDemissao().isEmpty()){
+            GenericaMensagem.error("Atenção", "Pessoa demissionada não pode ser Reativa!");
+            return;
+        }
+        
         if (pessoaEmpresa.getId() == -1) {
             pe.setPrincipal(true);
             if (!di.update(pe)) {

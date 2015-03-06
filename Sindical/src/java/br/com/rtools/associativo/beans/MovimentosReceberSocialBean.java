@@ -579,13 +579,14 @@ public class MovimentosReceberSocialBean {
             return null;
         }
 
-        if (semValor()) {
-            msgConfirma = "Boletos sem valor não podem ser Baixados!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            PF.closeDialog("dlg_caixa_banco");
-            PF.update("formMovimentosReceber");            
-            return null;
-        }
+        // ROGÉRIO PEDIU PARA BAIXAR BOLETOS COM VALOR ZERADO -- chamado 540
+//        if (semValor()) {
+//            msgConfirma = "Boletos sem valor não podem ser Baixados!";
+//            GenericaMensagem.warn("Erro", msgConfirma);
+//            PF.closeDialog("dlg_caixa_banco");
+//            PF.update("formMovimentosReceber");            
+//            return null;
+//        }
 
         if (!listaMovimento.isEmpty()) {
             for (int i = 0; i < listaMovimento.size(); i++) {
@@ -689,7 +690,7 @@ public class MovimentosReceberSocialBean {
             }
             if (!lista.isEmpty()) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
-                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).acordo();
+                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).acordoSocial();
             } else {
                 msgConfirma = "Nenhum boleto foi selecionado";
                 GenericaMensagem.warn("Erro", msgConfirma);
@@ -784,6 +785,7 @@ public class MovimentosReceberSocialBean {
                     soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
                 }
             }
+            //return Moeda.converteR$Float(Moeda.subtracaoValores(soma, Moeda.converteUS$(desconto)));
             return Moeda.converteR$Float(soma);
         } else {
             return "0";

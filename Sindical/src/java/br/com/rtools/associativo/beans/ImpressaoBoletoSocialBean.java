@@ -321,6 +321,10 @@ public class ImpressaoBoletoSocialBean {
                         //Movimento mov = (Movimento)sv.pesquisaCodigo((Integer)lista_socio.get(w).get(1), "Movimento");
                         List<Movimento> list_mov = movDB.listaMovimentoPorNrCtrBoleto(boletox.getNrCtrBoleto());
                         
+                        if (list_mov.isEmpty()){
+                            continue;
+                        }
+                        
                         valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
                         valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(14).toString()));
                         

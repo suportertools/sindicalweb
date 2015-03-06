@@ -6,6 +6,7 @@ import br.com.rtools.escola.db.EFinanceiroDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,7 @@ import javax.faces.model.SelectItem;
 public class EFinanceiroBean implements java.io.Serializable {
 
     private EFinanceiro eFinanceiro = new EFinanceiro();
-    private String msgConfirma = "";
-    private int idServicos = 0;
+    private Integer idServicos = 0;
     private List<EFinanceiro> listaMultas = new ArrayList();
     private String valorMulta = "0";
 
@@ -30,11 +30,16 @@ public class EFinanceiroBean implements java.io.Serializable {
     public String adicionar() {
         EFinanceiroDB db = new EFinanceiroDBToplink();
         ServicosDB dbs = new ServicosDBToplink();
+        if (getListaServicos().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Lista de Multa vazia!");
+            return null;
+        }
+        
         Servicos serv = dbs.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
 
-        for (int i = 0; i < listaMultas.size(); i++) {
-            if (listaMultas.get(i).getMulta().getId() == serv.getId()) {
-                msgConfirma = "Multa para esse serviço já existe!";
+        for (EFinanceiro listaMulta : listaMultas) {
+            if (listaMulta.getMulta().getId() == serv.getId()) {
+                GenericaMensagem.warn("Atenção", "Multa para esse serviço já existe!");
                 eFinanceiro = new EFinanceiro();
                 return "eFinanceiro";
             }
@@ -43,10 +48,11 @@ public class EFinanceiroBean implements java.io.Serializable {
         eFinanceiro.setMulta(serv);
         eFinanceiro.setNrMultaCancelamento(Moeda.substituiVirgulaFloat(valorMulta));
         if (db.insert(eFinanceiro)) {
-            msgConfirma = "Multa salva com sucesso!";
+            GenericaMensagem.info("Sucesso", "Multa Salva!");
         } else {
-            msgConfirma = "Erro ao salvar multa!";
+            GenericaMensagem.error("Erro", "Não foi possível salvar Multa!");
         }
+        
         listaMultas.clear();
         eFinanceiro = new EFinanceiro();
         return "eFinanceiro";
@@ -54,12 +60,10 @@ public class EFinanceiroBean implements java.io.Serializable {
 
     public String excluir() {
         EFinanceiroDB db = new EFinanceiroDBToplink();
-        //eFinanceiro = (EFinanceiro)htmlTable.getRowData();
         if (db.delete(db.pesquisaCodigo(eFinanceiro.getId()))) {
-            msgConfirma = "Multa excluído com sucesso!";
-            //listaMultas.remove(htmlTable.getRowIndex());
+            GenericaMensagem.info("Sucesso", "Multa Excluída!");
         } else {
-            msgConfirma = "Erro ao excluir multa!";
+            GenericaMensagem.error("Erro", "Não foi possível excluir Multa!");
         }
         eFinanceiro = new EFinanceiro();
         return "eFinanceiro";
@@ -87,19 +91,11 @@ public class EFinanceiroBean implements java.io.Serializable {
         this.eFinanceiro = eFinanceiro;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public int getIdServicos() {
+    public Integer getIdServicos() {
         return idServicos;
     }
 
-    public void setIdServicos(int idServicos) {
+    public void setIdServicos(Integer idServicos) {
         this.idServicos = idServicos;
     }
 

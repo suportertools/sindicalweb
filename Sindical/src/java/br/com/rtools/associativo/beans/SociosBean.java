@@ -12,6 +12,7 @@ import br.com.rtools.financeiro.db.*;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoDocumento;
@@ -170,6 +171,17 @@ public class SociosBean implements Serializable {
         index_desconto = 0;
         matriculaSocios.setEmissao(DataHoje.data());
     }
+    
+    public void loadPessoaComplemento(Integer id_pessoa){
+        PessoaDB db = new PessoaDBToplink();
+        PessoaComplemento pc = db.pesquisaPessoaComplementoPorPessoa(id_pessoa);
+        
+        if(pc.getId() == -1) {
+            servicoPessoa.setNrDiaVencimento(getRegistro().getFinDiaVencimentoCobranca());
+        } else {
+            servicoPessoa.setNrDiaVencimento(pc.getNrDiaVencimento());
+        }
+    }
 
     public void loadSocio(Pessoa p, boolean reativar) {
         SociosDB db = new SociosDBToplink();
@@ -187,6 +199,7 @@ public class SociosBean implements Serializable {
             servicoPessoa.setPessoa(p);
             // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
             loadServicos();
+            loadPessoaComplemento(servicoPessoa.getPessoa().getId());
             return;
         } else {
             socios = socio_pessoa;
@@ -202,7 +215,8 @@ public class SociosBean implements Serializable {
 
         // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
         loadServicos();
-
+        loadPessoaComplemento(servicoPessoa.getPessoa().getId());
+        
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
         List<SocioCarteirinha> listsc;
 
@@ -262,9 +276,13 @@ public class SociosBean implements Serializable {
     public void loadGrupoCategoria() {
         listaGrupoCategoria.clear();
         idGrupoCategoria = 0;
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
 
-        List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
+        //SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        //List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
+        
+        CategoriaDB db = new CategoriaDBToplink();
+        List<GrupoCategoria> grupoCategorias = db.pesquisaGrupoCategoriaOrdenada();
+        
         if (!grupoCategorias.isEmpty()) {
             for (int i = 0; i < grupoCategorias.size(); i++) {
                 listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
@@ -329,7 +347,7 @@ public class SociosBean implements Serializable {
                 listaServicos.add(new SelectItem(0, servicoCategoria.getServicos().getDescricao(),
                         Integer.toString(servicoCategoria.getServicos().getId()))
                 );
-                valorServico = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+                valorServico = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
                 calculoValor();
                 calculoDesconto();
             } else {
@@ -339,32 +357,32 @@ public class SociosBean implements Serializable {
     }
 
     public void calculoDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         servicoPessoa.setNrDescontoString(Moeda.percentualDoValor(valorx, valorServico));
     }
 
     public void calculoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         valorServico = Moeda.valorDoPercentual(valorx, servicoPessoa.getNrDescontoString());
     }
 
     public void calculoNovoDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         novoDescontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, novoValorServico));
     }
 
     public void calculoNovoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         novoValorServico = Moeda.valorDoPercentual(valorx, novoDescontoSocial.getNrDescontoString());
     }
 
     public void calculoAlterarDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         descontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, alteraValorServico));
     }
 
     public void calculoAlterarValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0));
+        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         alteraValorServico = Moeda.valorDoPercentual(valorx, descontoSocial.getNrDescontoString());
     }
 
@@ -2079,7 +2097,6 @@ public class SociosBean implements Serializable {
         return listaCategoria;
     }
 
-    // aqui
     public ServicoPessoa getServicoPessoa() {
 //        if (GenericaSessao.getObject("fisicaPesquisa") != null && GenericaSessao.getObject("reativarSocio") != null) {
 //            servicoPessoa.setPessoa(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa());

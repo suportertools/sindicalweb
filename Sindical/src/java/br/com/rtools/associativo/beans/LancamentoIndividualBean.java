@@ -26,6 +26,7 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -46,10 +47,12 @@ public class LancamentoIndividualBean {
     private Fisica fisica = new Fisica();
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private final List<SelectItem> listaServicos = new ArrayList();
+    private final List<SelectItem> listaTipoServico = new ArrayList();
     private List<SelectItem> listaJuridica = new ArrayList();
     private List<SelectItem> listaDiaVencimento = new ArrayList();
     private List<SelectItem> listaParcelas = new ArrayList();
     private int idServico = 0;
+    private int idTipoServico = 0;
     private int idJuridica = 0;
     private int idDia = 1;
     private int idParcela = 0;
@@ -113,7 +116,8 @@ public class LancamentoIndividualBean {
             td = (FTipoDocumento)sv.pesquisaCodigo(2, "FTipoDocumento");
         }
         
-        Servicos serv = (Servicos)sv.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()),"Servicos");
+        Servicos serv = (Servicos)sv.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos");
+        TipoServico tipo_serv = (TipoServico) sv.pesquisaCodigo(Integer.parseInt(listaTipoServico.get(idTipoServico).getDescription()), "TipoServico");
         
         float totalpagar = Moeda.converteUS$(totalPagar);
         float valor = Moeda.converteFloatR$Float(Moeda.divisaoValores(totalpagar, parcelas));
@@ -136,7 +140,7 @@ public class LancamentoIndividualBean {
                     fisica.getPessoa(),
                     serv, 
                     null, // BAIXA
-                    (TipoServico)sv.pesquisaCodigo(1, "TipoServico"), // TIPO SERVICO
+                    tipo_serv, // TIPO SERVICO
                     null, // ACORDO
                     valor, // VALOR
                     DataHoje.data().substring(3), // REFERENCIA
@@ -311,6 +315,24 @@ public class LancamentoIndividualBean {
             }
         }
         return listaServicos;
+    }
+    
+    public List<SelectItem> getListaTipoServico() {
+        if (listaTipoServico.isEmpty()) {
+            List<TipoServico> result = new Dao().list(new TipoServico());
+                    
+            if (!result.isEmpty()){
+                for(int i = 0; i < result.size(); i++){
+                    listaTipoServico.add(new SelectItem(i,
+                                      result.get(i).getDescricao(),
+                                      Integer.toString(result.get(i).getId())
+                            ));
+                }
+            }else{
+                listaTipoServico.add(new SelectItem(0, "Nenhum Tipo Serviço", "0"));
+            }
+        }
+        return listaTipoServico;
     }
 
     public Fisica getFisica() {
@@ -602,6 +624,14 @@ public class LancamentoIndividualBean {
 
     public void setServicoPessoa(ServicoPessoa servicoPessoa) {
         this.servicoPessoa = servicoPessoa;
+    }
+
+    public int getIdTipoServico() {
+        return idTipoServico;
+    }
+
+    public void setIdTipoServico(int idTipoServico) {
+        this.idTipoServico = idTipoServico;
     }
 
 }

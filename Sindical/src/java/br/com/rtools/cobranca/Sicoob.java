@@ -159,7 +159,7 @@ public class Sicoob extends Cobranca {
             }
             
             if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
-                composicao = "0";
+                composicao = "1";
             } else {
                 composicao = Integer.toString(11 - (soma % 11));
             }

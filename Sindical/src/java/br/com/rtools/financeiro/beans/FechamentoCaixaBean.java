@@ -417,26 +417,31 @@ public final class FechamentoCaixaBean implements Serializable {
         
         // true NÃO TEM PERMISSÃO
         boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
-        if (permissao){
-            result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", usuario.getId());
-            result_saida = db.listaMovimentoCaixa(caixa.getId(), "S", usuario.getId());
-            lEntrada = db.listaTransferenciaEntrada(caixa.getId(), usuario.getId());
-            lSaida = db.listaTransferenciaSaida(caixa.getId(), usuario.getId());
-        }else{
-            result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", null);
-            result_saida = db.listaMovimentoCaixa(caixa.getId(), "S", null);
-            lEntrada = db.listaTransferenciaEntrada(caixa.getId(), null);
-            lSaida = db.listaTransferenciaSaida(caixa.getId(), null);
-        }
         
-        if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty() && permissao) {
-            GenericaMensagem.warn("Erro", "Usuário não efetuou recebimento neste Caixa!");
-            return;
-        }else if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()){
+        
+        result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E", null);
+        result_saida = db.listaMovimentoCaixa(caixa.getId(), "S", null);
+        lEntrada = db.listaTransferenciaEntrada(caixa.getId(), null);
+        lSaida = db.listaTransferenciaSaida(caixa.getId(), null);
+        
+        if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()){
             GenericaMensagem.warn("Erro", "Não existe movimentos para este Caixa!");
             return;
         }
-
+        
+        // true NÃO TEM PERMISSÃO
+        if (permissao){
+            List<Vector> result_entrada_user = db.listaMovimentoCaixa(caixa.getId(), "E", usuario.getId());
+            List<Vector> result_saida_user = db.listaMovimentoCaixa(caixa.getId(), "S", usuario.getId());
+            List<TransferenciaCaixa> lEntrada_user = db.listaTransferenciaEntrada(caixa.getId(), usuario.getId());
+            List<TransferenciaCaixa> lSaida_user = db.listaTransferenciaSaida(caixa.getId(), usuario.getId());
+            
+            if (result_entrada_user.isEmpty() && result_saida_user.isEmpty() && lEntrada_user.isEmpty() && lSaida_user.isEmpty()) {
+                GenericaMensagem.warn("Erro", "Usuário não efetuou recebimento neste Caixa!");
+                return;
+            }
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
 

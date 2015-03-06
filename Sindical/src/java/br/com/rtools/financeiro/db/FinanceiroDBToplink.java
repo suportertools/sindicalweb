@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.db;
 
+import br.com.rtools.associativo.LoteBoleto;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Baixa;
@@ -355,7 +356,8 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "        fc.ds_hora  " +
                     "  FROM fin_fechamento_caixa fc  " +
                     " INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id AND tc.id_caixa_entrada = " + id_caixa +
-                    " WHERE tc.id_fechamento_entrada NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    //" WHERE tc.id_fechamento_entrada NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    " WHERE tc.id_fechamento_entrada NOT IN (SELECT id_fechamento_saida FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
                     " GROUP BY tc.id_caixa_entrada, " +
                     "          tc.id_fechamento_entrada, " +
                     "          fc.nr_valor_fechamento, " +
@@ -371,7 +373,8 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "        fc.ds_hora   " +
                     "  FROM fin_fechamento_caixa fc  " +
                     " INNER JOIN fin_baixa b ON b.id_caixa = "+id_caixa+" AND b.id_fechamento_caixa = fc.id " +
-                    " WHERE b.id_fechamento_caixa NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    //" WHERE b.id_fechamento_caixa NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    " WHERE b.id_fechamento_caixa NOT IN (SELECT id_fechamento_saida FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
                     " GROUP BY b.id_caixa, " +
                     "          b.id_fechamento_caixa, " +
                     "          fc.nr_valor_fechamento, " +
@@ -688,25 +691,27 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }else if (tipo.equals("juridica")){
             inner_join = " INNER JOIN pes_juridica j ON j.id_pessoa = b.codigo ";
         }
+        
+        where = " WHERE b.ativo = true";
 
         // RESPONSAVEL --
         if (!responsavel.isEmpty()){
             responsavel = AnaliseString.normalizeLower(responsavel);
-            where = " WHERE TRANSLATE(LOWER(b.responsavel)) like '%"+responsavel+"%'";
+            where += " AND TRANSLATE(LOWER(b.responsavel)) like '%"+responsavel+"%'";
         }
         
         // LOTE --
         if (!lote.isEmpty()){
-            where += (where.isEmpty()) ? " WHERE " : " AND "; where += " b.id_lote_boleto = "+Integer.valueOf(lote);
+            where += " AND b.id_lote_boleto = "+Integer.valueOf(lote);
             
         }
         
         // DATA --
         if (!data.isEmpty()){
-            where += (where.isEmpty()) ? " WHERE " : " AND "; where += " b.processamento = '"+data+"'";
+            where += " AND b.processamento = '"+data+"'";
         }
         
-        text_qry = " SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor, b.endereco_responsavel, b.codigo " +
+            text_qry = " SELECT b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, to_char(b.vencimento,'dd/MM/yyyy') as vencimento, to_char(b.processamento,'dd/MM/yyyy') as processamento, sum(b.valor) as valor, b.endereco_responsavel, b.codigo " +
                    "   FROM soc_boletos_vw b " + inner_join + where +
                    "  GROUP BY b.nr_ctr_boleto, b.id_lote_boleto, b.responsavel, b.boleto, b.vencimento, b.processamento, b.endereco_responsavel, b.codigo "+
                    "  ORDER BY b.responsavel, b.vencimento desc";
@@ -887,7 +892,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                 "select j.id_pessoa, m.id_titular " +
                 "  from fin_movimento m " +
                 " inner join pes_juridica j on j.id_pessoa = m.id_pessoa " +
-                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"'" +
+                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"' and m.is_ativo = true" +
                 "  group by j.id_pessoa, m.id_titular"
         );
         try{
@@ -904,7 +909,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                 "select f.id_pessoa, m.id_titular " +
                 "  from fin_movimento m " +
                 " inner join pes_fisica f on f.id_pessoa = m.id_pessoa " +
-                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"'" +
+                " where m.nr_ctr_boleto = '"+nrCtrBoleto+"' and m.is_ativo = true" +
                 "  group by f.id_pessoa, m.id_titular"
         );
         try{
@@ -1176,4 +1181,23 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
 //        }
 //    }
     
+    @Override
+    public List<LoteBoleto> listaLoteBoleto(){
+        String text = "SELECT lb.* \n" +
+                      "  FROM soc_lote_boleto lb \n" +
+                      " INNER JOIN soc_boletos_vw b ON b.id_lote_boleto = lb.id \n" +
+                      " WHERE b.ativo = true \n" +
+                      " GROUP BY lb.id, lb.dt_processamento \n" +
+                      " ORDER BY lb.id";
+        
+        Query qry = getEntityManager().createNativeQuery(text, LoteBoleto.class);
+        
+        try{
+            List<LoteBoleto> result = qry.getResultList();
+            return result;
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
 }

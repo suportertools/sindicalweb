@@ -226,7 +226,9 @@ public class GerarBoletoBean {
 
     public List<DataObject> getListaGerados() {
         if (listaGerados.isEmpty()){
-            List<LoteBoleto> lista = (new SalvarAcumuladoDBToplink()).listaObjeto("LoteBoleto");
+            FinanceiroDB db = new FinanceiroDBToplink();
+            //List<LoteBoleto> lista = (new SalvarAcumuladoDBToplink()).listaObjeto("LoteBoleto");
+            List<LoteBoleto> lista = db.listaLoteBoleto();
             for (LoteBoleto lb : lista){
                 listaGerados.add(new DataObject(lb, null));
             }
