@@ -277,15 +277,15 @@
                                         <h:column rendered="#{fisicaBean.fisica.id != -1}">
                                             <p:panel style="margin-top: 10px" styleClass="fundoCinza">
                                                 <h:panelGrid columns="2" style="width: 100%">
-                                                    <p:column rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.matriculaSocios.motivoInativacao == null}">
+                                                    <p:column rendered="#{fisicaBean.tipoCadastro == 2 or fisicaBean.tipoCadastro == 3}">
                                                         <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} ) DESDE #{fisicaBean.socios.matriculaSocios.emissao}" style="font-weight: bold; font-size: 12pt!important"/>
                                                     </p:column>
 
-                                                    <p:column rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.matriculaSocios.motivoInativacao != null and fisicaBean.listaSocioInativo.size() != 0}">
+                                                    <p:column rendered="#{fisicaBean.tipoCadastro == 4 or fisicaBean.tipoCadastro == 5}">
                                                         <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} INATIVO ) DESDE #{fisicaBean.socios.matriculaSocios.inativo}" style="font-weight: bold; font-size: 12pt!important; color: #ff9900"/>
                                                     </p:column>
 
-                                                    <p:column rendered="#{fisicaBean.socios.id == -1 and fisicaBean.listaSocioInativo.size() == 0}">
+                                                    <p:column rendered="#{fisicaBean.tipoCadastro == -1 or fisicaBean.tipoCadastro == 1}">
                                                         <p:outputLabel value="ESTA PESSOA NÃO É ASSOCIADA" style="font-weight: bold; font-size: 12pt!important"/>
                                                     </p:column>
 
@@ -295,7 +295,7 @@
                                                                 <p:commandButton value="#{fisicaBean.lblSocio}" action="#{fisicaBean.associarFisica}" immediate="true"/>
                                                             </p:column>
 
-                                                            <p:column>
+                                                            <p:column rendered="#{fisicaBean.tipoCadastro != 3}">
                                                                 <p:commandLink value="Ver Lista de Inativações" onclick="PF('i_dlg_inativos').show()" rendered="#{fisicaBean.listaSocioInativo.size() != 0}" style="margin-left: 15px"/>
                                                             </p:column>
                                                         </h:panelGrid>
@@ -306,10 +306,15 @@
                                                     <p:dataGrid value="#{fisicaBean.listaSocioInativo}" var="linha" rowIndexVar="index" columns="1" emptyMessage="Clique para adicionar MAIS VENCIMENTO">
                                                         <p:commandLink ajax="false" value="#{linha.matriculaSocios.inativo} - #{linha.matriculaSocios.motivoInativacao.descricao}" action="#{fisicaBean.associarFisica(linha.servicoPessoa.pessoa)}" disabled="#{linha.matriculaSocios.id != fisicaBean.socios.matriculaSocios.id}"/>
                                                     </p:dataGrid>
-                                                    <p:commandButton value="OK"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_inativos').hide()" icon="ui-icon-close"/>       
+                                                    <f:facet name="footer">
+                                                        <h:outputLabel value="* Clique no item da lista para reativar" styleClass="font-color-red"  />
+                                                        <br />
+                                                        <br />
+                                                        <p:commandButton value="Sair" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_inativos').hide()" icon="ui-icon-close"/>                                                        
+                                                    </f:facet>
                                                 </p:dialog>
 
-                                                <h:panelGrid rendered="#{fisicaBean.socios.id != -1}" columns="9" style="width: 60%">
+                                                <h:panelGrid rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.servicoPessoa.ativo}" columns="9" style="width: 60%">
                                                     <p:column>
                                                         <p:outputLabel value="Nº. Matrícula " style="font-size: 10pt!important"/>
                                                         <p:outputLabel value="#{fisicaBean.socios.matriculaSocios.nrMatricula}" style="font-weight: bold; font-size: 10pt!important"/>    
