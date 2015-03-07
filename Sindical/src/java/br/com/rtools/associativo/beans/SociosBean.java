@@ -184,11 +184,14 @@ public class SociosBean implements Serializable {
     }
 
     public void loadSocio(Pessoa p, boolean reativar) {
+        loadSocio(p, reativar, null);
+    }
+    
+    public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-        CategoriaDB dbca = new CategoriaDBToplink();
-
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
+        Dao dao = new Dao();
         // SE REATIVAR == FALSE NÃO CARREGAR SOCIO
 
         pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
@@ -196,18 +199,32 @@ public class SociosBean implements Serializable {
         if (reativar == false) {
             descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
             servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
-            servicoPessoa.setPessoa(p);
+            servicoPessoa.setPessoa(p);            
             // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
             loadServicos();
             loadPessoaComplemento(servicoPessoa.getPessoa().getId());
             return;
         } else {
-            socios = socio_pessoa;
+            socios = socio_pessoa;                
 
         }
 
         if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
-            socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
+            if (socios.getServicoPessoa().isAtivo() || reativar) {
+                socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
+            } else {
+                socios.setMatriculaSocios(new MatriculaSocios());
+                Pessoa ps = socios.getServicoPessoa().getPessoa();
+                ServicoPessoa sp = new ServicoPessoa();
+                sp.setPessoa(ps);
+                socios.setId(-1);
+                socios.setNrViaCarteirinha(1);
+                socios.setParentesco((Parentesco) dao.find(new Parentesco(), 1));
+                sp.setDescontoSocial((DescontoSocial) dao.find(new DescontoSocial(), 1));
+                socios.setServicoPessoa(sp);
+                servicoPessoa.setEmissao(DataHoje.data());
+                socios.getMatriculaSocios().setEmissao(DataHoje.data());
+            }
         }
 
         servicoPessoa = socios.getServicoPessoa();
@@ -259,11 +276,12 @@ public class SociosBean implements Serializable {
 
         listaDescontoSocial.clear();
         getListaDescontoSocial();
-
-        for (int i = 0; i < listaDescontoSocial.size(); i++) {
-            if (Integer.parseInt(listaDescontoSocial.get(i).getDescription()) == servicoPessoa.getDescontoSocial().getId()) {
-                index_desconto = i;
-                break;
+        if (servicoPessoa.getDescontoSocial() != null) {
+            for (int i = 0; i < listaDescontoSocial.size(); i++) {
+                if (Integer.parseInt(listaDescontoSocial.get(i).getDescription()) == servicoPessoa.getDescontoSocial().getId()) {
+                    index_desconto = i;
+                    break;
+                }
             }
         }
 
@@ -715,10 +733,10 @@ public class SociosBean implements Serializable {
 
             FisicaDB dbf = new FisicaDBToplink();
             GenericaSessao.put("fisicaBean", new FisicaBean());
-            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
-
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
             PF.update("formSocios");
 
         } else {
@@ -937,6 +955,7 @@ public class SociosBean implements Serializable {
                 return null;
             }
             GenericaMensagem.info("Sucesso", "Cadastro Atualizado!");
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
         }
 
         /* 
@@ -1121,19 +1140,29 @@ public class SociosBean implements Serializable {
         }
         FisicaDB db = new FisicaDBToplink();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
-        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).showImagemFisica();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).getListaSocioInativo().clear();
+        GenericaSessao.put("linkClicado", true);
         return "pessoaFisica";
     }
 
     public boolean validaSalvar() {
+        
+        if(servicoPessoa.getId() == -1) {
+            if (servicoPessoa.getPessoa().getDocumento().isEmpty() || servicoPessoa.getPessoa().getDocumento().equals("0")) {
+                GenericaMensagem.warn("Erro", "Para ser titular é necessário ter número de documento (CPF) no cadastro!");
+                return false;
+            }            
+        }
+        
         if (matriculaSocios.getEmissao().isEmpty()) {
-            GenericaMensagem.warn("Erro", "Data de Emissáo Inválida!");
+            GenericaMensagem.warn("Erro", "Data de Emissão Inválida!");
             return false;
         }
 
+        
         if (getListaGrupoCategoria().isEmpty()) {
             GenericaMensagem.warn("Erro", "Lista de Grupos Categoria Vazia!");
             return false;
@@ -1336,7 +1365,7 @@ public class SociosBean implements Serializable {
             for (int i = 0; i < list.size(); i++) {
                 if (soc_dep.getMatriculaSocios().getNrMatricula() == list.get(i).getMatriculaSocios().getNrMatricula()) {
                     if (list.get(i).getServicoPessoa().isAtivo()) {
-                        GenericaMensagem.error("Validação", "Esta pessoa já é um Dependente cadastrado para o sócio titular " + list.get(i).getMatriculaSocios().getTitular().getNome());
+                        GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para titular " + list.get(i).getMatriculaSocios().getTitular().getNome());
                         return false;
                     }
                 }
@@ -1566,9 +1595,11 @@ public class SociosBean implements Serializable {
         Fisica fi = (Fisica) linha.getArgumento0();
         if (fi.getId() != -1) {
             SociosDB db = new SociosDBToplink();
-            Socios soc = db.pesquisaSocioPorPessoa(fi.getPessoa().getId());
+            // Socios soc = db.pesquisaSocioPorPessoa(fi.getPessoa().getId());
+            Socios soc = db.pesquisaSocioPorPessoaEMatriculaSocio(fi.getPessoa().getId(), socios.getMatriculaSocios().getId());
             Dao dao = new Dao();
             dao.openTransaction();
+            soc.getServicoPessoa().setReferenciaValidade((String) linha.getArgumento4());
             if (soc.getId() == -1) {
                 listaDependentes.remove(index);
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
@@ -1662,13 +1693,12 @@ public class SociosBean implements Serializable {
         int dataHoje = DataHoje.converteDataParaRefInteger(dataRef);
         ServicoPessoaDB spdb = new ServicoPessoaDBToplink();
         List<ServicoPessoa> list = spdb.listByPessoa(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
-        SociosDB sociosDB = new SociosDBToplink();
         SociosDao sociosDao = new SociosDao();
         Socios s = null;
         Dao dao = new Dao();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isAtivo()) {
-                GenericaMensagem.warn("Validação", "Pessoa já esta ativa em outra matrícula!");
+                GenericaMensagem.warn("Validação", "Pessoa já esta ativa em outra matrícula! Ativo no cadastro de " + list.get(i).getPessoa().getNome());
                 return;
             }
         }
@@ -1682,24 +1712,29 @@ public class SociosBean implements Serializable {
         }
         list.clear();
         list = spdb.listByPessoaInativo(((Fisica) listaDependentesInativos.get(index).getArgumento0()).getPessoa().getId());
-        NovoLog novoLog = new NovoLog();
-        for (int i = 0; i < list.size(); i++) {
-            s = sociosDao.pesquisaSocioPorServicoPessoa(list.get(i).getId());
-            if (s.getMatriculaSocios().getId() == socios.getMatriculaSocios().getId()) {
-                list.get(i).setAtivo(true);
-                dao.update(list.get(i), true);
-                novoLog.update("Dependente reativado",
-                        " ID:" + list.get(i).getId()
-                        + " - Pessoa: (" + s.getServicoPessoa().getPessoa().getId() + ") - " + s.getServicoPessoa().getPessoa().getNome()
-                        + " - Titular: (" + s.getMatriculaSocios().getTitular().getId() + ") - " + s.getMatriculaSocios().getTitular().getNome()
-                        + " - Matrícula: " + s.getMatriculaSocios().getNrMatricula()
-                        + " - Categoria: " + s.getMatriculaSocios().getCategoria().getCategoria()
-                        + " - Parentesco: " + s.getParentesco().getParentesco()
-                );
+        if (servicoPessoa.isAtivo()) {
+            NovoLog novoLog = new NovoLog();
+            for (int i = 0; i < list.size(); i++) {
+                s = sociosDao.pesquisaSocioPorServicoPessoa(list.get(i).getId());
+                if (s.getMatriculaSocios().getId() == socios.getMatriculaSocios().getId()) {
+                    list.get(i).setAtivo(true);
+                    list.get(i).setReferenciaValidade(servicoPessoa.getReferenciaValidade());
+                    dao.update(list.get(i), true);
+                    novoLog.update("Dependente reativado",
+                            " ID:" + list.get(i).getId()
+                            + " - Pessoa: (" + s.getServicoPessoa().getPessoa().getId() + ") - " + s.getServicoPessoa().getPessoa().getNome()
+                            + " - Titular: (" + s.getMatriculaSocios().getTitular().getId() + ") - " + s.getMatriculaSocios().getTitular().getNome()
+                            + " - Matrícula: " + s.getMatriculaSocios().getNrMatricula()
+                            + " - Categoria: " + s.getMatriculaSocios().getCategoria().getCategoria()
+                            + " - Parentesco: " + s.getParentesco().getParentesco()
+                    );
+                }
             }
+            listaDependentes.add(listaDependentesInativos.get(index));
+            listaDependentesInativos.remove(index);
+        } else {
+            GenericaMensagem.warn("Validação", "Não é possível reativar dependente com titular (Serviço Pessoa) inativo! Contate o administrador do sistema!");
         }
-        listaDependentes.add(listaDependentesInativos.get(index));
-        listaDependentesInativos.remove(index);
     }
 
     public void reativarDependente() {
@@ -2345,7 +2380,7 @@ public class SociosBean implements Serializable {
     }
 
     public String getLblSocio() {
-        if (socios.getId() == -1) {
+        if (socios.getMatriculaSocios().getId() == -1) {
             lblSocio = "SALVAR ";
         } else {
             lblSocio = "ALTERAR";
