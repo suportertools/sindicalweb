@@ -590,7 +590,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.parentesco,                                  " + // 36
                 "            s.categoria,                                   " + // 37
                 "            pt.fantasia,                                   " + // 38
-                "            pt.codigo_funcional                            ";  // 39
+                "            pt.codigo_funcional,                           " + // 39
+                "            s.titular                                      ";  // 40
         try {
             Query qry = getEntityManager().createNativeQuery(textqry);
             if (!qry.getResultList().isEmpty()) {
