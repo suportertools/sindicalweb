@@ -116,6 +116,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     private int indexEndereco = 0;
     private String strEndereco = "";
+    private Integer tipoCadastro = -1;
 
     public void novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
@@ -584,7 +585,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void editarFisicaSocio(Fisica fis) {
         SociosDB db = new SociosDBToplink();
-        socios = db.pesquisaSocioPorPessoa(fisica.getPessoa().getId());
+        socios = db.pesquisaSocioPorPessoaAtivo(fisica.getPessoa().getId());
+        if (socios.getId() == -1) {
+            socios = new SociosDBToplink().pesquisaSocioTitularInativoPorPessoa(fisica.getPessoa().getId());
+            if (socios == null) {
+                socios = new Socios();
+            }
+        }
         listaSocioInativo.clear();
     }
 
@@ -1216,11 +1223,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         Dao di = new Dao();
         di.openTransaction();
 
-        if (!pe.getDemissao().isEmpty()){
+        if (!pe.getDemissao().isEmpty()) {
             GenericaMensagem.error("Atenção", "Pessoa demissionada não pode ser Reativa!");
             return;
         }
-        
+
         if (pessoaEmpresa.getId() == -1) {
             pe.setPrincipal(true);
             if (!di.update(pe)) {
@@ -1242,33 +1249,40 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         di.commit();
     }
 
-    public String associarFisica() {
-        boolean reativar;
-        if (fisica.getId() == -1) {
-            msgSocio = "Cadastre uma pessoa fisica para associar!";
+    public String associarFisica() {       
+        boolean reativar = false;
+        Pessoa p = fisica.getPessoa();
+        if (tipoCadastro == -1) {
             GenericaMensagem.warn("Validação", "Cadastre uma pessoa fisica para associar!");
             return "pessoaFisica";
-        } else {
-            msgSocio = "";
-//            GenericaSessao.put("fisicaPesquisa", fisica);
-            GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
-
-            if (socios.getMatriculaSocios().getMotivoInativacao() == null) {
-                reativar = true;
-                //GenericaSessao.put("reativarSocio", true);
-            } else {
-                reativar = false;
-                //GenericaSessao.put("reativarSocio", false);
+        } else if (tipoCadastro == 1) {
+            if(socios.getId() == -1) {
+                if (fisica.getPessoa().getDocumento().isEmpty() || fisica.getPessoa().getDocumento().equals("0")) {
+                    GenericaMensagem.warn("Erro", "Para se associar é necessário ter número de documento (CPF) no cadastro!");
+                    return null;
+                }
             }
-
+            reativar = socios.getServicoPessoa().isAtivo();
+        } else if (tipoCadastro == 2) {
+            reativar = socios.getServicoPessoa().isAtivo();
+        } else if (tipoCadastro == 3) {
+            p = socios.getMatriculaSocios().getTitular();
+            reativar = socios.getServicoPessoa().isAtivo();
+        } else if (tipoCadastro == 4) {
+            reativar = socios.getServicoPessoa().isAtivo();
+        } else if (tipoCadastro == 5) {
+            reativar = socios.getServicoPessoa().isAtivo();
         }
-
-        String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
-
+        if (pessoaEmpresa.getId() != -1) {
+            GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
+        }
+        String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).socios();
+        if (socios.getId() == -1) {
+            reativar = false;
+        }
         GenericaSessao.put("sociosBean", new SociosBean());
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
-        sb.loadSocio(fisica.getPessoa(), reativar);
-
+        sb.loadSocio(p, reativar);
         return retorno;
     }
 
@@ -1474,7 +1488,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String getLblSocio() {
         if (socios.getId() == -1) {
             lblSocio = "ASSOCIAR";
-        } else if (socios.getId() != -1 && socios.getMatriculaSocios().getDtInativo() != null) {
+        } else if (socios.getId() != -1 && (socios.getMatriculaSocios().getDtInativo() != null || !socios.getServicoPessoa().isAtivo())) {
             lblSocio = "ASSOCIAR";
         } else {
             lblSocio = "VER CADASTRO";
@@ -1816,6 +1830,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public List<Socios> getListaSocioInativo() {
         if (listaSocioInativo.isEmpty() && fisica.getId() != -1) {
+            //listaSocioInativo = new SociosDBToplink().listaSocioTitularInativoPorPessoa(fisica.getPessoa().getId()); 
             listaSocioInativo = new SociosDBToplink().pesquisaSocioPorPessoaInativo(fisica.getPessoa().getId());
         }
         return listaSocioInativo;
@@ -1946,5 +1961,34 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setPessoaOposicao(boolean pessoaOposicao) {
         this.pessoaOposicao = pessoaOposicao;
+    }
+
+    public Integer getTipoCadastro() {
+        if (fisica.getId() == -1) {
+            // CADASTRO NOVO
+            tipoCadastro = -1;
+        } else if (socios.getId() == -1) {
+            // CADASTRO PARA ALTERAR
+            tipoCadastro = 1;
+        } else if (socios.getServicoPessoa().isAtivo()) {
+            if (fisica.getPessoa().getId() == socios.getMatriculaSocios().getTitular().getId()) {
+                // SÓCIO TITULAR
+                tipoCadastro = 2;
+            } else {
+                // SÓCIO DEPENDENTE
+                tipoCadastro = 3;
+            }
+        } else if (!socios.getServicoPessoa().isAtivo() && listaSocioInativo.isEmpty()) {
+            // SÓCIO INÁTIVO
+            tipoCadastro = 4;
+        } else if (!socios.getServicoPessoa().isAtivo() && !listaSocioInativo.isEmpty()) {
+            // SÓCIO INÁTIVO
+            tipoCadastro = 5;
+        }
+        return tipoCadastro;
+    }
+
+    public void setTipoCadastro(Integer tipoCadastro) {
+        this.tipoCadastro = tipoCadastro;
     }
 }
