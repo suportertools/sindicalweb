@@ -203,14 +203,52 @@ public class SociosDBToplink extends DB implements SociosDB {
     }
 
     @Override
+    public Socios pesquisaSocioPorPessoaEMatriculaSocio(int idPessoa, int idMatriculaSocios) {
+        Socios socio = new Socios();
+
+        try {
+
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT s.id "
+                    + "  FROM soc_socios s "
+                    + " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa"
+                    + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa"
+                    + " WHERE sp.id_pessoa = " + idPessoa
+                    + "   AND s.id_matricula_socios = " + idMatriculaSocios
+                    + " ORDER BY sp.id");
+
+            List<Vector> lista = qry.getResultList();
+
+            for (int i = 0; i < lista.size(); i++) {
+                socio = (Socios) (new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) lista.get(i).get(0), "Socios");
+            }
+
+            //            Query qry = getEntityManager().createQuery(""
+            //                    + " SELECT s "
+            //                    + "   FROM Socios s "
+            //                    + "  WHERE s.servicoPessoa.pessoa.id = :pid "
+            //                    + "  ORDER BY s.servicoPessoa.id DESC");
+            //            qry.setParameter("pid", idPessoa);
+            //soc = (Socios) qry.setMaxResults(1).getSingleResult();
+            //            soc = (Socios) qry.getSingleResult();
+        } catch (EJBQLException e) {
+            e.getMessage();
+        }
+        return socio;
+    }
+
+    @Override
     public Socios pesquisaSocioPorPessoaAtivo(int idPessoa) {
         Socios soc = new Socios();
         try {
             Query qry = getEntityManager().createQuery("select s from Socios s"
                     + " where s.servicoPessoa.pessoa.id = :pid"
-                    + "   and s.matriculaSocios.motivoInativacao is null");
+                    + "   and s.servicoPessoa.ativo = true");
             qry.setParameter("pid", idPessoa);
-            soc = (Socios) qry.getSingleResult();
+            List list = qry.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                soc = (Socios) qry.getSingleResult();
+            }
         } catch (Exception e) {
             e.getMessage();
         }
@@ -220,14 +258,60 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public List<Socios> pesquisaSocioPorPessoaInativo(int idPessoa) {
         try {
-            //Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid AND s.matriculaSocios.motivoInativacao IS NOT NULL ORDER BY s.matriculaSocios.dtInativo DESC");
-            Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid AND s.servicoPessoa.ativo = false ORDER BY s.matriculaSocios.dtInativo DESC");
-            qry.setParameter("pid", idPessoa);
-            return qry.getResultList();
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false ORDER BY S.matriculaSocios.id DESC");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList<Socios>();
         }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Socios> pesquisaSocioPorPessoaTitularInativo(int idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false ORDER BY S.id DESC");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Socios pesquisaSocioTitularInativoPorPessoa(int idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.matriculaSocios.titular.id = :pessoa AND S.servicoPessoa.pessoa.id = :pessoaTitular AND S.servicoPessoa.ativo = false ORDER BY S.matriculaSocios.id DESC");
+            query.setParameter("pessoa", idPessoa);
+            query.setParameter("pessoaTitular", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Socios) list.get(0);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Socios> listaSocioTitularInativoPorPessoa(int idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false AND S.matriculaSocios.dtInativo IS NOT NULL ORDER BY S.matriculaSocios.dtInativo DESC");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 
     @Override
