@@ -46,7 +46,7 @@
                             <p:dialog widgetVar="i_dlg_c" header="Mensagem" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
-                                    <p:commandButton value="OK" onclick="PF('i_dlg_c').hide()" style="float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="OK" onclick="PF('i_dlg_c').hide();" style="float: left" icon="ui-icon-check"/>  
                                 </h:panelGrid>
                             </p:dialog>
 
@@ -64,7 +64,7 @@
                             <h:panelGrid id="i_panel_tipo" columns="4" style="margin-top: 10px">
                                 <p:column>
                                     <h:outputLabel value="Grupo Categoria"/><br />
-                                    <p:selectOneMenu value="#{sociosBean.idGrupoCategoria}" style="width: 380px" disabled="#{sociosBean.socios.id != -1}">
+                                    <p:selectOneMenu value="#{sociosBean.idGrupoCategoria}" style="width: 380px" disabled="#{sociosBean.socios.matriculaSocios.id != -1}">
                                         <p:ajax event="change" update="@this i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarCategoria()}"/>
                                         <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
                                     </p:selectOneMenu>
@@ -72,15 +72,15 @@
 
                                 <p:column>
                                     <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
-                                    <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" disabled="#{sociosBean.socios.id != -1}">
-                                        <p:ajax event="change" update="@this i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarListaCategoria()}"/> 
+                                    <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.atualizarListaCategoria()}" disabled="#{sociosBean.socios.matriculaSocios.id != -1}">
+                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" /> 
                                         <f:selectItems value="#{sociosBean.listaCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
                                 <p:column>
                                     <h:outputLabel value="NÚMERO DA MATRÍCULA" style="margin-left: 30px"/><br />
-                                    <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" onclick="PF('i_dlg_matricula').show()" size="17" readonly="true" style="margin-left: 30px; font-weight: bold; font-size: 10pt!important; cursor: pointer; background: #9ccaaa; text-align: center"/>
+                                    <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" onclick="PF('i_dlg_matricula').show();" size="17" readonly="true" style="margin-left: 30px; font-weight: bold; font-size: 10pt!important; cursor: pointer; background: #9ccaaa; text-align: center"/>
                                 </p:column>
                             </h:panelGrid>
                             
@@ -176,8 +176,8 @@
                                             <f:selectItem itemValue="30" itemLabel="30"/>
                                             <f:selectItem itemValue="31" itemLabel="31"/>
                                         </p:selectOneMenu>
-                                        <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show()" rendered="#{sociosBean.servicoPessoa.id != -1}"/>
-                                        <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show()" disabled="true" style="cursor: pointer" rendered="#{sociosBean.servicoPessoa.id == -1}" title="Não existe serviço pessoa para alterar este vencimento"/>
+                                        <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show();" rendered="#{sociosBean.servicoPessoa.id != -1}"/>
+                                        <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show();" disabled="true" style="cursor: pointer" rendered="#{sociosBean.servicoPessoa.id == -1}" title="Não existe serviço pessoa para alterar este vencimento"/>
                                     </h:panelGrid>
                                 </p:column>
                             </h:panelGrid>
@@ -259,7 +259,7 @@
                                     <h:outputLabel value="Este sócio esta inativo desde: #{sociosBean.matriculaSocios.inativo} por #{sociosBean.matriculaSocios.motivoInativacao.descricao}" style="margin-left: 30px; font-size: 10pt; color: white; font-weight: bold"/>
                                     <p:commandLink value=" detalhes " onclick="PF('i_dlg_smi_detalhes').show()" style="margin-left: 10px" rendered="#{sociosBean.matriculaSocios.motivo != ''}"/>
                                     <br />
-                                    <p:commandLink value="CLIQUE AQUI PARA REATIVAR" onclick="PF('i_dlg_re').show()" style="margin-left: 30px; font-size: 8pt; font-weight: bold"/>
+                                    <p:commandLink value="CLIQUE AQUI PARA REATIVAR" onclick="PF('i_dlg_re').show();" style="margin-left: 30px; font-size: 8pt; font-weight: bold"/>
                                 </p:panel>
 
                                 <p:panel style="background-color: #9ccaaa; margin-left:30px" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}">
@@ -302,11 +302,11 @@
 
                             <p:panel id="i_panel_dependente" header="Dependentes" style="margin-top: 10px">
                                 <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente i_msg" icon="ui-icon-circle-plus"/>
-                                <p:commandLink value="Sócio com Dependentes Inativos" id="id_dependente_inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()" styleClass="font-color-red bold" update="i_l_d_i" disabled="#{controleAcessoBean.verificarPermissao('linkDependente', 1)}"/>
+                                <p:commandLink value="Sócio com Dependentes Inativos" id="id_dependente_inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()" styleClass="font-color-red bold" update="i_l_d_i" disabled="#{controleAcessoBean.verificarPermissao('linkDependente', 1)}" actionListener="#{sociosBean.atualizarListaDependenteInativo}"/>
 
                                 <p:dataTable var="linha" id="tbl" value="#{sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
                                     <p:column width="30">
-                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" />
+                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" title="Excluir dependente"/>
                                     </p:column>
 
                                     <p:column headerText="Nome" width="200">
@@ -357,7 +357,6 @@
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sair" styleClass="ui-confirmdialog-no" oncomplete="PF('i_dlg_deps').hide()" update="i_panel_dependente"/>
-                                        <h:outputLabel value=" * Clique em ALTERAR para CONFIRMAR as alterações" style="color: red"/>
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>
