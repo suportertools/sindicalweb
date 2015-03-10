@@ -73,7 +73,7 @@
                                 <p:column>
                                     <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
                                     <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.atualizarListaCategoria()}" disabled="#{sociosBean.socios.matriculaSocios.id != -1}">
-                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" /> 
+                                        <p:ajax event="change" update="@this i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarListaCategoria()}"/> 
                                         <f:selectItems value="#{sociosBean.listaCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
