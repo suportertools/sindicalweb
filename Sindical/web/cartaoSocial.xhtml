@@ -133,11 +133,11 @@
 
                                     <p:column selectionMode="multiple" width="25" style="text-align: center"/>  
 
-                                    <p:column headerText="Matrícula" style="text-align: center; width: 80px">  
+                                    <p:column headerText="Matrícula" style="text-align: center; width: 80px" filterBy="#{linha[10]}" sortBy="#{linha[10]}">  
                                         <h:outputText value="#{linha[10]}" />  
                                     </p:column>  
 
-                                    <p:column headerText="Nome" filterValue="#{linha[1]}">
+                                    <p:column headerText="Nome" filterBy="#{linha[1]}" filterMatchMode="global" sortBy="#{linha[1]}">
                                         <p:commandLink value="#{linha[1]}" onclick="PF('dlg_pessoa_card').show()" update=":formCartaoSocial:i_pessoa_card" action="#{pessoaCardBean.cardPessoa(linha[0])}" title="Ver detalhes"/>
                                     </p:column>  
 
