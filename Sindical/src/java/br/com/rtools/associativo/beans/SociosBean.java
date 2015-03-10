@@ -730,7 +730,6 @@ public class SociosBean implements Serializable {
 
             GenericaMensagem.info("Concluído", "Sócio inativado com Sucesso!");
             sv.comitarTransacao();
-
             FisicaDB dbf = new FisicaDBToplink();
             GenericaSessao.put("fisicaBean", new FisicaBean());
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
@@ -738,6 +737,10 @@ public class SociosBean implements Serializable {
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
             PF.update("formSocios");
+            listaDependentes.clear();
+            listaDependentesInativos.clear();
+            atualizarListaDependenteAtivo();
+            atualizarListaDependenteInativo(); 
 
         } else {
             GenericaMensagem.warn("Erro", "Não existe sócio para ser inativado!");
@@ -779,17 +782,17 @@ public class SociosBean implements Serializable {
         }
 
         servicoPessoa = sp;
-        List<Socios> listaDps = db.listaDependentesInativos(matriculaSocios.getId());
-        for (int i = 0; i < listaDps.size(); i++) {
-            ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
-            sp2.setAtivo(true);
-            if (!sv.alterarObjeto(sp2)) {
-                GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa do Dependente");
-                sv.desfazerTransacao();
-                return null;
-            }
-            sp2 = new ServicoPessoa();
-        }
+//        List<Socios> listaDps = db.listaDependentesInativos(matriculaSocios.getId());
+//        for (int i = 0; i < listaDps.size(); i++) {
+//            ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
+//            sp2.setAtivo(true);
+//            if (!sv.alterarObjeto(sp2)) {
+//                GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa do Dependente");
+//                sv.desfazerTransacao();
+//                return null;
+//            }
+//            sp2 = new ServicoPessoa();
+//        }
         matriculaSocios.setMotivoInativacao(null);
         matriculaSocios.setDtInativo(null);
         if (!sv.alterarObjeto(matriculaSocios)) {
@@ -801,12 +804,17 @@ public class SociosBean implements Serializable {
         dataInativacao = DataHoje.data();
 
         sv.comitarTransacao();
-
         FisicaDB dbf = new FisicaDBToplink();
         GenericaSessao.put("fisicaBean", new FisicaBean());
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
+        PF.update("formSocios");
+        listaDependentes.clear();
+        listaDependentesInativos.clear();
+        atualizarListaDependenteAtivo();
+        atualizarListaDependenteInativo();
         return null;
     }
 
@@ -1359,13 +1367,24 @@ public class SociosBean implements Serializable {
 
         SociosDB dbs = new SociosDBToplink();
         SociosDao sociosDao = new SociosDao();
+        Socios s = dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId());
+        if(s.getId() != -1) {
+            if(s.getServicoPessoa().isAtivo()) {
+                if(s.getMatriculaSocios().getTitular().getId() == socios.getMatriculaSocios().getTitular().getId()) {
+                    GenericaMensagem.error("Validação", "Pessoa já é dependente nesta matrícula!");
+                } else {
+                    GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para o(a) titular " + s.getMatriculaSocios().getTitular().getNome());                    
+                }
+                return false;                
+            }
+        }
         List<Socios> list = sociosDao.listaPorPessoa(novoDependente.getPessoa().getId());
         Socios soc_dep = dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId());
         if (soc_dep.getId() != -1 && (soc_dep.getMatriculaSocios().getId() != socios.getMatriculaSocios().getId())) {
             for (int i = 0; i < list.size(); i++) {
                 if (soc_dep.getMatriculaSocios().getNrMatricula() == list.get(i).getMatriculaSocios().getNrMatricula()) {
                     if (list.get(i).getServicoPessoa().isAtivo()) {
-                        GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para titular " + list.get(i).getMatriculaSocios().getTitular().getNome());
+                        GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para o(a) titular " + list.get(i).getMatriculaSocios().getTitular().getNome());
                         return false;
                     }
                 }
