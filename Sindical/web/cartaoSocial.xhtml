@@ -125,7 +125,7 @@
                             </p:panel>
 
                             <h:panelGrid id="i_panel_grid" style="float: left; clear: both; width: 100%">
-                                <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!">  
+                                <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!">
 
                                     <p:column style="width:20px">  
                                         <p:rowToggler />  
@@ -137,7 +137,7 @@
                                         <h:outputText value="#{linha[10]}" />  
                                     </p:column>  
 
-                                    <p:column headerText="Nome">  
+                                    <p:column headerText="Nome" filterValue="#{linha[1]}">
                                         <p:commandLink value="#{linha[1]}" onclick="PF('dlg_pessoa_card').show()" update=":formCartaoSocial:i_pessoa_card" action="#{pessoaCardBean.cardPessoa(linha[0])}" title="Ver detalhes"/>
                                     </p:column>  
 
