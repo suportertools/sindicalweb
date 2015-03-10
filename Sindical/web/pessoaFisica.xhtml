@@ -314,7 +314,7 @@
                                                     </f:facet>
                                                 </p:dialog>
 
-                                                <h:panelGrid rendered="#{fisicaBean.socios.id != -1 and fisicaBean.socios.servicoPessoa.ativo}" columns="9" style="width: 60%">
+                                                <h:panelGrid rendered="#{fisicaBean.tipoCadastro == 2 or fisicaBean.tipoCadastro == 3 or fisicaBean.tipoCadastro == 4 or fisicaBean.tipoCadastro == 5}" columns="9" style="width: 60%">
                                                     <p:column>
                                                         <p:outputLabel value="Nº. Matrícula " style="font-size: 10pt!important"/>
                                                         <p:outputLabel value="#{fisicaBean.socios.matriculaSocios.nrMatricula}" style="font-weight: bold; font-size: 10pt!important"/>    
