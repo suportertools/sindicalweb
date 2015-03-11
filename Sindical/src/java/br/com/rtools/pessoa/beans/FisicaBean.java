@@ -86,6 +86,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
     private List<PessoaEmpresa> listaPessoaEmpresa = new ArrayList();
     private final List<SelectItem> listaProfissoes = new ArrayList();
+    private List<SelectItem> listaPaises = new ArrayList();
     private int idPais = 11;
     private int idProfissao = 0;
     private int idIndexFisica = 0;
@@ -475,7 +476,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 }
             }
         }
-
+        for (int i = 0; i < listaPaises.size(); i++) {
+            if ((listaPaises.get(i).getLabel().toUpperCase()).equals(fisica.getNacionalidade().toUpperCase())) {
+                idPais = i;
+                break;
+            }
+        }
         indexNovoEndereco = "";
         strEndereco = "";
         listaPessoaEndereco.clear();
@@ -911,79 +917,82 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public List<SelectItem> getListaPaises() {
-        // String[] lista = new String[]{};
-        String[] lista = new String[]{
-            "Africana(o)",
-            "Afegã(o)",
-            "Alemã(o)",
-            "Americana(o)",
-            "Angolana(o)",
-            "Argelina(o)",
-            "Argentina(o)",
-            "Asiática(o)",
-            "Australiana(o)",
-            "Belga(o)",
-            "Boliviana(o)",
-            "Brasileira(o)",
-            "Canadense(o)",
-            "Canadiana(o)",
-            "Chilena(o)",
-            "Chinesa(o)",
-            "Colombiana(o)",
-            "Cubana(o)",
-            "Da Nova Zelândia(o)",
-            "Dinamarquesa(o)",
-            "Egípcia(o)",
-            "Equatoriana(o)",
-            "Espanha(o)",
-            "Espanhola(o)",
-            "Europeu(o)",
-            "Finlandesa(o)",
-            "Francesa(o)",
-            "Grega(o)",
-            "Haitiana(o)",
-            "Holandesa(o)",
-            "Hondurenha(o)",
-            "Hungara(o)",
-            "Indiana(o)",
-            "Inglesa(o)",
-            "Iraneana(o)",
-            "Iraquiana(o)",
-            "Italiana(o)",
-            "Jamaicana(o)",
-            "Japonesa(o)",
-            "Marroquina(o)",
-            "Mexicana(o)",
-            "Norte Americana(o)",
-            "Norueguesa(o)",
-            "Paquistanesa(o)",
-            "Paraguaia(o)",
-            "Peruana(o)",
-            "Polaca(o)",
-            "Portuguesa(o)",
-            "Queniana(o)",
-            "Russa(o)",
-            "Sueca(o)",
-            "Suiça(o)",
-            "Sul-Africana(o)",
-            "Sul-Coreana(o)",
-            "Turca(o)",
-            "Uraguaia(o)",
-            "Venezuelana(o)"};
-        List<SelectItem> selectPais = new ArrayList<SelectItem>();
-        int i = 0;
-        while (i < lista.length) {
-            selectPais.add(new SelectItem(i, lista[i], String.valueOf(i)));
-            i++;
-        }
-        if (fisica.getId() != -1) {
-            for (i = 0; i < selectPais.size(); i++) {
-                if (selectPais.get(i).getLabel().equals(fisica.getNacionalidade())) {
-                    idPais = i;
-                }
+        if (listaPaises.isEmpty()) {
+            // String[] lista = new String[]{};
+            String[] lista = new String[]{
+                "Africana(o)",
+                "Afegã(o)",
+                "Alemã(o)",
+                "Americana(o)",
+                "Angolana(o)",
+                "Argelina(o)",
+                "Argentina(o)",
+                "Asiática(o)",
+                "Australiana(o)",
+                "Belga(o)",
+                "Boliviana(o)",
+                "Brasileira(o)",
+                "Canadense(o)",
+                "Canadiana(o)",
+                "Chilena(o)",
+                "Chinesa(o)",
+                "Colombiana(o)",
+                "Cubana(o)",
+                "Da Nova Zelândia(o)",
+                "Dinamarquesa(o)",
+                "Egípcia(o)",
+                "Equatoriana(o)",
+                "Espanha(o)",
+                "Espanhola(o)",
+                "Europeu(o)",
+                "Finlandesa(o)",
+                "Francesa(o)",
+                "Grega(o)",
+                "Haitiana(o)",
+                "Holandesa(o)",
+                "Hondurenha(o)",
+                "Hungara(o)",
+                "Indiana(o)",
+                "Inglesa(o)",
+                "Iraneana(o)",
+                "Iraquiana(o)",
+                "Italiana(o)",
+                "Jamaicana(o)",
+                "Japonesa(o)",
+                "Marroquina(o)",
+                "Mexicana(o)",
+                "Norte Americana(o)",
+                "Norueguesa(o)",
+                "Paquistanesa(o)",
+                "Paraguaia(o)",
+                "Peruana(o)",
+                "Polaca(o)",
+                "Portuguesa(o)",
+                "Queniana(o)",
+                "Russa(o)",
+                "Sueca(o)",
+                "Suiça(o)",
+                "Sul-Africana(o)",
+                "Sul-Coreana(o)",
+                "Turca(o)",
+                "Uraguaia(o)",
+                "Venezuelana(o)"};
+            for (int i = 0; i < lista.length; i++) {
+                listaPaises.add(new SelectItem(i, lista[i], String.valueOf(i)));
             }
+//            if (fisica.getId() != -1) {
+//                for (int i = 0; i < listaPaises.size(); i++) {
+//                    if ((listaPaises.get(i).getLabel().toUpperCase()).equals(fisica.getNacionalidade().toUpperCase())) {
+//                        idPais = i;
+//                    }
+//                }
+//            }
         }
-        return selectPais;
+        return listaPaises;
+    }
+
+    public void setListaPaises(List<SelectItem> listaPaises) {
+        this.listaPaises = listaPaises;
     }
 
     public List<SelectItem> getListaProfissoes() {
@@ -1003,6 +1012,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             readyOnlineNaturalidade = false;
             disabledNaturalidade = true;
             nat = "";
+            fisica.setNaturalidade(nat);
             return nat;
         } else {
             readyOnlineNaturalidade = true;
@@ -1032,7 +1042,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     nat = cidade.getCidade();
                     nat = nat + " - " + cidade.getUf();
                     nat = nat + " <<<";
-                    fisica.setNaturalidade(nat);
+                    if (idPais != 11) {
+                        fisica.setNaturalidade("");
+                    } else {
+                        fisica.setNaturalidade(nat);
+                    }
                     return nat;
                 }
             }
@@ -1249,14 +1263,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         di.commit();
     }
 
-    public String associarFisica() {       
+    public String associarFisica() {
         boolean reativar = false;
         Pessoa p = fisica.getPessoa();
         if (tipoCadastro == -1) {
             GenericaMensagem.warn("Validação", "Cadastre uma pessoa fisica para associar!");
             return "pessoaFisica";
         } else if (tipoCadastro == 1) {
-            if(socios.getId() == -1) {
+            if (socios.getId() == -1) {
                 if (fisica.getPessoa().getDocumento().isEmpty() || fisica.getPessoa().getDocumento().equals("0")) {
                     GenericaMensagem.warn("Erro", "Para se associar é necessário ter número de documento (CPF) no cadastro!");
                     return null;
@@ -1347,28 +1361,29 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.pessoaProfissao = pessoaProfissao;
     }
 
-    public void setPessoaEndereco(PessoaEndereco pessoaEndereco) {
-        this.pessoaEndereco = pessoaEndereco;
-    }
-
     public PessoaEndereco getPessoaEndereco() {
         return pessoaEndereco;
     }
-
-    public void setEnderecoCompleto(String enderecoCompleto) {
-        this.enderecoCompleto = enderecoCompleto;
+    
+    public void setPessoaEndereco(PessoaEndereco pessoaEndereco) {
+        this.pessoaEndereco = pessoaEndereco;
     }
 
     public String getEnderecoCompleto() {
         return enderecoCompleto;
     }
-
-    public void setIndicaTab(String indicaTab) {
-        this.indicaTab = indicaTab;
+    
+    public void setEnderecoCompleto(String enderecoCompleto) {
+        this.enderecoCompleto = enderecoCompleto;
     }
+
 
     public String getIndicaTab() {
         return indicaTab;
+    }
+    
+    public void setIndicaTab(String indicaTab) {
+        this.indicaTab = indicaTab;
     }
 
     public Fisica getFisica() {

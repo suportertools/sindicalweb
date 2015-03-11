@@ -18,7 +18,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class ModeloCarteirinhaBean {
+public class ModeloCarteirinhaBean { 
 
     private ModeloCarteirinha modelo = new ModeloCarteirinha();
     private ModeloCarteirinhaCategoria modeloCategoria = new ModeloCarteirinhaCategoria();

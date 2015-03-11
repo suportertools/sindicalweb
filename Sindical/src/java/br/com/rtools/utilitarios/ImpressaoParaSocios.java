@@ -374,11 +374,12 @@ public class ImpressaoParaSocios {
                 assinatura = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/assinatura.jpg");
             }
             try {
+                String recadastro = DataHoje.converteData(fisica.getDtRecadastro());
                 listaSocios.add(new FichaSocial(0,
                         matriculaSocios.getTitular().getId(),
                         matriculaSocios.getNrMatricula(),
                         matriculaSocios.getEmissao(),
-                        "",
+                        recadastro,
                         matriculaSocios.getCategoria().getGrupoCategoria().getGrupoCategoria(),
                         matriculaSocios.getCategoria().getCategoria(),
                         fisica.getPessoa().getNome(),

@@ -105,6 +105,14 @@ public class DataHoje {
         return referencia.substring(3);
     }
 
+    public static String converteDataParaReferencia(String data) {
+        try {
+            return data.substring(3);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
     public static String[] ArrayDataHoje() {
         String[] result = new String[3];
         result[0] = DataHoje.data().substring(0, 2);

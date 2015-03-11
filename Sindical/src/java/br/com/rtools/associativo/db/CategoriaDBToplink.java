@@ -112,12 +112,11 @@ public class CategoriaDBToplink extends DB implements CategoriaDB {
         }
     }
     
+    @Override
     public List<GrupoCategoria> pesquisaGrupoCategoriaOrdenada() {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "  select gc from GrupoCategoria gc order by gc.grupoCategoria"
-            );
-            return qry.getResultList();
+            Query query = getEntityManager().createQuery("SELECT GC FROM GrupoCategoria AS GC ORDER BY GC.grupoCategoria");
+            return query.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }

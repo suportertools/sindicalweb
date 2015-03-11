@@ -85,68 +85,15 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
             return null;
         }
     }
-    
+
     @Override
     public List<Parentesco> pesquisaTodosSemTitularCategoria(int id_categoria) {
         try {
             Query qry = getEntityManager().createQuery(
-                            "  SELECT sc.parentesco "
-                            + "  FROM ServicoCategoria sc "
-                            + " WHERE sc.categoria.id = "+id_categoria+" "
-                            + "   AND sc.parentesco.id <> 1 "
-                            + " ORDER BY sc.parentesco.id"
-            );
-            return qry.getResultList();
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList<Parentesco>();
-        }
-    }
-    
-    @Override
-    public List<Parentesco> pesquisaTodosSemTitularCategoriaSemDesconto(int id_categoria, int id_categoria_desconto) {
-        try {
-            Query qry = getEntityManager().createQuery(
-                            "  SELECT sc.parentesco "
-                            + "  FROM ServicoCategoria sc "
-                            + " WHERE sc.categoria.id = "+id_categoria+" "
-                            + "   AND sc.parentesco.id <> 1 "
-                            + "   AND sc.parentesco.id NOT IN (SELECT cdd.parentesco.id FROM CategoriaDescontoDependente cdd WHERE cdd.categoriaDesconto.id = " + id_categoria_desconto + ")"
-                            + " ORDER BY sc.parentesco.id"
-            );
-            return qry.getResultList();
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList<Parentesco>();
-        }
-    }
-    
-    @Override
-    public List<Parentesco> pesquisaTodosComTitularCategoriaSemDesconto(int id_categoria, int id_categoria_desconto) {
-        try {
-            Query qry = getEntityManager().createQuery(
-                            "  SELECT sc.parentesco "
-                            + "  FROM ServicoCategoria sc "
-                            + " WHERE sc.categoria.id = "+id_categoria+" "
-                            + "   AND sc.parentesco.id NOT IN (SELECT cdd.parentesco.id FROM CategoriaDescontoDependente cdd WHERE cdd.categoriaDesconto.id = " + id_categoria_desconto + ")"
-                            + " ORDER BY sc.parentesco.id"
-            );
-            return qry.getResultList();
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList<Parentesco>();
-        }
-    }
-    
-    @Override
-    public List<Parentesco> pesquisaTodosSemTitularCategoriaSexo(int id_categoria, String sexo) {
-        try {
-            Query qry = getEntityManager().createQuery(
-                      " SELECT sc.parentesco "
-                    + "   FROM ServicoCategoria sc "
-                    + "  WHERE sc.categoria.id = "+id_categoria+" "
-                    + " AND sc.parentesco.id <> 1 "
-                    + " AND sc.parentesco.sexo = '"+sexo+"' "
+                    "  SELECT sc.parentesco "
+                    + "  FROM ServicoCategoria sc "
+                    + " WHERE sc.categoria.id = " + id_categoria + " "
+                    + "   AND sc.parentesco.id <> 1 "
                     + " ORDER BY sc.parentesco.id"
             );
             return qry.getResultList();
@@ -154,6 +101,60 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
             e.getMessage();
             return new ArrayList<Parentesco>();
         }
+    }
+
+    @Override
+    public List<Parentesco> pesquisaTodosSemTitularCategoriaSemDesconto(int id_categoria, int id_categoria_desconto) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  SELECT sc.parentesco "
+                    + "  FROM ServicoCategoria sc "
+                    + " WHERE sc.categoria.id = " + id_categoria + " "
+                    + "   AND sc.parentesco.id <> 1 "
+                    + "   AND sc.parentesco.id NOT IN (SELECT cdd.parentesco.id FROM CategoriaDescontoDependente cdd WHERE cdd.categoriaDesconto.id = " + id_categoria_desconto + ")"
+                    + " ORDER BY sc.parentesco.id"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList<Parentesco>();
+        }
+    }
+
+    @Override
+    public List<Parentesco> pesquisaTodosComTitularCategoriaSemDesconto(int id_categoria, int id_categoria_desconto) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "     SELECT SC.parentesco                          "
+                    + "     FROM ServicoCategoria AS SC                 "
+                    + "    WHERE SC.categoria.id = " + id_categoria
+                    + "      AND SC.parentesco.id NOT IN (SELECT CDD.parentesco.id FROM CategoriaDescontoDependente AS CDD WHERE CDD.categoriaDesconto.id = " + id_categoria_desconto + ")"
+                    + " ORDER BY SC.parentesco.id                       "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Parentesco> pesquisaTodosSemTitularCategoriaSexo(int id_categoria, String sexo) {
+        try {
+            Query query = getEntityManager().createQuery(
+                    "     SELECT SC.parentesco                      "
+                    + "     FROM ServicoCategoria AS SC             "
+                    + "    WHERE SC.categoria.id = " + id_categoria
+                    + "      AND SC.parentesco.id <> 1              "
+                    + "      AND SC.parentesco.sexo = '" + sexo + "'"
+                    + " ORDER BY SC.parentesco.parentesco ASC       "
+            );
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList<>();
     }
 
 //    @Override
