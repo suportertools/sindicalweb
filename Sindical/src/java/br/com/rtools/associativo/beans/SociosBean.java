@@ -171,12 +171,12 @@ public class SociosBean implements Serializable {
         index_desconto = 0;
         matriculaSocios.setEmissao(DataHoje.data());
     }
-    
-    public void loadPessoaComplemento(Integer id_pessoa){
+
+    public void loadPessoaComplemento(Integer id_pessoa) {
         PessoaDB db = new PessoaDBToplink();
         PessoaComplemento pc = db.pesquisaPessoaComplementoPorPessoa(id_pessoa);
-        
-        if(pc.getId() == -1) {
+
+        if (pc.getId() == -1) {
             servicoPessoa.setNrDiaVencimento(getRegistro().getFinDiaVencimentoCobranca());
         } else {
             servicoPessoa.setNrDiaVencimento(pc.getNrDiaVencimento());
@@ -186,7 +186,7 @@ public class SociosBean implements Serializable {
     public void loadSocio(Pessoa p, boolean reativar) {
         loadSocio(p, reativar, null);
     }
-    
+
     public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
@@ -199,13 +199,13 @@ public class SociosBean implements Serializable {
         if (reativar == false) {
             descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
             servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
-            servicoPessoa.setPessoa(p);            
+            servicoPessoa.setPessoa(p);
             // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
             loadServicos();
             loadPessoaComplemento(servicoPessoa.getPessoa().getId());
             return;
         } else {
-            socios = socio_pessoa;                
+            socios = socio_pessoa;
 
         }
 
@@ -233,7 +233,7 @@ public class SociosBean implements Serializable {
         // CARREGAR OS SERVICOS APENAS QUANDO TER UMA PESSOA NA SESSÃO
         loadServicos();
         loadPessoaComplemento(servicoPessoa.getPessoa().getId());
-        
+
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
         List<SocioCarteirinha> listsc;
 
@@ -297,10 +297,9 @@ public class SociosBean implements Serializable {
 
         //SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         //List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
-        
         CategoriaDB db = new CategoriaDBToplink();
         List<GrupoCategoria> grupoCategorias = db.pesquisaGrupoCategoriaOrdenada();
-        
+
         if (!grupoCategorias.isEmpty()) {
             for (int i = 0; i < grupoCategorias.size(); i++) {
                 listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
@@ -740,7 +739,7 @@ public class SociosBean implements Serializable {
             listaDependentes.clear();
             listaDependentesInativos.clear();
             atualizarListaDependenteAtivo();
-            atualizarListaDependenteInativo(); 
+            atualizarListaDependenteInativo();
 
         } else {
             GenericaMensagem.warn("Erro", "Não existe sócio para ser inativado!");
@@ -915,7 +914,12 @@ public class SociosBean implements Serializable {
                 return null;
             }
         }
-        sv.alterarObjeto(grupoCategoria);
+
+        if (!sv.alterarObjeto(grupoCategoria)) {
+            GenericaMensagem.error("Erro", "Ao atualizar Grupo Categoria!");
+            sv.desfazerTransacao();
+            return null;
+        }
 
         socios.setMatriculaSocios(matriculaSocios);
         socios.setParentesco((Parentesco) sv.pesquisaCodigo(1, "Parentesco"));
@@ -1148,29 +1152,31 @@ public class SociosBean implements Serializable {
         }
         FisicaDB db = new FisicaDBToplink();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
-        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
-        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
-        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).showImagemFisica();
-        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).getListaSocioInativo().clear();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaEndereco().clear();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaEndereco();
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getStrEndereco();
         GenericaSessao.put("linkClicado", true);
         return "pessoaFisica";
     }
 
     public boolean validaSalvar() {
-        
-        if(servicoPessoa.getId() == -1) {
+
+        if (servicoPessoa.getId() == -1) {
             if (servicoPessoa.getPessoa().getDocumento().isEmpty() || servicoPessoa.getPessoa().getDocumento().equals("0")) {
                 GenericaMensagem.warn("Erro", "Para ser titular é necessário ter número de documento (CPF) no cadastro!");
                 return false;
-            }            
+            }
         }
-        
+
         if (matriculaSocios.getEmissao().isEmpty()) {
             GenericaMensagem.warn("Erro", "Data de Emissão Inválida!");
             return false;
         }
 
-        
         if (getListaGrupoCategoria().isEmpty()) {
             GenericaMensagem.warn("Erro", "Lista de Grupos Categoria Vazia!");
             return false;
@@ -1368,14 +1374,14 @@ public class SociosBean implements Serializable {
         SociosDB dbs = new SociosDBToplink();
         SociosDao sociosDao = new SociosDao();
         Socios s = dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId());
-        if(s.getId() != -1) {
-            if(s.getServicoPessoa().isAtivo()) {
-                if(s.getMatriculaSocios().getTitular().getId() == socios.getMatriculaSocios().getTitular().getId()) {
+        if (s.getId() != -1) {
+            if (s.getServicoPessoa().isAtivo()) {
+                if (s.getMatriculaSocios().getTitular().getId() == socios.getMatriculaSocios().getTitular().getId()) {
                     GenericaMensagem.error("Validação", "Pessoa já é dependente nesta matrícula!");
                 } else {
-                    GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para o(a) titular " + s.getMatriculaSocios().getTitular().getNome());                    
+                    GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para o(a) titular " + s.getMatriculaSocios().getTitular().getNome());
                 }
-                return false;                
+                return false;
             }
         }
         List<Socios> list = sociosDao.listaPorPessoa(novoDependente.getPessoa().getId());
@@ -2112,8 +2118,21 @@ public class SociosBean implements Serializable {
     public String getFotoSocio() {
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
+        String extensao = "jpg";
+        String fotoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId());
+        if (new File(fotoCaminho + ".jpg").exists()) {
+            extensao = "jpg";
+        } else if (new File(fotoCaminho + ".JPG").exists()) {
+            extensao = "JPG";
+        } else if (new File(fotoCaminho + ".png").exists()) {
+            extensao = "png";
+        } else if (new File(fotoCaminho + ".PNG").exists()) {
+            extensao = "PNG";
+        } else if (new File(fotoCaminho + ".gif").exists()) {
+            extensao = "gif";
+        }            
         if (socios.getId() != -1) {
-            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".png"));
+            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + "." + extensao));
             if (files.exists()) {
                 return files.getPath();
             } else {

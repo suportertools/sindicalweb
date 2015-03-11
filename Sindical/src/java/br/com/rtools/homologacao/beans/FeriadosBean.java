@@ -344,7 +344,10 @@ public class FeriadosBean implements Serializable {
     }
 
     public void selectedData(SelectEvent selectEvent) {
-        ScheduleEvent event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        Date d = (Date) selectEvent.getObject();
+        DataHoje dh = new DataHoje();
+        d = DataHoje.converte(dh.incrementarDias(1, DataHoje.converteData(d)));
+        ScheduleEvent event = new DefaultScheduleEvent("", d, d);
         feriados = new Feriados();
         feriados.setDtData(event.getStartDate());
     }

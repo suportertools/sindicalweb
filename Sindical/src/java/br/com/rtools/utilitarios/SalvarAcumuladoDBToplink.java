@@ -4,10 +4,8 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.principal.DB;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 

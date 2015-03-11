@@ -105,6 +105,7 @@ public class SociosDBToplink extends DB implements SociosDB {
         }
     }
 
+    @Override
     public List<Socios> listaDependentesInativos(int id_matricula) {
         try {
             Query qry = getEntityManager().createQuery("select s "
