@@ -5,8 +5,6 @@
  */
 package br.com.rtools.movimento;
 
-import br.com.rtools.associativo.db.LancamentoIndividualDB;
-import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Guia;
@@ -46,6 +44,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * @author rtools
  */
 public class ImprimirRecibo {
+
     public String recibo(int id_movimento) {
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = db.pesquisaCodigo(id_movimento);
@@ -53,7 +52,7 @@ public class ImprimirRecibo {
             Collection vetor = new ArrayList();
             Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-                //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
+            //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
 
             PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
             String formas[] = new String[10];
@@ -73,15 +72,16 @@ public class ImprimirRecibo {
                     formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
                 }
             }
-
+            String validade_servico = "";
+            DataHoje dataHoje = new DataHoje();
             List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
             for (int i = 0; i < lista.size(); i++) {
                 // tem casos de ter responsaveis diferentes, resultando em empresas conveniadas diferentes
                 Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
                 String conveniada = "";
-                if (gu.getId() != -1){
-                    if(gu.getPessoa() != null) {
-                        conveniada = gu.getPessoa().getNome();                        
+                if (gu.getId() != -1) {
+                    if (gu.getPessoa() != null) {
+                        conveniada = gu.getPessoa().getNome();
                     }
                 }
                 // ANTIGA EMPRESA CONVENIADA qry com id_sub_grupo_convenio
@@ -95,6 +95,13 @@ public class ImprimirRecibo {
 //                        }
 //                    }
 //                }
+                if (!lista.get(i).getServicos().isValidadeGuias()) {
+                    validade_servico = "";
+                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
+                    validade_servico = " - Validade" + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
+                    validade_servico = " - Validade" + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+                }
 
                 vetor.add(new ParametroRecibo(
                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
@@ -131,11 +138,12 @@ public class ImprimirRecibo {
                         formas[7],
                         formas[8],
                         formas[9],
-                        ( conveniada.isEmpty() ) ? "" : "Empresa Conveniada: " + conveniada
+                        (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
+                        validade_servico
                 )
                 );
             }
-            
+
             File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
             JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
@@ -158,7 +166,7 @@ public class ImprimirRecibo {
 
         return null;
     }
-    
+
     public void salvarRecibo(byte[] arquivo, Baixa baixa) {
         if (baixa.getCaixa() == null) {
             return;
@@ -184,5 +192,5 @@ public class ImprimirRecibo {
             System.out.println(e);
         }
 
-    }    
+    }
 }

@@ -1041,7 +1041,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();
                     nat = cidade.getCidade();
                     nat = nat + " - " + cidade.getUf();
-                    nat = nat + " <<<";
+                    // nat = nat + " <<<";
                     if (idPais != 11) {
                         fisica.setNaturalidade("");
                     } else {
