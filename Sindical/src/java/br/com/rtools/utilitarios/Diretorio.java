@@ -86,6 +86,10 @@ public class Diretorio {
     public static boolean remover(String diretorio) {
         if (new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio)).exists()) {
             File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio));
+            File[] arquivos = file.listFiles();
+            for (File arquivo : arquivos) {
+                arquivo.delete();
+            }
             if (file.delete()) {
                 return true;
             }
