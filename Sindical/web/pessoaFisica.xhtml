@@ -86,7 +86,7 @@
                                                     <h:panelGrid columns="1" style="margin-top: 15px; width: 100%">
                                                         <p:outputLabel value="Nome"/>
                                                         <p:inputText value="#{fisicaBean.fisica.pessoa.nome}" converter="#{toUpperCase}" style="width: 100%">
-                                                            <p:ajax event="blur" listener="#{fisicaBean.existePessoaNomeNascimento()}" update=":form_pessoa_fisica"/>
+                                                            <p:ajax event="blur" listener="#{fisicaBean.existePessoaNomeNascimento()}" />
                                                         </p:inputText>
                                                     </h:panelGrid>
                                                 </p:panel>
@@ -105,14 +105,14 @@
                                                         <p:outputLabel value="Estado Civil" /><br />
                                                         <p:selectOneMenu value="#{fisicaBean.fisica.estadoCivil}" style="margin-right: 30px">
                                                             <p:ajax event="change" update="@this"/>
-                                                            <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                            <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
-                                                            <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
-                                                            <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
                                                             <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                                            <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
                                                             <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
-                                                            <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                            <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
                                                             <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                                            <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                            <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                                            <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
                                                         </p:selectOneMenu>
                                                     </p:column>
 
@@ -195,11 +195,11 @@
                                                     </p:column>
                                                 </h:panelGrid>
 
-                                                <h:panelGrid columns="3" style="margin-top: 10px">
+                                                <h:panelGrid columns="3" style="margin-top: 10px" id="i_p_n">
                                                     <p:column>
                                                         <p:outputLabel value="Nacionalidade"/><br />
                                                         <p:selectOneMenu value="#{fisicaBean.idPais}" style="width: 170px; margin-right: 10px">
-                                                            <p:ajax event="change" update="@this" />
+                                                            <p:ajax event="change" update="@this i_p_n" />
                                                             <f:selectItems value="#{fisicaBean.listaPaises}"/>
                                                         </p:selectOneMenu>
                                                     </p:column>

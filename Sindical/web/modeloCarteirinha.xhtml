@@ -50,16 +50,17 @@
                             
                             <p:messages showDetail="true" closable="true"/>
                             
-                            <h:panelGrid columns="4">
+                            <h:panelGrid columns="4" id="i_p_g_r">
                                 <p:column>
                                     <h:outputLabel value="Categoria"/><br />
-                                    <p:selectOneMenu value="#{modeloCarteirinhaBean.idCategoria}" style="width: 350px; margin-right: 15px;">
+                                    <p:selectOneMenu value="#{modeloCarteirinhaBean.idCategoria}" style="width: 350px; margin-right: 15px;" disabled="#{modeloCarteirinhaBean.disabled[0]}">
                                         <f:selectItems value="#{modeloCarteirinhaBean.listaCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
                                 <p:column>
                                     <h:outputLabel value="Rotina"/><br />
                                     <p:selectOneMenu value="#{modeloCarteirinhaBean.idRotina}" style="width: 350px; margin-right: 15px;">
+                                        <p:ajax event="change" update="i_p_g_r" />
                                         <f:selectItems value="#{modeloCarteirinhaBean.listaRotina}"/>
                                     </p:selectOneMenu>
                                 </p:column>

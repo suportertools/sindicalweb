@@ -42,7 +42,7 @@
                                         <h:panelGrid columns="2" cellpadding="3" width="820">
                                             <p:outputLabel value="Emissão:" />
                                             <h:column>
-                                                <h:panelGrid id="i_panel_dia_vencimento" columns="4">
+                                                <h:panelGrid id="i_panel_dia_vencimento" columns="6">
                                                     <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.emissao}" mask="99/99/9999" size="8" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
                                                         <p:ajax event="blur" update="id_grid_validade" />
                                                     </p:inputMask>
@@ -52,6 +52,8 @@
                                                         <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                                     </p:selectOneMenu>
                                                     <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_alterar_dia_vencto').show()" rendered="#{matriculaAcademiaBean.aluno.id != -1}"/>
+                                                    <p:outputLabel value="Vigoração" styleClass="margin-left-max"/>
+                                                    <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.referenciaVigoracao}" size="5" mask="99/9999"/>
                                                     <p:dialog id="id_alterar_dia_vencto"  widgetVar="dlg_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                                                         <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}">
                                                             <p:ajax event="change" update="@this i_l_m :form_matricula_academia:" oncomplete="PF('dlg_alterar_dia_vencto').hide()" listener="#{matriculaAcademiaBean.salvarData}"/>
@@ -128,7 +130,7 @@
                                             </h:column>
                                             <p:outputLabel value="Modalidade:" />
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 690px">
-                                                <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular1()}"/>
+                                                <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade i_panel_dia_vencimento" listener="#{matriculaAcademiaBean.recalcular1()}"/>
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaModalidades}"/>
                                             </p:selectOneMenu>
                                         </h:panelGrid>
@@ -143,7 +145,7 @@
                                     <p:panel header="Período / Grade">
                                         <h:panelGrid columns="3" id="id_grid_periodo_grade">
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 940px;">
-                                                <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade id_grid_validade" listener="#{matriculaAcademiaBean.recalcular2}"/>
+                                                <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade id_grid_validade i_panel_dia_vencimento" listener="#{matriculaAcademiaBean.recalcular2}"/>
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaPeriodosGrade}"/>
                                             </p:selectOneMenu>                                            
                                         </h:panelGrid>                                        
@@ -218,7 +220,7 @@
                             </h:column>
                         </h:panelGrid>
                     </p:panel>
-                    <h:panelGrid columns="8" id="id_acao" styleClass="margin-top-max">
+                    <h:panelGrid columns="9" id="id_acao" styleClass="margin-top-max">
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
                             <h:column rendered="false">
                                 <p:commandButton value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save_movimento').show();" type="button"/>
@@ -230,12 +232,15 @@
                             </h:column>
                         </h:column>                        
                         <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" type="button" rendered="#{matriculaAcademiaBean.matriculaAcademia.id == -1}"/>
-                        <p:commandButton value="Novo" action="#{matriculaAcademiaBean.clear()}" update=":form_matricula_academia:"/>
+                        <p:commandButton value="Novo" action="#{matriculaAcademiaBean.clear()}" update="form_matricula_academia:"/>
                         <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" type="button" rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaMatriculaAcademia')}" />
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
                             <p:commandButton value="Inativar" onclick="PF('dlg_inative').show()" disabled="#{!matriculaAcademiaBean.matriculaAcademia.servicoPessoa.ativo}"/>                                        
-                        </h:column>                        
+                        </h:column>
+                        <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
+                            <p:commandLink action="#{chamadaPaginaBean.pagina('movimentosReceberSocial')}" value="Movimentos a receber social" actionListener="#{genericaSessao.putObject('pessoaPesquisa', matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca)}" />
+                        </h:column>
                         <h:panelGrid columns="3" rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
                             <!-- <p:commandLink type="button" value="Gerar Contrato" title="Gerar Contrato" action="# {matriculaAcademiaBean.gerarContrato}" target="# {matriculaAcademiaBean.target}" rendered="# {matriculaAcademiaBean.desabilitaGeracaoContrato}" disabled="# {controleAcessoBean.botaoSalvar}" /> -->
                             <!-- <p:commandButton value="Gerar Contrato" title="Gerar Contrato" action="# {matriculaAcademiaBean.gerarContrato}" rendered="# {!matriculaAcademiaBean.desabilitaGeracaoContrato}" disabled="# {controleAcessoBean.botaoSalvar}" /> -->
