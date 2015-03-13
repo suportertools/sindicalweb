@@ -65,6 +65,8 @@ public class Servicos implements java.io.Serializable {
     @JoinColumn(name = "id_administradora", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Administradora administradora;    
+    @Column(name = "is_validade_guias", nullable = false, columnDefinition = "boolean default false")
+    private boolean validadeGuias;
 
     public Servicos() {
         this.id = -1;
@@ -90,6 +92,7 @@ public class Servicos implements java.io.Serializable {
         this.valorZerado = false;
         this.validadeGuiasVigente = false;
         this.administradora = null;
+        this.validadeGuias = false;
     }
 
     public Servicos(int id,
@@ -114,7 +117,8 @@ public class Servicos implements java.io.Serializable {
             boolean familiarPeriodo,
             boolean valorZerado,
             boolean validadeGuiasVigente,
-            Administradora administradora) {
+            Administradora administradora,
+            boolean validadeGuias) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -138,6 +142,7 @@ public class Servicos implements java.io.Serializable {
         this.valorZerado = valorZerado;
         this.validadeGuiasVigente = validadeGuiasVigente;
         this.administradora = administradora;
+        this.validadeGuias = validadeGuias;
     }
 
     public int getId() {
@@ -327,5 +332,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setAdministradora(Administradora administradora) {
         this.administradora = administradora;
+    }
+
+    public boolean isValidadeGuias() {
+        return validadeGuias;
+    }
+
+    public void setValidadeGuias(boolean validadeGuias) {
+        this.validadeGuias = validadeGuias;
     }
 }
