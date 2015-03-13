@@ -866,14 +866,16 @@ public class MovimentosReceberSocialBean {
                 }
                 //soma = Moeda.somaValores(Moeda.converteR$(lista.get(i).get(5).toString()), Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
                 // DATA DE HOJE MENOR OU IGUAL A DATA DE VENCIMENTO
-                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
-                        <= DataHoje.converteDataParaInteger(DataHoje.data())
+                if ((
+                        DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
+                        <= DataHoje.converteDataParaInteger(DataHoje.data()) ||
+                        DataHoje.converteDataParaReferencia(DataHoje.converteData((Date) lista.get(i).get(3))).equals(DataHoje.converteDataParaReferencia(DataHoje.data())))
                         && dataBaixa.isEmpty()) {
                     chk = true;
                 } else {
                     chk = false;
-                }
-
+                }               
+                
                 // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
                 if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
                         < DataHoje.converteDataParaInteger(DataHoje.data()) 
@@ -1146,7 +1148,7 @@ public class MovimentosReceberSocialBean {
     }
 
     public String getDescPesquisaBoleto() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+        if (GenericaSessao.exists("pessoaPesquisa")) {
             descPesquisaBoleto = "";
         }
         return descPesquisaBoleto;
