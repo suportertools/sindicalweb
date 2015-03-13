@@ -51,7 +51,6 @@
                                             <h:column>
                                                 <h:outputLabel value="Mês"/><br />
                                                 <p:selectOneMenu value="#{gerarBoletoBean.mes}" style="width: 60px">
-                                                    
                                                     <f:selectItem itemValue="01" itemLabel="01"/>
                                                     <f:selectItem itemValue="02" itemLabel="02"/>
                                                     <f:selectItem itemValue="03" itemLabel="03"/>
@@ -77,6 +76,7 @@
                                         <h:column>
                                             <br />
                                             <p:commandButton icon="ui-icon-circle-plus" action="#{gerarBoletoBean.adicionarData()}" title="Adicionar Data" update=":formGerarBoleto:i_panel_mes"/>
+                                            <p:commandButton value="Todos os Meses" action="#{gerarBoletoBean.adicionarTodasData()}" title="Adicionar Todas as Data" update=":formGerarBoleto:i_panel_mes"/>
                                             <h:outputLabel value="Para MAIS DE UM VENCIMENTO clique no mais" style="color: red; font-size: 8pt!important; margin-left: 10px" rendered="#{gerarBoletoBean.listaData.size() == 0}"/>
                                         </h:column>
                                         </h:panelGrid>

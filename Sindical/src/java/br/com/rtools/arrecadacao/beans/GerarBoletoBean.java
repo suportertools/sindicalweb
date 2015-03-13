@@ -12,6 +12,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -45,6 +46,8 @@ public class GerarBoletoBean {
         
         getListaServicoSemCobranca();
         getListaPessoaSemComplemento();
+        
+        new FunctionsDBTopLink().incluiPessoaComplemento();
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
 //        getListaPessoaFisicaSemEndereco();
 //        getListaPessoaJuridicaSemEndereco();
@@ -195,6 +198,30 @@ public class GerarBoletoBean {
         }
     }    
     
+    public void adicionarTodasData(){
+        if (!listaData.isEmpty()){
+            boolean existe = false;
+            for (int w = 1; w <= 12; w++){
+                String mesx = (w < 10) ? "0"+w : ""+w;
+                for (int i = 0; i < listaData.size(); i++){
+                    if (listaData.get(i).toString().equals(mesx+"/"+ano)){
+                        existe = true;
+                        break;
+                    }
+                }
+                if (!existe){
+                    listaData.add(mesx+"/"+ano);
+                }
+                existe = false;
+            }
+        }else{
+            for (int w = 1; w <= 12; w++){
+                String mesx = (w < 10) ? "0"+w : ""+w;
+                listaData.add(mesx+"/"+ano);
+            }
+        }
+    }    
+    
     public void removerDataLista(int index) {
         listaData.remove(index);
     }
@@ -208,6 +235,7 @@ public class GerarBoletoBean {
         if (GenericaSessao.getObject("pessoaPesquisa") != null){
             pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
             GenericaSessao.remove("pessoaPesquisa");
+            adicionarPessoa();
         }
         return pessoa;
     }

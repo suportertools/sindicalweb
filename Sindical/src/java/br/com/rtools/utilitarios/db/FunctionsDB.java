@@ -51,4 +51,6 @@ public interface FunctionsDB {
     public int vagasEscolaTurma(int turma);
     
     public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias);
+    
+    public boolean incluiPessoaComplemento();
 }

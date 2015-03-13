@@ -1,0 +1,128 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Fechamento Caixa Geral</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+            
+            .column01{
+                width: 100%;
+            }
+            
+            .column02{
+                width: 0px;
+            }
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Fechamento Caixa Geral" styleClass="fonteHeader" />
+                        <h:form id="formFechamentoCaixaGeral">
+                            <div style="clear: both"></div>                            
+                            <p:dataTable var="linha" id="tbl" value="#{fechamentoCaixaGeralBean.listaFechamentoCaixa}" emptyMessage="Nenhum fechamento encontrado!">
+                                <p:column headerText="Nome do Caixa">
+                                    <p:commandLink value="#{linha.argumento0[0]}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Data do Fechamento" style="width: 80px; text-align: center">
+                                    <p:commandLink value="#{fechamentoCaixaGeralBean.converteData(linha.argumento0[1])}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Hora" style="width: 60px; text-align: center">
+                                    <p:commandLink value="#{linha.argumento0[2]}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Data de Transferência" style="width: 90px; text-align: center">
+                                    <p:commandLink value="#{fechamentoCaixaGeralBean.converteData(linha.argumento0[3])}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Valor" style="width: 80px; text-align: right">
+                                    <p:commandLink value="#{fechamentoCaixaGeralBean.converteMoeda(linha.argumento0[4])}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Operador" rendered="false">
+                                    <p:commandLink value="#{(linha.argumento2.usuario != null) ? linha.argumento2.usuario.pessoa.nome : null}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                                
+                                <p:column headerText="Consulta" style="width: 80px; text-align: center">
+                                    <p:commandLink value="Operadores" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:messages autoUpdate="false" showDetail="true" closable="true" />
+                            <p:growl autoUpdate="false" showDetail="true"/>
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="2" style="width: 100%; text-align: right" columnClasses="column01, column02">
+                                    <h:column>
+                                        <p:outputLabel value="Valor total de todos os caixas" /><br />
+                                        <p:inputText value="#{fechamentoCaixaGeralBean.valorFechamento}" style="text-align: right">
+                                            <p:ajax update="@this" event="change"/>
+                                        </p:inputText>
+                                    </h:column>
+
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Salvar" onclick="PF('dlg_fechamento').show()" style="text-align: right" />
+                                    </h:column>
+
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:dialog widgetVar="dlg_fechamento" header="Fechamento de Caixa Geral" resizable="false" width="400" modal="true">
+                                <p:outputLabel value="Deseja concluir este Fechamento Geral?" style="font-size: 12pt!important" />
+                                <br /><br />
+                                <p:commandButton value="Sim" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaGeralBean.salvar()}" update="formFechamentoCaixaGeral" icon="ui-icon-check" />  
+                                <p:commandButton value="Não" styleClass="ui-confirmdialog-no" onclick="PF('dlg_fechamento').hide()" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            
+                            <p:dialog widgetVar="dlg_detalhes_fechamento" header="Detalhes do Fechamento Caixa" resizable="false" width="400" modal="true">
+                                <p:dataTable var="linha" id="tbl2" value="#{fechamentoCaixaGeralBean.listaDetalhesFechamento}" emptyMessage="Nenhum fechamento encontrado!">
+                                    <p:column headerText="Operador">
+                                        <h:outputText value="#{linha[0]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Valor" style="width: 80px; text-align: center">
+                                        <h:outputText value="#{fechamentoCaixaGeralBean.converteMoeda(linha[1])}"/>
+                                    </p:column>
+                                </p:dataTable>
+                                <br /><br />
+                                <p:commandButton value="OK" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" onclick="PF('dlg_detalhes_fechamento').hide()"/>  
+                            </p:dialog>
+                            
+                        </h:form>
+                    
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

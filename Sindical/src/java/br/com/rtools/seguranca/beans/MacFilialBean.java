@@ -134,8 +134,8 @@ public class MacFilialBean implements Serializable {
                         + " - Departamento: (" + macFilial.getDepartamento().getId() + ") " + macFilial.getDepartamento().getDescricao()
                         + " - Mesa: " + macFilial.getMesa()
                         + " - Mac: " + macFilial.getMac()
-                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : macFilial.getCaixa().getCaixa())
-                        + " - Caixa: " + ((mf.getCaixa() == null) ? "" : macFilial.getCaixa().getDescricao())
+                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getCaixa(): "")
+                        + " - Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getDescricao() : "")
                 );
                 di.commit();
                 GenericaMensagem.info("Atualizado", "Computador atualizado com sucesso!");

@@ -21,6 +21,7 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
@@ -64,8 +65,114 @@ public final class FechamentoCaixaBean implements Serializable {
     private List<DataObject> listaFechamento = new ArrayList();
     private String dataResumoFechamento = DataHoje.data();
 
+    private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+    
     public FechamentoCaixaBean() {
+        cfb.init();
         getListaCaixa();
+        
+    }
+    
+    public void transferirParaCentral(){
+        if (fechamento.getId() == -1){
+            return;
+        }
+        
+        FinanceiroDB db = new FinanceiroDBToplink();
+        Caixa caixa = (Caixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) ,"Caixa"));
+        List<TransferenciaCaixa> lista_tc = db.listaTransferenciaDinheiro(fechamento.getId(), caixa.getId());
+        List<FormaPagamento> lista_fp_entrada = db.listaTransferenciaFormaPagamento(fechamento.getId(), caixa.getId(), "E");
+        List<FormaPagamento> lista_fp_saida = db.listaTransferenciaFormaPagamento(fechamento.getId(), caixa.getId(), "S");
+        
+        float dinheiro_transferencia = 0, dinheiro_baixa = 0, outros = 0, saldo_atual = 0;
+        float dinheiro_pagamento = 0, outros_pagamento = 0;
+        
+        for (int i = 0; i < lista_tc.size(); i++){
+            dinheiro_transferencia = Moeda.somaValores(dinheiro_transferencia, lista_tc.get(i).getValor());
+        }
+        
+        for (int i = 0; i < lista_fp_entrada.size(); i++){
+            if (lista_fp_entrada.get(i).getTipoPagamento().getId() == 3){
+                dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
+            }else{
+                outros = Moeda.somaValores(outros, lista_fp_entrada.get(i).getValor());
+            }
+        }
+        
+        for (int i = 0; i < lista_fp_saida.size(); i++){
+            if (lista_fp_saida.get(i).getTipoPagamento().getId() == 3){
+                dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+            }else{
+                outros_pagamento = Moeda.somaValores(outros_pagamento, lista_fp_saida.get(i).getValor());
+            }
+        }
+
+        List<Vector> lista = db.pesquisaSaldoAtual(caixa.getId());
+        float valor_saldo_atual = 0;
+        
+        if (!lista.isEmpty()){
+            valor_saldo_atual = Moeda.converteUS$(Moeda.converteR$(lista.get(0).get(1).toString()));
+        }
+        
+        float total_dinheiro = Moeda.somaValores(Moeda.somaValores(dinheiro_transferencia, dinheiro_baixa), valor_saldo_atual);
+        
+        float soma = Moeda.somaValores(total_dinheiro, outros);
+        float soma_pagamento = Moeda.somaValores(dinheiro_pagamento, outros_pagamento);
+        //float valor_minimo = Moeda.subtracaoValores(outros, soma_pagamento);
+        //if (fechamentoCaixa.getValorFechamento() != soma){
+            
+            //if (Moeda.converteUS$(valorTransferencia) > soma){
+            if (Moeda.converteUS$(valorTransferencia) > fechamento.getValorFechamento()){
+                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÁXIMO R$ " + Moeda.converteR$Float(fechamento.getValorFechamento()));
+                return;
+
+            }
+
+
+            if (Moeda.converteUS$(valorTransferencia) < outros){
+                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÍNIMO R$ " + Moeda.converteR$Float(outros));
+                return;
+            }else if (Moeda.converteUS$(valorTransferencia) >= outros){
+                //saldo_atual = Moeda.subtracaoValores(total_dinheiro, Moeda.subtracaoValores(Moeda.converteUS$(valorTransferencia), outros));
+                saldo_atual = Moeda.subtracaoValores(fechamento.getValorFechamento(),Moeda.converteUS$(valorTransferencia));
+            }
+            fechamento.setSaldoAtual(saldo_atual);
+        
+        //}
+        
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
+        
+        if (!sv.alterarObjeto(fechamento)){
+            GenericaMensagem.warn("Erro", "Não foi possivel alterar Fechamento Caixa!");
+            sv.desfazerTransacao();
+            return;
+        }
+        
+        // AQUI pesquisaCaixaUm COLOCAR id_filial
+        TransferenciaCaixa tc = new TransferenciaCaixa(
+                -1,
+                caixa,
+                Moeda.converteUS$(valorTransferencia),
+                (new FinanceiroDBToplink()).pesquisaCaixaUm(),
+                DataHoje.dataHoje(),
+                (FStatus) new SalvarAcumuladoDBToplink().pesquisaCodigo(12, "FStatus"),
+                null,
+                fechamento,
+                (Usuario) GenericaSessao.getObject("sessaoUsuario")
+        );
+        
+        if (!sv.inserirObjeto(tc)){
+            GenericaMensagem.warn("Erro", "Não foi possivel salvar esta Transferência, verifique se existe CAIXA 01 cadastrado!");
+            sv.desfazerTransacao();
+            return;
+        }
+        
+        sv.comitarTransacao();
+        GenericaMensagem.info("Sucesso", "Transferência entre Caixas concluído!");
+        fechamento = new FechamentoCaixa();
+        listaFechamento.clear();
     }
     
     public boolean permissaoFechamentoCaixa(){
@@ -534,6 +641,20 @@ public final class FechamentoCaixaBean implements Serializable {
 
         sv.comitarTransacao();
         GenericaMensagem.info("Sucesso", "Fechamento de Caixa concluído!");
+        
+        // TRANSFERE CAIXA AUTOMATICO
+        if (cfb.getConfiguracaoFinanceiro().isTransferenciaAutomaticaCaixa()){
+            
+            if (fechamento.getValorInformado() <= caixa.getFundoFixo()){
+                valorTransferencia = "0,00";
+            }else{
+                valorTransferencia = Moeda.converteR$Float(Moeda.subtracaoValores(fechamento.getValorInformado(), caixa.getFundoFixo()));
+            }
+            
+            PF.openDialog("i_dlg_transferir");
+            PF.update(":i_panel_transferencia");
+        }
+        
         //fechamento = new FechamentoCaixa();
         listaFechamento.clear();
         valor = "0,00";
@@ -543,11 +664,23 @@ public final class FechamentoCaixaBean implements Serializable {
         if (listaCaixa.isEmpty()) {
             ControleAcessoBean cab = new ControleAcessoBean();
             boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
-            MacFilial mac = MacFilial.getAcessoFilial();
-            
-            if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){
-                listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
-                return listaCaixa;
+            Caixa cx = null;
+            if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
+                MacFilial mac = MacFilial.getAcessoFilial();
+                if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){
+                    listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                    return listaCaixa;
+                }
+                
+                cx = mac.getCaixa();
+            }else{
+                FinanceiroDB dbf = new FinanceiroDBToplink();
+                cx = dbf.pesquisaCaixaUsuario( ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() );    
+                
+                if (cx == null){
+                    listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                    return listaCaixa;
+                }
             }
             
             // TRUE é igual NÃO ter permissão
@@ -555,8 +688,8 @@ public final class FechamentoCaixaBean implements Serializable {
                 listaCaixa.add(
                     new SelectItem(
                             0,
-                            mac.getCaixa().getCaixa() + " - " + mac.getCaixa().getDescricao(),
-                            Integer.toString(mac.getCaixa().getId())
+                            cx.getCaixa() + " - " + cx.getDescricao(),
+                            Integer.toString(cx.getId())
                     )
                 
                 );
@@ -578,7 +711,7 @@ public final class FechamentoCaixaBean implements Serializable {
                 }
                     
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getId() == mac.getCaixa().getId()) {
+                    if (list.get(i).getId() == cx.getId()) {
                         idCaixa = i;
                     }
                 }

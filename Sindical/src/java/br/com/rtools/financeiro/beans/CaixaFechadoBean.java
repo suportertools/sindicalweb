@@ -243,7 +243,7 @@ public class CaixaFechadoBean implements Serializable{
             return;
         }
         
-        GenericaMensagem.info("Sucesso", "Reabrimento de Caixa concluído!");
+        GenericaMensagem.info("Sucesso", "Reabertura de Caixa concluído!");
         sv.comitarTransacao();
         listaFechamento.clear();
         fechamentoCaixa = new FechamentoCaixa();

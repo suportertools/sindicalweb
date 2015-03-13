@@ -49,6 +49,7 @@
                                 <h:panelGrid columns="1">
                                     <p:column>
                                         <h:outputLabel value="Saldo Inicial: " style="font-size: 10pt!important; font-weight: bold"/>
+                                        <h:outputLabel value="R$ " style="font-size: 12pt!important"/>
                                         <h:outputLabel value="#{fechamentoCaixaBean.saldoAtual}" style="font-size: 12pt!important"/>
                                         <h:outputLabel value=" ( ATENÇÃO ) Este valor não entra na soma do FECHAMENTO CAIXA" style="font-size: 8pt!important; color: red" rendered="false"/>
                                     </p:column>
@@ -89,6 +90,9 @@
                                     
                                 </h:panelGrid>
                             </p:panel>
+                            
+                            <p:messages autoUpdate="false" showDetail="true" />  
+                            <p:growl autoUpdate="false" showDetail="true" />
                             
                             <p:dataTable var="linha" id="tbl" value="#{fechamentoCaixaBean.listaFechamento}" emptyMessage="Nenhum fechamento para este caixa!">
                                 
@@ -158,6 +162,22 @@
                                 </h:panelGrid>
                             </p:dialog>
                             
+                            <p:dialog widgetVar="i_dlg_transferir" header="Transferir valor para Caixa Central" resizable="false" modal="true">
+                                <h:outputLabel value="Concluir fechamento de caixa com transferência para o Caixa Central? " />
+                                <h:panelGrid id="i_panel_transferencia" style="clear: both; margin-top: 20px" columns="2">
+                                    <p:column>
+                                        <h:outputLabel value="Valor" style="font-weight: bold"/><br />
+                                        <p:inputText value="#{fechamentoCaixaBean.valorTransferencia}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </p:column>
+
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Concluir" oncomplete="PF('i_dlg_transferir').hide()" action="#{fechamentoCaixaBean.transferirParaCentral()}" update="formFechamentoCaixa" style="float: left" icon="ui-icon-check"/>  
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:dialog>
                         </h:form>
                         
                         <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />

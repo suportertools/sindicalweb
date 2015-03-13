@@ -141,4 +141,20 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return true;
     }    
+    
+    @Override
+    public boolean incluiPessoaComplemento(){
+        try {
+            Query query = getEntityManager().createNativeQuery(
+                    "SELECT func_inclui_pessoa_complemento();"
+            );
+            List list = query.getResultList();
+            boolean xbo;
+            if(!list.isEmpty())
+                xbo = (Boolean)((List)query.getSingleResult()).get(0);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }    
 }
