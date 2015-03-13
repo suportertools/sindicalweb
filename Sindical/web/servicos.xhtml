@@ -122,6 +122,13 @@
 
                                                         <h:column>
                                                             <br />
+                                                            <p:selectBooleanCheckbox value="#{servicosBean.servicos.validadeGuias}" itemLabel="Serviço com validade"   >
+                                                                <p:ajax event="change" update="@this"/>
+                                                            </p:selectBooleanCheckbox>
+                                                        </h:column>
+                                                        
+                                                        <h:column>
+                                                            <br />
                                                             <p:selectBooleanCheckbox value="#{servicosBean.servicos.validadeGuiasVigente}" itemLabel="Validade somente dentro do mês vigente"   >
                                                                 <p:ajax event="change" update="@this i_panel_opcoes"/>
                                                             </p:selectBooleanCheckbox>

@@ -194,7 +194,7 @@
                                                 <h:outputText value="#{linha.pessoa.documento}"/>
                                             </p:column>
 
-                                            <p:column headerText="Nome" filterBy="#{linha.pessoa.nome}">
+                                            <p:column headerText="Nome" filterBy="#{linha.pessoa.nome}" filterMatchMode="global">
                                                 <h:outputText value="#{linha.pessoa.nome}"/>
                                             </p:column>
                                         </p:dataTable>
@@ -207,7 +207,7 @@
                                         <p:dataTable id="tbl_cidade" value="#{relatorioMovimentoBean.listaCidadesBase}" var="linha" selection="#{relatorioMovimentoBean.listaCidadesBaseSelecionado}" rowKey="#{linha.id}" emptyMessage="Nenhuma Cidade foi encontrada!" scrollable="true" scrollHeight="300">
                                             <p:column selectionMode="multiple" style="width: 20px" />  
 
-                                            <p:column headerText="Cidade" filterBy="#{linha.cidade}">
+                                            <p:column headerText="Cidade" filterBy="#{linha.cidade}" filterMatchMode="global">
                                                 <h:outputText value="#{linha.cidade}"/>
                                             </p:column>
 
