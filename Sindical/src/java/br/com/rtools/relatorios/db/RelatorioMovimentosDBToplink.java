@@ -148,6 +148,9 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         } else if (porPesquisa.equals("atrasadas")) {
             textQuery = textQuery + " AND mov.id_baixa IS NULL"
                     + " AND mov.dt_vencimento < '" + DataHoje.data() + "' ";
+        } else if (porPesquisa.equals("atrasadas_quitadas")) {
+            textQuery = textQuery + " AND mov.id_baixa IS NULL"
+                    + " AND se.id_tipo_servico <> 4 AND mov.dt_vencimento < AND '" + DataHoje.data() + "' ";
         }
 
         // DATA DO RELATORIO ---------------------------------------------------------
