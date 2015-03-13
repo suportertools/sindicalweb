@@ -1127,4 +1127,46 @@ public class DataHoje {
         }
     }
 
+    /**
+     * Retorna o ultimo dia do mês
+     *
+     * @param month
+     * @return
+     */
+    public static Integer lastDayOfMonthInteger(Date month) {
+        try {
+            month = converte("01/02/2015");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(month);
+            //Ultimo dia do mês
+            calendar.add(Calendar.MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, -calendar.get(Calendar.DAY_OF_MONTH));
+            return 0;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    /**
+     * Retorna o ultimo dia do mês
+     *
+     * @param month
+     * @return
+     */
+    public static Date lastDayOfMonth(Date month) {
+        try {
+            month = converte("01/02/2015");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(month);
+            //Ultimo dia do mês
+            calendar.add(Calendar.MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, -calendar.get(Calendar.DAY_OF_MONTH));
+            return calendar.getTime();
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
 }

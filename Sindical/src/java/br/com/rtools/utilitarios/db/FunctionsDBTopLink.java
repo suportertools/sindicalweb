@@ -17,9 +17,10 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
      */
     @Override
     public int responsavel(int idPessoa, boolean decontoFolha) {
-        int idResponsavel = -1;
+        Integer idResponsavel = -1;
         try {
-            Query query = getEntityManager().createNativeQuery(" SELECT func_responsavel(" + idPessoa + ", " + decontoFolha + ") ");
+            String queryString = " SELECT func_responsavel(" + idPessoa + ", " + decontoFolha + ") ";
+            Query query = getEntityManager().createNativeQuery(queryString);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 idResponsavel = Integer.parseInt(((List) query.getSingleResult()).get(0).toString());
@@ -27,7 +28,7 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
                     idResponsavel = -1;
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return -1;
         }
         return idResponsavel;

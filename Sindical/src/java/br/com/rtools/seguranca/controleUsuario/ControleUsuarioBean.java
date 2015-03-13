@@ -49,25 +49,24 @@ public class ControleUsuarioBean implements Serializable {
     private MacFilial macFilial = null;
     private List<ContadorAcessos> listaContador = new ArrayList();
     private List<String> images = new ArrayList<String>();
+    private boolean habilitaLog = false;
 
-    public void atualizaDemissionaSocios()
-    {
+    public void atualizaDemissionaSocios() {
         FunctionsDB db = new FunctionsDBTopLink();
         ConfiguracaoSocialBean csb = new ConfiguracaoSocialBean();
         csb.init();
         ConfiguracaoSocial cs = csb.getConfiguracaoSocial();
-        if(cs.isInativaDemissionado() && DataHoje.maiorData(DataHoje.dataHoje(), cs.getDataInativacaoDemissionado()) && cs.getGrupoCategoriaInativaDemissionado() != null)
-        {
+        if (cs.isInativaDemissionado() && DataHoje.maiorData(DataHoje.dataHoje(), cs.getDataInativacaoDemissionado()) && cs.getGrupoCategoriaInativaDemissionado() != null) {
             db.demissionaSocios(cs.getGrupoCategoriaInativaDemissionado().getId(), cs.getDiasInativaDemissionado());
             Dao di = new Dao();
-            cs = (ConfiguracaoSocial)di.find(cs);
+            cs = (ConfiguracaoSocial) di.find(cs);
             di.openTransaction();
             cs.setDataInativacaoDemissionado(DataHoje.dataHoje());
             di.update(cs);
             di.commit();
         }
-    }    
-    
+    }
+
     public String validacao() throws Exception {
         String pagina = null;
         String nomeCliente = null;
@@ -396,9 +395,16 @@ public class ControleUsuarioBean implements Serializable {
         this.usuarioSuporteTecnico = usuarioSuporteTecnico;
     }
 
+    public boolean isHabilitaLog() {
+        return habilitaLog;
+    }
+
+    public void setHabilitaLog(boolean habilitaLog) {
+        GenericaSessao.put("habilitaLog", habilitaLog);
+        this.habilitaLog = habilitaLog;
+    }
+
 }
-
-
 
 //            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
 //                DBExternal dbe = new DBExternal();

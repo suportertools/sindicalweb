@@ -1,6 +1,7 @@
 package br.com.rtools.seguranca;
 
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -97,5 +98,12 @@ public class Usuario implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public static Usuario getUsuario() {
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            return (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        }
+        return null;
     }
 }
