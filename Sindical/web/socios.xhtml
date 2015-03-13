@@ -540,7 +540,7 @@
 
                                             <p:column>
                                                 <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
-                                                    <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px"/>
+                                                    <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px" cache="false"/>
                                                 </h:panelGrid>
                                                 
                                                 <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" style="float: right" rendered="#{!sociosBean.fotoTempPerfil.equals('') or !sociosBean.fotoPerfilDependente.equals('')}" update="i_panel_dados"/>
@@ -550,7 +550,7 @@
                                         </h:panelGrid>
 
                                         <h:panelGrid columns="3">
-                                            <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente"/>
+                                            <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente i_panel_foto"/>
                                             <p:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" update="i_panel_dados i_panel_pesquisa"/>
                                             <p:commandButton value="Cancelar" onclick="PF('dlg_dependente').hide()"/>
                                         </h:panelGrid>
