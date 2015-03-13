@@ -98,9 +98,9 @@ public class ImprimirRecibo {
                 if (!lista.get(i).getServicos().isValidadeGuias()) {
                     validade_servico = "";
                 } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
-                    validade_servico = " - Validade" + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+                    validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
                 } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
-                    validade_servico = " - Validade" + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+                    validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
                 }
 
                 vetor.add(new ParametroRecibo(
