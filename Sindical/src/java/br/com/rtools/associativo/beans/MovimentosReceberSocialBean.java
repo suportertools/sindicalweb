@@ -6,9 +6,13 @@ import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Baixa;
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.beans.ConfiguracaoFinanceiroBean;
+import br.com.rtools.financeiro.db.FinanceiroDB;
+import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
@@ -101,11 +105,13 @@ public class MovimentosReceberSocialBean {
     private boolean pessoaJuridicaNaLista = false;
     private List<DataObject> listaMesclar = new ArrayList();
     private String boletoSelecionadoMesclar = "";
+    private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
     
     @PostConstruct
     public void init() {
         
         csb.init();
+        cfb.init();
         
         listaMesclar.add(new DataObject(0, "001"));
         listaMesclar.add(new DataObject(1, "002"));
@@ -563,12 +569,25 @@ public class MovimentosReceberSocialBean {
             return null;
         }
 
-        if (macFilial.getCaixa() == null) {
-            msgConfirma = "Configurar Caixa nesta estação de trabalho!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            PF.closeDialog("dlg_caixa_banco");
-            PF.update("formMovimentosReceber");            
-            return null;
+        if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
+            if (macFilial.getCaixa() == null) {
+                msgConfirma = "Configurar Caixa nesta estação de trabalho!";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                PF.closeDialog("dlg_caixa_banco");
+                PF.update("formMovimentosReceber");            
+                return null;
+            }
+        }else{
+            FinanceiroDB dbf = new FinanceiroDBToplink();
+            Caixa caixax = dbf.pesquisaCaixaUsuario( ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() );
+            
+            if (caixax == null){
+                msgConfirma = "Configurar Caixa para este Operador!";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                PF.closeDialog("dlg_caixa_banco");
+                PF.update("formMovimentosReceber");            
+                return null;
+            }
         }
 
         if (baixado()) {
@@ -768,7 +787,7 @@ public class MovimentosReceberSocialBean {
             float soma = 0;
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento24().toString()));
+                    soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
                 }
             }
             return Moeda.converteR$Float(soma);
@@ -806,7 +825,7 @@ public class MovimentosReceberSocialBean {
         multa = "R$ " + Moeda.converteR$(linha.getArgumento19().toString()); // 19 - MULTA
         juros = "R$ " + Moeda.converteR$(linha.getArgumento20().toString()); // 20 - JUROS
         correcao = "R$ " + Moeda.converteR$(linha.getArgumento21().toString()); // 21 - CORRECAO
-        caixa = (linha.getArgumento22() == null) ? "Nenhum" : linha.getArgumento22().toString(); // 22 - CAIXA
+        caixa = (linha.getArgumento22() == null) ? "Nenhum" : linha.getArgumento22().toString(); // 22 - CAIXA 
         documento = (linha.getArgumento23() == null) ? "Sem Documento" : linha.getArgumento23().toString(); // 24 - DOCUMENTO
 
         int id_lote = Integer.valueOf(linha.getArgumento27().toString());
@@ -914,7 +933,7 @@ public class MovimentosReceberSocialBean {
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(19))), // ARG 29 MULTA
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(20))), // ARG 20 JUROS
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(21))), // ARG 21 CORRECAO
-                        getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA
+                        getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA 
                         lista.get(i).get(24), // ARG 23 DOCUMENTO
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 24 VALOR CALCULADO ORIGINAL
                         disabled,
@@ -926,6 +945,8 @@ public class MovimentosReceberSocialBean {
                 )
                 );
             }
+            
+            calculoDesconto();
         }
         return listaMovimento;
     }

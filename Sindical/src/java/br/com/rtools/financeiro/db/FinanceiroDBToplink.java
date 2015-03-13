@@ -1200,4 +1200,68 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }
         return new ArrayList();
     }
+    
+    @Override
+    public Caixa pesquisaCaixaUsuario(int id_usuario){
+        String text = "SELECT c " +
+                      "  FROM Caixa c " +
+                      " WHERE c.usuario.id = "+id_usuario;
+        
+        Query qry = getEntityManager().createQuery(text);
+        
+        try{
+            Caixa result = (Caixa) qry.getSingleResult();
+            return result;
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return null;
+    }
+    
+    @Override
+    public List<Vector> listaFechamentoCaixaGeral(){
+        String text = 
+                    "SELECT \n" +
+                    " caixa, \n" +
+                    " dt_fechamento, \n" +
+                    " hora_fechamento, \n" +
+                    " dt_transferencia, \n" +
+                    " sum(valor) as valor, \n" +
+                    " id_fechamento_caixa, \n" +
+                    " id_caixa \n" +
+                    "  FROM  fin_fecha_caixa_geral_vw \n" +
+                    " GROUP BY \n" +
+                    " caixa, \n" +
+                    " dt_fechamento, \n" +
+                    " hora_fechamento, \n" +
+                    " dt_transferencia, \n" +
+                    " id_fechamento_caixa, \n" +
+                    " id_caixa \n" +
+                    " ORDER BY dt_fechamento, caixa ";
+                
+        try {
+            Query qry = getEntityManager().createNativeQuery(text);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Vector> listaDetalhesFechamentoCaixaGeral(Integer id_caixa, Integer id_fechamento){
+        String text;
+        
+        if ( id_fechamento != null ){
+            text = "SELECT operador, sum(valor) FROM fin_fecha_caixa_geral_vw WHERE id_caixa = "+id_caixa+" AND id_fechamento_caixa = "+id_fechamento+" GROUP BY operador ";
+        }else{
+            text = "SELECT operador, sum(valor) FROM fin_fecha_caixa_geral_vw WHERE id_caixa = "+id_caixa+" AND id_fechamento_caixa IS NULL GROUP BY operador ";
+        }
+                
+        try {
+            Query qry = getEntityManager().createNativeQuery(text);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
 }

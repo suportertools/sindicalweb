@@ -71,6 +71,10 @@ public interface FinanceiroDB {
     public List<Vector> listaRelatorioAnalitico(Integer id_fechamento_caixa);
     public List<Vector> listaResumoFechamentoCaixa(String data);
     public List<LoteBoleto> listaLoteBoleto();
+    public Caixa pesquisaCaixaUsuario(int id_usuario);
+    public List<Vector> listaFechamentoCaixaGeral();
+    public List<Vector> listaDetalhesFechamentoCaixaGeral(Integer id_caixa, Integer id_fechamento);
+    
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015    
 //    public List<Vector> listaPessoaFisicaSemEndereco(int mes, int ano);
 //    public List<Vector> listaPessoaJuridicaSemEndereco(int mes, int ano);

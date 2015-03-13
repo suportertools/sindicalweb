@@ -1,9 +1,11 @@
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.financeiro.Caixa;
+import br.com.rtools.financeiro.dao.CaixaDao;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -22,16 +24,21 @@ import javax.faces.model.SelectItem;
 public class CaixaBean implements Serializable {
 
     private int idFilial;
+    private int idUsuario;
     private List<SelectItem> listaFiliais;
+    private List<SelectItem> listaUsuarios;
     private Caixa caixa;
     private List<Caixa> listaCaixa;
-
+    private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+    
     @PostConstruct
     public void init() {
         idFilial = 0;
-        listaFiliais = new ArrayList<SelectItem>();
+        listaFiliais = new ArrayList();
         caixa = new Caixa();
-        listaCaixa = new ArrayList<Caixa>();
+        listaCaixa = new ArrayList();
+        listaUsuarios = new ArrayList();
+        cfb.init();
     }
 
     @PreDestroy
@@ -50,7 +57,48 @@ public class CaixaBean implements Serializable {
             }
         }
         
+        
+        
+        if (caixa.getDescricao().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Digite uma descriçao para este caixa!");
+            return;
+        }
+        
         DaoInterface di = new Dao();
+        if (cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
+            if (listaUsuarios.get(idUsuario).getDescription() == null){
+                GenericaMensagem.warn("Atençao", "Selecione um Usuario para este Caixa!");
+                return;
+            }
+            
+            Usuario us = (Usuario) di.find(new Usuario(), Integer.valueOf(listaUsuarios.get(idUsuario).getDescription())) ;
+            
+            CaixaDao caixadao = new CaixaDao();
+            List<Caixa> listac = caixadao.listaCaixaUsuario(us.getId());
+            
+            if (caixa.getId() == -1){
+                if (!listac.isEmpty()){
+                    GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
+                    return;
+                }
+            }else{
+                List<Caixa> lusx = caixadao.listaCaixaUsuario( Integer.valueOf(listaUsuarios.get(idUsuario).getDescription()) );
+                
+                if (!lusx.isEmpty() && lusx.get(0).getId() != caixa.getId()){
+                    GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
+                    return;
+                }
+//                if (caixa.getUsuario() != null && caixa.getUsuario().getId() != usx.getId()){
+//                    GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
+//                    return;
+//                }
+            }
+            
+            caixa.setUsuario( us );
+        }else{
+            caixa.setUsuario(null);
+        }
+        
         if (caixa.getId() == -1){
             caixa.setFilial((Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())));
             if (!di.save(caixa, true)) {
@@ -101,6 +149,16 @@ public class CaixaBean implements Serializable {
             if (Integer.valueOf(listaFiliais.get(i).getDescription()) == c.getFilial().getId()){
                 idFilial = i;
             }
+        }
+        
+        if (caixa.getUsuario() != null){
+            for (int i = 0; i < listaUsuarios.size(); i++) {
+                if (listaUsuarios.get(i).getDescription() != null && Integer.valueOf(listaUsuarios.get(i).getDescription()) == c.getUsuario().getId()){
+                    idUsuario = i;
+                }
+            }
+        }else{
+            idUsuario = 0;
         }
     }
 
@@ -163,5 +221,41 @@ public class CaixaBean implements Serializable {
 
     public void setListaCaixa(List<Caixa> listaCaixa) {
         this.listaCaixa = listaCaixa;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public List<SelectItem> getListaUsuarios() {
+        if (listaUsuarios.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<Usuario> list = (List<Usuario>) di.list(new Usuario(), true);
+            
+            listaUsuarios.add(new SelectItem(0, "Selecione um Usuário", null));
+            
+            for (int i = 0; i < list.size(); i++) {
+                listaUsuarios.add(
+                        new SelectItem(
+                        i+1, 
+                        list.get(i).getPessoa().getNome(),
+                        Integer.toString(list.get(i).getId())
+                        )
+                );
+            }
+        }
+        return listaUsuarios;
+    }
+
+    public void setListaUsuarios(List<SelectItem> listaUsuarios) {
+        this.listaUsuarios = listaUsuarios;
+    }
+
+    public ConfiguracaoFinanceiroBean getCfb() {
+        return cfb;
     }
 }

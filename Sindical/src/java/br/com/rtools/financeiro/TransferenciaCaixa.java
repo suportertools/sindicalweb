@@ -2,6 +2,7 @@ package br.com.rtools.financeiro;
 
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Moeda;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,6 +96,15 @@ public class TransferenciaCaixa implements java.io.Serializable {
     public void setValor(float valor) {
         this.valor = valor;
     }
+    
+    
+    public String getValorString() {
+        return Moeda.converteR$Float(valor);
+    }
+
+    public void setValorString(String valorString) {
+        this.valor = Moeda.converteUS$(valorString);
+    }        
 
     public Caixa getCaixaEntrada() {
         return caixaEntrada;

@@ -39,6 +39,9 @@ public class FechamentoCaixa implements java.io.Serializable {
     private float valorFechamento;
     @Column(name = "nr_saldo_atual")
     private float saldoAtual;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_fechamento_geral")
+    private Date dtFechamentoGeral;    
 
     public FechamentoCaixa() {
         this.id = -1;
@@ -48,9 +51,10 @@ public class FechamentoCaixa implements java.io.Serializable {
         this.usuario = new Usuario();
         this.valorFechamento = 0;
         this.saldoAtual = 0;
+        this.dtFechamentoGeral = null;
     }
 
-    public FechamentoCaixa(int id, Date dtData, String hora, float valorInformado, Caixa caixa, Usuario usuario, Filial filial, float valorFechamento, float saldoAtual) {
+    public FechamentoCaixa(int id, Date dtData, String hora, float valorInformado, Caixa caixa, Usuario usuario, Filial filial, float valorFechamento, float saldoAtual, Date dtFechamentoGeral) {
         this.id = id;
         this.dtData = dtData;
         this.hora = hora;
@@ -58,6 +62,7 @@ public class FechamentoCaixa implements java.io.Serializable {
         this.usuario = usuario;
         this.valorFechamento = valorFechamento;
         this.saldoAtual = saldoAtual;
+        this.dtFechamentoGeral = dtFechamentoGeral;
     }
 
     public int getId() {
@@ -128,5 +133,21 @@ public class FechamentoCaixa implements java.io.Serializable {
 
     public void setSaldoAtual(float saldoAtual) {
         this.saldoAtual = saldoAtual;
+    }
+
+    public Date getDtFechamentoGeral() {
+        return dtFechamentoGeral;
+    }
+
+    public void setDtFechamentoGeral(Date dtFechamentoGeral) {
+        this.dtFechamentoGeral = dtFechamentoGeral;
+    }
+    
+    public String getDtFechamentoGeralString() {
+        return DataHoje.converteData(dtFechamentoGeral);
+    }
+
+    public void setDtFechamentoGeralString(String dtFechamentoGeralString) {
+        this.dtFechamentoGeral = DataHoje.converte(dtFechamentoGeralString);
     }
 }

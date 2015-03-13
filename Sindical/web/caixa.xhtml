@@ -26,7 +26,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Caixa" styleClass="fonteHeader" />
                         <h:form id="formCaixa">
                             <p:panel styleClass="fundoCinza" style="clear: both">
@@ -42,7 +42,7 @@
                                     <h:column>
                                         <h:outputLabel value="Número do Caixa" />
                                         <br />
-                                        <p:inputText value="#{caixaBean.caixa.caixa}"/>
+                                        <p:inputText value="#{caixaBean.caixa.caixa}" style="width: 230px; text-align: right"/>
                                     </h:column>
                                 </h:panelGrid>
                                 
@@ -50,6 +50,20 @@
                                     <h:column>
                                         <h:outputLabel value="Descrição" /><br />
                                         <p:inputTextarea value="#{caixaBean.caixa.descricao}" style="width: 700px"/>
+                                    </h:column>
+                                    
+                                    <h:column rendered="#{caixaBean.cfb.configuracaoFinanceiro.caixaOperador}">
+                                        <h:outputLabel value="Usuário" /><br />
+                                        <p:selectOneMenu value="#{caixaBean.idUsuario}" style="width: 230px">
+                                            <f:selectItems value="#{caixaBean.listaUsuarios}"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <h:outputLabel value="Fundo Fixo (Caixinha)" /><br />
+                                        <p:inputText value="#{caixaBean.caixa.fundoFixoString}" style="text-align: right">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
                                     </h:column>
 
                                     <h:column>
@@ -60,20 +74,24 @@
                             </p:panel>
                             
                             <p:dataTable id="tbl" value="#{caixaBean.listaCaixa}" var="linha" emptyMessage="Nenhum caixa encontrado">
-                                <p:column headerText="" style="text-align: center">
+                                <p:column headerText="" style="text-align: center; width: 30px">
                                     <p:commandButton icon="ui-icon-trash" action="#{caixaBean.excluir(linha)}"  update=":formCaixa" />
                                 </p:column>
 
-                                <p:column headerText="Filial">
+                                <p:column headerText="Filial" style="width: 420px">
                                     <p:commandLink value="#{linha.filial.filial.pessoa.nome}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
                                 </p:column>
 
-                                <p:column headerText="Número">
+                                <p:column headerText="Número" style="width: 60px; text-align: right">
                                     <p:commandLink value="#{linha.caixa}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
                                 </p:column>
 
-                                <p:column headerText="Descrição">
+                                <p:column headerText="Descrição" style="width: 120px"> 
                                     <p:commandLink value="#{linha.descricao}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
+                                </p:column>
+                                
+                                <p:column headerText="Usuário" rendered="#{caixaBean.cfb.configuracaoFinanceiro.caixaOperador}">
+                                    <p:commandLink value="#{(linha.usuario != null) ? linha.usuario.pessoa.nome : ''}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
                                 </p:column>
                             </p:dataTable>   
                                 

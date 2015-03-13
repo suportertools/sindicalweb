@@ -1,6 +1,8 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,19 +49,29 @@ public class Caixa implements Serializable {
     @JoinColumn(name = "id_filial", referencedColumnName = "id")
     @ManyToOne
     private Filial filial;
+    @Column(name = "nr_fundo_fixo")
+    private float fundoFixo;
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario usuario;
 
     public Caixa() {
         this.id = -1;
         this.caixa = 0;
         this.descricao = "";
         this.filial = new Filial();
+        this.fundoFixo = 0;
+        this.usuario = null;
     }
 
-    public Caixa(int id, int caixa, String descricao, Filial filial) {
+
+    public Caixa(int id, int caixa, String descricao, Filial filial, float fundoFixo, Usuario usuario) {
         this.id = id;
         this.caixa = caixa;
         this.descricao = descricao;
         this.filial = filial;
+        this.fundoFixo = fundoFixo;
+        this.usuario = usuario;
     }
 
     public int getId() {
@@ -92,5 +104,29 @@ public class Caixa implements Serializable {
 
     public void setFilial(Filial filial) {
         this.filial = filial;
+    }
+
+    public float getFundoFixo() {
+        return fundoFixo;
+    }
+
+    public void setFundoFixo(float fundoFixo) {
+        this.fundoFixo = fundoFixo;
+    }
+    
+    public String getFundoFixoString() {
+        return Moeda.converteR$Float(fundoFixo);
+    }
+
+    public void setFundoFixoString(String fundoFixoString) {
+        this.fundoFixo = Moeda.converteUS$(fundoFixoString);
+    }    
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

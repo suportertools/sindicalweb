@@ -4,11 +4,6 @@ import br.com.rtools.academia.beans.MatriculaAcademiaBean;
 import br.com.rtools.arrecadacao.beans.BaixaBoletoBean;
 import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
-import br.com.rtools.associativo.db.LancamentoIndividualDB;
-import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
-import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
-import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
-import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.Cartao;
@@ -17,7 +12,6 @@ import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.ContaBanco;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FormaPagamento;
-import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.TipoPagamento;
@@ -26,63 +20,42 @@ import br.com.rtools.financeiro.db.ContaRotinaDB;
 import br.com.rtools.financeiro.db.ContaRotinaDBToplink;
 import br.com.rtools.financeiro.db.FTipoDocumentoDB;
 import br.com.rtools.financeiro.db.FTipoDocumentoDBToplink;
+import br.com.rtools.financeiro.db.FinanceiroDB;
+import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.LancamentoFinanceiroDB;
 import br.com.rtools.financeiro.db.LancamentoFinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
-import br.com.rtools.impressao.ParametroRecibo;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.movimento.ImprimirRecibo;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.Juridica;
-import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.db.PessoaEnderecoDB;
-import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -123,6 +96,13 @@ public class BaixaGeralBean {
     private ChequeRec chequeRec = new ChequeRec();
     private List<FormaPagamento> lfp = new ArrayList();
     private boolean visibleModal = false;
+    private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+    
+    @PostConstruct
+    public void init(){
+        cfb.init();
+        
+    }
     
     public void atualizaTipo() {
         TipoPagamento tipoPagamento = (TipoPagamento) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoPagamento().get(idTipoPagamento)).getDescription()), "TipoPagamento");
@@ -376,16 +356,30 @@ public class BaixaGeralBean {
         }
         MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
         Caixa caixa = null;
-        if (macFilial == null) {
-            return mensagem = "Não existe filial na sessão!";
-        }
+        Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        
+        if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
+            if (macFilial == null) {
+                return mensagem = "Não existe filial na sessão!";
+            }
 
-        if (tipo.equals("caixa")){
-            if (macFilial.getCaixa() == null) {
-                return mensagem = "Não é possivel salvar baixa sem um caixa definido!";
+            if (tipo.equals("caixa")){
+                if (macFilial.getCaixa() == null) {
+                    return mensagem = "Não é possivel salvar baixa sem um caixa definido para esta estação!";
+                }
+
+                caixa = macFilial.getCaixa();
+            }
+        }else{
+            FinanceiroDB db = new FinanceiroDBToplink();
+            caixa = db.pesquisaCaixaUsuario(usuario.getId());
+            
+            if (tipo.equals("caixa")){
+                if (caixa == null) {
+                    return mensagem = "Não é possivel salvar baixa sem um caixa/operador definido!";
+                }
             }
             
-            caixa = macFilial.getCaixa();
         }
 
         Filial filial;
@@ -406,7 +400,7 @@ public class BaixaGeralBean {
         }
 
         Plano5DB plano5DB = new Plano5DBToplink();
-        Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        
 
         if (verificaBaixaBoleto()) {
             if (getListaConta().size() == 1 && getListaConta().get(0).getDescription().isEmpty()){

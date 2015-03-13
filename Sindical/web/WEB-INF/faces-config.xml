@@ -1626,6 +1626,18 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>configuracaoFinanceiro</from-outcome>
+            <to-view-id>/configuracaoFinanceiro</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>fechamentoCaixaGeral</from-outcome>
+            <to-view-id>/fechamentoCaixaGeral</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
