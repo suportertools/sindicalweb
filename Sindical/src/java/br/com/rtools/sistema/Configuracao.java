@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "sis_configuracao")
 @NamedQuery(name = "Configuracao.pesquisaID", query = "SELECT C FROM Configuracao c WHERE C.id = :pid")
-public class Configuracao implements Serializable {
+public class Configuracao  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

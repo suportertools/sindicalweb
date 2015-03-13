@@ -274,11 +274,15 @@ public class ImpressaoParaSocios {
             fisica = db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId());
             pesEndereco = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
-
-            if (pessoaEmpresa.getId() != -1) {
-                pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
+            
+            if(pessoaEmpresa != null) {
+                if (pessoaEmpresa.getId() != -1) {
+                    pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
+                } else {
+                    pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
+                }                
             } else {
-                pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
+                pesEndEmpresa = new PessoaEndereco();
             }
 
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);

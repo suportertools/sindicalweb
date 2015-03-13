@@ -3,8 +3,10 @@ package br.com.rtools.utilitarios;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 
+@ManagedBean
 public class GenericaSessao implements Serializable {
 
     public static void put(String sessionName, String sessionValue) {
@@ -15,6 +17,34 @@ public class GenericaSessao implements Serializable {
     }
 
     public void putString(String sessionName, String sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
+    }
+
+    public void putObject(String sessionName, Object sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
+    }
+
+    public void putBoolean(String sessionName, Boolean sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
+    }
+
+    public void putInteger(String sessionName, Integer sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
+    }
+
+    public void putList(String sessionName, List sessionValue) {
         if (GenericaSessao.exists(sessionName)) {
             GenericaSessao.remove(sessionName);
         }
