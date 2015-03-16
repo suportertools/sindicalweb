@@ -705,7 +705,9 @@
                                     </h:panelGrid>
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_painel_mensagem" modal="true" header="Mensagem"  width="400" resizable="false">
-                                    <p:outputLabel value="#{fisicaBean.mensagem}" id="i_painel_mensagem"/>
+                                    <h:panelGrid id="i_painel_mensagem">
+                                        <p:outputLabel value="#{fisicaBean.mensagem}"/>                                        
+                                    </h:panelGrid>
                                     <br /><br />
                                     <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_painel_mensagem').hide();" />
                                 </p:dialog>
