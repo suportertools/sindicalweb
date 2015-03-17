@@ -164,8 +164,24 @@
                                 <f:selectItem itemValue="M" itemLabel="Masculino"/>
                             </p:selectOneRadio>
                         </h:column>
-                    </h:panelGrid>
 
+                    </h:panelGrid>
+                    <h:panelGrid columns="4" style="margin-top: 10px">
+                        <h:column>
+                            <h:outputText value="Estado Civil"/><br />
+                            <p:selectOneMenu value="#{homologacaoBean.fisica.estadoCivil}">
+                                <p:ajax event="change" update="@this" global="false"/>
+                                <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                            </p:selectOneMenu>
+                        </h:column>
+                    </h:panelGrid>
                     <h:panelGrid columns="4" style="margin-top: 10px">
                         <h:column>
                             <h:outputLabel value="Setor"/><br />
@@ -357,7 +373,7 @@
 
                                 <h:column>
                                     <br />
-                                    <p:commandButton value="Atendimento" action="#{homologacaoBean.retornaSequenciaSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at i_msg" style="margin-left: 600px"/>
+                                    <p:commandButton value="Atendimento" action="#{homologacaoBean.retornaSequenciaSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao and controleUsuarioBean.macFilial.mesa > 0}" update=":form_cancelar_data_table:panel_atendimento_simples :form_cancelar_data_table:tbl_at i_msg" style="margin-left: 600px" />
                                 </h:column>
                             </h:panelGrid>
                             <p:commandButton icon="ui-icon-info" value="Existe(m) atendimento(s) não finalizado" rendered="#{homologacaoBean.listAtendimentoAberto().size() > 0}" style="color: red; margin-bottom: 15px!important;" onclick="PF('dlg_atendimentos').show()" update="id_atendimentos"/>
