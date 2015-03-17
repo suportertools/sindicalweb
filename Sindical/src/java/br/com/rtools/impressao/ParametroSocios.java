@@ -81,8 +81,11 @@ public class ParametroSocios {
     private String telefone2;
     private String telefone3;
     private String email;
+    private String contabilidade_nome;
+    private String contabilidade_contato;
+    private String contabilidade_telefone;
 
-    public ParametroSocios(String sinLogo, String sinSite, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinCidadeUf, String sinDocumento, int codigo, Date cadastro, String nome, String cpf, String telefone, String ds_uf_emissao_rg, String estado_civil, String ctps, String pai, String sexo, String mae, String nacionalidade, String nit, String ds_orgao_emissao_rg, String pis, String ds_serie, Date dt_aposentadoria, String ds_naturalidade, Date recadastro, Date dt_nascimento, Date dt_foto, String ds_rg, String foto, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, String setor, Date admissao, String profissao, String fantasia, String empresa, String cnpj, String e_telefone, String e_logradouro, String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String titular, String codsocio, String nomeTitular, String parentesco, int matricula, String categoria, String grupo_categoria, Date filiacao, Date inativacao, boolean votante, String grau, BigDecimal nr_deconto, boolean desconto_folha, String tipo_cobranca, int cod_tipo_cobranca, String telefone2, String telefone3, String email) {
+    public ParametroSocios(String sinLogo, String sinSite, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinCidadeUf, String sinDocumento, int codigo, Date cadastro, String nome, String cpf, String telefone, String ds_uf_emissao_rg, String estado_civil, String ctps, String pai, String sexo, String mae, String nacionalidade, String nit, String ds_orgao_emissao_rg, String pis, String ds_serie, Date dt_aposentadoria, String ds_naturalidade, Date recadastro, Date dt_nascimento, Date dt_foto, String ds_rg, String foto, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, String setor, Date admissao, String profissao, String fantasia, String empresa, String cnpj, String e_telefone, String e_logradouro, String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String titular, String codsocio, String nomeTitular, String parentesco, int matricula, String categoria, String grupo_categoria, Date filiacao, Date inativacao, boolean votante, String grau, BigDecimal nr_deconto, boolean desconto_folha, String tipo_cobranca, int cod_tipo_cobranca, String telefone2, String telefone3, String email, String contabilidade_nome, String contabilidade_contato, String contabilidade_telefone) {
         this.sinLogo = sinLogo;
         this.sinSite = sinSite;
         this.sinNome = sinNome;
@@ -159,6 +162,9 @@ public class ParametroSocios {
         this.telefone2 = telefone2;
         this.telefone3 = telefone3;
         this.email = email;
+        this.contabilidade_nome = contabilidade_nome;
+        this.contabilidade_contato = contabilidade_contato;
+        this.contabilidade_telefone = contabilidade_telefone;
 
     }
 
@@ -768,5 +774,29 @@ public class ParametroSocios {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getContabilidade_nome() {
+        return contabilidade_nome;
+    }
+
+    public void setContabilidade_nome(String contabilidade_nome) {
+        this.contabilidade_nome = contabilidade_nome;
+    }
+
+    public String getContabilidade_contato() {
+        return contabilidade_contato;
+    }
+
+    public void setContabilidade_contato(String contabilidade_contato) {
+        this.contabilidade_contato = contabilidade_contato;
+    }
+
+    public String getContabilidade_telefone() {
+        return contabilidade_telefone;
+    }
+
+    public void setContabilidade_telefone(String contabilidade_telefone) {
+        this.contabilidade_telefone = contabilidade_telefone;
     }
 }
