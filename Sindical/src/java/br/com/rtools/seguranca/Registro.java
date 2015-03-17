@@ -117,6 +117,8 @@ public class Registro implements java.io.Serializable {
     private boolean acessoWebDocumento;
     @Column(name = "rais_mensagem_email", length = 8000)
     private String raisMensagemEmail;
+    @Column(name = "is_cadastro_cnpj", columnDefinition = "boolean default false")
+    private boolean cadastroCnpj;
 
     public Registro() {
         this.id = -1;
@@ -168,6 +170,7 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketingResposta = "";
         this.acessoWebDocumento = false;
         this.raisMensagemEmail = "";
+        this.cadastroCnpj = false;
     }
 
     public Registro(int id,
@@ -217,7 +220,8 @@ public class Registro implements java.io.Serializable {
             boolean sisEmailMarketing,
             String sisEmailMarketingResposta,
             boolean acessoWebDocumento,
-            String raisMensagemEmail) {
+            String raisMensagemEmail,
+            boolean cadastroCnpj) {
 
         this.id = id;
         this.filial = filial;
@@ -267,6 +271,7 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
         this.acessoWebDocumento = acessoWebDocumento;
         this.raisMensagemEmail = raisMensagemEmail;
+        this.cadastroCnpj = cadastroCnpj;
     }
 
     public int getId() {
@@ -657,16 +662,10 @@ public class Registro implements java.io.Serializable {
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
     }
 
-    /**
-     * @return the sisEmailMarketingResposta
-     */
     public String getSisEmailMarketingResposta() {
         return sisEmailMarketingResposta;
     }
 
-    /**
-     * @param sisEmailMarketingResposta the sisEmailMarketingResposta to set
-     */
     public void setSisEmailMarketingResposta(String sisEmailMarketingResposta) {
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
     }
@@ -685,5 +684,13 @@ public class Registro implements java.io.Serializable {
 
     public void setRaisMensagemEmail(String raisMensagemEmail) {
         this.raisMensagemEmail = raisMensagemEmail;
+    }
+
+    public boolean isCadastroCnpj() {
+        return cadastroCnpj;
+    }
+
+    public void setCadastroCnpj(boolean cadastroCnpj) {
+        this.cadastroCnpj = cadastroCnpj;
     }
 }
