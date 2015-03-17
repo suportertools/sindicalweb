@@ -64,11 +64,12 @@
                                             <f:selectItem itemValue="recebidas"     itemLabel="Recebidas"/>
                                             <f:selectItem itemValue="naorecebidas"  itemLabel="Não Recebidas"/>
                                             <f:selectItem itemValue="atrasadas"     itemLabel="Atrasadas"/>
+                                            <f:selectItem itemValue="atrasadas_quitadas"     itemLabel="Atrasadas Quitadas"/>
                                         </p:selectOneMenu>
                                     </p:column>
                                 </h:panelGrid>
                             </p:panel>
-                            <p:messages id="i_msg" showDetail="true" closable="true" /> 
+                            <p:messages id="i_msg" showDetail="true" closable="true" autoUpdate="true" /> 
                             <h:panelGrid id="i_opcoes" style="margin-top: 10px; float: left; width: 200px">
                                 <p:menu>  
                                     <p:menuitem value="Empresa" action="#{relatorioMovimentoBean.porEmpresa()}" update="i_opcoes i_panel i_email_para_e i_email_para_c i_panel_b" style="#{relatorioMovimentoBean.chkEmpresa == true ? 'background: #dbeaeb; font-weight: bold' : ''}" />  
@@ -240,7 +241,7 @@
                                     
                                     <p:column>
                                         <br />
-                                        <p:commandButton ajax="false" value="Visualizar" action="#{relatorioMovimentoBean.visualizar()}"/>
+                                        <p:commandButton ajax="false" value="Visualizar" action="#{relatorioMovimentoBean.visualizar()}" />
                                     </p:column>
                                     
                                     <p:column>
