@@ -69,9 +69,13 @@ public class MacFilialBean implements Serializable {
             return;
         }
 
-        Registro registro = (Registro) di.find(new Registro(), 1);
-        if (registro.isSenhaHomologacao() && macFilial.getMesa() <= 0) {
-            GenericaMensagem.warn("Validação", "O campo mesa é obrigatório devido Senha Homologação em Registro ser verdadeiro");
+//        Registro registro = (Registro) di.find(new Registro(), 1);
+//        if (registro.isSenhaHomologacao() && macFilial.getMesa() <= 0) {
+//            GenericaMensagem.warn("Validação", "O campo mesa é obrigatório devido Senha Homologação em Registro ser verdadeiro");
+//            return;
+//        }
+        if (!macFilial.getMac().matches("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$")) {
+            GenericaMensagem.warn("Validação", "Digite um mac válido!");
             return;
         }
         macFilial.setDepartamento(departamento);
@@ -303,7 +307,14 @@ public class MacFilialBean implements Serializable {
         GenericaSessao.remove("acessoFilial");
         GenericaSessao.remove("chamadaPaginaBean");
         ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setMacFilial(mf);
-        ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setFilial("Filial: ( " + mf.getFilial().getFilial().getPessoa().getNome() + " / " + mf.getDepartamento().getDescricao() + " )");
+        String s = "Filial: ( " + mf.getFilial().getFilial().getPessoa().getNome() + " / " + mf.getDepartamento().getDescricao() + " )";
+        if (mf.getMesa() > 0) {
+            s += " - Guiche: " + mf.getMesa();
+        }
+        if (mf.getDescricao() != null && !mf.getDescricao().isEmpty()) {
+            s += " - " + mf.getDescricao();
+        }
+        ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setFilial(s);
         GenericaSessao.put("acessoFilial", mf);
         GenericaSessao.put("linkClicado", true);
         return "menuPrincipal";
