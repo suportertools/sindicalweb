@@ -16,12 +16,15 @@ import br.com.rtools.impressao.ParametroSocios;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -65,6 +68,8 @@ public class RelatorioSociosBean implements Serializable {
     private String dataAdmissaoSocioFim = "";
     private String dataAdmissaoEmpresa = "";
     private String dataAdmissaoEmpresaFim = "";
+    private String dataAposetandoria = "";
+    private String dataAposetandoriaFim = "";
     private String tipoEleicao = "todos";
     private String tipoSexo = "M";
     private String tipoCarteirinha = "com";
@@ -99,6 +104,7 @@ public class RelatorioSociosBean implements Serializable {
     private int idadeFinal = 500;
     private int diaInicial = 1;
     private int diaFinal = 31;
+    private Integer idRelatorioOrdem = null;
     private Integer idRelatorio = null;
     private List<DataObject> listaTipoCobranca = new ArrayList();
     private List<DataObject> listaCidadesSocio = new ArrayList();
@@ -110,6 +116,7 @@ public class RelatorioSociosBean implements Serializable {
     private List<DataObject> listaMenuRSocial = new ArrayList();
     private List<DataObject> listaGrupo = new ArrayList();
     private List<DataObject> listaCategoria = new ArrayList();
+    private List<SelectItem> listaRelatorioOrdem = new ArrayList();
     private boolean booMatricula = false;
     private boolean booIdade = false;
     private boolean booGrupoCategoria = false;
@@ -298,7 +305,7 @@ public class RelatorioSociosBean implements Serializable {
             listaMenuRSocial.add(new DataObject("Cidade do Sócio ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Cidade do Empresa ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Aniversário ", "Editar", null, null, null, null));
-            listaMenuRSocial.add(new DataObject("Pesquisa por Datas ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Datas ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Votante ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Email ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Telefone ", "Editar", null, null, null, null));
@@ -336,6 +343,10 @@ public class RelatorioSociosBean implements Serializable {
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioSociosDB dbS = new RelatorioSociosDBToplink();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
+        if (!listaRelatorioOrdem.isEmpty()) {
+            Dao dao = new Dao();
+            relatorios.setQryOrdem(((RelatorioOrdem) dao.find(new RelatorioOrdem(), Integer.parseInt(getListaRelatorioOrdem().get(idRelatorioOrdem).getDescription()))).getQuery());
+        }
 
         String ids_gc = "", ids_c = "";
         if (booGrupoCategoria) {
@@ -428,7 +439,7 @@ public class RelatorioSociosBean implements Serializable {
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
-                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, tipoOrdem);
+                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, dataAposetandoria, dataAposetandoriaFim, tipoOrdem);
 
         Collection lista = new ArrayList();
         for (int i = 0; i < result.size(); i++) {
@@ -510,7 +521,10 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullInt(result.get(i).get(72)),// COD TIPO COBRANCA
                     getConverteNullString(result.get(i).get(73)),// TELEFONE2
                     getConverteNullString(result.get(i).get(74)), // TELEFONE3                                          
-                    getConverteNullString(result.get(i).get(75)) // EMAIL 1
+                    getConverteNullString(result.get(i).get(75)), // EMAIL 1
+                    getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
+                    getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
+                    getConverteNullString(result.get(i).get(78)) // CONTABILIDADE - EMAIL
             ));
 //            if (i == 2392){
 //                break;
@@ -1237,6 +1251,18 @@ public class RelatorioSociosBean implements Serializable {
         return listaParentesco;
     }
 
+    public List<SelectItem> getListaRelatorioOrdem() {
+        listaRelatorioOrdem.clear();
+        if (idRelatorio != null) {
+            RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
+            List<RelatorioOrdem> list = relatorioOrdemDao.findAllByRelatorio(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
+            for (int i = 0; i < list.size(); i++) {
+                listaRelatorioOrdem.add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
+            }
+        }
+        return listaRelatorioOrdem;
+    }
+
     public void setListaParentesco(List<DataObject> listaParentesco) {
         this.listaParentesco = listaParentesco;
     }
@@ -1311,5 +1337,29 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setDataAdmissaoEmpresaFim(String dataAdmissaoEmpresaFim) {
         this.dataAdmissaoEmpresaFim = dataAdmissaoEmpresaFim;
+    }
+
+    public String getDataAposetandoria() {
+        return dataAposetandoria;
+    }
+
+    public void setDataAposetandoria(String dataAposetandoria) {
+        this.dataAposetandoria = dataAposetandoria;
+    }
+
+    public String getDataAposetandoriaFim() {
+        return dataAposetandoriaFim;
+    }
+
+    public void setDataAposetandoriaFim(String dataAposetandoriaFim) {
+        this.dataAposetandoriaFim = dataAposetandoriaFim;
+    }
+
+    public Integer getIdRelatorioOrdem() {
+        return idRelatorioOrdem;
+    }
+
+    public void setIdRelatorioOrdem(Integer idRelatorioOrdem) {
+        this.idRelatorioOrdem = idRelatorioOrdem;
     }
 }
