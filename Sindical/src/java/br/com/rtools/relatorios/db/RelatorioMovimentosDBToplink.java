@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimentosDB {
 
@@ -16,8 +15,9 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
             String tipoData, Date dtInicial, Date dtFinal, String dtRefInicial, String dtRefFinal,
             String ordem, boolean chkPesEmpresa, String porPesquisa, String filtroEmpresa,
             int idConvencao, int idGrupoCidade, String idsCidades, String idsEsc, String inCnaes) {
-        List result = new ArrayList();
-        String textQuery = "SELECT mov.id                       AS idMov,       "
+        List result;
+        String textQuery = ""
+                + "SELECT mov.id                       AS idMov,                "
                 + "       mov.ds_documento             AS numeroDocumento,      "
                 + "       se.ds_descricao              AS servico,              "
                 + "       ts.ds_descricao              AS tipoServico,          "
@@ -67,111 +67,131 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                 + "       mov.nr_valor_baixa           AS valor_baixa,          "
                 + "       cc.nr_repasse                AS vl_repasse            "
                 + "  FROM fin_movimento                AS mov                   "
-                + " INNER JOIN pes_pessoa              AS pes              ON pes.id               = mov.id_pessoa                  "
-                + " INNER JOIN pes_tipo_documento      AS pdoc             ON pdoc.id              = pes.id_tipo_documento          "
-                + " INNER JOIN fin_servicos            AS se               ON se.id                = mov.id_servicos                "
-                + " INNER JOIN fin_servico_rotina      AS ser              ON ser.id_servicos      = se.id AND ser.id_rotina=4      "
-                + " INNER JOIN fin_tipo_servico        AS ts               ON ts.id                = mov.id_tipo_servico            "
-                + "  LEFT JOIN fin_baixa               AS lot              ON lot.id               = mov.id_baixa                   "
-                + "  LEFT JOIN pes_juridica            AS jur              ON jur.id_pessoa        = pes.id                         "
-                + "  LEFT JOIN pes_juridica            AS esc              ON esc.id               = jur.id_contabilidade           "
-                + "  LEFT JOIN pes_pessoa              AS pesc             ON pesc.id              = esc.id_pessoa                  "
-                + "  LEFT JOIN pes_tipo_documento      AS escdoc           ON escdoc.id            = pes.id_tipo_documento          "
-                + "  LEFT JOIN pes_cnae                AS cnae             ON cnae.id              = jur.id_cnae                    "
-                + "  LEFT JOIN pes_pessoa_endereco     AS pes_pend         ON pes_pend.id_pessoa   = pes.id                         "
-                + "  LEFT JOIN end_endereco            AS pes_end          ON pes_end.id           = pes_pend.id_endereco           "
-                + "  LEFT JOIN end_logradouro          AS pes_logradouro   ON pes_logradouro.id    = pes_end.id_logradouro          "
-                + "  LEFT JOIN end_descricao_endereco  AS pes_endereco     ON pes_endereco.id      = pes_end.id_descricao_endereco  "
-                + "  LEFT JOIN end_bairro              AS pes_bairro       ON pes_bairro.id        = pes_end.id_bairro              "
-                + "  LEFT JOIN end_cidade              AS pes_cidade       ON pes_cidade.id        = pes_end.id_cidade              "
-                + "  LEFT JOIN pes_pessoa_endereco     AS esc_pend         ON esc_pend.id_pessoa   = pesc.id                        "
-                + "  LEFT JOIN end_endereco            AS esc_end          ON esc_end.id           = esc_pend.id_endereco           "
-                + "  LEFT JOIN end_logradouro          AS esc_logradouro   ON esc_logradouro.id    = esc_end.id_logradouro          "
-                + "  LEFT JOIN end_descricao_endereco  AS esc_endereco     ON esc_endereco.id      = esc_end.id_descricao_endereco  "
-                + "  LEFT JOIN end_bairro              AS esc_bairro       ON esc_bairro.id        = esc_end.id_bairro              "
-                + "  LEFT JOIN end_cidade              AS esc_cidade       ON esc_cidade.id        = esc_end.id_cidade              "
-                + "  LEFT JOIN seg_usuario             AS us               ON us.id                = lot.id_usuario                 "
-                + "  LEFT JOIN pes_pessoa              AS upes             ON upes.id              = us.id_pessoa                   "
-                + "  LEFT JOIN fin_boleto              AS bol              ON bol.nr_ctr_boleto    = mov.nr_ctr_boleto              "
-                + "  LEFT JOIN fin_conta_cobranca      AS cc               ON cc.id                = bol.id_conta_cobranca          ";
+                + " INNER JOIN pes_pessoa              AS pes              ON pes.id               = mov.id_pessoa                              "
+                + " INNER JOIN pes_tipo_documento      AS pdoc             ON pdoc.id              = pes.id_tipo_documento                      "
+                + " INNER JOIN fin_servicos            AS se               ON se.id                = mov.id_servicos                            "
+                + " INNER JOIN fin_servico_rotina      AS ser              ON ser.id_servicos      = se.id AND ser.id_rotina = 4                "
+                + " INNER JOIN fin_tipo_servico        AS ts               ON ts.id                = mov.id_tipo_servico                        "
+                + "  LEFT JOIN pes_juridica            AS jur              ON jur.id_pessoa        = pes.id                                     "
+                + "  LEFT JOIN arr_contribuintes_vw    AS C                ON C.id_juridica        = jur.id                                     ";
+        if (condicao.equals("inativos")) {
+            textQuery += " LEFT JOIN arr_contribuintes_inativos_agrupados_vw AS CI ON CI.id_juridica = C.id_juridica ";
+        }
+        textQuery += " "
+                + "  LEFT JOIN fin_baixa               AS lot              ON lot.id               = mov.id_baixa                                                                       "
+                + "  LEFT JOIN pes_juridica            AS esc              ON esc.id               = jur.id_contabilidade                                                               "
+                + "  LEFT JOIN pes_pessoa              AS pesc             ON pesc.id              = esc.id_pessoa                                                                      "
+                + "  LEFT JOIN pes_tipo_documento      AS escdoc           ON escdoc.id            = pes.id_tipo_documento                                                              "
+                + "  LEFT JOIN pes_cnae                AS cnae             ON cnae.id              = jur.id_cnae                                                                        "
+                + "  LEFT JOIN pes_pessoa_endereco     AS pes_pend         ON pes_pend.id_pessoa   = pes.id AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL)    "
+                + "  LEFT JOIN end_endereco            AS pes_end          ON pes_end.id           = pes_pend.id_endereco                                                               "
+                + "  LEFT JOIN end_logradouro          AS pes_logradouro   ON pes_logradouro.id    = pes_end.id_logradouro                                                              "
+                + "  LEFT JOIN end_descricao_endereco  AS pes_endereco     ON pes_endereco.id      = pes_end.id_descricao_endereco                                                      "
+                + "  LEFT JOIN end_bairro              AS pes_bairro       ON pes_bairro.id        = pes_end.id_bairro                                                                  "
+                + "  LEFT JOIN end_cidade              AS pes_cidade       ON pes_cidade.id        = pes_end.id_cidade                                                                  "
+                + "  LEFT JOIN pes_pessoa_endereco     AS esc_pend         ON esc_pend.id_pessoa   = pesc.id AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL)   "
+                + "  LEFT JOIN end_endereco            AS esc_end          ON esc_end.id           = esc_pend.id_endereco                                                               "
+                + "  LEFT JOIN end_logradouro          AS esc_logradouro   ON esc_logradouro.id    = esc_end.id_logradouro                                                              "
+                + "  LEFT JOIN end_descricao_endereco  AS esc_endereco     ON esc_endereco.id      = esc_end.id_descricao_endereco                                                      "
+                + "  LEFT JOIN end_bairro              AS esc_bairro       ON esc_bairro.id        = esc_end.id_bairro                                                                  "
+                + "  LEFT JOIN end_cidade              AS esc_cidade       ON esc_cidade.id        = esc_end.id_cidade                                                                  "
+                + "  LEFT JOIN seg_usuario             AS us               ON us.id                = lot.id_usuario                                                                     "
+                + "  LEFT JOIN pes_pessoa              AS upes             ON upes.id              = us.id_pessoa                                                                       "
+                + "  LEFT JOIN fin_boleto              AS bol              ON bol.nr_ctr_boleto    = mov.nr_ctr_boleto                                                                  "
+                + "  LEFT JOIN fin_conta_cobranca      AS cc               ON cc.id                = bol.id_conta_cobranca                                                              ";
 
         // CONDICAO -----------------------------------------------------
-        if (condicao.equals("todos")) {
-            textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) ";
-        } else if (condicao.equals("ativos")) {
-            textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) "
-                    + "   AND jur.id IN (select c.id_juridica FROM arr_contribuintes_vw c WHERE c.id_motivo IS NULL) ";
-        } else if (condicao.equals("inativos")) {
-            textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) "
-                    // 03/11/2014 - Chamado 234 - RUNRUN + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw c) "
-                    + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw C WHERE dt_inativacao IS NULL) "
-                    + "   AND jur.id IN (SELECT ci.id_juridica FROM arr_contribuintes_inativos ci GROUP BY ci.id_juridica) ";
+        switch (condicao) {
+            case "todos":
+                textQuery += " WHERE mov.is_ativo = true ";
+                break;
+            case "ativos":
+                textQuery += " WHERE mov.is_ativo = true AND C.id_juridica IS NOT NULL AND C.dt_inativacao IS NULL ";
+                break;
+            case "inativos":
+                textQuery += " WHERE mov.is_ativo = true AND CI.id_juridica IS NOT NULL ";
+                // 03/11/2014 - Chamado 234 - RUNRUN + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw c) "
+                // + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw C WHERE dt_inativacao IS NULL) "
+                //+ "   AND jur.id IN (SELECT ci.id_juridica FROM arr_contribuintes_inativos ci GROUP BY ci.id_juridica) "
+                // + " AND C.dt_inativacao IS NOT NULL ";
+                break;
         }
 
         // CONTRIBUICAO DE RELATORIO---------------------------------------------
         if (idServico != 0) {
-            textQuery = textQuery + " AND mov.id_servicos = " + idServico + "";
+            textQuery += " AND mov.id_servicos = " + idServico + "";
         }
 
         // TIPO SERVICO DO RELATORIO-----------------------------------------------
         if (idTipoServico != 0) {
-            textQuery = textQuery + " AND mov.id_tipo_servico = " + idTipoServico + "";
+            textQuery += " AND mov.id_tipo_servico = " + idTipoServico + "";
         }
 
         // PESSOA DO RELATORIO-----------------------------------------------------
         if (idJuridica != 0) {
             if (filtroEmpresa.equals("empresa")) {
-                textQuery = textQuery + " AND jur.id = " + idJuridica + "";
+                textQuery += " AND jur.id = " + idJuridica + "";
             } else {
-                textQuery = textQuery + " AND esc.id = " + idJuridica + "";
+                textQuery += " AND esc.id = " + idJuridica + "";
             }
         }
 
         // FILTRAR POR ESCRITÓRIOS ------------------------------------------------        
         if (!idsEsc.isEmpty()) {
-            if (idsEsc.equals("sem")) {
-                textQuery = textQuery + " AND jur.id_contabilidade IS NULL ";
-            } else if (idsEsc.equals("com")) {
-                textQuery = textQuery + " AND jur.id_contabilidade IS NOT NULL ";
-            } else {
-                textQuery = textQuery + " AND esc.id IN ( " + idsEsc + " ) ";
+            switch (idsEsc) {
+                case "sem":
+                    textQuery += " AND jur.id_contabilidade IS NULL ";
+                    break;
+                case "com":
+                    textQuery += " AND jur.id_contabilidade IS NOT NULL ";
+                    break;
+                default:
+                    textQuery += " AND esc.id IN ( " + idsEsc + " ) ";
+                    break;
             }
         }
 
         // FILTRO MOVIMENTO ---------------------------------------------------------
-        if (porPesquisa.equals("todas")) {
-            //textQuery = textQuery + " AND mov.is_ativo = true";
-        } else if (porPesquisa.equals("recebidas")) {
-            textQuery = textQuery + " AND mov.id_baixa IS NOT NULL ";
-        } else if (porPesquisa.equals("naorecebidas")) {
-            textQuery = textQuery + " AND mov.id_baixa IS NULL ";
-        } else if (porPesquisa.equals("atrasadas")) {
-            textQuery = textQuery + " AND mov.id_baixa IS NULL"
-                    + " AND mov.dt_vencimento < '" + DataHoje.data() + "' ";
-        } else if (porPesquisa.equals("atrasadas_quitadas")) {
-            textQuery = textQuery + " AND mov.id_baixa IS NULL"
-                    + " AND se.id_tipo_servico <> 4 AND mov.dt_vencimento < AND '" + DataHoje.data() + "' ";
+        switch (porPesquisa) {
+            case "todas":
+                break;
+            case "recebidas":
+                textQuery += " AND mov.id_baixa IS NOT NULL ";
+                break;
+            case "naorecebidas":
+                textQuery += " AND mov.id_baixa IS NULL ";
+                break;
+            case "atrasadas":
+                textQuery += " AND mov.id_baixa IS NULL AND mov.dt_vencimento < '" + DataHoje.data() + "' ";
+                break;
+            case "atrasadas_quitadas":
+                textQuery += " AND mov.id_baixa > 0 AND lot.dt_baixa > mov.dt_vencimento ";
+                break;
         }
 
         // DATA DO RELATORIO ---------------------------------------------------------
         if (data) {
             if (dtInicial != null && dtFinal != null) {
-                if (tipoData.equals("importacao")) {
-                    textQuery = textQuery + " AND mov.id_baixa = lot.id"
-                            + " AND lot.dt_importacao >= '" + DataHoje.converteData(dtInicial) + "'"
-                            + " AND lot.dt_importacao <= '" + DataHoje.converteData(dtFinal) + "'";
-                } else if (tipoData.equals("recebimento")) {
-                    textQuery = textQuery + " AND mov.id_baixa = lot.id"
-                            + " AND lot.dt_baixa >= '" + DataHoje.converteData(dtInicial) + "'"
-                            + " AND lot.dt_baixa <= '" + DataHoje.converteData(dtFinal) + "'";
-                } else if (tipoData.equals("vencimento")) {
-                    textQuery = textQuery + " AND mov.dt_vencimento >= '" + DataHoje.converteData(dtInicial) + "'"
-                            + " AND mov.dt_vencimento <= '" + DataHoje.converteData(dtFinal) + "'";
+                switch (tipoData) {
+                    case "importacao":
+                        textQuery += " AND mov.id_baixa = lot.id"
+                                + " AND lot.dt_importacao >= '" + DataHoje.converteData(dtInicial) + "'"
+                                + " AND lot.dt_importacao <= '" + DataHoje.converteData(dtFinal) + "'";
+                        break;
+                    case "recebimento":
+                        textQuery += " AND mov.id_baixa = lot.id"
+                                + " AND lot.dt_baixa >= '" + DataHoje.converteData(dtInicial) + "'"
+                                + " AND lot.dt_baixa <= '" + DataHoje.converteData(dtFinal) + "'";
+                        break;
+                    case "vencimento":
+                        textQuery += " AND mov.dt_vencimento >= '" + DataHoje.converteData(dtInicial) + "'"
+                                + " AND mov.dt_vencimento <= '" + DataHoje.converteData(dtFinal) + "'";
+                        break;
                 }
             } else if (!dtRefInicial.equals("") && !dtRefFinal.equals("")) {
                 String ini = dtRefInicial.substring(3, 7) + dtRefInicial.substring(0, 2);
                 String fin = dtRefFinal.substring(3, 7) + dtRefFinal.substring(0, 2);
-                textQuery = textQuery + " AND concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3)) >=  \'" + ini + "\' "
+                textQuery += " AND concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3)) >=  \'" + ini + "\' "
                         + " AND concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3)) <=  \'" + fin + "\' ";
             }
         }
@@ -179,57 +199,68 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         // CONVENCAO DO RELATORIO ------------------------------------------------------------------------------------
         if (inCnaes.isEmpty()) {
             if (idConvencao != 0) {
-                textQuery = textQuery + " AND jur.id_cnae in (SELECT id_cnae from arr_cnae_convencao WHERE id_convencao = " + idConvencao + ")";
+                textQuery += " AND jur.id_cnae in (SELECT id_cnae from arr_cnae_convencao WHERE id_convencao = " + idConvencao + ")";
             }
         } else {
-            textQuery = textQuery + " AND jur.id_cnae in (" + inCnaes + ")";
+            textQuery += " AND jur.id_cnae in (" + inCnaes + ")";
         }
 
         // GRUPO CIDADE DO RELATORIO -----------------------------------------------------------------------------------
         if (idGrupoCidade != 0) {
-            textQuery = textQuery + " AND pes_cidade.id in (SELECT id_cidade from arr_grupo_cidades WHERE id_grupo_cidade = " + idGrupoCidade + ")";
+            textQuery += " AND pes_cidade.id in (SELECT id_cidade from arr_grupo_cidades WHERE id_grupo_cidade = " + idGrupoCidade + ")";
         }
 
         // IDS CIDADES DA BASE -----------------------------------------------------------------------------------
         if (!idsCidades.isEmpty()) {
-            textQuery = textQuery + " AND pes_cidade.id in (" + idsCidades + ")";
+            textQuery += " AND pes_cidade.id in (" + idsCidades + ")";
         }
 
-        String ordem2 = "";
+        String ordem2;
         if (relatorios.getQryOrdem() == null || relatorios.getQryOrdem().isEmpty()) {
-            ordem2 = " order by ";
+            ordem2 = " ORDER BY ";
         } else {
-            ordem2 = " order by " + relatorios.getQryOrdem() + ", ";
+            ordem2 = " ORDER BY " + relatorios.getQryOrdem() + ", ";
         }
 
         // ORDEM DO RELATORIO --------------------------------------------------------
         if (chkPesEmpresa) {
-            textQuery = textQuery + ordem2 + " pes.ds_nome, ";
-            if (ordem.equals("vencimento")) {
-                textQuery = textQuery + " mov.dt_vencimento ";
-            } else if (ordem.equals("quitacao")) {
-                textQuery = textQuery + " lot.dt_baixa ";
-            } else if (ordem.equals("importacao")) {
-                textQuery = textQuery + " lot.dt_importacao ";
-            } else if (ordem.equals("referencia")) {
-                textQuery = textQuery + " concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3))";
+            textQuery += ordem2 + " pes.ds_nome, ";
+            switch (ordem) {
+                case "vencimento":
+                    textQuery += " mov.dt_vencimento ";
+                    break;
+                case "quitacao":
+                    textQuery += " lot.dt_baixa ";
+                    break;
+                case "importacao":
+                    textQuery += " lot.dt_importacao ";
+                    break;
+                case "referencia":
+                    textQuery += " concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3))";
+                    break;
             }
         } else {
-            if (ordem.equals("vencimento")) {
-                textQuery = textQuery + ordem2 + " mov.dt_vencimento ";
-            } else if (ordem.equals("quitacao")) {
-                textQuery = textQuery + ordem2 + " lot.dt_baixa ";
-            } else if (ordem.equals("importacao")) {
-                textQuery = textQuery + ordem2 + " lot.dt_importacao ";
-            } else if (ordem.equals("referencia")) {
-                textQuery = textQuery + ordem2 + " concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3))";
+            textQuery += ordem2 + " pes.ds_nome, ";
+            switch (ordem) {
+                case "vencimento":
+                    textQuery += " mov.dt_vencimento ";
+                    break;
+                case "quitacao":
+                    textQuery += " lot.dt_baixa ";
+                    break;
+                case "importacao":
+                    textQuery += " lot.dt_importacao ";
+                    break;
+                case "referencia":
+                    textQuery += " concatenar(substring(mov.ds_referencia, 4, 8), substring(mov.ds_referencia, 0, 3))";
+                    break;
             }
         }
 
         try {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             result = qry.getResultList();
-        } catch (EJBQLException e) {
+        } catch (Exception e) {
             result = new ArrayList();
         }
         return result;

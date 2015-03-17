@@ -149,89 +149,95 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booTipoPagamento, String ids_pagamento, boolean booCidadeSocio, String ids_cidade_socio, boolean booCidadeEmpresa, String ids_cidade_empresa,
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
-            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String ordem) {
+            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem) {
         String textQry = ""
                 + "SELECT "
-                + "           ''                  AS sindLogo,                  "
-                + "           sind.jurSite        AS sindSite,                  "
-                + "           sind.jurNome        AS sinnome,                   "
-                + "           sind.jurEndereco    AS sinendereco,               "
-                + "           sind.jurLogradouro  AS sinlogradouro,             "
-                + "           sind.jurNumero      AS sinnumero,                 "
-                + "           sind.jurComplemento AS sincomplemento,            "
-                + "           sind.jurBairro      AS sinbairro,                 "
+                + "           ''                  AS sindLogo,                  " // 0
+                + "           sind.jurSite        AS sindSite,                  " // 1
+                + "           sind.jurNome        AS sinnome,                   " // 2
+                + "           sind.jurEndereco    AS sinendereco,               " // 3
+                + "           sind.jurLogradouro  AS sinlogradouro,             " // 4
+                + "           sind.jurNumero      AS sinnumero,                 " // 5
+                + "           sind.jurComplemento AS sincomplemento,            " // 6
+                + "           sind.jurBairro      AS sinbairro,                 " // 7
                 + "           substring(sind.jurCep,1,5)||'-'||substring(sind.jurCep,6,3)  AS sincep,   "
-                + "           sind.jurCidade      AS sincidade,                 "
-                + "           sind.jurUf          AS sinuF,                     "
-                + "           sind.jurDocumento   AS sindocumento,              "
-                + "           p.codigo,                                         "
-                + "           p.cadastro,                                       "
-                + "           p.nome,                                           "
-                + "           p.cpf,                                            "
-                + "           p.telefone,                                       "
-                + "           p.ds_uf_emissao_rg,                               "
-                + "           p.estado_civil,                                   "
-                + "           p.ctps,                                           "
-                + "           p.pai,                                            "
-                + "           p.sexo,                                           "
-                + "           p.mae,                                            "
-                + "           p.nacionalidade,                                  "
-                + "           p.nit,                                            "
-                + "           p.ds_orgao_emissao_rg,                            "
-                + "           p.ds_pis,                                         "
-                + "           p.ds_serie,                                       "
-                + "           p.dt_aposentadoria,                               "
-                + "           p.ds_naturalidade,                                "
-                + "           p.recadastro,                                     "
-                + "           p.dt_nascimento,                                  "
-                + "           p.dt_foto,                                        "
-                + "           p.ds_rg,                                          "
-                + "           foto,                                             "
-                + "           p.logradouro,                                     "
-                + "           p.endereco,                                       "
-                + "           p.numero,                                         "
-                + "           p.complemento,                                    "
-                + "           p.bairro,                                         "
-                + "           p.cidade,                                         "
-                + "           p.uf,                                             "
-                + "           p.cep,                                            "
-                + "           p.setor,                                          "
-                + "           p.admissao,                                       "
-                + "           p.profissao,                                      "
-                + "           p.fantasia,                                       "
-                + "           p.empresa,                                        "
-                + "           p.cnpj,                                           "
-                + "           p.e_telefone,                                     "
-                + "           p.e_logradouro,                                   "
-                + "           p.e_endereco,                                     "
-                + "           p.e_numero,                                       "
-                + "           p.e_complemento,                                  "
-                + "           p.e_bairro,                                       "
-                + "           p.e_cidade,                                       "
-                + "           p.e_uf,                                           "
-                + "           p.e_cep,                                          "
-                + "           titular,                                          "
-                + "           so.codsocio,                                      "
-                + "           pt.ds_nome as titular,                            "
-                + "           so.parentesco,                                    "
-                + "           so.matricula,                                     "
-                + "           so.categoria,                                     "
-                + "           so.grupo_categoria,                               "
-                + "           so.filiacao,                                      "
-                + "           so.inativacao,                                    "
-                + "           so.votante,                                       "
-                + "           so.grau,                                          "
-                + "           so.nr_desconto,                                   "
-                + "           so.desconto_folha,                                "
-                + "           so.tipo_cobranca,                                 "
-                + "           so.cod_tipo_cobranca,                             "
+                + "           sind.jurCidade      AS sincidade,                 " // 9
+                + "           sind.jurUf          AS sinuF,                     " // 10
+                + "           sind.jurDocumento   AS sindocumento,              " // 11
+                + "           p.codigo,                                         " // 12
+                + "           p.cadastro,                                       " // 13
+                + "           p.nome,                                           " // 14
+                + "           p.cpf,                                            " // 15
+                + "           p.telefone,                                       " // 16
+                + "           p.ds_uf_emissao_rg,                               " // 17
+                + "           p.estado_civil,                                   " // 18
+                + "           p.ctps,                                           " // 19
+                + "           p.pai,                                            " // 20
+                + "           p.sexo,                                           " // 21
+                + "           p.mae,                                            " // 22
+                + "           p.nacionalidade,                                  " // 23
+                + "           p.nit,                                            " // 24
+                + "           p.ds_orgao_emissao_rg,                            " // 25
+                + "           p.ds_pis,                                         " // 26
+                + "           p.ds_serie,                                       " // 27
+                + "           p.dt_aposentadoria,                               " // 28
+                + "           p.ds_naturalidade,                                " // 29
+                + "           p.recadastro,                                     " // 30
+                + "           p.dt_nascimento,                                  " // 31
+                + "           p.dt_foto,                                        " // 32
+                + "           p.ds_rg,                                          " // 33
+                + "           foto,                                             " // 34
+                + "           p.logradouro,                                     " // 35
+                + "           p.endereco,                                       " // 36
+                + "           p.numero,                                         " // 37
+                + "           p.complemento,                                    " // 38
+                + "           p.bairro,                                         " // 39
+                + "           p.cidade,                                         " // 40
+                + "           p.uf,                                             " // 41
+                + "           p.cep,                                            " // 42
+                + "           p.setor,                                          " // 43
+                + "           p.admissao,                                       " // 44
+                + "           p.profissao,                                      " // 45
+                + "           p.fantasia,                                       " // 46
+                + "           p.empresa,                                        " // 47
+                + "           p.cnpj,                                           " // 48
+                + "           p.e_telefone,                                     " // 49
+                + "           p.e_logradouro,                                   " // 50
+                + "           p.e_endereco,                                     " // 51
+                + "           p.e_numero,                                       " // 52
+                + "           p.e_complemento,                                  " // 53
+                + "           p.e_bairro,                                       " // 54
+                + "           p.e_cidade,                                       " // 55
+                + "           p.e_uf,                                           " // 56
+                + "           p.e_cep,                                          " // 57
+                + "           titular,                                          " // 58
+                + "           so.codsocio,                                      " // 59
+                + "           pt.ds_nome as titular,                            " // 60
+                + "           so.parentesco,                                    " // 61
+                + "           so.matricula,                                     " // 62
+                + "           so.categoria,                                     " // 63
+                + "           so.grupo_categoria,                               " // 64
+                + "           so.filiacao,                                      " // 65
+                + "           so.inativacao,                                    " // 66
+                + "           so.votante,                                       " // 67
+                + "           so.grau,                                          " // 68
+                + "           so.nr_desconto,                                   " // 69
+                + "           so.desconto_folha,                                " // 70
+                + "           so.tipo_cobranca,                                 " // 71
+                + "           so.cod_tipo_cobranca,                             " // 72
                 + "           p.telefone2,                                      " // 73
-                + "           p.telefone3,                                      " //74           
-                + "           p.email                                           " //75
-                + "      FROM pes_pessoa_vw     AS p                            "
-                + "INNER JOIN soc_socios_vw     AS so   ON so.codsocio      = p.codigo      "
-                + "INNER JOIN pes_juridica_vw   AS sind ON sind.id_pessoa   = 1             "
-                + "INNER JOIN pes_pessoa        AS pt   ON pt.id            = so.titular    ";
+                + "           p.telefone3,                                      " // 74           
+                + "           p.email,                                          " // 75
+                + "           PC.ds_nome,                                       " // 76
+                + "           PJC.ds_contato,                                   " // 77
+                + "           PC.ds_telefone1                                   " // 78
+                + "      FROM pes_pessoa_vw      AS p                           "
+                + "INNER JOIN soc_socios_vw      AS so   ON so.codsocio     = p.codigo              "
+                + "INNER JOIN pes_juridica_vw    AS sind ON sind.id_pessoa  = 1                     "
+                + "INNER JOIN pes_pessoa         AS pt   ON pt.id           = so.titular            "
+                + " LEFT JOIN pes_juridica       AS J    ON J.id            = P.e_id                "
+                + " LEFT JOIN pes_juridica       AS PJC  ON PJC.id          = J.id_contabilidade    "
+                + " LEFT JOIN pes_pessoa         AS PC   ON PC.id           = PJC.id_pessoa         ";
 
         String filtro = "";
 
@@ -286,9 +292,9 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
 
         if (booCarteirinha) {
             if (tipo_carteirinha.equals("com")) {
-                filtro += " AND so.codsocio IN(SELECT sc.id_socio FROM soc_carteirinha AS sc GROUP BY sc.id_socio)";
+                filtro += " AND so.codsocio IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)";
             } else if (tipo_carteirinha.equals("sem")) {
-                filtro += " AND so.codsocio NOT IN(SELECT sc.id_socio FROM soc_carteirinha AS sc GROUP BY sc.id_socio)";
+                filtro += " AND so.codsocio NOT IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)";
             }
         }
 
@@ -350,6 +356,13 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                 filtro += " AND p.admissao = '" + dt_admissao_empresa + "'";
             }
 
+            // DATA APOSENTADORIA
+            if (!data_aposentadoria.isEmpty() && !data_aposentadoria_fim.isEmpty()) {
+                filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'";
+            } else if (!dt_admissao_empresa.isEmpty()) {
+                filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'";
+            }
+
         } else {
             filtro += " AND (p.principal = true OR p.principal IS NULL) ";
             //filtro += " and p.demissao is null ";
@@ -394,21 +407,26 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         }
 
         String tordem = "";
-        if (ordem.equals("nome")) {
-            tordem = " p.nome ";
-        } else if (ordem.equals("matricula")) {
-            tordem = " so.matricula ";
-        } else if (ordem.equals("cep")) {
-            tordem = " p.cep ";
-        } else if (ordem.equals("endereco")) {
-            tordem = " p.logradouro, p.endereco, p.numero, p.bairro ";
+        if(ordem != null) {
+            if (ordem.equals("nome")) {
+                tordem = " p.nome ";
+            } else if (ordem.equals("matricula")) {
+                tordem = " so.matricula ";
+            } else if (ordem.equals("cep")) {
+                tordem = " p.cep ";
+            } else if (ordem.equals("endereco")) {
+                tordem = " p.logradouro, p.endereco, p.numero, p.bairro ";
+            }            
         }
 
         // ORDEM DA QRY
         if (relatorio.getQryOrdem() == null || relatorio.getQryOrdem().isEmpty()) {
             filtro += " ORDER BY " + tordem;
         } else {
-            filtro += " ORDER BY " + relatorio.getQryOrdem() + ", " + tordem;
+            filtro += " ORDER BY " + relatorio.getQryOrdem();
+            if(!tordem.isEmpty()) {
+                filtro += ", " + tordem;
+            }
         }
         try {
             String queryString = textQry + filtro;
