@@ -163,19 +163,19 @@
                                                     <p:spinner id="idFim" size="2" value="#{servicosBean.servicoValor.idadeFim}" min="#{servicosBean.servicoValor.idadeIni}" max="150" />
                                                     <p:outputLabel value="Valor: "  for="idValor"/>
                                                     <p:inputText id="idValor" value="#{servicosBean.valorf}">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" />
                                                     </p:inputText>
                                                     <p:outputLabel value=" Desconto até o vencimento: "  for="idDesconto"/>
                                                     <p:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" maxlength="100"> 
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" />
                                                     </p:inputText>
                                                     <p:outputLabel value=" Taxa: " for="idTaxa"/>
                                                     <p:inputText size="10" id="idTaxa" value="#{servicosBean.taxa}">
-                                                        <p:ajax event="blur" update="@this" />
+                                                        <p:ajax event="change" update="@this" />
                                                     </p:inputText>
                                                 </p:panelGrid>
                                                 <p:panelGrid columns="4" styleClass="sbb  margin-top-max" id="id_acao">
-                                                    <p:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.saveServicoValor}" title="Adicionar serviço valor" update="tblDesconto id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl"/>
+                                                    <p:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.saveServicoValor}" title="Adicionar serviço valor" update="tblDesconto id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl id_acao"/>
                                                     <p:commandButton value="Limpar" action="#{servicosBean.clearServicoValor}"  title="Novo serviço valor"  update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl id_acao" />
                                                     <p:commandButton value="Remover"  action="#{servicosBean.removeServicoValor}" title="Remover serviço valor" update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl" />                                            
                                                 </p:panelGrid>
