@@ -80,6 +80,12 @@ public class ControleUsuarioBean implements Serializable {
             objs[1] = macFilial.getDepartamento();
             GenericaSessao.put("acessoFilial", macFilial);
             filial = "Filial: ( " + macFilial.getFilial().getFilial().getPessoa().getNome() + " / " + macFilial.getDepartamento().getDescricao() + " )";
+            if (macFilial.getMesa() > 0) {
+                filial += " - Guiche: " + macFilial.getMesa();
+            }
+            if (!macFilial.getDescricao().isEmpty()) {
+                filial += " - " + macFilial.getDescricao();
+            }
         } else {
             GenericaSessao.put("acessoFilial", null);
             filial = "";
