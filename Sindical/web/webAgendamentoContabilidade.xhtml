@@ -202,6 +202,23 @@
                         </h:panelGrid>
 
                         <h:panelGrid columns="4" style="margin-top: 10px">
+                            <h:column>
+                                <h:outputText value="Estado Civil"/><br />
+                                <p:selectOneMenu value="#{webAgendamentoContabilidadeBean.fisica.estadoCivil}">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                    <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                    <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                    <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                    <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                    <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                    <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                    <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                    <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                </p:selectOneMenu>
+                            </h:column>
+                        </h:panelGrid>                        
+
+                        <h:panelGrid columns="4" style="margin-top: 10px">
                             <p:commandButton value="Endereço" disabled="#{webAgendamentoContabilidadeBean.fisica.id != -1}" onclick="PF('dlg_endereco').show()"/>
                             <h:panelGrid rendered="#{webAgendamentoContabilidadeBean.fisica.id != -1}">
                                 <h:outputLabel value="#{webAgendamentoContabilidadeBean.enderecoFisica.endereco.logradouro.descricao} 
