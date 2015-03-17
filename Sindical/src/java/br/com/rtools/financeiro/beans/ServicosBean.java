@@ -468,9 +468,6 @@ public class ServicosBean implements Serializable {
         servicoValor.setDescontoAteVenc(Moeda.substituiVirgulaFloat(desconto));
         boolean existeValor = true;
         if (existeValor) {
-            if (servicoValor.getDescontoAteVenc() > servicoValor.getValor()) {
-                servicoValor.setDescontoAteVenc(servicoValor.getValor());
-            }
             if (servicoValor.getId() == -1) {
                 servicoValor.setServicos(servicos);
                 if (di.save(servicoValor, true)) {
@@ -520,6 +517,7 @@ public class ServicosBean implements Serializable {
                     valorf = "0";
                     desconto = "0";
                     taxa = "0";
+                    textoBtnServico = "Adicionar";
                 } else {
                     GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 }
@@ -587,6 +585,7 @@ public class ServicosBean implements Serializable {
 //                }
                 listServicoValor.clear();
                 GenericaMensagem.info("Sucesso", "Registro excluido com sucesso");
+                textoBtnServico = "Adicionar";
             } else {
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
             }
@@ -641,6 +640,9 @@ public class ServicosBean implements Serializable {
             }
         } else {
             this.desconto = Moeda.substituiVirgula("0");
+        }
+        if(Float.parseFloat(this.desconto) > 100) {
+            this.desconto = "100,00";
         }
     }
 
