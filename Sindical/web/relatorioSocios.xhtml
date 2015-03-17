@@ -41,18 +41,23 @@
                         <h:outputText value="Relatório Sócios" styleClass="fonteHeader" />
                         <h:form id="formRelatorioSocios">
                             <p:panel styleClass="fundoCinza" style="clear: both">
-                                <h:panelGrid columns="1">
-                                    <p:outputLabel value="Tipo de Relatório" />
+                                <h:panelGrid columns="4" id="i_p_r">
+                                    <p:outputLabel value="Tipo de Relatório: " />
                                     <p:selectOneMenu value="#{relatorioSociosBean.idRelatorio}">
-                                        <p:ajax event="change" update="@this"/>
+                                        <p:ajax event="change" update="@this i_p_r i_ordernacao"/>
                                         <f:selectItems value="#{relatorioSociosBean.listaTipoRelatorios}"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Ordem: " styleClass="margin-left-max" rendered="#{not empty relatorioSociosBean.listaRelatorioOrdem}"/>
+                                    <p:selectOneMenu value="#{relatorioSociosBean.idRelatorioOrdem}" rendered="#{not empty relatorioSociosBean.listaRelatorioOrdem}">
+                                        <p:ajax event="change" update="@this"/>
+                                        <f:selectItems value="#{relatorioSociosBean.listaRelatorioOrdem}"/>
                                     </p:selectOneMenu>
                                 </h:panelGrid>
                             </p:panel>
-                            
+
                             <p:messages autoUpdate="true" closable="true" showDetail="true" />
                             <p:growl autoUpdate="true" showDetail="true" />
-                            
+
                             <h:panelGrid columns="2" style="width: 100%;" columnClasses="column01, column02">
                                 <h:column>
                                     <p:accordionPanel>
@@ -73,12 +78,12 @@
                                             </c:forEach>
                                         </p:tab>
                                     </p:accordionPanel>
-                                    
+
                                     <p:commandLink value="Limpar Filtro" action="#{relatorioSociosBean.limparFiltro()}" update="formRelatorioSocios" style="float: right"/>
-                                    
-                                    
-                                    <h:panelGrid columns="1">
-                                        <p:panel styleClass="fundoCinza">
+
+
+                                    <h:panelGrid columns="1" id="i_ordernacao">
+                                        <p:panel styleClass="fundoCinza" rendered="#{empty relatorioSociosBean.listaRelatorioOrdem}">
                                             <h:outputLabel value="Ordenar por "/><br />
                                             <p:selectOneRadio id="idOrdem" value="#{relatorioSociosBean.tipoOrdem}">
                                                 <f:selectItem itemValue="nome"      itemLabel="Nome"/>
@@ -88,7 +93,7 @@
                                             </p:selectOneRadio>
                                         </p:panel>
                                     </h:panelGrid>
-                                    
+
                                     <h:commandLink target="_blank" action="#{relatorioSociosBean.visualizarRelatorio()}" title="Imprimir Relatório">
                                         <p:commandButton icon="ui-icon-print" value="Imprimir Relatório" title="Imprimir Relatório"/>
                                     </h:commandLink>                                    
@@ -101,7 +106,7 @@
                                                 <p:outputLabel value="Listar todos Sócios" style="font-size: 20pt!important"/>
                                             </h:column>
                                         </h:panelGrid>
-                                        
+
                                         <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booMatricula}" style="float: left; margin: 10px ">
                                             <h:column>
                                                 <p:outputLabel value="Número da Matricula" />
@@ -363,18 +368,20 @@
                                             <h:column>
                                                 <p:outputLabel value="Estado Civil" /><br />
                                                 <p:selectOneMenu value="#{relatorioSociosBean.tipoEstadoCivil}">
-                                                    <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                    <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
-                                                    <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
-                                                    <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
                                                     <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                                    <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
                                                     <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
-                                                    <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                    <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
                                                     <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                                    <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                    <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                                    <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
                                                 </p:selectOneMenu>
                                             </h:column>
                                         </h:panelGrid>
+                                        
                                     </h:panelGrid>
+
 
                                     <h:panelGrid id="i_panel_filtro2" columns="1">
                                         <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmpresa}" style="float: left; margin: 10px">
@@ -437,6 +444,15 @@
                                                     <p:inputMask value="#{relatorioSociosBean.dataAdmissaoSocio}" size="8" mask="99/99/9999"/>
                                                     <h:outputLabel value="Até" styleClass="fontePadrao"/>
                                                     <p:inputMask value="#{relatorioSociosBean.dataAdmissaoSocioFim}" size="8" mask="99/99/9999"/>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            
+                                            <h:column>
+                                                <h:panelGrid style="margin-right: 20px">
+                                                    <h:outputLabel value="Aposentadoria" styleClass="fontePadrao"/>
+                                                    <p:inputMask value="#{relatorioSociosBean.dataAposetandoria}" size="8" mask="99/99/9999"/>
+                                                    <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                                    <p:inputMask value="#{relatorioSociosBean.dataAposetandoriaFim}" size="8" mask="99/99/9999"/>
                                                 </h:panelGrid>
                                             </h:column>
                                         </h:panelGrid>  
