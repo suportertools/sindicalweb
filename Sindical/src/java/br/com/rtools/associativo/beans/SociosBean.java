@@ -1641,21 +1641,26 @@ public class SociosBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
                 dao.rollback();
                 return null;
-            } else if (!inativaDependentes(dao, soc)) {
+            } else if (!inativaDependentes(dao, (Socios) dao.find(soc))) {
                 dao.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inativar dependente!");
                 return null;
             } else {
-                try {
-                    listaDependentes.remove(index);
-                } catch (Exception e) {
-                }
-                if (soc.getServicoPessoa().isAtivo()) {
-                    GenericaMensagem.warn("Erro", "Dependente inativado!");
-                } else {
-                    GenericaMensagem.warn("Erro", "Dependente excluído!");
-                }
                 dao.commit();
+                listaDependentesInativos.clear();
+                if (soc.getServicoPessoa().isAtivo()) {
+                    try {
+                        GenericaMensagem.warn("Erro", "Dependente inativado!");
+                        listaDependentes.remove(index);
+                    } catch (Exception e) {
+                    }
+                } else {
+                    if (!dao.delete(soc.getServicoPessoa(), true)) {
+                        GenericaMensagem.warn("Sistema", "Serviço pessoa não pode ser excluído para esse dependente!");
+                    }
+                    GenericaMensagem.info("Sucesso", "Dependente excluído!");
+                }
+                soc = null;
                 atualizarListaDependenteInativo();
                 return null;
             }
@@ -1671,7 +1676,7 @@ public class SociosBean implements Serializable {
             soc.getServicoPessoa().setAtivo(false);
             return dao.update(soc.getServicoPessoa());
         } else {
-            return excluirDependentes(dao, soc);
+            return excluirDependentes(dao, (Socios) dao.find(soc));
         }
     }
 
@@ -1717,12 +1722,13 @@ public class SociosBean implements Serializable {
             return false;
         }
 
-        //ServicoPessoa serPessoa = dbS.pesquisaServicoPessoaPorPessoa(soc.getServicoPessoa().getPessoa().getId());
-        ServicoPessoa serPessoa = (ServicoPessoa) dao.find(soc.getServicoPessoa());
-        if (!dao.delete(serPessoa)) {
-            GenericaMensagem.warn("Erro", "Ao excluir serviço pessoa Dependente!");
-            return true;
-        }
+        // ServicoPessoa serPessoa = dbS.pesquisaServicoPessoaPorPessoa(soc.getServicoPessoa().getPessoa().getId());
+//        ServicoPessoa serPessoa = (ServicoPessoa) dao.find(soc.getServicoPessoa());
+//        if (!dao.delete(serPessoa)) {
+//            GenericaMensagem.info("Sucesso", "Dependente excluído!");
+//            GenericaMensagem.warn("Erro", "Ao excluir serviço pessoa do Dependente!");
+//            return true;
+//        }
         GenericaMensagem.info("Sucesso", "Dependente excluído!");
         return true;
     }
