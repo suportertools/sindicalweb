@@ -343,6 +343,9 @@
                             <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="600" modal="true" closeOnEscape="true">
                                 <h:panelGrid id="i_l_d_i">
                                     <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
+                                        <p:column style="text-align: center" width="30">
+                                            <p:commandButton title="Excluir" icon="ui-icon-close" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.excluirDependente(linha, index)}"/>
+                                        </p:column>
                                         <p:column headerText="Nome">
                                             <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
                                         </p:column>
