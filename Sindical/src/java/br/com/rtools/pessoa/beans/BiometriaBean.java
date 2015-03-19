@@ -54,9 +54,9 @@ public class BiometriaBean {
         if (GenericaSessao.exists("acessoFilial")) {
             List list = biometriaDao.pesquisaBiometriaCapturaPorPessoa(p.getId());
             if (!list.isEmpty()) {
-                list.stream().forEach((list1) -> {
+                for (Object list1 : list) {
                     dao.delete(list1, true);
-                });
+                }
             }
             BiometriaCaptura biometriaCaptura = new BiometriaCaptura();
             biometriaCaptura.setMacFilial((MacFilial) GenericaSessao.getObject("acessoFilial"));
