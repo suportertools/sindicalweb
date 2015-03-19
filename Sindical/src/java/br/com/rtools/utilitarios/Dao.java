@@ -39,7 +39,22 @@ public class Dao extends DB implements DaoInterface {
      */
     @Override
     public void commit() {
-        getEntityManager().getTransaction().commit();
+        if(activeSession()) {
+            try {
+                getEntityManager().getTransaction().commit();
+            } catch (Exception e) {
+                EXCEPCION = e;
+                // getEntityManager().getTransaction().setRollbackOnly();
+                if (GenericaSessao.exists("habilitaLog")) {
+                    if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                        GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                        PF.update("header:form_log");
+                    }
+                }
+            }            
+        } else {
+            rollback();
+        }
     }
 
     /**
@@ -93,9 +108,11 @@ public class Dao extends DB implements DaoInterface {
         } catch (Exception e) {
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return false;
         }
@@ -126,9 +143,11 @@ public class Dao extends DB implements DaoInterface {
             getEntityManager().getTransaction().rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return false;
         }
@@ -169,9 +188,11 @@ public class Dao extends DB implements DaoInterface {
             return true;
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
         }
         return false;
@@ -216,9 +237,11 @@ public class Dao extends DB implements DaoInterface {
             getEntityManager().getTransaction().rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return false;
         }
@@ -245,9 +268,11 @@ public class Dao extends DB implements DaoInterface {
         } catch (Exception e) {
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return false;
         }
@@ -279,9 +304,11 @@ public class Dao extends DB implements DaoInterface {
             getEntityManager().getTransaction().rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return false;
         }
@@ -336,9 +363,11 @@ public class Dao extends DB implements DaoInterface {
             rollback();
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
         }
         return object;
@@ -359,9 +388,11 @@ public class Dao extends DB implements DaoInterface {
         } catch (Exception e) {
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
         }
     }
@@ -421,9 +452,11 @@ public class Dao extends DB implements DaoInterface {
             } catch (Exception e) {
                 Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
                 EXCEPCION = e;
-                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                    PF.update("header:form_log");
+                if (GenericaSessao.exists("habilitaLog")) {
+                    if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                        GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                        PF.update("header:form_log");
+                    }
                 }
                 return null;
             }
@@ -674,9 +707,11 @@ public class Dao extends DB implements DaoInterface {
         } catch (Exception e) {
             Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
-                PF.update("header:form_log");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", "Exceção gerada " + EXCEPCION.getMessage());
+                    PF.update("header:form_log");
+                }
             }
             return new ArrayList();
         }
