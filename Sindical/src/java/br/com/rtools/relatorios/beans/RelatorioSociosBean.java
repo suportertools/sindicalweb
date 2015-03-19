@@ -442,90 +442,105 @@ public class RelatorioSociosBean implements Serializable {
                 booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, dataAposetandoria, dataAposetandoriaFim, tipoOrdem);
 
         Collection lista = new ArrayList();
+        boolean agrupa = false;
+        boolean continua = false;
+        String empresaString = "";
+        if (relatorios.getId() == 42) {
+            agrupa = true;
+        } else {
+            continua = true;
+        }
         for (int i = 0; i < result.size(); i++) {
-//            if (i == 762 || i == 2392){
-//                continue;
-//            }
-            lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    getConverteNullString(result.get(i).get(1)), // SITE
-                    getConverteNullString(result.get(i).get(2)), // SIN NOME
-                    getConverteNullString(result.get(i).get(3)), // SIN ENDERECO
-                    getConverteNullString(result.get(i).get(4)), // SIN LOGRADOURO
-                    getConverteNullString(result.get(i).get(5)), // SIN NUMERO
-                    getConverteNullString(result.get(i).get(6)), // SIN COMPLEMENTO
-                    getConverteNullString(result.get(i).get(7)), // SIN BAIRRO
-                    getConverteNullString(result.get(i).get(8)), // SIN CEP
-                    getConverteNullString(result.get(i).get(9)), // SIN CIDADE
-                    getConverteNullString(result.get(i).get(10)),// SIN UF 
-                    getConverteNullString(result.get(i).get(11)),// SIN DOCUMENTO 
-                    getConverteNullInt(result.get(i).get(12)),// CODIGO 
-                    (Date) result.get(i).get(13),// CADASTRO
-                    getConverteNullString(result.get(i).get(14)),// NOME
-                    getConverteNullString(result.get(i).get(15)),// CPF
-                    getConverteNullString(result.get(i).get(16)),// TELEFONE
-                    getConverteNullString(result.get(i).get(17)),// UF EMISSAO RG
-                    getConverteNullString(result.get(i).get(18)),// ESTADO CIVIL
-                    getConverteNullString(result.get(i).get(19)),// CTPS
-                    getConverteNullString(result.get(i).get(20)),// PAI
-                    getConverteNullString(result.get(i).get(21)),// SEXO
-                    getConverteNullString(result.get(i).get(22)),// MAE
-                    getConverteNullString(result.get(i).get(23)),// NACIONALIDADE
-                    getConverteNullString(result.get(i).get(24)),// NIT
-                    getConverteNullString(result.get(i).get(25)),// ORGAO EMISSAO RG
-                    getConverteNullString(result.get(i).get(26)),// PIS
-                    getConverteNullString(result.get(i).get(27)),// SERIE
-                    (Date) result.get(i).get(28),// APOSENTADORIA ------------
-                    getConverteNullString(result.get(i).get(29)),// NATURALIDADE
-                    (Date) result.get(i).get(30),// RECADASTRO
-                    (Date) result.get(i).get(31),// DT NASCIMENTO -------------
-                    (Date) result.get(i).get(32),// DT FOTO -------------------
-                    getConverteNullString(result.get(i).get(33)),// RG
-                    "",// CAMINHO DA FOTO SOCIO
-                    getConverteNullString(result.get(i).get(35)),// LOGRADOURO
-                    getConverteNullString(result.get(i).get(36)),// ENDERECO
-                    getConverteNullString(result.get(i).get(37)),// NUMERO
-                    getConverteNullString(result.get(i).get(38)),// COMPLEMENTO
-                    getConverteNullString(result.get(i).get(39)),// BAIRRO
-                    getConverteNullString(result.get(i).get(40)),// CIDADE
-                    getConverteNullString(result.get(i).get(41)),// UF
-                    getConverteNullString(result.get(i).get(42)),// CEP
-                    getConverteNullString(result.get(i).get(43)),// SETOR
-                    (Date) result.get(i).get(44),// DT ADMISSAO ---------------
-                    getConverteNullString(result.get(i).get(45)),// PROFISSAO
-                    getConverteNullString(result.get(i).get(46)),// EMPRESA FANTASIA
-                    getConverteNullString(result.get(i).get(47)),// NOME EMPRESA
-                    getConverteNullString(result.get(i).get(48)),// EMPRESA CNPJ
-                    getConverteNullString(result.get(i).get(49)),// EMPRESA TELEFONE
-                    getConverteNullString(result.get(i).get(50)),// EMPRESA LOGRADOURO
-                    getConverteNullString(result.get(i).get(51)),// EMPRESA ENDERECO
-                    getConverteNullString(result.get(i).get(52)),// EMPRESA NUMERO
-                    getConverteNullString(result.get(i).get(53)),// "       COMPLEMENTO 
-                    getConverteNullString(result.get(i).get(54)),// "       BAIRRO
-                    getConverteNullString(result.get(i).get(55)),// "       CIDADE
-                    getConverteNullString(result.get(i).get(56)),// "       UF
-                    getConverteNullString(result.get(i).get(57)),// "       CEP
-                    getConverteNullString(result.get(i).get(58)),// TITULAR
-                    getConverteNullString(result.get(i).get(59)),// COD SOCIO
-                    getConverteNullString(result.get(i).get(60)),// NOME SOCIO
-                    getConverteNullString(result.get(i).get(61)),// PARENTESCO 
-                    getConverteNullInt(result.get(i).get(62)),// MATRICULA
-                    getConverteNullString(result.get(i).get(63)),// CATEGORIA
-                    getConverteNullString(result.get(i).get(64)),// GRUPO CATEGORIA
-                    (Date) result.get(i).get(65),// DT FILIACAO --------------
-                    (Date) result.get(i).get(66),// INATIVACAO ---------------
-                    (Boolean) result.get(i).get(67),// VOTANTE
-                    getConverteNullString(result.get(i).get(68)),// GRAU
-                    new BigDecimal(Float.parseFloat(getConverteNullString(result.get(i).get(58)))),// NR DESCONTO
-                    (Boolean) result.get(i).get(70),
-                    getConverteNullString(result.get(i).get(71)),// TIPO COBRANCA
-                    getConverteNullInt(result.get(i).get(72)),// COD TIPO COBRANCA
-                    getConverteNullString(result.get(i).get(73)),// TELEFONE2
-                    getConverteNullString(result.get(i).get(74)), // TELEFONE3                                          
-                    getConverteNullString(result.get(i).get(75)), // EMAIL 1
-                    getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
-                    getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
-                    getConverteNullString(result.get(i).get(78)) // CONTABILIDADE - EMAIL
-            ));
+            if (agrupa) {
+                if (!empresaString.equals(getConverteNullString(result.get(i).get(47)))) {
+                    empresaString = getConverteNullString(result.get(i).get(47));
+                    continua = true;
+                } else {
+                    continua = false;
+                }
+            }
+            if (continua) {
+                lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        getConverteNullString(result.get(i).get(1)), // SITE
+                        getConverteNullString(result.get(i).get(2)), // SIN NOME
+                        getConverteNullString(result.get(i).get(3)), // SIN ENDERECO
+                        getConverteNullString(result.get(i).get(4)), // SIN LOGRADOURO
+                        getConverteNullString(result.get(i).get(5)), // SIN NUMERO
+                        getConverteNullString(result.get(i).get(6)), // SIN COMPLEMENTO
+                        getConverteNullString(result.get(i).get(7)), // SIN BAIRRO
+                        getConverteNullString(result.get(i).get(8)), // SIN CEP
+                        getConverteNullString(result.get(i).get(9)), // SIN CIDADE
+                        getConverteNullString(result.get(i).get(10)),// SIN UF 
+                        getConverteNullString(result.get(i).get(11)),// SIN DOCUMENTO 
+                        getConverteNullInt(result.get(i).get(12)),// CODIGO 
+                        (Date) result.get(i).get(13),// CADASTRO
+                        getConverteNullString(result.get(i).get(14)),// NOME
+                        getConverteNullString(result.get(i).get(15)),// CPF
+                        getConverteNullString(result.get(i).get(16)),// TELEFONE
+                        getConverteNullString(result.get(i).get(17)),// UF EMISSAO RG
+                        getConverteNullString(result.get(i).get(18)),// ESTADO CIVIL
+                        getConverteNullString(result.get(i).get(19)),// CTPS
+                        getConverteNullString(result.get(i).get(20)),// PAI
+                        getConverteNullString(result.get(i).get(21)),// SEXO
+                        getConverteNullString(result.get(i).get(22)),// MAE
+                        getConverteNullString(result.get(i).get(23)),// NACIONALIDADE
+                        getConverteNullString(result.get(i).get(24)),// NIT
+                        getConverteNullString(result.get(i).get(25)),// ORGAO EMISSAO RG
+                        getConverteNullString(result.get(i).get(26)),// PIS
+                        getConverteNullString(result.get(i).get(27)),// SERIE
+                        (Date) result.get(i).get(28),// APOSENTADORIA ------------
+                        getConverteNullString(result.get(i).get(29)),// NATURALIDADE
+                        (Date) result.get(i).get(30),// RECADASTRO
+                        (Date) result.get(i).get(31),// DT NASCIMENTO -------------
+                        (Date) result.get(i).get(32),// DT FOTO -------------------
+                        getConverteNullString(result.get(i).get(33)),// RG
+                        "",// CAMINHO DA FOTO SOCIO
+                        getConverteNullString(result.get(i).get(35)),// LOGRADOURO
+                        getConverteNullString(result.get(i).get(36)),// ENDERECO
+                        getConverteNullString(result.get(i).get(37)),// NUMERO
+                        getConverteNullString(result.get(i).get(38)),// COMPLEMENTO
+                        getConverteNullString(result.get(i).get(39)),// BAIRRO
+                        getConverteNullString(result.get(i).get(40)),// CIDADE
+                        getConverteNullString(result.get(i).get(41)),// UF
+                        getConverteNullString(result.get(i).get(42)),// CEP
+                        getConverteNullString(result.get(i).get(43)),// SETOR
+                        (Date) result.get(i).get(44),// DT ADMISSAO ---------------
+                        getConverteNullString(result.get(i).get(45)),// PROFISSAO
+                        getConverteNullString(result.get(i).get(46)),// EMPRESA FANTASIA
+                        getConverteNullString(result.get(i).get(47)),// NOME EMPRESA
+                        getConverteNullString(result.get(i).get(48)),// EMPRESA CNPJ
+                        getConverteNullString(result.get(i).get(49)),// EMPRESA TELEFONE
+                        getConverteNullString(result.get(i).get(50)),// EMPRESA LOGRADOURO
+                        getConverteNullString(result.get(i).get(51)),// EMPRESA ENDERECO
+                        getConverteNullString(result.get(i).get(52)),// EMPRESA NUMERO
+                        getConverteNullString(result.get(i).get(53)),// "       COMPLEMENTO 
+                        getConverteNullString(result.get(i).get(54)),// "       BAIRRO
+                        getConverteNullString(result.get(i).get(55)),// "       CIDADE
+                        getConverteNullString(result.get(i).get(56)),// "       UF
+                        getConverteNullString(result.get(i).get(57)),// "       CEP
+                        getConverteNullString(result.get(i).get(58)),// TITULAR
+                        getConverteNullString(result.get(i).get(59)),// COD SOCIO
+                        getConverteNullString(result.get(i).get(60)),// NOME SOCIO
+                        getConverteNullString(result.get(i).get(61)),// PARENTESCO 
+                        getConverteNullInt(result.get(i).get(62)),// MATRICULA
+                        getConverteNullString(result.get(i).get(63)),// CATEGORIA
+                        getConverteNullString(result.get(i).get(64)),// GRUPO CATEGORIA
+                        (Date) result.get(i).get(65),// DT FILIACAO --------------
+                        (Date) result.get(i).get(66),// INATIVACAO ---------------
+                        (Boolean) result.get(i).get(67),// VOTANTE
+                        getConverteNullString(result.get(i).get(68)),// GRAU
+                        new BigDecimal(Float.parseFloat(getConverteNullString(result.get(i).get(58)))),// NR DESCONTO
+                        (Boolean) result.get(i).get(70),
+                        getConverteNullString(result.get(i).get(71)),// TIPO COBRANCA
+                        getConverteNullInt(result.get(i).get(72)),// COD TIPO COBRANCA
+                        getConverteNullString(result.get(i).get(73)),// TELEFONE2
+                        getConverteNullString(result.get(i).get(74)), // TELEFONE3                                          
+                        getConverteNullString(result.get(i).get(75)), // EMAIL 1
+                        getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
+                        getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
+                        getConverteNullString(result.get(i).get(78)) // CONTABILIDADE - EMAIL
+                ));
+            }
 //            if (i == 2392){
 //                break;
 //            }
