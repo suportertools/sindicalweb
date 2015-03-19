@@ -665,42 +665,64 @@ public final class FechamentoCaixaBean implements Serializable {
             ControleAcessoBean cab = new ControleAcessoBean();
             boolean permissao = cab.getBotaoFecharCaixaOutroUsuario();
             Caixa cx = null;
-            if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
-                MacFilial mac = MacFilial.getAcessoFilial();
-                if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){
-                    listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
-                    return listaCaixa;
-                }
-                
-                cx = mac.getCaixa();
-            }else{
-                FinanceiroDB dbf = new FinanceiroDBToplink();
-                cx = dbf.pesquisaCaixaUsuario( ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() );    
-                
-                if (cx == null){
-                    listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
-                    return listaCaixa;
-                }
-            }
+            Usuario usuario = ((Usuario) GenericaSessao.getObject("sessaoUsuario"));
             
-            // TRUE é igual NÃO ter permissão
-            if (permissao){
-                listaCaixa.add(
-                    new SelectItem(
-                            0,
-                            cx.getCaixa() + " - " + cx.getDescricao(),
-                            Integer.toString(cx.getId())
-                    )
-                
-                );
+            if (usuario.getId() != 1){
+                if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
+                    MacFilial mac = MacFilial.getAcessoFilial();
+                    if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){
+                        listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                        return listaCaixa;
+                    }
+
+                    cx = mac.getCaixa();
+                }else{
+                    FinanceiroDB dbf = new FinanceiroDBToplink();
+                    cx = dbf.pesquisaCaixaUsuario( ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() );    
+
+                    if (cx == null){
+                        listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                        return listaCaixa;
+                    }
+                }
+            
+                // TRUE é igual NÃO ter permissão
+                if (permissao){
+                    listaCaixa.add(
+                        new SelectItem(
+                                0,
+                                cx.getCaixa() + " - " + cx.getDescricao(),
+                                Integer.toString(cx.getId())
+                        )
+
+                    );
+                }else{
+                    List<Caixa> list = (new FinanceiroDBToplink()).listaCaixa();
+                    if (!list.isEmpty()){
+
+                        // TRUE é igual não ter permissão
+
+                        for (int i = 0; i < list.size(); i++) {
+
+                            listaCaixa.add(
+                                    new SelectItem(i,
+                                    list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
+                                    Integer.toString(list.get(i).getId())));
+                        }
+                    }else{
+                        listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
+                    }
+
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getId() == cx.getId()) {
+                            idCaixa = i;
+                        }
+                    }
+                }
             }else{
                 List<Caixa> list = (new FinanceiroDBToplink()).listaCaixa();
                 if (!list.isEmpty()){
-
-                    // TRUE é igual não ter permissão
-
                     for (int i = 0; i < list.size(); i++) {
-                        
                         listaCaixa.add(
                                 new SelectItem(i,
                                 list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
@@ -708,12 +730,6 @@ public final class FechamentoCaixaBean implements Serializable {
                     }
                 }else{
                     listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
-                }
-                    
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getId() == cx.getId()) {
-                        idCaixa = i;
-                    }
                 }
             }
         }

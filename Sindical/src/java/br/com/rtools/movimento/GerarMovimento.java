@@ -2,7 +2,6 @@ package br.com.rtools.movimento;
 
 import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.Convencao;
-import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.MensagemConvencao;
 import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.financeiro.*;
@@ -12,6 +11,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -597,6 +597,68 @@ public class GerarMovimento extends DB {
             }
         } catch (Exception e) {
             mensagem = e.getMessage();
+        }
+        return mensagem;
+    }
+    
+    public static String inativarArrayMovimento(List<Movimento> listaMovimento, String historico, Dao dao) {
+        String mensagem = "";
+        MovimentoDB movDB = new MovimentoDBToplink();
+        
+        NovoLog novoLog = new NovoLog();
+        
+        boolean new_dao = false;
+        
+        if (dao == null){
+            dao = new Dao();
+            dao.openTransaction();
+            new_dao = true;
+        }
+        
+        for (Movimento mov : listaMovimento){
+            try {
+                if (mov.isAtivo() && mov.getBaixa() == null || mov.getBaixa().getId() == -1) {
+                    mov.setAtivo(false);
+                    
+                    MovimentoInativo mi = new MovimentoInativo();
+                    mi.setData(DataHoje.data());
+                    mi.setMovimento(mov);
+                    mi.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
+                    mi.setHistorico(historico);
+
+                    Boleto bol = movDB.pesquisaBoletos(mov.getNrCtrBoleto());
+                    
+                    if (bol != null) {
+                        bol.setAtivo(false);
+                        if (!dao.update(bol)) {
+                            return "Erro ao excluir Boleto, verifique os logs!";
+                        }
+                    }
+
+                    if (!dao.update(mov)) {
+                        return "Erro ao excluir Movimento, verifique os logs!";
+                    }
+
+                    if (!dao.save(mi)) {
+                        dao.rollback();
+                        return "Erro ao salvar Motivo de Inativação, verifique os logs!";
+                    }
+                    
+                    String nrCtrBoleto = "";
+                    if(bol != null) {
+                        if(bol.getNrCtrBoleto() != null) {
+                            nrCtrBoleto = bol.getNrCtrBoleto();
+                        }
+                    }
+                    novoLog.delete("Inativação de boleto: Documento: " + mi.getMovimento().getDocumento() + " - Valor: " + mi.getMovimento().getValorString() + " - Data inativação: " + mi.getData() + " - Pessoa: (" + mi.getMovimento().getPessoa().getId() + ") - " + mi.getMovimento().getPessoa().getNome() + " - CTR Boleto: " + nrCtrBoleto + " - Motivo: " + mi.getHistorico());
+                }
+            } catch (Exception e) {
+                mensagem = e.getMessage();
+            }
+        }
+        
+        if (new_dao){
+            dao.commit();
         }
         return mensagem;
     }

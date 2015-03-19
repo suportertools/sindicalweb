@@ -16,6 +16,7 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
@@ -25,6 +26,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -41,12 +44,24 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class CaixaFechadoBean implements Serializable{
-    private List<DataObject> listaFechamento = new ArrayList<DataObject>();
-    private List<SelectItem> listaCaixa = new ArrayList<SelectItem>();
+    private List<DataObject> listaFechamento = new ArrayList();
+    private List<SelectItem> listaCaixa = new ArrayList();
     private int idCaixa = 0;
     private FechamentoCaixa fechamentoCaixa = new FechamentoCaixa();
     private String valorTransferencia = "0,00";
 
+    private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+    
+    @PostConstruct
+    public void init(){
+        cfb.init();
+    }
+    
+    @PreDestroy
+    public void destroy(){
+        
+    }
+    
     public void imprimir(DataObject linha){
         FechamentoCaixa fc = null;
         fc = (FechamentoCaixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo( (Integer) ((Vector)linha.getArgumento0()).get(1), "FechamentoCaixa"));
@@ -353,6 +368,19 @@ public class CaixaFechadoBean implements Serializable{
     
     public void transferir(DataObject dob){
         fechamentoCaixa = (FechamentoCaixa)(new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) ((Vector)dob.getArgumento0()).get(1), "FechamentoCaixa");
+        
+        Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
+        
+        // TRANSFERE CAIXA AUTOMATICO
+        if (cfb.getConfiguracaoFinanceiro().isTransferenciaAutomaticaCaixa()){
+            
+            if (fechamentoCaixa.getValorInformado() <= caixa.getFundoFixo()){
+                valorTransferencia = "0,00";
+            }else{
+                valorTransferencia = Moeda.converteR$Float(Moeda.subtracaoValores(fechamentoCaixa.getValorInformado(), caixa.getFundoFixo()));
+            }
+            
+        }
     }
     
     public List<DataObject> getListaFechamento() {

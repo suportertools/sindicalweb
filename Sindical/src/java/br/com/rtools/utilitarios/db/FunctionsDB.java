@@ -1,5 +1,6 @@
 package br.com.rtools.utilitarios.db;
 
+import br.com.rtools.pessoa.Pessoa;
 import java.util.Date;
 
 public interface FunctionsDB {
@@ -53,4 +54,6 @@ public interface FunctionsDB {
     public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias);
     
     public boolean incluiPessoaComplemento();
+    
+    public Pessoa titularDaPessoa(int id_pessoa);
 }

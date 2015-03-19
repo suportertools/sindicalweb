@@ -68,6 +68,10 @@
                                 <p:column headerText="Consulta" style="width: 80px; text-align: center">
                                     <p:commandLink value="Operadores" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
                                 </p:column>
+                                
+                                <p:column headerText="" style="width: 80px; text-align: center">
+                                    <p:commandButton icon="ui-icon-close" action="#{fechamentoCaixaGeralBean.loadEstornarFechamento(linha.argumento0[5])}" update=":formFechamentoCaixaGeral:i_panel_estorno" oncomplete="PF('dlg_estornar_fechamento').show()" rendered="#{linha.argumento0[3] != null}"/>
+                                </p:column>
                             </p:dataTable>
                             <p:messages autoUpdate="false" showDetail="true" closable="true" />
                             <p:growl autoUpdate="false" showDetail="true"/>
@@ -108,6 +112,21 @@
                                 </p:dataTable>
                                 <br /><br />
                                 <p:commandButton value="OK" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" onclick="PF('dlg_detalhes_fechamento').hide()"/>  
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_estornar_fechamento" header="Estornar Fechamento" resizable="false" width="400" modal="true">
+                                <p:outputLabel value="Deseja realmente estornar esta transferencia?" style="font-size: 12pt!important"/>
+                                <h:panelGrid id="i_panel_estorno" columns="4">
+                                    <p:outputLabel value="Data: " />
+                                    <p:outputLabel value="#{fechamentoCaixaGeralBean.fechamento.data}" style="font-weight: bold"/>
+                                    <p:outputLabel value="Valor: " />
+                                    <p:outputLabel value="#{fechamentoCaixaGeralBean.converteMoeda(fechamentoCaixaGeralBean.fechamento.valorFechamento)}" style="font-weight: bold"/>
+                                </h:panelGrid>
+                                <br /><br />
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Estornar" icon="ui-icon-check" style="font-weight: bold" action="#{fechamentoCaixaGeralBean.estornarFechamento()}" onclick="PF('dlg_detalhes_fechamento').hide()" update="formFechamentoCaixaGeral"/>  
+                                    <p:commandButton value="Cancelar" icon="ui-icon-close" onclick="PF('dlg_estornar_fechamento').hide()"/>  
+                                </h:panelGrid>
                             </p:dialog>
                             
                         </h:form>

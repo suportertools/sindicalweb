@@ -172,6 +172,9 @@ public class BaixaGeralBean {
             } else if (url.equals("matriculaAcademia")) {
                 GenericaSessao.put("linkClicado", true);
                 return "matriculaAcademia";
+            } else if (url.equals("menuPrincipal")){
+                GenericaSessao.put("linkClicado", true);
+                return "menuPrincipal";
             } else {
                 return null;
             }

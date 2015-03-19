@@ -43,6 +43,8 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
@@ -1934,9 +1936,24 @@ public class MatriculaAcademiaBean implements Serializable {
     }
     
     public List<SelectItem> getListaDiaParcela() {
-        if (listaDiaParcela.isEmpty()) {
+        if (listaDiaParcela.isEmpty() || matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1) {
             if (matriculaAcademia.getServicoPessoa().getId() == -1) {
-                int dia = DataHoje.DataToArrayInt(matriculaAcademia.getServicoPessoa().getEmissao())[0];
+                listaDiaParcela.clear();
+                int dia = 0;
+                if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1){
+                    PessoaDB dbp = new PessoaDBToplink();
+                    pessoaComplemento = dbp.pesquisaPessoaComplementoPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+                    
+                    if(pessoaComplemento.getId() == -1) {
+                        dia = getRegistro().getFinDiaVencimentoCobranca();                
+                    } else {
+                        dia = pessoaComplemento.getNrDiaVencimento();
+                    }
+                
+                }else{
+                    dia = DataHoje.DataToArrayInt(matriculaAcademia.getServicoPessoa().getEmissao())[0];
+                }
+                    
                 for (int i = 1; i <= 31; i++) {
                     listaDiaParcela.add(new SelectItem(Integer.toString(i)));
                     if (dia == i) {

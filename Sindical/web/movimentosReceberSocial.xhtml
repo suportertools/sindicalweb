@@ -141,6 +141,11 @@
                                     <br />
                                     <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" onclick="PF('i_dlg_estorno').show()" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos'}" disabled="#{controleAcessoBean.botaoEstornarMensalidades}"/>
                                 </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="Deletar" title="Deletar Movimentos Selecionados" onclick="PF('i_dlg_excluir').show()" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                </p:column>
 
                                 <p:column>
                                     <br />
@@ -178,6 +183,10 @@
 
                                 <p:column headerText="Serviços">
                                     <h:outputText value="#{linha.argumento2}" style="font-size: 8pt!important"/>
+                                </p:column>
+                                
+                                <p:column headerText="Tipo" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento3}" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column style="text-align: center; width: 75px" headerText="Vencimento">
@@ -245,6 +254,20 @@
                             <p:dialog widgetVar="i_dlg_estorno" header="Deseja estornar este Movimento" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosReceberSocialBean.estornarBaixa()}" update="formMovimentosReceber" onclick="PF('i_dlg_estorno').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_estorno').hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_excluir" header="Deseja excluir estes Movimentos" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente EXCLUIR esse movimento?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid style="width: 100%">
+                                    <p:outputLabel value="Digite um motivo para exclusão" style="font-size: 10pt!important; font-weight: bold"/>
+                                    <p:inputTextarea value="#{movimentosReceberSocialBean.motivoInativacao}" style="width: 100%"/>
+                                </h:panelGrid>
+                                
+                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosReceberSocialBean.inativarMovimentos()}" update="formMovimentosReceber" onclick="PF('i_dlg_estorno').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_mesclar" header="Selecione os Boletos a serem mesclados" resizable="false" width="600" modal="true">

@@ -948,13 +948,18 @@ public class SociosBean implements Serializable {
             //Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data()));
             String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
 
-            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, servicoPessoa.getPessoa().getId(), 1, validadeCarteirinha);
+            // ANTIGAMENTE O NR_CARTAO ERA O ID DA PESSOA -- ALTERADO PELO ROGÉRIO NO CHAMADO 599
+            //SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, servicoPessoa.getPessoa().getId(), 1, validadeCarteirinha);
+            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, 0, 1, validadeCarteirinha);
             if (!sv.inserirObjeto(sc)) {
                 GenericaMensagem.error("Erro", "Não foi possivel salvar Socio Carteirinha!");
                 sv.desfazerTransacao();
                 return null;
             }
-
+            sc.setCartao(sc.getId());
+            
+            sv.alterarObjeto(sc);
+            
             socCarteirinha = sc;
         }
 
@@ -1050,7 +1055,9 @@ public class SociosBean implements Serializable {
 
                         sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                         if (sc == null) {
-                            sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha);
+                            // ANTIGAMENTE O NR_CARTAO ERA O ID DA PESSOA -- ALTERADO PELO ROGÉRIO NO CHAMADO 599
+                            //sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha);
+                            sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, 0, 1, validadeCarteirinha);
                         }
                         if (sc.getId() == -1) {
                             if (!sv.inserirObjeto(sc)) {
@@ -1058,6 +1065,9 @@ public class SociosBean implements Serializable {
                                 sv.desfazerTransacao();
                                 return null;
                             }
+                            
+                            sc.setCartao(sc.getId());
+                            sv.alterarObjeto(sc);
                         } else {
                             sc.setValidadeCarteirinha(validadeCarteirinha);
                             if (!sv.alterarObjeto(sc)) {
@@ -2006,7 +2016,7 @@ public class SociosBean implements Serializable {
         Fisica fisica = (Fisica) ((DataObject) listaDependentes.get(index)).getArgumento0();
 
         List<Parentesco> listap = getListaParentesco(fisica.getSexo());
-        List<SelectItem> lista_si = new ArrayList<SelectItem>();
+        List<SelectItem> lista_si = new ArrayList();
         for (int w = 0; w < listap.size(); w++) {
             lista_si.add(new SelectItem(w, listap.get(w).getParentesco(), Integer.toString(listap.get(w).getId())));
         }

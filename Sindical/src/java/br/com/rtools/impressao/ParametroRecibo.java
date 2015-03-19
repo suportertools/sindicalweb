@@ -38,12 +38,13 @@ public class ParametroRecibo {
     private String formaPagamento9;
     private String formaPagamento10;
     private String conveniada;
-    private String validade_servico;
+    private String lblVencimento;
+    private String mensagem;
 
     public ParametroRecibo(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, 
                            String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String responsavel, String idResponsavel, String idBaixa, String beneficiario, String servico, String vencimento, 
                            BigDecimal valorBaixa, String usuario, String dataPagamento, String horaPagamento, String formaPagamento1, String formaPagamento2, String formaPagamento3, String formaPagamento4, String formaPagamento5,
-                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String validade_servico) {
+                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String lblVencimento, String mensagem) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -79,7 +80,8 @@ public class ParametroRecibo {
         this.formaPagamento9 = formaPagamento9;
         this.formaPagamento10 = formaPagamento10;
         this.conveniada = conveniada;
-        this.validade_servico = validade_servico;
+        this.lblVencimento = lblVencimento;
+        this.mensagem = mensagem;
     }
 
     public String getSinLogo() {
@@ -362,12 +364,20 @@ public class ParametroRecibo {
         this.conveniada = conveniada;
     }
 
-    public String getValidade_servico() {
-        return validade_servico;
+    public String getLblVencimento() {
+        return lblVencimento;
     }
 
-    public void setValidade_servico(String validade_servico) {
-        this.validade_servico = validade_servico;
+    public void setLblVencimento(String lblVencimento) {
+        this.lblVencimento = lblVencimento;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
 

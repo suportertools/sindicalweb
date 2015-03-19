@@ -141,7 +141,7 @@
 
                                                         <h:column rendered="#{!servicosBean.servicos.validadeGuiasVigente}">
                                                             <p:outputLabel value="Dias validos da guia" for="idDiaValido" style="font-weight: bold"/><br />
-                                                            <p:spinner id="idDiaValido" size="14" value="#{servicosBean.servicos.validade}" min="0" max="90"/>
+                                                            <p:spinner id="idDiaValido" size="14" value="#{servicosBean.servicos.validade}" min="0" max="360"/>
                                                         </h:column>
                                                     </h:panelGrid>
                                                 </h:panelGrid>
