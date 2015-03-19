@@ -344,7 +344,7 @@
                                 <h:panelGrid id="i_l_d_i">
                                     <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
                                         <p:column style="text-align: center" width="30">
-                                            <p:commandButton title="Excluir" icon="ui-icon-close" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.excluirDependente(linha, index)}"/>
+                                            <p:commandButton title="Excluir" icon="ui-icon-close" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.excluirDependente(linha, index)}" disabled="#{controleAcessoBean.botaoExcluir}" />
                                         </p:column>
                                         <p:column headerText="Nome">
                                             <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
