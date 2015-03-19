@@ -35,13 +35,16 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -75,7 +78,7 @@ public class EmissaoGuiasBean implements Serializable {
     private String desconto;
     private String total;
     private String message;
-    private boolean validaPessoa;
+    //private boolean validaPessoa;
 
     // MODIFICAÇÕES BRUNO
     private boolean modalPedido;
@@ -88,7 +91,7 @@ public class EmissaoGuiasBean implements Serializable {
     private Juridica juridica;
     private Pedido pedido;
     private Estoque estoque;
-    private boolean enabledItensPedido;
+    //private boolean enabledItensPedido;
     /**
      * <ul>
      * <li> Indices </li>
@@ -115,7 +118,9 @@ public class EmissaoGuiasBean implements Serializable {
     
     private Socios socios;
     private List<Movimento> listaMovimentosEmitidos;
-
+    private Servicos servicox = new Servicos();
+    private Fisica fisicaNovoCadastro = new Fisica();
+    
     @PostConstruct
     public void init() {
         estoque = new Estoque();
@@ -130,7 +135,7 @@ public class EmissaoGuiasBean implements Serializable {
         desconto = "";
         total = "";
         listaMovimento = new ArrayList();
-        validaPessoa = false;
+        //validaPessoa = false;
         // MODIFICAÇÕES BRUNO
         modalPedido = false;
         quantidadePedido = 1;
@@ -147,7 +152,7 @@ public class EmissaoGuiasBean implements Serializable {
             new ArrayList(),
             new ArrayList()
         };
-        enabledItensPedido = false;
+        //enabledItensPedido = false;
         index = new Integer[]{0, 0, 0, 0};
         var = new String[]{"", "", "", "", ""};
         
@@ -155,11 +160,12 @@ public class EmissaoGuiasBean implements Serializable {
         getListSubGrupo();
         if (!listSelectItem[0].isEmpty() && !listSelectItem[1].isEmpty()){
             SubGrupoConvenio sgc = (SubGrupoConvenio) (new Dao()).find(new SubGrupoConvenio(), Integer.parseInt(getListSubGrupo().get(index[1]).getDescription()));
-            lote.setHistorico(sgc.getDescricao());
+            lote.setHistorico(sgc.getObservacao());
         }
         
         socios = new Socios();
         listaMovimentosEmitidos = new ArrayList();
+        servicox = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
     }
 
     @PreDestroy
@@ -239,9 +245,11 @@ public class EmissaoGuiasBean implements Serializable {
             // GUIA
             Guia guias = db.pesquisaGuias(heg.getMovimento().getLote().getId());
 
-            if (!di.delete(guias)) {
-                di.rollback();
-                return null;
+            if (guias.getId() != -1){
+                if (!di.delete(guias)) {
+                    di.rollback();
+                    return null;
+                }
             }
 
             // MOVIMENTO
@@ -316,12 +324,11 @@ public class EmissaoGuiasBean implements Serializable {
                 listenerEnabledItensPedido();
                 if (!listSelectItem[0].isEmpty() && !listSelectItem[1].isEmpty()){
                     SubGrupoConvenio sgc = (SubGrupoConvenio) (new Dao()).find(new SubGrupoConvenio(), Integer.parseInt(getListSubGrupo().get(index[1]).getDescription()));
-                    lote.setHistorico(sgc.getDescricao());
+                    lote.setHistorico(sgc.getObservacao());
                 }
                 break;
             case 2:
                 listSelectItem[0] = new ArrayList();
-                ;
                 listSelectItem[2] = new ArrayList();
                 listSelectItem[3] = new ArrayList();
                 index[2] = 0;
@@ -332,93 +339,115 @@ public class EmissaoGuiasBean implements Serializable {
                 listenerEnabledItensPedido();
                 if (!listSelectItem[0].isEmpty() && !listSelectItem[1].isEmpty()){
                     SubGrupoConvenio sgc = (SubGrupoConvenio) (new Dao()).find(new SubGrupoConvenio(), Integer.parseInt(getListSubGrupo().get(index[1]).getDescription()));
-                    lote.setHistorico(sgc.getDescricao());
+                    lote.setHistorico(sgc.getObservacao());
                 }
                 break;
             case 3:
                 pessoa = new Pessoa();
                 juridica = new Juridica();
                 fisica = new Fisica();
+                fisicaNovoCadastro = new Fisica();
                 break;
         }
     }
 
     public void pesquisaSemCadastro(String por) {
         FisicaDB dbf = new FisicaDBToplink();
-        if (por.equals("cpf")) {
-            if (!pessoa.getDocumento().isEmpty()) {
-                List lista = dbf.pesquisaFisicaPorDoc(pessoa.getDocumento());
+        if (por.equals("cpf") && fisicaNovoCadastro.getId() == -1) {
+            if (!fisicaNovoCadastro.getPessoa().getDocumento().isEmpty()) {
+                List<Fisica> lista = dbf.pesquisaFisicaPorDoc(fisicaNovoCadastro.getPessoa().getDocumento());
                 if (!lista.isEmpty()) {
                     message = "Este CPF já esta cadastrado!";
                     GenericaMensagem.warn("Validação", message);
-                    validaPessoa = false;
+                    fisicaNovoCadastro = lista.get(0);
                     return;
                 }
             }
         }
 
-        if (por.equals("rg")) {
-            if (!fisica.getRg().isEmpty()) {
-                List lista = dbf.pesquisaFisicaPorNomeNascRG("", null, fisica.getRg());
+        if (por.equals("rg") && fisicaNovoCadastro.getId() == -1) {
+            if (!fisicaNovoCadastro.getRg().isEmpty()) {
+                List<Fisica> lista = dbf.pesquisaFisicaPorNomeNascRG("", null, fisicaNovoCadastro.getRg());
                 if (!lista.isEmpty()) {
                     message = "Este RG já esta cadastrado!";
                     GenericaMensagem.warn("Validação", message);
-                    validaPessoa = false;
+                    fisicaNovoCadastro = lista.get(0);
                     return;
                 }
             }
         }
 
-        if (por.equals("nome") || por.equals("nascimento")) {
-            if (!pessoa.getNome().isEmpty() && !fisica.getNascimento().isEmpty()) {
-                List lista = dbf.pesquisaFisicaPorNomeNascRG(pessoa.getNome(), fisica.getDtNascimento(), fisica.getRg());
+        if (por.equals("nome") || por.equals("nascimento") && fisicaNovoCadastro.getId() == -1) {
+            if (!fisicaNovoCadastro.getPessoa().getNome().isEmpty() && !fisicaNovoCadastro.getNascimento().isEmpty()) {
+                List<Fisica> lista = dbf.pesquisaFisicaPorNomeNascRG(fisicaNovoCadastro.getPessoa().getNome(), fisicaNovoCadastro.getDtNascimento(), fisicaNovoCadastro.getRg());
                 if (!lista.isEmpty()) {
                     message = "Esta pessoa já esta cadastrada em nosso sistema!";
                     GenericaMensagem.warn("Validação", message);
-                    validaPessoa = false;
-
-                    pessoa.setNome("");
-                    fisica.setDtNascimento(null);
-                    return;
+                    fisicaNovoCadastro = lista.get(0);
                 }
-            } else {
-                validaPessoa = false;
-                return;
             }
         }
-        validaPessoa = true;
     }
 
     public void clear() {
         GenericaSessao.remove("emissaoGuiasBean");
     }
+    
+    public void selecionarPessoaCadastro(){
+        if (fisicaNovoCadastro.getId() != -1){
+            fisica = fisicaNovoCadastro;
+            pessoa = fisicaNovoCadastro.getPessoa();
+        }
+    }
 
     public void saveSemCadastro() {
-        if (!validaPessoa) {
+        if (fisicaNovoCadastro.getPessoa().getId() != -1) {
             GenericaMensagem.fatal("Erro", "Verifique os dados antes de salvar!");
             return;
         }
-        if (pessoa.getNome().isEmpty()) {
+        if (fisicaNovoCadastro.getPessoa().getNome().isEmpty()) {
             message = "Nome não pode estar vazio!";
             return;
         }
         DaoInterface di = new Dao();
-        pessoa.setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));
-        fisica.setPessoa(pessoa);
-        if (pessoa.getId() == -1 && fisica.getId() == -1) {
+        
+        fisicaNovoCadastro.getPessoa().setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));
+        fisicaNovoCadastro.setPessoa(pessoa);
+        
+        if (fisicaNovoCadastro.getPessoa().getId() == -1 && fisicaNovoCadastro.getId() == -1) {
             di.openTransaction();
-            if (!di.save(pessoa)) {
+            if (!di.save(fisicaNovoCadastro.getPessoa())) {
                 message = "Falha ao salvar Pessoa!";
                 di.rollback();
                 return;
             }
-            if (!di.save(fisica)) {
+            
+            if (!di.save(fisicaNovoCadastro)) {
                 message = "Falha ao salvar Física!";
+                di.rollback();
+                return;
+            }
+            
+            Registro reg = (Registro) di.find(new Registro(), 1);
+            PessoaComplemento pc = new PessoaComplemento(
+                    -1, 
+                    fisicaNovoCadastro.getPessoa(), 
+                    reg.getFinDiaVencimentoCobranca(), 
+                    false, 
+                    null
+            );
+            
+            if (!di.save(pc)) {
+                message = "Falha ao salvar Pessoa Complemento!";
                 di.rollback();
                 return;
             }
             message = "Pessoa salva com Sucesso!";
             di.commit();
+            
+            selecionarPessoaCadastro();
+            
+            fisicaNovoCadastro = new Fisica();
         }
     }
 
@@ -716,7 +745,7 @@ public class EmissaoGuiasBean implements Serializable {
             movimento = (Movimento) di.find(new Movimento(), listaMovimento.get(i).getMovimento().getId());
 
             descontox = Moeda.converteUS$(listaMovimento.get(i).getDesconto());
-            valorx = Moeda.converteUS$(listaMovimento.get(i).getValor());
+            valorx = Moeda.multiplicarValores(listaMovimento.get(i).getMovimento().getQuantidade(), Moeda.converteUS$(listaMovimento.get(i).getValor()));
             
             valor_soma = Moeda.somaValores(valor_soma, valorx);
             
@@ -726,7 +755,7 @@ public class EmissaoGuiasBean implements Serializable {
             movimento.setDesconto(descontox);
 
             //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
-            movimento.setValor(listaMovimento.get(i).getMovimento().getValor());
+            movimento.setValor(Moeda.multiplicarValores(listaMovimento.get(i).getMovimento().getQuantidade(), listaMovimento.get(i).getMovimento().getValor()));
 
             // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
             movimento.setValorBaixa(valorx);
@@ -777,23 +806,7 @@ public class EmissaoGuiasBean implements Serializable {
     }
 
     public String getValor() {
-        if (pessoa.getId() != -1) {
-            if (!enabledItensPedido) {
-                LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
-                List<Vector> valorx = db.pesquisaServicoValor(pessoa.getId(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
-                float vl = Float.valueOf(((Double) valorx.get(0).get(0)).toString());
-                valor = Moeda.converteR$Float(vl);
-            } else {
-                float v = 0;
-                if (!listPedidos.isEmpty()) {
-                    for (Pedido p : listPedidos) {
-                        v += Moeda.somaValores(v, Moeda.converteUS$(valorTotalPedido(p)));
-                    }
-                }
-                valor = "" + v;
-            }
 
-        }
         return Moeda.converteR$(valor);
     }
 
@@ -1068,6 +1081,7 @@ public class EmissaoGuiasBean implements Serializable {
         descontoUnitarioPedido = "0,00";
         valorUnitarioPedido = "0,00";
         quantidadePedido = 1;
+        
     }
 
     public void openModalPedido() {
@@ -1080,6 +1094,8 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void closeModalPedido() {
         modalPedido = false;
+        
+        listenerEnabledItensPedido();
     }
 
     public String valorTotalPedido(Pedido p) {
@@ -1179,19 +1195,46 @@ public class EmissaoGuiasBean implements Serializable {
         this.pedido = pedido;
     }
 
-    public boolean isEnabledItensPedido() {
-        return enabledItensPedido;
-    }
-
-    public void setEnabledItensPedido(boolean enabledItensPedido) {
-        this.enabledItensPedido = enabledItensPedido;
-    }
+//    public boolean isEnabledItensPedido() {
+//        return enabledItensPedido;
+//    }
+//
+//    public void setEnabledItensPedido(boolean enabledItensPedido) {
+//        this.enabledItensPedido = enabledItensPedido;
+//    }
 
     public void listenerEnabledItensPedido() {
         if (!getListServicos().isEmpty() && !listSelectItem[2].get(index[2]).getDescription().equals("0")){
             DaoInterface di = new Dao();
-            Servicos servicos = (Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
-            enabledItensPedido = servicos.isProduto();
+                servicox = (Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
+            
+            if (pessoa.getId() != -1) {
+                //if (!enabledItensPedido) {
+                if (!servicox.isProduto()) {
+                    LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
+                    List<Vector> valorx = db.pesquisaServicoValor(pessoa.getId(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
+                    float vl = Float.valueOf(((Double) valorx.get(0).get(0)).toString());
+                    valor = Moeda.converteR$Float(vl);
+                } else {
+                    float v = 0;
+                    if (!listPedidos.isEmpty()) {
+                        for (Pedido p : listPedidos) {
+                            v += Moeda.somaValores(v, Moeda.converteUS$(valorTotalPedido(p)));
+                        }
+                    }
+                    valor = "" + v;
+                }
+            }else{
+                valor = "0,00";
+                GenericaMensagem.fatal("Atenção", "Pesquise uma pessoa para que o valor seja calculado!");
+            }
+//            if (servicos.isProduto() && servicos.isAlterarValor()){
+//                enabledItensPedido = true;
+//            }else
+//                enabledItensPedido = false;
+        }else{
+            valor = "0,00";
+            servicox = new Servicos();
         }
     }
 
@@ -1234,5 +1277,21 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void setListaMovimentosEmitidos(List<Movimento> listaMovimentosEmitidos) {
         this.listaMovimentosEmitidos = listaMovimentosEmitidos;
+    }
+
+    public Servicos getServicox() {
+        return servicox;
+    }
+
+    public void setServicox(Servicos servicox) {
+        this.servicox = servicox;
+    }
+
+    public Fisica getFisicaNovoCadastro() {
+        return fisicaNovoCadastro;
+    }
+
+    public void setFisicaNovoCadastro(Fisica fisicaNovoCadastro) {
+        this.fisicaNovoCadastro = fisicaNovoCadastro;
     }
 }

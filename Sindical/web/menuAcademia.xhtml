@@ -42,7 +42,10 @@
                                     </p:submenu>                            
                                 </p:submenu>
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">  
-                                    <p:menuitem value="Matricula Academia"          action="#{chamadaPaginaBean.pagina('matriculaAcademia')}"/>
+                                    <p:menuitem value="Movimentos a Receber" action="#{chamadaPaginaBean.movimentosReceberSocial()}" />
+                                    <p:menuitem value="Matricula Academia"   action="#{chamadaPaginaBean.pagina('matriculaAcademia')}"/>
+                                    <p:menuitem value="Emissão de Guias"     action="#{chamadaPaginaBean.pagina('emissaoGuias')}" />
+                                    <p:menuitem value="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" />
                                 </p:submenu>
                                 <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:menuitem value="Academia"          action="#{chamadaPaginaBean.pagina('relatorioAcademia')}"/>

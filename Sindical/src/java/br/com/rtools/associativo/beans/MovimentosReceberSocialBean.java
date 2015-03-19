@@ -20,9 +20,12 @@ import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.impressao.ParametroEncaminhamento;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirRecibo;
+import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.db.FisicaDB;
+import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
@@ -41,6 +44,8 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
+import br.com.rtools.utilitarios.db.FunctionsDB;
+import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -106,6 +111,7 @@ public class MovimentosReceberSocialBean {
     private List<DataObject> listaMesclar = new ArrayList();
     private String boletoSelecionadoMesclar = "";
     private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+    private String motivoInativacao = "";
     
     @PostConstruct
     public void init() {
@@ -123,6 +129,52 @@ public class MovimentosReceberSocialBean {
         //GenericaSessao.remove("movimentosReceberSocialBean");
     }    
     
+    public void inativarMovimentos(){
+        if (motivoInativacao.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Digite um motivo para exclusão!");
+            return;
+        } else if (motivoInativacao.length() < 6) {
+            GenericaMensagem.warn("Atenção", "Motivo de exclusão inválido!");
+            return;
+        }
+        
+        List<Movimento> listam = new ArrayList();
+        
+        if (baixado()) {
+            GenericaMensagem.warn("Atenção", "Boletos BAIXADOS não podem ser excluídos!");
+            return;
+        }
+        
+        if (acordados()) {
+            GenericaMensagem.warn("Atenção", "Boletos do tipo ACORDO não podem ser excluídos!");
+            return;
+        }
+        
+        for (DataObject dh : listaMovimento) {
+            if ((Boolean)dh.getArgumento0()){
+                int id_movimento = Integer.valueOf(dh.getArgumento1().toString());
+                Movimento mov = (Movimento) new Dao().find(new Movimento(), id_movimento);
+                listam.add(mov);
+            }
+        }   
+            
+        if (listam.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Nenhum boletos foi selecionado!");
+            return;
+        }
+        
+        Dao dao = new Dao();
+        dao.openTransaction();
+        
+        if (!GerarMovimento.inativarArrayMovimento(listam, motivoInativacao, dao).isEmpty())
+            GenericaMensagem.error("Atenção", "Ocorreu um erro em uma das exclusões, verifique o log!");
+        else
+            GenericaMensagem.info("Sucesso", "Boletos foram excluídos!");
+        
+        listaMovimento.clear();
+        dao.commit();
+    }
+    
     public void mesclar(){
         for (DataObject dh : listaMovimento) {
             
@@ -135,7 +187,7 @@ public class MovimentosReceberSocialBean {
     }
     
     public void concluirMescla(){
-        boletoSelecionadoMesclar = boletoSelecionadoMesclar;
+        //boletoSelecionadoMesclar = boletoSelecionadoMesclar;
     }
     
     public String caixaOuBanco(){
@@ -865,14 +917,46 @@ public class MovimentosReceberSocialBean {
     public List<DataObject> getListaMovimento() {
         if (listaMovimento.isEmpty() && !listaPessoa.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
-            String ids = "";
+            String ids = "", idb = "";
+            
+            FisicaDB dbf = new FisicaDBToplink();
+            JuridicaDB dbj = new JuridicaDBToplink();
+            FunctionsDB dbfunc = new FunctionsDBTopLink();
+            
+            List<Pessoa> listaPessoaQry = new ArrayList();
+            for(Pessoa pe : listaPessoa){
+                // PESSOA FISICA -----
+                Fisica fi = dbf.pesquisaFisicaPorPessoa(pe.getId());
+                if (fi != null){
+                    // PESQUISA RESPONSAVEL DA PESSOA
+                    Pessoa t = dbfunc.titularDaPessoa(pe.getId());
+                    if (t != null)
+                        listaPessoaQry.add(t);
+                    continue;
+                }
+                
+                // PESSOA JURIDICA ---
+                Juridica ju = dbj.pesquisaJuridicaPorPessoa(pe.getId());
+                if (ju != null){
+                    listaPessoaQry.add(ju.getPessoa());
+                }
+            }
+            
             for (int i = 0; i < listaPessoa.size(); i++) {
                 if (ids.length() > 0 && i != listaPessoa.size()) {
                     ids = ids + ",";
                 }
                 ids = ids + String.valueOf(listaPessoa.get(i).getId());
             }
-            List<Vector> lista = db.pesquisaListaMovimentos(ids, porPesquisa);
+            
+            for (int i = 0; i < listaPessoaQry.size(); i++) {
+                if (idb.length() > 0 && i != listaPessoaQry.size()) {
+                    idb = idb + ",";
+                }
+                idb = idb + String.valueOf(listaPessoaQry.get(i).getId());
+            }
+                        
+            List<Vector> lista = db.pesquisaListaMovimentos(idb, ids, porPesquisa);
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
@@ -1213,5 +1297,13 @@ public class MovimentosReceberSocialBean {
 
     public void setBoletoSelecionadoMesclar(String boletoSelecionadoMesclar) {
         this.boletoSelecionadoMesclar = boletoSelecionadoMesclar;
+    }
+
+    public String getMotivoInativacao() {
+        return motivoInativacao;
+    }
+
+    public void setMotivoInativacao(String motivoInativacao) {
+        this.motivoInativacao = motivoInativacao;
     }
 }

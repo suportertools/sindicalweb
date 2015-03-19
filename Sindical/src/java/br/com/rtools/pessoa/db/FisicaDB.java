@@ -28,17 +28,17 @@ public interface FisicaDB {
 
     public Fisica idFisica(Fisica des_fisica);
 
-    public List pesquisaFisicaPorDoc(String doc);
+    public List<Fisica> pesquisaFisicaPorDoc(String doc);
     
-    public List pesquisaFisicaPorDocRG(String doc);
+    public List<Fisica> pesquisaFisicaPorDocRG(String doc);
     
-    public List pesquisaFisicaPorDoc(String doc, boolean like);
+    public List<Fisica> pesquisaFisicaPorDoc(String doc, boolean like);
 
     public List pesquisaFisicaPorDocSemLike(String doc);
 
     public Fisica pesquisaFisicaPorPessoa(int idPessoa);
 
-    public List pesquisaFisicaPorNomeNascRG(String nome, Date nascimento, String RG);
+    public List<Fisica> pesquisaFisicaPorNomeNascRG(String nome, Date nascimento, String RG);
 
     public List pesquisaFisicaPorNome(String nome);
 

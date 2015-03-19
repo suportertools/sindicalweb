@@ -2,6 +2,7 @@ package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.FechamentoCaixa;
+import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.utilitarios.Dao;
@@ -25,6 +26,7 @@ public class FechamentoCaixaGeralBean implements Serializable {
     private List<DataObject> listaFechamentoCaixa;
     private String valorFechamento;
     private List<Vector> listaDetalhesFechamento;
+    private FechamentoCaixa fechamento;
     
     @PostConstruct
     public void init(){
@@ -33,11 +35,47 @@ public class FechamentoCaixaGeralBean implements Serializable {
         loadListaFechamentoCaixa();
         
         valorFechamento = "0,00";
+        
+        fechamento = new FechamentoCaixa();
     }
     
     @PreDestroy
     public void destroy(){
         
+    }
+    
+    public void estornarFechamento(){
+        if (fechamento.getId() != -1){
+            Dao dao = new Dao();
+            
+            dao.openTransaction();
+            
+            FinanceiroDB db = new FinanceiroDBToplink();
+            
+            List<TransferenciaCaixa> listat = db.listaTransferencia(fechamento.getId());
+            
+            if (!listat.isEmpty()){
+                
+                for (TransferenciaCaixa tc : listat){
+                    if  ( !dao.delete(dao.find(tc)) ){
+                        GenericaMensagem.error("Erro", "Não foi possível concluir estorno!");
+                        dao.rollback();
+                        return;
+                    }
+                }
+                dao.commit();
+                
+                GenericaMensagem.info("Sucesso", "Estorno Concluído!");
+                loadListaFechamentoCaixa();
+            }
+            
+            
+        }
+        
+    }
+    
+    public void loadEstornarFechamento(Integer id_fechamento){
+        fechamento = (FechamentoCaixa) new Dao().find(new FechamentoCaixa(), id_fechamento);
     }
     
     public void loadListaDetalhesFechamento(Integer id_caixa, Integer id_fechamento){
@@ -134,5 +172,13 @@ public class FechamentoCaixaGeralBean implements Serializable {
 
     public void setListaDetalhesFechamento(List<Vector> listaDetalhesFechamento) {
         this.listaDetalhesFechamento = listaDetalhesFechamento;
+    }
+
+    public FechamentoCaixa getFechamento() {
+        return fechamento;
+    }
+
+    public void setFechamento(FechamentoCaixa fechamento) {
+        this.fechamento = fechamento;
     }
 }

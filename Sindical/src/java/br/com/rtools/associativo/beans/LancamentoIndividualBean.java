@@ -57,7 +57,7 @@ public class LancamentoIndividualBean {
     private int idDia = 1;
     private int idParcela = 0;
     private List<DataObject> listaMovimento = new ArrayList();
-    private String cobrancaBancaria = "nao";
+    private String cobrancaBancaria = "sim";
     private String entrada = "sim";
     private String descontoFolha = "nao";
     private String totalPagar = "";
@@ -103,7 +103,7 @@ public class LancamentoIndividualBean {
         if (entrada.equals("sim")){
             vencto_ini = DataHoje.data();
         }else{
-            vencto_ini = dh.incrementarMeses(1, DataHoje.data());
+            vencto_ini = dh.incrementarMeses(1, idDia +"/"+ DataHoje.data().substring(3));
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
@@ -168,7 +168,7 @@ public class LancamentoIndividualBean {
                     Moeda.converteR$Float(Moeda.converteFloatR$Float(valor))
             ));
             if (cobrancaBancaria.equals("sim"))
-                vencto_ini = Integer.valueOf(idDia) + dh.incrementarMeses(1, vencto_ini).substring(2);
+                vencto_ini = idDia + dh.incrementarMeses(1, vencto_ini).substring(2);
             else
                 vencto_ini = dh.incrementarMeses(1, vencto_ini);
         }
@@ -265,19 +265,20 @@ public class LancamentoIndividualBean {
             }
         }
         
-        
-        Guia guias = new Guia(
-                -1,
-                lote, 
-                empresaConveniada, 
-                null, 
-                false
-        );
-        
-        if (!sv.inserirObjeto(guias)){
-            GenericaMensagem.error("Atenção", "Erro ao salvar Guias!");
-            sv.desfazerTransacao();
-            return null;
+        if (empresaConveniada != null){
+            Guia guias = new Guia(
+                    -1,
+                    lote, 
+                    empresaConveniada, 
+                    null, 
+                    false
+            );
+
+            if (!sv.inserirObjeto(guias)){
+                GenericaMensagem.error("Atenção", "Erro ao salvar Guias!");
+                sv.desfazerTransacao();
+                return null;
+            }
         }
         sv.comitarTransacao();
         GenericaMensagem.info("OK", "Lançamento efetuado com Sucesso!");
@@ -351,9 +352,9 @@ public class LancamentoIndividualBean {
             if (pessoaComplemento.getId() != -1){
                 if (pessoaComplemento.isCobrancaBancaria()){
                     cobrancaBancaria = "sim";
-                    idDia = pessoaComplemento.getNrDiaVencimento();
                 }else
                     cobrancaBancaria = "nao";
+                idDia = pessoaComplemento.getNrDiaVencimento();
             }
             responsavel = new Pessoa();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");

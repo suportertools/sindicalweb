@@ -72,7 +72,7 @@
                                 <p:column headerText="Opções" style="text-align: center" width="200">
                                     <p:commandLink value="Reabrir Caixa" action="#{caixaFechadoBean.reabrir(linha)}" onclick="PF('i_dlg_reabrir').show()"/>
                                     <h:outputLabel value=" | " style="font-weight: bold;"/>
-                                    <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="PF('i_dlg_transferir').show()"/>
+                                    <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="PF('i_dlg_transferir').show()" update=":formCaixaFechado:i_panel_transferir"/>
                                 </p:column>
 
                             </p:dataTable>
@@ -89,7 +89,7 @@
 
                             <p:dialog widgetVar="i_dlg_transferir" header="Transferir valor para Caixa Central" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente transferir valores para o Caixa Central? " />
-                                <h:panelGrid style="clear: both; margin-top: 20px" columns="2">
+                                <h:panelGrid id="i_panel_transferir" style="clear: both; margin-top: 20px" columns="2">
                                     <p:column>
                                         <h:outputLabel value="Valor" style="font-weight: bold"/><br />
                                         <p:inputText value="#{caixaFechadoBean.valorTransferencia}">

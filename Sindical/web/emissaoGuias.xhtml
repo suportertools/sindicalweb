@@ -32,6 +32,7 @@
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Emissão de Guias" styleClass="fonteHeader" />
                         <div class="clear"></div>
+                        <h:outputScript name="script_primefaces.js" library="js" />
                         <h:form id="form_eg">
                             <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" id="i_message" />
                             
@@ -40,7 +41,7 @@
                                     <p:outputLabel value="Nome: " />
                                     <p:inputText id="nomeBene" size="80" value="#{emissaoGuiasBean.pessoa.nome}" readonly="true" />
                                     <p:commandButton value="Pesquisar" onclick="PF('dlg_tipo_pessoa').show()" icon="ui-icon-search" rendered="#{emissaoGuiasBean.lote.id == -1}" />
-                                    <p:commandButton value="Nova Pessoa - Cadastrar" actionListener="#{emissaoGuiasBean.clear(3)}" oncomplete="PF('dlg_cadastro').show()" rendered="#{emissaoGuiasBean.pessoa.id == -1}" icon="ui-icon-circle-plus" style="margin-left: 70px!important"/>
+                                    <p:commandButton value="Nova Pessoa - Cadastrar" actionListener="#{emissaoGuiasBean.clear(3)}" oncomplete="PF('dlg_cadastro').show()" rendered="#{emissaoGuiasBean.pessoa.id == -1}" icon="ui-icon-circle-plus" style="margin-left: 70px!important" update=":form_eg:i_panel_sem_cadastro"/>
                                 </h:panelGrid>
                                 
                                 <h:panelGrid columns="1" rendered="#{emissaoGuiasBean.socios.id != -1}">
@@ -96,26 +97,44 @@
                                         <f:selectItems value="#{emissaoGuiasBean.listServicos}"/>
                                     </p:selectOneMenu>
                                 </h:panelGrid>
-                                <h:panelGrid id="i_panel_add_servicos" columns="8" styleClass="margin-top-max">
-                                    <p:outputLabel value="Quantidade: " rendered="#{!emissaoGuiasBean.enabledItensPedido}"/>
-                                    <p:inputText id="i_qnt" value="#{emissaoGuiasBean.quantidade}" size="1" rendered="#{!emissaoGuiasBean.enabledItensPedido}">
-                                        <p:ajax event="change" update="@this" />
-                                    </p:inputText>
-                                    <p:outputLabel value="Valor: "  />
-                                    <p:commandButton id="i_valor" value="R$ #{emissaoGuiasBean.valor}" action="#{emissaoGuiasBean.openModalPedido}" icon="ui-icon-cart" readonly="true" onclick="PF('dlg_pedido').show()" title="Adicionar itens (produtos) ao serviço" disabled="#{!emissaoGuiasBean.enabledItensPedido}" />
-                                    <p:outputLabel value="Desconto (R$): " rendered="#{!emissaoGuiasBean.enabledItensPedido}"/>
-                                    <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.enabledItensPedido}" disabled="true">
-                                        <p:ajax event="change" update="i_panel_servicos" />
-                                    </p:inputText>
-                                    <p:commandButton icon="ui-icon-plus" action="#{emissaoGuiasBean.addServico()}" update="i_message i_tbl_eg i_panel_add_servicos" disabled="#{emissaoGuiasBean.lote.id != -1}" />
-                                    <p:commandLink value="Ver guias emitidas nesse Periodo" rendered="#{emissaoGuiasBean.listaMovimentosEmitidos.size() > 0}" onclick="PF('dlg_movimentos_emitidos').show()" style="margin-left: 20px; font-size: 10pt!important; color: red" update="i_tbl_movimentos_emitidos"/>
+                                
+                                <h:panelGrid id="i_panel_add_servicos" columns="4" styleClass="margin-top-max">
+                                    <h:column>
+                                        <p:outputLabel value="Quantidade" rendered="#{!emissaoGuiasBean.servicox.produto}"/><br />
+                                        <p:inputText id="i_qnt" value="#{emissaoGuiasBean.quantidade}" size="5" rendered="#{!emissaoGuiasBean.servicox.produto}" style="margin-right: 10px">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:outputLabel value="Valor"  /><br />
+                                        <p:commandButton id="i_valor" value="R$ #{emissaoGuiasBean.valor}" action="#{emissaoGuiasBean.openModalPedido}" icon="ui-icon-cart" readonly="true" onclick="PF('dlg_pedido').show()" title="Adicionar itens (produtos) ao serviço" rendered="#{emissaoGuiasBean.servicox.produto}" />
+                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.valor}" disabled="#{!emissaoGuiasBean.servicox.alterarValor}" rendered="#{!emissaoGuiasBean.servicox.produto}">
+                                            <p:ajax event="change" update="i_panel_servicos" />
+                                        </p:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:outputLabel value="Desconto (R$)" rendered="#{!emissaoGuiasBean.servicox.produto}"/><br />
+                                        <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto}" disabled="true">
+                                            <p:ajax event="change" update="i_panel_servicos" />
+                                        </p:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-plus" action="#{emissaoGuiasBean.addServico()}" update="i_message i_tbl_eg i_panel_add_servicos" disabled="#{emissaoGuiasBean.lote.id != -1}" />
+                                        <p:commandLink value="Ver guias emitidas nesse Periodo" rendered="#{emissaoGuiasBean.listaMovimentosEmitidos.size() > 0}" onclick="PF('dlg_movimentos_emitidos').show()" style="margin-left: 20px; font-size: 10pt!important; color: red" update="i_tbl_movimentos_emitidos"/>
+                                    </h:column>
                                 </h:panelGrid>
+                                
                                 <h:panelGrid columns="1" style="width: 100%">
                                     <h:outputText value="Observação" />
                                     <p:inputTextarea value="#{emissaoGuiasBean.lote.historico}" style="width: 100%">
                                         <p:ajax event="change" update="@this" />
                                     </p:inputTextarea>
                                 </h:panelGrid>
+                                
                                 <h:panelGrid id="i_tbl_eg" styleClass="margin-top-max">
                                     <p:dataTable var="listMovimentoEmissaoGuias" value="#{emissaoGuiasBean.listaMovimento}" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="150">
                                         <p:column headerText="Serviços">
@@ -173,36 +192,40 @@
                                 </h:panelGrid>
                             </p:dialog>
                             
-                            <p:dialog id="i_dlg_cadastro" header="Cadastrar Pessoa" widgetVar="dlg_cadastro" modal="true" width="1024" closable="true" >
+                            <p:dialog id="i_dlg_cadastro" header="Cadastrar Pessoa" widgetVar="dlg_cadastro" modal="true" width="500" closable="true" >
                                 <h:panelGrid id="i_panel_sem_cadastro">
+                                    <h:outputScript name="script_primefaces.js" library="js" />
                                     <p:messages id="i_msg" showDetail="true" closable="true" autoUpdate="true"/>  
                                     <h:panelGrid columns="2" >
                                         <p:outputLabel value="CPF: " />
-                                        <p:inputMask size="12" value="#{emissaoGuiasBean.pessoa.documento}" mask="999.999.999-99" >
-                                            <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('cpf')}"/>
+                                        <p:inputMask size="12" value="#{emissaoGuiasBean.fisicaNovoCadastro.pessoa.documento}" mask="999.999.999-99" >
+                                            <p:ajax event="change" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('cpf')}" />
                                         </p:inputMask>
                                         <p:outputLabel value="RG: " />
-                                        <p:inputText size="12" value="#{emissaoGuiasBean.fisica.rg}" >
-                                            <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('rg')}"/>
+                                        <p:inputText size="12" value="#{emissaoGuiasBean.fisicaNovoCadastro.rg}" >
+                                            <p:ajax event="change" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('rg')}"/>
                                         </p:inputText>
                                         <h:outputLabel value="Nome: " />
-                                        <p:inputText value="#{emissaoGuiasBean.pessoa.nome}" size="50" converter="#{toUpperCase}">
-                                            <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nome')}" />
+                                        <p:inputText value="#{emissaoGuiasBean.fisicaNovoCadastro.pessoa.nome}" size="50" converter="#{toUpperCase}">
+                                            <p:ajax event="change" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nome')}" />
                                         </p:inputText>
                                         <h:outputLabel value="Data de Nascimento: " />
-                                        <p:inputMask size="8" value="#{emissaoGuiasBean.fisica.nascimento}" mask="99/99/9999" converter="#{isDateString}">
-                                            <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nascimento')}"/>
+                                        <p:inputMask size="8" value="#{emissaoGuiasBean.fisicaNovoCadastro.nascimento}" mask="99/99/9999" converter="#{isDateString}">
+                                            <p:ajax event="change" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nascimento')}"/>
                                         </p:inputMask>
                                         <p:outputLabel value="Telefone: "/>
-                                        <p:inputText size="10" value="#{emissaoGuiasBean.pessoa.telefone1}" styleClass="telefone"/>
+                                        <p:inputText value="#{emissaoGuiasBean.fisicaNovoCadastro.pessoa.telefone1}" styleClass="ddd_telefone" style="width: 120px"/>
                                     </h:panelGrid>
+                                    <br />
+                                    <f:facet name="footer">
+                                        <h:panelGrid columns="3">
+                                            <p:commandButton value="Salvar" action="#{emissaoGuiasBean.saveSemCadastro()}" title="Salvar Cadastro" update=":form_eg:" oncomplete="PF('dlg_cadastro').hide()" rendered="#{emissaoGuiasBean.fisicaNovoCadastro.id == -1}"/>
+                                            <p:commandButton value="Selecionar" action="#{emissaoGuiasBean.selecionarPessoaCadastro()}" title="Selecionar Pessoa" update=":form_eg:" oncomplete="PF('dlg_cadastro').hide()" rendered="#{emissaoGuiasBean.fisicaNovoCadastro.id != -1}" style="font-weight: bold"/>
+                                            <p:commandButton value="Limpar" action="#{emissaoGuiasBean.clear(3)}" update="i_panel_sem_cadastro" />
+                                            <p:commandButton value="Sair" onclick="PF('dlg_cadastro').hide()"/>
+                                        </h:panelGrid>
+                                    </f:facet>
                                 </h:panelGrid>
-                                <f:facet name="footer">
-                                    <h:panelGrid columns="2">
-                                        <p:commandButton value="Salvar" action="#{emissaoGuiasBean.saveSemCadastro()}" title="Salvar Cadastro" update=":form_eg:" oncomplete="PF('dlg_cadastro').hide()" />
-                                        <p:commandButton value="Sair" onclick="PF('dlg_cadastro').hide()"/>
-                                    </h:panelGrid>
-                                </f:facet>
                             </p:dialog>
                             
                             <p:dialog widgetVar="dlg_tipo_pessoa"  modal="true" resizable="true" header="Pesquisar por pessoa" width="450">

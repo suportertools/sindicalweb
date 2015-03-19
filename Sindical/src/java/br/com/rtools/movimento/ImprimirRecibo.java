@@ -72,18 +72,25 @@ public class ImprimirRecibo {
                     formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
                 }
             }
-            String validade_servico = "";
+            String lblVencimento = "";
+            String vencimento = "";
             DataHoje dataHoje = new DataHoje();
             List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
             for (int i = 0; i < lista.size(); i++) {
                 // tem casos de ter responsaveis diferentes, resultando em empresas conveniadas diferentes
                 Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
-                String conveniada = "";
+                String conveniada = "", mensagemConvenio = "";
                 if (gu.getId() != -1) {
                     if (gu.getPessoa() != null) {
                         conveniada = gu.getPessoa().getNome();
                     }
+//                    
+//                    if (gu.getSubGrupoConvenio() != null){
+//                        mensagemConvenio = gu.getSubGrupoConvenio().getObservacao();
+//                    }
                 }
+                
+                
                 // ANTIGA EMPRESA CONVENIADA qry com id_sub_grupo_convenio
 //                if (lista.get(i).getLote().getRotina().getId() == 132) {
 //                    Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
@@ -95,15 +102,81 @@ public class ImprimirRecibo {
 //                        }
 //                    }
 //                }
-                if (!lista.get(i).getServicos().isValidadeGuias()) {
-                    validade_servico = "";
-                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
-                    validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
-                    validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                if (!lista.get(i).getServicos().isValidadeGuias()) {
+//                    lblVencimento = "VENCTO";
+//                    vencimento = lista.get(i).getVencimento();
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    lblVencimento = "VALID";
+//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                    
+//                    lblVencimento = "VALID";
+//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                }
+                
+                if (lista.get(i).getLote().getRotina().getId() == 132) {
+                    if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
+                        lblVencimento = "Validade";
+                        vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+                    } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
+                        lblVencimento = "Validade";
+                        vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+                    }else {
+                        lblVencimento = "Validade";
+                        vencimento = "";
+                    }
+                    
+                    // MOSTRANDO MENSAGEM APENAS SE VIER DA PAGINA EMISSÃO DE GUIAS --- by rogerinho 17/03/2015 -- chamado 579
+                    mensagemConvenio = lista.get(i).getLote().getHistorico();
+                }else{
+                    lblVencimento = "Vencimento";
+                    vencimento = lista.get(i).getVencimento();                    
                 }
+                
+//                
+//                if (lista.get(i).getLote().getRotina().getId() != 132) {
+//                    lblVencimento = "Vencimento";
+//                    vencimento = lista.get(i).getVencimento();
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    lblVencimento = "Validade";
+//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                    
+//                    lblVencimento = "Validade";
+//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                }else {
+//                    lblVencimento = "Validade";
+//                    vencimento = "";
+//                }
+//                if (!lista.get(i).getServicos().isValidadeGuias()) {
+//                    lblVencimento = "VENCTO";
+//                    vencimento = lista.get(i).getVencimento();
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    lblVencimento = "VALID";
+//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
+//                    
+//                    
+//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
+//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                    
+//                    lblVencimento = "VALID";
+//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
+//                }
 
-                vetor.add(new ParametroRecibo(
+                vetor.add(
+                    new ParametroRecibo(
                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         sindicato.getPessoa().getNome(),
                         pe.getEndereco().getDescricaoEndereco().getDescricao(),
@@ -123,7 +196,7 @@ public class ImprimirRecibo {
                         String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
                         lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
                         lista.get(i).getServicos().getDescricao(), // SERVICO
-                        lista.get(i).getVencimento(), // VENCIMENTO
+                        vencimento, // VENCIMENTO
                         new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
                         lista.get(i).getBaixa().getUsuario().getLogin(),
                         lista.get(i).getBaixa().getBaixa(),
@@ -139,8 +212,9 @@ public class ImprimirRecibo {
                         formas[8],
                         formas[9],
                         (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
-                        validade_servico
-                )
+                        lblVencimento,
+                        mensagemConvenio
+                    )
                 );
             }
 

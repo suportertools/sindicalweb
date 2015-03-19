@@ -108,8 +108,8 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:outputLabel value="Cobrança Bancária" style="font-weight: bold"/><br />
-                                    <p:selectOneRadio value="#{lancamentoIndividualBean.cobrancaBancaria}">
+                                    <p:outputLabel value="Cobrança Bancária" style="font-weight: bold" rendered="false"/><br />
+                                    <p:selectOneRadio value="#{lancamentoIndividualBean.cobrancaBancaria}" rendered="false">
                                         <f:selectItem itemLabel="Sim" itemValue="sim" />
                                         <f:selectItem itemLabel="Não" itemValue="nao" />
                                     </p:selectOneRadio>
@@ -117,7 +117,7 @@
 
                                 <h:column>
                                     <p:outputLabel value="Dia de Vencimento" style="font-weight: bold"/><br />
-                                    <p:selectOneMenu value="#{lancamentoIndividualBean.servicoPessoa.nrDiaVencimento}" disabled="true">
+                                    <p:selectOneMenu value="#{lancamentoIndividualBean.idDia}" disabled="true">
                                         <f:selectItem itemValue="1" itemLabel="01"/>
                                         <f:selectItem itemValue="2" itemLabel="02"/>
                                         <f:selectItem itemValue="3" itemLabel="03"/>
@@ -150,9 +150,6 @@
                                         <f:selectItem itemValue="30" itemLabel="30"/>
                                         <f:selectItem itemValue="31" itemLabel="31"/>
                                     </p:selectOneMenu>  
-
-                                    <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show()" rendered="#{lancamentoIndividualBean.servicoPessoa.id != -1}"/>
-                                    <p:commandLink value="Alterar dia Vencimento" disabled="true" rendered="#{lancamentoIndividualBean.servicoPessoa.id == -1}" title="Não existe serviço pessoa para alterar este vencimento"/>
                                 </h:column>
 
                                 <h:column>

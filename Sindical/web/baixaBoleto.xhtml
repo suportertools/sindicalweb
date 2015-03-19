@@ -152,7 +152,7 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <p:commandButton value="Baixar Boleto" title="Baixar Boletos Selecionados" action="#{baixaBoletoBean.baixarBoletos(null)}" rendered="#{!baixaBoletoBean.disBtnBaixar and baixaBoletoBean.listaBoletos.size() != 0}" ajax="false"/>
+                            <p:commandButton value="Baixar Boleto" title="Baixar Boletos Selecionados" action="#{baixaBoletoBean.baixarBoletos(null)}" rendered="#{!baixaBoletoBean.disBtnBaixar and baixaBoletoBean.listBoletos.size() != 0}" ajax="false"/>
                         </h:form>
                     </p:panel>
                 </f:view>

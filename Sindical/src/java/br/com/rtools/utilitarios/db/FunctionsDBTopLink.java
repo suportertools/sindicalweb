@@ -1,9 +1,12 @@
 package br.com.rtools.utilitarios.db;
 
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.Query;
 
 public class FunctionsDBTopLink extends DB implements FunctionsDB {
@@ -157,4 +160,18 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return true;
     }    
+    
+    @Override
+    public Pessoa titularDaPessoa(int id_pessoa) {
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT func_titular_da_pessoa(" + id_pessoa + ");");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Pessoa) new Dao().find(new Pessoa(), Integer.parseInt( ((Vector) list.get(0)).get(0).toString()  ));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
 }

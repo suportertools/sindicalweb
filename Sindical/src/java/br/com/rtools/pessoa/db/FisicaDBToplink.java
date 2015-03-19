@@ -481,12 +481,12 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     }
 
     @Override
-    public List pesquisaFisicaPorDoc(String doc) {
+    public List<Fisica> pesquisaFisicaPorDoc(String doc) {
         return pesquisaFisicaPorDoc(doc, true);
     }
 
     @Override
-    public List pesquisaFisicaPorDoc(String doc, boolean like) {
+    public List<Fisica> pesquisaFisicaPorDoc(String doc, boolean like) {
         String documento = doc;
         if (like) {
             documento = "%" + doc + "%";
@@ -503,7 +503,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         return new ArrayList();
     }
 
-    public List pesquisaFisicaPorDocRG(String doc) {
+    public List<Fisica> pesquisaFisicaPorDocRG(String doc) {
         String documento = doc;
         try {
             Query qry = getEntityManager().createQuery("SELECT FIS FROM Fisica AS FIS WHERE FIS.rg LIKE :documento");
@@ -518,7 +518,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     }
 
     @Override
-    public List pesquisaFisicaPorDocSemLike(String doc) {
+    public List<Fisica> pesquisaFisicaPorDocSemLike(String doc) {
         try {
             Query qry = getEntityManager().createQuery(
                     "   SELECT FIS                           "
@@ -553,7 +553,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     }
 
     @Override
-    public List pesquisaFisicaPorNomeNascRG(String nome, Date nascimento, String RG) {
+    public List<Fisica> pesquisaFisicaPorNomeNascRG(String nome, Date nascimento, String RG) {
         String textQuery = "";
         try {
             if (RG.isEmpty() && nascimento != null) {
