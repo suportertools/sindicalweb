@@ -83,8 +83,13 @@ public class ControleUsuarioBean implements Serializable {
             if (macFilial.getMesa() > 0) {
                 filial += " - Guiche: " + macFilial.getMesa();
             }
-            if (!macFilial.getDescricao().isEmpty()) {
+            if (macFilial.getDescricao() != null && !macFilial.getDescricao().isEmpty()) {
                 filial += " - " + macFilial.getDescricao();
+            }
+            if (macFilial.getCaixa() != null) {
+                if(macFilial.getCaixa().getCaixa() > 0) {
+                    filial += " - Caixa: " + macFilial.getCaixa().getCaixa();
+                }
             }
         } else {
             GenericaSessao.put("acessoFilial", null);

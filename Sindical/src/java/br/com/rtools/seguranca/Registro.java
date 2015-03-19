@@ -119,6 +119,8 @@ public class Registro implements java.io.Serializable {
     private String raisMensagemEmail;
     @Column(name = "is_cadastro_cnpj", columnDefinition = "boolean default false")
     private boolean cadastroCnpj;
+    @Column(name = "is_biometria", columnDefinition = "boolean default false")
+    private boolean biometria;
 
     public Registro() {
         this.id = -1;
@@ -171,6 +173,7 @@ public class Registro implements java.io.Serializable {
         this.acessoWebDocumento = false;
         this.raisMensagemEmail = "";
         this.cadastroCnpj = false;
+        this.biometria = false;
     }
 
     public Registro(int id,
@@ -221,7 +224,8 @@ public class Registro implements java.io.Serializable {
             String sisEmailMarketingResposta,
             boolean acessoWebDocumento,
             String raisMensagemEmail,
-            boolean cadastroCnpj) {
+            boolean cadastroCnpj,
+            boolean biometria) {
 
         this.id = id;
         this.filial = filial;
@@ -272,6 +276,7 @@ public class Registro implements java.io.Serializable {
         this.acessoWebDocumento = acessoWebDocumento;
         this.raisMensagemEmail = raisMensagemEmail;
         this.cadastroCnpj = cadastroCnpj;
+        this.biometria = biometria;
     }
 
     public int getId() {
@@ -692,5 +697,13 @@ public class Registro implements java.io.Serializable {
 
     public void setCadastroCnpj(boolean cadastroCnpj) {
         this.cadastroCnpj = cadastroCnpj;
+    }
+
+    public boolean isBiometria() {
+        return biometria;
+    }
+
+    public void setBiometria(boolean biometria) {
+        this.biometria = biometria;
     }
 }

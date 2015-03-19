@@ -12,23 +12,22 @@ public class BiometriaServidor implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
-    @OneToOne
-    private Pessoa pessoa;
     @JoinColumn(name = "id_mac_filial", referencedColumnName = "id", nullable = false)
     @OneToOne
     private MacFilial macFilial;
+    @Column(name = "is_ativo", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean ativo;
 
     public BiometriaServidor() {
         this.id = null;
-        this.pessoa = null;
         this.macFilial = null;
+        this.ativo = false;
     }
 
-    public BiometriaServidor(Integer id, Pessoa pessoa, MacFilial macFilial) {
+    public BiometriaServidor(Integer id, MacFilial macFilial, boolean ativo) {
         this.id = id;
-        this.pessoa = pessoa;
         this.macFilial = macFilial;
+        this.ativo = ativo;
     }
 
     public Integer getId() {
@@ -47,12 +46,12 @@ public class BiometriaServidor implements Serializable {
         this.macFilial = macFilial;
     }
 
-    public Pessoa getPessoa() {
-        return pessoa;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public void setPessoa(Pessoa pessoa) {
-        this.pessoa = pessoa;
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
     @Override
@@ -69,13 +68,13 @@ public class BiometriaServidor implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BiometriaServidor other = (BiometriaServidor) obj;
+        final BiometriaCaptura other = (BiometriaCaptura) obj;
         return true;
     }
 
     @Override
     public String toString() {
-        return "BiometriaServidor{" + "id=" + id + ", pessoa=" + pessoa + ", macFilial=" + macFilial + '}';
+        return "BiometriaServidor{" + "id=" + id + ", macFilial=" + macFilial + ", ativo=" + ativo + '}';
     }
 
 }
