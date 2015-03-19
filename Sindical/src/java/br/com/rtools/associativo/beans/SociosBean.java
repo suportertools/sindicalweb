@@ -1633,17 +1633,31 @@ public class SociosBean implements Serializable {
             dao.openTransaction();
             soc.getServicoPessoa().setReferenciaValidade((String) linha.getArgumento4());
             if (soc.getId() == -1) {
-                listaDependentes.remove(index);
+                try {
+                    listaDependentes.remove(index);
+                } catch (Exception e) {
+
+                }
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
                 dao.rollback();
+                return null;
             } else if (!inativaDependentes(dao, soc)) {
                 dao.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inativar dependente!");
+                return null;
             } else {
-                listaDependentes.remove(index);
-                GenericaMensagem.warn("Erro", "Dependente inativado!");
+                try {
+                    listaDependentes.remove(index);
+                } catch (Exception e) {
+                }
+                if (soc.getServicoPessoa().isAtivo()) {
+                    GenericaMensagem.warn("Erro", "Dependente inativado!");
+                } else {
+                    GenericaMensagem.warn("Erro", "Dependente excluído!");
+                }
                 dao.commit();
                 atualizarListaDependenteInativo();
+                return null;
             }
         } else {
             listaDependentes.remove(index);
@@ -1653,8 +1667,12 @@ public class SociosBean implements Serializable {
     }
 
     public boolean inativaDependentes(Dao dao, Socios soc) {
-        soc.getServicoPessoa().setAtivo(false);
-        return dao.update(soc.getServicoPessoa());
+        if (soc.getServicoPessoa().isAtivo()) {
+            soc.getServicoPessoa().setAtivo(false);
+            return dao.update(soc.getServicoPessoa());
+        } else {
+            return excluirDependentes(dao, soc);
+        }
     }
 
     public boolean excluirDependentes(Dao dao, Socios soc) {
@@ -1667,6 +1685,18 @@ public class SociosBean implements Serializable {
         ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(soc.getParentesco().getId(), servicoCategoria.getCategoria().getId());
 
         ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(servicoCategoriaDep.getCategoria().getId(), 170);
+
+        List<HistoricoCarteirinha> listaHistoricoCarteirinha = dbc.listaHistoricoCarteirinha(soc.getServicoPessoa().getPessoa().getId());
+
+        if (!listaHistoricoCarteirinha.isEmpty()) {
+            for (HistoricoCarteirinha hc : listaHistoricoCarteirinha) {
+                if (!dao.delete(hc)) {
+                    GenericaMensagem.warn("Erro", "Ao excluir histórico carteirinha do Dependente!");
+                    return false;
+                }
+            }
+        }
+
         List<SocioCarteirinha> list = new ArrayList();
 
         if (modeloc != null) {
@@ -1676,24 +1706,24 @@ public class SociosBean implements Serializable {
         if (!list.isEmpty()) {
             for (SocioCarteirinha socioCarteirinha : list) {
                 if (!dao.delete(socioCarteirinha)) {
-                    msgConfirma = "Erro ao excluir carteirinha do Dependente!";
+                    GenericaMensagem.warn("Erro", "Ao excluir carteirinha do Dependente!");
                     return false;
                 }
             }
         }
 
         if (!dao.delete(soc)) {
-            msgConfirma = "Erro ao excluir Dependente!";
+            GenericaMensagem.warn("Erro", "Ao excluir Dependente!");
             return false;
         }
 
         //ServicoPessoa serPessoa = dbS.pesquisaServicoPessoaPorPessoa(soc.getServicoPessoa().getPessoa().getId());
         ServicoPessoa serPessoa = (ServicoPessoa) dao.find(soc.getServicoPessoa());
         if (!dao.delete(serPessoa)) {
-            msgConfirma = "Erro ao excluir serviço pessoa dependente!";
-            return false;
+            GenericaMensagem.warn("Erro", "Ao excluir serviço pessoa Dependente!");
+            return true;
         }
-        msgConfirma = "Dependente excluído!";
+        GenericaMensagem.info("Sucesso", "Dependente excluído!");
         return true;
     }
 
