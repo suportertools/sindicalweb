@@ -361,6 +361,13 @@
                                     </h:panelGrid>
                                 </p:tab>                                
                             </c:if>
+                            <p:tab title="Dispositivos">
+                                <h:panelGrid columns="2">
+                                    <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.biometria}" itemLabel="Habilitar biometria">
+                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages i_per"/>
+                                    </p:selectBooleanCheckbox>                                        
+                                </h:panelGrid>
+                            </p:tab>                                
                         </p:tabView>
                     </p:panel>
                     <div style="clear: both;"></div>
