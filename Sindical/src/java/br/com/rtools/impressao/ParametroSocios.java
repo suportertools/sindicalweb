@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 
 public class ParametroSocios {
@@ -84,6 +85,89 @@ public class ParametroSocios {
     private String contabilidade_nome;
     private String contabilidade_contato;
     private String contabilidade_telefone;
+
+    public ParametroSocios() {
+        this.sinLogo = "";
+        this.sinSite = "";
+        this.sinNome = "";
+        this.sinEndereco = "";
+        this.sinLogradouro = "";
+        this.sinNumero = "";
+        this.sinComplemento = "";
+        this.sinBairro = "";
+        this.sinCep = "";
+        this.sinCidade = "";
+        this.sinCidadeUf = "";
+        this.sinDocumento = "";
+        this.codigo = 0;
+        this.cadastro = new Date();
+        this.nome = "";
+        this.cpf = "";
+        this.telefone = "";
+        this.ds_uf_emissao_rg = "";
+        this.estado_civil = "";
+        this.ctps = "";
+        this.pai = "";
+        this.sexo = "";
+        this.mae = "";
+        this.nacionalidade = "";
+        this.nit = "";
+        this.ds_orgao_emissao_rg = "";
+        this.pis = "";
+        this.ds_serie = "";
+        this.dt_aposentadoria = new Date();
+        this.ds_naturalidade = "";
+        this.recadastro = new Date();
+        this.dt_nascimento = new Date();
+        this.dt_foto = new Date();
+        this.ds_rg = "";
+        this.foto = "";
+        this.logradouro = "";
+        this.endereco = "";
+        this.numero = "";
+        this.complemento = "";
+        this.bairro = "";
+        this.cidade = "";
+        this.uf = "";
+        this.cep = "";
+        this.setor = "";
+        this.admissao = new Date();
+        this.profissao = "";
+        this.fantasia = "";
+        this.empresa = "";
+        this.cnpj = "";
+        this.e_telefone = "";
+        this.e_logradouro = "";
+        this.e_endereco = "";
+        this.e_numero = "";
+        this.e_complemento = "";
+        this.e_bairro = "";
+        this.e_cidade = "";
+        this.e_uf = "";
+        this.e_cep = "";
+        this.titular = "";
+        this.codsocio = "";
+        this.nomeTitular = "";
+        this.parentesco = "";
+        this.matricula = 0;
+        this.categoria = "";
+        this.grupo_categoria = "";
+        this.filiacao = new Date();
+        this.inativacao = new Date();
+        this.votante = false;
+        this.grau = "";
+        this.nr_deconto = new BigDecimal(0);
+        this.desconto_folha = false;
+        this.tipo_cobranca = "";
+        this.cod_tipo_cobranca = 0;
+        this.telefone2 = "";
+        this.telefone3 = "";
+        this.email = "";
+        this.contabilidade_nome = "";
+        this.contabilidade_contato = "";
+        this.contabilidade_telefone = "";
+
+    }
 
     public ParametroSocios(String sinLogo, String sinSite, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinCidadeUf, String sinDocumento, int codigo, Date cadastro, String nome, String cpf, String telefone, String ds_uf_emissao_rg, String estado_civil, String ctps, String pai, String sexo, String mae, String nacionalidade, String nit, String ds_orgao_emissao_rg, String pis, String ds_serie, Date dt_aposentadoria, String ds_naturalidade, Date recadastro, Date dt_nascimento, Date dt_foto, String ds_rg, String foto, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, String setor, Date admissao, String profissao, String fantasia, String empresa, String cnpj, String e_telefone, String e_logradouro, String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String titular, String codsocio, String nomeTitular, String parentesco, int matricula, String categoria, String grupo_categoria, Date filiacao, Date inativacao, boolean votante, String grau, BigDecimal nr_deconto, boolean desconto_folha, String tipo_cobranca, int cod_tipo_cobranca, String telefone2, String telefone3, String email, String contabilidade_nome, String contabilidade_contato, String contabilidade_telefone) {
         this.sinLogo = sinLogo;
