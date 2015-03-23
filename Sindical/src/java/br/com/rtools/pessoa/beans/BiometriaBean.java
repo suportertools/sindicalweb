@@ -8,6 +8,7 @@ import br.com.rtools.pessoa.dao.BiometriaDao;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -62,6 +63,22 @@ public class BiometriaBean {
             biometriaCaptura.setMacFilial((MacFilial) GenericaSessao.getObject("acessoFilial"));
             biometriaCaptura.setPessoa(p);
             dao.save(biometriaCaptura, true);
+        }
+    }
+
+    public void delete(Pessoa p) {
+        BiometriaDao biometriaDao = new BiometriaDao();
+        Dao dao = new Dao();
+        if (GenericaSessao.exists("acessoFilial")) {
+            Biometria b = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
+            if (b != null) {
+                b.setAtivo(false);
+                if (dao.update(b, true)) {
+                    GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
+                } else {
+                    GenericaMensagem.warn("Erro", "Ao excluir registro!");
+                }
+            }
         }
     }
 
