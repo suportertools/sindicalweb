@@ -948,19 +948,22 @@ public class SociosBean implements Serializable {
             //Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data()));
             String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
 
-            // ANTIGAMENTE O NR_CARTAO ERA O ID DA PESSOA -- ALTERADO PELO ROGÉRIO NO CHAMADO 599
-            //SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, servicoPessoa.getPessoa().getId(), 1, validadeCarteirinha);
-            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, 0, 1, validadeCarteirinha);
+            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, servicoPessoa.getPessoa().getId(), 1, validadeCarteirinha, true);
+
+            if ((socios.getMatriculaSocios().getCategoria().isCartaoTitular() && socios.getParentesco().getId() == 1)
+                    || (socios.getMatriculaSocios().getCategoria().isCartaoDependente() && socios.getParentesco().getId() != 1)) {
+                sc.setAtivo(true);
+
+            } else {
+                sc.setAtivo(false);
+            }
             if (!sv.inserirObjeto(sc)) {
                 GenericaMensagem.error("Erro", "Não foi possivel salvar Socio Carteirinha!");
                 sv.desfazerTransacao();
                 return null;
             }
-            sc.setCartao(sc.getId());
-            
-            sv.alterarObjeto(sc);
-            
             socCarteirinha = sc;
+
         }
 
         if (socios.getId() == -1) {
@@ -1055,9 +1058,13 @@ public class SociosBean implements Serializable {
 
                         sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                         if (sc == null) {
-                            // ANTIGAMENTE O NR_CARTAO ERA O ID DA PESSOA -- ALTERADO PELO ROGÉRIO NO CHAMADO 599
-                            //sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha);
-                            sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, 0, 1, validadeCarteirinha);
+                            sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha, true);
+                        }
+                        if ((socios.getMatriculaSocios().getCategoria().isCartaoTitular() && socios.getParentesco().getId() == 1)
+                                || (socios.getMatriculaSocios().getCategoria().isCartaoDependente() && socios.getParentesco().getId() != 1)) {
+                            sc.setAtivo(true);
+                        } else {
+                            sc.setAtivo(false);
                         }
                         if (sc.getId() == -1) {
                             if (!sv.inserirObjeto(sc)) {
