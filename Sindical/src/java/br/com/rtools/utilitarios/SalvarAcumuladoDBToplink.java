@@ -36,9 +36,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return true;
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -81,9 +83,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return true;
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -97,9 +101,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return true;
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -124,9 +130,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             e.getMessage();
         }
@@ -192,9 +200,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
                 object = getEntityManager().find(object.getClass(), objectId);
             } catch (Exception e) {
                 EXCEPCION = e;
-                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                    PF.update("form_log:i_messages");
+                if (GenericaSessao.exists("habilitaLog")) {
+                    if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                        GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                        PF.update("form_log:i_messages");
+                    }
                 }
                 return null;
             }
@@ -233,9 +243,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             e.getMessage();
         }
@@ -283,9 +295,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             e.printStackTrace();
         }
@@ -302,9 +316,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return new ArrayList();
         }
@@ -354,9 +370,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
         }
         return result;
@@ -372,9 +390,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
         }
         return result;
@@ -395,9 +415,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -418,9 +440,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -441,9 +465,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
             return false;
         }
@@ -465,9 +491,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
         }
         return new ArrayList();
@@ -489,9 +517,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             }
         } catch (Exception e) {
             EXCEPCION = e;
-            if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
-                GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
-                PF.update("form_log:i_messages");
+            if (GenericaSessao.exists("habilitaLog")) {
+                if (Usuario.getUsuario().getId() == 1 && GenericaSessao.getBoolean("habilitaLog")) {
+                    GenericaMensagem.fatal("LOG", EXCEPCION.getMessage());
+                    PF.update("form_log:i_messages");
+                }
             }
         }
         return new ArrayList();
