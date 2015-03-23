@@ -1,6 +1,7 @@
 package br.com.rtools.associativo;
 
 import br.com.rtools.endereco.Cidade;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import java.util.Date;
 @Table(name = "matr_socios")
 @NamedQuery(name = "MatriculaSocios.pesquisaID", query = "select ms from MatriculaSocios ms where ms.id=:pid")
 public class MatriculaSocios implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -53,8 +55,11 @@ public class MatriculaSocios implements java.io.Serializable {
     private Date dtEmissao;
     @Column(name = "ds_motivo", length = 500)
     private String motivo;
+    @JoinColumn(name = "id_filial", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Filial filial;
 
-    public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade, String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao, Pessoa titular, String emissao, String motivo) {
+    public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade, String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao, Pessoa titular, String emissao, String motivo, Filial filial) {
         this.id = id;
         this.setInativo(inativo);
         this.categoria = categoria;
@@ -67,6 +72,7 @@ public class MatriculaSocios implements java.io.Serializable {
         this.titular = titular;
         this.setEmissao(emissao);
         this.motivo = motivo;
+        this.filial = filial;
 
     }
 
@@ -83,6 +89,7 @@ public class MatriculaSocios implements java.io.Serializable {
         this.titular = new Pessoa();
         this.setEmissao("");
         this.motivo = "";
+        this.filial = null;
     }
 
     public int getId() {
@@ -201,5 +208,13 @@ public class MatriculaSocios implements java.io.Serializable {
 
     public void setMotivo(String motivo) {
         this.motivo = motivo;
+    }
+
+    public Filial getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Filial filial) {
+        this.filial = filial;
     }
 }
