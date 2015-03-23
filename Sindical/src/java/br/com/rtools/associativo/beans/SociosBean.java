@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
@@ -18,6 +19,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -907,6 +909,9 @@ public class SociosBean implements Serializable {
             }
         }
         if (matriculaSocios.getId() == -1) {
+            if (MacFilial.getAcessoFilial().getId() == -1) {
+                matriculaSocios.setFilial((Filial) new Dao().find(new Filial(), 1));
+            }
             if (!sv.inserirObjeto(matriculaSocios)) {
                 GenericaMensagem.error("Erro", "Erro ao Salvar Matrícula!");
                 sv.desfazerTransacao();
@@ -1072,7 +1077,7 @@ public class SociosBean implements Serializable {
                                 sv.desfazerTransacao();
                                 return null;
                             }
-                            
+
                             sc.setCartao(sc.getId());
                             sv.alterarObjeto(sc);
                         } else {
