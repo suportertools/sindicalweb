@@ -911,6 +911,8 @@ public class SociosBean implements Serializable {
         if (matriculaSocios.getId() == -1) {
             if (MacFilial.getAcessoFilial().getId() == -1) {
                 matriculaSocios.setFilial((Filial) new Dao().find(new Filial(), 1));
+            } else {
+                matriculaSocios.setFilial(MacFilial.getAcessoFilial().getFilial());                
             }
             if (!sv.inserirObjeto(matriculaSocios)) {
                 GenericaMensagem.error("Erro", "Erro ao Salvar Matrícula!");
