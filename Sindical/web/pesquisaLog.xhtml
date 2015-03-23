@@ -103,7 +103,7 @@
                                 <h:column rendered="#{pesquisaLogBean.filtro[2]}">
                                     <h:panelGrid columns="3">
                                         <p:outputLabel value="Rotinas:" styleClass="bold"/>
-                                        <p:selectOneMenu value="#{pesquisaLogBean.index[0]}" filter="true" filterMatchMode="global" disabled="#{pesquisaLogBean.blockUsuario}">
+                                        <p:selectOneMenu value="#{pesquisaLogBean.index[0]}" filter="true" filterMatchMode="startsWith" disabled="#{pesquisaLogBean.blockUsuario}">
                                             <p:ajax event="change" update="@this" />
                                             <f:selectItem itemValue="" itemLabel="Selecionar" />
                                             <f:selectItems value="#{pesquisaLogBean.listRotinas}" />
