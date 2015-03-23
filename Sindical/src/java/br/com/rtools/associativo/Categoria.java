@@ -47,6 +47,10 @@ public class Categoria implements Serializable {
     private boolean usaClubeSabado;
     @Column(name = "usa_clube_domingo", nullable = true)
     private boolean usaClubeDomingo;
+    @Column(name = "is_cartao_titular", nullable = true, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean cartaoTitular;
+    @Column(name = "is_cartao_dependente", nullable = true, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean cartaoDependente;
 
     public Categoria() {
         this.id = -1;
@@ -63,11 +67,13 @@ public class Categoria implements Serializable {
         this.usaClubeSexta = false;
         this.usaClubeSabado = false;
         this.usaClubeDomingo = false;
+        this.cartaoTitular = true;
+        this.cartaoDependente = true;
     }
 
     public Categoria(int id, String categoria, GrupoCategoria grupoCategoria, int nrCarenciaBalcao, int nrCarenciaDescFolha,
             boolean empresaObrigatoria, boolean votante, boolean usaClubeSegunda, boolean usaClubeTerca, boolean usaClubeQuarta,
-            boolean usaClubeQuinta, boolean usaClubeSexta, boolean usaClubeSabado, boolean usaClubeDomingo) {
+            boolean usaClubeQuinta, boolean usaClubeSexta, boolean usaClubeSabado, boolean usaClubeDomingo, boolean cartaoTitular, boolean cartaoDependente) {
         this.id = id;
         this.categoria = categoria;
         this.grupoCategoria = grupoCategoria;
@@ -82,6 +88,8 @@ public class Categoria implements Serializable {
         this.usaClubeSexta = usaClubeSexta;
         this.usaClubeSabado = usaClubeSabado;
         this.usaClubeDomingo = usaClubeDomingo;
+        this.cartaoTitular = cartaoTitular;
+        this.cartaoDependente = cartaoDependente;
     }
 
     public int getId() {
@@ -210,6 +218,30 @@ public class Categoria implements Serializable {
 
     public void setNrCarenciaDescFolha(String nrCarenciaDescFolhaString) {
         this.nrCarenciaDescFolha = Integer.parseInt(nrCarenciaDescFolhaString);
+    }
+
+    public boolean isCartaoTitular() {
+        return cartaoTitular;
+    }
+
+    public void setCartaoTitular(boolean cartaoTitular) {
+        if (!cartaoTitular) {
+            cartaoDependente = false;
+        }        
+        this.cartaoTitular = cartaoTitular;
+    }
+
+    public boolean isCartaoDependente() {
+        return cartaoDependente;
+    }
+
+    public void setCartaoDependente(boolean cartaoDependente) {
+        if (cartaoDependente) {
+            if (!this.cartaoTitular) {
+                cartaoDependente = false;
+            }
+        }
+        this.cartaoDependente = cartaoDependente;
     }
 
 }
