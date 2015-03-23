@@ -2363,4 +2363,12 @@ public class ChamadaPaginaBean implements Serializable {
         menuLinks.get(i).setIndice(i);
         return menuLinks.get(i).getLink();
     }
+
+    public String getUrlAtual() {
+        return urlAtual;
+    }
+
+    public void setUrlAtual(String urlAtual) {
+        this.urlAtual = urlAtual;
+    }
 }
