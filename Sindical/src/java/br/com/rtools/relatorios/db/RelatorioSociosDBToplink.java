@@ -359,7 +359,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             // DATA APOSENTADORIA
             if (!data_aposentadoria.isEmpty() && !data_aposentadoria_fim.isEmpty()) {
                 filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'";
-            } else if (!dt_admissao_empresa.isEmpty()) {
+            } else if (!data_aposentadoria.isEmpty()) {
                 filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'";
             }
 
