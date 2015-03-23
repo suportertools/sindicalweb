@@ -13,10 +13,16 @@
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
-            
+
             .duas-colunas{
                 width: 50%;
             }
+            .leitor-biometrico-on {  
+                background-image: url("#{facesContext.externalContext.requestContextPath}/Imagens/biometric-on-icon.gif") !important;  
+            }            
+            .leitor-biometrico-off {  
+                background-image: url("#{facesContext.externalContext.requestContextPath}/Imagens/biometric-off-icon.png") !important;  
+            }            
         </style>
 
         <script type="text/javascript">
@@ -261,12 +267,13 @@
                                                 <p:photoCam widgetVar="pc" listener="#{fisicaBean.capturar}" />
                                                 <h:column>
                                                     <h:panelGrid columns="2">
-                                                        <p:commandButton value="Capturar Foto" onclick="PF('pc').capture(); PF('dlg_loading_image').show()" actionListener="#{fisicaBean.loadingImage()}" />
+                                                        <p:commandButton value="Capturar Foto" onclick="PF('pc').capture();
+                                                                PF('dlg_loading_image').show()" actionListener="#{fisicaBean.loadingImage()}" />
                                                     </h:panelGrid>
                                                 </h:column>
                                             </h:panelGrid>                        
                                         </p:dialog>
-                                        
+
                                         <p:dialog widgetVar="dlg_loading_image" modal="true" header="Carregando Imagem">
                                             <p:ajax event="close" update="i_panel_imagens" />
                                             <h:panelGrid style="width: 100%; text-align: center">
@@ -387,7 +394,7 @@
                                                     <p:inputText size="20" id="i_setor" value="#{fisicaBean.pessoaEmpresa.setor}"  />
                                                 </h:panelGrid>
                                             </h:column>
-                                            
+
                                             <h:column>
                                                 <p:commandButton value="Adicionar Empresa" action="#{fisicaBean.adicionarEmpresa()}" update="i_tbl_empresa_b, :form_pessoa_fisica:" rendered="#{fisicaBean.pessoaEmpresa.juridica.id != -1 and fisicaBean.fisica.id != -1}"/>
                                             </h:column>
@@ -638,12 +645,19 @@
                                     </h:panelGrid>
                                 </p:dialog>
 
-                                <h:panelGrid columns="6">
+                                <h:panelGrid columns="8">
                                     <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_painel_salvar').show();"/>
                                     <p:commandButton value="Novo" action="#{fisicaBean.novo}" update="form_pessoa_fisica"/>
                                     <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_painel_excluir').show();" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
                                     <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
+                                    <h:column>
+                                        <h:panelGrid id="i_app_message" rendered="#{biometriaBean.biometria and fisicaBean.fisica.id != -1}" columns="3">
+                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" />
+                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-off" rendered="#{!biometriaBean.status}" disabled="#{!biometriaBean.status}"  title="Offline"/>
+                                            <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dl_delete_biometria').show()"/>
+                                        </h:panelGrid>                                        
+                                    </h:column>
                                 </h:panelGrid>              
 
                                 <!-- PESQUISAR PROFISSAO -->
@@ -692,6 +706,14 @@
                                     </h:panelGrid>
                                 </p:dialog>
 
+                                <!-- EXCLUIR BIOMETRIA -->
+                                <p:dialog modal="true" width="650" height="400" widgetVar="dl_delete_biometria" closable="true" header="Deseja excluir esta biometria?">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" title="Salvar" action="#{biometriaBean.delete(fisicaBean.fisica.pessoa)}" update="i_painel_mensagem, i_panel_pessoa_fisica" oncomplete="PF('dl_delete_biometria').hide(); PF('dlg_painel_mensagem').show();" />
+                                        <p:commandButton value="Não" title="Cancelar" oncomplete="PF('dl_delete_biometria').hide();"/>
+                                    </h:panelGrid>
+                                </p:dialog>
+
                                 <p:dialog id="i_painel_salvar" widgetVar="dlg_painel_salvar" modal="true" header="Deseja salvar/atualizar este registro?" width="400" resizable="false">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sim" title="Salvar" action="#{fisicaBean.salvar}" update="i_painel_mensagem, i_panel_pessoa_fisica" oncomplete="PF('dlg_painel_salvar').hide(); PF('dlg_painel_mensagem').show();" />
@@ -706,6 +728,7 @@
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_painel_mensagem" modal="true" header="Mensagem"  width="400" resizable="false">
                                     <h:panelGrid id="i_painel_mensagem">
+                                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true" />
                                         <p:outputLabel value="#{fisicaBean.mensagem}"/>                                        
                                     </h:panelGrid>
                                     <br /><br />
@@ -741,6 +764,9 @@
                                           oncomplete="PF('dgl_upload').hide()" onstart="PF('dlg_loading_image').show()"/>
                         </p:dialog>
                     </h:form>
+                    <h:form id="form_aplicativos">
+                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" />
+                    </h:form>                    
                 </f:view>
 
                 <!-- FINALIZA div wrap main -->
