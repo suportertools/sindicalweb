@@ -43,10 +43,10 @@
                                         <p:selectBooleanButton value="#{pesquisaLogBean.filtro[0]}" onLabel="Período - Edição" offLabel="Período - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[1]}" onLabel="Usuário - Edição" offLabel="Usuário - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[1]}" onLabel="Usuário - Edição" offLabel="Usuário - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{pesquisaLogBean.blockUsuario}">
                                             <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[2]}" onLabel="Rotina - Edição" offLabel="Rotina - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[2]}" onLabel="Rotina - Edição" offLabel="Rotina - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" disabled="#{pesquisaLogBean.blockUsuario}">
                                             <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{pesquisaLogBean.filtro[3]}" onLabel="Evento - Edição" offLabel="Evento - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
@@ -89,9 +89,9 @@
                                 </h:column>
                                 <h:column rendered="#{pesquisaLogBean.filtro[1]}">
                                     <h:column>
-                                        <h:panelGrid columns="2" styleClass="margin-top-max">
-                                            <p:commandButton  icon="ui-icon-search" value="Pesquisar usuário" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}"/>
-                                            <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('usuario')}" title="Remover filtro"/>
+                                        <h:panelGrid columns="2" styleClass="margin-top-max" rendered="#{!pesquisaLogBean.blockUsuario}">
+                                            <p:commandButton  icon="ui-icon-search" value="Pesquisar usuário" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}" />
+                                            <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('usuario')}" title="Remover filtro" />
                                         </h:panelGrid>
                                         <h:panelGrid columns="2" styleClass="margin-top-max">
                                             <p:outputLabel value="Usuário:" styleClass="bold"/>
@@ -103,12 +103,12 @@
                                 <h:column rendered="#{pesquisaLogBean.filtro[2]}">
                                     <h:panelGrid columns="3">
                                         <p:outputLabel value="Rotinas:" styleClass="bold"/>
-                                        <p:selectOneMenu value="#{pesquisaLogBean.index[0]}" filter="true" filterMatchMode="startsWith">
+                                        <p:selectOneMenu value="#{pesquisaLogBean.index[0]}" filter="true" filterMatchMode="global" disabled="#{pesquisaLogBean.blockUsuario}">
                                             <p:ajax event="change" update="@this" />
                                             <f:selectItem itemValue="" itemLabel="Selecionar" />
                                             <f:selectItems value="#{pesquisaLogBean.listRotinas}" />
                                         </p:selectOneMenu>
-                                        <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('rotina')}" title="Remover filtro"/>
+                                        <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('rotina')}" title="Remover filtro" disabled="#{pesquisaLogBean.blockUsuario}"/>
                                     </h:panelGrid>
                                     <hr />
                                 </h:column>                                   
