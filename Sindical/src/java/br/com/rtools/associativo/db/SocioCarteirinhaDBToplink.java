@@ -277,6 +277,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
             }
 
+            textqry += " AND sc.is_ativo = true "; // SE NÃO FOR SÓCIO (ACADEMIA)
+
             // GROUP DA QUERY
             textqry += " "
                     + " GROUP BY p.id,                                       "
