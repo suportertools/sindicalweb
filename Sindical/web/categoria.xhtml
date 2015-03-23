@@ -52,6 +52,16 @@
                                         <h:panelGrid columns="2">
                                             <p:selectBooleanCheckbox value="#{categoriaBean.categoria.empresaObrigatoria}" itemLabel="Empresa Obrigatória" />
                                             <p:selectBooleanCheckbox value="#{categoriaBean.categoria.votante}"  itemLabel="Votante" style="margin-left: 25px"/>
+                                            <p:selectBooleanCheckbox value="#{categoriaBean.categoria.cartaoTitular}" itemLabel="Cartão Titular">
+                                                <p:ajax event="change" update="@this i_dependente" />
+                                            </p:selectBooleanCheckbox>
+                                            <h:column>
+                                                <p:outputPanel id="i_dependente">
+                                                    <p:selectBooleanCheckbox value="#{categoriaBean.categoria.cartaoDependente}" itemLabel="Cartão Dependente" style="margin-left: 25px"  rendered="#{categoriaBean.categoria.cartaoTitular}">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanCheckbox>                                                    
+                                                </p:outputPanel>
+                                            </h:column>
                                         </h:panelGrid>                                        
                                     </h:column>
                                 </h:panelGrid>
@@ -105,7 +115,7 @@
                             </p:dialog>
                             <p:dialog widgetVar="dlg_delete" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{categoriaBean.delete()}" oncomplete="PF('dlg_delete').hide();
-                                        PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message :form_categoria:"/> 
+                                                 PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="i_message :form_categoria:"/> 
                                 <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" style="float: left;" icon="ui-icon-close"/>
                             </p:dialog>
                             <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
