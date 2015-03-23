@@ -82,7 +82,7 @@ public class ImpressaoParaSocios {
                 via = "0" + via;
             }
 
-            Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+            Registro reg = (Registro) new Dao().find(new Registro(), 1);
             String bc = getConverteNullString(((List) (listaCartao.get(i))).get(18)) + via; //             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via; // id_pessoa
             String barras = "";
 
@@ -191,7 +191,7 @@ public class ImpressaoParaSocios {
             DBExternal con = new DBExternal();
             con.setDatabase(GenericaSessao.getString("sessaoCliente"));
             Map map = new HashMap();
-            if(!new File(subreport).exists()) {
+            if (!new File(subreport).exists()) {
                 subreport = null;
             } else {
                 map.put("REPORT_CONNECTION", con.getConnection());
@@ -210,7 +210,7 @@ public class ImpressaoParaSocios {
                 //* ADD LISTA DE JASPERS *//
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(entry.getValue());
                 jasper = (JasperReport) JRLoader.loadObject(file);
-                if(subreport != null) {
+                if (subreport != null) {
                     map.put("template_dir", subreport);
                 }
                 ljasper.add(JasperFillManager.fillReport(jasper, map, dtSource));
@@ -274,13 +274,13 @@ public class ImpressaoParaSocios {
             fisica = db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId());
             pesEndereco = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
-            
-            if(pessoaEmpresa != null) {
+
+            if (pessoaEmpresa != null) {
                 if (pessoaEmpresa.getId() != -1) {
                     pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
                 } else {
                     pesEndEmpresa = dbEnd.pesquisaEndPorPessoaTipo(pessoaEmpresa.getJuridica().getPessoa().getId(), 2);
-                }                
+                }
             } else {
                 pesEndEmpresa = new PessoaEndereco();
             }
