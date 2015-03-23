@@ -1665,7 +1665,7 @@ public class SociosBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Dependente Excluído!");
                 dao.rollback();
                 return null;
-            } else if (!inativaDependentes(dao, (Socios) dao.find(soc))) {
+            } else if (!inativaDependentes(dao, soc)) {
                 dao.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inativar dependente!");
                 return null;
