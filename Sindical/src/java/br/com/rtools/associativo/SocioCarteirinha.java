@@ -39,7 +39,9 @@ public class SocioCarteirinha implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_validade_carteirinha")
     private Date dtValidadeCarteirinha;
-
+    @Column(name = "is_ativo", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean ativo;
+    
     public SocioCarteirinha() {
         this.id = -1;
         this.setEmissao(DataHoje.data());
@@ -48,9 +50,10 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.cartao = 0;
         this.via = 0;
         this.setValidadeCarteirinha("");
+         this.ativo = true;
     }
 
-    public SocioCarteirinha(int id, String emissao, Pessoa pessoa, ModeloCarteirinha modeloCarteirinha, int cartao, int via, String validadeCarteirinha) {
+    public SocioCarteirinha(int id, String emissao, Pessoa pessoa, ModeloCarteirinha modeloCarteirinha, int cartao, int via, String validadeCarteirinha, boolean ativo) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -58,6 +61,7 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.cartao = cartao;
         this.via = via;
         this.setValidadeCarteirinha(validadeCarteirinha);
+        this.ativo = ativo;
     }
     
     
@@ -146,5 +150,13 @@ public class SocioCarteirinha implements java.io.Serializable {
             this.dtValidadeCarteirinha = DataHoje.converte(validadeCarteirinha);
         }
     }        
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
     
 }
