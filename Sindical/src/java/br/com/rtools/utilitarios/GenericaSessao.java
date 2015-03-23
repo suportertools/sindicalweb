@@ -90,13 +90,17 @@ public class GenericaSessao implements Serializable {
     }
 
     public static boolean getBoolean(String sessionName, boolean remove) {
-        boolean is = (Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
-        if (exists(sessionName)) {
-            if (remove) {
-                remove(sessionName);
+        try {
+            boolean is = (Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
+            if (exists(sessionName)) {
+                if (remove) {
+                    remove(sessionName);
+                }
             }
+            return is;
+        } catch (Exception e) {
+            return false;
         }
-        return is;
     }
 
     public static Object getObject(String sessionName) {
