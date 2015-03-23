@@ -2,7 +2,9 @@ package br.com.rtools.cobranca;
 
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
+import java.util.Date;
 
 public class Sicoob extends Cobranca {
     public Sicoob(Movimento movimento, Boleto boleto) {
@@ -70,7 +72,8 @@ public class Sicoob extends Cobranca {
         String iniCodigoBarras = "", fimCodigoBarras = "";
         iniCodigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
         
-        fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        //fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        fimCodigoBarras += fatorVencimentoSicoob(movimento.getDtVencimento());   // fator de vencimento
         
         String valor = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor()));
         int tam = valor.length();
@@ -158,8 +161,9 @@ public class Sicoob extends Cobranca {
                 }
             }
             
-            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
-                composicao = "1";
+            //if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
+            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1) {
+                composicao = "0";
             } else {
                 composicao = Integer.toString(11 - (soma % 11));
             }
@@ -180,5 +184,18 @@ public class Sicoob extends Cobranca {
     @Override
     public String codigoBanco() {
         return "756";
+    }
+    
+    
+    public String fatorVencimentoSicoob(Date vencimento) {
+        if (vencimento != null) {
+            Date dataModel = DataHoje.converte("03/07/2000");
+            long dias = vencimento.getTime() - dataModel.getTime();
+            long total = dias / 86400000;
+            total = total + 1000;
+            return Long.toString(total);
+        } else {
+            return "";
+        }
     }
 }
