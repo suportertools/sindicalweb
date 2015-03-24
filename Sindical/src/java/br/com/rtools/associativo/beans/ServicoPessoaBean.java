@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.DescontoSocial;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.Servicos;
@@ -201,6 +202,9 @@ public class ServicoPessoaBean implements Serializable {
         }
 
         if (servicoPessoa.getPessoa().getId() != -1) {
+            if(servicoPessoa.getId() == -1) {
+                servicoPessoa.setDescontoSocial((DescontoSocial) dbSalvar.find(new DescontoSocial(), 1));                
+            }
             if (dbSalvar.inserirObjeto(servicoPessoa)) {
                 return "";
             } else {
