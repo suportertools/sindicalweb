@@ -107,7 +107,7 @@
                             </h:panelGrid>
                             
                             <h:panelGrid id="i_panel_boleto" columns="3">
-                                <p:commandButton value="Imprimir Carnê para Todos" onclick="PF('i_dlg_todos').show()" rendered="#{carneMensalidadesBean.listaPessoa.size() == 0}"/>
+                                <p:commandButton value="Imprimir Carnê para Todos" onclick="PF('i_dlg_todos').show()" rendered="false"/>
                                 <p:commandButton value="Imprimir Carnê para SUA LISTA de Pessoas" onclick="PF('i_dlg_lista').show()" rendered="#{carneMensalidadesBean.listaPessoa.size() != 0}"/>
                             </h:panelGrid>
                    
