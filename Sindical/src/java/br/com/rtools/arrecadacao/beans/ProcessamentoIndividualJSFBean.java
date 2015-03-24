@@ -548,9 +548,9 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
     }
 
     public String imprimirBoleto() {
-        List<Movimento> movs = new ArrayList<Movimento>();
-        List<Float> listaValores = new ArrayList<Float>();
-        List<String> listaVencimentos = new ArrayList<String>();
+        List<Movimento> movs = new ArrayList();
+        List<Float> listaValores = new ArrayList();
+        List<String> listaVencimentos = new ArrayList();
 
         Movimento movi = null;
         if (!listMovimentos.isEmpty()) {

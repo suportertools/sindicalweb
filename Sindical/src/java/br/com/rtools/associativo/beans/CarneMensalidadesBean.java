@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.financeiro.dao.CarneMensalidadesDao;
 import br.com.rtools.impressao.ParametroCarneMensalidades;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -10,11 +11,17 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
@@ -61,47 +68,75 @@ public class CarneMensalidadesBean {
         PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
         PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
         
-        List result = new ArrayList();
+        CarneMensalidadesDao db = new CarneMensalidadesDao();
+        String id_pessoa = "";
+        for (int i = 0; i < listaPessoa.size(); i++) {
+            if (id_pessoa.length() > 0 && i != listaPessoa.size()) {
+                id_pessoa = id_pessoa + ",";
+            }
+            id_pessoa = id_pessoa + String.valueOf(listaPessoa.get(i).getId());
+        }
+        
+        String datas = "";
+        if (!listaData.isEmpty()){
+            for (int i = 0; i < listaData.size(); i++) {
+                if (datas.length() > 0 && i != listaData.size()) {
+                    datas = datas + ",";
+                }
+                datas = datas + "'"+String.valueOf(listaData.get(i))+"'";
+            }
+        }else{
+            datas = "'"+mes+"/"+ano+"'";
+        }
+        
+        
+        List<Vector> result = db.listaCarneMensalidadesAgrupado( (id_pessoa.isEmpty()) ? null : id_pessoa, datas );
         Collection lista = new ArrayList();
         
-        
-        List listax = new ArrayList();
-        
-        listax.add("TESTE 01");
-        listax.add("TESTE FUNCIONAL");
-        
-        
-        
-        for (int i = 0; i < 4; i++){
-            lista.add(
-                new ParametroCarneMensalidades(
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    sindicato.getPessoa().getNome(),
-                    pe.getEndereco().getDescricaoEndereco().getDescricao(),
-                    pe.getEndereco().getLogradouro().getDescricao(),
-                    pe.getNumero(),
-                    pe.getComplemento(),
-                    pe.getEndereco().getBairro().getDescricao(),
-                    pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
-                    pe.getEndereco().getCidade().getCidade(),
-                    pe.getEndereco().getCidade().getUf(),
-                    sindicato.getPessoa().getTelefone1(),
-                    sindicato.getPessoa().getEmail1(),
-                    sindicato.getPessoa().getSite(),
-                    sindicato.getPessoa().getDocumento(),
-                    (i > 1) ? "RAMON ANDRADE" : "MARIA AUGUSTA", 
-                    "000125", 
-                    "123", 
-                    "COMERCIÁRIO",
-                    (i > 1) ? "MENSALIDADE TITULAR" : "ACADEMIA",
-                    0,
-                    i+1,
-                    "20/02/2001",
-                    "10,00",
-                    "50,00",
-                    listax
-                )
-            );
+        for (Vector result1 : result) {
+            List<Vector> result_servico = db.listaServicosCarneMensalidades(Integer.valueOf(result1.get(3).toString()), datas);
+            List listax = new ArrayList();
+            for (Vector result_servico1 : result_servico) {
+                Map hash = new HashMap();
+                hash.put("servicos", result_servico1.get(0).toString());
+                hash.put("quantidade", result_servico1.get(1).toString());
+                listax.add(hash);
+            }
+            List<Vector> result_2 = db.listaCarneMensalidades(Integer.valueOf(result1.get(3).toString()), datas);
+            String valor_total = "";
+            float soma = 0;
+            for (int w = 0; w < result_2.size(); w++){
+                float valor_linha = Moeda.converteFloatR$Float(Float.parseFloat(Double.toString( (Double) result_2.get(w).get(5) )));
+                soma = Moeda.somaValores(soma, valor_linha);
+                valor_total = Moeda.converteR$Float(soma);
+                lista.add(
+                        new ParametroCarneMensalidades(
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                sindicato.getPessoa().getNome(),
+                                pe.getEndereco().getDescricaoEndereco().getDescricao(),
+                                pe.getEndereco().getLogradouro().getDescricao(),
+                                pe.getNumero(),
+                                pe.getComplemento(),
+                                pe.getEndereco().getBairro().getDescricao(),
+                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
+                                pe.getEndereco().getCidade().getCidade(),
+                                pe.getEndereco().getCidade().getUf(),
+                                sindicato.getPessoa().getTelefone1(),
+                                sindicato.getPessoa().getEmail1(),
+                                sindicato.getPessoa().getSite(),
+                                sindicato.getPessoa().getDocumento(),
+                                result_2.get(w).get(0).toString(),
+                                ( result_2.get(w).get(1) != null ) ? result_2.get(w).get(1).toString() : "",
+                                result_2.get(w).get(3).toString(),
+                                ( result_2.get(w).get(2) != null ) ? result_2.get(w).get(2).toString() : "",
+                                w+1,
+                                DataHoje.converteData( (Date) result_2.get(w).get(4) ),
+                                Moeda.converteR$Float( valor_linha ),
+                                valor_total,
+                                listax
+                        )
+                );
+            }
         }
         
         try {

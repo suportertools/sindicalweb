@@ -161,8 +161,8 @@ public class Sicoob extends Cobranca {
                 }
             }
             
-            //if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
-            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1) {
+            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
+            //if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1) {
                 composicao = "0";
             } else {
                 composicao = Integer.toString(11 - (soma % 11));

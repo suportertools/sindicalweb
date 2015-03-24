@@ -23,17 +23,14 @@ public class ParametroCarneMensalidades {
     private String codigo;
     private String categoria;
     
-    private String servicos;
-    private Integer quantidade;
-
     private Integer parcela;
     private String vencimento;
     private String valor;
     private String valor_total;
     
-    private List lista;
+    private List listaServicos;
     
-    public ParametroCarneMensalidades(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String titular, String matricula, String codigo, String categoria, String servicos, Integer quantidade, Integer parcela, String vencimento, String valor, String valor_total, List lista) {
+    public ParametroCarneMensalidades(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String titular, String matricula, String codigo, String categoria, Integer parcela, String vencimento, String valor, String valor_total, List listaServicos) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -52,13 +49,11 @@ public class ParametroCarneMensalidades {
         this.matricula = matricula;
         this.codigo = codigo;
         this.categoria = categoria;
-        this.servicos = servicos;
-        this.quantidade = quantidade;
         this.parcela = parcela;
         this.vencimento = vencimento;
         this.valor = valor;
         this.valor_total = valor_total;
-        this.lista = lista;
+        this.listaServicos = listaServicos;
     }
 
     public String getSinLogo() {
@@ -205,22 +200,6 @@ public class ParametroCarneMensalidades {
         this.categoria = categoria;
     }
 
-    public String getServicos() {
-        return servicos;
-    }
-
-    public void setServicos(String servicos) {
-        this.servicos = servicos;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
     public Integer getParcela() {
         return parcela;
     }
@@ -253,12 +232,12 @@ public class ParametroCarneMensalidades {
         this.valor_total = valor_total;
     }
 
-    public List getLista() {
-        return lista;
+    public List getListaServicos() {
+        return listaServicos;
     }
 
-    public void setLista(List lista) {
-        this.lista = lista;
+    public void setListaServicos(List listaServicos) {
+        this.listaServicos = listaServicos;
     }
 
     
