@@ -84,9 +84,10 @@ public class ConvenioServicoDBToplink extends DB implements ConvenioServicoDB {
         }
     }
 
+    @Override
     public List pesquisaServicosSubGrupoConvenio(int idSubGrupo) {
         try {
-            Query qry = getEntityManager().createQuery("select cs.servicos from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo);
+            Query qry = getEntityManager().createQuery("select cs.servicos from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo + " order by cs.servicos.descricao");
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();
