@@ -149,7 +149,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booTipoPagamento, String ids_pagamento, boolean booCidadeSocio, String ids_cidade_socio, boolean booCidadeEmpresa, String ids_cidade_empresa,
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
-            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem) {
+            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias) {
         String textQry = ""
                 + "SELECT "
                 + "           ''                  AS sindLogo,                  " // 0
@@ -406,8 +406,22 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             }
         }
 
+        if (carenciaDias != null && carenciaDias >= 0) {
+            switch (tipoCarencia) {
+                case "todos":
+                    filtro += " AND func_inadimplente_todos(so.codsocio, " + carenciaDias + ") = false ";
+                    break;
+                case "eleicao":
+                    filtro += " AND func_inadimplente_eleicao(so.codsocio, " + carenciaDias + ") = false ";
+                    break;
+                case "clube":
+                    filtro += " AND func_inadimplente_clube(so.codsocio, " + carenciaDias + ") = false ";
+                    break;
+            }
+        }
+
         String tordem = "";
-        if(ordem != null) {
+        if (ordem != null) {
             if (ordem.equals("nome")) {
                 tordem = " p.nome ";
             } else if (ordem.equals("matricula")) {
@@ -416,7 +430,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                 tordem = " p.cep ";
             } else if (ordem.equals("endereco")) {
                 tordem = " p.logradouro, p.endereco, p.numero, p.bairro ";
-            }            
+            }
         }
 
         // ORDEM DA QRY
@@ -424,7 +438,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             filtro += " ORDER BY " + tordem;
         } else {
             filtro += " ORDER BY " + relatorio.getQryOrdem();
-            if(!tordem.isEmpty()) {
+            if (!tordem.isEmpty()) {
                 filtro += ", " + tordem;
             }
         }

@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.dao;
 
 import br.com.rtools.pessoa.Biometria;
+import br.com.rtools.pessoa.BiometriaDepartamento;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,20 @@ public class BiometriaDao extends DB {
 
         }
         return null;
+    }
+
+    public List listaBiometriaDepartamentoPorPessoa(Integer pessoa) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT BD FROM BiometriaDepartamento AS BD WHERE BD.biometria.pessoa.id = :pessoa ");
+            query.setParameter("pessoa", pessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
     }
 
 }

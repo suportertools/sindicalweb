@@ -18,7 +18,9 @@ import javax.faces.bean.ViewScoped;
 @ViewScoped
 public class BiometriaBean {
 
-    public boolean isBiometria() {
+    private Biometria biometria = null;
+
+    public boolean isOpenBiometria() {
         if (GenericaSessao.exists("acessoFilial")) {
             Registro registro = (Registro) new Dao().find(new Registro(), 1);
             return registro.isBiometria();
@@ -39,11 +41,17 @@ public class BiometriaBean {
     }
 
     public boolean complete(Pessoa p) {
-        if (GenericaSessao.exists("acessoFilial")) {
-            BiometriaDao biometriaDao = new BiometriaDao();
-            Biometria biometria = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
-            if (biometria != null) {
-                return true;
+        if (biometria == null) {
+            if (GenericaSessao.exists("acessoFilial")) {
+                BiometriaDao biometriaDao = new BiometriaDao();
+                Dao dao = new Dao();
+                biometria = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
+                if (biometria != null) {
+                    biometria = (Biometria) dao.rebind(biometria);
+                    if (biometria.isAtivo()) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -74,12 +82,25 @@ public class BiometriaBean {
             if (b != null) {
                 b.setAtivo(false);
                 if (dao.update(b, true)) {
+                    List list = biometriaDao.listaBiometriaDepartamentoPorPessoa(p.getId());
+                    for (Object list1 : list) {
+                        dao.delete(list1, true);
+                    }
+                    biometria = null;
                     GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
                 } else {
                     GenericaMensagem.warn("Erro", "Ao excluir registro!");
                 }
             }
         }
+    }
+
+    public Biometria getBiometria() {
+        return biometria;
+    }
+
+    public void setBiometria(Biometria biometria) {
+        this.biometria = biometria;
     }
 
 }
