@@ -134,6 +134,9 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booTelefone = false;
     private boolean booEstadoCivil = false;
     private boolean booEmpresa = false;
+    private Boolean situacao = false;
+    private Integer carenciaDias = null;
+    private String tipoCarencia = "eleicao";
 
     public void limparFiltro() {
 //        listaMenuRSocial.clear();
@@ -174,7 +177,8 @@ public class RelatorioSociosBean implements Serializable {
                 && !booEmail
                 && !booTelefone
                 && !booEstadoCivil
-                && !booEmpresa) {
+                && !booEmpresa
+                && !situacao) {
             return false;
         }
         return true;
@@ -188,106 +192,47 @@ public class RelatorioSociosBean implements Serializable {
         }
 
         if (index == 0) {
-            if (booMatricula) {
-                booMatricula = false;
-            } else {
-                booMatricula = true;
-            }
+            booMatricula = !booMatricula;
         } else if (index == 1) {
-            if (booIdade) {
-                booIdade = false;
-            } else {
-                booIdade = true;
-            }
+            booIdade = !booIdade;
         } else if (index == 2) {
-            if (booGrupoCategoria) {
-                booGrupoCategoria = false;
-            } else {
-                booGrupoCategoria = true;
-            }
+            booGrupoCategoria = !booGrupoCategoria;
         } else if (index == 3) {
-            if (booSexo) {
-                booSexo = false;
-            } else {
-                booSexo = true;
-            }
+            booSexo = !booSexo;
         } else if (index == 4) {
-            if (booGrau) {
-                booGrau = false;
-            } else {
-                booGrau = true;
-            }
+            booGrau = !booGrau;
         } else if (index == 5) {
-            if (booFotos) {
-                booFotos = false;
-            } else {
-                booFotos = true;
-            }
+            booFotos = !booFotos;
         } else if (index == 6) {
-            if (booCarteirinha) {
-                booCarteirinha = false;
-            } else {
-                booCarteirinha = true;
-            }
+            booCarteirinha = !booCarteirinha;
         } else if (index == 7) {
-            if (booTipoCobranca) {
-                booTipoCobranca = false;
-            } else {
-                booTipoCobranca = true;
-            }
+            booTipoCobranca = !booTipoCobranca;
         } else if (index == 8) {
-            if (booCidadeSocio) {
-                booCidadeSocio = false;
-            } else {
-                booCidadeSocio = true;
-            }
+            booCidadeSocio = !booCidadeSocio;
         } else if (index == 9) {
-            if (booCidadeEmpresa) {
-                booCidadeEmpresa = false;
-            } else {
-                booCidadeEmpresa = true;
-            }
+            booCidadeEmpresa = !booCidadeEmpresa;
         } else if (index == 10) {
-            if (booAniversario) {
-                booAniversario = false;
-            } else {
-                booAniversario = true;
-            }
+            booAniversario = !booAniversario;
         } else if (index == 11) {
-            if (booData) {
-                booData = false;
-            } else {
-                booData = true;
-            }
+            booData = !booData;
         } else if (index == 12) {
-            if (booVotante) {
-                booVotante = false;
-            } else {
-                booVotante = true;
-            }
+            booVotante = !booVotante;
         } else if (index == 13) {
-            if (booEmail) {
-                booEmail = false;
-            } else {
-                booEmail = true;
-            }
+            booEmail = !booEmail;
         } else if (index == 14) {
-            if (booTelefone) {
-                booTelefone = false;
-            } else {
-                booTelefone = true;
-            }
+            booTelefone = !booTelefone;
         } else if (index == 15) {
-            if (booEstadoCivil) {
-                booEstadoCivil = false;
-            } else {
-                booEstadoCivil = true;
-            }
+            booEstadoCivil = !booEstadoCivil;
         } else if (index == 16) {
-            if (booEmpresa) {
-                booEmpresa = false;
+            booEmpresa = !booEmpresa;
+        } else if (index == 17) {
+            situacao = !situacao;
+            if (situacao) {
+                tipoCarencia = "eleicao";
+                carenciaDias = 0;
             } else {
-                booEmpresa = true;
+                tipoCarencia = "eleicao";
+                carenciaDias = null;
             }
         }
     }
@@ -311,6 +256,7 @@ public class RelatorioSociosBean implements Serializable {
             listaMenuRSocial.add(new DataObject("Telefone ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Estado Civil ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Empresas ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Situação ", "Editar", null, null, null, null));
         }
         return listaMenuRSocial;
     }
@@ -334,6 +280,12 @@ public class RelatorioSociosBean implements Serializable {
     }
 
     public String visualizarRelatorio() {
+        if (situacao) {
+            if (carenciaDias < 0) {
+                GenericaMensagem.warn("Sistema", "Informar carência de débito em dias:!");
+                return null;
+            }
+        }
         // ESTA TRAZENDO TODOS REGISTRO DO BANCO -- rogério pediu
 //        if (!validaFiltro()){
 //            GenericaMensagem.warn("Atenção", "Selecione algum filtro para esta pesquisa!");
@@ -439,7 +391,7 @@ public class RelatorioSociosBean implements Serializable {
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
-                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, dataAposetandoria, dataAposetandoriaFim, tipoOrdem);
+                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias);
 
         Collection lista = new ArrayList();
         boolean agrupa = false;
@@ -1360,5 +1312,49 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setIdRelatorioOrdem(Integer idRelatorioOrdem) {
         this.idRelatorioOrdem = idRelatorioOrdem;
+    }
+
+    public Boolean getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(Boolean situacao) {
+        this.situacao = situacao;
+    }
+
+    public Integer getCarenciaDias() {
+        return carenciaDias;
+    }
+
+    public void setCarenciaDias(Integer carenciaDias) {
+        try {
+            this.carenciaDias = carenciaDias;
+        } catch (Exception e) {
+            this.carenciaDias = 0;
+        }
+    }
+
+    public String getCarenciaDiasString() {
+        try {
+            return Integer.toString(carenciaDias);
+        } catch (Exception e) {
+            return "0";
+        }
+    }
+
+    public void setCarenciaDiasString(String carenciaDiasString) {
+        try {
+            this.carenciaDias = Integer.parseInt(carenciaDiasString);
+        } catch (Exception e) {
+            this.carenciaDias = 0;
+        }
+    }
+
+    public String getTipoCarencia() {
+        return tipoCarencia;
+    }
+
+    public void setTipoCarencia(String tipoCarencia) {
+        this.tipoCarencia = tipoCarencia;
     }
 }

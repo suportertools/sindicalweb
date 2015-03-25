@@ -63,7 +63,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     private final List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
     private String tipoTelefone = "telefone";
     private ConfiguracaoHomologacao configuracaoHomologacao = new ConfiguracaoHomologacao();
-    
+
     private String tipoAviso = null;
 
     public WebAgendamentoContribuinteBean() {
@@ -82,60 +82,59 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             registro = (Registro) dao.find(new Registro(), 1);
         }
     }
-    
-    public boolean validaAdmissao(){
-        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getId() == -1){
+
+    public boolean validaAdmissao() {
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getAdmissao().isEmpty() && pessoaEmpresa.getId() == -1) {
             HomologacaoDB db = new HomologacaoDBToplink();
-            
+
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaAdmissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getAdmissao());
-            
-            if(pe != null){
+
+            if (pe != null) {
                 int[] ids = new int[2];
-                ids[0] = 2; 
+                ids[0] = 2;
                 ids[1] = 4;
                 Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
-                
-                if (a != null){
-                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+
+                if (a != null) {
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi " + a.getStatus().getDescricao() + "!");
                     return false;
                 }
-                
+
                 pessoaEmpresa = pe;
             }
         }
         return true;
     }
-    
-    public void actionValidaAdmissao(){
+
+    public void actionValidaAdmissao() {
         validaAdmissao();
     }
-    
-    public boolean validaDemissao(){
-        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getId() == -1){
+
+    public boolean validaDemissao() {
+        if (fisica.getId() != -1 && juridica.getId() != -1 && !pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getId() == -1) {
             HomologacaoDB db = new HomologacaoDBToplink();
-            
+
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaDemissao(fisica.getId(), juridica.getId(), pessoaEmpresa.getDemissao());
-            
-            if(pe != null){
+
+            if (pe != null) {
                 int[] ids = new int[2];
-                ids[0] = 2; 
+                ids[0] = 2;
                 ids[1] = 4;
                 Agendamento a = db.pesquisaAgendamentoPorPessoaEmpresa(pe.getId(), ids);
-                
-                if (a != null){
-                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi "+a.getStatus().getDescricao()+"!");
+
+                if (a != null) {
+                    GenericaMensagem.fatal("Atenção", "Esse agendamento já foi " + a.getStatus().getDescricao() + "!");
                     return false;
                 }
                 pessoaEmpresa = pe;
             }
         }
         return true;
-    }    
-    
-    public void actionValidaDemissao(){
+    }
+
+    public void actionValidaDemissao() {
         validaDemissao();
     }
-        
 
     public void alterarTipoMascara() {
         if (tipoTelefone.equals("telefone")) {
@@ -165,7 +164,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             List<Demissao> select = dao.list(new Demissao());
             listaMotivoDemissao.add(new SelectItem(0, "", "0"));
             for (int i = 0; i < select.size(); i++) {
-                listaMotivoDemissao.add(new SelectItem(i+1, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+                listaMotivoDemissao.add(new SelectItem(i + 1, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
             }
         }
         return listaMotivoDemissao;
@@ -259,26 +258,26 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public void salvar() {
-        if (!validaAdmissao()){
+        if (!validaAdmissao()) {
             return;
         }
-        
-        if (!validaDemissao()){
+
+        if (!validaDemissao()) {
             return;
         }
         Dao dao = new Dao();
-        
-        if (listaMotivoDemissao.get(idMotivoDemissao).getDescription().equals("0")){
+
+        if (listaMotivoDemissao.get(idMotivoDemissao).getDescription().equals("0")) {
             GenericaMensagem.warn("Validação", "Selecione um Motivo de Demissão!");
             return;
         }
-        
-        if (tipoAviso == null || tipoAviso.isEmpty()){
+
+        if (tipoAviso == null || tipoAviso.isEmpty()) {
             GenericaMensagem.warn("Validação", "Selecione um Tipo de Aviso!");
             return;
         }
         pessoaEmpresa.setAvisoTrabalhado(tipoAviso.equals("true"));
-        
+
         configuracaoHomologacao = (ConfiguracaoHomologacao) dao.find(new ConfiguracaoHomologacao(), 1);
         if (configuracaoHomologacao.isWebValidaDataNascimento()) {
             if (fisica.getNascimento().isEmpty()) {
@@ -322,13 +321,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         }
-        
+
         if (configuracaoHomologacao.isWebValidaAdmissao()) {
             if (pessoaEmpresa.getAdmissao().isEmpty()) {
                 GenericaMensagem.warn("Validação", "Informar data de admissão!");
                 return;
             }
-        }        
+        }
         if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
@@ -343,7 +342,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
             return;
         }
-        
+
         if (!getStrContribuinte().isEmpty()) {
             GenericaMensagem.error("Atenção", "Não é permitido agendar para uma empresa não contribuinte!");
             return;
@@ -441,7 +440,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
             pessoaEmpresa.setFuncao(profissao);
             pessoaEmpresa.setPrincipal(false);
-            
+
             if (!dao.save(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao adicionar Pessoa Empresa!");
                 dao.rollback();
@@ -453,7 +452,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
             pessoaEmpresa.setFuncao(profissao);
             pessoaEmpresa.setPrincipal(false);
-            
+
             if (!dao.update(pessoaEmpresa)) {
                 GenericaMensagem.error("Atenção", "Erro ao atualizar Pessoa Empresa!");
                 dao.rollback();
@@ -510,7 +509,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         pessoaEmpresa = new PessoaEmpresa();
         idMotivoDemissao = 0;
         tipoAviso = null;
-        
+
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             // STATUS DISPONÍVEL
             case 1: {
@@ -604,11 +603,22 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         FeriadosDB db = new FeriadosDBToplink();
         List<Feriados> listFeriados = db.pesquisarPorDataFilialEData(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
         if (!listFeriados.isEmpty()) {
+            GenericaMensagem.info("Feriado", listFeriados.get(0).getNome());
             return true;
-        }else{
+        } else {
             listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
-            if (!listFeriados.isEmpty()){
-                return true;
+            PessoaEndereco pe = ((PessoaEndereco) ((List) new PessoaEnderecoDBToplink().pesquisaEndPorPessoa(getSindicatoFilial().getFilial().getFilial().getPessoa().getId())).get(0));
+            if (!listFeriados.isEmpty()) {
+                for (int i = 0; i < listFeriados.size(); i++) {
+                    if (listFeriados.get(i).getCidade() == null) {
+                        GenericaMensagem.info("Feriado", listFeriados.get(0).getNome());
+                        return true;
+                    }
+                    if (listFeriados.get(i).getCidade().getId() == pe.getEndereco().getCidade().getId()) {
+                        GenericaMensagem.info("Feriado", listFeriados.get(0).getNome());
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -702,8 +712,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 enderecoFisica = new PessoaEndereco();
             }
         }
-        
-            // VERIFICAÇÃO DE PESSOA EMPRESA SEM DEMISSAO
+
+        // VERIFICAÇÃO DE PESSOA EMPRESA SEM DEMISSAO
 //            if (fisica.getId() != -1){
 //                PessoaEmpresaDB dbx = new PessoaEmpresaDBToplink();
 //                List<PessoaEmpresa> list_pe = dbx.listaPessoaEmpresaPorFisicaEmpresaDemissao(fisica.getId(), juridica.getId());
