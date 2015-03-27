@@ -12,60 +12,6 @@ import javax.persistence.Query;
 public class ServicosDBToplink extends DB implements ServicosDB {
 
     @Override
-    public boolean insert(Servicos servicos) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(servicos);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Servicos servicos) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(servicos);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Servicos servicos) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(servicos);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public synchronized Servicos pesquisaCodigo(int id) {
-        Servicos result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Servicos.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Servicos) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
     public Correcao pesquisaCorrecao(int idServico) {
         Correcao result = null;
         try {
@@ -97,26 +43,6 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         } catch (Exception e) {
         }
         return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos AS S ORDER BY S.descricao ASC");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
-    public List<Servicos> pesquisaTodosServicos() {
-        try {
-            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos S ORDER BY S.descricao ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     @Override
@@ -160,30 +86,31 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     }
 
     @Override
-    public List pesquisaServicos(String desc, String por, String como) {
-        List lista = new Vector<Object>();
-        String textQuery = null;
-
-        if (como.equals("P")) {
-            desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select ser from Servicos ser "
-                    + "  where UPPER(ser." + por + ") like :desc";
-        } else if (como.equals("I")) {
-            desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select ser from Servicos ser "
-                    + "  where UPPER(ser." + por + ") like :desc";
+    public List pesquisaServicos(String desc, String por, String como, String situacao) {
+        String textQuery = "";
+        switch (como) {
+            case "P":
+                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+                textQuery = "SELECT S FROM Servicos AS S "
+                        + "  WHERE UPPER(S." + por + ") LIKE :desc";
+                break;
+            case "I":
+                desc = desc.toLowerCase().toUpperCase() + "%";
+                textQuery = "SELECT S FROM Servicos AS S "
+                        + "  WHERE UPPER(S." + por + ") LIKE :desc";
+                break;
         }
+        textQuery += " AND S.situacao LIKE '" + situacao + "'";
 
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
                 qry.setParameter("desc", desc);
             }
-            lista = qry.getResultList();
+            return qry.getResultList();
         } catch (Exception e) {
-            lista = new Vector<Object>();
+            return new ArrayList();
         }
-        return lista;
     }
 
     @Override
@@ -198,7 +125,7 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         }
         return result;
     }
-    
+
     @Override
     public List<Servicos> listaServicoSituacao(int id_rotina, String situacao) {
         try {
@@ -206,12 +133,27 @@ public class ServicosDBToplink extends DB implements ServicosDB {
                     "  SELECT S.servicos "
                     + "  FROM ServicoRotina AS S"
                     + " WHERE S.rotina.id = :rotina"
-                    + "   AND S.servicos.situacao = '"+situacao+"'");
+                    + "   AND S.servicos.situacao = '" + situacao + "'");
             qry.setParameter("rotina", id_rotina);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
-            
+
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.subGrupoFinanceiro.id = :subgrupo AND S.situacao = 'A' AND S.id NOT IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = 4 GROUP BY SR.servicos.id) ");
+            query.setParameter("subgrupo", subgrupo);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
         }
         return new ArrayList();
     }
