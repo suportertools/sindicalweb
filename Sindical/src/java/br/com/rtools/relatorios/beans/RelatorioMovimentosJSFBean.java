@@ -183,8 +183,6 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
             String quitacao, importacao, usuario;
             float valor = 0, repasse = 0, valorLiquido = 0;
 
-
-
             try {
                 for (int i = 0; i < result.size(); i++) {
                     valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL     
@@ -274,18 +272,15 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
                             totaliza));
                 }
 
-
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaMovs);
 
                 //String ini = DataHoje.hora();
-
                 JasperPrint print = JasperFillManager.fillReport(
                         jasper,
                         null,
                         dtSource);
 
                 //String fim = DataHoje.hora();
-
                 arquivo = JasperExportManager.exportReportToPdf(print);
 
                 String nomeDownload = "relatorio_movimentos_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
@@ -499,8 +494,6 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
                             }
                         }
 
-
-
                         quitacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(39));
                         importacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(40));
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
@@ -508,7 +501,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
 
                     repasse = Moeda.multiplicarValores(valor, Moeda.divisaoValores(
                             Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
-                            ));
+                    ));
                     valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.valueOf(valor), Float.valueOf(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43))))), repasse);
 
                     listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
@@ -602,7 +595,6 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
                     List<Pessoa> p = new ArrayList();
                     p.add(juridica.getPessoa());
 
-
                     String[] ret = new String[2];
                     if (!reg.isEnviarEmailAnexo()) {
                         ret = EnviarEmail.EnviarEmailPersonalizado(reg,
@@ -678,8 +670,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
         List<SelectItem> servicos = new Vector<SelectItem>();
         if (chkContribuicao) {
             int i = 0;
-            ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos();
+            List select = new Dao().list(new Servicos(), true);
             while (i < select.size()) {
                 servicos.add(new SelectItem(new Integer(i),
                         (String) ((Servicos) select.get(i)).getDescricao(),
@@ -723,9 +714,9 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
     }
 
     public void carregarFolha(DataObject data) {
-        
+
     }
-    
+
     @Override
     public void carregarFolha() {
         throw new UnsupportedOperationException("Not supported yet.");
