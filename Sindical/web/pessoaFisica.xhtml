@@ -652,10 +652,10 @@
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
                                     <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <h:column>
-                                        <h:panelGrid id="i_app_message" rendered="#{biometriaBean.biometria and fisicaBean.fisica.id != -1}" columns="3">
-                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" />
-                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-off" rendered="#{!biometriaBean.status}" disabled="#{!biometriaBean.status}"  title="Offline"/>
-                                            <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dl_delete_biometria').show()"/>
+                                        <h:panelGrid id="i_app_message" rendered="#{biometriaBean.openBiometria and fisicaBean.fisica.id != -1}" columns="3">
+                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" disabled="#{biometriaBean.biometria != null and !biometriaBean.biometria.ativo}"/>
+                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-off" rendered="#{!biometriaBean.status}" disabled="#{!biometriaBean.status}"  title="Offline" />
+                                            <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dl_delete_biometria').show()" style="color: red"/>
                                         </h:panelGrid>                                        
                                     </h:column>
                                 </h:panelGrid>              
@@ -707,7 +707,7 @@
                                 </p:dialog>
 
                                 <!-- EXCLUIR BIOMETRIA -->
-                                <p:dialog modal="true" width="650" height="400" widgetVar="dl_delete_biometria" closable="true" header="Deseja excluir esta biometria?">
+                                <p:dialog modal="true" width="400" widgetVar="dl_delete_biometria" closable="true" header="Deseja excluir esta biometria?">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sim" title="Salvar" action="#{biometriaBean.delete(fisicaBean.fisica.pessoa)}" update="i_painel_mensagem, i_panel_pessoa_fisica" oncomplete="PF('dl_delete_biometria').hide(); PF('dlg_painel_mensagem').show();" />
                                         <p:commandButton value="Não" title="Cancelar" oncomplete="PF('dl_delete_biometria').hide();"/>
