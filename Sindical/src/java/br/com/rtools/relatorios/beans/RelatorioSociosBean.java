@@ -24,35 +24,27 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.design.JRDesignGroup;
 
 @ManagedBean
 @SessionScoped
@@ -116,6 +108,7 @@ public class RelatorioSociosBean implements Serializable {
     private List<DataObject> listaMenuRSocial = new ArrayList();
     private List<DataObject> listaGrupo = new ArrayList();
     private List<DataObject> listaCategoria = new ArrayList();
+    private List<SelectItem> listaRelatorio = new ArrayList();
     private List<SelectItem> listaRelatorioOrdem = new ArrayList();
     private boolean booMatricula = false;
     private boolean booIdade = false;
@@ -137,6 +130,8 @@ public class RelatorioSociosBean implements Serializable {
     private Boolean situacao = false;
     private Integer carenciaDias = null;
     private String tipoCarencia = "eleicao";
+    private Boolean enableFolha = false;
+    private Boolean porFolha = false;
 
     public void limparFiltro() {
 //        listaMenuRSocial.clear();
@@ -265,18 +260,20 @@ public class RelatorioSociosBean implements Serializable {
         this.listaMenuRSocial = listaMenuRSocial;
     }
 
-    public List<SelectItem> getListaTipoRelatorios() {
-        List<SelectItem> relatorios = new Vector<SelectItem>();
-        int i = 0;
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-        List select = db.pesquisaTipoRelatorio(171);
-        while (i < select.size()) {
-            relatorios.add(new SelectItem(new Integer(i),
-                    (String) ((Relatorios) select.get(i)).getNome(),
-                    Integer.toString(((Relatorios) select.get(i)).getId())));
-            i++;
+    public List<SelectItem> getListaRelatorios() {
+        if (listaRelatorio.isEmpty()) {
+            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            List<Relatorios> list = db.pesquisaTipoRelatorio(171);
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    idRelatorio = i;
+                }
+                listaRelatorio.add(new SelectItem(i,
+                        list.get(i).getNome(),
+                        Integer.toString(list.get(i).getId())));
+            }
         }
-        return relatorios;
+        return listaRelatorio;
     }
 
     public String visualizarRelatorio() {
@@ -294,7 +291,7 @@ public class RelatorioSociosBean implements Serializable {
 
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioSociosDB dbS = new RelatorioSociosDBToplink();
-        Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
+        Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaRelatorios().get(idRelatorio).getDescription()));
         if (!listaRelatorioOrdem.isEmpty()) {
             Dao dao = new Dao();
             relatorios.setQryOrdem(((RelatorioOrdem) dao.find(new RelatorioOrdem(), Integer.parseInt(getListaRelatorioOrdem().get(idRelatorioOrdem).getDescription()))).getQuery());
@@ -485,27 +482,17 @@ public class RelatorioSociosBean implements Serializable {
             GenericaMensagem.warn("Sistema", "Nenhum registro encontrado!");
             return null;
         }
-        try {
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo = new byte[0];
-            arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = relatorios.getNome() + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-            download.remover();
-        } catch (JRException e) {
-            System.err.println(e);
+        Jasper.PART_NAME = AnaliseString.removerAcentos(relatorios.getNome().toLowerCase());
+        Jasper.PATH = "downloads";
+        if (relatorios.getPorFolha()) {
+            Jasper.GROUP_NAME = relatorios.getNomeGrupo();
+            if (porFolha) {
+                Jasper.IS_BY_LEAF = true;
+            } else {
+                Jasper.IS_BY_LEAF = false;
+            }
         }
+        Jasper.printReports(relatorios.getJasper(), "relatorios", (Collection) lista);
         return null;
     }
 
@@ -539,7 +526,7 @@ public class RelatorioSociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaEmpresas() {
-        List<SelectItem> empresas = new Vector<SelectItem>();
+        List<SelectItem> empresas = new ArrayList<SelectItem>();
         if (tipoEmpresas.equals("especificas")) {
             int i = 0;
             RelatorioSociosDB db = new RelatorioSociosDBToplink();
@@ -1206,7 +1193,7 @@ public class RelatorioSociosBean implements Serializable {
         listaRelatorioOrdem.clear();
         if (idRelatorio != null) {
             RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
-            List<RelatorioOrdem> list = relatorioOrdemDao.findAllByRelatorio(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
+            List<RelatorioOrdem> list = relatorioOrdemDao.findAllByRelatorio(Integer.parseInt(getListaRelatorios().get(idRelatorio).getDescription()));
             for (int i = 0; i < list.size(); i++) {
                 listaRelatorioOrdem.add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
             }
@@ -1357,4 +1344,27 @@ public class RelatorioSociosBean implements Serializable {
     public void setTipoCarencia(String tipoCarencia) {
         this.tipoCarencia = tipoCarencia;
     }
+
+    public Boolean getEnableFolha() {
+        if (idRelatorio != null) {
+            Relatorios r = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(getListaRelatorios().get(idRelatorio).getDescription()));
+            if (r != null) {
+                enableFolha = r.getPorFolha();
+            }
+        }
+        return enableFolha;
+    }
+
+    public void setEnableFolha(Boolean enableFolha) {
+        this.enableFolha = enableFolha;
+    }
+
+    public Boolean getPorFolha() {
+        return porFolha;
+    }
+
+    public void setPorFolha(Boolean porFolha) {
+        this.porFolha = porFolha;
+    }
+
 }
