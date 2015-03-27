@@ -12,6 +12,7 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Types;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -437,7 +438,9 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
                     and += "    AND p.ds_documento LIKE '%" + descricao + "'";
                     break;
                 case "protocolo":
-                    and += "    AND rm.id = " + descricao;
+                    if (Types.isInteger(descricao)) {
+                        and += "    AND rm.id = " + descricao;
+                    }
                     break;
                 case "status":
                     inner += "  INNER JOIN arr_repis_status rs ON rs.id = rm.id_repis_status ";

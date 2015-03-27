@@ -2,7 +2,6 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.ConvenioServico;
 import br.com.rtools.associativo.SubGrupoConvenio;
-import br.com.rtools.financeiro.Servicos;
 import java.util.List;
 
 public interface SubGrupoConvenioDB {
@@ -11,7 +10,11 @@ public interface SubGrupoConvenioDB {
 
     public boolean existeSubGrupoConvenio(SubGrupoConvenio subGrupoConvenio);
 
-    public List<Servicos> listaServicosDisponiveis(int idSubGrupoConvenio);
+    public List listaServicosDisponiveis(int idSubGrupoConvenio);
+
+    public List listaServicosDisponiveisPorGrupoFinanceiro(Integer idSubGrupoConvenio, Integer idGrupoFinanceiro);
+
+    public List listaServicosDisponiveisPorSubGrupoFinanceiro(Integer idSubGrupoConvenio, Integer idSubGrupoFinanceiro);
 
     public List<ConvenioServico> listaServicosAdicionados(int idSubGrupoConvenio);
 //    public List pesquisaSubGrupoConvênioComServico(int idSubGrupo);

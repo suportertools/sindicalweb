@@ -37,6 +37,7 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -47,7 +48,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class AcordoBean {
+public class AcordoBean implements Serializable {
 
     private List<DataObject> listaVizualizado = new ArrayList();
     private List<DataObject> listaOperado = new ArrayList();
@@ -76,13 +77,13 @@ public class AcordoBean {
     private Pessoa pessoa = new Pessoa();
     private Pessoa pessoaEnvio = new Pessoa();
     private String emailPara = "contabilidade";
-    
+
     private String emailContato = "";
-    
-    public String converteValorString(String valor){
+
+    public String converteValorString(String valor) {
         return Moeda.converteR$(valor);
     }
-    
+
     public void verificaEmail() {
         Juridica jur = new Juridica();
         JuridicaDB db = new JuridicaDBToplink();
@@ -399,11 +400,12 @@ public class AcordoBean {
                     ((MovimentosReceberSocialBean) GenericaSessao.getObject("movimentosReceberSocialBean")).getListaMovimento().clear();
                     break;
             }
-            if (!mensagem.isEmpty())
+            if (!mensagem.isEmpty()) {
                 GenericaMensagem.error("Atenção", mensagem);
+            }
         } catch (Exception e) {
             GenericaMensagem.error("Atenção", "Acordo não foi gerado");
-            
+
         }
     }
 
@@ -700,7 +702,7 @@ public class AcordoBean {
 
                             if (frequencia == 30) {
                                 ultimoVencimento = data.incrementarMeses(1, ultimoVencimento);
-                                if (ultimoVencimento.substring(3,5).equals("02")){
+                                if (ultimoVencimento.substring(3, 5).equals("02")) {
                                     ultimoVencimento = acordo.getData().substring(0, 2) + ultimoVencimento.substring(2);
                                 }
                             } else if (frequencia == 7) {
@@ -739,9 +741,9 @@ public class AcordoBean {
                         if (parcela > 1) {
                             if (frequenciaSind == 30) {
                                 ultimoVencimentoSind = data.incrementarMeses(1, ultimoVencimentoSind);
-                                if (ultimoVencimentoSind.substring(3,5).equals("02")){
+                                if (ultimoVencimentoSind.substring(3, 5).equals("02")) {
                                     ultimoVencimentoSind = acordo.getData().substring(0, 2) + ultimoVencimentoSind.substring(2);
-                                }                                
+                                }
                             } else if (frequenciaSind == 7) {
                                 ultimoVencimentoSind = data.incrementarSemanas(1, ultimoVencimentoSind);
                             }
