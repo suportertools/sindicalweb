@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -40,6 +41,10 @@ public class Jasper {
 
     public static void printReports(String jasperName, String fileName, Collection c) {
         printReports(jasperName, fileName, c, null);
+    }
+
+    public static void printReports(String jasperName, String fileName, List c, Map parameters) {
+        printReports(jasperName, fileName, (Collection) c, parameters);
     }
 
     public static void printReports(String jasperName, String fileName, Collection c, Map parameters) {
@@ -95,14 +100,22 @@ public class Jasper {
                 jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(jasperName)));
             }
             try {
-                JRBeanCollectionDataSource dtSource;
-                dtSource = new JRBeanCollectionDataSource(c);
-                JasperPrint print = JasperFillManager.fillReport(jasper, parameters, dtSource);
-                if (IS_BY_LEAF) {
-                    if (!GROUP_NAME.isEmpty()) {
-
+                if (!GROUP_NAME.isEmpty()) {
+                    JRGroup[] jRGroups = jasper.getGroups();
+                    for (int i = 0; i < jasper.getGroups().length; i++) {
+                        if (jRGroups[i].getName().equals(GROUP_NAME)) {
+                            if (IS_BY_LEAF) {
+                                ((JRGroup) jasper.getGroups()[i]).setStartNewPage(true);
+                            } else {
+                                ((JRGroup) jasper.getGroups()[i]).setStartNewPage(false);
+                            }
+                            break;
+                        }
                     }
                 }
+                jasper.setProperty(fileName, PATH);
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(c);
+                JasperPrint print = JasperFillManager.fillReport(jasper, parameters, dtSource);
                 if (bytesComparer == BYTES) {
                     b = JasperExportManager.exportReportToPdf(print);
                 } else {
