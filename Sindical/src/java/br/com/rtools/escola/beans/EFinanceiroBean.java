@@ -6,6 +6,7 @@ import br.com.rtools.escola.db.EFinanceiroDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
@@ -29,13 +30,12 @@ public class EFinanceiroBean implements java.io.Serializable {
 
     public String adicionar() {
         EFinanceiroDB db = new EFinanceiroDBToplink();
-        ServicosDB dbs = new ServicosDBToplink();
-        if (getListaServicos().isEmpty()){
+        if (getListaServicos().isEmpty()) {
             GenericaMensagem.warn("Atenção", "Lista de Multa vazia!");
             return null;
         }
-        
-        Servicos serv = dbs.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
+
+        Servicos serv = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
 
         for (EFinanceiro listaMulta : listaMultas) {
             if (listaMulta.getMulta().getId() == serv.getId()) {
@@ -52,7 +52,7 @@ public class EFinanceiroBean implements java.io.Serializable {
         } else {
             GenericaMensagem.error("Erro", "Não foi possível salvar Multa!");
         }
-        
+
         listaMultas.clear();
         eFinanceiro = new EFinanceiro();
         return "eFinanceiro";
