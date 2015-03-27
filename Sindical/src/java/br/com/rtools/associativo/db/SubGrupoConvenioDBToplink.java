@@ -19,8 +19,9 @@ public class SubGrupoConvenioDBToplink extends DB implements SubGrupoConvenioDB 
             if (!list.isEmpty()) {
                 return list;
             }
-        } catch (Exception e) {}
-        return new ArrayList() ;
+        } catch (Exception e) {
+        }
+        return new ArrayList();
     }
 
     @Override
@@ -36,15 +37,66 @@ public class SubGrupoConvenioDBToplink extends DB implements SubGrupoConvenioDB 
     }
 
     @Override
-    public List<Servicos> listaServicosDisponiveis(int idSubGrupoConvenio) {
+    public List listaServicosDisponiveis(int idSubGrupoConvenio) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.id NOT IN( SELECT CS.servicos.id FROM ConvenioServico AS CS WHERE CS.subGrupoConvenio.id = :pid ) ORDER BY S.descricao ASC ");
+            Query qry = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.situacao = 'A' AND S.id NOT IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = 4 GROUP BY SR.servicos.id) AND S.id NOT IN( SELECT CS.servicos.id FROM ConvenioServico AS CS WHERE CS.subGrupoConvenio.id = :pid ) ORDER BY S.descricao ASC ");
             qry.setParameter("pid", idSubGrupoConvenio);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List listaServicosDisponiveisPorGrupoFinanceiro(Integer idSubGrupoConvenio, Integer idGrupoFinanceiro) {
+        String queryString = ""
+                + "     SELECT S.* FROM fin_servicos AS S                                                                                                               "
+                + "  LEFT JOIN fin_subgrupo AS SGF ON SGF.id = S.id_subgrupo                                                                                          "
+                + "  WHERE S.id IN (                                                                                                                                    "
+                + "            SELECT SV.id FROM fin_servicos AS SV                                                                                                     "
+                + "         LEFT JOIN fin_subgrupo AS SG ON SG.id = SV.id_subgrupo                                                                                      "
+                + "             WHERE SV.ds_situacao = 'A'                                                                                                              "
+                + "               AND SV.id NOT IN (SELECT SR.id_servicos FROM fin_servico_rotina AS SR WHERE SR.id_rotina = 4 GROUP BY SR.id_servicos)                 "
+                + "               AND SV.id NOT IN (SELECT CS.id_servico FROM soc_convenio_servico AS CS WHERE CS.id_convenio_sub_grupo = " + idSubGrupoConvenio + " )  "
+                + "               AND SG.id_grupo = " + idGrupoFinanceiro
+                + "          GROUP BY SV.id, SV.id_subgrupo)                                                                                                            "
+                + "   ORDER BY SGF.ds_descricao ASC";
+        try {
+            Query query = getEntityManager().createNativeQuery(queryString, Servicos.class);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List listaServicosDisponiveisPorSubGrupoFinanceiro(Integer idSubGrupoConvenio, Integer idSubGrupoFinanceiro) {
+        String queryString = " "
+                + "     SELECT S.*                                                                                                                              "
+                + "       FROM fin_servicos AS S                                                                                                                "
+                + "      WHERE S.id_subgrupo = ?                                                                                                                "
+                + "        AND S.ds_situacao = 'A'                                                                                                              "
+                + "        AND S.id NOT IN (SELECT SR.id_servicos FROM fin_servico_rotina AS SR WHERE SR.id_rotina = 4 GROUP BY SR.id_servicos)                 "
+                + "        AND S.id NOT IN (SELECT CS.id_servico FROM soc_convenio_servico AS CS WHERE CS.id_convenio_sub_grupo = " + idSubGrupoConvenio + " )  "
+                + "   ORDER BY S.ds_descricao ASC";
+        try {
+            Query query = getEntityManager().createNativeQuery(queryString, Servicos.class);
+            query.setParameter("1", idSubGrupoFinanceiro);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
         return new ArrayList();
     }
 
@@ -57,7 +109,8 @@ public class SubGrupoConvenioDBToplink extends DB implements SubGrupoConvenioDB 
             if (!list.isEmpty()) {
                 return list;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return new ArrayList();
     }
 
