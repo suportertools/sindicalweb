@@ -13,7 +13,7 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu-label .ui-inputfield{
-                
+
             }
             * {font-family: 'lucida grande',verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
         </style>        
@@ -31,33 +31,42 @@
                         <h:form id="formRelatorio">
                             <c:set scope="request" var="object" value="${relatorioBean.relatorio}"/>
                             <h:outputText value="Relatórios" styleClass="fonteHeader" />
-
-                            <p:panel id="i_panel" styleClass="fundoCinza" style="width: 100%; clear: both; height: 45px">
-                                <p:inputText id="i_nome" size="50" maxlength="150" value="#{relatorioBean.relatorio.nome}" style="float: left"/>
-                                <p:watermark for="i_nome" value="Nome do Relatório ex. Relatório de Contribuintes" />
-
-                                <p:inputText id="i_caminho_jasper" size="75" maxlength="150" value="#{relatorioBean.relatorio.jasper}" style="float: left"/>
-                                <p:watermark for="i_caminho_jasper" value="Caminho do Jasper ex. /Relatorios/CONTRIBUINTES.jasper" />
-
-                                <p:selectOneMenu value="#{relatorioBean.index}" style="float: left; padding-right: 20px">
-                                    <f:selectItems value="#{relatorioBean.listaRotina}"/>
-                                </p:selectOneMenu>
+                            <div class="clear"></div>
+                            <p:panel id="i_panel" styleClass="fundoCinza" style="width: 100%;">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Nome:" />
+                                    <h:column>
+                                        <p:inputText id="i_nome" size="50" maxlength="150" value="#{relatorioBean.relatorio.nome}" />
+                                        <p:watermark for="i_nome" value="Nome do Relatório ex. Relatório de Contribuintes" />
+                                    </h:column>
+                                    <h:outputLabel value="Arquivo:" />
+                                    <h:column>
+                                        <p:inputText id="i_caminho_jasper" size="75" maxlength="150" value="#{relatorioBean.relatorio.jasper}" />
+                                        <p:watermark for="i_caminho_jasper" value="Caminho do Jasper ex. /Relatorios/CONTRIBUINTES.jasper" />
+                                    </h:column>
+                                    <h:outputLabel value="Rotina:" />
+                                    <h:column>
+                                        <p:selectOneMenu value="#{relatorioBean.index}">
+                                            <f:selectItems value="#{relatorioBean.listaRotina}"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
+                                    <h:column />
+                                    <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.porFolha}" itemLabel="Imprime relatório por folha" />
+                                </h:panelGrid>
                             </p:panel>
 
                             <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />  
 
-                            <h:panelGrid style="width: 100%;">
-                                <h:outputLabel value="Complementar Query" style="font-size: 15pt!important;"/>
+                            <p:panel styleClass="margin-top-max" header="Complementar Query">
+                                <h:panelGrid style="width: 100%;" >
+                                    <h:outputLabel value=" Where: " styleClass="bold"/>
+                                    <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qry}" style="width: 100%" />
+                                    <h:column><br /></h:column>
+                                    <h:outputLabel value="Order By:" styleClass="bold"/>
+                                    <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qryOrdem}" style="width: 100%"/>
+                                </h:panelGrid>
+                            </p:panel>
 
-                                <h:outputLabel value="Query" styleClass="fontePadrao"/><br />
-                                <h:outputLabel value=" where: " styleClass="fontePadraoNegrito" style="font-size: 8pt"/>
-                                <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qry}" style="width: 100%"/>
-
-                                <h:outputLabel value="Ordem Query" styleClass="fontePadrao"/><br />
-                                <h:outputLabel value="order by: " styleClass="fontePadraoNegrito" style="font-size: 8pt"/>
-                                <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qryOrdem}" style="width: 100%"/>
-                            </h:panelGrid>
-                            
                             <p:panel rendered="#{relatorioBean.relatorio.id != -1}" styleClass="margin-top-max" header="Ordenações">
                                 <h:panelGrid columns="5">
                                     <p:outputLabel value="Descrição:" />

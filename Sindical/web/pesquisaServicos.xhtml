@@ -26,20 +26,27 @@
                     <h:outputText value="Pesquisa de Serviços" styleClass="fonteHeader"/>
                     <div class="clear"></div>
                     <p:panel styleClass="fundoCinza">
-                        <p:inputText value="#{servicosBean.descPesquisa}" title="Pesquisar Serviços" style="width: 300px" placeholder="DIGITE O NOME DO SERVIÇO"/>
-                        <p:commandButton value="Inicial" action="#{servicosBean.acaoInicial}" title="Retorna somente valores referente ao primeiro caractere. Ex: a" update="tbl"/>
-                        <p:commandButton value="Parcial" action="#{servicosBean.acaoParcial}" title="Retorna somente valores complentos. Ex: André" update="tbl"/>
+                        <h:panelGrid columns="6">
+                            <p:inputText value="#{servicosBean.descPesquisa}" title="Pesquisar Serviços" style="width: 300px" placeholder="DIGITE O NOME DO SERVIÇO"/>
+                            <p:outputLabel value="Situação: " styleClass="margin-left-max"/>
+                            <p:selectOneMenu value="#{servicosBean.situacao}" style="width: 50px">
+                                <f:selectItem itemValue="A" itemLabel="A" />
+                                <f:selectItem itemValue="I" itemLabel="I" />
+                            </p:selectOneMenu>
+                            <p:commandButton value="Inicial" action="#{servicosBean.acaoInicial}" title="Retorna somente valores referente ao primeiro caractere. Ex: a" update="i_tbl" styleClass="margin-left-max"/>
+                            <p:commandButton value="Parcial" action="#{servicosBean.acaoParcial}" title="Retorna somente valores complentos. Ex: André" update="i_tbl"/>
+                        </h:panelGrid>
                     </p:panel>
-                    
-                    <p:dataTable id="tbl" value="#{servicosBean.listServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
-                        <p:column headerText="Serviço" width="400">
-                            <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
-                        </p:column>
-                        <p:column headerText="Plano 5">
-                            <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
-                        </p:column>
-                    </p:dataTable>
-                    
+                    <h:panelGrid id="i_tbl">
+                        <p:dataTable value="#{servicosBean.listServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
+                            <p:column headerText="Serviço" width="400">
+                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
+                            </p:column>
+                            <p:column headerText="Plano 5">
+                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
                 </h:form>
             </p:panel>
         </f:view>

@@ -45,13 +45,14 @@
                                     <p:outputLabel value="Tipo de Relatório: " />
                                     <p:selectOneMenu value="#{relatorioSociosBean.idRelatorio}">
                                         <p:ajax event="change" update="@this i_p_r i_ordernacao"/>
-                                        <f:selectItems value="#{relatorioSociosBean.listaTipoRelatorios}"/>
+                                        <f:selectItems value="#{relatorioSociosBean.listaRelatorios}"/>
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Ordem: " styleClass="margin-left-max" rendered="#{not empty relatorioSociosBean.listaRelatorioOrdem}"/>
                                     <p:selectOneMenu value="#{relatorioSociosBean.idRelatorioOrdem}" rendered="#{not empty relatorioSociosBean.listaRelatorioOrdem}">
                                         <p:ajax event="change" update="@this"/>
                                         <f:selectItems value="#{relatorioSociosBean.listaRelatorioOrdem}"/>
                                     </p:selectOneMenu>
+                                    <p:selectBooleanCheckbox itemLabel="Imprimir por folha" value="#{relatorioSociosBean.porFolha}" rendered="#{relatorioSociosBean.enableFolha}"/>
                                 </h:panelGrid>
                             </p:panel>
 
@@ -72,7 +73,7 @@
                                             <br /><br />
                                             <c:forEach items="#{relatorioSociosBean.listaMenuRSocial}" var="linha" varStatus="loop">
                                                 <p:outputLabel value="#{linha.argumento0}" />
-                                                <p:commandLink value="#{linha.argumento1}" action="#{relatorioSociosBean.editarOpcao(loop.index)}" style="#{linha.argumento1 == 'Editar' ? 'color: blue' : 'color: red'} " update="@this :formRelatorioSocios:i_panel_filtro :formRelatorioSocios:i_panel_filtro2 :formRelatorioSocios:i_panel_filtro3"/>
+                                                <p:commandLink value="#{linha.argumento1}" action="#{relatorioSociosBean.editarOpcao(loop.index)}" style="#{linha.argumento1 == 'Editar' ? 'color: blue' : 'color: red'} " update="@this :formRelatorioSocios:i_panel_filtro :formRelatorioSocios:i_panel_filtro2 :formRelatorioSocios:i_panel_filtro3 :formRelatorioSocios:i_panel_filtro6"/>
 
                                                 <br /><br />
                                             </c:forEach>
@@ -379,9 +380,26 @@
                                                 </p:selectOneMenu>
                                             </h:column>
                                         </h:panelGrid>
-                                        
-                                    </h:panelGrid>
 
+                                    </h:panelGrid>
+                                    <div class="clear"></div>
+                                    <h:panelGrid id="i_panel_filtro6" columns="1">
+                                        <h:panelGrid columns="3" rendered="#{relatorioSociosBean.situacao}" style="margin: 10px">
+                                            <h:column>
+                                                <p:outputLabel value="Carência de Débito em Dias:" /><br /><br />
+                                                <h:column>
+                                                    <p:selectOneButton value="#{relatorioSociosBean.tipoCarencia}">
+                                                        <f:selectItem itemValue="eleicao" itemLabel="Eleição" />
+                                                        <f:selectItem itemValue="clube" itemLabel="Clube" itemDisabled="true"/>
+                                                        <f:selectItem itemValue="todos" itemLabel="Todos" itemDisabled="true"/>
+                                                    </p:selectOneButton>                                                
+                                                </h:column>
+                                                <p:inputText value="#{relatorioSociosBean.carenciaDiasString}" maxlength="3" size="2" styleClass="margin-left-max" converter="#{thisNumber}">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputText>
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
 
                                     <h:panelGrid id="i_panel_filtro2" columns="1">
                                         <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmpresa}" style="float: left; margin: 10px">
@@ -446,7 +464,7 @@
                                                     <p:inputMask value="#{relatorioSociosBean.dataAdmissaoSocioFim}" size="8" mask="99/99/9999"/>
                                                 </h:panelGrid>
                                             </h:column>
-                                            
+
                                             <h:column>
                                                 <h:panelGrid style="margin-right: 20px">
                                                     <h:outputLabel value="Aposentadoria" styleClass="fontePadrao"/>
