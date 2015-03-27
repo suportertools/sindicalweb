@@ -22,7 +22,6 @@ import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
@@ -75,6 +74,7 @@ public class ServicosBean implements Serializable {
     private CategoriaDescontoDependente descontoDepentende;
     private String valorDependente;
     private List<CategoriaDescontoDependente> listaDescontoDependente;
+    private String situacao;
 
     @PostConstruct
     public void init() {
@@ -111,6 +111,7 @@ public class ServicosBean implements Serializable {
         valorDependente = "0,00";
         listaDescontoDependente = new ArrayList<>();
         //    private String tabViewTitle = "0";
+        situacao = "A";
     }
 
     @PreDestroy
@@ -177,7 +178,7 @@ public class ServicosBean implements Serializable {
             return;
         }
         ServicosDB db = new ServicosDBToplink();
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         NovoLog novoLog = new NovoLog();
         try {
             di.openTransaction();
@@ -342,13 +343,13 @@ public class ServicosBean implements Serializable {
             idGrupo = 0;
             idSubGrupo = 0;
         }
-        
-        if(servicos.getAdministradora() != null) {
+
+        if (servicos.getAdministradora() != null) {
             for (int i = 0; i < listAdministradora.size(); i++) {
                 if (Integer.parseInt(listAdministradora.get(i).getDescription()) == servicos.getAdministradora().getId()) {
                     idAdministradora = i;
                 }
-            }            
+            }
         }
 
         if (servicos.getPeriodo() != null) {
@@ -370,7 +371,7 @@ public class ServicosBean implements Serializable {
 
     public void delete() {
         if (servicos.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             NovoLog novoLog = new NovoLog();
             if (!listServicoValor.isEmpty()) {
                 message = "Existem valores cadastrados neste serviço!";
@@ -431,7 +432,7 @@ public class ServicosBean implements Serializable {
     public List<Servicos> getListServicos() {
         if (listServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            setListServicos((List<Servicos>) db.pesquisaServicos(descPesquisa, porPesquisa, comoPesquisa));
+            setListServicos((List<Servicos>) db.pesquisaServicos(descPesquisa, porPesquisa, comoPesquisa, situacao));
         }
         return listServicos;
     }
@@ -461,7 +462,7 @@ public class ServicosBean implements Serializable {
     }
 
     public void saveServicoValor() {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         NovoLog novoLog = new NovoLog();
         servicoValor.setValor(Moeda.substituiVirgulaFloat(valorf));
         servicoValor.setTaxa(Moeda.substituiVirgulaFloat(taxa));
@@ -554,7 +555,7 @@ public class ServicosBean implements Serializable {
     }
 
     public void removeServicoValor(ServicoValor sv) {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         boolean clean = false;
         if (sv != null) {
             if (sv.getId() != -1) {
@@ -641,7 +642,7 @@ public class ServicosBean implements Serializable {
         } else {
             this.desconto = Moeda.substituiVirgula("0");
         }
-        if(Float.parseFloat(this.desconto) > 100) {
+        if (Float.parseFloat(this.desconto) > 100) {
             this.desconto = "100,00";
         }
     }
@@ -761,7 +762,7 @@ public class ServicosBean implements Serializable {
 
     public List<SelectItem> getListGrupo() {
         if (listGrupo.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             List<GrupoFinanceiro> result = di.list(new GrupoFinanceiro());
 
             listGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Adicionado", "0"));
@@ -908,9 +909,10 @@ public class ServicosBean implements Serializable {
     }
 
     public void openDescontoDependente(CategoriaDesconto cd) {
-        if (cd.getId() == -1)
+        if (cd.getId() == -1) {
             GenericaMensagem.error("Atenção", "Salve o Serviço antes de Adicionar um Desconto");
-        
+        }
+
         this.id_categoria = cd.getCategoria().getId();
         indexParentesco = 0;
         listaParentesco.clear();
@@ -1134,5 +1136,13 @@ public class ServicosBean implements Serializable {
 
     public void setIdAdministradora(Integer idAdministradora) {
         this.idAdministradora = idAdministradora;
+    }
+
+    public String getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(String situacao) {
+        this.situacao = situacao;
     }
 }

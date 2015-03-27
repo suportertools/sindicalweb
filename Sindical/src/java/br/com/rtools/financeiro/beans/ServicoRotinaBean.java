@@ -54,8 +54,7 @@ public class ServicoRotinaBean implements Serializable {
 
     public List<SelectItem> getListServicos() {
         if (listSelectItem[0].isEmpty()) {
-            ServicosDB db = new ServicosDBToplink();
-            List<Servicos> list = (List<Servicos>) db.pesquisaTodosServicos();
+            List<Servicos> list = (List<Servicos>) new Dao().list(new Servicos(), true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
@@ -152,9 +151,9 @@ public class ServicoRotinaBean implements Serializable {
 
     public List<ServicoRotina> getListServicoRotina() {
         if (listServicoRotina.isEmpty()) {
-            if(!getListServicos().isEmpty()) {
+            if (!getListServicos().isEmpty()) {
                 ServicoRotinaDB db = new ServicoRotinaDBToplink();
-                listServicoRotina = db.pesquisaServicoRotinaPorServico(Integer.parseInt(getListServicos().get(index[0]).getDescription()));                
+                listServicoRotina = db.pesquisaServicoRotinaPorServico(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
             }
         }
         return listServicoRotina;

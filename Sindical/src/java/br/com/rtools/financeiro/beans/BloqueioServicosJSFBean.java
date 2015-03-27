@@ -4,10 +4,9 @@ import br.com.rtools.financeiro.BloqueiaServicoPessoa;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
-import br.com.rtools.financeiro.db.ServicosDB;
-import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -140,7 +139,7 @@ public class BloqueioServicosJSFBean {
                     + " - Período: " + bl.getInicio() + " - " + bl.getFim()
                     + " - Gerar Guias: " + bl.isGeracao()
                     + " - Impressão: " + bl.isImpressao()
-            );            
+            );
             msgConfirma = "Bloqueio excluído com Sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
             listaBloqueios.clear();
@@ -210,8 +209,7 @@ public class BloqueioServicosJSFBean {
 
     public List<SelectItem> getListaServico() {
         if (listaServicos.isEmpty()) {
-            ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos();
+            List select = new Dao().list(new Servicos(), true);
             for (int i = 0; i < select.size(); i++) {
                 listaServicos.add(new SelectItem(
                         new Integer(i),

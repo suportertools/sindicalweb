@@ -5,8 +5,6 @@ import br.com.rtools.financeiro.Indice;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.CorrecaoDB;
 import br.com.rtools.financeiro.db.CorrecaoDBToplink;
-import br.com.rtools.financeiro.db.ServicosDB;
-import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -183,8 +181,7 @@ public class CorrecaoBean implements Serializable {
     public List<SelectItem> getListaServico() {
         List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
-        ServicosDB db = new ServicosDBToplink();
-        List select = db.pesquisaTodos();
+        List select = new Dao().list(new Servicos(), true);
         while (i < select.size()) {
             result.add(new SelectItem(i,
                     (String) ((Servicos) select.get(i)).getDescricao(),
