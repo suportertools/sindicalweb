@@ -8,7 +8,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "fin_servicos")
-@NamedQuery(name = "Servicos.pesquisaID", query = "SELECT S FROM Servicos AS S WHERE S.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "Servicos.pesquisaID", query = "SELECT S FROM Servicos AS S WHERE S.id = :pid"),
+    @NamedQuery(name = "Servicos.findAll", query = "SELECT S FROM Servicos AS S ORDER BY S.descricao ASC ")
+})
 public class Servicos implements java.io.Serializable {
 
     @Id
@@ -64,7 +67,7 @@ public class Servicos implements java.io.Serializable {
     private boolean validadeGuiasVigente;
     @JoinColumn(name = "id_administradora", referencedColumnName = "id", nullable = true)
     @ManyToOne
-    private Administradora administradora;    
+    private Administradora administradora;
     @Column(name = "is_validade_guias", nullable = false, columnDefinition = "boolean default false")
     private boolean validadeGuias;
 

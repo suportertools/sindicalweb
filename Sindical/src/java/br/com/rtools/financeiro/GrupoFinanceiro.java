@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -13,7 +14,10 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "fin_grupo",
         uniqueConstraints = @UniqueConstraint(columnNames = {"id_plano5", "ds_descricao"})
 )
-@NamedQuery(name = "GrupoFinanceiro.pesquisaID", query = "SELECT GF FROM GrupoFinanceiro AS GF WHERE GF.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "GrupoFinanceiro.pesquisaID", query = "SELECT GF FROM GrupoFinanceiro AS GF WHERE GF.id = :pid"),
+    @NamedQuery(name = "GrupoFinanceiro.findAll", query = "SELECT GF FROM GrupoFinanceiro AS GF ORDER BY GF.descricao ASC ")
+})
 public class GrupoFinanceiro implements java.io.Serializable {
 
     @Id
