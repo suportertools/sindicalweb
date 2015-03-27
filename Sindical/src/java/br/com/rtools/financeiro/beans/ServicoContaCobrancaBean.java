@@ -19,6 +19,7 @@ import javax.faces.model.SelectItem;
 @ManagedBean
 @SessionScoped
 public class ServicoContaCobrancaBean implements Serializable {
+
     private ServicoContaCobranca servicoContaCobranca = new ServicoContaCobranca();
     private int idServicos = 0;
     private int idContaCobranca = 0;
@@ -29,12 +30,12 @@ public class ServicoContaCobrancaBean implements Serializable {
     private int idIndex = -1;
     private List<ServicoContaCobranca> listaServicoCobranca = new ArrayList();
 
-    public ServicoContaCobrancaBean(){
+    public ServicoContaCobrancaBean() {
         getListaServico();
         getListaContaCobranca();
         getListaTipoServico();
     }
-    
+
     public int getIdServicos() {
         return idServicos;
     }
@@ -97,11 +98,11 @@ public class ServicoContaCobrancaBean implements Serializable {
         DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
         servicoContaCobranca = new ServicoContaCobranca();
-        
+
         Servicos servico = (Servicos) di.find(new Servicos(), Integer.parseInt(listaServico.get(idServicos).getDescription()));
         ContaCobranca contaCobranca = (ContaCobranca) di.find(new ContaCobranca(), Integer.parseInt(getListaContaCobranca().get(getIdContaCobranca()).getDescription()));
 
-        for (SelectItem ts : listaTipoServico){
+        for (SelectItem ts : listaTipoServico) {
             TipoServico tipoServico = (TipoServico) di.find(new TipoServico(), Integer.parseInt(ts.getDescription()));
             List serv = servContaCobrancaDB.pesquisaServPorIdServIdTipoServ(servico.getId(), tipoServico.getId());
 
@@ -116,12 +117,12 @@ public class ServicoContaCobrancaBean implements Serializable {
                             + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
                             + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
                     );
-                    GenericaMensagem.info("Sucesso", tipoServico.getDescricao()+" adicionado!");
+                    GenericaMensagem.info("Sucesso", tipoServico.getDescricao() + " adicionado!");
                 } else {
                     GenericaMensagem.warn("Erro", "Erro ao Salvar!");
                 }
             } else {
-                GenericaMensagem.warn("Erro", "Tipo Serviço " +tipoServico.getDescricao()+" já existente para esse Serviço!");
+                GenericaMensagem.warn("Erro", "Tipo Serviço " + tipoServico.getDescricao() + " já existente para esse Serviço!");
             }
             servicoContaCobranca = new ServicoContaCobranca();
         }
@@ -164,9 +165,8 @@ public class ServicoContaCobrancaBean implements Serializable {
     }
 
     public final List<SelectItem> getListaServico() {
-        if (listaServico.isEmpty()){
-            ServicosDB db = new ServicosDBToplink();
-            List<Servicos> list = db.pesquisaTodos();
+        if (listaServico.isEmpty()) {
+            List<Servicos> list = new Dao().list(new Servicos(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaServico.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
@@ -175,7 +175,7 @@ public class ServicoContaCobrancaBean implements Serializable {
     }
 
     public final List<SelectItem> getListaContaCobranca() {
-        if (listaContaCobranca.isEmpty()){
+        if (listaContaCobranca.isEmpty()) {
             DaoInterface di = new Dao();
             List<ContaCobranca> list = (List<ContaCobranca>) di.list(new ContaCobranca());
             for (int i = 0; i < list.size(); i++) {
@@ -190,7 +190,7 @@ public class ServicoContaCobrancaBean implements Serializable {
     }
 
     public final List<SelectItem> getListaTipoServico() {
-        if (listaTipoServico.isEmpty()){
+        if (listaTipoServico.isEmpty()) {
             DaoInterface di = new Dao();
             List<TipoServico> list = (List<TipoServico>) di.list(new TipoServico());
             for (int i = 0; i < list.size(); i++) {
