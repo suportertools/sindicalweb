@@ -14,6 +14,7 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import java.io.Serializable;
@@ -157,7 +158,6 @@ public class ServicoPessoaBean implements Serializable {
     }
 
     public String salvarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar) {
-        ServicosDB dbServico = new ServicosDBToplink();
         ServicoContaCobrancaDB dbSCB = new ServicoContaCobrancaDBToplink();
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
 
@@ -166,9 +166,9 @@ public class ServicoPessoaBean implements Serializable {
             return "Cadastrar serviços!";
         }
         if (servico == null) {
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
+            servicoPessoa.setServicos((Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServico).getDescription())));
         } else {
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(servico.getId()));
+            servicoPessoa.setServicos((Servicos) new Dao().find(new Servicos(), servico.getId()));
         }
         try {
             servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription())));
@@ -202,8 +202,8 @@ public class ServicoPessoaBean implements Serializable {
         }
 
         if (servicoPessoa.getPessoa().getId() != -1) {
-            if(servicoPessoa.getId() == -1) {
-                servicoPessoa.setDescontoSocial((DescontoSocial) dbSalvar.find(new DescontoSocial(), 1));                
+            if (servicoPessoa.getId() == -1) {
+                servicoPessoa.setDescontoSocial((DescontoSocial) dbSalvar.find(new DescontoSocial(), 1));
             }
             if (dbSalvar.inserirObjeto(servicoPessoa)) {
                 return "";
@@ -216,14 +216,13 @@ public class ServicoPessoaBean implements Serializable {
     }
 
     public String atualizarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar) {
-        ServicosDB dbServico = new ServicosDBToplink();
         ServicoContaCobrancaDB dbSCB = new ServicoContaCobrancaDBToplink();
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
 
         if (servico == null) {
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
+            servicoPessoa.setServicos((Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServico).getDescription())));
         } else {
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(servico.getId()));
+            servicoPessoa.setServicos((Servicos) new Dao().find(new Servicos(), servico.getId()));
         }
         // --------------------------------------------
         try {

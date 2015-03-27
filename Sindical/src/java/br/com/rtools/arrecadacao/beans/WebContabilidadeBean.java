@@ -30,6 +30,7 @@ import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -208,7 +209,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
                 return;
             }
 
-            servico = dbSer.pesquisaCodigo(Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
+            servico = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
             tipoServico = dbTipo.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()));
             Juridica juri = new Juridica();
 
@@ -350,7 +351,7 @@ public class WebContabilidadeBean extends MovimentoValorBean {
             GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
         }
     }
-    
+
 //    public void validaReferencia() {
 //        DataHoje data = new DataHoje();
 //        if (data.integridadeReferencia(strReferencia)) {
@@ -364,7 +365,6 @@ public class WebContabilidadeBean extends MovimentoValorBean {
 //            GenericaMensagem.warn("Atenção", "Essa referência não é válida!");
 //        }
 //    }
-
     public String imprimirComValorCalculado() {
         List<Movimento> lista = new ArrayList<Movimento>();
         List<Float> listaValores = new ArrayList<Float>();
@@ -459,10 +459,8 @@ public class WebContabilidadeBean extends MovimentoValorBean {
 
     public List<SelectItem> getListaTipoServico() {
         List<SelectItem> listaTipoServico = new Vector<SelectItem>();
-        FilialDB filDB = new FilialDBToplink();
         DataHoje data = new DataHoje();
-        ServicosDB dbSer = new ServicosDBToplink();
-        Servicos servicos = dbSer.pesquisaCodigo(Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
+        Servicos servicos = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServicos().get(idServicos).getDescription()));
         int i = 0;
         TipoServicoDB db = new TipoServicoDBToplink();
         if ((!data.integridadeReferencia(strReferencia))

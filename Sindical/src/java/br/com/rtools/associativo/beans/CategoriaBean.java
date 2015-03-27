@@ -60,7 +60,6 @@ public class CategoriaBean implements Serializable {
         }
         ServicoCategoriaDB dbSeC = new ServicoCategoriaDBToplink();
         ServicoCategoria servicoCategoria = new ServicoCategoria();
-        ServicosDB dbS = new ServicosDBToplink();
         CategoriaDB db = new CategoriaDBToplink();
         Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
@@ -91,7 +90,7 @@ public class CategoriaBean implements Serializable {
                 if (Integer.parseInt(listServicos.get(Integer.parseInt((String) ((DataObject) list.get(i)).getArgumento1())).getDescription()) != -1) {
                     servicoCategoria.setCategoria(categoria);
                     servicoCategoria.setParentesco((Parentesco) ((DataObject) list.get(i)).getArgumento0());
-                    servicoCategoria.setServicos(dbS.pesquisaCodigo(Integer.parseInt(
+                    servicoCategoria.setServicos((Servicos) new Dao().find(new Servicos(), Integer.parseInt(
                             listServicos.get(Integer.parseInt((String) ((DataObject) list.get(i)).getArgumento1())).getDescription())));
                     dbSeC.insert(servicoCategoria);
                     servicoCategoria = new ServicoCategoria();
@@ -143,7 +142,7 @@ public class CategoriaBean implements Serializable {
                         dbSeC.delete(servicoCategoria);
                     }
                 } else {
-                    servicoCategoria.setServicos(dbS.pesquisaCodigo(Integer.parseInt(
+                    servicoCategoria.setServicos((Servicos) new Dao().find(new Servicos(), Integer.parseInt(
                             listServicos.get(Integer.parseInt((String) ((DataObject) list.get(i)).getArgumento1())).getDescription())));
                     servicoCategoria.setCategoria(categoria);
                     servicoCategoria.setParentesco((Parentesco) ((DataObject) list.get(i)).getArgumento0());

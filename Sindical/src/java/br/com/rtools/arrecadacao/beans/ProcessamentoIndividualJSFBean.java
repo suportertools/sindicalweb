@@ -214,16 +214,14 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
             GenericaMensagem.warn("Erro", msgConfirmaTela);
             return null;
         }
-        FilialDB dbFilial = new FilialDBToplink();
         FTipoDocumentoDB dbft = new FTipoDocumentoDBToplink();
         ContaCobrancaDB ctaCobraDB = new ContaCobrancaDBToplink();
         MensagemConvencaoDB menDB = new MensagemConvencaoDBToplink();
         Servicos servicos = new Servicos();
         TipoServico tipoServico = new TipoServico();
         ContaCobranca contaCob = new ContaCobranca();
-        ServicosDB dbSer = new ServicosDBToplink();
         TipoServicoDB dbTipo = new TipoServicoDBToplink();
-        servicos = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
+        servicos = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServico().get(idServicos).getDescription()));
         tipoServico = dbTipo.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()));
         contaCob = ctaCobraDB.pesquisaServicoCobranca(servicos.getId(), tipoServico.getId());
         if (contaCob == null) {
@@ -351,9 +349,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                 grupoCidade = convencaoCidade.pesquisaGrupoCidadeJuridica(convencao.getId(), pessoaEndereco.getEndereco().getCidade().getId());
                 if (grupoCidade != null) {
                     MensagemConvencao mensagemConvencao = new MensagemConvencao();
-                    ServicosDB dbSer = new ServicosDBToplink();
                     TipoServicoDB dbTipo = new TipoServicoDBToplink();
-                    Servicos servicos = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
+                    Servicos servicos = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServico().get(idServicos).getDescription()));
                     TipoServico tipoServico = dbTipo.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()));
                     if ((servicos != null) && (tipoServico != null)) {
                         mensagemConvencao.setConvencao(convencao);
@@ -497,7 +494,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
                             + " - Pessoa: (" + movimentoBefore.getPessoa().getId() + ") " + movim.getPessoa().getNome()
                             + " - Valor: " + movimentoBefore.getValorString()
                             + " - Vencimento: " + movimentoBefore.getVencimento();
-                    
+
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
                     if (GerarMovimento.alterarUmMovimento(movim)) {
                         novoLog.update(beforeUpdate,
@@ -1034,9 +1031,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
         List<SelectItem> tipoServico = new Vector<SelectItem>();
         FilialDB filDB = new FilialDBToplink();
         DataHoje data = new DataHoje();
-        ServicosDB dbSer = new ServicosDBToplink();
         Registro registro = filDB.pesquisaRegistroPorFilial(1);
-        Servicos servicos = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
+        Servicos servicos = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServico().get(idServicos).getDescription()));
         int i = 0;
         TipoServicoDB db = new TipoServicoDBToplink();
         if ((!data.integridadeReferencia(strReferencia))
