@@ -23,6 +23,8 @@ public class Relatorios implements java.io.Serializable {
     private String qry;
     @Column(name = "ds_qry_ordem", length = 1000)
     private String qryOrdem;
+    @Column(name = "is_por_folha", length = 1000)
+    private Boolean porFolha;
 
     public Relatorios() {
         this.id = -1;
@@ -31,15 +33,17 @@ public class Relatorios implements java.io.Serializable {
         this.jasper = "";
         this.qry = "";
         this.qryOrdem = "";
+        this.porFolha = false;
     }
 
-    public Relatorios(int id, Rotina rotina, String nome, String jasper, String qry, String qryOrdem) {
+    public Relatorios(int id, Rotina rotina, String nome, String jasper, String qry, String qryOrdem, Boolean porFolha) {
         this.id = -1;
         this.rotina = rotina;
         this.nome = nome;
         this.jasper = jasper;
         this.qry = qry;
         this.qryOrdem = qryOrdem;
+        this.porFolha = porFolha;
     }
 
     public int getId() {
@@ -88,5 +92,13 @@ public class Relatorios implements java.io.Serializable {
 
     public void setQryOrdem(String qryOrdem) {
         this.qryOrdem = qryOrdem;
+    }
+
+    public Boolean getPorFolha() {
+        return porFolha;
+    }
+
+    public void setPorFolha(Boolean porFolha) {
+        this.porFolha = porFolha;
     }
 }
