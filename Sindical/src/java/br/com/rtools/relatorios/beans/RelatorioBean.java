@@ -9,8 +9,6 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +24,17 @@ public class RelatorioBean implements Serializable {
 
     private Relatorios relatorio = new Relatorios();
     private RelatorioOrdem relatorioOrdem = new RelatorioOrdem();
-    private List<SelectItem> listaRotina = new ArrayList<SelectItem>();
+    private List<SelectItem> listaRotina = new ArrayList<>();
     private List<Relatorios> listaRelatorio = new ArrayList();
     private List<RelatorioOrdem> listRelatorioOrdem = new ArrayList<>();
     private String msgConfirma = "";
     private int index = 0;
 
     public void addRelatorioOrdem() {
-        if(relatorioOrdem.getNome().isEmpty() || relatorioOrdem.getQuery().isEmpty()) {  
+        if (relatorioOrdem.getNome().isEmpty() || relatorioOrdem.getQuery().isEmpty()) {
             GenericaMensagem.warn("Sucesso", "Informar descrição e query!");
             return;
-            
+
         }
         Dao dao = new Dao();
         if (relatorioOrdem.getId() == null) {
@@ -87,41 +85,40 @@ public class RelatorioBean implements Serializable {
             return null;
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         NovoLog log = new NovoLog();
 
-        relatorio.setRotina((Rotina) sv.pesquisaCodigo(Integer.parseInt(listaRotina.get(index).getDescription()), "Rotina"));
+        relatorio.setRotina((Rotina) dao.find(new Rotina(), Integer.parseInt(listaRotina.get(index).getDescription())));
 
-        sv.abrirTransacao();
+        dao.openTransaction();
         if (relatorio.getId() == -1) {
-            if (sv.inserirObjeto(relatorio)) {
+            if (dao.save(relatorio)) {
                 msgConfirma = "Relatório salvo com Sucesso!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
                 log.novo("Novo registro", "Relatório inserido " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
             } else {
                 msgConfirma = "Erro ao salvar Relatório!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                sv.desfazerTransacao();
+                dao.rollback();
                 return null;
             }
         } else {
-            Relatorios rel = new Relatorios();
-            rel = (Relatorios) sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
+            Relatorios rel = (Relatorios) dao.find(new Relatorios(), relatorio.getId());
             String antes = "De: " + rel.getNome() + " / " + relatorio.getNome() + " -  " + rel.getJasper() + " / " + relatorio.getJasper();
 
-            if (sv.alterarObjeto(relatorio)) {
+            if (dao.update(relatorio)) {
                 msgConfirma = "Registro atualizado!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
                 log.novo("Atualizado", antes + " - para: " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
             } else {
                 msgConfirma = "Erro ao atualizar!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                sv.desfazerTransacao();
+                dao.rollback();
                 return null;
             }
         }
         listaRelatorio.clear();
-        sv.comitarTransacao();
+        dao.commit();
         return null;
     }
 
@@ -141,24 +138,22 @@ public class RelatorioBean implements Serializable {
             return "relatorio";
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         NovoLog log = new NovoLog();
+        dao.openTransaction();
 
-        sv.abrirTransacao();
-
-        relatorio = (Relatorios) sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
-        if (sv.deletarObjeto(relatorio)) {
+        if (dao.delete(relatorio)) {
             msgConfirma = "Relatório excluido com Sucesso!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
             log.novo("Excluido", relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
         } else {
             msgConfirma = "Relatório não pode ser excluido";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            sv.desfazerTransacao();
+            dao.rollback();
             return null;
         }
 
-        sv.comitarTransacao();
+        dao.commit();
         relatorio = new Relatorios();
         index = 0;
         return null;
@@ -190,7 +185,7 @@ public class RelatorioBean implements Serializable {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Rotina> result = db.pesquisaRotina();
             for (int i = 0; i < result.size(); i++) {
-                listaRotina.add(new SelectItem(new Integer(i),
+                listaRotina.add(new SelectItem(i,
                         result.get(i).getRotina(),
                         String.valueOf(result.get(i).getId()))
                 );
