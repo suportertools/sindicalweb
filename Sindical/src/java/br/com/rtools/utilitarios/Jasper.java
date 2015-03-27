@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -25,10 +26,17 @@ public class Jasper {
     public static Boolean IS_DOWNLOAD = true;
     public static byte[] BYTES = null;
     public static Boolean IS_HEADER = false;
+    // IMPRIME POR FOLHA
+    public static Boolean IS_BY_LEAF = false;
+    public static String GROUP_NAME = "";
     /**
      * set: retrato or paisagem
      */
     public static String TYPE = "";
+
+    public static void printReports(String jasperName, String fileName, List c) {
+        printReports(jasperName, fileName, (Collection) c, null);
+    }
 
     public static void printReports(String jasperName, String fileName, Collection c) {
         printReports(jasperName, fileName, c, null);
@@ -90,15 +98,21 @@ public class Jasper {
                 JRBeanCollectionDataSource dtSource;
                 dtSource = new JRBeanCollectionDataSource(c);
                 JasperPrint print = JasperFillManager.fillReport(jasper, parameters, dtSource);
+                if (IS_BY_LEAF) {
+                    if (!GROUP_NAME.isEmpty()) {
+
+                    }
+                }
                 if (bytesComparer == BYTES) {
                     b = JasperExportManager.exportReportToPdf(print);
                 } else {
                     b = BYTES;
                 }
                 if (!Jasper.PART_NAME.isEmpty()) {
-                    Jasper.PART_NAME = "-" + Jasper.PART_NAME;
+                    Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
+                    Jasper.PART_NAME = "_" + Jasper.PART_NAME;
                 }
-                String downloadName = PART_NAME + fileName + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                String downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
                 String realPath;
                 if (Jasper.PATH.isEmpty()) {
                     realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
