@@ -355,7 +355,7 @@
                                 </h:column>
 
                                 <h:column>
-                                    <c:if test="#{webAgendamentoContribuinteBean.tipoTelefone.equals('telefone')}">
+                                    <h:column rendered="#{webAgendamentoContribuinteBean.tipoTelefone eq 'telefone'}">
                                         <h:column>
                                             <h:outputLabel value="Telefone" rendered="#{webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaTelefone}" styleClass="font-color-red"/>
                                             <h:outputText value="Telefone" rendered="#{!webAgendamentoContribuinteBean.configuracaoHomologacao.webValidaTelefone}"/><br />
@@ -363,13 +363,13 @@
                                         <p:inputMask value="#{webAgendamentoContribuinteBean.agendamento.telefone}" style="text-align: center" mask="(99) 9999-9999" size="13">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputMask>
-                                    </c:if>
-                                    <c:if test="#{webAgendamentoContribuinteBean.tipoTelefone.equals('celular')}">
+                                    </h:column>
+                                    <h:column rendered="#{webAgendamentoContribuinteBean.tipoTelefone eq 'celular'}">
                                         <h:outputLabel value="Telefone (Celular)"/><br />
                                         <p:inputMask value="#{webAgendamentoContribuinteBean.agendamento.telefone}" style="text-align: center" mask="(99) 99999-9999" size="14">
                                             <p:ajax event="change" update="@this" global="false"/>
                                         </p:inputMask>
-                                    </c:if>
+                                    </h:column>
                                 </h:column>
 
                                 <h:column>

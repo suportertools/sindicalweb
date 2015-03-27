@@ -58,7 +58,7 @@
                             <h:panelGrid columns="4" style="margin-top: 10px">
                                 <h:column>
                                     <h:outputLabel value="Serviço" /><br />
-                                    <p:selectOneMenu value="#{alterarMovimentoBean.idServicos}" style="margin-right: 20px; padding-right: 20px">
+                                    <p:selectOneMenu value="#{alterarMovimentoBean.idServicos}" style="margin-right: 20px; padding-right: 20px" filter="true" filterMatchMode="startsWith">
                                         <p:ajax event="change" update="@this" />
                                         <f:selectItems value="#{alterarMovimentoBean.listaServico}" />
                                     </p:selectOneMenu>
