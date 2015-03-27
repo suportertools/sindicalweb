@@ -51,7 +51,11 @@
                                         </p:selectOneMenu>
                                     </h:column>
                                     <h:column />
-                                    <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.porFolha}" itemLabel="Imprime relatório por folha" />
+                                    <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.porFolha}" itemLabel="Imprime relatório por folha">
+                                        <p:ajax event="change" update="@this i_ds_nome_grupo" />
+                                    </p:selectBooleanCheckbox>
+                                    <h:outputLabel value="Nome Grupo:" />
+                                    <p:inputText size="30" maxlength="100" value="#{relatorioBean.relatorio.nomeGrupo}" />
                                 </h:panelGrid>
                             </p:panel>
 
