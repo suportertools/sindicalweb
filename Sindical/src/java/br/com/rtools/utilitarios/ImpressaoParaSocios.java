@@ -196,7 +196,6 @@ public class ImpressaoParaSocios {
             } else {
                 map.put("REPORT_CONNECTION", con.getConnection());
             }
-            System.setProperty("java.awt.headless", "true");
             for (Entry<Integer, List> entry : hash.entrySet()) {
                 modelo = (ModeloCarteirinha) new Dao().find(new ModeloCarteirinha(), entry.getKey());
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
