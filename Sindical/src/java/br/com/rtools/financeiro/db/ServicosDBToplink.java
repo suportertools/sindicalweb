@@ -144,6 +144,17 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     }
 
     @Override
+    public List<Servicos> listaServicoSituacaoAtivo() {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.situacao = 'A' ORDER BY S.descricao ASC ");
+            return qry.getResultList();
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    @Override
     public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo) {
         try {
             Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.subGrupoFinanceiro.id = :subgrupo AND S.situacao = 'A' AND S.id NOT IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = 4 GROUP BY SR.servicos.id) ");

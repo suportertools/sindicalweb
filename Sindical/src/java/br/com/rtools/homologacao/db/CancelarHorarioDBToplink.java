@@ -51,7 +51,7 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
             diaSemanaWhere = " AND h.semana.id = " + diaDaSemana;
         }
         try {
-            Query qry = getEntityManager().createQuery("SELECT h FROM Horarios h WHERE " + dataWhere + " h.filial.id = :pfilial" + diaSemanaWhere +" ORDER BY H.hora ASC");
+            Query qry = getEntityManager().createQuery("SELECT h FROM Horarios h WHERE " + dataWhere + " h.filial.id = :pfilial" + diaSemanaWhere + " ORDER BY H.hora ASC");
             qry.setParameter("pfilial", idFilial);
             if (!qry.getResultList().isEmpty()) {
                 result = (qry.getResultList());
@@ -63,7 +63,23 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
     }
 
     @Override
-    public List<CancelarHorario> listaTodosHorariosCanceladosPorFilial(int idFilial, Date dataInicial, Date dataFinal) {
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal) {
+        return listaTodosHorariosCancelados(idFilial, dataInicial, dataFinal, null, null);
+    }
+
+    @Override
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, String horario) {
+        return listaTodosHorariosCancelados(idFilial, dataInicial, dataFinal, null, horario);
+
+    }
+
+    @Override
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, Integer idSemana) {
+        return listaTodosHorariosCancelados(idFilial, dataInicial, dataFinal, idSemana, null);
+    }
+
+    @Override
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, Integer idSemana, String horario) {
         List list = new ArrayList();
         if (dataFinal != null) {
             String queryPeriodo;
@@ -75,11 +91,19 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
                 queryPeriodo = " '" + dataInicial + "' AND '" + dataFinal + "'  ";
             }
             try {
-                Query qry = getEntityManager().createNativeQuery(
-                        "       SELECT ch.id "
-                        + "       FROM hom_cancelar_horario ch "
-                        + "      WHERE ch.dt_data BETWEEN " + queryPeriodo
-                        + "        AND ch.id_filial = " + idFilial);
+                String queryString
+                        = "     SELECT CH.id                                        "
+                        + "       FROM hom_cancelar_horario CH                      "
+                        + " INNER JOIN hom_horarios AS H ON H.id = CH.id_horarios   "
+                        + "      WHERE CH.dt_data BETWEEN " + queryPeriodo
+                        + "        AND CH.id_filial = " + idFilial;
+                if (idSemana != null) {
+                    queryString += " AND H.id_semana = " + idSemana;
+                }
+                if (horario != null) {
+                    queryString += " AND H.ds_hora = '" + horario + "'";
+                }
+                Query qry = getEntityManager().createNativeQuery(queryString);
                 if (!qry.getResultList().isEmpty()) {
                     list = qry.getResultList();
                     String queryListaIdPeriodo = "";
@@ -92,7 +116,7 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
                         }
                     }
                     list.clear();
-                    Query qryResultadoPeriodo = getEntityManager().createQuery("SELECT ch FROM CancelarHorario ch WHERE ch.id IN (" + queryListaIdPeriodo + ") ORDER BY ch.dtData DESC, ch.horarios.hora ASC ");
+                    Query qryResultadoPeriodo = getEntityManager().createQuery("SELECT ch FROM CancelarHorario ch WHERE ch.id IN (" + queryListaIdPeriodo + ") ORDER BY ch.dtData DESC, ch.horarios.hora ASC");
                     if (!qryResultadoPeriodo.getResultList().isEmpty()) {
                         list = qryResultadoPeriodo.getResultList();
                     }
@@ -102,7 +126,7 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
 
         } else {
             try {
-                Query qry = getEntityManager().createQuery("SELECT ch FROM CancelarHorario ch WHERE ch.dtData = :dtData AND ch.filial.id = :idFilial ORDER BY ch.horarios.hora ASC ");
+                Query qry = getEntityManager().createQuery("SELECT ch FROM CancelarHorario ch WHERE ch.dtData = :dtData AND ch.filial.id = :idFilial ORDER BY ch.dtData DESC, ch.horarios.hora ASC ");
                 qry.setParameter("idFilial", idFilial);
                 qry.setParameter("dtData", dataInicial);
                 if (!qry.getResultList().isEmpty()) {

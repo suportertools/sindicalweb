@@ -37,6 +37,7 @@ public class PesquisaLogBean implements Serializable {
     private Boolean[] filtro;
     private Boolean[] filtroEvento;
     private Boolean blockUsuario;
+    private Boolean blockRotina;
     private Date[] data;
     private String[] hora;
     private Integer[] index;
@@ -61,9 +62,10 @@ public class PesquisaLogBean implements Serializable {
         filtro[2] = false;
         filtro[3] = false;
         blockUsuario = false;
-        listLogs = new ArrayList<Log>();
+        blockRotina = false;
+        listLogs = new ArrayList<>();
         listSelectItem = new ArrayList[1];
-        listSelectItem[0] = new ArrayList<SelectItem>();
+        listSelectItem[0] = new ArrayList<>();
         data = new Date[2];
         data[0] = DataHoje.dataHoje();
         data[1] = DataHoje.dataHoje();
@@ -97,7 +99,7 @@ public class PesquisaLogBean implements Serializable {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getRotina(), "" + list.get(i).getId()));
             }
             if (listSelectItem[0].isEmpty()) {
-                listSelectItem[0] = new ArrayList<SelectItem>();
+                listSelectItem[0] = new ArrayList<>();
             }
         }
         return listSelectItem[0];
@@ -121,7 +123,7 @@ public class PesquisaLogBean implements Serializable {
     public void clear() {
         if (!filtro[0]) {
             listSelectItem = new ArrayList[1];
-            listSelectItem[0] = new ArrayList<SelectItem>();
+            listSelectItem[0] = new ArrayList<>();
         }
         if (!filtro[1]) {
             data[0] = DataHoje.dataHoje();
@@ -157,7 +159,7 @@ public class PesquisaLogBean implements Serializable {
         } else if (close.equals("rotina")) {
             filtro[2] = false;
             listSelectItem = new ArrayList[1];
-            listSelectItem[0] = new ArrayList<SelectItem>();
+            listSelectItem[0] = new ArrayList<>();
         } else if (close.equals("evento")) {
             filtro[3] = false;
             filtroEvento[0] = false;
@@ -416,7 +418,10 @@ public class PesquisaLogBean implements Serializable {
             }
         }
         if (integer[0] == 0) {
+            pesquisaLogBean.setBlockRotina(false);
             GenericaMensagem.info("Sistema", "Nenhum Log encontrado para esta rotina!");
+        } else {
+            pesquisaLogBean.setBlockRotina(true);
         }
         // GenericaSessao.put("pesquisaLogBean", pesquisaLogBean);
         filtro[1] = true;
@@ -430,7 +435,7 @@ public class PesquisaLogBean implements Serializable {
         pesquisaLogBean.getListLogs();
         pesquisaLogBean.getFiltroEvento();
         GenericaSessao.put("pesquisaLogBean", pesquisaLogBean);
-        
+
     }
 
     public Boolean getBlockUsuario() {
@@ -439,5 +444,13 @@ public class PesquisaLogBean implements Serializable {
 
     public void setBlockUsuario(Boolean blockUsuario) {
         this.blockUsuario = blockUsuario;
+    }
+
+    public Boolean getBlockRotina() {
+        return blockRotina;
+    }
+
+    public void setBlockRotina(Boolean blockRotina) {
+        this.blockRotina = blockRotina;
     }
 }

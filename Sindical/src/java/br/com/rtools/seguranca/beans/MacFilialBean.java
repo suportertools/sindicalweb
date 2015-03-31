@@ -5,7 +5,6 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
-import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.MacFilialDB;
 import br.com.rtools.seguranca.db.MacFilialDBToplink;
@@ -36,6 +35,7 @@ public class MacFilialBean implements Serializable {
     public List<SelectItem> listaFiliais;
     public List<SelectItem> listaDepartamentos;
     private List<SelectItem> listaCaixa;
+    private Boolean mostrarTodos;
 
     @PostConstruct
     public void init() {
@@ -43,10 +43,11 @@ public class MacFilialBean implements Serializable {
         idFilial = 0;
         idDepartamento = 0;
         idCaixa = 0;
-        listaMacs = new ArrayList<MacFilial>();
-        listaFiliais = new ArrayList<SelectItem>();
-        listaDepartamentos = new ArrayList<SelectItem>();
-        listaCaixa = new ArrayList<SelectItem>();
+        listaMacs = new ArrayList<>();
+        listaFiliais = new ArrayList<>();
+        listaDepartamentos = new ArrayList<>();
+        listaCaixa = new ArrayList<>();
+        mostrarTodos = false;
     }
 
     @PreDestroy
@@ -138,7 +139,7 @@ public class MacFilialBean implements Serializable {
                         + " - Departamento: (" + macFilial.getDepartamento().getId() + ") " + macFilial.getDepartamento().getDescricao()
                         + " - Mesa: " + macFilial.getMesa()
                         + " - Mac: " + macFilial.getMac()
-                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getCaixa(): "")
+                        + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getCaixa() : "")
                         + " - Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getDescricao() : "")
                 );
                 di.commit();
@@ -263,7 +264,11 @@ public class MacFilialBean implements Serializable {
     public List<MacFilial> getListaMacs() {
         if (listaMacs.isEmpty()) {
             MacFilialDB db = new MacFilialDBToplink();
-            listaMacs = db.pesquisaTodos();
+            if (mostrarTodos) {
+                listaMacs = db.listaTodosPorFilial(null);
+            } else {
+                listaMacs = db.listaTodosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()));
+            }
         }
         return listaMacs;
     }
@@ -319,5 +324,13 @@ public class MacFilialBean implements Serializable {
         GenericaSessao.put("linkClicado", true);
         return "menuPrincipal";
 
+    }
+
+    public Boolean getMostrarTodos() {
+        return mostrarTodos;
+    }
+
+    public void setMostrarTodos(Boolean mostrarTodos) {
+        this.mostrarTodos = mostrarTodos;
     }
 }

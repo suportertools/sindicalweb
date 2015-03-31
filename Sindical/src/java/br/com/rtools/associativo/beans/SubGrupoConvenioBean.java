@@ -106,6 +106,12 @@ public class SubGrupoConvenioBean implements Serializable {
             listServicosAdicionados.clear();
             listSubGrupoFinanceiro.clear();
         }
+        if (tcase == 3) {
+            idSubGrupoConvenio = 0;
+            listSubGrupoConvenio.clear();
+            listServicosDisponiveis.clear();
+            servicoSelecionado = null;
+        }
     }
 
     public void add() {

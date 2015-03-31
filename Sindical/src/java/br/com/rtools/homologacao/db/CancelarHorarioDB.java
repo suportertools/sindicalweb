@@ -16,7 +16,13 @@ public interface CancelarHorarioDB {
 
     public List<Horarios> listaTodosHorariosDisponiveisPorFilial(int idFilial, Date date, boolean isCancelados);
 
-    public List<CancelarHorario> listaTodosHorariosCanceladosPorFilial(int idFilial, Date dataInicial, Date dataFinal);
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal);
+
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, String horario);
+
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, Integer idSemana);
+
+    public List<CancelarHorario> listaTodosHorariosCancelados(Integer idFilial, Date dataInicial, Date dataFinal, Integer idSemana, String horario);
 
     public boolean cancelarTodosHorariosPeriodo(int idFilial, Date dateInicial, Date dateFinal);
 }
