@@ -32,6 +32,7 @@ public class ChamadaPaginaBean implements Serializable {
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;
     private boolean linkClicado = false;
+    private Boolean disabled = false;
     private String urlAtual = "";
     private String paginaDestino;
     private String oqFazer;
@@ -993,7 +994,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("retornoSocialBean");
         return metodoGenerico(2, "retornoSocial");
     }
-    
+
     public synchronized String acordoSocial() {
         GenericaSessao.remove("acordoSocialBean");
         return metodoGenerico(2, "acordoSocial");
@@ -2357,6 +2358,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.put("linkClicado", true);
         if (menuLinks.get(i).getLink().equals("")) {
             menuLinks.get(i - 1).setIndice(i);
+            disabled = false;
             return menuLinks.get(i - 1).getLink();
         }
         nivelLink = i + 1;
@@ -2370,5 +2372,46 @@ public class ChamadaPaginaBean implements Serializable {
 
     public void setUrlAtual(String urlAtual) {
         this.urlAtual = urlAtual;
+    }
+
+    /**
+     * Link Clicado
+     */
+    public static void link() {
+        GenericaSessao.put("linkClicado", true);
+    }
+
+    /**
+     * Botão voltar
+     *
+     * @return
+     */
+    public String back() {
+        GenericaSessao.put("linkClicado", true);
+        return urlAtual;
+    }
+
+    /**
+     * Botão voltar
+     *
+     * @param destroyBean (Apaga a sessão do bean)
+     * @return
+     */
+    public String back(String destroyBean) {
+        GenericaSessao.remove(destroyBean);
+        GenericaSessao.put("linkClicado", true);
+        return urlAtual;
+    }
+
+    public void backButton() {
+        this.disabled = true;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
     }
 }

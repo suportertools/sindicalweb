@@ -8,6 +8,8 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.db.RotinaDB;
+import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -54,12 +56,14 @@ public class ServicoRotinaBean implements Serializable {
 
     public List<SelectItem> getListServicos() {
         if (listSelectItem[0].isEmpty()) {
-            List<Servicos> list = (List<Servicos>) new Dao().list(new Servicos(), true);
+            ServicosDB servicosDB = new ServicosDBToplink();
+            List<Servicos> list = (List<Servicos>) servicosDB.listaServicoSituacaoAtivo();
+
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
             if (listSelectItem[0].isEmpty()) {
-                listSelectItem[0] = new ArrayList<SelectItem>();
+                listSelectItem[0] = new ArrayList<>();
             }
         }
         return listSelectItem[0];

@@ -34,4 +34,24 @@ public class MacFilialDBToplink extends DB implements MacFilialDB {
         }
         return null;
     }
+
+    public List listaTodosPorFilial(Integer filial) {
+        try {
+            Query query;
+            if (filial == null) {
+                query = getEntityManager().createQuery("SELECT MF FROM MacFilial MF ORDER BY MF.filial.filial.pessoa.nome ASC, MF.departamento.descricao ASC, MF.mesa ASC ");
+            } else {
+                query = getEntityManager().createQuery("SELECT MF FROM MacFilial MF WHERE MF.filial.id = :filial ORDER BY MF.filial.filial.pessoa.nome ASC, MF.departamento.descricao ASC, MF.mesa ASC ");
+                query.setParameter("filial", filial);
+            }
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
 }

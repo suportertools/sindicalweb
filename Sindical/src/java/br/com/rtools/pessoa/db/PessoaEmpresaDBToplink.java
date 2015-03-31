@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
+
     @Override
     public boolean insert(PessoaEmpresa pessoaEmpresa) {
         try {
@@ -74,14 +75,14 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
             qry.setParameter("id", id);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                return list;                
+                return list;
             }
         } catch (Exception e) {
             return new ArrayList();
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List listaPessoaEmpresaPorFisicaDemissao(int id) {
         try {
@@ -89,14 +90,14 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
             qry.setParameter("id", id);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                return list;                
+                return list;
             }
         } catch (Exception e) {
             return new ArrayList();
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<PessoaEmpresa> listaPessoaEmpresaPorFisicaEmpresaDemissao(int id, int id_juridica) {
         try {
@@ -105,7 +106,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
             qry.setParameter("id_empresa", id_juridica);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                return list;                
+                return list;
             }
         } catch (Exception e) {
             return new ArrayList();
@@ -133,15 +134,22 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     + "    FROM PessoaEmpresa AS PE         "
                     + "   WHERE PE.fisica.id = " + id
                     + "     AND (PE.principal = true OR PE.dtDemissao IS NULL)");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                PessoaEmpresa pessoaEmpresa = ((PessoaEmpresa) qry.getSingleResult());                
-                return pessoaEmpresa;
+            List<PessoaEmpresa> list = qry.getResultList();
+            PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
+            if (!list.isEmpty() && list.size() > 1) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).isPrincipal()) {
+                        pessoaEmpresa = (PessoaEmpresa) list.get(i);
+                        break;
+                    }
+                }
+            } else if (!list.isEmpty() && list.size() == 1) {
+                pessoaEmpresa = (PessoaEmpresa) list.get(0);
             }
+            return pessoaEmpresa;
         } catch (Exception e) {
             return new PessoaEmpresa();
         }
-        return new PessoaEmpresa();
     }
 
     @Override

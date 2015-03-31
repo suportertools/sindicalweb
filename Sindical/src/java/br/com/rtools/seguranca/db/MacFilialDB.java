@@ -8,4 +8,7 @@ public interface MacFilialDB {
     public List pesquisaTodos();
 
     public MacFilial pesquisaMac(String mac);
+    
+    public List listaTodosPorFilial(Integer filial);
+    
 }

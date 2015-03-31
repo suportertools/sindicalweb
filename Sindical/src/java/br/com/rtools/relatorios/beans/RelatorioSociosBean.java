@@ -492,6 +492,8 @@ public class RelatorioSociosBean implements Serializable {
                 Jasper.IS_BY_LEAF = false;
             }
         }
+        Jasper.COMPRESS_FILE = true;
+        Jasper.COMPRESS_LIMIT = 1000;
         Jasper.printReports(relatorios.getJasper(), "relatorios", (Collection) lista);
         return null;
     }

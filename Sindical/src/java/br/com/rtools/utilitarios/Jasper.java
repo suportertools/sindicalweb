@@ -1,10 +1,15 @@
 package br.com.rtools.utilitarios;
 
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -30,6 +36,10 @@ public class Jasper {
     // IMPRIME POR FOLHA
     public static Boolean IS_BY_LEAF = false;
     public static String GROUP_NAME = "";
+    public static Boolean COMPRESS_FILE = false;
+    public static Integer COMPRESS_LIMIT = 100;
+    public static String COMPRESS_EXTENSION = "ZIP";
+    private static final int MEGABYTE = (1024 * 1024);
     /**
      * set: retrato or paisagem
      */
@@ -92,7 +102,9 @@ public class Jasper {
             parameters.put("sindicato_logo", ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"));
             parameters.put("template_dir", subreport);
         }
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
         try {
+            byte[] bytes;
             JasperReport jasper;
             if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + jasperName)).exists()) {
                 jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + jasperName)));
@@ -113,40 +125,157 @@ public class Jasper {
                         }
                     }
                 }
-                jasper.setProperty(fileName, PATH);
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(c);
-                JasperPrint print = JasperFillManager.fillReport(jasper, parameters, dtSource);
-                if (bytesComparer == BYTES) {
-                    b = JasperExportManager.exportReportToPdf(print);
+                Integer size = 0;
+                if (c.size() > COMPRESS_LIMIT) {
+                    size = c.size() / COMPRESS_LIMIT;
+                    size = (int) Math.ceil((double) size);
+                    size += 1;
                 } else {
-                    b = BYTES;
+                    COMPRESS_FILE = false;
                 }
-                if (!Jasper.PART_NAME.isEmpty()) {
-                    Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
-                    Jasper.PART_NAME = "_" + Jasper.PART_NAME;
-                }
-                String downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                String realPath;
+                Collection[] collections = new Collection[size];
+                List listTemp = new ArrayList();
+                String downloadName = "";
+                String realPath = "";
+                String mimeType = "application/pdf";
+                JasperPrint print;
+                JRBeanCollectionDataSource dtSource;
+                List listFilesZip = new ArrayList();
+                Integer idUsuario = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId();
                 if (Jasper.PATH.isEmpty()) {
                     realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
                 } else {
                     realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/";
                 }
                 String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(realPath);
-                try {
-                    File file = new File(dirPath + "/" + downloadName);
-                    try (FileOutputStream out = new FileOutputStream(file)) {
-                        out.write(b);
-                        out.flush();
+                if (!Jasper.PART_NAME.isEmpty()) {
+                     Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
+                     Jasper.PART_NAME = "_" + Jasper.PART_NAME;
+                 }                
+                if (COMPRESS_FILE) {
+                    if (COMPRESS_EXTENSION.equals("zip")) {
+                        mimeType = "application/zip, application/octet-stream";
+                    } else {
+                        mimeType = "application/x-rar-compressed, application/octet-stream";
                     }
-                } catch (IOException e) {
-                    System.out.println(e);
-                    return;
+                    List listCollection = (List) c;
+                    c = null;
+                    int pos = 0;
+                    int y = 0;
+                    int x = 0;
+                    collections[0] = new ArrayList();
+                    for (int i = 0; i < listCollection.size(); i++) {
+                        if (pos + 1 <= COMPRESS_LIMIT) {
+                            listTemp.add(listCollection.get(x));
+                            // listCollection.remove(x);
+                            pos++;
+                            x++;
+                        } else {
+                            collections[y] = (Collection) listTemp;
+                            if (y + 1 > size) {
+                                break;
+                            }
+                            y++;
+                            collections[y] = new ArrayList();
+                            listTemp = new ArrayList();
+                            pos = 0;
+                            i--;
+                        }
+                    }
+                    if (!listTemp.isEmpty()) {
+                        collections[y] = (Collection) listTemp;
+                    }
+                    listCollection.clear();
+                    if (Jasper.PATH.isEmpty()) {
+                        realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
+                    } else {
+                        realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/";
+                    } 
+                    jasper.setProperty(fileName, PATH);
+                    JRVariable[] jrvs = jasper.getVariables();
+                    for (int i = 0; i < collections.length; i++) {
+                        dtSource = new JRBeanCollectionDataSource(collections[i]);
+                        print = JasperFillManager.fillReport(jasper, parameters, dtSource);
+                        if (bytesComparer == BYTES) {
+                            b = JasperExportManager.exportReportToPdf(print);
+                        } else {
+                            b = BYTES;
+                        }
+                        if (b.length > MEGABYTE) {
+                            bytes = new byte[MEGABYTE * 500];
+                        }
+                        downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + "_" + (i + 1) + ".pdf";
+                        try {
+                            File file = new File(dirPath + "/" + downloadName);
+                            listFilesZip.add(dirPath + "/" + downloadName);
+                            try (FileOutputStream out = new FileOutputStream(file)) {
+                                out.write(b);
+                                out.flush();
+                            }
+                        } catch (IOException e) {
+                            System.out.println(e);
+                            return;
+                        } catch (OutOfMemoryError e) {
+                            MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
+                            long maxMemory = heapUsage.getMax() / MEGABYTE;
+                            long usedMemory = heapUsage.getUsed() / MEGABYTE;
+                            System.out.println("Memória > Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
+                            GenericaMensagem.info("Servidor > Memória", "Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
+                        }
+                        // b = null;
+                    }
+                    Compact.OUT_FILE = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".zip";
+                    downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".zip";
+                    Compact.setListFiles(listFilesZip);
+                    Compact.PATH_OUT_FILE = realPath;
+                    try {
+                        Compact.toZip();
+                    } catch (IOException e) {
+
+                    }
+                } else {
+                    jasper.setProperty(fileName, PATH);
+                    dtSource = new JRBeanCollectionDataSource(c);
+                    print = JasperFillManager.fillReport(jasper, parameters, dtSource);
+                    if (bytesComparer == BYTES) {
+                        b = JasperExportManager.exportReportToPdf(print);
+                    } else {
+                        b = BYTES;
+                    }
+                    if (b.length > MEGABYTE) {
+                        bytes = new byte[MEGABYTE * 500];
+                    }
+                    // Se o método por ventura passar apagar arquivos gerados, 
+                    // acrescentar a linha abaixo, esta contém o id do usuário
+                    // downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".pdf";
+                    downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                    try {
+                        File file = new File(dirPath + "/" + downloadName);
+                        try (FileOutputStream out = new FileOutputStream(file)) {
+                            out.write(b);
+                            out.flush();
+                        }
+                    } catch (IOException e) {
+                        System.out.println(e);
+                        return;
+                    } catch (OutOfMemoryError e) {
+                        MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
+                        long maxMemory = heapUsage.getMax() / MEGABYTE;
+                        long usedMemory = heapUsage.getUsed() / MEGABYTE;
+                        System.out.println("Memória > Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
+                        GenericaMensagem.info("Servidor > Memória", "Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
+                    }
                 }
                 if (IS_DOWNLOAD) {
-                    Download download = new Download(downloadName, dirPath, "application/pdf", FacesContext.getCurrentInstance());
+                    Download download = new Download(downloadName, dirPath, mimeType, FacesContext.getCurrentInstance());
                     download.baixar();
                     download.remover();
+                    if (!listFilesZip.isEmpty()) {
+                        for (int i = 0; i < listFilesZip.size(); i++) {
+                            File f = new File(listFilesZip.get(i).toString());
+                            f.delete();
+                        }
+                    }
                 }
             } catch (JRException erro) {
                 GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -155,7 +284,28 @@ public class Jasper {
         } catch (JRException erro) {
             GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+        } catch (OutOfMemoryError e) {
+            MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
+            long maxMemory = heapUsage.getMax() / MEGABYTE;
+            long usedMemory = heapUsage.getUsed() / MEGABYTE;
+            System.out.println("Memória > Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
+            GenericaMensagem.info("Servidor > Memória", "Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
         }
+        destroy();
+    }
+
+    public static void destroy() {
+        PATH = "downloads/relatorios";
+        PART_NAME = "relatorio";
+        IS_DOWNLOAD = true;
+        BYTES = null;
+        IS_HEADER = false;
+        // IMPRIME POR FOLHA
+        IS_BY_LEAF = false;
+        GROUP_NAME = "";
+        COMPRESS_FILE = false;
+        COMPRESS_LIMIT = 100;
+        COMPRESS_EXTENSION = "ZIP";
     }
 
     // USAR - ADICIONAR AO JASPER NO XML
