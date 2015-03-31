@@ -49,9 +49,9 @@
                         <f:facet name="header">Filtro serviços</f:facet>
                         <p:panelGrid columns="7" styleClass="sbb">
                             <p:outputLabel value="Grupo: " for="idSGrupoFiltro"/>
-                            <h:selectOneMenu id="idSGrupoFiltro" value="#{subGrupoConvenioBean.idGrupoConvenioFiltro}" valueChangeListener="#{subGrupoConvenioBean.listSubGrupoConvenio.clear()}">
+                            <h:selectOneMenu id="idSGrupoFiltro" value="#{subGrupoConvenioBean.idGrupoConvenioFiltro}">
+                                <p:ajax event="change" update="@this id_subgrupos :form_subgrupo_convenio:id_subgrupos_filtro" listener="#{subGrupoConvenioBean.clear(3)}"/>
                                 <f:selectItem itemValue="" itemLabel="Selecionar" itemDisabled="true" />
-                                <p:ajax event="change" update="@this id_subgrupos :form_subgrupo_convenio:id_subgrupos_filtro" />
                                 <f:selectItems value="#{subGrupoConvenioBean.listGrupoConvenio}" />
                             </h:selectOneMenu>                        
                             <p:outputLabel value="Subgrupos: "/>

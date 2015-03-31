@@ -74,7 +74,7 @@
                     <p:menuButton value="Opções" style="float: right">
                         <p:menuitem value="Meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" />
                         <p:menuitem value="Resolução" onclick="PF('dlg_resolucao').show()"/>                        
-                        <p:menuitem value="Logs" actionListener="#{pesquisaLogBean.listenerBlockUsuario}" action="#{chamadaPaginaBean.pesquisa('pesquisaLog')}" />
+                        <p:menuitem value="Meus Logs" actionListener="#{pesquisaLogBean.listenerBlockUsuario}" action="#{chamadaPaginaBean.pesquisa('meusLogs')}" />
                         <p:separator />
                         <p:menuitem value="Sair" action="#{usuarioBean.sairSistema}" icon="ui-icon-extlink"/>
                     </p:menuButton>

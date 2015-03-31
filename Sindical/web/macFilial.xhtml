@@ -33,21 +33,22 @@
 
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid style="width: 100%" columns="2">
+                                    <h:outputLabel value="Filiais disponíveis"/>
                                     <h:column>
-                                        <h:outputLabel value="Filiais disponíveis"/>
-                                        <br />
-                                        <p:selectOneMenu value="#{macFilialBean.idFilial}" style="width: 700px">
-                                            <f:selectItems value="#{macFilialBean.listaFiliais}"/>
-                                        </p:selectOneMenu>
+                                        <h:panelGrid columns="2">
+                                            <p:selectOneMenu value="#{macFilialBean.idFilial}">
+                                                <p:ajax event="change" update="@this :formMacFilial2:" listener="#{macFilialBean.listaMacs.clear()}"/>
+                                                <f:selectItems value="#{macFilialBean.listaFiliais}" />
+                                            </p:selectOneMenu>
+                                            <p:selectBooleanCheckbox value="#{macFilialBean.mostrarTodos}" itemLabel="Mostrar todas filiais" styleClass="margin-left-max">
+                                                <p:ajax event="change" update="@this :formMacFilial2:" listener="#{macFilialBean.listaMacs.clear()}"/>
+                                            </p:selectBooleanCheckbox>
+                                        </h:panelGrid>
                                     </h:column>
-
-                                    <h:column> 
-                                        <h:outputLabel value="Departamentos" />
-                                        <br />
-                                        <p:selectOneMenu value="#{macFilialBean.idDepartamento}" style="width: 200px">
-                                            <f:selectItems value="#{macFilialBean.listaDepartamentos}"/>
-                                        </p:selectOneMenu>
-                                    </h:column>
+                                    <h:outputLabel value="Departamentos" />
+                                    <p:selectOneMenu value="#{macFilialBean.idDepartamento}" style="width: 200px">
+                                        <f:selectItems value="#{macFilialBean.listaDepartamentos}"/>
+                                    </p:selectOneMenu>
                                 </h:panelGrid>
                             </p:panel>
 
@@ -112,7 +113,7 @@
                                     <p:column headerText="Departamento" style="width: 130px">
                                         <p:commandLink value="#{macFilial.departamento.descricao}" action="#{macFilialBean.edit(macFilial)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
-                                    
+
                                     <p:column headerText="Descrição" filterBy="#{macFilial.descricao}" filterMatchMode="global">
                                         <p:commandLink value="#{macFilial.descricao}" action="#{macFilialBean.edit(macFilial)}" update=":formMacFilial1: :formMacFilial2:"/>
                                     </p:column>
