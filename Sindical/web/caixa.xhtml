@@ -79,7 +79,7 @@
                                 </p:column>
 
                                 <p:column headerText="Filial" style="width: 420px">
-                                    <p:commandLink value="#{linha.filial.filial.pessoa.nome}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
+                                    <p:commandLink value="#{(linha.filial != null) ? linha.filial.filial.pessoa.nome : null}" action="#{caixaBean.editar(linha)}" update=":formCaixa"/>
                                 </p:column>
 
                                 <p:column headerText="Número" style="width: 60px; text-align: right">

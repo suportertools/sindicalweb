@@ -118,7 +118,7 @@
                                 <p:column>
                                     <h:outputText value="Desconto"/><br />
                                     <p:inputText id="i_desconto" size="10" value="#{movimentosReceberSocialBean.desconto}" style="margin-right: 20px; text-align: right">
-                                        <p:ajax event="blur" update="@this i_panel tbl" listener="#{movimentosReceberSocialBean.calculoDesconto()}" />
+                                        <p:ajax event="blur" update="@this i_panel tbl i_msg" listener="#{movimentosReceberSocialBean.permissaoEcalculoDesconto()}" />
                                     </p:inputText>
                                 </p:column>
 
@@ -147,7 +147,7 @@
                                     <p:commandButton value="Deletar" title="Deletar Movimentos Selecionados" onclick="PF('i_dlg_excluir').show()" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}" disabled="#{controleAcessoBean.botaoExcluir}"/>
                                 </p:column>
 
-                                <p:column>
+                                <p:column rendered="false">
                                     <br />
                                     <p:commandButton value="Mesclar" title="Mesclar Movimentos" action="#{movimentosReceberSocialBean.mesclar()}" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos'}" />
                                 </p:column>

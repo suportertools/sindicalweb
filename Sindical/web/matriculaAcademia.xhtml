@@ -48,12 +48,14 @@
                                                     </p:inputMask>
                                                     <p:outputLabel value="Vencimento para Boleto Bancário:" styleClass="margin-left-max" />
                                                     <h:column rendered="#{matriculaAcademiaBean.aluno.id == -1}"></h:column>
-                                                    <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}" disabled="true" id="i_l_m">
+                                                    <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}" disabled="true" id="i_l_m" style="padding-right: 10px">
                                                         <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                                     </p:selectOneMenu>
                                                     <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_alterar_dia_vencto').show()" rendered="#{matriculaAcademiaBean.aluno.id != -1}"/>
                                                     <p:outputLabel value="Vigoração" styleClass="margin-left-max"/>
-                                                    <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.referenciaVigoracao}" size="5" mask="99/9999"/>
+                                                    <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.referenciaVigoracao}" size="5" mask="99/9999">
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputMask>
                                                     <p:dialog id="id_alterar_dia_vencto"  widgetVar="dlg_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                                                         <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}">
                                                             <p:ajax event="change" update="@this i_l_m :form_matricula_academia:" oncomplete="PF('dlg_alterar_dia_vencto').hide()" listener="#{matriculaAcademiaBean.salvarData}"/>
@@ -124,7 +126,8 @@
                                                     <p:commandLink id="idResp" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.nome}" onclick="PF('dlg_pessoa_card').show()" update="i_pessoa_card" action="#{pessoaCardBean.cardPessoa(matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.id)}" title="Ver detalhes" />
                                                     <p:commandButton value="Pesquisar / Alterar Responsável" onclick="PF('dlg_painel_trocar_responsavel').show();" type="button" icon="ui-icon-search" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" styleClass="margin-left-max" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
                                                     <h:column rendered="#{matriculaAcademiaBean.sociosCobranca.id != -1}">
-                                                        <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
+                                                        <!-- <p:selectBooleanCheckbox value="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" disabled="# {matriculaAcademiaBean.desabilitaCamposMovimento}" /> -->
+                                                        <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" />
                                                     </h:column>
                                                 </h:panelGrid>
                                             </h:column>
@@ -187,7 +190,8 @@
                                             <p:outputLabel value="Taxa cartão (R$):" rendered="#{matriculaAcademiaBean.taxaCartao}"/>
                                             <p:inputText value="#{matriculaAcademiaBean.valorCartao}" rendered="#{matriculaAcademiaBean.taxaCartao}" readonly="true" size="5"/>
                                             <p:outputLabel value="Dia do Vencimento: " styleClass="margin-left-max" />
-                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
+                                            <!-- <p:selectOneMenu value="# {matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px" disabled="# {matriculaAcademiaBean.desabilitaCamposMovimento}"> -->
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px">
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaDiaParcela}" />
                                             </p:selectOneMenu>
                                         </h:panelGrid>
@@ -231,7 +235,7 @@
                                 <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete_movimento').show();" type="button"/>
                             </h:column>
                         </h:column>                        
-                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" type="button" rendered="#{matriculaAcademiaBean.matriculaAcademia.id == -1}"/>
+                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" type="button"/>
                         <p:commandButton value="Novo" action="#{matriculaAcademiaBean.clear()}" update="form_matricula_academia:"/>
                         <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" type="button" rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaMatriculaAcademia')}" />

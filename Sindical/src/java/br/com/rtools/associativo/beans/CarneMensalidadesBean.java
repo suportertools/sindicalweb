@@ -93,6 +93,10 @@ public class CarneMensalidadesBean {
         List<Vector> result = db.listaCarneMensalidadesAgrupado( (id_pessoa.isEmpty()) ? null : id_pessoa, datas );
         Collection lista = new ArrayList();
         
+        Map hash_subreport = new HashMap();
+        hash_subreport.put("subreport_file", ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE_MENSALIDADES_subreport.jasper"));
+        String logo_sindicato = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
+        
         for (Vector result1 : result) {
             List<Vector> result_servico = db.listaServicosCarneMensalidades(Integer.valueOf(result1.get(3).toString()), datas);
             List listax = new ArrayList();
@@ -111,7 +115,7 @@ public class CarneMensalidadesBean {
                 valor_total = Moeda.converteR$Float(soma);
                 lista.add(
                         new ParametroCarneMensalidades(
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                logo_sindicato,
                                 sindicato.getPessoa().getNome(),
                                 pe.getEndereco().getDescricaoEndereco().getDescricao(),
                                 pe.getEndereco().getLogradouro().getDescricao(),
@@ -144,7 +148,7 @@ public class CarneMensalidadesBean {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
 
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, hash_subreport, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
             
             HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();

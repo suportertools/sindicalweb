@@ -34,7 +34,7 @@ import javax.persistence.UniqueConstraint;
 )
 @NamedQueries({
     @NamedQuery(name = "Caixa.pesquisaID", query = "SELECT C FROM Caixa AS C WHERE C.id = :pid"),
-    @NamedQuery(name = "Caixa.findAll", query = "SELECT C FROM Caixa AS C ORDER BY C.filial.filial.pessoa.nome ASC, C.caixa ASC, C.descricao ASC ")
+    @NamedQuery(name = "Caixa.findAll", query = "SELECT C FROM Caixa AS C ORDER BY C.caixa ASC, C.descricao ASC ")
 })
 public class Caixa implements Serializable {
 

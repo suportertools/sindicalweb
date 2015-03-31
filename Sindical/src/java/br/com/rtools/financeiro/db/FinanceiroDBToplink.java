@@ -694,6 +694,10 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         
         where = " WHERE b.ativo = true";
 
+        // IF temporário... excluir
+        if (tipo.equals("fisica")){
+            where += " AND b.codigo IN (SELECT id FROM xextrato) ";
+        }
         // RESPONSAVEL --
         if (!responsavel.isEmpty()){
             responsavel = AnaliseString.normalizeLower(responsavel);

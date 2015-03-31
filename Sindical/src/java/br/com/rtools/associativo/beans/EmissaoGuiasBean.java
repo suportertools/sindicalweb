@@ -44,7 +44,6 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -312,10 +311,12 @@ public class EmissaoGuiasBean implements Serializable {
     public void clear(int tcase) {
         switch (tcase) {
             case 1:
-                listSelectItem[0] = new ArrayList();
+                //listSelectItem[0] = new ArrayList();
+                listSelectItem[1] = new ArrayList();
                 listSelectItem[2] = new ArrayList();
                 listSelectItem[3] = new ArrayList();
-                index[0] = 0;
+                //index[0] = 0;
+                index[1] = 0;
                 index[2] = 0;
                 index[3] = 0;
                 getListSubGrupo();
@@ -328,7 +329,7 @@ public class EmissaoGuiasBean implements Serializable {
                 }
                 break;
             case 2:
-                listSelectItem[0] = new ArrayList();
+                //listSelectItem[0] = new ArrayList();
                 listSelectItem[2] = new ArrayList();
                 listSelectItem[3] = new ArrayList();
                 index[2] = 0;
@@ -411,8 +412,8 @@ public class EmissaoGuiasBean implements Serializable {
         }
         DaoInterface di = new Dao();
         
+        //fisicaNovoCadastro.setPessoa(pessoa);
         fisicaNovoCadastro.getPessoa().setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));
-        fisicaNovoCadastro.setPessoa(pessoa);
         
         if (fisicaNovoCadastro.getPessoa().getId() == -1 && fisicaNovoCadastro.getId() == -1) {
             di.openTransaction();
@@ -823,6 +824,7 @@ public class EmissaoGuiasBean implements Serializable {
             
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
+            listenerEnabledItensPedido();
         }
         boolean isFisica = false;
         if (GenericaSessao.exists("fisicaPesquisa")) {
@@ -833,6 +835,7 @@ public class EmissaoGuiasBean implements Serializable {
             
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
+            listenerEnabledItensPedido();
         }
         if (!isFisica) {
             if (GenericaSessao.exists("juridicaPesquisa")) {
@@ -840,6 +843,7 @@ public class EmissaoGuiasBean implements Serializable {
                 pessoa = new Pessoa();
                 pessoa = juridica.getPessoa();
                 socios = new Socios();
+                listenerEnabledItensPedido();
             }
         }
         return pessoa;
@@ -1213,8 +1217,13 @@ public class EmissaoGuiasBean implements Serializable {
                 if (!servicox.isProduto()) {
                     LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
                     List<Vector> valorx = db.pesquisaServicoValor(pessoa.getId(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
-                    float vl = Float.valueOf(((Double) valorx.get(0).get(0)).toString());
-                    valor = Moeda.converteR$Float(vl);
+                    if (!valorx.isEmpty()){
+                        float vl = Float.valueOf(((Double) valorx.get(0).get(0)).toString());
+                        valor = Moeda.converteR$Float(vl);
+                    }else{
+                        valor = "0,00";
+                        GenericaMensagem.fatal("Atenção", "Valor do Serviço não encontrado");
+                    }
                 } else {
                     float v = 0;
                     if (!listPedidos.isEmpty()) {

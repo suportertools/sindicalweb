@@ -170,12 +170,12 @@ public class MatriculaAcademiaBean implements Serializable {
         valorLiquido = "";
         valorTaxa = "";
         target = "#";
-        listaAcademia = new ArrayList<MatriculaAcademia>();
-        listaMovimentos = new ArrayList<Movimento>();
-        listaDiaVencimento = new ArrayList<SelectItem>();
-        listaModalidades = new ArrayList<SelectItem>();
-        listaPeriodosGrade = new ArrayList<SelectItem>();
-        listaDiaParcela = new ArrayList<SelectItem>();
+        listaAcademia = new ArrayList();
+        listaMovimentos = new ArrayList();
+        listaDiaVencimento = new ArrayList();
+        listaModalidades = new ArrayList();
+        listaPeriodosGrade = new ArrayList();
+        listaDiaParcela = new ArrayList();
         taxa = false;
         ocultaBotaoSalvar = false;
         socio = false;
@@ -273,8 +273,8 @@ public class MatriculaAcademiaBean implements Serializable {
             matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
         }
         NovoLog novoLog = new NovoLog();
-        matriculaAcademia.getServicoPessoa().setReferenciaVigoracao(DataHoje.livre(matriculaAcademia.getServicoPessoa().getDtEmissao(), "MM/yyyy"));
         if (matriculaAcademia.getId() == -1) {
+            matriculaAcademia.getServicoPessoa().setReferenciaVigoracao(DataHoje.livre(matriculaAcademia.getServicoPessoa().getDtEmissao(), "MM/yyyy"));
             AcademiaDao academiaDao = new AcademiaDao();
             if (academiaDao.existeAlunoModalidade(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getAcademiaServicoValor().getServicos().getId(), matriculaAcademia.getServicoPessoa().getDtEmissao())) {
                 message = "Aluno já cadastrado para esta modalidade!";
