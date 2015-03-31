@@ -453,14 +453,13 @@
                             </h:panelGrid>
 
 
-                            <h:panelGrid columns="1" style="width: 100%; text-align: left; margin-top: 10px; color: ">
-                                <h:column>
-                                    <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar').show()"/>
-                                    <p:commandButton value="Novo" action="#{juridicaBean.novo()}"/>
-                                    <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_excluir').show()"/>
-                                    <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}"/>
-                                    <p:commandButton value="Extrato na Tela" action="#{juridicaBean.extratoTela}" disabled="#{juridicaBean.habilitar}" style="width: 150px;"/>
-                                </h:column>
+                            <h:panelGrid columns="6" style="text-align: left; margin-top: 10px; color: ">
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar').show()"/>
+                                <p:commandButton value="Novo" action="#{juridicaBean.novo()}" rendered="#{!chamadaPaginaBean.disabled}"/>
+                                <p:commandButton value="Voltar" action="#{chamadaPaginaBean.back}" rendered="#{chamadaPaginaBean.disabled}" />
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_excluir').show()"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" disabled="#{chamadaPaginaBean.disabled}"/>
+                                <p:commandButton value="Extrato na Tela" action="#{juridicaBean.extratoTela}" disabled="#{juridicaBean.habilitar}" style="width: 150px;" />
                             </h:panelGrid>
 
                             <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Jurídica" width="400" resizable="false">

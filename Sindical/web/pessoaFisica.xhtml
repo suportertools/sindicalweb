@@ -348,11 +348,12 @@
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" id="i_pesquisar_empresa"/>
                                             </h:column>
                                             <h:column>
-                                                <h:panelGrid columns="4">
+                                                <h:panelGrid columns="5">
                                                     <p:outputLabel value="PESQUISAR EMPRESA " rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id == -1}" style="border-bottom: 1px dashed gray; color: gray;" for="i_pesquisar_empresa"/>
                                                     <p:outputLabel value="CNPJ: #{fisicaBean.pessoaEmpresa.juridica.pessoa.documento} - #{fisicaBean.pessoaEmpresa.juridica.pessoa.nome}"  rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id != -1}" for="i_pesquisar_empresa"  style="font-weight: bold"/>
                                                     <p:commandButton icon="ui-icon-trash" action="#{fisicaBean.removerJuridicaPesquisada}" rendered="#{fisicaBean.renderJuridicaPesquisa}" />
                                                     <p:commandButton icon="ui-icon-contact" update=":form_pessoa_fisica:i_pessoa_juridica_card" action="#{pessoaCardBean.cardJuridica(fisicaBean.pessoaEmpresa.juridica.pessoa.id)}" oncomplete="PF('dlg_pessoa_juridica_card').show()" title="Ver detalhes" rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id != -1}"/>
+                                                    <h:commandLink action="#{juridicaBean.editar(fisicaBean.pessoaEmpresa.juridica, true)}" value="Alterar cadastro" rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id != -1}" actionListener="#{chamadaPaginaBean.backButton}" />
                                                 </h:panelGrid>
                                             </h:column>
                                             <p:outputLabel value="Nome Fantasia: "/>
@@ -748,7 +749,7 @@
                                 <p:panel id="i_pesquisa_endereco" styleClass="no-border">                                    
                                     <ui:include src="templates/templatePesquisaEndereco.xhtml" />    
                                 </p:panel>
-                            </p:dialog>                  
+                            </p:dialog>                           
                         </h:form>
                     </p:panel>
 

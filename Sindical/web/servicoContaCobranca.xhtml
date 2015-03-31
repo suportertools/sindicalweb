@@ -66,12 +66,12 @@
                                 </h:panelGrid>
                             </p:panel>
                             <p:messages id="i_msg" showDetail="true" closable="true" /> 
-                            <p:dataTable value="#{servicoContaCobrancaBean.listaServicoCobranca}" var="linha" id="tbl" emptyMessage="Nenhum Serviço Conta Cobrança encontrado!">
-                                <p:column style="text-align: center; width: 30px">
+                            <p:dataTable value="#{servicoContaCobrancaBean.listaServicoCobranca}" var="linha" id="tbl" emptyMessage="Nenhum Serviço Conta Cobrança encontrado!" rows="20" scrollable="true" scrollHeight="600" paginator="true">
+                                <p:column style="text-align: center; width: 30px" >
                                     <p:commandButton icon="ui-icon-trash" action="#{servicoContaCobrancaBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formServicoContaCobranca"/>
                                 </p:column>
                                 
-                                <p:column headerText="Contribuição" style="width: 150px">
+                                <p:column headerText="Contribuição" style="width: 150px" filterBy="#{linha.servicos.descricao}" filterMatchMode="global">
                                     <h:outputText value="#{linha.servicos.descricao}"/>
                                 </p:column>
                                 
