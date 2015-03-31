@@ -115,12 +115,16 @@ public class MovimentosReceberSocialBean implements Serializable {
     private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
     private String motivoInativacao = "";
 
+    private ControleAcessoBean cab = new ControleAcessoBean();
+    
     @PostConstruct
     public void init() {
 
         csb.init();
         cfb.init();
-
+    
+        cab = (ControleAcessoBean) GenericaSessao.getObject("controleAcessoBean");
+        
         listaMesclar.add(new DataObject(0, "001"));
         listaMesclar.add(new DataObject(1, "002"));
         listaMesclar.add(new DataObject(2, "003"));
@@ -129,8 +133,20 @@ public class MovimentosReceberSocialBean implements Serializable {
     @PreDestroy
     public void destroy() {
         //GenericaSessao.remove("movimentosReceberSocialBean");
+    }    
+    
+    public void permissaoEcalculoDesconto(){
+        // if TRUE não tem permissão
+        if (cab.verificarPermissao("descontoTotalMensalidades", 1) || cab.verificarPermissao("descontoTotalMensalidades", 3)){
+            if (Moeda.converteUS$(desconto) > 5){
+                GenericaMensagem.warn("Atenção", "Usuário sem permissão para desconto maior que R$ 5,00");
+                desconto = "0,00";
+            }
+        }
+        
+        calculoDesconto();
     }
-
+    
     public void inativarMovimentos() {
         if (motivoInativacao.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Digite um motivo para exclusão!");
@@ -776,11 +792,11 @@ public class MovimentosReceberSocialBean implements Serializable {
         float desc = 0;
         float acre = 0;
         float calc = Moeda.substituiVirgulaFloat(getValorPraDesconto());
-        if (Float.valueOf(desconto) > calc) {
+        if (Moeda.converteUS$(desconto) > calc) {
             desconto = String.valueOf(calc);
         }
 
-        descPorcento = Moeda.multiplicarValores(Moeda.divisaoValores(Float.valueOf(desconto), calc), 100);
+        descPorcento = Moeda.multiplicarValores(Moeda.divisaoValores(Moeda.converteUS$(desconto), calc), 100);
 
         for (int i = 0; i < listaMovimento.size(); i++) {
             if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {

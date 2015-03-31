@@ -132,7 +132,7 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
     @Override
     public List<Vector> pesquisaServicoValor(int id_pessoa, int id_servico) {
         try{
-            String textqry = " select func_valor_servico("+id_pessoa+", "+id_servico+", current_date, 0) ";
+            String textqry = " select func_valor_servico("+id_pessoa+", "+id_servico+", current_date, 0, 0) ";
             
             Query qry = getEntityManager().createNativeQuery(textqry);
             return qry.getResultList();

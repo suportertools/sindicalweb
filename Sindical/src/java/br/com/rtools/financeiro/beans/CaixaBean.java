@@ -23,7 +23,7 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class CaixaBean implements Serializable {
 
-    private int idFilial;
+    private Integer idFilial;
     private int idUsuario;
     private List<SelectItem> listaFiliais;
     private List<SelectItem> listaUsuarios;
@@ -100,14 +100,15 @@ public class CaixaBean implements Serializable {
         }
         
         if (caixa.getId() == -1){
-            caixa.setFilial((Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())));
+            caixa.setFilial( (listaFiliais.get(idFilial).getDescription() != null) ? (Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())) : null);
             if (!di.save(caixa, true)) {
                 GenericaMensagem.warn("Erro", "Não foi possível salvar Caixa!");
             } else {
                 NovoLog novoLog = new NovoLog();
+                String fi = (caixa.getFilial() != null) ? " - Filial: ("+ caixa.getFilial().getId() + ") " + caixa.getFilial().getFilial().getPessoa().getNome() : "- Filial: () ";
                 novoLog.save(
                         "ID: " + caixa.getId()
-                        + " - Filial: (" + caixa.getFilial().getId() + ") " + caixa.getFilial().getFilial().getPessoa().getNome()
+                        + fi
                         + " - Caixa: " + caixa.getCaixa()
                         + " - Descrição: " + caixa.getDescricao()
                 );
@@ -117,21 +118,23 @@ public class CaixaBean implements Serializable {
             }
         }else{
             Caixa c = (Caixa) di.find(caixa);
-            
+            String fi = (c.getFilial() != null) ? " - Filial: ("+ c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome() : "- Filial: () ";
             String before_update = 
                         "ID: " + c.getId()
-                        + " - Filial: (" + c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome()
+                        + fi
                         + " - Caixa: " + c.getCaixa()
                         + " - Descrição: " + c.getDescricao();
             
-            caixa.setFilial((Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())));
+            caixa.setFilial( (listaFiliais.get(idFilial).getDescription() != null) ? (Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())) : null);
             if (!di.update(caixa, true)) {
                 GenericaMensagem.warn("Erro", "Não foi possível alterar Caixa!");
             } else {
                 NovoLog novoLog = new NovoLog();
+                fi = (caixa.getFilial() != null) ? " - Filial: ("+ caixa.getFilial().getId() + ") " + caixa.getFilial().getFilial().getPessoa().getNome() : "- Filial: () ";
+                
                 novoLog.update(before_update,
                         "ID: " + caixa.getId()
-                        + " - Filial: (" + caixa.getFilial().getId() + ") " + caixa.getFilial().getFilial().getPessoa().getNome()
+                        + fi
                         + " - Caixa: " + caixa.getCaixa()
                         + " - Descrição: " + caixa.getDescricao()
                 );
@@ -145,10 +148,14 @@ public class CaixaBean implements Serializable {
     public void editar(Caixa c){
         caixa = c;
         
-        for (int i = 0; i < listaFiliais.size(); i++) {
-            if (Integer.valueOf(listaFiliais.get(i).getDescription()) == c.getFilial().getId()){
-                idFilial = i;
+        if (c.getFilial() != null){
+            for (int i = 0; i < listaFiliais.size(); i++) {
+                if (listaFiliais.get(i).getDescription() != null && Integer.valueOf(listaFiliais.get(i).getDescription()) == c.getFilial().getId()){
+                    idFilial = i;
+                }
             }
+        }else{
+            idFilial = 0;
         }
         
         if (caixa.getUsuario() != null){
@@ -168,9 +175,10 @@ public class CaixaBean implements Serializable {
             GenericaMensagem.warn("Erro", "Não foi possível excluir Caixa!");
         } else {
             NovoLog novoLog = new NovoLog();
+            String fi = (c.getFilial() != null) ? " - Filial: ("+ c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome() : "- Filial: () ";
             novoLog.delete(
                     "ID: " + c.getId()
-                    + " - Filial: (" + c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome()
+                    + fi
                     + " - Caixa: " + c.getCaixa()
                     + " - Descrição: " + c.getDescricao()
             );
@@ -179,20 +187,23 @@ public class CaixaBean implements Serializable {
         }
     }
 
-    public int getIdFilial() {
+    public Integer getIdFilial() {
         return idFilial;
     }
 
-    public void setIdFilial(int idFilial) {
+    public void setIdFilial(Integer idFilial) {
         this.idFilial = idFilial;
     }
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
             DaoInterface di = new Dao();
+            
+            listaFiliais.add(new SelectItem(0, "Selecione uma Filial", null));
+            
             List<Filial> list = (List<Filial>) di.list(new Filial(), true);
             for (int i = 0; i < list.size(); i++) {
-                listaFiliais.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getDocumento() + " - " + list.get(i).getFilial().getPessoa().getNome(),
+                listaFiliais.add(new SelectItem(i+1, list.get(i).getFilial().getPessoa().getDocumento() + " - " + list.get(i).getFilial().getPessoa().getNome(),
                         Integer.toString(list.get(i).getId())));
             }
         }
@@ -213,8 +224,9 @@ public class CaixaBean implements Serializable {
 
     public List<Caixa> getListaCaixa() {
         if (listaCaixa.isEmpty()) {
-            DaoInterface di = new Dao();
-            listaCaixa = di.list(new Caixa(), true);
+            CaixaDao dao = new CaixaDao();
+            
+            listaCaixa = dao.listaTodosCaixas();
         }
         return listaCaixa;
     }

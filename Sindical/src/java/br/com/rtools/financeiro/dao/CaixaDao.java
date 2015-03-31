@@ -28,4 +28,23 @@ public class CaixaDao extends DB {
         }
         return new ArrayList(); 
     }
+    
+    public List<Caixa> listaTodosCaixas() {
+        try {
+            String text = 
+                        "SELECT c.* " +
+                        "  FROM fin_caixa c " +
+                        "  LEFT JOIN pes_filial f ON c.id_filial = f.id " +
+                        "  LEFT JOIN pes_juridica j ON j.id = f.id_filial " +
+                        "  LEFT JOIN pes_pessoa p ON p.id = j.id_pessoa " +
+                        " ORDER BY p.ds_nome, c.ds_descricao";
+            
+            //Query query = getEntityManager().createNativeQuery(text, new Caixa().getClass());
+            Query query = getEntityManager().createNativeQuery(text, Caixa.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }    
 }

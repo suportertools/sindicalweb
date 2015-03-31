@@ -89,7 +89,9 @@
                             <h:panelGrid id="i_panel_valores" columns="6" style="width: 100%; padding: 10px">
                                 <h:column>
                                     <h:outputLabel value="Total Pagar" style="font-weight: bold"/><br />
-                                    <p:inputText value="#{lancamentoIndividualBean.totalPagar}" size="8" style="text-align: right" />
+                                    <p:inputText value="#{lancamentoIndividualBean.totalPagar}" size="8" style="text-align: right; #{(!lancamentoIndividualBean.servicos.alterarValor) ? 'opacity: 100!important; color: black' : ''}" disabled="#{!lancamentoIndividualBean.servicos.alterarValor}">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputText>
                                 </h:column>
 
                                 <h:column>

@@ -13,6 +13,7 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
+            .ui-spinner-button { padding: 0px!important; }
         </style>
 
         <script type="text/javascript">
@@ -74,17 +75,17 @@
                                 <h:panelGrid id="i_panel_grupos" columns="6">
                                     <p:outputLabel value="Grupo: " />
                                     <p:selectOneMenu id="idGrupo" value="#{emissaoGuiasBean.index[0]}" disabled="#{emissaoGuiasBean.lote.id != -1}">
-                                        <p:ajax event="change" update="i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.clear(1)}"/>
+                                        <p:ajax event="change" update="@this i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.clear(1)}"/>
                                         <f:selectItems value="#{emissaoGuiasBean.listGrupo}"/>
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Sub Grupo: " />
                                     <p:selectOneMenu id="idSubGrupo" value="#{emissaoGuiasBean.index[1]}" disabled="#{emissaoGuiasBean.lote.id != -1}">
-                                        <p:ajax event="change" update="i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.clear(2)}"/>
+                                        <p:ajax event="change" update="@this i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.clear(2)}"/>
                                         <f:selectItems value="#{emissaoGuiasBean.listSubGrupo}"/>
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Razão: " />
                                     <p:selectOneMenu id="idEmpresasConv" value="#{emissaoGuiasBean.index[3]}" disabled="#{emissaoGuiasBean.lote.id != -1}">
-                                        <p:ajax event="change"  />
+                                        <p:ajax event="change"  update="@this"/>
                                         <f:selectItems value="#{emissaoGuiasBean.listJuridica}" />
                                     </p:selectOneMenu>
                                 </h:panelGrid>
@@ -109,14 +110,14 @@
                                     <h:column>
                                         <p:outputLabel value="Valor"  /><br />
                                         <p:commandButton id="i_valor" value="R$ #{emissaoGuiasBean.valor}" action="#{emissaoGuiasBean.openModalPedido}" icon="ui-icon-cart" readonly="true" onclick="PF('dlg_pedido').show()" title="Adicionar itens (produtos) ao serviço" rendered="#{emissaoGuiasBean.servicox.produto}" />
-                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.valor}" disabled="#{!emissaoGuiasBean.servicox.alterarValor}" rendered="#{!emissaoGuiasBean.servicox.produto}">
+                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.valor}" disabled="#{!emissaoGuiasBean.servicox.alterarValor}" rendered="#{!emissaoGuiasBean.servicox.produto}" style="#{(!emissaoGuiasBean.servicox.alterarValor) ? 'opacity: 100!important; font-weight: bold; color: black' : ''} ">
                                             <p:ajax event="change" update="i_panel_servicos" />
                                         </p:inputText>
                                     </h:column>
                                     
                                     <h:column>
                                         <p:outputLabel value="Desconto (R$)" rendered="#{!emissaoGuiasBean.servicox.produto}"/><br />
-                                        <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto}" disabled="true">
+                                        <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto}" disabled="true" style="opacity: 100!important; font-weight: bold; color: black">
                                             <p:ajax event="change" update="i_panel_servicos" />
                                         </p:inputText>
                                     </h:column>
@@ -254,7 +255,7 @@
                                         <p:outputLabel value="Valor Unit." />
                                         <p:outputLabel value="Desconto Unit." />
                                         <p:column />
-                                        <p:spinner value="#{emissaoGuiasBean.quantidadePedido}" size="5" min="0" max="#{emissaoGuiasBean.estoque.estoque}" disabled="#{emissaoGuiasBean.lote.id != -1}">
+                                        <p:spinner value="#{emissaoGuiasBean.quantidadePedido}" size="5" min="0" max="#{emissaoGuiasBean.estoque.estoque}" disabled="#{emissaoGuiasBean.lote.id != -1}" style="width: 80px">
                                             <p:ajax event="blur" update="@this" />
                                         </p:spinner>
                                         <p:inputText value="#{emissaoGuiasBean.valorUnitarioPedido}" size="8" dir="rtl" readonly="true">

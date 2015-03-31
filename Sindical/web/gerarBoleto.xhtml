@@ -117,8 +117,8 @@
                             </h:panelGrid>
                             
                             <h:panelGrid id="i_panel_boleto" columns="3">
-                                <p:commandButton value="Gerar Boletos para Todos" onclick="PF('i_dlg_todos').show()" rendered="#{gerarBoletoBean.listaPessoa.size() == 0}"/>
-                                <p:commandButton value="Gerar Boletos para SUA LISTA de Pessoas" onclick="PF('i_dlg_lista').show()" rendered="#{gerarBoletoBean.listaPessoa.size() != 0}"/>
+                                <p:commandButton value="Gerar Boletos para Todos" onclick="PF('i_dlg_todos').show()" rendered="#{gerarBoletoBean.listaPessoa.size() == 0}" disabled="#{controleAcessoBean.verificarPermissao('gerarTodasMensalidades', 1)}"/>
+                                <p:commandButton value="Gerar Boletos para SUA LISTA de Pessoas" onclick="PF('i_dlg_lista').show()" rendered="#{gerarBoletoBean.listaPessoa.size() != 0}" disabled="#{controleAcessoBean.verificarPermissao('gerarMensalidadesIndividual', 1)}"/>
                             </h:panelGrid>
                             
                             <h:panelGrid style="margin-top: 20px; margin-bottom: 20px">

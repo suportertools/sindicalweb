@@ -13,6 +13,21 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu-label .ui-inputfield{}
+            
+            .column01{
+                width: 15%;
+                vertical-align: top;
+            }
+            
+            .column02{
+                width: 65%;
+                vertical-align: top;
+            }
+            
+            .column03{
+                width: 20%;
+                vertical-align: top;
+            }
         </style>
     </h:head>
     <h:body>
@@ -109,114 +124,129 @@
                                     </p:submenu>
                                 </p:submenu>
                             </p:menubar> 
-                        </p:panel>
-                        <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
-                            <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'"/>
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
-                                <center>
-                                    <h:panelGrid>
-                                        <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
-                                    </h:panelGrid>
-                                </center>
-                                <p:commandLink action="#{chamadaPaginaBean.pagina('pesquisaAgendaTelefone','agendaTelefone')}" title="Pesquisa Agenda Telefônica" style="clear: both" actionListener="#{agendaTelefoneBean.putType('pesquisaAgendaTelefone')}">
-                                    <h:graphicImage value="/Imagens/-icone-agenda-telefone.jpg" width="120" /><br />
-                                </p:commandLink>
-                                <h:column rendered="#{agendaNotificaoBean.listAniversariantes.size() > 0}">
-                                    <p:commandLink onclick="PF('dlg_agenda_contato').show();">
-                                        Aniversariantes do mês
-                                        <h:graphicImage value="/Imagens/icon-birthday.png" width="16" /><br />
-                                    </p:commandLink>
-                                </h:column>
-                            </p:panel>
-                            <p:dialog widgetVar="dlg_agenda_contato" modal="true" footer="Felicite esta pessoa" width="600" height="400" resizable="false">
-                                <f:facet name="header">
-                                    <h:panelGrid columns="2">
-                                        <h:graphicImage value="/Imagens/icon-birthday.png" width="16" />
-                                        <h:column>Aniversariantes</h:column>
-                                    </h:panelGrid>
-                                </f:facet>
-                                <p:dataTable var="agendaContato" value="#{agendaNotificaoBean.listAniversariantes}" paginator="true" rows="15">
-                                    <p:column headerText="Principal" width="80">
-                                        #{agendaContato.agenda.nome}
-                                    </p:column>
-                                    <p:column headerText="Data" width="80">
-                                        <h:outputLabel value="#{agendaContato.nascimentoString}" />
-                                    </p:column>
-                                    <p:column headerText="Aniversariante">
-                                        #{agendaContato.contato}
-                                    </p:column>
-                                    <p:column headerText="Depto">
-                                        #{agendaContato.departamento}
-                                    </p:column>
-                                    <p:column headerText="Email">
-                                        <p:outputLabel value="#{agendaContato.email1}" title="#{agendaContato.email2}" />
-                                    </p:column>
-                                </p:dataTable>                                
-                            </p:dialog>
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
-                                <!-- <p:poll interval="5" update="i_panel_poll" listener="# {polling.existeUsuarioSessao()}"/>  -->
-                                <h:panelGrid id="i_panel_poll" style="float: left">
-                                    <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
-                                    <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
-                                    <br />
-                                    <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
-                                </h:panelGrid>
-                            </p:panel>
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="#{!emissaoGuiasBean.listHistoricoEmissaoGuias.isEmpty()}">
-                                <h:panelGrid  style="float: left">
-                                    <h:outputLabel value="Existem guias geradas sem baixar" styleClass="fonteExtratoTela"  style="font-size: 12pt; color: #dd3b58"/>
-                                    <br />
-                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="PF('i_dlg_guias').show()"/>
-                                </h:panelGrid>
-                                <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
-                                    <h:column rendered="#{emissaoGuiasBean.listHistoricoEmissaoGuias != null}">
-                                        <p:dataTable value="#{emissaoGuiasBean.listHistoricoEmissaoGuias}" var="historicoEmissaoGuias" id="tbl" emptyMessage="Nenhuma guia encontrada!" style="width: 550px">
-                                            <p:column headerText="Nome Pessoa">
-                                                <h:outputText value="#{historicoEmissaoGuias.movimento.pessoa.nome}"/>
-                                            </p:column>                                            
-                                            <p:column headerText="Valor" style="text-align: center" width="100">
-                                                <h:outputText value="R$ " style="float: left"/>
-                                                <h:outputText value="#{historicoEmissaoGuias.movimento.valorBaixaString}" style="float: right"/>
-                                            </p:column>                                            
-                                            <p:column headerText="" style="text-align: center" width="40">
-                                                <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
-                                            </p:column>                                            
-                                            <p:column headerText="" style="text-align: center" width="40">
-                                                <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
-                                            </p:column>
-                                        </p:dataTable>
-                                    </h:column>
-                                    <br /><br />
-                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_guias').hide()" style="float: left" />
-                                </p:dialog>
-                            </p:panel>
+                            
+                            <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'" rendered="false"/>
 
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="false">
-                                <h:outputText style="font-size: 16pt!important; color: red; text-decoration: underline;" value="Comunicado" />
-                                <br /><br />
-                                <h:outputText value="Por motivo de feriado Municipal na cidade de Ribeirão Preto no dia 20 de Janeiro, excepcionalmente atenderemos só urgências pelo telefone (16) 3443-3828.
-                                              Caso não seja urgente mandar e-mail para suporte@rtools.com.br que entraremos em contato quando retornarmos.
-                                              Retornaremos nossas atividades no dia 21 de Janeiro em horário normal pelo telefone (16) 3964-6117.
-                                              Agradecemos a Compreensão." style="font-size: 10pt!important"/>
-                                <br /><br />
-                                <h:outputText value="Qualquer problema técnico dentro deste horário enviar um email para  " style="font-size: 10pt!important"/>
-                                <h:outputLink value="mailto:suporte@rtools.com.br" style="font-weight: bold">suporte@rtools.com.br</h:outputLink>
-                                <h:outputText value=" sua solicitação será respondida após voltarmos." style="font-size: 10pt!important"/>
-                            </p:panel>
+                            <h:panelGrid columns="3" columnClasses="column01, column02, column03" style="width: 100%">
+                                <p:column>
+                                    <p:panel>
+                                        <center>
+                                            <h:panelGrid>
+                                                <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
+                                            </h:panelGrid>
+                                        
+                                            <p:commandLink action="#{chamadaPaginaBean.pagina('pesquisaAgendaTelefone','agendaTelefone')}" title="Pesquisa Agenda Telefônica" style="clear: both" actionListener="#{agendaTelefoneBean.putType('pesquisaAgendaTelefone')}">
+                                                <h:graphicImage value="/Imagens/-icone-agenda-telefone.jpg" width="120" /><br />
+                                            </p:commandLink>
+                                            <h:column rendered="#{agendaNotificaoBean.listAniversariantes.size() > 0}">
+                                                <p:commandLink onclick="PF('dlg_agenda_contato').show();">
+                                                    Aniversariantes do mês
+                                                    <h:graphicImage value="/Imagens/icon-birthday.png" width="16" /><br />
+                                                </p:commandLink>
+                                            </h:column>
+                                        </center>
+                                    </p:panel>
+                                </p:column>
 
-                            <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
-                                <h:panelGrid>
-                                    <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
-                                </h:panelGrid>
-                                <br />
-                                <h:panelGrid style="text-align: left;">
-                                    <c:forEach items="#{controleUsuarioBean.listaContador}" var="contadorAcesso">
-                                        <h:commandLink value="#{contadorAcesso.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(contadorAcesso.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
+                                <p:column>
+                                    <p:panel style="height: 50px">
+                                        <!-- <p:poll interval="5" update="i_panel_poll" listener="# {polling.existeUsuarioSessao()}"/>  -->
+                                        <h:panelGrid id="i_panel_poll" style="float: left">
+                                            <h:outputLabel value="Sem Notificações" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58; font-weight: bold"/>
+                                            <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58; font-weight: bold"/>
+                                            <br />
+                                            <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                    <br />
+                                    <p:panel style="height: 80px" rendered="#{!emissaoGuiasBean.listHistoricoEmissaoGuias.isEmpty()}">
+                                        <h:panelGrid  style="float: left">
+                                            <h:outputLabel value="Existem guias geradas sem baixar" style="font-size: 12pt; color: #dd3b58; font-weight: bold"/>
+                                            <br />
+                                            <p:commandLink value="CLIQUE AQUI PARA BAIXAR OU EXCLUIR" onclick="PF('i_dlg_guias').show()"/>
+                                        </h:panelGrid>
+                                    </p:panel>
+
+                                    <p:panel rendered="false">
+                                        <h:outputText style="font-size: 16pt!important; color: red; text-decoration: underline;" value="Comunicado" />
+                                        <br /><br />
+                                        <h:outputText value="Por motivo de feriado Municipal na cidade de Ribeirão Preto no dia 20 de Janeiro, excepcionalmente atenderemos só urgências pelo telefone (16) 3443-3828.
+                                                      Caso não seja urgente mandar e-mail para suporte@rtools.com.br que entraremos em contato quando retornarmos.
+                                                      Retornaremos nossas atividades no dia 21 de Janeiro em horário normal pelo telefone (16) 3964-6117.
+                                                      Agradecemos a Compreensão." style="font-size: 10pt!important"/>
+                                        <br /><br />
+                                        <h:outputText value="Qualquer problema técnico dentro deste horário enviar um email para  " style="font-size: 10pt!important"/>
+                                        <h:outputLink value="mailto:suporte@rtools.com.br" style="font-weight: bold">suporte@rtools.com.br</h:outputLink>
+                                        <h:outputText value=" sua solicitação será respondida após voltarmos." style="font-size: 10pt!important"/>
+                                    </p:panel>
+                                </p:column>
+
+                                <p:column>
+                                    <p:panel>
+                                        <h:panelGrid>
+                                            <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
+                                        </h:panelGrid>
                                         <br />
-                                    </c:forEach>
-                                </h:panelGrid>
-                            </p:panel>
+                                        <h:panelGrid style="text-align: left;">
+                                            <c:forEach items="#{controleUsuarioBean.listaContador}" var="contadorAcesso">
+                                                <h:commandLink value="#{contadorAcesso.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(contadorAcesso.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
+                                                <br />
+                                            </c:forEach>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:column>
+                            </h:panelGrid>                            
                         </p:panel>
+
+
+
+                        <p:dialog widgetVar="dlg_agenda_contato" modal="true" footer="Felicite esta pessoa" width="600" height="400" resizable="false">
+                            <f:facet name="header">
+                                <h:panelGrid columns="2">
+                                    <h:graphicImage value="/Imagens/icon-birthday.png" width="16" />
+                                    <h:column>Aniversariantes</h:column>
+                                </h:panelGrid>
+                            </f:facet>
+                            <p:dataTable var="agendaContato" value="#{agendaNotificaoBean.listAniversariantes}" paginator="true" rows="15">
+                                <p:column headerText="Principal" width="80">
+                                    #{agendaContato.agenda.nome}
+                                </p:column>
+                                <p:column headerText="Data" width="80">
+                                    <h:outputLabel value="#{agendaContato.nascimentoString}" />
+                                </p:column>
+                                <p:column headerText="Aniversariante">
+                                    #{agendaContato.contato}
+                                </p:column>
+                                <p:column headerText="Depto">
+                                    #{agendaContato.departamento}
+                                </p:column>
+                                <p:column headerText="Email">
+                                    <p:outputLabel value="#{agendaContato.email1}" title="#{agendaContato.email2}" />
+                                </p:column>
+                            </p:dataTable>                                
+                        </p:dialog>
+
+                        <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
+                            <h:column rendered="#{emissaoGuiasBean.listHistoricoEmissaoGuias != null}">
+                                <p:dataTable value="#{emissaoGuiasBean.listHistoricoEmissaoGuias}" var="historicoEmissaoGuias" id="tbl" emptyMessage="Nenhuma guia encontrada!" style="width: 550px">
+                                    <p:column headerText="Nome Pessoa">
+                                        <h:outputText value="#{historicoEmissaoGuias.movimento.pessoa.nome}"/>
+                                    </p:column>                                            
+                                    <p:column headerText="Valor" style="text-align: center" width="100">
+                                        <h:outputText value="R$ " style="float: left"/>
+                                        <h:outputText value="#{historicoEmissaoGuias.movimento.valorBaixaString}" style="float: right"/>
+                                    </p:column>                                            
+                                    <p:column headerText="" style="text-align: center" width="40">
+                                        <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
+                                    </p:column>                                            
+                                    <p:column headerText="" style="text-align: center" width="40">
+                                        <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
+                                    </p:column>
+                                </p:dataTable>
+                            </h:column>
+                            <br /><br />
+                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_guias').hide()" style="float: left" />
+                        </p:dialog>
                     </h:form>
                 </f:view>
 

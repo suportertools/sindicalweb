@@ -1,6 +1,8 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
+import br.com.rtools.associativo.MensalidadesAtrasadas;
+import br.com.rtools.associativo.dao.ImpressaoBoletoSocialDao;
 import br.com.rtools.cobranca.BancoDoBrasil;
 import br.com.rtools.cobranca.Bradesco;
 import br.com.rtools.cobranca.CaixaFederalSicob;
@@ -23,6 +25,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.beans.JuridicaBean;
@@ -30,12 +33,12 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.Dao;
@@ -53,7 +56,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -305,7 +307,7 @@ public class ImpressaoBoletoSocialBean {
             
             MovimentoDB movDB = new MovimentoDBToplink();
             Cobranca cobranca = null;
-            
+            PessoaDB dbp = new PessoaDBToplink();
             
             for (int i = 0; i < listaGrid.size(); i++){
                 if ((Boolean)listaGrid.get(i).getArgumento1()){
@@ -316,6 +318,15 @@ public class ImpressaoBoletoSocialBean {
                     else 
                         lista_socio = db.listaBoletoSocioJuridica((String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)); // NR_CTR_BOLETO
 
+                    MensalidadesAtrasadas ma = new ImpressaoBoletoSocialDao().pesquisaMensalidadesAtrasadasPessoa(pessoa.getId());
+                    String referenciaMensalidadesAtrasadas = "Mensalidades Atrasadas";
+                    float valor_total_atrasadas = 0;
+                    if (ma != null){
+                        //valor_total = ma.getValor();
+                        valor_total_atrasadas = ma.getValor();
+                        referenciaMensalidadesAtrasadas = ma.getDescricao();
+                    }
+
                     for (int w = 0; w < lista_socio.size(); w++){
                         Boleto boletox = movDB.pesquisaBoletos("'"+(String) ((Vector)listaGrid.get(i).getArgumento2()).get(0)+"'"); // NR_CTR_BOLETO
                         //Movimento mov = (Movimento)sv.pesquisaCodigo((Integer)lista_socio.get(w).get(1), "Movimento");
@@ -324,14 +335,24 @@ public class ImpressaoBoletoSocialBean {
                         if (list_mov.isEmpty()){
                             continue;
                         }
-                        
                         valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
                         valor_total = Moeda.somaValores(valor_total, Moeda.converteUS$(lista_socio.get(w).get(14).toString()));
                         
                         // ALTERO O VALOR DO MOVIMENTO PARA QUE NA SOMA FINAL DE O VALOR TOTAL DAS GUIAS
                         // O MÉTODO PADRÃO PEGA O VALOR DE UM MOVIMENTO APENAS
-                        list_mov.get(0).setValor(valor_total);
-        
+                        list_mov.get(0).setValor(Moeda.somaValores(valor_total, valor_total_atrasadas));
+                        
+                        // ALTERAR O VENCIMENTO DA GUIA COLOCANDO O DIA DA PESSOA EM pes_complemento
+                        // O MÉTODO PADRÃO PEGA O VENCIMENTO DO MOCIMENTO
+                        PessoaComplemento pc = dbp.pesquisaPessoaComplementoPorPessoa(pessoa.getId());
+                        String vencimento = DataHoje.converteData((Date)lista_socio.get(w).get(7));
+                        
+                        if (pc.getId() != -1) {
+                            vencimento = pc.getNrDiaVencimento() +"/"+ vencimento.substring(3);
+                        } 
+                        
+                        list_mov.get(0).setVencimento(vencimento);
+                        
                         if (boletox.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
                             cobranca = new CaixaFederalSindical(list_mov.get(0), boletox);
                             //swap[43] = "EXERC " + lista.get(i).getReferencia().substring(3);
@@ -361,7 +382,7 @@ public class ImpressaoBoletoSocialBean {
                                 filial.getFilial().getPessoa().getNome(), 
                                 lista_socio.get(w).get(5).toString(), // CODIGO
                                 lista_socio.get(w).get(6).toString(), // RESPONSAVEL
-                                DataHoje.converteData((Date)lista_socio.get(w).get(7)), // VENCIMENTO
+                                vencimento, // VENCIMENTO
                                 (lista_socio.get(w).get(8) == null) ? "" : lista_socio.get(w).get(8).toString(), // MATRICULA
                                 (lista_socio.get(w).get(10) == null) ? "" : lista_socio.get(w).get(10).toString(), // CATEGORIA
                                 (lista_socio.get(w).get(9) == null) ? "" : lista_socio.get(w).get(9).toString(), // GRUPO
@@ -370,8 +391,9 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(11).toString(), // SERVICO
                                 Moeda.converteR$Float(valor), // VALOR
                                 Moeda.converteR$Float(valor_total), // VALOR TOTAL
-                                Moeda.converteR$(lista_socio.get(w).get(15).toString()), // VALOR ATRASADAS
-                                Moeda.converteR$Float(valor_total), // VALOR ATÉ  VALORVENCIMENTO
+                                //Moeda.converteR$(lista_socio.get(w).get(15).toString()), // VALOR ATRASADAS
+                                Moeda.converteR$Float(valor_total_atrasadas), // VALOR ATRASADAS
+                                Moeda.converteR$Float(Moeda.somaValores(valor_total, valor_total_atrasadas)), // VALOR ATÉ VENCIMENTO
                                 file_promo == null ? null : file_promo.getAbsolutePath(), // LOGO PROMOÇÃO
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(boletox.getContaCobranca().getContaBanco().getBanco().getLogo().trim()), // LOGO BANCO
                                 lista_socio.get(w).get(16).toString(), // MENSAGEM
@@ -396,7 +418,8 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(36).toString(), // INFORMATIVO
                                 pessoa.getTipoDocumento().getDescricao()+": "+pessoa.getDocumento(), 
                                 String.valueOf(lista_socio.size()),
-                                boletox.getContaCobranca().getContaBanco().getBanco().getNumero()
+                                boletox.getContaCobranca().getContaBanco().getBanco().getNumero(),
+                                referenciaMensalidadesAtrasadas
                         ));
                     }
                 

@@ -36,6 +36,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -64,6 +65,12 @@ public class LancamentoIndividualBean {
     private Pessoa responsavel = new Pessoa();
     private Lote lote = new Lote();
     private ServicoPessoa servicoPessoa = new ServicoPessoa();
+    private Servicos servicos = new Servicos();
+    
+    @PostConstruct
+    public void init(){
+        servicos = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription()), "Servicos"));
+    }
     
     public void salvarData(){
         if (servicoPessoa.getId() != -1){
@@ -296,6 +303,8 @@ public class LancamentoIndividualBean {
     
     public void limpaEmpresaConvenio(){
         listaJuridica.clear();
+        servicos = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
+        totalPagar = "0,00";
     }
     
     public List<SelectItem> getListaServicos() {
@@ -550,7 +559,7 @@ public class LancamentoIndividualBean {
         if (fisica.getId() != -1 && responsavel.getId() == -1){
             
             List<Vector> result = dbl.pesquisaResponsavel(fisica.getPessoa().getId(), descontoFolha.equals("sim"));
-            if ((Integer) result.get(0).get(0) != 0){
+            if (!result.isEmpty() && (Integer) result.get(0).get(0) != 0){
                 // VERIFICA SE TEM MOVIMENTO EM ABERTO (DEVEDORES)
                 List listam = dbl.pesquisaMovimentoFisica(fisica.getPessoa().getId());
                 if (!listam.isEmpty()){
@@ -573,6 +582,8 @@ public class LancamentoIndividualBean {
                     return responsavel = new Pessoa();
                 }
                 return responsavel = fisica.getPessoa();
+            }else{
+                GenericaMensagem.fatal("Atenção", "Responsável não encontrado, erro na função!");
             }
         }
         return responsavel;
@@ -633,6 +644,14 @@ public class LancamentoIndividualBean {
 
     public void setIdTipoServico(int idTipoServico) {
         this.idTipoServico = idTipoServico;
+    }
+
+    public Servicos getServicos() {
+        return servicos;
+    }
+
+    public void setServicos(Servicos servicos) {
+        this.servicos = servicos;
     }
 
 }
