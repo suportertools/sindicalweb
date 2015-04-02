@@ -221,14 +221,23 @@ public class CartaoSocialBean implements Serializable {
     }
 
     public void imprimirCarteirinha() {
-        Dao dao = new Dao();
+        imprimirCarteirinha(null);
+    }
 
-        if (!listaSelecionado.isEmpty()) {
+    public void imprimirCarteirinha(Vector vector) {
+        Dao dao = new Dao();
+        List<Vector> list = new ArrayList();
+        if (!listaSelecionado.isEmpty() && vector == null) {
+            list = listaSelecionado;
+        } else if (vector != null) {
+            list.add(vector);
+        }
+        if (!list.isEmpty()) {
             dao.openTransaction();
             SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-            for (int i = 0; i < listaSelecionado.size(); i++) {
-                Pessoa pessoa = (Pessoa) dao.find(new Pessoa(), (Integer) ((List) listaSelecionado.get(i)).get(0));
-                SocioCarteirinha carteirinha = (SocioCarteirinha) dao.find(new SocioCarteirinha(), (Integer) ((List) listaSelecionado.get(i)).get(19));
+            for (int i = 0; i < list.size(); i++) {
+                Pessoa pessoa = (Pessoa) dao.find(new Pessoa(), (Integer) ((List) list.get(i)).get(0));
+                SocioCarteirinha carteirinha = (SocioCarteirinha) dao.find(new SocioCarteirinha(), (Integer) ((List) list.get(i)).get(19));
 
                 //ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
                 //ModeloCarteirinha modeloc = (ModeloCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "ModeloCarteirinha");
@@ -240,14 +249,14 @@ public class CartaoSocialBean implements Serializable {
                         dao.rollback();
                         return;
                     }
-                    listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
+                    list.get(i).set(6, carteirinha.getValidadeCarteirinha());
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
 
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Primeira Impressão de Carteirinha");
 
-                    if (listaSelecionado.get(i).get(17) != null) {
-                        Movimento m = (Movimento) dao.find(new Movimento(), Integer.valueOf(listaSelecionado.get(i).get(17).toString()));
+                    if (list.get(i).get(17) != null) {
+                        Movimento m = (Movimento) dao.find(new Movimento(), Integer.valueOf(list.get(i).get(17).toString()));
                         if (m != null) {
                             hc.setMovimento(m);
                         }
@@ -275,8 +284,8 @@ public class CartaoSocialBean implements Serializable {
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Impressão de Carteirinha");
 
-                    if (listaSelecionado.get(i).get(17) != null) {
-                        Movimento m = (Movimento) dao.find(new Movimento(), Integer.valueOf(listaSelecionado.get(i).get(17).toString()));
+                    if (list.get(i).get(17) != null) {
+                        Movimento m = (Movimento) dao.find(new Movimento(), Integer.valueOf(list.get(i).get(17).toString()));
                         if (m != null) {
                             hc.setMovimento(m);
                         }
@@ -300,7 +309,7 @@ public class CartaoSocialBean implements Serializable {
                 }
             }
 
-            if (ImpressaoParaSocios.imprimirCarteirinha(listaSelecionado)) {
+            if (ImpressaoParaSocios.imprimirCarteirinha(list)) {
                 dao.commit();
             } else {
                 dao.rollback();

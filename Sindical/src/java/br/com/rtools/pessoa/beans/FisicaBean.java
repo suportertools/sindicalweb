@@ -1805,6 +1805,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (fisica.getId() != -1) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png"));
                 sucesso = f.delete();
+                if(!sucesso) {
+                    f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".jpg"));
+                    sucesso = f.delete();                    
+                }
             }
         }
         if (sucesso) {

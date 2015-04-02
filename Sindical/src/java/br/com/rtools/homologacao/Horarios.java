@@ -39,6 +39,8 @@ public class Horarios implements Serializable {
     @JoinColumn(name = "id_semana", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Semana semana;
+    @Column(name = "is_web", columnDefinition = "BOOLEAN DEFAULT TRUE", nullable = false)
+    private Boolean web;
 
     public Horarios() {
         id = -1;
@@ -47,15 +49,17 @@ public class Horarios implements Serializable {
         ativo = true;
         filial = new Filial();
         semana = new Semana();
+        web = true;
     }
 
-    public Horarios(int id, String hora, int quantidade, boolean ativo, Filial filial, Semana semana) {
+    public Horarios(int id, String hora, int quantidade, boolean ativo, Filial filial, Semana semana, Boolean web) {
         this.id = id;
         this.hora = hora;
         this.quantidade = quantidade;
         this.ativo = ativo;
         this.filial = filial;
         this.semana = semana;
+        this.web = web;
     }
 
     public int getId() {
@@ -104,5 +108,13 @@ public class Horarios implements Serializable {
 
     public void setSemana(Semana semana) {
         this.semana = semana;
+    }
+
+    public Boolean getWeb() {
+        return web;
+    }
+
+    public void setWeb(Boolean web) {
+        this.web = web;
     }
 }

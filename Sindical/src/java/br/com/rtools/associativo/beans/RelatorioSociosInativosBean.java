@@ -15,13 +15,16 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -40,6 +43,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class RelatorioSociosInativosBean implements Serializable {
+
     private List<Socios> listaSocios;
     private List<SelectItem> listaTipoRelatorio;
     private int indexRelatorio;
@@ -57,9 +61,8 @@ public class RelatorioSociosInativosBean implements Serializable {
     private List<SelectItem> listaGrupoCategoria;
     private int indexGrupoCategoria;
     private String ordernarPor = "nome";
-    
-    
-    public RelatorioSociosInativosBean(){
+
+    public RelatorioSociosInativosBean() {
         listaSocios = new ArrayList();
         listaTipoRelatorio = new ArrayList();
         listaCategoria = new ArrayList();
@@ -67,7 +70,7 @@ public class RelatorioSociosInativosBean implements Serializable {
         this.loadListaRelatorio();
         indexRelatorio = 0;
         comDependentes = false;
-        
+
         chkDataInativacao = false;
         chkDataFiliacao = false;
         chkCategoria = false;
@@ -81,29 +84,28 @@ public class RelatorioSociosInativosBean implements Serializable {
         indexCategoria = 0;
         indexGrupoCategoria = 0;
     }
-    
-    
-    public void imprimir(){
+
+    public void imprimir() {
         RelatorioSociosDB db = new RelatorioSociosDBToplink();
-        
+
         int id_categoria = -1, id_grupo_categoria = -1;
-        if (chkCategoria){
+        if (chkCategoria) {
             id_categoria = Integer.valueOf(listaCategoria.get(indexCategoria).getDescription());
         }
-        
-        if (chkGrupoCategoria){
+
+        if (chkGrupoCategoria) {
             id_grupo_categoria = Integer.valueOf(listaGrupoCategoria.get(indexGrupoCategoria).getDescription());
         }
-        
+
         List<Vector> result = db.listaSociosInativos(comDependentes, chkDataInativacao, chkDataFiliacao, dataInativacaoInicial, dataInativacaoFinal, dataFiliacaoInicial, dataFiliacaoFinal, id_categoria, id_grupo_categoria, ordernarPor);
-        
+
         Dao di = new Dao();
-        
-        Juridica sindicato = (Juridica)di.find(new Juridica(), 1);
+
+        Juridica sindicato = (Juridica) di.find(new Juridica(), 1);
         PessoaEndereco endSindicato = (new PessoaEnderecoDBToplink()).pesquisaEndPorPessoaTipo(sindicato.getId(), 3);
-        
+
         List<ParametroSociosInativos> lista = new ArrayList();
-        for(int i = 0; i < result.size(); i++){
+        for (int i = 0; i < result.size(); i++) {
             lista.add(new ParametroSociosInativos(
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                     sindicato.getPessoa().getSite(), // sinSite
@@ -120,67 +122,59 @@ public class RelatorioSociosInativosBean implements Serializable {
                     result.get(i).get(0).toString(), // nomeTitular
                     result.get(i).get(1).toString(), // codTitular
                     result.get(i).get(2).toString(), // codSocio
-                    result.get(i).get(3).toString()+" ("+result.get(i).get(4).toString()+") ", // nome
+                    result.get(i).get(3).toString() + " (" + result.get(i).get(4).toString() + ") ", // nome
                     result.get(i).get(4).toString(), // parentesco
                     result.get(i).get(5).toString(), // matricula
                     result.get(i).get(6).toString(), // categoria
-                    DataHoje.converteData((Date)result.get(i).get(7)), // filiacao -- data
-                    DataHoje.converteData((Date)result.get(i).get(8)), // inativacao -- data
+                    DataHoje.converteData((Date) result.get(i).get(7)), // filiacao -- data
+                    DataHoje.converteData((Date) result.get(i).get(8)), // inativacao -- data
                     result.get(i).get(9).toString()) // motivo_inativacao
             );
         }
-        
-        if (!lista.isEmpty()){
-            Relatorios rel = (Relatorios) di.find(new Relatorios(), Integer.valueOf(listaTipoRelatorio.get(indexRelatorio).getDescription()));
+
+        if (!lista.isEmpty()) {
             try {
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-                File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(rel.getJasper()));
-                
-                if (comDependentes)
-                    fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/SOCIOINATIVODEPENDENTE.jasper"));
-                        
-                JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                Relatorios relatorios = (Relatorios) di.find(new Relatorios(), Integer.valueOf(listaTipoRelatorio.get(indexRelatorio).getDescription()));
+                String jasperName = relatorios.getNome();
+                String jasperFile = relatorios.getJasper();
+                if (comDependentes) {
+                    jasperName = "relatorio sócios inativos dependente";
+                    jasperFile = "/Relatorios/SOCIOINATIVODEPENDENTE.jasper";
+                }
 
-                byte[] arquivo = new byte[0];
-                arquivo = JasperExportManager.exportReportToPdf(print);
-
-                String nomeDownload = rel.getNome() + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-                sa.salvaNaPasta(pathPasta);
-
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
+                Jasper.PART_NAME = AnaliseString.removerAcentos(jasperName.toLowerCase());
+                Jasper.PATH = "downloads";
+                if (relatorios.getPorFolha()) {
+                    Jasper.GROUP_NAME = relatorios.getNomeGrupo();
+                }
+                Jasper.printReports(jasperFile, "relatorios", (Collection) lista);
             } catch (Exception e) {
                 System.err.println(e);
             }
         }
     }
-    
-    public void porDataInativacao(){
+
+    public void porDataInativacao() {
         chkDataInativacao = (chkDataInativacao == true) ? false : true;
         dataInativacaoInicial = DataHoje.data();
         dataInativacaoFinal = DataHoje.data();
     }
-    
-    public void porDataFiliacao(){
+
+    public void porDataFiliacao() {
         chkDataFiliacao = (chkDataFiliacao == true) ? false : true;
         dataFiliacaoInicial = DataHoje.data();
         dataFiliacaoFinal = DataHoje.data();
     }
-    
-    public void porCategoria(){
+
+    public void porCategoria() {
         chkCategoria = (chkCategoria == true) ? false : true;
     }
-    
-    public void porGrupoCategoria(){
+
+    public void porGrupoCategoria() {
         chkGrupoCategoria = (chkGrupoCategoria == true) ? false : true;
     }
-    
-    public final void loadListaRelatorio(){
+
+    public final void loadListaRelatorio() {
         listaTipoRelatorio.clear();
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         List<Relatorios> select = db.pesquisaTipoRelatorio(270);
@@ -191,8 +185,8 @@ public class RelatorioSociosInativosBean implements Serializable {
             );
         }
     }
-    
-    public final void loadListaCategoria(){
+
+    public final void loadListaCategoria() {
         listaCategoria.clear();
         Dao di = new Dao();
         CategoriaDB db = new CategoriaDBToplink();
@@ -205,8 +199,8 @@ public class RelatorioSociosInativosBean implements Serializable {
             );
         }
     }
-    
-    public final void loadListaGrupoCategoria(){
+
+    public final void loadListaGrupoCategoria() {
         listaGrupoCategoria.clear();
         Dao di = new Dao();
         //List<Categoria> select = di.list(new Categoria());
@@ -218,10 +212,10 @@ public class RelatorioSociosInativosBean implements Serializable {
             );
         }
     }
-    
+
     public List<SelectItem> getListaTipoRelatorio() {
         return listaTipoRelatorio;
-    }    
+    }
 
     public void setListaTipoRelatorio(List<SelectItem> listaTipoRelatorio) {
         this.listaTipoRelatorio = listaTipoRelatorio;

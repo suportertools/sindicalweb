@@ -256,11 +256,12 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
 
     @Override
-    public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica) {
+    public List<Agendamento> pesquisaAgendamento(Integer idStatus, Integer idFilial, Date dataInicial, Date dataFinal, Integer idUsuario, Integer idPessoaFisica, Integer idPessoaJuridica, Boolean somenteAtivos, Boolean web) {
 
         String dataCampo = "";
         String homologadorCampo = "";
         String statusCampo = "";
+        String somenteAtivosString = "";
         String innerPessoaEmpresa = "";
         String pessoaEmpresaCampo = "";
         if (idPessoaFisica > 0 || idPessoaJuridica > 0) {
@@ -283,8 +284,11 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         if (idStatus > 0) {
             statusCampo = " AND age.id_status = " + idStatus;
         }
+        if (somenteAtivos) {
+            somenteAtivosString = " AND hor.ativo = true ";
+        }
         try {
-            String textoQry
+            String textQuery
                     = "       SELECT age.*                                      "
                     + "       FROM hom_agendamento age                         "
                     + "      INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
@@ -294,12 +298,12 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + homologadorCampo
                     + statusCampo
                     + pessoaEmpresaCampo
-                    + "        AND hor.ativo = true                            "
+                    + somenteAtivosString
                     + "        AND age.id_filial = " + idFilial
                     + "      ORDER BY age.dt_data DESC, hor.ds_hora ASC      "
                     + "      LIMIT 1000                                        ";
 
-            Query qry = getEntityManager().createNativeQuery(textoQry, Agendamento.class);
+            Query qry = getEntityManager().createNativeQuery(textQuery, Agendamento.class);
 
             return qry.getResultList();
 //            if (!qry.getResultList().isEmpty()) {
@@ -406,7 +410,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
 
     @Override
-    public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data) {
+    public int pesquisaQntdDisponivel(Integer idFilial, Horarios horarios, Date data) {
         try {
             String text = " "
                     + "      SELECT CASE WHEN  "
@@ -486,18 +490,28 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     }
 
     @Override
-    public List pesquisaTodosHorariosDisponiveis(int idFilial, int idDiaSemana) {
+    public List pesquisaTodosHorariosDisponiveis(Integer idFilial, Integer idDiaSemana) {
+        return pesquisaTodosHorariosDisponiveis(idFilial, idDiaSemana, false);
+    }
+
+    @Override
+    public List pesquisaTodosHorariosDisponiveis(Integer idFilial, Integer idDiaSemana, Boolean web) {
+        String whereString = "";
+        if (web) {
+            whereString = " AND H.web = true ";
+        }
         try {
-            Query qry = getEntityManager().createQuery(
-                    "   SELECT h "
-                    + "     FROM Horarios h "
-                    + "    WHERE h.ativo = true "
-                    + "      AND h.filial.id = :idFilial "
-                    + "      AND h.semana.id = :idDiaSemana "
-                    + " ORDER BY h.hora");
-            qry.setParameter("idFilial", idFilial);
-            qry.setParameter("idDiaSemana", idDiaSemana);
-            List list = qry.getResultList();
+            Query query = getEntityManager().createQuery(
+                    "     SELECT H                          "
+                    + "     FROM Horarios AS H              "
+                    + "    WHERE H.ativo = true             "
+                    + "      AND H.filial.id = :idFilial    "
+                    + "      AND H.semana.id = :idDiaSemana "
+                    + whereString
+                    + " ORDER BY H.hora");
+            query.setParameter("idFilial", idFilial);
+            query.setParameter("idDiaSemana", idDiaSemana);
+            List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }

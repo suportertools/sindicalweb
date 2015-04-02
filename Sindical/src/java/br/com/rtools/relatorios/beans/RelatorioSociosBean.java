@@ -14,8 +14,6 @@ import br.com.rtools.financeiro.db.FTipoDocumentoDB;
 import br.com.rtools.financeiro.db.FTipoDocumentoDBToplink;
 import br.com.rtools.impressao.ParametroSocios;
 import br.com.rtools.pessoa.Juridica;
-import br.com.rtools.pessoa.db.JuridicaDB;
-import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
@@ -26,7 +24,6 @@ import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -44,7 +41,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.design.JRDesignGroup;
 
 @ManagedBean
 @SessionScoped
@@ -128,10 +124,12 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booEstadoCivil = false;
     private boolean booEmpresa = false;
     private Boolean situacao = false;
+    private Boolean compactar = false;
     private Integer carenciaDias = null;
     private String tipoCarencia = "eleicao";
     private Boolean enableFolha = false;
     private Boolean porFolha = false;
+    private Juridica empresa = new Juridica();
 
     public void limparFiltro() {
 //        listaMenuRSocial.clear();
@@ -218,8 +216,14 @@ public class RelatorioSociosBean implements Serializable {
             booTelefone = !booTelefone;
         } else if (index == 15) {
             booEstadoCivil = !booEstadoCivil;
+            if (!booEstadoCivil) {
+                tipoEstadoCivil = "Solteiro(a)";
+            }
         } else if (index == 16) {
             booEmpresa = !booEmpresa;
+            if (!booEmpresa) {
+                empresa = new Juridica();
+            }
         } else if (index == 17) {
             situacao = !situacao;
             if (situacao) {
@@ -377,22 +381,14 @@ public class RelatorioSociosBean implements Serializable {
             }
         }
 
-        int id_juridica = -1;
-        if (!getListaEmpresas().isEmpty()) {
-            JuridicaDB dbJ = new JuridicaDBToplink();
-            id_juridica = dbJ.pesquisaCodigo(Integer.parseInt(getListaEmpresas().get(idEmpresas).getDescription())).getId();
-        }
-
         List<List> result = dbS.pesquisaSocios(relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
                 booSexo, tipoSexo, booGrau, ids_parentesco, booFotos, tipoFotos, booCarteirinha, tipoCarteirinha,
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
-                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, id_juridica, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias);
+                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias);
 
         Collection lista = new ArrayList();
-        boolean agrupa = false;
-        boolean continua = false;
         for (int i = 0; i < result.size(); i++) {
             lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     getConverteNullString(result.get(i).get(1)), // SITE
@@ -436,7 +432,7 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(39)),// BAIRRO
                     getConverteNullString(result.get(i).get(40)),// CIDADE
                     getConverteNullString(result.get(i).get(41)),// UF
-                    getConverteNullString(result.get(i).get(42)),// CEP
+                    getConverteNullString(getConverteNullString(result.get(i).get(42))),// CEP
                     getConverteNullString(result.get(i).get(43)),// SETOR
                     (Date) result.get(i).get(44),// DT ADMISSAO ---------------
                     getConverteNullString(result.get(i).get(45)),// PROFISSAO
@@ -487,13 +483,13 @@ public class RelatorioSociosBean implements Serializable {
         if (relatorios.getPorFolha()) {
             Jasper.GROUP_NAME = relatorios.getNomeGrupo();
             if (porFolha) {
-                Jasper.IS_BY_LEAF = true;
+                // Jasper.setIS_BY_LEAF((Boolean) true);
             } else {
-                Jasper.IS_BY_LEAF = false;
+                // Jasper.setIS_BY_LEAF((Boolean) false);
             }
         }
-        Jasper.COMPRESS_FILE = true;
-        Jasper.COMPRESS_LIMIT = 1000;
+        // Jasper.COMPRESS_FILE = false;
+        // Jasper.COMPRESS_LIMIT = 1000;
         Jasper.printReports(relatorios.getJasper(), "relatorios", (Collection) lista);
         return null;
     }
@@ -1367,6 +1363,28 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setPorFolha(Boolean porFolha) {
         this.porFolha = porFolha;
+    }
+
+    public Juridica getEmpresa() {
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            empresa = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+        }
+        return empresa;
+    }
+
+    public void setEmpresa(Juridica empresa) {
+        if (empresa == null) {
+            empresa = new Juridica();
+        }
+        this.empresa = empresa;
+    }
+
+    public Boolean getCompactar() {
+        return compactar;
+    }
+
+    public void setCompactar(Boolean compactar) {
+        this.compactar = compactar;
     }
 
 }
