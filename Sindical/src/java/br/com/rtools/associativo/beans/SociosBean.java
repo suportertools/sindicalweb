@@ -197,7 +197,11 @@ public class SociosBean implements Serializable {
         Dao dao = new Dao();
         // SE REATIVAR == FALSE NÃO CARREGAR SOCIO
 
-        pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
+        if (GenericaSessao.exists("pessoaEmpresaPesquisa")) {
+            pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa", true);
+        } else {
+            pessoaEmpresa = null;
+        }
 
         if (reativar == false) {
             descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), 1);
@@ -556,6 +560,10 @@ public class SociosBean implements Serializable {
             if (novoDependente.getId() != -1) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png"));
                 sucesso = f.delete();
+                if (!sucesso) {
+                    f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".jpg"));
+                    sucesso = f.delete();
+                }
             }
         }
         if (sucesso) {

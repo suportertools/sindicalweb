@@ -183,7 +183,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 case 1: {
                     // TIRAR VALOR 1 DA PESQUISA PELO MAC DA FILIAL
                     int idDiaSemana = DataHoje.diaDaSemana(data);
-                    horario = db.pesquisaTodosHorariosDisponiveis(sindicatoFilial.getFilial().getId(), idDiaSemana);
+                    horario = db.pesquisaTodosHorariosDisponiveis(sindicatoFilial.getFilial().getId(), idDiaSemana, true);
                     int qnt;
                     for (int i = 0; i < horario.size(); i++) {
                         qnt = db.pesquisaQntdDisponivel(getSindicatoFilial().getFilial().getId(), horario.get(i), data);

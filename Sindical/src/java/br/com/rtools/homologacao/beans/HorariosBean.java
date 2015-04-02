@@ -209,6 +209,12 @@ public class HorariosBean implements Serializable {
         return null;
     }
 
+    public void update(Horarios h) {
+        Dao dao = new Dao();
+        GenericaMensagem.info("Sucesso", "Registro atualizado");
+        dao.update(h, true);
+    }
+
     public void delete(Horarios h) {
         Dao dao = new Dao();
         if (h.getId() != -1) {

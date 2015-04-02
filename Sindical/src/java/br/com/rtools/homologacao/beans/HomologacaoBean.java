@@ -126,12 +126,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         } else {
             idUsuario = us.getId();
         }
-        List<Agendamento> agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), data, null, idUsuario, 0, 0);
+        List<Agendamento> agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), data, null, idUsuario, 0, 0, false, false);
 
         for (int i = 0; i < agendamentos.size(); i++) {
             ListaAgendamento listaAgendamento = new ListaAgendamento();
             listaAgendamento.setAgendamento(agendamentos.get(i));
-            Usuario u = new Usuario();
             if (registro.isSenhaHomologacao()) {
                 Senha senha = db.pesquisaSenhaAgendamento(agendamentos.get(i).getId());
                 if (DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData())) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
@@ -300,13 +299,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public String retornaSequenciaSenha() {
-        Senha senha = null;
         HomologacaoDB dbh = new HomologacaoDBToplink();
         SegurancaUtilitariosBean su = new SegurancaUtilitariosBean();
         Dao di = new Dao();
 
         // SENHA COM HOMOLOGAÇÃO INICIADA -----
-        senha = dbh.pesquisaAtendimentoIniciado(su.getSessaoUsuario().getId(), macFilial.getMesa(), macFilial.getFilial().getId());
+        Senha senha = dbh.pesquisaAtendimentoIniciado(su.getSessaoUsuario().getId(), macFilial.getMesa(), macFilial.getFilial().getId());
         if (senha.getId() != -1) {
             agendamento = senha.getAgendamento();
             if (agendamento.getTelefone().length() > 14) {
@@ -1390,15 +1388,14 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     public void setTipoTelefone(String tipoTelefone) {
         this.tipoTelefone = tipoTelefone;
     }
-    
-    // ARQUIVOS
 
+    // ARQUIVOS
     public List getListFiles() {
         listFiles.clear();
         listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamento.getId());
         return listFiles;
     }
-    
+
     public void upload(FileUploadEvent event) {
         ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
         configuracaoUpload.setArquivo(event.getFile().getFileName());

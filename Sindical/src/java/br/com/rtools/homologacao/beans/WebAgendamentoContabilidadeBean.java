@@ -191,7 +191,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
             case 1: {
                 int idDiaSemana = DataHoje.diaDaSemana(data);
-                horario = (List<Horarios>) db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana);
+                horario = (List<Horarios>) db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana, true);
 
                 int qnt;
                 for (int i = 0; i < horario.size(); i++) {

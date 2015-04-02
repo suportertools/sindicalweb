@@ -268,7 +268,7 @@ public class RecepcaoBean implements Serializable {
         dataFinalAtendimento = DataHoje.data();
 
         listFiles = new ArrayList();
-                
+
         getListaStatusAtendimento();
         loadListHorarios();
         loadListaAtendimentoSimples();
@@ -1095,7 +1095,7 @@ public class RecepcaoBean implements Serializable {
             }
 
             if (numeroProtocolo.equals("")) {
-                ag = db.pesquisaAgendamento(idCasoStatus, macFilial.getFilial().getId(), dataInicialA, dataFinalA, 0, fisica.getId(), juridica.getId());
+                ag = db.pesquisaAgendamento(idCasoStatus, macFilial.getFilial().getId(), dataInicialA, dataFinalA, 0, fisica.getId(), juridica.getId(), true, false);
             } else {
                 ag = new ArrayList();
             }
@@ -1148,7 +1148,7 @@ public class RecepcaoBean implements Serializable {
 
             if (!isOposicao) {
                 Cancelamento can = (Cancelamento) db.pesquisaCancelamentoPorAgendanto(ag.get(i).getId());
-                if (senha.getId() != -1 && can == null) {
+                if (senha != null && senha.getId() != -1 && can == null) {
                     senhaId = "tblListaRecepcaox";
                 }
             } else {
@@ -1357,8 +1357,8 @@ public class RecepcaoBean implements Serializable {
     // ARQUIVOS
     public List getListFiles() {
         listFiles.clear();
-        if(agendamentoEdit.getId() != -1) {
-            listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamentoEdit.getId());            
+        if (agendamentoEdit.getId() != -1) {
+            listFiles = Diretorio.listaArquivos("Arquivos/homologacao/" + agendamentoEdit.getId());
         }
         return listFiles;
     }

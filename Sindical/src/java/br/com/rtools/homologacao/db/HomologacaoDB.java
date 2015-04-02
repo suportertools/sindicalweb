@@ -16,20 +16,21 @@ public interface HomologacaoDB {
 
     public Agendamento pesquisaProtocolo(int id);
 
-    public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica);
+    public List<Agendamento> pesquisaAgendamento(Integer idStatus, Integer idFilial, Date dataInicial, Date dataFinal, Integer idUsuario, Integer idPessoaFisica, Integer idPessoaJuridica, Boolean somenteAtivos, Boolean web);
 
     public List pesquisaTodos(int idFilial);
 
-    public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data);
+    public int pesquisaQntdDisponivel(Integer idFilial, Horarios horarios, Date data);
 
     public int pesquisaQuantidadeAgendado(int idFilial, Horarios horarios, Date data);
 
     public List pesquisaAgendadoPorEmpresa(Date data, int idEmpresa);
 
-    public List pesquisaTodosHorariosDisponiveis(int idFilial, int idDiaSemana);
+    public List pesquisaTodosHorariosDisponiveis(Integer idFilial, Integer idDiaSemana);
+
+    public List pesquisaTodosHorariosDisponiveis(Integer idFilial, Integer idDiaSemana, Boolean web);
 
     //public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc);
-
     public PessoaEmpresa pesquisaPessoaEmpresaPertencente(String doc);
 
     public List pesquisaPessoaDebito(int id_pessoa, String vencimento);
@@ -59,27 +60,29 @@ public interface HomologacaoDB {
     public Senha pesquisaAtendimentoIniciado(int id_usuario, int nr_mesa, int id_filial);
 
     public Senha pesquisaAtendimentoIniciadoSimples(int id_filial);
-    
+
     public boolean verificaNaoAtendidosSegRegistroAgendamento();
 
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo);
 
     public boolean existeHorarioDisponivel(Date date, Horarios horarios);
-    
+
     public Cancelamento pesquisaCancelamentoPorAgendanto(int idAgendamento);
-    
+
     public List<Senha> listaAtendimentoIniciadoSimples(int id_filial, int id_usuario);
-    
+
     public List<Senha> listaAtendimentoIniciadoSimplesPesquisa(int id_filial, int id_usuario, int id_status, String tipoData, String dataInicial, String dataFinal, int id_pessoa, String descricaoFisica, String tipoPesquisaFisica);
-    
+
     public List<Senha> listaAtendimentoIniciadoSimplesUsuario(int id_filial, int id_usuario);
-    
+
     public Senha pesquisaAtendimentoReserva(int id_filial, int id_usuario);
-    
+
     public List<Senha> listaSequenciaSenha(int id_filial);
-    
+
     public PessoaEmpresa pesquisaPessoaEmpresaAdmissao(int id_fisica, int id_juridica, String dataAdmissao);
+
     public PessoaEmpresa pesquisaPessoaEmpresaDemissao(int id_fisica, int id_juridica, String dataDemissao);
+
     public Agendamento pesquisaAgendamentoPorPessoaEmpresa(int id_pessoa_empresa, int[] ids_status);
-    
+
 }

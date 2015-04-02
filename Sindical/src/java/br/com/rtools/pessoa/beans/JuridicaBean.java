@@ -3,6 +3,10 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.arrecadacao.*;
 import br.com.rtools.arrecadacao.beans.OposicaoBean;
 import br.com.rtools.arrecadacao.db.*;
+import br.com.rtools.associativo.dao.SociosDao;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
+import br.com.rtools.associativo.lista.ListaSociosEmpresa;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
@@ -108,6 +112,7 @@ public class JuridicaBean implements Serializable {
     private boolean carregaEnvios = false;
     private boolean renderAtivoInativo = false;
     private List<Oposicao> listaOposicao = new ArrayList();
+    private List<ListaSociosEmpresa> listSocios = new ArrayList<>();
     private boolean somenteAtivas = false;
     private boolean somenteContabilidades = false;
 //    private boolean chkEndContabilidade = true;
@@ -805,6 +810,7 @@ public class JuridicaBean implements Serializable {
                 return url;
             }
         }
+        listSocios.clear();
         listaContribuintesInativos.clear();
         listaEmpresasPertencentes.clear();
         contribuintesInativos = new ContribuintesInativos();
@@ -861,6 +867,7 @@ public class JuridicaBean implements Serializable {
 //            }
 //        }
         existeOposicaoEmpresa();
+        getListSocios();
         return "pessoaJuridica";
 
     }
@@ -2480,6 +2487,44 @@ public class JuridicaBean implements Serializable {
     public void setListRepisMovimento(List<RepisMovimento> listRepisMovimento) {
         this.listRepisMovimento = listRepisMovimento;
     }
+
+    public List<ListaSociosEmpresa> getListSocios() {
+        if (listSocios.isEmpty()) {
+            if (juridica.getId() != -1) {
+                SociosDao sociosDao = new SociosDao();
+                List list = sociosDao.pesquisaSocioPorEmpresa(juridica.getId());
+                for (int i = 0; i < list.size(); i++) {
+                    Integer matricula = Integer.parseInt(AnaliseString.converteNullString(((List) list.get(i)).get(1)));
+                    Date filiacao = null;
+                    if (!((List) list.get(i)).get(3).toString().isEmpty()) {
+                        filiacao = (Date) ((List) list.get(i)).get(3);
+                    }
+                    Date admissao = null;
+                    if (!AnaliseString.converteNullString(((List) list.get(i)).get(4)).isEmpty()) {
+                        admissao = (Date) ((List) list.get(i)).get(4);
+                    }
+                    Boolean desconto_folha = false;
+                    if (!AnaliseString.converteNullString(((List) list.get(i)).get(5)).isEmpty()) {
+                        desconto_folha = (Boolean) ((List) list.get(i)).get(5);
+                    }
+                    listSocios.add(
+                            new ListaSociosEmpresa(
+                                    AnaliseString.converteNullString(((List) list.get(i)).get(0)),
+                                    matricula,
+                                    AnaliseString.converteNullString(((List) list.get(i)).get(2)),
+                                    filiacao,
+                                    admissao,
+                                    desconto_folha
+                            ));
+                }
+            }
+        }
+        return listSocios;
+    }
+
+    public void setListSocios(List<ListaSociosEmpresa> listSocios) {
+        this.listSocios = listSocios;
+    }
 }
 
 // ANTIGA PESQUISA POR WEBSERVICE KNU -- depois da data 01/12/2014 excluir esse comentário
@@ -2519,7 +2564,6 @@ public class JuridicaBean implements Serializable {
 //            } catch (Exception ex) {
 //                ex.printStackTrace();
 //            }
-
 //
 //    public void pesquisaCnpj() {
 //        if (juridica.getId() != -1) {
