@@ -303,6 +303,29 @@
                                         </ui:include>                                 
                                     </p:tab>
 
+                                    <p:tab title="Sócios">
+                                        <p:dataTable styleClass="margin-top-max" value="#{juridicaBean.listSocios}" var="listSocios" style="width: 100%" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="300">
+                                            <p:column headerText="Matrícula" styleClass="text-center">
+                                                <h:outputText value="#{listSocios.matricula}" />
+                                            </p:column>                                                                                       
+                                            <p:column headerText="Nome" styleClass="text-center">
+                                                <h:outputText value="#{listSocios.nome}" />
+                                            </p:column>                                                
+                                            <p:column headerText="Categoria" styleClass="text-center">
+                                                <h:outputText value="#{listSocios.categoria}" />
+                                            </p:column>                                                
+                                            <p:column headerText="Filiação" styleClass="text-center">
+                                                <h:outputText value="#{listSocios.filiacaoString}" />
+                                            </p:column>
+                                            <p:column headerText="Admissão" styleClass="text-center">
+                                                <h:outputText value="#{listSocios.admissaoString}" />
+                                            </p:column>
+                                            <p:column headerText="Desc. Folha" styleClass="text-center">
+                                                <p:selectBooleanCheckbox value="#{listSocios.desconto_folha}" disabled="true"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
+
                                     <p:tab title="Certidões">
                                         <p:dataTable styleClass="margin-top-max" value="#{juridicaBean.listRepisMovimento}" var="repisMovimento" id="tbl" style="width: 100%" emptyMessage="Nenhum registro encontrado!">
                                             <f:facet name="header">
