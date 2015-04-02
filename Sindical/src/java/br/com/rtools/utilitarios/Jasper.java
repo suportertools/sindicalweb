@@ -1,8 +1,10 @@
 package br.com.rtools.utilitarios;
 
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,36 +16,90 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
+@ManagedBean(name = "jasperBean")
 public class Jasper {
 
+    /**
+     * Diretório do arquivo
+     */
     public static String PATH = "downloads/relatorios";
+    /**
+     * Nome extra do arquivo
+     */
     public static String PART_NAME = "relatorio";
+    /**
+     * Baixar arquivo (Default true);
+     */
     public static Boolean IS_DOWNLOAD = true;
+    /**
+     * Remover arquivo após gerar (Default true);
+     */
+    public static Boolean IS_REMOVE_FILE = true;
+    /**
+     * Uso interno
+     */
     public static byte[] BYTES = null;
+    /**
+     * Se o arquivo vai ter configuração com cabeçalho (SUBREPORT)
+     */
     public static Boolean IS_HEADER = false;
-    // IMPRIME POR FOLHA
+    /**
+     * Impressão por folha (configurar grupo)
+     */
     public static Boolean IS_BY_LEAF = false;
+    /**
+     * Nome do grupo
+     */
     public static String GROUP_NAME = "";
+    /**
+     * Se o arquivo é comprimido
+     */
     public static Boolean COMPRESS_FILE = false;
-    public static Integer COMPRESS_LIMIT = 100;
-    public static String COMPRESS_EXTENSION = "ZIP";
+    /**
+     * Limite da compressão do arquivo
+     */
+    public static Integer COMPRESS_LIMIT = 0;
+    /**
+     * Define a extensão do arquivo compactado
+     */
+    public static String COMPRESS_EXTENSION = "zip";
+    /**
+     * Uso interno
+     */
     private static final int MEGABYTE = (1024 * 1024);
+    /**
+     * Retorna o nome do arquivo gerado
+     */
+    public static String FILE_NAME_GENERATED = "";
     /**
      * set: retrato or paisagem
      */
     public static String TYPE = "";
+    /**
+     * Nome do arquivo subreport
+     */
+    public static String SUBREPORT_NAME = "";
+    /**
+     * Impressão por folha (configurar grupo)
+     */
+    public static Boolean IS_REPORT_CONNECTION = false;
 
     public static void printReports(String jasperName, String fileName, List c) {
         printReports(jasperName, fileName, (Collection) c, null);
@@ -84,10 +140,10 @@ public class Jasper {
                 IS_HEADER = false;
                 break;
         }
+        if (parameters == null) {
+            parameters = new HashMap();
+        }
         if (IS_HEADER) {
-            if (parameters == null) {
-                parameters = new HashMap();
-            }
             parameters.put("sindicato_nome", juridica.getPessoa().getNome());
             parameters.put("sindicato_documento", juridica.getPessoa().getDocumento());
             parameters.put("sindicato_site", juridica.getPessoa().getSite());
@@ -105,6 +161,21 @@ public class Jasper {
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
         try {
             byte[] bytes;
+            JasperReport subJasper;
+            if (!SUBREPORT_NAME.isEmpty()) {
+                if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + SUBREPORT_NAME)).exists()) {
+                    subJasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + SUBREPORT_NAME)));
+                } else {
+                    subJasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/" + SUBREPORT_NAME)));
+                }
+            }
+            if (IS_REPORT_CONNECTION) {
+                DBExternal con = new DBExternal();
+                con.setDatabase(GenericaSessao.getString("sessaoCliente"));
+                if (new File(subreport).exists()) {
+                    parameters.put("REPORT_CONNECTION", con.getConnection());
+                }
+            }
             JasperReport jasper;
             if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + jasperName)).exists()) {
                 jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ " + jasperName)));
@@ -126,12 +197,14 @@ public class Jasper {
                     }
                 }
                 Integer size = 0;
-                if (c.size() > COMPRESS_LIMIT) {
-                    size = c.size() / COMPRESS_LIMIT;
-                    size = (int) Math.ceil((double) size);
-                    size += 1;
-                } else {
-                    COMPRESS_FILE = false;
+                if (COMPRESS_FILE && COMPRESS_LIMIT > 0) {
+                    if (c.size() > COMPRESS_LIMIT) {
+                        size = c.size() / COMPRESS_LIMIT;
+                        size = (int) Math.ceil((double) size);
+                        size += 1;
+                    } else {
+                        COMPRESS_FILE = false;
+                    }
                 }
                 Collection[] collections = new Collection[size];
                 List listTemp = new ArrayList();
@@ -149,15 +222,11 @@ public class Jasper {
                 }
                 String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(realPath);
                 if (!Jasper.PART_NAME.isEmpty()) {
-                     Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
-                     Jasper.PART_NAME = "_" + Jasper.PART_NAME;
-                 }                
-                if (COMPRESS_FILE) {
-                    if (COMPRESS_EXTENSION.equals("zip")) {
-                        mimeType = "application/zip, application/octet-stream";
-                    } else {
-                        mimeType = "application/x-rar-compressed, application/octet-stream";
-                    }
+                    Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
+                    Jasper.PART_NAME = "_" + Jasper.PART_NAME;
+                }
+                UUID uuid = UUID.randomUUID();
+                if (COMPRESS_FILE && COMPRESS_LIMIT > 0) {
                     List listCollection = (List) c;
                     c = null;
                     int pos = 0;
@@ -190,9 +259,9 @@ public class Jasper {
                         realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
                     } else {
                         realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + PATH + "/" + fileName + "/";
-                    } 
+                    }
                     jasper.setProperty(fileName, PATH);
-                    JRVariable[] jrvs = jasper.getVariables();
+                    // JRVariable[] jrvs = jasper.getVariables();
                     for (int i = 0; i < collections.length; i++) {
                         dtSource = new JRBeanCollectionDataSource(collections[i]);
                         print = JasperFillManager.fillReport(jasper, parameters, dtSource);
@@ -204,7 +273,7 @@ public class Jasper {
                         if (b.length > MEGABYTE) {
                             bytes = new byte[MEGABYTE * 500];
                         }
-                        downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + "_" + (i + 1) + ".pdf";
+                        downloadName = fileName + PART_NAME + "_" + UUID.randomUUID() + "_" + idUsuario + "_page_" + (i + 1) + ".pdf";
                         try {
                             File file = new File(dirPath + "/" + downloadName);
                             listFilesZip.add(dirPath + "/" + downloadName);
@@ -224,8 +293,8 @@ public class Jasper {
                         }
                         // b = null;
                     }
-                    Compact.OUT_FILE = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".zip";
-                    downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".zip";
+                    Compact.OUT_FILE = fileName + PART_NAME + "_" + uuid + "_" + idUsuario + "." + COMPRESS_EXTENSION;
+                    downloadName = fileName + PART_NAME + "_" + uuid + "_" + idUsuario + "." + COMPRESS_EXTENSION;
                     Compact.setListFiles(listFilesZip);
                     Compact.PATH_OUT_FILE = realPath;
                     try {
@@ -247,14 +316,23 @@ public class Jasper {
                     }
                     // Se o método por ventura passar apagar arquivos gerados, 
                     // acrescentar a linha abaixo, esta contém o id do usuário
-                    // downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".pdf";
-                    downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                    // downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".pdf";                    
+                    downloadName = fileName + PART_NAME + "_" + uuid + ".pdf";
                     try {
                         File file = new File(dirPath + "/" + downloadName);
                         try (FileOutputStream out = new FileOutputStream(file)) {
                             out.write(b);
                             out.flush();
                         }
+//                        VER COM O CLAUDEMIR                          
+//                        JRPdfExporter exporter = new JRPdfExporter();
+//                        ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+//                        exporter.setExporterInput(SimpleExporterInput.getInstance(list_jasper));
+//                        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path + "/" + nameFile));
+//                        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+//                        configuration.setCreatingBatchModeBookmarks(true);
+//                        exporter.setConfiguration(configuration);
+//                        exporter.exportReport();
                     } catch (IOException e) {
                         System.out.println(e);
                         return;
@@ -265,11 +343,30 @@ public class Jasper {
                         System.out.println("Memória > Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
                         GenericaMensagem.info("Servidor > Memória", "Tamanho do arquivo não suporta o formato PDF, tente novamente baixando o mesmo compactado. Memória usada: " + usedMemory + "M/" + maxMemory + "M");
                     }
+                    if (COMPRESS_FILE) {
+                        if (COMPRESS_EXTENSION.equals("zip")) {
+                            mimeType = "application/zip, application/octet-stream";
+                        } else {
+                            mimeType = "application/x-rar-compressed, application/octet-stream";
+                        }
+                        Compact.OUT_FILE = fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION;
+                        Compact.PATH_OUT_FILE = realPath;
+                        try {
+                            listFilesZip.add(dirPath + "/" + downloadName);
+                            Compact.toZip(fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION, dirPath + "/" + downloadName);
+                            downloadName = fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION;
+                        } catch (IOException e) {
+
+                        }
+                    }
                 }
                 if (IS_DOWNLOAD) {
                     Download download = new Download(downloadName, dirPath, mimeType, FacesContext.getCurrentInstance());
                     download.baixar();
-                    download.remover();
+                    FILE_NAME_GENERATED = dirPath + "/" + downloadName;
+                    if (IS_REMOVE_FILE) {
+                        download.remover();
+                    }
                     if (!listFilesZip.isEmpty()) {
                         for (int i = 0; i < listFilesZip.size(); i++) {
                             File f = new File(listFilesZip.get(i).toString());
@@ -298,14 +395,50 @@ public class Jasper {
         PATH = "downloads/relatorios";
         PART_NAME = "relatorio";
         IS_DOWNLOAD = true;
+        IS_REMOVE_FILE = true;
         BYTES = null;
         IS_HEADER = false;
         // IMPRIME POR FOLHA
         IS_BY_LEAF = false;
         GROUP_NAME = "";
         COMPRESS_FILE = false;
-        COMPRESS_LIMIT = 100;
-        COMPRESS_EXTENSION = "ZIP";
+        COMPRESS_LIMIT = 0;
+        COMPRESS_EXTENSION = "zip";
+        FILE_NAME_GENERATED = "";
+        SUBREPORT_NAME = "";
+        IS_REPORT_CONNECTION = false;
+    }
+
+    public static String getFILE_NAME_GENERATED() {
+        return FILE_NAME_GENERATED;
+    }
+
+    public static void setFILE_NAME_GENERATED(String aFILE_NAME_GENERATED) {
+        FILE_NAME_GENERATED = aFILE_NAME_GENERATED;
+    }
+
+    public Boolean getIS_BY_LEAF() {
+        return IS_BY_LEAF;
+    }
+
+    public void setIS_BY_LEAF(Boolean aIS_BY_LEAF) {
+        IS_BY_LEAF = aIS_BY_LEAF;
+    }
+
+    public String getCOMPRESS_EXTENSION() {
+        return COMPRESS_EXTENSION;
+    }
+
+    public void setCOMPRESS_EXTENSION(String aCOMPRESS_EXTENSION) {
+        COMPRESS_EXTENSION = aCOMPRESS_EXTENSION;
+    }
+
+    public Boolean getCOMPRESS_FILE() {
+        return COMPRESS_FILE;
+    }
+
+    public void setCOMPRESS_FILE(Boolean aCOMPRESS_FILE) {
+        COMPRESS_FILE = aCOMPRESS_FILE;
     }
 
     // USAR - ADICIONAR AO JASPER NO XML
