@@ -91,6 +91,11 @@
                                         <p:column headerText="Status" styleClass="text-center">
                                             <h:outputText value="#{listHorarios.ativo}"/>
                                         </p:column>
+                                        <p:column headerText="Web" styleClass="text-center" width="30">
+                                            <p:selectBooleanCheckbox value="#{listHorarios.horarios.web}">
+                                                <p:ajax event="change" listener="#{horariosBean.update(listHorarios.horarios)}"  update="@this"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
                                     </p:dataTable>
                                 </p:panel>
                             </p:panel>                            
