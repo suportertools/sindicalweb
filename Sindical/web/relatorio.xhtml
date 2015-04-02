@@ -52,7 +52,7 @@
                                     </h:column>
                                     <h:column />
                                     <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.porFolha}" itemLabel="Imprime relatório por folha">
-                                        <p:ajax event="change" update="@this i_ds_nome_grupo" />
+                                        <p:ajax event="change" update="@this" />
                                     </p:selectBooleanCheckbox>
                                     <h:outputLabel value="Nome Grupo:" />
                                     <p:inputText size="30" maxlength="100" value="#{relatorioBean.relatorio.nomeGrupo}" />
