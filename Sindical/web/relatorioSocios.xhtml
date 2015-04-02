@@ -52,7 +52,7 @@
                                         <p:ajax event="change" update="@this"/>
                                         <f:selectItems value="#{relatorioSociosBean.listaRelatorioOrdem}"/>
                                     </p:selectOneMenu>
-                                    <p:selectBooleanCheckbox itemLabel="Imprimir por folha" value="#{relatorioSociosBean.porFolha}" rendered="#{relatorioSociosBean.enableFolha}"/>
+                                    <p:selectBooleanCheckbox itemLabel="Imprimir por folha" value="#{jasperBean.IS_BY_LEAF}" rendered="#{relatorioSociosBean.enableFolha}"/>
                                 </h:panelGrid>
                             </p:panel>
 
@@ -95,9 +95,13 @@
                                         </p:panel>
                                     </h:panelGrid>
 
-                                    <h:commandLink target="_blank" action="#{relatorioSociosBean.visualizarRelatorio()}" title="Imprimir Relatório">
-                                        <p:commandButton icon="ui-icon-print" value="Imprimir Relatório" title="Imprimir Relatório"/>
-                                    </h:commandLink>                                    
+                                    <h:panelGrid>
+                                        <h:commandLink target="_blank" action="#{relatorioSociosBean.visualizarRelatorio()}" title="Imprimir Relatório">
+                                            <p:commandButton icon="ui-icon-print" value="Imprimir Relatório" title="Imprimir Relatório"/>
+                                        </h:commandLink>                                    
+                                        <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar Arquivo (ZIP)" />
+
+                                    </h:panelGrid>
                                 </h:column>
 
                                 <h:column>
@@ -401,20 +405,21 @@
                                         </h:panelGrid>
                                     </h:panelGrid>
 
-                                    <h:panelGrid id="i_panel_filtro2" columns="1">
-                                        <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmpresa}" style="float: left; margin: 10px">
-                                            <h:column>
-                                                <p:outputLabel value="Empresas" /><br />
-                                                <p:selectOneMenu id="idEmpresas" value="#{relatorioSociosBean.idEmpresas}" style="width: 650px">
-                                                    <f:selectItems value="#{relatorioSociosBean.listaEmpresas}"/>
-                                                </p:selectOneMenu>
+                                    <h:panelGrid id="i_panel_filtro2">
+                                        <h:panelGrid rendered="#{relatorioSociosBean.booEmpresa}" styleClass="margin-top-max">
+                                            <h:panelGrid columns="2">
                                                 <p:selectOneRadio id="idRadioEmpresas" value="#{relatorioSociosBean.tipoEmpresas}">
                                                     <p:ajax event="change" update="@this idEmpresas"/>
                                                     <f:selectItem itemValue="com"         itemLabel="Com"/>
                                                     <f:selectItem itemValue="sem"         itemLabel="Sem"/>
                                                     <f:selectItem itemValue="especificas" itemLabel="Específicas"/>
                                                 </p:selectOneRadio>
-                                            </h:column>
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="3" id="idEmpresas">
+                                                <p:commandButton value="Pesquisar Empresa" action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" actionListener="#{juridicaBean.pesquisaTodosEAtivos}" rendered="#{relatorioSociosBean.tipoEmpresas eq 'especificas'}" icon="ui-icon-search"/>
+                                                <h:outputLabel value="#{relatorioSociosBean.empresa.pessoa.nome} - CNPJ: #{relatorioSociosBean.empresa.pessoa.documento}" rendered="#{relatorioSociosBean.empresa.id != -1}"/> 
+                                                <p:commandButton action="#{relatorioSociosBean.setEmpresa(null)}" icon="ui-icon-close" rendered="#{relatorioSociosBean.empresa.id != -1}" update="idEmpresas"/>
+                                            </h:panelGrid>
                                         </h:panelGrid>
                                     </h:panelGrid>
 
