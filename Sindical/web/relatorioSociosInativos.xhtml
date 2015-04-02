@@ -14,9 +14,9 @@
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>
     </h:head>
     <h:body>
@@ -44,7 +44,7 @@
                                     </p:column>
                                 </h:panelGrid>
                             </p:panel>
-                            
+
                             <p:messages id="i_msg" showDetail="true" closable="true" /> 
                             <h:panelGrid id="i_opcoes" style="margin-top: 10px; float: left; width: 200px">
                                 <p:menu>  
@@ -54,7 +54,7 @@
                                     <p:menuitem value="Grupo Categoria" action="#{relatorioSociosInativosBean.porGrupoCategoria()}" update="i_opcoes i_panel" style="#{relatorioSociosInativosBean.chkGrupoCategoria == true ? 'background: #dbeaeb; font-weight: bold' : ''};"/>
                                 </p:menu> 
                             </h:panelGrid>   
-                            
+
                             <h:panelGrid id="i_panel" style="margin-top: 10px; float: left; width: 800px" columns="3">
                                 <h:panelGrid rendered="#{!relatorioSociosInativosBean.chkDataInativacao and 
                                                          !relatorioSociosInativosBean.chkDataFiliacao and 
@@ -62,7 +62,7 @@
                                                          !relatorioSociosInativosBean.chkGrupoCategoria}">
                                     <h:outputLabel value="Listar todos Sócios Inativos (não recomendado)" style="font-size: 14pt!important"/>
                                 </h:panelGrid>
-                                
+
                                 <h:panelGrid rendered="#{relatorioSociosInativosBean.chkDataInativacao}" columns="1" style="float: left">
                                     <h:outputLabel value="Data de Inativação" />
                                     <p:column>
@@ -73,7 +73,7 @@
                                         </h:panelGrid>
                                     </p:column>
                                 </h:panelGrid>    
-                                
+
                                 <h:panelGrid rendered="#{relatorioSociosInativosBean.chkDataFiliacao}" columns="1" style="float: left">
                                     <h:outputLabel value="Data de Filiação" />
                                     <p:column>
@@ -84,7 +84,7 @@
                                         </h:panelGrid>
                                     </p:column>
                                 </h:panelGrid>                                
-                                
+
                                 <h:panelGrid rendered="#{relatorioSociosInativosBean.chkCategoria}" columns="1" style="float: left">
                                     <h:outputLabel value="Categoria" />
                                     <p:column>
@@ -93,7 +93,7 @@
                                         </p:selectOneMenu>
                                     </p:column>
                                 </h:panelGrid>   
-                                
+
                                 <h:panelGrid rendered="#{relatorioSociosInativosBean.chkGrupoCategoria}" columns="1" style="float: left">
                                     <h:outputLabel value="Grupo Categoria" />
                                     <p:column>
@@ -102,12 +102,12 @@
                                         </p:selectOneMenu>
                                     </p:column>
                                 </h:panelGrid>                                
-                                
+
                             </h:panelGrid>
-                            
+
                             <p:panel styleClass="fundoCinza" style="clear: both; margin-top: 10px">
                                 <h:panelGrid id="i_panel_b" columns="2">
-                                                                        
+
                                     <p:column>
                                         <h:outputLabel value="Ordernar por" />
                                         <br />
@@ -119,12 +119,15 @@
                                             <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
                                         </p:selectOneMenu>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <br />
-                                        <p:commandButton ajax="false" value="Imprimir" action="#{relatorioSociosInativosBean.imprimir()}"/>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton ajax="false" value="Imprimir" action="#{relatorioSociosInativosBean.imprimir()}"/>
+                                            <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar Arquivo (ZIP)" />
+                                        </h:panelGrid>
                                     </p:column>
-                                    
+
                                 </h:panelGrid>
                             </p:panel>
                         </h:form>
