@@ -21,9 +21,16 @@ public class Compact {
     public static String OUT_FILE = "";
     public static String PATH_OUT_FILE = "";
 
+    /**
+     *
+     * @param OUT_FILE Arquivo de saída
+     * @param IN_FILE Arquivo de entrada
+     * @throws IOException
+     */
     public static void toZip(String OUT_FILE, String IN_FILE) throws IOException {
         Compact.OUT_FILE = OUT_FILE;
         listFiles.add(IN_FILE);
+        toZip();
     }
 
     public static void toZip() throws IOException {
@@ -52,6 +59,7 @@ public class Compact {
             }
             out.close();
         } catch (IOException e) {
+            destroy();
             throw new IOException(e.getMessage());
         }
         destroy();
