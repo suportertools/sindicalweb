@@ -641,7 +641,7 @@
                                         <h:panelGrid columns="3">
                                             <p:commandButton value="Alterar"  type="submit" styleClass="ui-confirmdialog-yes" action="#{fisicaBean.alterarEndereco}" update="i_acc_tab_endereco" onclick="PF('i_dlg_editar_endereco').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                             <p:commandButton value="Alterar Todos"  type="submit" styleClass="ui-confirmdialog-yes" action="#{fisicaBean.alterarTodosEndereco()}" update="i_acc_tab_endereco" onclick="PF('i_dlg_editar_endereco').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_editar_endereco').hide()" style="float: left" icon="ui-icon-close"/>       
+                                            <p:commandButton value="Cancelar" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_editar_endereco').hide()" style="float: left" icon="ui-icon-close" action="#{fisicaBean.setVisibleEditarEndereco(false)}"/>
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </p:dialog>
