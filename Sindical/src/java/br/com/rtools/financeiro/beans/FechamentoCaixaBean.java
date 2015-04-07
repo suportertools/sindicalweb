@@ -648,7 +648,7 @@ public final class FechamentoCaixaBean implements Serializable {
             if (fechamento.getValorInformado() <= caixa.getFundoFixo()){
                 valorTransferencia = "0,00";
             }else{
-                valorTransferencia = Moeda.converteR$Float(Moeda.subtracaoValores(fechamento.getValorInformado(), caixa.getFundoFixo()));
+                valorTransferencia = Moeda.converteR$Float(Moeda.subtracaoValores(fechamento.getValorFechamento(), caixa.getFundoFixo()));
             }
             
             PF.openDialog("i_dlg_transferir");

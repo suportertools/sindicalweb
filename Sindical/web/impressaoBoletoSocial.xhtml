@@ -58,7 +58,7 @@
                         <h:form id="formImpressaoBoletoSocial">
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:outputLabel value="Opção Marcar" style="font-size: 12pt!important"/><br />
-                                <h:panelGrid columns="9">
+                                <h:panelGrid columns="11">
                                     <p:column>
                                         <h:outputLabel value="De" /><br />
                                         <p:inputText size="5" value="#{impressaoBoletoSocialBean.de}"/>
@@ -72,18 +72,27 @@
                                     <p:column>
                                         <br />
                                         <p:commandButton icon="ui-icon-check" action="#{impressaoBoletoSocialBean.marcar()}" update="tbl i_panel_quantidade" />
-                                        <p:commandButton icon="ui-icon-close" action="#{impressaoBoletoSocialBean.desmarcarTudo()}" update="tbl i_panel_quantidade" />
                                     </p:column>
 
                                     <p:column>
-                                        <h:outputLabel value="Responsável" style="margin-left: 10px"/><br />
-                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" size="30" style="margin-left: 10px"/>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-close" action="#{impressaoBoletoSocialBean.desmarcarTudo()}" update="tbl i_panel_quantidade" />
+                                    </p:column>
+                                    
+                                    <p:column id="i_documento">
+                                        <h:outputText value="Documento" /><br />
+                                        <p:inputMask value="#{impressaoBoletoSocialBean.strDocumento}" mask="#{(impressaoBoletoSocialBean.tipo eq 'juridica') ? '99.999.999/9999-99' : '999.999.999-99'}" style="width: 140px"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Responsável"/><br />
+                                        <p:inputText value="#{impressaoBoletoSocialBean.strResponsavel}" style="width: 170px"/>
                                     </p:column>
 
                                     <p:column>
                                         <br />
                                         <p:selectOneMenu value="#{impressaoBoletoSocialBean.tipo}" style="padding-right: 20px">
-                                            <p:ajax event="change" update="formImpressaoBoletoSocial" listener="#{impressaoBoletoSocialBean.loadLista()}" />
+                                            <p:ajax event="change" update="i_documento formImpressaoBoletoSocial" listener="#{impressaoBoletoSocialBean.loadLista()}" />
                                             <f:selectItem itemValue="fisica" itemLabel="Física" />
                                             <f:selectItem itemValue="juridica" itemLabel="Jurídica" />
                                         </p:selectOneMenu>
@@ -91,12 +100,12 @@
 
                                     <p:column>
                                         <h:outputLabel value="Lote" /><br />
-                                        <p:inputText value="#{impressaoBoletoSocialBean.strLote}" size="10"/>
+                                        <p:inputText value="#{impressaoBoletoSocialBean.strLote}" size="5"/>
                                     </p:column>
 
                                     <p:column>
                                         <h:outputLabel value="Qnt. Páginas" /><br />
-                                        <p:selectOneMenu value="#{impressaoBoletoSocialBean.qntFolhas}" style="padding-right: 20px">
+                                        <p:selectOneMenu value="#{impressaoBoletoSocialBean.qntFolhas}" style="padding-right: 10px">
                                             <p:ajax event="change" update="@this tbl" listener="#{impressaoBoletoSocialBean.loadLista()}"/>
                                             <f:selectItem itemValue="0" itemLabel="Todas" />
                                             <f:selectItem itemValue="1" itemLabel="1 Página" />

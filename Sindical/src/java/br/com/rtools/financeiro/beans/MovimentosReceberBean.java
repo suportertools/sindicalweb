@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.beans;
 
+import br.com.rtools.arrecadacao.beans.ConfiguracaoArrecadacaoBean;
 import br.com.rtools.financeiro.Impressao;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -50,6 +51,7 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
     private boolean marcarTodos;
     private int index;
     private BloqueioRotina bloqueioRotina;
+    private ConfiguracaoArrecadacaoBean cab;
 
     @PostConstruct
     public void init() {
@@ -68,6 +70,9 @@ public class MovimentosReceberBean extends MovimentoValorBean implements Seriali
         totalSemSindical = "0";
         marcarTodos = false;
         index = 0;
+        
+        cab = new ConfiguracaoArrecadacaoBean();
+        cab.init();
     }
 
     @PreDestroy

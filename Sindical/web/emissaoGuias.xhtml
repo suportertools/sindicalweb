@@ -38,10 +38,11 @@
                             <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" id="i_message" />
                             
                             <p:panel header="Beneficiário" styleClass="margin-top-max">
-                                <h:panelGrid columns="4">
+                                <h:panelGrid columns="5">
                                     <p:outputLabel value="Nome: " />
                                     <p:inputText id="nomeBene" size="80" value="#{emissaoGuiasBean.pessoa.nome}" readonly="true" />
                                     <p:commandButton value="Pesquisar" onclick="PF('dlg_tipo_pessoa').show()" icon="ui-icon-search" rendered="#{emissaoGuiasBean.lote.id == -1}" />
+                                    <p:commandButton value="Local" action="#{emissaoGuiasBean.pesquisaPessoaSindicato}" icon="ui-icon-search" rendered="#{emissaoGuiasBean.lote.id == -1}" update="form_eg"/>
                                     <p:commandButton value="Nova Pessoa - Cadastrar" actionListener="#{emissaoGuiasBean.clear(3)}" oncomplete="PF('dlg_cadastro').show()" rendered="#{emissaoGuiasBean.pessoa.id == -1}" icon="ui-icon-circle-plus" style="margin-left: 70px!important" update=":form_eg:i_panel_sem_cadastro"/>
                                 </h:panelGrid>
                                 
@@ -117,8 +118,11 @@
                                     
                                     <h:column>
                                         <p:outputLabel value="Desconto (R$)" rendered="#{!emissaoGuiasBean.servicox.produto}"/><br />
-                                        <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto}" disabled="true" style="opacity: 100!important; font-weight: bold; color: black">
+                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto and !emissaoGuiasBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="opacity: 100!important; font-weight: bold; color: black">
                                             <p:ajax event="change" update="i_panel_servicos" />
+                                        </p:inputText>
+                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto and emissaoGuiasBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="opacity: 100!important; font-weight: bold; color: black" onclick="PF('dlg_autentica_usuario').show()" readonly="true">
+                                            
                                         </p:inputText>
                                     </h:column>
                                     
@@ -172,6 +176,19 @@
                                 <p:commandButton action="#{emissaoGuiasBean.clear()}" value="Novo" update=":form_eg:" title="Novo Lançamento" />
                                 <p:commandButton action="#{emissaoGuiasBean.imprimirEncaminhamento()}" value="Imprimir Encaminhamento" title="Imprimir este Encaminhamento" rendered="#{emissaoGuiasBean.pesquisaGuia(emissaoGuiasBean.lote.id).encaminhamento == true}" ajax="false"/>
                             </h:panelGrid>                    
+                            
+                            <p:dialog widgetVar="dlg_desconto" modal="true" header="Inserir Desconto" width="200">  
+                                <h:panelGrid>
+                                    <p:outputLabel value="Digite o valor do Desconto" />
+                                    <p:inputText value="#{emissaoGuiasBean.desconto}" style="width: 100px; text-align: right">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputText>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid>
+                                    <p:commandButton value="Adicionar Desconto" title="Adicionar desconto" action="#{emissaoGuiasBean.adicionarDesconto}"/>    
+                                </h:panelGrid>
+                            </p:dialog>  
                             
                             <p:dialog widgetVar="dlg_movimentos_emitidos" header="Guias Emitidas" modal="true" width="600">
                                 <p:dataTable id="i_tbl_movimentos_emitidos" value="#{emissaoGuiasBean.listaMovimentosEmitidos}" var="linha" emptyMessage="Nenhum Movimento Encontrado!" style="width: 100%">
@@ -330,6 +347,39 @@
                                     <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();" />
                                 </f:facet>
                             </p:dialog>                            
+                        </h:form>
+                        
+                        <h:form id="formAutenticaUsuario">
+                            <p:dialog widgetVar="dlg_autentica_usuario" modal="true" header="Autenticar Usuário" width="380" >
+                                <p:ajax event="close" listener="#{autenticaUsuario.clear()}" update="i_autentica_usuario"/>
+                                <h:panelGrid id="i_autentica_usuario">
+                                    <p:messages autoUpdate="false" closable="true" showDetail="true" />
+                                        
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <p:outputLabel value="Login" /><br />
+                                            <p:inputText value="#{autenticaUsuario.login}" />    
+                                        </h:column>
+
+                                        <h:column>
+                                            <p:outputLabel value="Senha" /><br />
+                                            <p:password value="#{autenticaUsuario.senha}" />    
+                                        </h:column>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-check" value="Validar" action="#{autenticaUsuario.validarUsuario('dlg_desconto', 'autorizaDescontos', 3)}" update="i_autentica_usuario"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-close" value="Fechar" onclick="PF('dlg_autentica_usuario').hide()"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:dialog>  
                         </h:form>
                     </p:panel>
                 </f:view>

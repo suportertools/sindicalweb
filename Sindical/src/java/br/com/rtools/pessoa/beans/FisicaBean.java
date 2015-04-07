@@ -586,6 +586,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         GenericaSessao.put("linkClicado", true);
+        
+        showImagemFisica();
+        getListaSocioInativo().clear();
+        getListaSocioInativo();
+        getListaPessoaEndereco().clear();
+        getListaPessoaEndereco();
+        getStrEndereco();
         return url;
     }
 

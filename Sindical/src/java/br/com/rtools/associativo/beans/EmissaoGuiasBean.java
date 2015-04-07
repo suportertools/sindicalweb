@@ -5,6 +5,7 @@ import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.SubGrupoConvenio;
+import br.com.rtools.associativo.dao.EmissaoGuiasDao;
 import br.com.rtools.associativo.db.ConvenioServicoDB;
 import br.com.rtools.associativo.db.ConvenioServicoDBToplink;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
@@ -44,6 +45,7 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -120,6 +122,9 @@ public class EmissaoGuiasBean implements Serializable {
     private Servicos servicox = new Servicos();
     private Fisica fisicaNovoCadastro = new Fisica();
     
+    private ControleAcessoBean cab = new ControleAcessoBean();
+    
+    
     @PostConstruct
     public void init() {
         estoque = new Estoque();
@@ -165,6 +170,7 @@ public class EmissaoGuiasBean implements Serializable {
         socios = new Socios();
         listaMovimentosEmitidos = new ArrayList();
         servicox = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
+        
     }
 
     @PreDestroy
@@ -175,6 +181,26 @@ public class EmissaoGuiasBean implements Serializable {
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("produtoPesquisa");
         GenericaSessao.remove("listaMovimento");
+        GenericaSessao.remove("usuarioAutenticado");
+    }
+    
+    public void adicionarDesconto(){
+        PF.closeDialog("dlg_autentica_usuario");
+        PF.closeDialog("dlg_desconto");
+        PF.update("form_eg:i_panel_servicos");
+    }
+    
+    public void autenticaUsuario(){
+        // se TRUE NÃO tem permissao
+        if (cab.verificarPermissao("autorizaDescontos", 3)){
+            PF.openDialog("dlg_autentica_usuario");
+        }
+    }
+    
+    public void pesquisaPessoaSindicato(){
+        Juridica jur = (Juridica) new Dao().find(new Juridica(), 1);
+        GenericaSessao.put("juridicaPesquisa", jur);
+        getPessoa();
     }
 
     public String calculoIdade(){
@@ -253,16 +279,20 @@ public class EmissaoGuiasBean implements Serializable {
 
             // MOVIMENTO
             for (Movimento listaMovimentoAuxiliar1 : listaMovimentoAuxiliar) {
-                if (!di.delete(listaMovimentoAuxiliar1)) {
-                    di.rollback();
-                    return null;
+                if (listaMovimentoAuxiliar1.getId() != -1){
+                    if (!di.delete(listaMovimentoAuxiliar1)) {
+                        di.rollback();
+                        return null;
+                    }
                 }
             }
 
             // LOTE
-            if (!di.delete(heg.getMovimento().getLote())) {
-                di.rollback();
-                return null;
+            if (heg.getMovimento().getLote().getId() != -1){
+                if (!di.delete(heg.getMovimento().getLote())) {
+                    di.rollback();
+                    return null;
+                }
             }
             di.commit();
             listHistoricoEmissaoGuias.clear();
@@ -652,6 +682,12 @@ public class EmissaoGuiasBean implements Serializable {
             return null;
         }
         
+        List listax = (new EmissaoGuiasDao()).listaMovimentosDevedores(pessoa.getId());
+        if (!listax.isEmpty()){
+            GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
+            return null;
+        }
+        
         DaoInterface di = new Dao();
         Servicos serv = (Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[2]).getDescription()));
         
@@ -758,8 +794,8 @@ public class EmissaoGuiasBean implements Serializable {
             //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
             movimento.setValor(Moeda.multiplicarValores(listaMovimento.get(i).getMovimento().getQuantidade(), listaMovimento.get(i).getMovimento().getValor()));
 
-            // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
-            movimento.setValorBaixa(valorx);
+             movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
+            //movimento.setValorBaixa(valorx);
 
             listaMovimentoAuxiliar.add(movimento);
             heg.setMovimento(movimento);
@@ -825,6 +861,10 @@ public class EmissaoGuiasBean implements Serializable {
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
             listenerEnabledItensPedido();
+            List listax = (new EmissaoGuiasDao()).listaMovimentosDevedores(pessoa.getId());
+            if (!listax.isEmpty()){
+                GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
+            }
         }
         boolean isFisica = false;
         if (GenericaSessao.exists("fisicaPesquisa")) {
@@ -836,6 +876,10 @@ public class EmissaoGuiasBean implements Serializable {
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
             listenerEnabledItensPedido();
+            List listax = (new EmissaoGuiasDao()).listaMovimentosDevedores(pessoa.getId());
+            if (!listax.isEmpty()){
+                GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
+            }
         }
         if (!isFisica) {
             if (GenericaSessao.exists("juridicaPesquisa")) {
@@ -844,6 +888,10 @@ public class EmissaoGuiasBean implements Serializable {
                 pessoa = juridica.getPessoa();
                 socios = new Socios();
                 listenerEnabledItensPedido();
+                List listax = (new EmissaoGuiasDao()).listaMovimentosDevedores(pessoa.getId());
+                if (!listax.isEmpty()){
+                    GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
+                }
             }
         }
         return pessoa;
@@ -1302,5 +1350,13 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void setFisicaNovoCadastro(Fisica fisicaNovoCadastro) {
         this.fisicaNovoCadastro = fisicaNovoCadastro;
+    }
+
+    public ControleAcessoBean getCab() {
+        return cab;
+    }
+
+    public void setCab(ControleAcessoBean cab) {
+        this.cab = cab;
     }
 }

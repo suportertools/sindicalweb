@@ -24,6 +24,8 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.beans.FisicaBean;
+import br.com.rtools.pessoa.beans.JuridicaBean;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
@@ -78,7 +80,6 @@ import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 @ManagedBean
 @SessionScoped
 public class MovimentosReceberSocialBean implements Serializable {
-
     private String porPesquisa = "abertos";
     private List<DataObject> listaMovimento = new ArrayList();
     private String titular = "";
@@ -116,6 +117,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     private String motivoInativacao = "";
 
     private ControleAcessoBean cab = new ControleAcessoBean();
+    private String referenciaPesquisa = "";
     
     @PostConstruct
     public void init() {
@@ -133,7 +135,50 @@ public class MovimentosReceberSocialBean implements Serializable {
     @PreDestroy
     public void destroy() {
         //GenericaSessao.remove("movimentosReceberSocialBean");
+        GenericaSessao.remove("usuarioAutenticado");
     }    
+    
+    public String cadastroPessoa(DataObject linha){
+        Movimento mov = (Movimento) new Dao().find(new Movimento(), (Integer) linha.getArgumento1());
+        
+        FisicaDB dbf = new FisicaDBToplink();
+        Fisica f = dbf.pesquisaFisicaPorPessoa(mov.getBeneficiario().getId());
+        
+        if (f != null){
+            //ChamadaPaginaBean cpb = new ChamadaPaginaBean();
+            //GenericaSessao.put("chamadaPaginaBean", cpb);
+            
+            String retorno =  ((ChamadaPaginaBean)GenericaSessao.getObject("chamadaPaginaBean")).pessoaFisica();
+            
+            
+            FisicaBean fb = new FisicaBean();
+            fb.editarFisica(f);
+            //fb.editarFisicaParametro(f);
+            GenericaSessao.put("fisicaBean", fb);
+            return retorno;
+        }
+        
+        JuridicaDB dbj = new JuridicaDBToplink();
+        Juridica j = dbj.pesquisaJuridicaPorPessoa(mov.getBeneficiario().getId());
+        
+        if (j != null){
+            String retorno = (new ChamadaPaginaBean()).pessoaJuridica();
+            JuridicaBean jb = new JuridicaBean();
+            jb.editar(j);
+            GenericaSessao.put("juridicaBean", jb);
+            return retorno;
+        }
+        
+        return null;
+    }
+    
+    public void adicionarDesconto(){
+        PF.closeDialog("dlg_autentica_usuario");
+        PF.closeDialog("dlg_desconto");
+        calculoDesconto();
+        
+        PF.update("formMovimentosReceber");
+    }
     
     public void permissaoEcalculoDesconto(){
         // if TRUE não tem permissão
@@ -818,6 +863,10 @@ public class MovimentosReceberSocialBean implements Serializable {
         listaMovimento.clear();
     }
 
+    public void listenerPesquisa() {
+        
+    }
+
     public String getTotal() {
         if (!listaMovimento.isEmpty()) {
             float soma = 0;
@@ -970,8 +1019,8 @@ public class MovimentosReceberSocialBean implements Serializable {
                 }
                 idb = idb + String.valueOf(listaPessoaQry.get(i).getId());
             }
-
-            List<Vector> lista = db.pesquisaListaMovimentos(idb, ids, porPesquisa);
+            
+            List<Vector> lista = db.pesquisaListaMovimentos(idb, ids, porPesquisa, referenciaPesquisa);
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
@@ -1320,4 +1369,21 @@ public class MovimentosReceberSocialBean implements Serializable {
     public void setMotivoInativacao(String motivoInativacao) {
         this.motivoInativacao = motivoInativacao;
     }
+
+    public String getReferenciaPesquisa() {
+        return referenciaPesquisa;
+    }
+
+    public void setReferenciaPesquisa(String referenciaPesquisa) {
+        this.referenciaPesquisa = referenciaPesquisa;
+    }
+
+    public ControleAcessoBean getCab() {
+        return cab;
+    }
+
+    public void setCab(ControleAcessoBean cab) {
+        this.cab = cab;
+    }
+
 }

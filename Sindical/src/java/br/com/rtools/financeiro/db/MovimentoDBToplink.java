@@ -2377,7 +2377,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     "SELECT heg.* " +
                     "  FROM soc_historico_emissao_guias heg " +
                     " INNER JOIN fin_movimento m ON m.id = heg.id_movimento " +
-                    " WHERE heg.id_usuario = 1 " +
+                    " WHERE heg.id_usuario = " + id_usuario +
                     "   AND heg.is_baixado = false " +
                     "   AND m.is_ativo = TRUE", HistoricoEmissaoGuias.class
             );

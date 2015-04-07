@@ -682,7 +682,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data, String tipo) {
+    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data, String tipo, String documento) {
         
         String text_qry = "", where = "", inner_join ="";
         
@@ -694,10 +694,23 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         
         where = " WHERE b.ativo = true";
 
-        // IF temporário... excluir
-        if (tipo.equals("fisica")){
-            where += " AND b.codigo IN (SELECT id FROM xextrato) ";
+//        // IF temporário... excluir
+//        if (tipo.equals("fisica")){
+//            where += " AND b.codigo IN (SELECT id FROM xextrato) ";
+//        }
+        
+        // DOCUMENTO --
+        if (!documento.isEmpty()){
+//            if (tipo.equals("fisica")){
+//                inner_join = " INNER JOIN pes_pessoa p ON p.id = f.id_pessoa ";
+//            }else if (tipo.equals("juridica")){
+//                inner_join = " INNER JOIN pes_pessoa p ON p.id = j.id_pessoa ";
+//            }
+            
+            inner_join += " INNER JOIN pes_pessoa p ON p.id = b.codigo ";
+            where += " AND p.ds_documento = '"+documento+"'";
         }
+        
         // RESPONSAVEL --
         if (!responsavel.isEmpty()){
             responsavel = AnaliseString.normalizeLower(responsavel);

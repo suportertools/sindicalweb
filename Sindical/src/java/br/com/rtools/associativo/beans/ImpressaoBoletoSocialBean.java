@@ -93,6 +93,7 @@ public class ImpressaoBoletoSocialBean {
     private String strResponsavel = "";
     private String strLote = "";
     private String strData = "";
+    private String strDocumento = "";
     
     private String tipo = "fisica";
     private Integer qntFolhas = 0;
@@ -174,14 +175,14 @@ public class ImpressaoBoletoSocialBean {
         listaGrid.clear();
         listaPessoaSemEndereco.clear();
         
-        if (strResponsavel.length() == 1 && strLote.isEmpty() && strData.isEmpty()){
+        if (strResponsavel.length() == 1 && strLote.isEmpty() && strData.isEmpty() && strDocumento.isEmpty()){
             GenericaMensagem.warn("Atenção", "Muitos resultatos na pesquisa pode gerar lentidão!");
             return;
         }
         
-        if (!strResponsavel.isEmpty() || !strLote.isEmpty() || !strData.isEmpty()){
+        if (!strResponsavel.isEmpty() || !strLote.isEmpty() || !strData.isEmpty() || !strDocumento.isEmpty()){
             FinanceiroDB db = new FinanceiroDBToplink();
-            List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData, tipo);
+            List<Vector> lista_agrupado = db.listaBoletoSocioAgrupado(strResponsavel, strLote, strData, tipo, strDocumento);
             
             int contador = 1;
             for (int i = 0; i < lista_agrupado.size(); i++){
@@ -797,5 +798,13 @@ public class ImpressaoBoletoSocialBean {
 
     public void setValorTotal(String valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public String getStrDocumento() {
+        return strDocumento;
+    }
+
+    public void setStrDocumento(String strDocumento) {
+        this.strDocumento = strDocumento;
     }
 }

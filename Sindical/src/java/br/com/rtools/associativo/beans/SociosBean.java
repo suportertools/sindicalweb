@@ -773,8 +773,8 @@ public class SociosBean implements Serializable {
             GenericaSessao.put("fisicaBean", new FisicaBean());
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
-            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
-            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
+            //((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
+            //((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
             PF.update("formSocios");
             listaDependentes.clear();
             listaDependentesInativos.clear();
@@ -847,8 +847,8 @@ public class SociosBean implements Serializable {
         GenericaSessao.put("fisicaBean", new FisicaBean());
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
+        //((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
+        //((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
         PF.update("formSocios");
         listaDependentes.clear();
         listaDependentesInativos.clear();
@@ -1218,11 +1218,6 @@ public class SociosBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
         ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaSocioInativo().clear();
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaEndereco().clear();
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaEndereco();
-        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getStrEndereco();
         GenericaSessao.put("linkClicado", true);
         return "pessoaFisica";
     }

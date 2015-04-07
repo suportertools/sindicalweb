@@ -9,7 +9,7 @@ import javax.persistence.Query;
 public class MovimentosReceberSocialDBToplink extends DB implements MovimentosReceberSocialDB {
 
     @Override
-    public List pesquisaListaMovimentos(String ids, String idb, String por_status) {
+    public List pesquisaListaMovimentos(String ids, String idb, String por_status, String referencia) {
         try{
             if (ids.isEmpty()){
                 return new ArrayList();
@@ -64,9 +64,19 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
             }else if (por_status.equals("abertos")){
                 ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
                 order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
-            }else{
+            }else if (por_status.equals("quitados")){ 
                 ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
                 order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+            }else if (por_status.equals("atrasados")){ 
+                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento < current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+            }else if (por_status.equals("vencer")){ 
+                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento > current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+            }
+            
+            if (!referencia.isEmpty()){
+                ands += " and m.ds_referencia = '"+referencia+"' \n";
             }
             
             textqry += ands + order_by;

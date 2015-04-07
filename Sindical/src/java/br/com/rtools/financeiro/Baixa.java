@@ -33,6 +33,9 @@ public class Baixa implements java.io.Serializable {
     @JoinColumn(name = "id_fechamento_caixa", referencedColumnName = "id")
     @ManyToOne
     private FechamentoCaixa fechamentoCaixa;
+    @JoinColumn(name = "id_usuario_desconto", referencedColumnName = "id")
+    @ManyToOne
+    private Usuario usuarioDesconto;
 
     public Baixa() {
         this.id = -1;
@@ -43,6 +46,7 @@ public class Baixa implements java.io.Serializable {
         this.documentoBaixa = "";
         this.caixa = new Caixa();
         this.fechamentoCaixa = new FechamentoCaixa();
+        this.usuarioDesconto = null;
     }
 
     public Baixa(int id,
@@ -52,7 +56,8 @@ public class Baixa implements java.io.Serializable {
             int sequenciaBaixa,
             String documentoBaixa,
             Caixa caixa,
-            FechamentoCaixa fechamentoCaixa) {
+            FechamentoCaixa fechamentoCaixa,
+            Usuario usuarioDesconto) {
         this.id = id;
         this.usuario = usuario;
         this.setBaixa(baixa);
@@ -61,6 +66,7 @@ public class Baixa implements java.io.Serializable {
         this.sequenciaBaixa = sequenciaBaixa;
         this.documentoBaixa = documentoBaixa;
         this.caixa = caixa;
+        this.usuarioDesconto = usuarioDesconto;
     }
 
     public int getId() {
@@ -141,5 +147,13 @@ public class Baixa implements java.io.Serializable {
 
     public void setFechamentoCaixa(FechamentoCaixa fechamentoCaixa) {
         this.fechamentoCaixa = fechamentoCaixa;
+    }
+
+    public Usuario getUsuarioDesconto() {
+        return usuarioDesconto;
+    }
+
+    public void setUsuarioDesconto(Usuario usuarioDesconto) {
+        this.usuarioDesconto = usuarioDesconto;
     }
 }
