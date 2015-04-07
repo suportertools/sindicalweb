@@ -1228,7 +1228,7 @@ public class EmissaoGuiasBean implements Serializable {
                     float v = 0;
                     if (!listPedidos.isEmpty()) {
                         for (Pedido p : listPedidos) {
-                            v += Moeda.somaValores(v, Moeda.converteUS$(valorTotalPedido(p)));
+                            v = Moeda.somaValores(v, Moeda.converteUS$(valorTotalPedido(p)));
                         }
                     }
                     valor = "" + v;

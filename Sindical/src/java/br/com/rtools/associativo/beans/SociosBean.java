@@ -59,6 +59,7 @@ public class SociosBean implements Serializable {
     //private List<SelectItem> listaParentesco;
     private List<DataObject> listaDependentes;
     private List<DataObject> listaDependentesInativos;
+    private List<SelectItem> listaFilial;
     private final List<SelectItem> listaMotivoInativacao;
     private int idTipoDocumento;
     private int idServico;
@@ -66,6 +67,7 @@ public class SociosBean implements Serializable {
     private int idCategoria;
     private int idIndexCombo;
     private Integer idInativacao;
+    private Integer idFilial;
     private boolean renderServicos;
     private boolean fotoTemp;
     private boolean temFoto;
@@ -121,12 +123,14 @@ public class SociosBean implements Serializable {
         listaServicos = new ArrayList();
         listaDependentes = new ArrayList();
         listaDependentesInativos = new ArrayList();
+        listaFilial = new ArrayList();
         idTipoDocumento = 0;
         idServico = 0;
         idGrupoCategoria = 0;
         idCategoria = 0;
         idIndexCombo = -1;
         idInativacao = 0;
+        idFilial = 0;
         renderServicos = true;
         fotoTemp = false;
         temFoto = false;
@@ -271,6 +275,16 @@ public class SociosBean implements Serializable {
             if (Integer.parseInt(listaCategoria.get(i).getDescription()) == socios.getMatriculaSocios().getCategoria().getId()) {
                 idCategoria = i;
                 break;
+            }
+        }
+        listaFilial.clear();
+        idFilial = 0;
+        for (int i = 0; i < getListaFilial().size(); i++) {
+            if(socios.getMatriculaSocios().getFilial() != null) {
+                if (Integer.parseInt(listaFilial.get(i).getDescription()) == socios.getMatriculaSocios().getFilial().getId()) {
+                    idFilial = i;
+                    break;
+                }
             }
         }
 
@@ -567,6 +581,9 @@ public class SociosBean implements Serializable {
             }
         }
         if (sucesso) {
+            Dao dao = new Dao();
+            novoDependente.setDtFoto(null);
+            dao.update(novoDependente, true);
             fotoTempPerfil = "";
             RequestContext.getCurrentInstance().update(":formSocios:tab_view:i_panel_dados");
         }
@@ -596,12 +613,17 @@ public class SociosBean implements Serializable {
 
             if (!rename) {
                 error = true;
+            } else {
+                Dao dao = new Dao();
+                novoDependente.setDtFoto(DataHoje.dataHoje());
+                dao.update(novoDependente, true);
             }
         }
         if (!error) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
             boolean delete = f.delete();
         }
+        GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
     }
 
     public String getFotoPerfilDependente() {
@@ -923,7 +945,7 @@ public class SociosBean implements Serializable {
             if (MacFilial.getAcessoFilial().getId() == -1) {
                 matriculaSocios.setFilial((Filial) new Dao().find(new Filial(), 1));
             } else {
-                matriculaSocios.setFilial(MacFilial.getAcessoFilial().getFilial());
+                matriculaSocios.setFilial((Filial) new Dao().find(new Filial(), Integer.parseInt(listaFilial.get(idFilial).getDescription())));
             }
             if (!sv.inserirObjeto(matriculaSocios)) {
                 GenericaMensagem.error("Erro", "Erro ao Salvar Matrícula!");
@@ -931,6 +953,7 @@ public class SociosBean implements Serializable {
                 return null;
             }
         } else {
+            matriculaSocios.setFilial((Filial) new Dao().find(new Filial(), Integer.parseInt(listaFilial.get(idFilial).getDescription())));
             if (!sv.alterarObjeto(matriculaSocios)) {
                 GenericaMensagem.error("Erro", "Erro ao Atualizar Matrícula!");
                 sv.desfazerTransacao();
@@ -2806,6 +2829,35 @@ public class SociosBean implements Serializable {
 
     public void setAlteraValorServico(String alteraValorServico) {
         this.alteraValorServico = Moeda.converteR$(alteraValorServico);;
+    }
+
+    public Integer getIdFilial() {
+        return idFilial;
+    }
+
+    public void setIdFilial(Integer idFilial) {
+        this.idFilial = idFilial;
+    }
+
+    public List<SelectItem> getListaFilial() {
+        if (listaFilial.isEmpty()) {
+            List<Filial> list = new Dao().list(new Filial(), true);
+            MacFilial mc = MacFilial.getAcessoFilial();
+            if (mc.getId() == -1) {
+                mc.setFilial((Filial) new Dao().find(new Filial(), 1));
+            }
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getId() == mc.getFilial().getId()) {
+                    idFilial = i;
+                }
+                listaFilial.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+            }
+        }
+        return listaFilial;
+    }
+
+    public void setListaFilial(List<SelectItem> listaFilial) {
+        this.listaFilial = listaFilial;
     }
 }
 
