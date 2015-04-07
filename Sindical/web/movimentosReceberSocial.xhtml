@@ -94,7 +94,7 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <h:panelGrid style="float: left; clear: both; margin-top: 10px; margin-bottom: 10px" columns="9" id="i_panel" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}">
+                            <h:panelGrid style="float: left; clear: both; margin-top: 10px; margin-bottom: 10px" columns="11" id="i_panel" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}">
                                 <p:column>
                                     <h:outputText value="Filtrar por" /><br />
                                     <p:selectOneMenu value="#{movimentosReceberSocialBean.porPesquisa}" style="padding-right: 10px; margin-right: 20px">
@@ -102,9 +102,18 @@
                                         <f:selectItem itemValue="todos"    itemLabel="Todos"/>
                                         <f:selectItem itemValue="abertos"  itemLabel="Abertos"/>
                                         <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
+                                        <f:selectItem itemValue="atrasados" itemLabel="Atrasados"/>
+                                        <f:selectItem itemValue="vencer" itemLabel="A vencer"/>
                                     </p:selectOneMenu>
                                 </p:column>
 
+                                <p:column>
+                                    <h:outputText value="Ref" /><br />
+                                    <p:inputMask size="8" value="#{movimentosReceberSocialBean.referenciaPesquisa}" style="margin-right: 20px;" mask="99/9999">
+                                        <p:ajax event="change" update="@this i_panel tbl i_msg" listener="#{movimentosReceberSocialBean.atualizarStatus()}"/>
+                                    </p:inputMask>
+                                </p:column>
+                                
                                 <p:column>
                                     <h:outputText value="Total em Aberto" /><br />
                                     <p:inputText readonly="true" size="10" value="#{movimentosReceberSocialBean.total}" style="font-weight: bold; margin-right: 20px; text-align: right"/>
@@ -117,9 +126,14 @@
 
                                 <p:column>
                                     <h:outputText value="Desconto"/><br />
-                                    <p:inputText id="i_desconto" size="10" value="#{movimentosReceberSocialBean.desconto}" style="margin-right: 20px; text-align: right">
+                                    <p:inputText id="i_desconto" size="10" value="#{movimentosReceberSocialBean.desconto}" style="text-align: right">
                                         <p:ajax event="blur" update="@this i_panel tbl i_msg" listener="#{movimentosReceberSocialBean.permissaoEcalculoDesconto()}" />
                                     </p:inputText>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton icon="ui-icon-locked" title="Autorizar Desconto" onclick="PF('dlg_autentica_usuario').show()" disabled="#{!movimentosReceberSocialBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="margin-right: 20px;"/>
                                 </p:column>
 
                                 <p:column>
@@ -139,7 +153,7 @@
 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" onclick="PF('i_dlg_estorno').show()" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos'}" disabled="#{controleAcessoBean.botaoEstornarMensalidades}"/>
+                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" onclick="PF('i_dlg_estorno').show()" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos' or movimentosReceberSocialBean.porPesquisa != 'atrasados'}" disabled="#{controleAcessoBean.botaoEstornarMensalidades}"/>
                                 </p:column>
                                 
                                 <p:column>
@@ -149,7 +163,7 @@
 
                                 <p:column rendered="false">
                                     <br />
-                                    <p:commandButton value="Mesclar" title="Mesclar Movimentos" action="#{movimentosReceberSocialBean.mesclar()}" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos'}" />
+                                    <p:commandButton value="Mesclar" title="Mesclar Movimentos" action="#{movimentosReceberSocialBean.mesclar()}" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos' or movimentosReceberSocialBean.porPesquisa != 'atrasados'}" />
                                 </p:column>
                             </h:panelGrid>
 
@@ -164,33 +178,38 @@
                                 </f:facet>
 
                                 <p:column style="text-align: center; width: 15px">
+                                    <f:facet name="header">
+                                        <p:selectBooleanCheckbox value="#{movimentosReceberSocialBean.chkSeleciona}">
+                                            <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosReceberSocialBean.marcarTodos()}" />
+                                        </p:selectBooleanCheckbox>
+                                    </f:facet>
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosReceberSocialBean.calculoDesconto()}" />
                                     </p:selectBooleanCheckbox>
                                 </p:column>
 
                                 <p:column headerText="Beneficiário" rendered="#{movimentosReceberSocialBean.listaPessoa.size() eq 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}">
-                                    <p:commandLink value="#{linha.argumento14}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento14}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() gt 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}">
-                                    <p:commandLink value="#{linha.argumento13}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento13}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() ge 1 and movimentosReceberSocialBean.pessoaJuridicaNaLista}">
-                                    <p:commandLink value="#{linha.argumento14}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento14}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column headerText="Serviços">
-                                    <h:outputText value="#{linha.argumento2}" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento2}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
                                 
                                 <p:column headerText="Tipo" style="text-align: center">
-                                    <h:outputText value="#{linha.argumento3}" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento3}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column style="text-align: center; width: 75px" headerText="Vencimento">
-                                    <h:outputText value="#{linha.argumento5}" style="font-size: 8pt!important"/>
+                                    <p:commandLink value="#{linha.argumento5}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
 
                                 <p:column headerText="Valor Base" style="width: 80px">
@@ -388,7 +407,53 @@
                                     </h:panelGrid>
                                 </h:panelGrid>
                             </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_desconto" modal="true" header="Inserir Desconto" width="200">  
+                                <h:panelGrid>
+                                    <p:outputLabel value="Digite o valor do Desconto" />
+                                    <p:inputText value="#{movimentosReceberSocialBean.desconto}" style="width: 100px; text-align: right">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputText>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid>
+                                    <p:commandButton value="Adicionar Desconto" title="Adicionar desconto" action="#{movimentosReceberSocialBean.adicionarDesconto}"/>    
+                                </h:panelGrid>
+                            </p:dialog>  
+                            
+                        </h:form>
 
+                        <h:form id="formAutenticaUsuario">
+                            <p:dialog widgetVar="dlg_autentica_usuario" modal="true" header="Autenticar Usuário" width="380" >
+                                <p:ajax event="close" listener="#{autenticaUsuario.clear()}" update="i_autentica_usuario"/>
+                                <h:panelGrid id="i_autentica_usuario">
+                                    <p:messages autoUpdate="false" closable="true" showDetail="true" />
+                                        
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <p:outputLabel value="Login" /><br />
+                                            <p:inputText value="#{autenticaUsuario.login}" />    
+                                        </h:column>
+
+                                        <h:column>
+                                            <p:outputLabel value="Senha" /><br />
+                                            <p:password value="#{autenticaUsuario.senha}" />    
+                                        </h:column>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-check" value="Validar" action="#{autenticaUsuario.validarUsuario('dlg_desconto', 'autorizaDescontos', 3)}" update="i_autentica_usuario"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-close" value="Fechar" onclick="PF('dlg_autentica_usuario').hide()"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:dialog>  
                         </h:form>
                     </p:panel>
 

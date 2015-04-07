@@ -13,6 +13,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -862,6 +863,11 @@ public class GerarMovimento extends DB {
             baixa.setBaixa(pagamento);
             baixa.setDocumentoBaixa(numeroComposto);
             baixa.setCaixa(caixa);
+            
+            if (GenericaSessao.getObject("usuarioAutenticado") != null){
+                baixa.setUsuarioDesconto((Usuario)GenericaSessao.getObject("usuarioAutenticado"));
+                GenericaSessao.remove("usuarioAutenticado");
+            }
             
             sv.abrirTransacao();
             if (!sv.inserirObjeto(baixa)) {

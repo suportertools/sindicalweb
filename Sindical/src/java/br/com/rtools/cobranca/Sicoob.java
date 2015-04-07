@@ -60,8 +60,8 @@ public class Sicoob extends Cobranca {
             j++;
             i--;
         }
-        if ((11 - (soma % 11)) > 9) {
-            return "0";
+        if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
+            return "1";
         } else {
             return Integer.toString(11 - (soma % 11));
         }
@@ -134,6 +134,7 @@ public class Sicoob extends Cobranca {
         String agencia = boleto.getContaCobranca().getContaBanco().getAgencia();
         String cedente = "0000000".substring(0, 7 - boleto.getContaCobranca().getCodCedente().length()) + boleto.getContaCobranca().getCodCedente();
         String composicao = agencia+("0000000000".substring(0, 10- cedente.length()) + cedente) + "0000000".substring(0, 7 - boleto.getBoletoComposto().length()) + boleto.getBoletoComposto();
+        //String composicao = "000100000000190000021";
         
         if (!composicao.isEmpty()){
             int soma = 0;
@@ -160,13 +161,19 @@ public class Sicoob extends Cobranca {
                         peso = 0; 
                 }
             }
-            
-            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
-            //if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1) {
+            if ((soma % 11) == 0 || (soma % 11) == 1){
                 composicao = "0";
-            } else {
+            }else{
                 composicao = Integer.toString(11 - (soma % 11));
             }
+            
+//            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
+//                // NO MANUAL NÃO FALA DO CASO DE SER MAIOR QUE 9, PORÉM EM UM TESTE CAIU ESSE CASO
+//            //if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1) {
+//                composicao = "0";
+//            } else {
+//                composicao = Integer.toString(11 - (soma % 11));
+//            }
         }
         return composicao;
     }
