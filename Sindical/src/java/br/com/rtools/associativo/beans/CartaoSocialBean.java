@@ -13,14 +13,15 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.impressao.Etiquetas;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.ImpressaoParaSocios;
-import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -32,9 +33,9 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
 // import java.util.Vector;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -58,11 +59,13 @@ public class CartaoSocialBean implements Serializable {
     private List<Vector> listaCarteirinha = new ArrayList();
     private List<Vector> filteredCarteirinha = new ArrayList();
     private List<Vector> listaSelecionado = new ArrayList();
+    private List<SelectItem> listFilial = new ArrayList();
     private List listaHistorico = new ArrayList();
     private String por = "";
     private String porLabel = "";
     private String indexOrdem = "0";
     private Integer page;
+    private Integer idFilial = 0;
     private Boolean toggle = false;
     private Integer firstIndex = 0;
     private Integer lastIndex = 0;
@@ -549,10 +552,10 @@ public class CartaoSocialBean implements Serializable {
     }
 
     public void setListaSelecionado(List<Vector> listaSelecionado) {
-//        if (toggle != null || toggle) {
+        if (toggle != null || toggle) {
 //            this.listaSelecionado = listaSelecionado;
 //            toggle = true;
-//        }
+        }
     }
 
     public List getListaHistorico() {
@@ -606,21 +609,50 @@ public class CartaoSocialBean implements Serializable {
         toggle = true;
     }
 
-    public void selectedAll(Boolean all) {
-        if (!listaSelecionado.isEmpty() && listaSelecionado.size() == listaCarteirinha.size()) {
-            listaSelecionado.clear();
+    public void toggleSelectedListener() {
+        Integer pageNumber = listaCarteirinha.size() / 10;
+        Integer indexMin = 0;
+        Integer indexMax = 0;
+        Integer pg = 0;
+        if (page != null) {
+            pg = page + 1;
         } else {
-            listaSelecionado.clear();
-            listaSelecionado.addAll(listaCarteirinha);
+            pg = 1;
+        }
+        if (pageNumber == 1) {
+            indexMax = listaCarteirinha.size() - 1;
+            indexMin = 0;
+        } else if (pageNumber > 1) {
+            if (page == null || page == 0) {
+                indexMin = 0;
+                indexMax = 9;
+            } else {
+                indexMin = page;
+                indexMax = page + 10;
+            }
+        }
+        int x = 0;
+        listaSelecionado.clear();
+        for (int i = indexMin; i < listaCarteirinha.size(); i++) {
+            if (x == 10) {
+                break;
+            }
+            listaSelecionado.add(listaCarteirinha.get(i));
+            x++;
         }
     }
 
-    public void selectedAll() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        toggle = false;
-        selectedAll(false);
-        UIComponent uIComponent = PF.findComponent("i_btn_toggle");
-        PF.update("formCartaoSocial:i_panel_grid");
+    public String selectedAll() {
+        if (!listaSelecionado.isEmpty()) {
+            if (listaSelecionado.size() == listaCarteirinha.size()) {
+                listaSelecionado.clear();
+            } else {
+                listaSelecionado.addAll(listaCarteirinha);
+            }
+        } else {
+            listaSelecionado.addAll(listaCarteirinha);
+        }
+        return "cartaoSocial";
     }
 
     public Boolean getToggle() {
@@ -675,6 +707,37 @@ public class CartaoSocialBean implements Serializable {
             listaSelecionado.add(listaCarteirinha.get(i));
         }
         return "cartaoSocial";
+    }
+
+    public List<SelectItem> getListFilial() {
+        if (listFilial.isEmpty()) {
+            idFilial = MacFilial.getAcessoFilial().getFilial().getId();
+            if (idFilial == -1) {
+                idFilial = 0;
+            }
+            List<Filial> list = new Dao().list(new Filial(), true);
+            int i = 0;
+            listFilial.add(new SelectItem(i, "Todas", "" + 0));
+            for (i = 1; i < list.size(); i++) {
+                if (idFilial == list.get(i).getFilial().getId()) {
+                    idFilial = i;
+                }
+                listFilial.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+            }
+        }
+        return listFilial;
+    }
+
+    public void setListFilial(List<SelectItem> listFilial) {
+        this.listFilial = listFilial;
+    }
+
+    public Integer getIdFilial() {
+        return idFilial;
+    }
+
+    public void setIdFilial(Integer idFilial) {
+        this.idFilial = idFilial;
     }
 
 }
