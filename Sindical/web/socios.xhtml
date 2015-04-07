@@ -50,7 +50,9 @@
                                 </h:panelGrid>
                             </p:dialog>
 
-                            <p:panel styleClass="fundoCinza" style="clear: both">
+                            <div class="clear"></div>
+
+                            <p:panel styleClass="fundoCinza">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Dados da Pessoa " style="font-weight: bold"/><br />
                                     <h:outputText value="#{sociosBean.servicoPessoa.pessoa.tipoDocumento.descricao} - #{sociosBean.servicoPessoa.pessoa.documento}" style="font-size: 12pt!important;"/>
@@ -58,6 +60,16 @@
                                     <p:tooltip for="i_link_pessoa">
                                         <p:graphicImage value="#{sociosBean.fotoTipTitular}" width="100"/>
                                     </p:tooltip>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:panel styleClass="fundoCinza margin-top-max">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Filial: "/>
+                                    <p:selectOneMenu value="#{sociosBean.idFilial}">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{sociosBean.listaFilial}"/>
+                                    </p:selectOneMenu>                                
                                 </h:panelGrid>
                             </p:panel>
 
@@ -83,9 +95,9 @@
                                     <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" onclick="PF('i_dlg_matricula').show();" size="17" readonly="true" style="margin-left: 30px; font-weight: bold; font-size: 10pt!important; cursor: pointer; background: #9ccaaa; text-align: center"/>
                                 </p:column>
                             </h:panelGrid>
-                            
+
                             <hr />
-                            
+
                             <h:panelGrid id="i_panel_servicos" columns="8" style="margin-top: 5px">
                                 <p:column>
                                     <h:outputLabel value="Valor" /><br />
@@ -93,26 +105,26 @@
                                         <p:ajax event="blur" update="@this i_panel_servicos" global="false" listener="#{sociosBean.calculoDesconto()}"/>
                                     </p:inputText>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <h:outputLabel value="Desconto" /><br />
                                     <p:inputText value="#{sociosBean.servicoPessoa.nrDescontoString}" size="5" style="text-align: right" disabled="#{controleAcessoBean.botaoDescontoSocial || sociosBean.descontoSocial.id != 1}">
                                         <p:ajax event="blur" update="@this i_panel_servicos" global="false" listener="#{sociosBean.calculoValor()}"/>
                                     </p:inputText>
                                 </p:column>
-                                
+
                                 <p:column rendered="false">
                                     <br />
                                     <h:outputLabel value=" % "/>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <br />      
                                     <p:selectOneMenu value="#{sociosBean.index_desconto}" style="width: 125px">
                                         <p:ajax event="change" update="@this i_panel_servicos" global="false" listener="#{sociosBean.selecionarDesconto(null)}"/>
                                         <f:selectItems value="#{sociosBean.listaDescontoSocial}"/>
                                     </p:selectOneMenu>
-                                    
+
                                     <p:splitButton value="#{sociosBean.descontoSocial.descricao}" icon="ui-icon-star" update="@this" resetValues="true" partialSubmit="true" rendered="false">
                                         <c:forEach items="#{sociosBean.listaDescontoSocial}" var="linha" rendered="false">
                                             <p:menuitem value="#{linha.descricao}" actionListener="#{sociosBean.selecionarDesconto(linha)}" update="i_panel_servicos"/>
@@ -121,13 +133,13 @@
                                         <p:menuitem value="Novo Desconto" actionListener="#{sociosBean.clickSalvarDesconto()}" disabled="#{controleAcessoBean.botaoDescontoSocial}"/>
                                     </p:splitButton>   
                                 </p:column>
-                                
+
                                 <p:column>
                                     <br />
                                     <p:commandButton icon="ui-icon-plusthick" actionListener="#{sociosBean.clickSalvarDesconto()}" disabled="#{controleAcessoBean.botaoDescontoSocial}" title="Adicionar um Novo Desconto"/>
                                 </p:column>
-                                    
-                                
+
+
                                 <p:column>
                                     <br />
                                     <p:commandButton icon="ui-icon-extlink" actionListener="#{sociosBean.clickAlterarDesconto()}" disabled="#{controleAcessoBean.botaoDescontoSocial or (sociosBean.index_desconto == 0 and !controleAcessoBean.botaoDescontoSocial)}" title="Alterar esse Desconto"/>
@@ -181,7 +193,7 @@
                                     </h:panelGrid>
                                 </p:column>
                             </h:panelGrid>
-                            
+
                             <p:dialog widgetVar="dlg_dv" header="Alterar dia de vencimento?" modal="true" width="300">
                                 <center>
                                     <h:panelGrid columns="2">
@@ -239,7 +251,7 @@
                                     <h:outputLabel value="Ref. Validade" rendered="#{sociosBean.renderServicos}" style="margin-left: 20px"/><br />
                                     <p:inputMask value="#{sociosBean.servicoPessoa.referenciaValidade}" size="5" rendered="#{servicoPessoaBean.renderServicos}" mask="99/9999" style="margin-left: 20px"/>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <h:outputLabel value="Validade Carteirinha" style="margin-left: 20px"/><br />
                                     <p:inputMask value="#{sociosBean.socCarteirinha.validadeCarteirinha}" size="13" mask="99/99/9999" style="margin-left: 20px; text-align: center" readonly="true"/>
@@ -249,12 +261,12 @@
                                     <h:outputLabel value="Cidade do Convênio" style="margin-left: 20px" rendered="false"/><br />
                                     <p:commandButton value="#{sociosBean.matriculaSocios.cidade.cidade} - #{sociosBean.matriculaSocios.cidade.uf}" action="#{chamadaPaginaBean.cidade}" style="margin-left: 20px" rendered="false"/>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <br />
                                     <p:selectBooleanCheckbox value="#{sociosBean.servicoPessoa.descontoFolha}" style="margin-left: 25px;" itemLabel="Descontar em Folha"/>
                                 </p:column>
-                                
+
                                 <p:panel style="background-color: #ff8484; margin-left: 30px" rendered="#{sociosBean.matriculaSocios.id != -1 and sociosBean.matriculaSocios.motivoInativacao != null and sociosBean.matriculaSocios.motivoInativacao.id != -1}">
                                     <h:outputLabel value="Este sócio esta inativo desde: #{sociosBean.matriculaSocios.inativo} por #{sociosBean.matriculaSocios.motivoInativacao.descricao}" style="margin-left: 30px; font-size: 10pt; color: white; font-weight: bold"/>
                                     <p:commandLink value=" detalhes " onclick="PF('i_dlg_smi_detalhes').show()" style="margin-left: 10px" rendered="#{sociosBean.matriculaSocios.motivo != ''}"/>
@@ -313,7 +325,7 @@
                                         <p:commandLink rendered="#{linha.argumento0.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
                                         <p:commandLink rendered="#{linha.argumento0.pessoa.id != -1}" value="#{linha.argumento0.pessoa.documento} - #{linha.argumento0.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
                                     </p:column>
-                                    
+
                                     <p:column headerText="Parentesco" >
                                         <p:selectOneMenu value="#{linha.argumento1}" style="width: 120px">
                                             <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
@@ -404,20 +416,20 @@
                                 <p:commandButton value="Inativar"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.validaMotivoInativacao()}" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_i').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_smi" header="Complementar Motivo de Inativação" resizable="false" width="400" modal="true">
                                 <p:messages id="i_msg_motivo" autoUpdate="false" closable="true" showDetail="true"/>
                                 <h:panelGrid columns="1" style="width: 100%">
                                     <h:outputLabel value="Motivo" />
                                     <p:inputTextarea style="width: 100%" value="#{sociosBean.matriculaSocios.motivo}" rows="3">
-                                        
+
                                     </p:inputTextarea>
                                 </h:panelGrid>
 
                                 <p:commandButton value="Confirmar" type="submit" action="#{sociosBean.inativarSocio()}" styleClass="ui-confirmdialog-yes" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Voltar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_smi').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_smi_detalhes" header="Motivo de Inativação" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="1" style="width: 100%">
                                     <h:outputLabel value="#{sociosBean.matriculaSocios.motivo}" style="font-size: 11pt!important" />
@@ -435,7 +447,7 @@
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.reativarSocio()}" update="formSocios" onclick="PF('i_dlg_re').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_re').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="dlg_validade_carteirinha" header="Carteirinha Vencida" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Esta carteirinha esta vencida! Alterar para nova validade?" /><br />
@@ -445,7 +457,7 @@
                                 <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.visualizarCarteirinha(true)}" style="clear: both; float: left" icon="ui-icon-check" ajax="false"/>  
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_validade_carteirinha').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="dlg_imprimir_carteirinha" header="Imprimir Carteirinha" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Deseja realmente imprimir essa carteirinha?" /><br />
@@ -545,7 +557,7 @@
                                                 <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
                                                     <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px" cache="false"/>
                                                 </h:panelGrid>
-                                                
+
                                                 <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" style="float: right" rendered="#{!sociosBean.fotoTempPerfil.equals('') or !sociosBean.fotoPerfilDependente.equals('')}" update="i_panel_dados"/>
                                                 <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
                                                 <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />
@@ -559,7 +571,7 @@
                                         </h:panelGrid>
                                     </p:tab>
 
-                                        
+
                                     <p:tab id="tab_pesquisa" title="Pesquisa">
                                         <p:messages id="i_msg2" showDetail="true" closable="true" />   
                                         <h:panelGrid id="i_panel_pesquisa" columns="1" style="width: 400px">
@@ -598,7 +610,7 @@
                                     </p:tab>
                                 </p:tabView>
                             </p:dialog>
-                                                                    
+
                             <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
                                 <h:panelGrid id="i_panel_imagem" columns="1">
                                     <p:photoCam widgetVar="pc" listener="#{sociosBean.capturar}" update=":formSocios:tab_view:i_panel_dados"/>
@@ -611,7 +623,7 @@
                             </p:dialog>
                         </h:form>
                     </p:panel>
-                    
+
                     <h:form id="form_desconto">
                         <p:dialog widgetVar="dlg_desconto" modal="true" header="Salvar Desconto" resizable="false"  width="400">
                             <h:panelGrid id="i_panel_desconto">
@@ -624,14 +636,14 @@
                                             <p:ajax event="blur" update="i_panel_valores_novo_desconto" global="false" listener="#{sociosBean.calculoNovoDesconto()}"/>
                                         </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Desconto" style="font-size: 11pt!important"/><br />
                                         <p:inputText value="#{sociosBean.novoDescontoSocial.nrDescontoString}" style="width: 80px">
                                             <p:ajax event="blur" update="i_panel_valores_novo_desconto" global="false" listener="#{sociosBean.calculoNovoValor()}"/>
                                         </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Nome do Desconto" style="font-size: 11pt!important"/><br />
                                         <p:inputText value="#{sociosBean.novoDescontoSocial.descricao}">
@@ -639,11 +651,11 @@
                                         </p:inputText>
                                     </h:column>
                                 </h:panelGrid>
-                                
+
                                 <p:commandButton value="Salvar" action="#{sociosBean.salvarDesconto()}" icon="ui-icon-check"/>
                             </h:panelGrid>
                         </p:dialog>
-                        
+
                         <p:dialog widgetVar="dlg_alterar_desconto" modal="true" header="Alterar Desconto" resizable="false"  width="400">
                             <h:panelGrid id="i_panel_alterar_desconto">
                                 <p:outputLabel value="Deseja ALTERAR esse desconto?" style="font-size: 11pt!important; font-weight: bold"/>
@@ -654,14 +666,14 @@
                                             <p:ajax event="blur" update="i_panel_valores_alterar_desconto" global="false" listener="#{sociosBean.calculoAlterarDesconto()}"/>
                                         </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Desconto" style="font-size: 11pt!important"/><br />
                                         <p:inputText value="#{sociosBean.descontoSocial.nrDescontoString}" style="width: 80px">
                                             <p:ajax event="blur" update="i_panel_valores_alterar_desconto" global="false" listener="#{sociosBean.calculoAlterarValor()}"/>
                                         </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <p:outputLabel value="Nome do Desconto" style="font-size: 11pt!important"/><br />
                                         <p:inputText value="#{sociosBean.descontoSocial.descricao}">
@@ -669,12 +681,12 @@
                                         </p:inputText>
                                     </h:column>
                                 </h:panelGrid>
-                                
+
                                 <p:commandButton value="Salvar" action="#{sociosBean.alterarDesconto()}" icon="ui-icon-check"/>
                             </h:panelGrid>
                         </p:dialog>
                     </h:form>
-                    
+
                     <h:form id="form_dependente_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
                         <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar Foto" >
                             <p:fileUpload label="Procurar"
