@@ -69,6 +69,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -651,6 +652,7 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public List<SelectItem> getListaPeriodosGrade() {
+
         if (listaPeriodosGrade.isEmpty()) {
             if (!listaModalidades.isEmpty()) {
                 // idPeriodoGrade = 0;
@@ -661,7 +663,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 // List<AcademiaServicoValor> listaAcademiaServicoValor = di.list(new AcademiaServicoValor(), true);
                 AcademiaServicoValor asv = (AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()));
                 List<AcademiaServicoValor> listaAcademiaServicoValor = academiaDao.listaAcademiaServicoValorPorServico(asv.getServicos().getId());
-                
+
                 for (int w = 0; w < listaAcademiaServicoValor.size(); w++) {
                     String text = "";
                     List<AcademiaSemana> listaAcademiaSemana = academiaDao.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());
@@ -673,6 +675,23 @@ public class MatriculaAcademiaBean implements Serializable {
                     text = listaAcademiaServicoValor.get(w).getPeriodo().getDescricao() + " - " + text;
                     listaPeriodosGrade.add(new SelectItem(w, text, Integer.toString(listaAcademiaServicoValor.get(w).getId())));
                 }
+
+                Collections.sort(listaPeriodosGrade, new Comparator<SelectItem>() {
+                    @Override
+                    public int compare(SelectItem sItem1, SelectItem sItem2) {
+                        String sItem1Label = sItem1.getLabel();
+                        String sItem2Label = sItem2.getLabel();
+
+                        return (sItem1Label.compareToIgnoreCase(sItem2Label));
+                    }
+                });
+                
+                List<SelectItem> list = new ArrayList<>();
+                for (int i = 0; i < listaPeriodosGrade.size(); i++) {
+                    list.add(new SelectItem(i, listaPeriodosGrade.get(i).getLabel(), listaPeriodosGrade.get(i).getDescription()));
+                }
+                
+                listaPeriodosGrade = list;
 
 //                AcademiaDao academiaDao = new AcademiaDao();
 //                DaoInterface di = new Dao();
@@ -2055,4 +2074,5 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setSociosCobranca(Socios sociosCobranca) {
         this.sociosCobranca = sociosCobranca;
     }
+
 }
