@@ -36,6 +36,7 @@ public class CartaoSocial {
     private String fantasia_titular;
     private String codigo_funcional_titular;
     private Integer titular_id;
+    private String grupo_categoria;
 
     public CartaoSocial() {
         this.matricula = "";
@@ -72,9 +73,10 @@ public class CartaoSocial {
         this.fantasia_titular = "";
         this.codigo_funcional_titular = "";
         this.titular_id = null;
+        this.grupo_categoria = "";
     }
 
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia, String titular, String dependente, String fantasia_titular, String codigo_funcional_titular, Integer titular_id) {
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia, String titular, String dependente, String fantasia_titular, String codigo_funcional_titular, Integer titular_id, String grupo_categoria) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -109,6 +111,7 @@ public class CartaoSocial {
         this.fantasia_titular = fantasia_titular;
         this.codigo_funcional_titular = codigo_funcional_titular;
         this.titular_id = titular_id;
+        this.grupo_categoria = grupo_categoria;
     }
 
     public String getMatricula() {
@@ -381,5 +384,13 @@ public class CartaoSocial {
 
     public void setTitular_id(Integer titular_id) {
         this.titular_id = titular_id;
+    }
+
+    public String getGrupo_categoria() {
+        return grupo_categoria;
+    }
+
+    public void setGrupo_categoria(String grupo_categoria) {
+        this.grupo_categoria = grupo_categoria;
     }
 }
