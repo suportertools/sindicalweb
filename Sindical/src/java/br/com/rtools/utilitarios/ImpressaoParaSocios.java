@@ -118,7 +118,7 @@ public class ImpressaoParaSocios {
                     + getConverteNullString(((List) (listaCartao.get(i))).get(25));
 
             String cidade_uf = getConverteNullString(((List) (listaCartao.get(i))).get(26)) + " - " + getConverteNullString(((List) (listaCartao.get(i))).get(27));
-            if (getConverteNullString(((List) (listaCartao.get(i))).get(36)).equals("TITULAR")) {
+            if (getConverteNullString(((List) (listaCartao.get(i))).get(36)).equals("TITULAR") || getConverteNullString(((List) (listaCartao.get(i))).get(36)).isEmpty()) {
                 titular = getConverteNullString(((List) (listaCartao.get(i))).get(1));
                 dependente = "";
                 orgaoOrigem = getConverteNullString(((List) (listaCartao.get(i))).get(9));
@@ -163,7 +163,7 @@ public class ImpressaoParaSocios {
                             dependente, //                                                   DEPENDENTE
                             getConverteNullString(((List) (listaCartao.get(i))).get(38)), // FANTASIA EMPRESA - TITULAR
                             getConverteNullString(((List) (listaCartao.get(i))).get(39)), //  CÓDIGO FUNCIONAL - TITULAR
-                            Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))), // TITULAR ID
+                            ( getConverteNullString(((List) (listaCartao.get(i))).get(40)).isEmpty() ) ? 0 : Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))), // TITULAR ID
                             getConverteNullString(((List) (listaCartao.get(i))).get(41)) // GRUPO CATEGORIA
                     )
             );
