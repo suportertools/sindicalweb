@@ -92,7 +92,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class MatriculaAcademiaBean implements Serializable {
-
     private MatriculaAcademia matriculaAcademia;
     private Fisica aluno;
     private Registro registro;
