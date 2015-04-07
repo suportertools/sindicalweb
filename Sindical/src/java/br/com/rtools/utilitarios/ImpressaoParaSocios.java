@@ -5,8 +5,6 @@ import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.dao.SociosDao;
-import br.com.rtools.associativo.db.MatriculaSociosDB;
-import br.com.rtools.associativo.db.MatriculaSociosDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.impressao.CartaoSocial;
@@ -165,7 +163,8 @@ public class ImpressaoParaSocios {
                             dependente, //                                                   DEPENDENTE
                             getConverteNullString(((List) (listaCartao.get(i))).get(38)), // FANTASIA EMPRESA - TITULAR
                             getConverteNullString(((List) (listaCartao.get(i))).get(39)), //  CÓDIGO FUNCIONAL - TITULAR
-                            Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))) // TITULAR ID
+                            Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))), // TITULAR ID
+                            getConverteNullString(((List) (listaCartao.get(i))).get(41)) // GRUPO CATEGORIA
                     )
             );
 
