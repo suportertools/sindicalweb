@@ -136,7 +136,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "            s.categoria,                                             " // 37 CATEGORIA
                     + "            pt.fantasia AS fantasia_titular,                         " // 38 FANTASIA EMPRESA - TITULAR
                     + "            pt.codigo_funcional AS codigo_funcional_titular,         " // 39 CÓDIGO FUNCIONAL - TITULAR
-                    + "            s.titular AS titular_id                                  " // 40 TITULAR ID
+                    + "            s.titular AS titular_id,                                 " // 40 TITULAR ID
+                    + "            s.grupo_categoria                                        " // 41 GRUPO CATEGORIA
                     + "       FROM pes_fisica           AS f                                                                "
                     + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               "
                     + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 "
@@ -151,7 +152,9 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "  LEFT JOIN end_endereco         AS ende ON ende.id      = pend.id_endereco                          "
                     + "  LEFT JOIN end_cidade           AS c    ON c.id         = ende.id_cidade                            "
                     + " INNER JOIN soc_carteirinha      AS sc   ON sc.id_pessoa = p.id                                      "
-                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
+                    // USADA ATÉ 06/04/2015 - CHAMADO 665
+                    // + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
+                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (select id_servico_cartao from seg_registro)  and m.dt_vencimento >='06/04/2015' "
                     + "  LEFT JOIN soc_historico_carteirinha sh ON sh.id_movimento = m.id                                   "
                     + " INNER JOIN soc_modelo_carteirinha AS mc ON mc.id        = sc.id_modelo_carteirinha                  ";
 
@@ -320,7 +323,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          s.categoria,                                "
                     + "          pt.fantasia,                                "
                     + "          pt.codigo_funcional,                        "
-                    + "          s.titular                                   ";
+                    + "          s.titular,                                  "
+                    + "          s.grupo_categoria                           ";
 
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {
@@ -543,7 +547,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 + "            s.categoria,                                               " // 37 CATEGORIA
                 + "            pt.fantasia AS fantasia_titular,                           " // 38 FANTASIA EMPRESA - TITULAR
                 + "            pt.codigo_funcional AS codigo_funcional_titular,           " // 39 CÓDIGO FUNCIONAL - TITULAR
-                + "            s.titular AS titular_id                                    " // 40 TITULAR ID
+                + "            s.titular AS titular_id,                                   " // 40 TITULAR ID
+                + "            s.grupo_categoria                                          " // 41 GRUPO CATEGORIA
                 + "       FROM pes_pessoa_vw                    AS p                                                "
                 + " INNER JOIN soc_socios_vw                    AS s  ON s.codsocio     = p.codigo                  "
                 + " INNER JOIN soc_carteirinha                  AS c  ON c.id_pessoa    = s.codsocio                "
@@ -593,7 +598,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.categoria,                                   " + // 37
                 "            pt.fantasia,                                   " + // 38
                 "            pt.codigo_funcional,                           " + // 39
-                "            s.titular                                      ";  // 40
+                "            s.titular,                                     " + // 40
+                "            s.grupo_categoria                              "; // 41 - GRUPO CATEGORIA
         try {
             Query qry = getEntityManager().createNativeQuery(textqry);
             if (!qry.getResultList().isEmpty()) {
