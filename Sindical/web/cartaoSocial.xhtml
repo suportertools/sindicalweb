@@ -33,7 +33,17 @@
                         <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                         <h:form id="formCartaoSocial" >
                             <h:outputText value="Cartão Social" styleClass="fonteHeader" />
-                            <p:menu style="width:200px; clear: both; float: left">
+                            <div class="clear"></div>
+                            <p:panel styleClass="fundoCinza margin-top-max">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Filial: "/>
+                                    <p:selectOneMenu value="#{cartaoSocialBean.idFilial}" disabled="true">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{cartaoSocialBean.listFilial}"/>
+                                    </p:selectOneMenu>                                
+                                </h:panelGrid>
+                            </p:panel>                            
+                            <p:menu style="width:200px; float: left;" styleClass="margin-top-max">
                                 <p:submenu label="Não Impressos">  
                                     <p:menuitem value="Todos" action="#{cartaoSocialBean.naoImpressoTodos()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
                                     <p:menuitem value="Empresa" action="#{cartaoSocialBean.naoImpressoEmpresa()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
@@ -56,7 +66,7 @@
                                 </p:submenu>  
                             </p:menu>
 
-                            <h:panelGrid id="i_panel" style="float: left; margin-left: 20px;">
+                            <h:panelGrid id="i_panel" style="float: left; margin-left: 20px;" styleClass="margin-top-max">
 
                                 <p:panel rendered="#{cartaoSocialBean.por == 'niEmpresaTodos' or cartaoSocialBean.por == 'niEmpresa' or cartaoSocialBean.por == 'iEmpresaTodos' or cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iDias'}" styleClass="fundoCinza" style="font-weight: bold">
                                     <h:outputLabel value="#{cartaoSocialBean.porLabel}" />
@@ -108,7 +118,7 @@
 
                             </h:panelGrid>
 
-                            <p:panel id="i_panel_botoes" styleClass="fundoCinza" style="float: right; font-weight: bold; width: 200px" >
+                            <p:panel id="i_panel_botoes" styleClass="fundoCinza margin-top-max"  style="float: right; font-weight: bold; width: 200px" >
                                 <p:commandLink ajax="false" value="Imprimir" action="#{cartaoSocialBean.imprimirCarteirinha()}" 
                                                rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
 
@@ -125,7 +135,7 @@
                                                rendered="#{(cartaoSocialBean.por != 'niEmpresa' or cartaoSocialBean.por != 'niCNPJ') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                             </p:panel>
                             <h:panelGrid id="i_panel_grid" style="float: left; clear: both; width: 100%">
-                                <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!" first="#{cartaoSocialBean.page}" rowStyleClass="cursor-none" rowSelectMode="checkbox" rowIndexVar="index">
+                                <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="10"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!" first="#{cartaoSocialBean.page}" rowStyleClass="cursor-none" rowSelectMode="checkbox" rowIndexVar="index">
 
                                     <f:facet name="header" >
                                         <p:outputLabel value="Selecionados #{cartaoSocialBean.listaSelecionado.size()} de #{cartaoSocialBean.listaCarteirinha.size()}" />
@@ -134,7 +144,7 @@
                                     <p:ajax event="rowSelectCheckbox" update="@this :formCartaoSocial:i_panel_grid" listener="#{cartaoSocialBean.onRowSelect}"/>
                                     <!-- <p:ajax event="rowUnselect" update="@this :formCartaoSocial:i_panel_grid" listener="#{cartaoSocialBean.onRowUnselect}"/> -->
                                     <p:ajax event="rowUnselectCheckbox" update="@this :formCartaoSocial:i_panel_grid" listener="#{cartaoSocialBean.onRowUnselect}"/>
-                                    <p:ajax event="toggleSelect" update=":formCartaoSocial:i_panel_grid :formCartaoSocial:i_tbl" listener="#{cartaoSocialBean.selectedAll}"/>
+                                    <p:ajax event="toggleSelect" update=":formCartaoSocial:i_panel_grid :formCartaoSocial:i_tbl" listener="#{cartaoSocialBean.toggleSelectedListener}"/>
                                     <p:ajax event="page" listener="#{cartaoSocialBean.selectedPage}" />
                                     <p:ajax event="filter" listener="#{cartaoSocialBean.listernetFilter}" />
 
@@ -200,9 +210,10 @@
                                         <p:inputText value="#{cartaoSocialBean.lastIndex}" size="2" styleClass="text-center">
                                             <p:ajax update="@this" event="change" />
                                         </p:inputText>
-                                        <p:commandButton value="Filtrar por faixa" styleClass="margin-left-max" action="#{cartaoSocialBean.loadSelecteds}">
-                                            <p:ajax event="click" update=":formCartaoSocial:i_tbl"  />
-                                        </p:commandButton>                                        
+                                        <p:commandButton value="Selecionar por faixa" styleClass="margin-left-max" action="#{cartaoSocialBean.loadSelecteds}">
+                                            <p:ajax event="click" update="@this :formCartaoSocial:i_tbl"  />
+                                        </p:commandButton>
+                                        <p:commandButton value="Selecionar todos" styleClass="margin-left-max" action="#{cartaoSocialBean.selectedAll}" />
                                     </f:facet>
 
                                 </p:dataTable>  
