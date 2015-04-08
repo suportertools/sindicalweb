@@ -9,9 +9,9 @@ import javax.persistence.Query;
 public class MovimentosReceberSocialDBToplink extends DB implements MovimentosReceberSocialDB {
 
     @Override
-    public List pesquisaListaMovimentos(String ids, String idb, String por_status, String referencia) {
+    public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia) {
         try{
-            if (ids.isEmpty()){
+            if (id_pessoa.isEmpty()){
                 return new ArrayList();
             }
         String textqry = " select  "
@@ -51,28 +51,35 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + "inner join fin_tipo_servico as tp on tp.id=m.id_tipo_servico  \n"
                         + " left join fin_baixa as bx on bx.id=m.id_baixa \n"
                         + " left join seg_usuario as u on u.id=bx.id_usuario \n"
-                        + " left join pes_pessoa as us on us.id=u.id_pessoa \n";
+                        + " left join pes_pessoa as us on us.id=u.id_pessoa \n"
+                        + " left join pes_juridica as j on j.id_pessoa=m.id_pessoa \n";
                         
             //String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, b.ds_nome ";
             String order_by = "";
             String where = "";
             String ands = "";
 
-            if (por_status.equals("todos")){
-                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
-            }else if (por_status.equals("abertos")){
-                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
-            }else if (por_status.equals("quitados")){ 
-                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
-            }else if (por_status.equals("atrasados")){ 
-                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento < current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
-            }else if (por_status.equals("vencer")){ 
-                ands = where + " where (m.id_pessoa in ("+ids+") or m.id_beneficiario in ("+idb+")) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento > current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+            switch (por_status) {
+                case "todos":
+                    ands = where + " where (m.id_pessoa in ("+id_responsavel+") or (m.id_beneficiario in ("+id_pessoa+") and j.id is null)) and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                    order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
+                    break;
+                case "abertos":
+                    ands = where + " where (m.id_pessoa in ("+id_responsavel+") or (m.id_beneficiario in ("+id_pessoa+") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                    order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
+                    break;
+                case "quitados":
+                    ands = where + " where (m.id_pessoa in ("+id_responsavel+") or (m.id_beneficiario in ("+id_pessoa+") and j.id is null)) and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                    order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    break;
+                case "atrasados":
+                    ands = where + " where (m.id_pessoa in ("+id_responsavel+") or (m.id_beneficiario in ("+id_pessoa+") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento < current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                    order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    break;
+                case "vencer":
+                    ands = where + " where (m.id_pessoa in ("+id_responsavel+") or (m.id_beneficiario in ("+id_pessoa+") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento > current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
+                    order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    break;
             }
             
             if (!referencia.isEmpty()){

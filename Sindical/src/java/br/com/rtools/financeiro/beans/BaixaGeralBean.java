@@ -242,7 +242,7 @@ public class BaixaGeralBean {
             return;
         }
         
-        if (Moeda.converteUS$(total) == somaValoresGrid()){
+        if (Moeda.converteUS$(total) == somaValoresGrid() && Moeda.converteUS$(total) != 0){
             GenericaMensagem.error("Atenção", "Os valores já conferem!");
             return;
         }

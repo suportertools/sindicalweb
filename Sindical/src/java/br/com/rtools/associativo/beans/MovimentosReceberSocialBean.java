@@ -980,7 +980,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     public List<DataObject> getListaMovimento() {
         if (listaMovimento.isEmpty() && !listaPessoa.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
-            String ids = "", idb = "";
+            String id_pessoa = "", id_responsavel = "";
 
             FisicaDB dbf = new FisicaDBToplink();
             JuridicaDB dbj = new JuridicaDBToplink();
@@ -1007,20 +1007,20 @@ public class MovimentosReceberSocialBean implements Serializable {
             }
 
             for (int i = 0; i < listaPessoa.size(); i++) {
-                if (ids.length() > 0 && i != listaPessoa.size()) {
-                    ids = ids + ",";
+                if (id_pessoa.length() > 0 && i != listaPessoa.size()) {
+                    id_pessoa = id_pessoa + ",";
                 }
-                ids = ids + String.valueOf(listaPessoa.get(i).getId());
+                id_pessoa = id_pessoa + String.valueOf(listaPessoa.get(i).getId());
             }
 
             for (int i = 0; i < listaPessoaQry.size(); i++) {
-                if (idb.length() > 0 && i != listaPessoaQry.size()) {
-                    idb = idb + ",";
+                if (id_responsavel.length() > 0 && i != listaPessoaQry.size()) {
+                    id_responsavel = id_responsavel + ",";
                 }
-                idb = idb + String.valueOf(listaPessoaQry.get(i).getId());
+                id_responsavel = id_responsavel + String.valueOf(listaPessoaQry.get(i).getId());
             }
             
-            List<Vector> lista = db.pesquisaListaMovimentos(idb, ids, porPesquisa, referenciaPesquisa);
+            List<Vector> lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa);
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
