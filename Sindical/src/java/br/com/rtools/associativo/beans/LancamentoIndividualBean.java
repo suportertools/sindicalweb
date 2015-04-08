@@ -175,7 +175,7 @@ public class LancamentoIndividualBean {
                     Moeda.converteR$Float(Moeda.converteFloatR$Float(valor))
             ));
             if (cobrancaBancaria.equals("sim"))
-                vencto_ini = idDia + dh.incrementarMeses(1, vencto_ini).substring(2);
+                vencto_ini = (idDia < 10) ? "0" + idDia + dh.incrementarMeses(1, vencto_ini).substring(2) : idDia + dh.incrementarMeses(1, vencto_ini).substring(2);
             else
                 vencto_ini = dh.incrementarMeses(1, vencto_ini);
         }
