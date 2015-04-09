@@ -45,9 +45,9 @@
                             <p:growl id="i_growl" showDetail="true" showSummary="true"  />
                             <p:dialog widgetVar="i_dlg_c" header="Mensagem" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
-                                <h:panelGrid style="clear: both; width: 100%" columns="2">
-                                    <p:commandButton value="OK" onclick="PF('i_dlg_c').hide();" style="float: left" icon="ui-icon-check"/>  
-                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <p:commandButton value="OK" onclick="PF('i_dlg_c').hide();" icon="ui-icon-check"/>
+                                </f:facet>
                             </p:dialog>
 
                             <div class="clear"></div>
@@ -314,55 +314,89 @@
 
                             <p:panel id="i_panel_dependente" header="Dependentes" style="margin-top: 10px">
                                 <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente i_msg" icon="ui-icon-circle-plus"/>
-                                <p:commandLink value="Sócio com Dependentes Inativos" id="id_dependente_inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()" styleClass="font-color-red bold" update="i_l_d_i" disabled="#{controleAcessoBean.verificarPermissao('linkDependente', 1)}" actionListener="#{sociosBean.atualizarListaDependenteInativo}"/>
+                                <p:commandLink value="Sócio com Dependentes Inativos" id="id_dependente_inativos" rendered="#{sociosBean.listDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()" styleClass="font-color-red bold" update="i_l_d_i" disabled="#{controleAcessoBean.verificarPermissao('linkDependente', 1)}" actionListener="#{sociosBean.atualizarListaDependenteInativo}"/>
 
-                                <p:dataTable var="linha" id="tbl" value="#{sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
+                                <p:dataTable var="listDependentes" id="tbl" value="#{sociosBean.listDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
                                     <p:column width="30">
-                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" title="Excluir dependente"/>
+                                        <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(listDependentes, index)}" update=":formSocios:i_panel_dependente" title="Excluir dependente"/>
                                     </p:column>
 
                                     <p:column headerText="Nome" width="200">
-                                        <p:commandLink rendered="#{linha.argumento0.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
-                                        <p:commandLink rendered="#{linha.argumento0.pessoa.id != -1}" value="#{linha.argumento0.pessoa.documento} - #{linha.argumento0.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                        <p:commandLink rendered="#{listDependentes.fisica.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                        <p:commandLink rendered="#{listDependentes.fisica.id != -1}" value="#{listDependentes.fisica.pessoa.documento} - #{listDependentes.fisica.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
                                     </p:column>
 
                                     <p:column headerText="Parentesco" >
-                                        <p:selectOneMenu value="#{linha.argumento1}" style="width: 120px">
+                                        <p:selectOneMenu value="#{listDependentes.idParentesco}" style="width: 120px">
                                             <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
                                             <!-- <f:selectItems value="# {sociosBean.listaParentesco}"/> -->
-                                            <f:selectItems value="#{linha.argumento6}"/>
+                                            <f:selectItems value="#{listDependentes.listParentesco}"/>
                                         </p:selectOneMenu>
                                     </p:column>
 
                                     <p:column headerText="Via Carteirinha" style="text-align: center">
-                                        <p:inputText value="#{linha.argumento2}" size="3"/>
+                                        <p:inputText value="#{listDependentes.viaCarteirinha}" size="3"/>
                                     </p:column>
 
                                     <p:column headerText="Validade Carteirinha" style="text-align: center">
-                                        <p:inputMask value="#{linha.argumento3}" size="8" mask="99/99/9999" readonly="true" id="i_validade_dependente2"/>
+                                        <p:inputMask value="#{listDependentes.validadeCarteirinha}" size="8" mask="99/99/9999" readonly="true" id="i_validade_dependente2"/>
                                     </p:column>
 
                                     <p:column headerText="Val. Dependente" style="text-align: center">
-                                        <p:inputMask id="i_validade_dependente" value="#{linha.argumento4}" size="5" mask="99/9999"/>
+                                        <p:inputMask id="i_validade_dependente" value="#{listDependentes.validadeDependente}" size="5" mask="99/9999"/>
                                     </p:column>
 
                                     <p:column headerText="Desconto %" style="text-align: center">
-                                        <p:inputText value="#{linha.argumento5}" size="5" style="text-align: center"/>
+                                        <p:inputText value="#{listDependentes.nrDesconto}" size="5" style="text-align: center"/>
                                     </p:column>
                                 </p:dataTable>
+                                <!-- <p:dataTable var="linha" id="tbl" value="# {sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
+                                    <p:column width="30">
+                                        <p:commandButton icon="ui-icon-close" action="# {sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" title="Excluir dependente"/>
+                                    </p:column>
+
+                                    <p:column headerText="Nome" width="200">
+                                        <p:commandLink rendered="# {linha.argumento0.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="# {sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                        <p:commandLink rendered="# {linha.argumento0.pessoa.id != -1}" value="# {linha.argumento0.pessoa.documento} - # {linha.argumento0.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="# {sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                    </p:column>
+
+                                    <p:column headerText="Parentesco" >
+                                        <p:selectOneMenu value="# {linha.argumento1}" style="width: 120px">
+                                            <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="# {sociosBean.atualizaValidadeTela(index)}"/>
+                                            < ! - - <f:selectItems value="# {sociosBean.listaParentesco}"/> - - >
+                                            <f:selectItems value="# {linha.argumento6}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column headerText="Via Carteirinha" style="text-align: center">
+                                        <p:inputText value="# {linha.argumento2}" size="3"/>
+                                    </p:column>
+
+                                    <p:column headerText="Validade Carteirinha" style="text-align: center">
+                                        <p:inputMask value="# {linha.argumento3}" size="8" mask="99/99/9999" readonly="true" id="i_validade_dependente2"/>
+                                    </p:column>
+
+                                    <p:column headerText="Val. Dependente" style="text-align: center">
+                                        <p:inputMask id="i_validade_dependente" value="# {linha.argumento4}" size="5" mask="99/9999"/>
+                                    </p:column>
+
+                                    <p:column headerText="Desconto %" style="text-align: center">
+                                        <p:inputText value="# {linha.argumento5}" size="5" style="text-align: center"/>
+                                    </p:column>
+                                </p:dataTable> -->
                             </p:panel>
 
                             <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="600" modal="true" closeOnEscape="true">
                                 <h:panelGrid id="i_l_d_i">
-                                    <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
+                                    <p:dataTable value="#{sociosBean.listDependentesInativos}" var="listDependentesInativos" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
                                         <p:column style="text-align: center" width="30">
-                                            <p:commandButton title="Excluir" icon="ui-icon-close" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.excluirDependente(linha, index)}" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                            <p:commandButton title="Excluir" icon="ui-icon-close" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.excluirDependente(listDependentesInativos, index)}" disabled="#{controleAcessoBean.botaoExcluir}" />
                                         </p:column>
                                         <p:column headerText="Nome">
-                                            <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
+                                            <h:outputLabel value="#{listDependentesInativos.fisica.pessoa.nome}" />
                                         </p:column>
                                         <p:column headerText="Validade Dependente" style="text-align: center" width="150">
-                                            <p:inputMask id="i_validade_dependente_inativo" value="#{linha.argumento4}" size="5" mask="99/9999"/>
+                                            <p:inputMask id="i_validade_dependente_inativo" value="#{listDependentesInativos.validadeDependente}" size="5" mask="99/9999"/>
                                         </p:column>
                                         <p:column style="text-align: center" width="100">
                                             <p:commandButton value="Reativar" icon="ui-icon-check" update=":formSocios:i_panel_dependente :formSocios:i_growl :formSocios:i_l_d_i" action="#{sociosBean.reativarDependente(index)}"/>
@@ -376,31 +410,48 @@
                                 </f:facet>
                             </p:dialog>
 
-                            <h:panelGrid columns="10">
-                                <p:commandButton ajax="false" value="Voltar" action="#{sociosBean.editarTitular()}" />
-                                <p:commandButton onclick="PF('i_dlg_s').show()" value="#{sociosBean.lblSocio}" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                <p:commandButton onclick="PF('i_dlg_e').show()" value="EXCLUIR" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                <p:commandButton onclick="PF('i_dlg_i').show()" value="INATIVAR" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.verificarPermissao('linkSocio', 1)}" />
-
-                                <p:selectBooleanCheckbox value="#{sociosBean.imprimirVerso}" itemLabel="Imprimir Verso" disabled="true" style="margin-left: 190px" />
-
-                                <p:selectOneMenu value="#{sociosBean.tipoDestinario}" disabled="#{sociosBean.desabilitaImpressao}" rendered="false">
-                                    <f:selectItem itemValue="socio"   itemLabel="para o Sócio"/>
-                                    <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
-                                </p:selectOneMenu>
-
-                                <p:commandButton value="Visualizar Carteirinha" action="#{sociosBean.confirmaImprimirCartao()}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;" rendered="#{!sociosBean.registro.cobrancaCarteirinha}"/>
-                                <p:commandButton ajax="false" value="Imprimir Ficha" action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
+                            <h:panelGrid columns="3" style="width: 100%">
+                                <h:column>
+                                    <h:panelGrid columns="10">
+                                        <p:commandButton ajax="false" value="Voltar" action="#{sociosBean.editarTitular()}" />
+                                        <p:commandButton onclick="PF('i_dlg_s').show()" value="#{sociosBean.lblSocio}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                        <p:commandButton onclick="PF('i_dlg_e').show()" value="EXCLUIR" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                        <p:commandButton onclick="PF('i_dlg_i').show()" value="INATIVAR" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.verificarPermissao('linkSocio', 1)}" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="2">
+                                        <p:selectBooleanCheckbox value="#{sociosBean.imprimirVerso}" itemLabel="Imprimir Verso" disabled="true"/>
+                                        <p:selectOneMenu value="#{sociosBean.tipoDestinario}" disabled="#{sociosBean.desabilitaImpressao}" rendered="false">
+                                            <f:selectItem itemValue="socio"   itemLabel="para o Sócio"/>
+                                            <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Visualizar Carteirinha" action="#{sociosBean.confirmaImprimirCartao()}" disabled="#{sociosBean.desabilitaImpressao}" rendered="#{!sociosBean.registro.cobrancaCarteirinha}"/>
+                                        <p:commandButton ajax="false" value="Imprimir Ficha" action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
+                                    </h:panelGrid>
+                                </h:column>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja #{sociosBean.lblSocio} este Sócio" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.salvar()}" update="formSocios" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.salvar()}" update="formSocios" onclick="PF('i_dlg_s').hide()" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" icon="ui-icon-close"/>       
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja EXCLUIR DEFINITIVAMENTE este Sócio" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.excluir()}" update="formSocios" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.excluir()}" update="formSocios" onclick="PF('i_dlg_e').hide()" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" icon="ui-icon-close"/>                                               
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_i" header="Deseja INATIVAR este Sócio" resizable="false" width="400" modal="true">
@@ -412,9 +463,12 @@
                                         <f:selectItems value="#{sociosBean.listaMotivoInativacao}"/>
                                     </p:selectOneMenu>
                                 </h:panelGrid>
-
-                                <p:commandButton value="Inativar"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.validaMotivoInativacao()}" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_i').hide()" style="float: left" icon="ui-icon-close"/>       
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Inativar"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.validaMotivoInativacao()}" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_i').hide()" icon="ui-icon-close"/>       
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_smi" header="Complementar Motivo de Inativação" resizable="false" width="400" modal="true">
