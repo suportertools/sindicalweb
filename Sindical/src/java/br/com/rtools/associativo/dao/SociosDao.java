@@ -1,10 +1,8 @@
 package br.com.rtools.associativo.dao;
 
 import br.com.rtools.associativo.Socios;
-import br.com.rtools.associativo.lista.ListaSociosEmpresa;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -98,6 +96,28 @@ public class SociosDao extends DB {
             return new ArrayList();
         }
         return new ArrayList();
+    }
+
+    /**
+     * Retorna o sócio inativo por matricula
+     *
+     * @param idPessoa
+     * @param idMatriculaSocios
+     * @return
+     */
+    public Socios pesquisaDependenteInativoPorMatricula(Integer idPessoa, Integer idMatriculaSocios) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.matriculaSocios.id = :matriculaSocios AND S.servicoPessoa.ativo = true ");
+            query.setParameter("pessoa", idPessoa);
+            query.setParameter("matriculaSocios", idMatriculaSocios);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Socios) list.get(0);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 
 }
