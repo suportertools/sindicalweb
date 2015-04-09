@@ -479,6 +479,7 @@ public class RelatorioSociosBean implements Serializable {
             return null;
         }
         Jasper.PART_NAME = AnaliseString.removerAcentos(relatorios.getNome().toLowerCase());
+        Jasper.PART_NAME = Jasper.PART_NAME.replace("/", "");
         Jasper.PATH = "downloads";
         if (relatorios.getPorFolha()) {
             Jasper.GROUP_NAME = relatorios.getNomeGrupo();
