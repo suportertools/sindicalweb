@@ -154,7 +154,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + " INNER JOIN soc_carteirinha      AS sc   ON sc.id_pessoa = p.id                                      "
                     // USADA ATÉ 06/04/2015 - CHAMADO 665
                     // + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
-                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (select id_servico_cartao from seg_registro)  and m.dt_vencimento >='06/04/2015' "
+                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_beneficiario = sc.id_pessoa AND m.id_servicos IN (SELECT id_servico_cartao FROM seg_registro) AND m.dt_vencimento >='06/04/2015' "
                     + "  LEFT JOIN soc_historico_carteirinha sh ON sh.id_movimento = m.id                                   "
                     + " INNER JOIN soc_modelo_carteirinha AS mc ON mc.id        = sc.id_modelo_carteirinha                  ";
 
@@ -288,7 +288,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          p.ds_nome,                                  "
                     + "          pj.ds_documento,                            "
                     + "          pj.ds_nome,                                 "
-                    + "          sc.dt_emissao,                              "
+                    + "          to_char(sc.dt_emissao, 'DD/MM/YYYY')        "
                     + "          c.ds_cidade,                                "
                     + "          to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
                     + "          c.ds_uf,                                    "
