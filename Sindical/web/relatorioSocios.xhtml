@@ -100,7 +100,9 @@
                                             <p:commandButton icon="ui-icon-print" value="Imprimir Relatório" title="Imprimir Relatório"/>
                                         </h:commandLink>                                    
                                         <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar Arquivo (ZIP)" />
-
+                                        <p:selectBooleanCheckbox value="#{jasperBean.IS_HEADER}" itemLabel="Com cabeçalho">
+                                            <p:ajax event="change" update="@this" listener="#{jasperBean.setTYPE('paisagem')}" />
+                                        </p:selectBooleanCheckbox>
                                     </h:panelGrid>
                                 </h:column>
 
