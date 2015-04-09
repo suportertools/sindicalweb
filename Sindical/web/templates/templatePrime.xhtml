@@ -75,6 +75,7 @@
                         <p:menuitem value="Meu Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" />
                         <p:menuitem value="Resolução" onclick="PF('dlg_resolucao').show()"/>                        
                         <p:menuitem value="Meus Logs" actionListener="#{pesquisaLogBean.listenerBlockUsuario}" action="#{chamadaPaginaBean.pesquisa('meusLogs')}" />
+                        <p:menuitem ajax="false" value="Trocar Filial" action="#{chamadaPaginaBean.pagina('macFilial')}" immediate="true" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="font-color-red" actionListener="#{genericaSessao.putBoolean('back', true)}"/>
                         <p:separator />
                         <p:menuitem value="Sair" action="#{usuarioBean.sairSistema}" icon="ui-icon-extlink"/>
                     </p:menuButton>

@@ -10,7 +10,10 @@
                 <p:outputLabel value="- Realizar acesso com filial!" styleClass="font-color-red font-size-14" /><br /><br />
                 <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>
                 <f:facet name="footer">
-                    <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
+                    <h:panelGrid columns="2">
+                        <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
+                        <p:commandLink ajax="false" value="Acessar Macs" action="#{chamadaPaginaBean.pagina('macFilial')}" immediate="true" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="font-color-red" actionListener="#{genericaSessao.putBoolean('back', true)}"/>
+                    </h:panelGrid>
                 </f:facet>
             </p:dialog>
         </h:form>
