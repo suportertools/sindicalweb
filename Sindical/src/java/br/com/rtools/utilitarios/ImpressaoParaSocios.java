@@ -17,6 +17,7 @@ import br.com.rtools.pessoa.db.*;
 import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import static br.com.rtools.utilitarios.Jasper.PART_NAME;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -163,7 +164,7 @@ public class ImpressaoParaSocios {
                             dependente, //                                                   DEPENDENTE
                             getConverteNullString(((List) (listaCartao.get(i))).get(38)), // FANTASIA EMPRESA - TITULAR
                             getConverteNullString(((List) (listaCartao.get(i))).get(39)), //  CÓDIGO FUNCIONAL - TITULAR
-                            ( getConverteNullString(((List) (listaCartao.get(i))).get(40)).isEmpty() ) ? 0 : Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))), // TITULAR ID
+                            (getConverteNullString(((List) (listaCartao.get(i))).get(40)).isEmpty()) ? 0 : Integer.parseInt(getConverteNullString(((List) (listaCartao.get(i))).get(40))), // TITULAR ID
                             getConverteNullString(((List) (listaCartao.get(i))).get(41)) // GRUPO CATEGORIA
                     )
             );
@@ -195,6 +196,7 @@ public class ImpressaoParaSocios {
             } else {
                 map.put("REPORT_CONNECTION", con.getConnection());
             }
+            String mimeType = "application/pdf";
             for (Entry<Integer, List> entry : hash.entrySet()) {
                 modelo = (ModeloCarteirinha) new Dao().find(new ModeloCarteirinha(), entry.getKey());
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
@@ -212,35 +214,73 @@ public class ImpressaoParaSocios {
                 if (subreport != null) {
                     map.put("template_dir", subreport);
                 }
+
+                // EM PRODUÇÃO COMPACTA CARTÕES EM GRANDES QUANTIDADES E PARTICIONA - BRUNO
+//                String sessaoCliente = ControleUsuarioBean.getCliente();
+//                List list = entry.getValue();
+//                Jasper.PATH = "downloads";
+//                if (list.size() > 20) {
+//                    if (sessaoCliente.endsWith("HoteleiroRP")) {
+//                        if (list.size() > 20) {
+//                            Jasper.COMPRESS_FILE = true;
+//                            Jasper.COMPRESS_LIMIT = 4;
+//                            Jasper.IS_DOWNLOAD = false;
+//                            Jasper.NO_COMPACT = true;
+//                            mimeType = "application/zip, application/octet-stream";
+//                            Jasper.printReports(modelo.getJasper(), "cartao_social", list, map);
+//                        }
+//                    } else if (sessaoCliente.endsWith("ComercioLimeira")) {
+//                        if (list.size() > 20) {
+//                            Jasper.COMPRESS_FILE = true;
+//                            Jasper.COMPRESS_LIMIT = 5;
+//                            Jasper.IS_DOWNLOAD = false;
+//                            Jasper.NO_COMPACT = true;
+//                            mimeType = "application/zip, application/octet-stream";
+//                            Jasper.printReports(modelo.getJasper(), "cartao_social", list, map);
+//                        }
+//                    }
+//                } else {
+//                    Jasper.printReports(modelo.getJasper().trim(), "cartao_social", list, map);
+//                }
                 ljasper.add(JasperFillManager.fillReport(jasper, map, dtSource));
             }
 
-            JRPdfExporter exporter = new JRPdfExporter();
-            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
-
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
-            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
-            exporter.exportReport();
-
-            String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-            SalvaArquivos sa = new SalvaArquivos(retorno.toByteArray(), nomeDownload, false);
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carteirinhas");
-            sa.salvaNaPasta(pathPasta);
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-            download.remover();
-
-            //JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            //JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
-//            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//            String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-//            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+//          EM PRODUÇÃO COMPACTA CARTÕES EM GRANDES QUANTIDADES E PARTICIONA - BRUNO
+//            if (!Jasper.LIST_FILE_GENERATED.isEmpty()) {
+//                String out_file = "cartao_social" + "_" + UUID.randomUUID() + "." + "zip";
+//                String out_path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + "downloads/cartao_social" + "/";
+//                Compact.OUT_FILE = out_file;
+//                Compact.PATH_OUT_FILE = out_path;
+//                Compact.setListFiles(Jasper.LIST_FILE_GENERATED);
+//                try {
+//                    Compact.toZip();
+//                    for (int i = 0; i < Jasper.LIST_FILE_GENERATED.size(); i++) {
+//                        File f = new File(Jasper.LIST_FILE_GENERATED.get(i).toString());
+//                        f.delete();
+//                    }
+//                    Download download = new Download(out_file, ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(out_path), mimeType, FacesContext.getCurrentInstance());
+//                    download.baixar();
+//                    download.remover();
+//                } catch (Exception e) {
 //
+//                }
+//
+//            }
+            Jasper.PART_NAME = "";
+            Jasper.PATH = "downloads";
+            Jasper.printReports("cartao_social", ljasper);
+//            JRPdfExporter exporter = new JRPdfExporter();
+//            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+//
+//            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
+//            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
+//            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
+//            exporter.exportReport();
+//
+//            String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+//            SalvaArquivos sa = new SalvaArquivos(retorno.toByteArray(), nomeDownload, false);
 //            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carteirinhas");
 //            sa.salvaNaPasta(pathPasta);
-//
 //            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
 //            download.baixar();
 //            download.remover();
@@ -251,12 +291,11 @@ public class ImpressaoParaSocios {
     }
 
     public static void comDependente(String pathPasta, String nomeDownload, String path, String pathVerso, Socios socios, PessoaEmpresa pessoaEmpresa, MatriculaSocios matriculaSocios, boolean imprimirVerso, String fotoSocio) {
-        SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro registro = (Registro) acumuladoDB.pesquisaCodigo(1, "Registro");
+        Dao dao = new Dao();
+        Registro registro = (Registro) dao.find(new Registro(), 1);
         Fisica fisica = new Fisica();
         Juridica sindicato = new Juridica();
         FisicaDB db = new FisicaDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         PessoaEndereco pesEndereco, pesDestinatario, pesEndEmpresa, pesEndSindicato = new PessoaEndereco();
         PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
         //PessoaEmpresa pesEmpresa = new PessoaEmpresa();
@@ -272,7 +311,7 @@ public class ImpressaoParaSocios {
 
             fisica = db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId());
             pesEndereco = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
+            sindicato = (Juridica) dao.find(new Juridica(), 1);
 
             if (pessoaEmpresa != null) {
                 if (pessoaEmpresa.getId() != -1) {
@@ -542,31 +581,37 @@ public class ImpressaoParaSocios {
                             "")
                     );
                 }
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
-                JasperPrint print = JasperFillManager.fillReport(
-                        jasper,
-                        null,
-                        dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//                     response.setContentType("application/pdf");
-//                     response.setContentLength(arquivo.length);
-//                     ServletOutputStream saida = response.getOutputStream();
-//                     saida.write(arquivo, 0, arquivo.length);
-//                     saida.flush();
-//                     saida.close();
-
-                SalvaArquivos sa = new SalvaArquivos(arquivo,
-                        nomeDownload,
-                        false);
-                sa.salvaNaPasta(pathPasta);
-
-                Download download = new Download(nomeDownload,
-                        pathPasta,
-                        "application/pdf",
-                        FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
+                if(listaSocios.isEmpty()) {
+                    return;
+                }
+                Jasper.PATH = "downloads";
+                Jasper.PART_NAME = "";                
+                Jasper.printReports(path, "cartao_social", listaSocios);                
+//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
+//                JasperPrint print = JasperFillManager.fillReport(
+//                        jasper,
+//                        null,
+//                        dtSource);
+//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+////                     response.setContentType("application/pdf");
+////                     response.setContentLength(arquivo.length);
+////                     ServletOutputStream saida = response.getOutputStream();
+////                     saida.write(arquivo, 0, arquivo.length);
+////                     saida.flush();
+////                     saida.close();
+//
+//                SalvaArquivos sa = new SalvaArquivos(arquivo,
+//                        nomeDownload,
+//                        false);
+//                sa.salvaNaPasta(pathPasta);
+//
+//                Download download = new Download(nomeDownload,
+//                        pathPasta,
+//                        "application/pdf",
+//                        FacesContext.getCurrentInstance());
+//                download.baixar();
+//                download.remover();
+            } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
         } catch (JRException erro) {
@@ -585,7 +630,7 @@ public class ImpressaoParaSocios {
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
         String dados[] = new String[34];
         List<Socios> listaSocs = new ArrayList();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
@@ -593,7 +638,7 @@ public class ImpressaoParaSocios {
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
                     new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(path))
             );
-            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
+            sindicato = (Juridica) dao.find(new Juridica(), 1);
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
 
             listaSocs.add(socios);
@@ -772,29 +817,34 @@ public class ImpressaoParaSocios {
                     continue;
                 }
             }
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
-            JasperPrint print = JasperFillManager.fillReport(
-                    jasper,
-                    null,
-                    dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            //response.setContentType("application/pdf");
-            //response.setContentLength(arquivo.length);
-            //ServletOutputStream saida = response.getOutputStream();
-            ///saida.write(arquivo, 0, arquivo.length);
-            //saida.flush();
-            //saida.close();
-
-            SalvaArquivos sa = new SalvaArquivos(arquivo,
-                    nomeDownload,
-                    false);
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance());
-            download.baixar();
+            if(listaSocios.isEmpty()) {
+                return;
+            }
+            Jasper.PATH = "downloads";
+            Jasper.printReports(path, "cartao_social", listaSocios);
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
+//            JasperPrint print = JasperFillManager.fillReport(
+//                    jasper,
+//                    null,
+//                    dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//            //response.setContentType("application/pdf");
+//            //response.setContentLength(arquivo.length);
+//            //ServletOutputStream saida = response.getOutputStream();
+//            ///saida.write(arquivo, 0, arquivo.length);
+//            //saida.flush();
+//            //saida.close();
+//
+//            SalvaArquivos sa = new SalvaArquivos(arquivo,
+//                    nomeDownload,
+//                    false);
+//            sa.salvaNaPasta(pathPasta);
+//
+//            Download download = new Download(nomeDownload,
+//                    pathPasta,
+//                    "application/pdf",
+//                    FacesContext.getCurrentInstance());
+//            download.baixar();
         } catch (JRException erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
