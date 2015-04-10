@@ -34,16 +34,23 @@ public class ConfiguracaoFinanceiroBean implements Serializable {
     public void update() {
         Dao dao = new Dao();
         if (configuracaoFinanceiro.getId() != -1) {
+            alterModalTransferencia();
             if (dao.update(configuracaoFinanceiro, true)) {
                 GenericaMensagem.info("Sucesso", "Configurações Aplicadas");
             } else {
                 GenericaMensagem.warn("Erro", "Ao atualizar este registro!");
             }
         }
-    }
-
+    }        
+        
     public void load() {
 
+    }
+    
+    public void alterModalTransferencia(){
+        if (!configuracaoFinanceiro.isTransferenciaAutomaticaCaixa()){
+            configuracaoFinanceiro.setModalTransferencia(false);
+        }   
     }
 
     public ConfiguracaoFinanceiro getConfiguracaoFinanceiro() {
