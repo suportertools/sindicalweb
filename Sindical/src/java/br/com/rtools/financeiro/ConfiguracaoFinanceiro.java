@@ -66,6 +66,9 @@ public class ConfiguracaoFinanceiro implements Serializable {
     }
 
     public void setCarenciaDias(Integer carenciaDias) {
+        if (carenciaDias != null && carenciaDias < 0) {
+            carenciaDias = null;
+        }
         this.carenciaDias = carenciaDias;
     }
 
