@@ -44,10 +44,24 @@
 
                             <p:panel styleClass="fundoCinza">
                                 <p:outputLabel value="Transferência de Caixas" style="font-weight: bold; font-size: 11pt!important"/>
-                                <h:panelGrid columns="2">
+                                <h:panelGrid columns="3">
                                     <h:column>
                                         <br />
                                         <p:selectBooleanCheckbox value="#{configuracaoFinanceiroBean.configuracaoFinanceiro.transferenciaAutomaticaCaixa}" itemLabel="Transferir Caixas automaticamente para Caixa Central" style="margin-right: 20px">
+                                            <p:ajax event="change" update="formConfiguracaoFinanceiro" listener="#{configuracaoFinanceiroBean.alterModalTransferencia()}"/>
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+                                    
+                                    <h:column rendered="#{configuracaoFinanceiroBean.configuracaoFinanceiro.transferenciaAutomaticaCaixa}">
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{configuracaoFinanceiroBean.configuracaoFinanceiro.modalTransferencia}" itemLabel="Modal de Transferência" style="margin-right: 20px">
+                                            <p:ajax event="change" update="formConfiguracaoFinanceiro" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{configuracaoFinanceiroBean.configuracaoFinanceiro.alterarValorFechamento}" itemLabel="Alterar valor do Fechamento" style="margin-right: 20px">
                                             <p:ajax event="change" update="formConfiguracaoFinanceiro" />
                                         </p:selectBooleanCheckbox>
                                     </h:column>
