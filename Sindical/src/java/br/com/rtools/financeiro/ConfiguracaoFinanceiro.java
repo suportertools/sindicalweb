@@ -11,27 +11,32 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "conf_financeiro")
 public class ConfiguracaoFinanceiro implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;   
+    private int id;
     @Column(name = "is_transferencia_automatica_caixa", columnDefinition = "boolean default true")
-    private boolean transferenciaAutomaticaCaixa;    
+    private boolean transferenciaAutomaticaCaixa;
     @Column(name = "is_caixa_operador", columnDefinition = "boolean default false")
-    private boolean caixaOperador;    
+    private boolean caixaOperador;
+    @Column(name = "nr_carencia")
+    private Integer carenciaDias;
 
     public ConfiguracaoFinanceiro() {
         this.id = -1;
         this.transferenciaAutomaticaCaixa = true;
         this.caixaOperador = false;
+        this.carenciaDias = null;
     }
-    
-    public ConfiguracaoFinanceiro(int id, boolean transferenciaAutomaticaCaixa, boolean caixaOperador) {
+
+    public ConfiguracaoFinanceiro(int id, boolean transferenciaAutomaticaCaixa, boolean caixaOperador, Integer carenciaDias) {
         this.id = id;
         this.transferenciaAutomaticaCaixa = transferenciaAutomaticaCaixa;
         this.caixaOperador = caixaOperador;
+        this.carenciaDias = carenciaDias;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -55,5 +60,13 @@ public class ConfiguracaoFinanceiro implements Serializable {
     public void setCaixaOperador(boolean caixaOperador) {
         this.caixaOperador = caixaOperador;
     }
-    
+
+    public Integer getCarenciaDias() {
+        return carenciaDias;
+    }
+
+    public void setCarenciaDias(Integer carenciaDias) {
+        this.carenciaDias = carenciaDias;
+    }
+
 }
