@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.rtools.financeiro.beans;
 
-import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.financeiro.ConfiguracaoFinanceiro;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -16,12 +10,12 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-
 @ManagedBean
 @ViewScoped
 public class ConfiguracaoFinanceiroBean implements Serializable {
+
     private ConfiguracaoFinanceiro configuracaoFinanceiro;
-    
+
     @PostConstruct
     public void init() {
         Dao dao = new Dao();
@@ -31,12 +25,11 @@ public class ConfiguracaoFinanceiroBean implements Serializable {
             dao.save(configuracaoFinanceiro, true);
         }
     }
-    
+
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("configuracaoFinanceiroBean");
-    }    
-    
+    }
 
     public void update() {
         Dao dao = new Dao();
@@ -47,9 +40,8 @@ public class ConfiguracaoFinanceiroBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar este registro!");
             }
         }
-    }        
-    
-        
+    }
+
     public void load() {
 
     }
