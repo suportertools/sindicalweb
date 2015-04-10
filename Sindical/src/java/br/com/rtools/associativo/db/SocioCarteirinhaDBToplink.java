@@ -288,7 +288,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          p.ds_nome,                                  "
                     + "          pj.ds_documento,                            "
                     + "          pj.ds_nome,                                 "
-                    + "          to_char(sc.dt_emissao, 'DD/MM/YYYY')        "
+                    + "          to_char(sc.dt_emissao, 'DD/MM/YYYY'),       "
                     + "          c.ds_cidade,                                "
                     + "          to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
                     + "          c.ds_uf,                                    "
