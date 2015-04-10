@@ -20,21 +20,29 @@ public class ConfiguracaoFinanceiro implements Serializable {
     private boolean transferenciaAutomaticaCaixa;
     @Column(name = "is_caixa_operador", columnDefinition = "boolean default false")
     private boolean caixaOperador;
-    @Column(name = "nr_carencia")
+    @Column(name = "nr_carencia_dias", columnDefinition = "integer default 0")
     private Integer carenciaDias;
+    @Column(name = "is_alterar_valor_fechamento", columnDefinition = "boolean default false")
+    private boolean alterarValorFechamento;    
+    @Column(name = "is_modal_transferencia", columnDefinition = "boolean default false")
+    private boolean modalTransferencia;    
 
     public ConfiguracaoFinanceiro() {
         this.id = -1;
         this.transferenciaAutomaticaCaixa = true;
         this.caixaOperador = false;
         this.carenciaDias = null;
+        this.alterarValorFechamento = false;
+        this.modalTransferencia = false;
     }
-
-    public ConfiguracaoFinanceiro(int id, boolean transferenciaAutomaticaCaixa, boolean caixaOperador, Integer carenciaDias) {
+    
+    public ConfiguracaoFinanceiro(int id, boolean transferenciaAutomaticaCaixa, boolean caixaOperador, Integer carenciaDias, boolean alterarValorFechamento, boolean modalTransferencia) {
         this.id = id;
         this.transferenciaAutomaticaCaixa = transferenciaAutomaticaCaixa;
         this.caixaOperador = caixaOperador;
         this.carenciaDias = carenciaDias;
+        this.alterarValorFechamento = alterarValorFechamento;
+        this.modalTransferencia = modalTransferencia;
     }
 
     public int getId() {
@@ -60,7 +68,7 @@ public class ConfiguracaoFinanceiro implements Serializable {
     public void setCaixaOperador(boolean caixaOperador) {
         this.caixaOperador = caixaOperador;
     }
-
+    
     public Integer getCarenciaDias() {
         return carenciaDias;
     }
@@ -71,5 +79,20 @@ public class ConfiguracaoFinanceiro implements Serializable {
         }
         this.carenciaDias = carenciaDias;
     }
+    
+    public boolean isAlterarValorFechamento() {
+        return alterarValorFechamento;
+    }
 
+    public void setAlterarValorFechamento(boolean alterarValorFechamento) {
+        this.alterarValorFechamento = alterarValorFechamento;
+    }
+
+    public boolean isModalTransferencia() {
+        return modalTransferencia;
+    }
+
+    public void setModalTransferencia(boolean modalTransferencia) {
+        this.modalTransferencia = modalTransferencia;
+    }
 }
