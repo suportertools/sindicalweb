@@ -1,5 +1,8 @@
 package br.com.rtools.utilitarios.db;
 
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.SociosDBToplink;
+import br.com.rtools.financeiro.ConfiguracaoFinanceiro;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.Dao;
@@ -50,7 +53,7 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
     @Override
     public float valorServico(int idPessoa, int idServico, Date date, int tipo, Integer id_categoria) {
         String dataString = DataHoje.converteData(date);
-        String queryString = "SELECT func_valor_servico(" + idPessoa + ", " + idServico + ", '" + dataString + "', " + tipo + ", "+id_categoria+") ";
+        String queryString = "SELECT func_valor_servico(" + idPessoa + ", " + idServico + ", '" + dataString + "', " + tipo + ", " + id_categoria + ") ";
         try {
             Query qry = getEntityManager().createNativeQuery(queryString);
             List list = qry.getResultList();
@@ -129,49 +132,117 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return vagas;
     }
-    
+
     @Override
-    public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias){
+    public boolean demissionaSocios(int id_grupo_cidade, int nr_quantidade_dias) {
         try {
             Query query = getEntityManager().createNativeQuery(
-                    "SELECT func_demissiona_socios("+id_grupo_cidade+", "+nr_quantidade_dias+");");
+                    "SELECT func_demissiona_socios(" + id_grupo_cidade + ", " + nr_quantidade_dias + ");");
             List list = query.getResultList();
             boolean xbo;
-            if(!list.isEmpty())
-                xbo = (Boolean)((List)query.getSingleResult()).get(0);
-        }catch(Exception e){
+            if (!list.isEmpty()) {
+                xbo = (Boolean) ((List) query.getSingleResult()).get(0);
+            }
+        } catch (Exception e) {
             return false;
         }
         return true;
-    }    
-    
+    }
+
     @Override
-    public boolean incluiPessoaComplemento(){
+    public boolean incluiPessoaComplemento() {
         try {
             Query query = getEntityManager().createNativeQuery(
                     "SELECT func_inclui_pessoa_complemento();"
             );
             List list = query.getResultList();
             boolean xbo;
-            if(!list.isEmpty())
-                xbo = (Boolean)((List)query.getSingleResult()).get(0);
-        }catch(Exception e){
+            if (!list.isEmpty()) {
+                xbo = (Boolean) ((List) query.getSingleResult()).get(0);
+            }
+        } catch (Exception e) {
             return false;
         }
         return true;
-    }    
-    
+    }
+
     @Override
     public Pessoa titularDaPessoa(int id_pessoa) {
         try {
             Query query = getEntityManager().createNativeQuery("SELECT func_titular_da_pessoa(" + id_pessoa + ");");
             List list = query.getResultList();
             if (!list.isEmpty()) {
-                return (Pessoa) new Dao().find(new Pessoa(), Integer.parseInt( ((Vector) list.get(0)).get(0).toString()  ));
+                return (Pessoa) new Dao().find(new Pessoa(), Integer.parseInt(((Vector) list.get(0)).get(0).toString()));
             }
         } catch (Exception e) {
             return null;
         }
         return null;
+    }
+
+    /**
+     * Verificar se a pessoa esta inapinplente
+     *
+     * @param id_pessoa
+     * @return
+     */
+    public Boolean inadimplente(Integer id_pessoa) {
+        if (id_pessoa == -1) {
+            return false;
+        }
+        Integer nr_carencia_dias;
+        ConfiguracaoFinanceiro cf = (ConfiguracaoFinanceiro) new Dao().find(new ConfiguracaoFinanceiro(), 1);
+        if (cf == null) {
+            return true;
+        }
+        SociosDBToplink sociosDBToplink = new SociosDBToplink();
+        Socios socios = sociosDBToplink.pesquisaSocioPorPessoaAtivo(id_pessoa);
+        if (socios.getId() == -1) {
+            nr_carencia_dias = cf.getCarenciaDias();
+        } else {
+            nr_carencia_dias = socios.getMatriculaSocios().getCategoria().getNrCarenciaBalcao();
+        }
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT func_inadimplente(" + id_pessoa + ", " + nr_carencia_dias + ")");
+            query.setMaxResults(1);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                Boolean bool = Boolean.parseBoolean(((List) list.get(0)).get(0).toString());
+                return bool;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gerar mensalidades
+     *
+     * @param id_pessoa
+     * @param referencia
+     */
+    public void gerarMensalidades(Integer id_pessoa, String referencia) {
+        gerarMensalidadesBoolean(id_pessoa, referencia);
+    }
+
+    /**
+     * Gerar mensalidades boolean
+     *
+     * @param id_pessoa
+     * @param referencia
+     * @return
+     */
+    public Boolean gerarMensalidadesBoolean(Integer id_pessoa, String referencia) {
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT func_geramensalidades(" + id_pessoa + ", '" + referencia + "')");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 }

@@ -17,8 +17,6 @@ import br.com.rtools.pessoa.db.*;
 import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import static br.com.rtools.utilitarios.Jasper.PART_NAME;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,14 +28,9 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 public class ImpressaoParaSocios {
@@ -581,12 +574,12 @@ public class ImpressaoParaSocios {
                             "")
                     );
                 }
-                if(listaSocios.isEmpty()) {
+                if (listaSocios.isEmpty()) {
                     return;
                 }
                 Jasper.PATH = "downloads";
-                Jasper.PART_NAME = "";                
-                Jasper.printReports(path, "cartao_social", listaSocios);                
+                Jasper.PART_NAME = "";
+                Jasper.printReports(path, "cartao_social", listaSocios);
 //                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
 //                JasperPrint print = JasperFillManager.fillReport(
 //                        jasper,
@@ -817,7 +810,7 @@ public class ImpressaoParaSocios {
                     continue;
                 }
             }
-            if(listaSocios.isEmpty()) {
+            if (listaSocios.isEmpty()) {
                 return;
             }
             Jasper.PATH = "downloads";
@@ -857,8 +850,7 @@ public class ImpressaoParaSocios {
         Dao dao = new Dao();
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            Collection listaSocios = new ArrayList<FichaSocial>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROBRANCO.jasper")));
+            Collection listaSocios = new ArrayList<>();
             Juridica sindicato = (Juridica) dao.find(new Juridica(), 1);
             PessoaEndereco pessoaEndereco = enderecoDB.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
             Registro registro = (Registro) dao.find(new Registro(), 1);
@@ -945,23 +937,10 @@ public class ImpressaoParaSocios {
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
-            JasperPrint print = JasperFillManager.fillReport(
-                    jasper,
-                    null,
-                    dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            String nomeDownload = "ficha_branco.pdf";
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            sa.salvaNaPasta(pathPasta);
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance());
-            download.baixar();
-            download.remover();
-        } catch (JRException e) {
+            Jasper.PART_NAME = "";
+            Jasper.PATH = "ficha";
+            Jasper.printReports("/Relatorios/FICHACADASTROBRANCO.jasper", "ficha_branco", listaSocios);
+        } catch (Exception e) {
         }
     }
 
