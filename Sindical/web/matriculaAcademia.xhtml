@@ -17,6 +17,9 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <f:metadata>  
+                <f:event type="preRenderView" listener="${matriculaAcademiaBean.load()}"/>  
+            </f:metadata>             
             <ui:include src="templates/templateAcessoFilial.xhtml"/>
             <ui:include src="templates/templateStatus.xhtml" />
             <div class="wrapper">
@@ -25,7 +28,7 @@
                 <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                 <h:form id="form_matricula_academia">                  
                     <c:set scope="request" var="object" value="${matriculaAcademiaBean.matriculaAcademia}"/>
-                    <p:growl id="id_mensagem_growl" showDetail="true" showSummary="true" />
+                    <p:growl id="id_mensagem_growl" showDetail="true" showSummary="true"/> 
                     <h:column rendered="#{!matriculaAcademiaBean.matriculaAcademia.servicoPessoa.ativo}">
                         <div class="ui-widget margin-bottom-max">
                             <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
@@ -33,7 +36,7 @@
                                     <strong>IMPORTANTE:</strong> CADASTRO INATIVO </p>
                             </div>
                         </div>                        
-                    </h:column>
+                    </h:column>                    
                     <p:panel id="id_panel_cadastro">
                         <h:panelGrid>
                             <h:column>
@@ -223,6 +226,9 @@
                                 </h:panelGrid>
                             </h:column>
                         </h:panelGrid>
+                        <f:facet name="header">
+                            <h:outputLabel value="#{matriculaAcademiaBean.mensagemInadinplente}" rendered="#{not empty matriculaAcademiaBean.mensagemInadinplente}" styleClass="font-color-red"/>
+                        </f:facet>                        
                     </p:panel>
                     <h:panelGrid columns="9" id="id_acao" styleClass="margin-top-max">
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
@@ -235,7 +241,7 @@
                                 <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete_movimento').show();" type="button"/>
                             </h:column>
                         </h:column>                        
-                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" type="button"/>
+                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar or matriculaAcademiaBean.disabled}" onclick="PF('dlg_save').show()" type="button" />
                         <p:commandButton value="Novo" action="#{matriculaAcademiaBean.clear()}" update="form_matricula_academia:"/>
                         <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" type="button" rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaMatriculaAcademia')}" />
@@ -318,7 +324,7 @@
                                 <ui:param name="idPessoa" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.id}" />
                             </ui:include>      
                         </p:panel>
-                    </p:dialog>                    
+                    </p:dialog>
                 </h:form>
             </div>
         </f:view>

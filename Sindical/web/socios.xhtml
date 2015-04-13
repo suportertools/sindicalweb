@@ -525,7 +525,7 @@
                                 <p:ajax event="close" listener="#{sociosBean.fechaModal()}" update="formSocios"/>  
                                 <p:tabView id="tab_view">
                                     <p:tab id="tab_cadastro" title="Cadastro de Dependente">
-                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px">
+                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px" columnClasses="verticalAlignTop verticalAlignTop" >
                                             <p:column>
 
                                                 <p:messages id="i_msg" showDetail="true" closable="true" />   
@@ -611,10 +611,11 @@
                                                 <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
                                                     <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px" cache="false"/>
                                                 </h:panelGrid>
-
-                                                <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" style="float: right" rendered="#{!sociosBean.fotoTempPerfil.equals('') or !sociosBean.fotoPerfilDependente.equals('')}" update="i_panel_dados"/>
-                                                <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
-                                                <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />
+                                                <h:panelGrid columns="3">
+                                                    <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" rendered="#{not empty sociosBean.fotoTempPerfil or not empty sociosBean.fotoPerfilDependente}" update="i_panel_dados"/>
+                                                    <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" />
+                                                    <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />                                                    
+                                                </h:panelGrid>
                                             </p:column>
                                         </h:panelGrid>
 
@@ -663,14 +664,14 @@
 
                                     </p:tab>
                                 </p:tabView>
-                            </p:dialog>
+                            </p:dialog>                          
 
                             <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
                                 <h:panelGrid id="i_panel_imagem" columns="1">
-                                    <p:photoCam widgetVar="pc" listener="#{sociosBean.capturar}" update=":formSocios:tab_view:i_panel_dados"/>
+                                    <p:photoCam widgetVar="pc" listener="#{sociosBean.capturar}" />
                                     <h:column>
                                         <h:panelGrid columns="2">
-                                            <p:commandButton type="button" value="Capturar Foto" onclick="PF('pc').capture();" />
+                                            <p:commandButton value="Capturar Foto" onclick="PF('pc').capture(); PF('dlg_loading_image').show()" actionListener="#{sociosBean.loadingImage()}"  />
                                         </h:panelGrid>
                                     </h:column>
                                 </h:panelGrid>                        

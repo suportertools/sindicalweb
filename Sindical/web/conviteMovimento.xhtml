@@ -15,6 +15,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <ui:include src="templates/templateAcessoFilial.xhtml"/>
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_convite">
                     <p:outputLabel value="Convite" styleClass="fonteHeader"/>
@@ -147,7 +148,7 @@
                                                 <p:outputLabel value="Nascimento:" />
                                                 <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="dateSelect" listener="#{conviteMovimentoBean.conviteMovimento.sisPessoa.selecionaDataNascimento}" />
-                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
+                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
                                                 </p:calendar>
                                                 <p:watermark value="99/99/9999" for="iData" />
                                             </h:panelGrid>

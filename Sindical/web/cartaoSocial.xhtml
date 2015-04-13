@@ -55,7 +55,9 @@
                                     <p:menuitem value="Todos" action="#{cartaoSocialBean.impressoTodos()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
                                     <p:menuitem value="Empresa" action="#{cartaoSocialBean.impressoEmpresa()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
                                     <p:menuitem value="CNPJ" action="#{cartaoSocialBean.impressoCNPJ()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
-                                    <p:menuitem value="Últimos 30 dias" action="#{cartaoSocialBean.impressoDias()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
+                                    <p:menuitem value="Ontem" action="#{cartaoSocialBean.impressoDias(1)}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
+                                    <p:menuitem value="Hoje" action="#{cartaoSocialBean.impressoDias(0)}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
+                                    <p:menuitem value="Últimos 30 dias" action="#{cartaoSocialBean.impressoDias(2)}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  
                                 </p:submenu>  
 
                                 <p:submenu label="Pessoa" >  
@@ -219,7 +221,7 @@
                                 </p:dataTable>  
                             </h:panelGrid>
 
-                            <p:dialog id="i_panel_dlgx" widgetVar="i_dlg" header="Lista de Impressões" modal="true">
+                            <p:dialog id="i_panel_dlgx" widgetVar="i_dlg" header="Lista de Impressões" modal="true" height="300">
                                 <h:panelGrid id="i_panel_dlg">
                                     <h:column rendered="#{cartaoSocialBean.listaSelecionado.size() == 0}">
                                         <h:outputLabel value="Nenhuma carteirinha foi selecionada!" />  

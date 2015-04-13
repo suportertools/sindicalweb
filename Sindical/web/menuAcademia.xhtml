@@ -33,10 +33,10 @@
                                     <p:menuitem value="Pessoa Jurídica"             action="#{chamadaPaginaBean.pessoaJuridica}"/>
                                     <p:menuitem value="Pessoa Física"               action="#{chamadaPaginaBean.pessoaFisica}"/>
                                     <p:menuitem value="SPC"                         action="#{chamadaPaginaBean.pagina('spc')}" />
+                                    <p:menuitem value="Desc. Serviço Empresa"   action="#{chamadaPaginaBean.pagina('descontoServicoEmpresa')}" title="Desconto Serviço Empresa"/>
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Grade Academia"          action="#{chamadaPaginaBean.pagina('academiaGrade')}" />
                                         <p:menuitem value="Modelo Contrato"         action="#{chamadaPaginaBean.pagina('modeloContrato')}" />
-                                        <p:menuitem value="Desc. Serviço Empresa"   action="#{chamadaPaginaBean.pagina('descontoServicoEmpresa')}" title="Desconto Serviço Empresa"/>
                                         <p:menuitem value="Serviços"                action="#{chamadaPaginaBean.pagina('servicos')}" />
                                         <p:menuitem value="Serviço Rotina"          action="#{chamadaPaginaBean.pagina('servicoRotina')}" />
                                     </p:submenu>                            
@@ -50,7 +50,7 @@
                                 </p:submenu>
                                 <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:menuitem value="Academia"          action="#{chamadaPaginaBean.pagina('relatorioAcademia')}"/>
-                                    <p:menuitem value="Cartão Social"        action="#{chamadaPaginaBean.cartaoSocial}" />
+                                    <p:menuitem value="Cartão Social"     action="#{chamadaPaginaBean.pagina('cartaoSocial')}" />
                                 </p:submenu>
                             </p:menubar> 
                         </p:panel>
