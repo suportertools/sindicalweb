@@ -681,7 +681,8 @@ public class MovimentosReceberSocialBean implements Serializable {
             return null;
         }
 
-        if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()) {
+        //if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()) {
+        if (!macFilial.isCaixaOperador()) {
             if (macFilial.getCaixa() == null) {
                 msgConfirma = "Configurar Caixa nesta estação de trabalho!";
                 GenericaMensagem.warn("Erro", msgConfirma);

@@ -19,9 +19,22 @@ public class ParametroFechamentoCaixa {
     private String status = "";
     private String banco = "";
     private String banco_dados = "";
-
+    private String descricao_caixa = "";
+    private boolean mostrar_valor_informado = false;
+    private String valor_caixa = "";
+    private String valor_transferido = "";
+    private String saldo_atual = "";
+    private String deposito_bancario = "";
+    private String doc_bancario = "";
+    private String transferencia_bancaria = "";
+    private String ticket = "";
+    private String debito_automatico = "";
+    private String boleto = "";
+    
     public ParametroFechamentoCaixa(String data, String filial, String caixa, String usuario, String valor_fechamento, String valor_informado, String saldo_anterior,
-            String dinheiro, String cheque, String cheque_pre, String cartao_credito, String cartao_debito, String transferencia_entrada, String transferencia_saida, String pagamento, String status, String banco, String banco_dados) {
+            String dinheiro, String cheque, String cheque_pre, String cartao_credito, String cartao_debito, String transferencia_entrada, String transferencia_saida, String pagamento, String status, String banco, String banco_dados, 
+            String descricao_caixa, boolean mostrar_valor_informado, String valor_caixa, String valor_transferido, String saldo_atual, String deposito_bancario, String doc_bancario, String transferencia_bancaria,
+            String ticket, String debito_automatico, String boleto) {
         this.data = data;
         this.filial = filial;
         this.caixa = caixa;
@@ -40,6 +53,17 @@ public class ParametroFechamentoCaixa {
         this.status = status;
         this.banco = banco;
         this.banco_dados = banco_dados;
+        this.descricao_caixa = descricao_caixa;
+        this.mostrar_valor_informado = mostrar_valor_informado;
+        this.valor_caixa = valor_caixa;
+        this.valor_transferido = valor_transferido;
+        this.saldo_atual = saldo_atual;
+        this.deposito_bancario = deposito_bancario;
+        this.doc_bancario = doc_bancario;
+        this.transferencia_bancaria = transferencia_bancaria;
+        this.ticket = ticket;
+        this.debito_automatico = debito_automatico;
+        this.boleto = boleto;        
     }
 
 
@@ -185,6 +209,94 @@ public class ParametroFechamentoCaixa {
 
     public void setPagamento(String pagamento) {
         this.pagamento = pagamento;
+    }
+
+    public String getDescricao_caixa() {
+        return descricao_caixa;
+    }
+
+    public void setDescricao_caixa(String descricao_caixa) {
+        this.descricao_caixa = descricao_caixa;
+    }
+
+    public boolean isMostrar_valor_informado() {
+        return mostrar_valor_informado;
+    }
+
+    public void setMostrar_valor_informado(boolean mostrar_valor_informado) {
+        this.mostrar_valor_informado = mostrar_valor_informado;
+    }
+
+    public String getValor_caixa() {
+        return valor_caixa;
+    }
+
+    public void setValor_caixa(String valor_caixa) {
+        this.valor_caixa = valor_caixa;
+    }
+
+    public String getValor_transferido() {
+        return valor_transferido;
+    }
+
+    public void setValor_transferido(String valor_transferido) {
+        this.valor_transferido = valor_transferido;
+    }
+
+    public String getSaldo_atual() {
+        return saldo_atual;
+    }
+
+    public void setSaldo_atual(String saldo_atual) {
+        this.saldo_atual = saldo_atual;
+    }
+
+    public String getDeposito_bancario() {
+        return deposito_bancario;
+    }
+
+    public void setDeposito_bancario(String deposito_bancario) {
+        this.deposito_bancario = deposito_bancario;
+    }
+
+    public String getDoc_bancario() {
+        return doc_bancario;
+    }
+
+    public void setDoc_bancario(String doc_bancario) {
+        this.doc_bancario = doc_bancario;
+    }
+
+    public String getTransferencia_bancaria() {
+        return transferencia_bancaria;
+    }
+
+    public void setTransferencia_bancaria(String transferencia_bancaria) {
+        this.transferencia_bancaria = transferencia_bancaria;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
+
+    public String getDebito_automatico() {
+        return debito_automatico;
+    }
+
+    public void setDebito_automatico(String debito_automatico) {
+        this.debito_automatico = debito_automatico;
+    }
+
+    public String getBoleto() {
+        return boleto;
+    }
+
+    public void setBoleto(String boleto) {
+        this.boleto = boleto;
     }
 
     

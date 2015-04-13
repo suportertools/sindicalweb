@@ -52,7 +52,7 @@
                                         <p:inputTextarea value="#{caixaBean.caixa.descricao}" style="width: 700px"/>
                                     </h:column>
                                     
-                                    <h:column rendered="#{caixaBean.cfb.configuracaoFinanceiro.caixaOperador}">
+                                    <h:column>
                                         <h:outputLabel value="Usuário" /><br />
                                         <p:selectOneMenu value="#{caixaBean.idUsuario}" style="width: 230px">
                                             <f:selectItems value="#{caixaBean.listaUsuarios}"/>
