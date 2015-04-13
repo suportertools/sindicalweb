@@ -31,9 +31,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 @ManagedBean(name = "jasperBean")
 public class Jasper {
@@ -145,12 +142,18 @@ public class Jasper {
                 GenericaMensagem.info("Sistema", "Erro ao criar relatório!");
                 return;
             }
+            jasperName = jasperName.trim();
         } else {
             if (fileName.isEmpty()) {
                 GenericaMensagem.info("Sistema", "Erro ao criar relatório!");
                 return;
             }
         }
+        fileName = fileName.trim();
+        fileName = fileName.replace(" ", "_");
+        fileName = fileName.replace("/", "");
+        fileName = fileName.toLowerCase();
+        fileName = AnaliseString.removerAcentos(fileName);
         if (!Diretorio.criar("Arquivos/" + PATH + "/" + fileName)) {
             GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
             return;
@@ -253,7 +256,11 @@ public class Jasper {
                 }
                 String dirPath = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(realPath);
                 if (!Jasper.PART_NAME.isEmpty()) {
+                    Jasper.PART_NAME = Jasper.PART_NAME.trim();
+                    Jasper.PART_NAME = Jasper.PART_NAME.toLowerCase();
                     Jasper.PART_NAME = Jasper.PART_NAME.replace(" ", "_");
+                    Jasper.PART_NAME = Jasper.PART_NAME.replace("/", "");
+                    Jasper.PART_NAME = AnaliseString.removerAcentos(Jasper.PART_NAME);
                     Jasper.PART_NAME = "_" + Jasper.PART_NAME;
                 }
                 UUID uuid = UUID.randomUUID();
