@@ -80,7 +80,16 @@
                                 </h:panelGrid>
                             </p:panel>
                             
-                            <p:commandButton value="Atualizar" action="#{configuracaoFinanceiroBean.update()}" update="formConfiguracaoFinanceiro"/>
+                            <p:panel header="Pessoas" styleClass="margin-top-max">
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Carência dias" />
+                                    <p:inputText value="#{configuracaoFinanceiroBean.configuracaoFinanceiro.carenciaDias}" size="5" maxlength="2">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputText>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:commandButton value="Atualizar" action="#{configuracaoFinanceiroBean.update()}" update="formConfiguracaoFinanceiro" styleClass="margin-top-max"/>
                         </h:form>
                     </p:panel>
                 </f:view>

@@ -15,44 +15,93 @@
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
-                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
                 <p:outputLabel value="Desconto Serviço Empresa" styleClass="fonteHeader" />
-                <p:panel style="clear: both;" styleClass="no-border"></p:panel>                
-                <h:form id="form_novo_desconto">                    
+                <div class="clear"></div>
+                <h:form id="form_desconto">                    
                     <p:messages id="growl" showDetail="true" autoUpdate="true" closable="true" />
                     <c:set scope="request" var="object" value="${descontoServicoEmpresaBean.descontoServicoEmpresa}"/>  
-                    <p:panel styleClass="float-left" style="width: 400px; margin-top: 15px;">
-                        <p:panelGrid id="id_panel_grid_novo" columns="2" styleClass="margin-top sbb">
+                    <p:panel styleClass="fundoCinza margin-top-max">
+                        <h:panelGrid id="id_panel_grid_novo" columns="2" styleClass="margin-top">
                             <p:commandButton icon="ui-icon-circle-zoomin" value="Empresa" id="idPesquisarEmpresa" title="Pesquisar empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}"/>
                             <p:column>
                                 <p:outputLabel value="Pesquisar empresa" for="idPesquisarEmpresa" rendered="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.id == -1}" style="border-bottom: 1px solid #ECF3FE"/>
                                 <p:outputLabel value=": #{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.nome}" for="idPesquisarEmpresa" rendered="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.id != -1}"/>
                             </p:column>
-                            <p:outputLabel for="idServicos" value="Serviços:" />
-                            <p:selectOneMenu id="idServicos" value="#{descontoServicoEmpresaBean.idServicos}" style="width: 250px;" disabled="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.id == -1}" >
-                                <p:ajax event="change" update="idServicos" />
-                                <f:selectItems value="#{descontoServicoEmpresaBean.listServicos}" />
-                            </p:selectOneMenu>
                             <p:outputLabel for="idDesconto" value="Desconto:" />
                             <p:column>
                                 <p:spinner id="idDesconto" value="#{descontoServicoEmpresaBean.descontoServicoEmpresa.desconto}" stepFactor="0.1" min="0" max="100" size="3" placeholder="100" disabled="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.id == -1}">
                                 </p:spinner>
                                 <h:outputText value="Ex. 10.6 / 100 / 33" styleClass="margin-left-max"/>
                             </p:column>
-                        </p:panelGrid>
-                        <p:panelGrid columns="1" styleClass="sbb margin-top-max">
-                            <p:column>
-                                <p:commandButton icon="ui-icon-plus"  value="Adicionar" title="Adicionar" action="#{descontoServicoEmpresaBean.save()}" update="growl :form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                <p:commandButton value="Novo" action="#{descontoServicoEmpresaBean.clear()}" styleClass="margin-left-max" update=":form_novo_desconto: :form_desconto:" />
-                            </p:column>
-                        </p:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                            <p:outputLabel value="Grupo Financeiro:" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" />
+                            <p:outputLabel value="SubGrupo Financeiro:" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" />
+                            <p:selectOneMenu value="#{descontoServicoEmpresaBean.idGrupoFinanceiro}" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" filter="true" filterMatchMode="startsWith">
+                                <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(1)}"/>
+                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                <f:selectItems value="#{descontoServicoEmpresaBean.listGrupoFinanceiro}" />
+                            </p:selectOneMenu>                         
+                            <p:selectOneMenu value="#{descontoServicoEmpresaBean.idSubGrupoFinanceiro}" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" filter="true" filterMatchMode="startsWith">
+                                <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(2)}"/>
+                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                <f:selectItems value="#{descontoServicoEmpresaBean.listSubGrupoFinanceiro}" />
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton icon="ui-icon-plus"  value="Adicionar" title="Adicionar" action="#{descontoServicoEmpresaBean.save()}" update=":form_desconto:" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <p:commandButton value="Novo" action="#{descontoServicoEmpresaBean.clear()}" styleClass="margin-left-max" update=":form_desconto:" />
+                            </h:panelGrid>
+                        </f:facet>
                     </p:panel>
+                    <h:panelGrid columns="3" captionClass="verticalAlignTop verticalAlignTop verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:panel header="Serviços disponíveis">
+                                <p:dataTable id="id_data_table_servicoes" value="#{descontoServicoEmpresaBean.listServicos}" var="servicos" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true" selection="#{descontoServicoEmpresaBean.selectedServicos}" rowKey="#{servicos.id}">
+                                    <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                                    <p:column headerText="Serviço" filterBy="#{servicos.descricao}" filterMatchMode="global">
+                                        #{servicos.descricao}
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </h:column> 
+                        <h:column>
+                        </h:column> 
+                        <h:column> 
+                            <p:panel id="id_desconto_filtro" header="Serviços com desconto adicionados" styleClass="margin-left-max">
+                                <p:dataTable id="id_data_table" value="#{descontoServicoEmpresaBean.listDSEPorEmpresa}" var="dse" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true" editable="true" >
+                                    <p:ajax event="rowEdit" listener="#{descontoServicoEmpresaBean.update}" update=":form_desconto:growl id_data_table" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                    <p:column headerText="Serviço" filterBy="#{dse.servicos.descricao}" filterMatchMode="global">
+                                        #{dse.servicos.descricao}                                
+                                    </p:column>
+                                    <p:column headerText="Desc. (%)" width="80" styleClass="text-center">
+                                        <p:cellEditor>  
+                                            <f:facet name="output">  
+                                                <h:outputText value="#{dse.desconto}" />  
+                                            </f:facet>  
+                                            <f:facet name="input">  
+                                                <p:spinner value="#{dse.desconto}" stepFactor="0.1" min="0" max="100" size="3" placeholder="100" />
+                                            </f:facet>  
+                                        </p:cellEditor>                                
+                                    </p:column>
+                                    <p:column headerText="" width="20">
+                                        <p:rowEditor />  
+                                    </p:column>
+                                    <p:column width="30">
+                                        <p:commandButton icon="ui-icon-close" action="#{descontoServicoEmpresaBean.remove(dse)}" update=":form_desconto:" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                    </p:column>
+                                    <f:facet name="footer">Desc. (%) Percentual de desconto</f:facet>
+                                </p:dataTable>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
                     <p:dialog id="i_painel_salvar" header="Deseja salvar este registro?" widgetVar="dlg_save" modal="true" height="100" width="350">
                         <h:panelGrid columns="2" styleClass="margin-top">
                             <p:commandButton value="Sim" title="Confirmar" action="#{descontoServicoEmpresaBean.save()}" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" update=":form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
                             <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dlg_save').hide();" />
                         </h:panelGrid>
-                    </p:dialog>                     
+                    </p:dialog>                            
                     <p:dialog id="i_painel_excluir" header="Deseja excluir este registro?" widgetVar="dlg_delete" modal="true" height="100" width="350">
                         <h:panelGrid columns="2" styleClass="margin-top">
                             <p:commandButton value="Sim" action="#{descontoServicoEmpresaBean.delete()}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" styleClass="margin-left-max" disabled="#{controleAcessoBean.botaoExcluir}" update="growl id_panel_grid_novo :form_desconto:id_desconto_filtro i_painel_mensagem" />
@@ -66,32 +115,6 @@
                             <p:commandButton value="Ok" type="button" onclick="PF('dlg_message').hide()" style="float: left;" icon="ui-icon-close" />
                         </center>
                     </p:dialog>                    
-                </h:form>
-                <h:form id="form_desconto">
-                    <p:panel id="id_desconto_filtro" style="width: 400px; margin-left: 50px;" styleClass="float-left">
-                        <p:dataTable id="id_data_table" value="#{descontoServicoEmpresaBean.listDSEPorEmpresa}" var="dse" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true" editable="true" >
-                            <f:facet name="header">Serviços com desconto adicionados</f:facet>
-                            <p:ajax event="rowEdit" listener="#{descontoServicoEmpresaBean.update}" update=":form_novo_desconto:growl id_data_table" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <p:ajax event="rowEditCancel" listener="#{descontoServicoEmpresaBean.remove}" update=":form_novo_desconto:growl id_data_table :form_novo_desconto:id_panel_grid_novo" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                            <p:column headerText="Serviço">
-                                #{dse.servicos.descricao}                                
-                            </p:column>
-                            <p:column headerText="Desc. (%)" width="80" styleClass="text-center">
-                                <p:cellEditor>  
-                                    <f:facet name="output">  
-                                        <h:outputText value="#{dse.desconto}" />  
-                                    </f:facet>  
-                                    <f:facet name="input">  
-                                        <p:spinner value="#{dse.desconto}" stepFactor="0.1" min="0" max="100" size="3" placeholder="100" />
-                                    </f:facet>  
-                                </p:cellEditor>                                
-                            </p:column>
-                            <p:column headerText="" width="20">
-                                <p:rowEditor />  
-                            </p:column>
-                            <f:facet name="footer">Desc. (%) Percentual de desconto</f:facet>
-                        </p:dataTable>
-                    </p:panel>
                 </h:form>
             </p:panel>
         </f:view>
