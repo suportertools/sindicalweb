@@ -188,6 +188,14 @@ public class LancamentoIndividualBean {
             valor = Moeda.somaValores(valor,  Moeda.converteUS$(listaMovimento.get(i).getArgumento1().toString()));
         }
         
+        // VERIFICA VENCIMENTO  
+        for (int i = 0; i < listaMovimento.size(); i++){
+            if (listaMovimento.get(i).getArgumento1().toString().isEmpty()){
+                GenericaMensagem.error("Atenção", "Data de Vencimento na lista inválida!");
+                return null;
+            }
+        }
+        
         if (Moeda.converteFloatR$Float(valor) !=  Moeda.converteUS$(totalPagar)){
             float valordif1 = Moeda.converteFloatR$Float(valor), valordif2 = Moeda.converteUS$(totalPagar);
             if (valordif1 > valordif2){

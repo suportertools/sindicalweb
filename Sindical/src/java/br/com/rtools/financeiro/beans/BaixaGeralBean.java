@@ -392,7 +392,7 @@ public class BaixaGeralBean {
                 idTipoPagamento = 0;
             } else {
                 if (tipo.equals("caixa")){
-                    select = db.pesquisaCodigoTipoPagamentoIDS("2,3,4,5,6,7,8,9,10,11");
+                    select = db.pesquisaCodigoTipoPagamentoIDS("2,3,4,5,6,7,8,9,10,11,13");
                     idTipoPagamento = 1;
                 }else{
                     select = db.pesquisaCodigoTipoPagamentoIDS("2,8,9,10,11,13");
@@ -436,30 +436,7 @@ public class BaixaGeralBean {
         Caixa caixa = null;
         Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
-        if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()) {
-            if (macFilial == null) {
-                return mensagem = "Não existe filial na sessão!";
-            }
-
-            if (tipo.equals("caixa")) {
-                if (macFilial.getCaixa() == null) {
-                    return mensagem = "Não é possivel salvar baixa sem um caixa definido para esta estação!";
-                }
-
-                caixa = macFilial.getCaixa();
-            }
-        } else {
-            FinanceiroDB db = new FinanceiroDBToplink();
-            caixa = db.pesquisaCaixaUsuario(usuario.getId());
-
-            if (tipo.equals("caixa")) {
-                if (caixa == null) {
-                    return mensagem = "Não é possivel salvar baixa sem um caixa/operador definido!";
-                }
-            }
-
-        }
-
+        
         Filial filial;
         Departamento departamento = new Departamento();
 
@@ -468,6 +445,25 @@ public class BaixaGeralBean {
             departamento = macFilial.getDepartamento();
         } catch (Exception e) {
             return mensagem = "Não é foi possível encontrar a filial no sistema!";
+        }
+
+        if (!macFilial.isCaixaOperador()){
+            if (tipo.equals("caixa")) {
+                if (macFilial.getCaixa() == null) {
+                    return mensagem = "Não é possivel salvar baixa sem um caixa definido para esta estação!";
+                }
+
+                caixa = macFilial.getCaixa();
+            }
+        }else{
+            FinanceiroDB db = new FinanceiroDBToplink();
+            caixa = db.pesquisaCaixaUsuario(usuario.getId());
+
+            if (tipo.equals("caixa")) {
+                if (caixa == null) {
+                    return mensagem = "Não é possivel salvar baixa sem um caixa/operador definido!";
+                }
+            }
         }
 
         if (Moeda.converteUS$(valor) > 0) {

@@ -65,17 +65,14 @@ public class CaixaBean implements Serializable {
         }
         
         DaoInterface di = new Dao();
-        if (cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
-            if (listaUsuarios.get(idUsuario).getDescription() == null){
-                GenericaMensagem.warn("Atençao", "Selecione um Usuario para este Caixa!");
-                return;
-            }
-            
+        caixa.setFilial( (listaFiliais.get(idFilial).getDescription() != null) ? (Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())) : null);
+        
+        if (listaUsuarios.get(idUsuario).getDescription() != null){
             Usuario us = (Usuario) di.find(new Usuario(), Integer.valueOf(listaUsuarios.get(idUsuario).getDescription())) ;
-            
+
             CaixaDao caixadao = new CaixaDao();
             List<Caixa> listac = caixadao.listaCaixaUsuario(us.getId());
-            
+
             if (caixa.getId() == -1){
                 if (!listac.isEmpty()){
                     GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
@@ -83,24 +80,20 @@ public class CaixaBean implements Serializable {
                 }
             }else{
                 List<Caixa> lusx = caixadao.listaCaixaUsuario( Integer.valueOf(listaUsuarios.get(idUsuario).getDescription()) );
-                
+
                 if (!lusx.isEmpty() && lusx.get(0).getId() != caixa.getId()){
                     GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
                     return;
                 }
-//                if (caixa.getUsuario() != null && caixa.getUsuario().getId() != usx.getId()){
-//                    GenericaMensagem.warn("Atençao", "Este usuário já tem Caixa definido!");
-//                    return;
-//                }
             }
-            
+
             caixa.setUsuario( us );
         }else{
-            caixa.setUsuario(null);
+            caixa.setUsuario( null );
         }
+
         
         if (caixa.getId() == -1){
-            caixa.setFilial( (listaFiliais.get(idFilial).getDescription() != null) ? (Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())) : null);
             if (!di.save(caixa, true)) {
                 GenericaMensagem.warn("Erro", "Não foi possível salvar Caixa!");
             } else {
@@ -125,7 +118,6 @@ public class CaixaBean implements Serializable {
                         + " - Caixa: " + c.getCaixa()
                         + " - Descrição: " + c.getDescricao();
             
-            caixa.setFilial( (listaFiliais.get(idFilial).getDescription() != null) ? (Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())) : null);
             if (!di.update(caixa, true)) {
                 GenericaMensagem.warn("Erro", "Não foi possível alterar Caixa!");
             } else {

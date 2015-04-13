@@ -164,7 +164,7 @@
                                 <h:panelGrid id="i_mensagem" style="width: 100%">
                                     <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
                                     <h:panelGrid columns="2" style="width: 100%; margin-top: 20px">
-                                        <p:commandLink action="#{baixaGeralBean.imprimirRecibo()}" style="float: left" target="_blank" ajax="false" onclick="PF('i_dlg_s').show()">
+                                        <p:commandLink action="#{baixaGeralBean.imprimirRecibo()}" style="float: left" target="_blank" ajax="false" onclick="PF('i_dlg_s').show()" rendered="#{baixaGeralBean.visibleModal}">
                                             <p:button icon="ui-icon-print" value="Imprimir Recibo" />
                                         </p:commandLink>  
 

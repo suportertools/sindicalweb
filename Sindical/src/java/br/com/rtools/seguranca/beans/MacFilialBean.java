@@ -1,6 +1,7 @@
 package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.financeiro.Caixa;
+import br.com.rtools.financeiro.beans.ConfiguracaoFinanceiroBean;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
@@ -48,6 +49,11 @@ public class MacFilialBean implements Serializable {
         listaDepartamentos = new ArrayList<>();
         listaCaixa = new ArrayList<>();
         mostrarTodos = false;
+        ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
+        
+        cfb.init();
+        
+        macFilial.setCaixaOperador(cfb.getConfiguracaoFinanceiro().isCaixaOperador());
     }
 
     @PreDestroy

@@ -71,7 +71,7 @@
                                         <p:inputMask value="#{fechamentoCaixaBean.fechamento.data}" style="font-weight: bold; margin-right: 15px; width: 80px" mask="99/99/9999" readonly="true" />
                                     </p:column>
                                     
-                                    <p:column>
+                                    <p:column rendered="#{fechamentoCaixaBean.cfb.configuracaoFinanceiro.alterarValorFechamento}">
                                         <h:outputLabel value="Valor do Caixa"/><br />
                                         <p:inputText value="#{fechamentoCaixaBean.valor}" style="margin-right: 15px; text-align: right">
                                             <p:ajax event="change" update="@this" global="false"/>

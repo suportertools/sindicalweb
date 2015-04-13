@@ -29,6 +29,8 @@ public class MacFilial implements java.io.Serializable {
     private Caixa caixa;
     @Column(name = "ds_descricao", nullable = true, length = 100)
     private String descricao;
+    @Column(name = "is_caixa_operador", columnDefinition = "boolean default true")
+    private boolean caixaOperador;        
 
     public MacFilial() {
         this.id = -1;
@@ -38,9 +40,10 @@ public class MacFilial implements java.io.Serializable {
         this.mesa = 0;
         this.caixa = new Caixa();
         this.descricao = "";
+        this.caixaOperador = true;
     }
 
-    public MacFilial(int id, Departamento departamento, Filial filial, String mac, int mesa, Caixa caixa, String descricao) {
+    public MacFilial(int id, Departamento departamento, Filial filial, String mac, int mesa, Caixa caixa, String descricao, boolean caixaOperador) {
         this.id = id;
         this.departamento = departamento;
         this.filial = filial;
@@ -48,6 +51,7 @@ public class MacFilial implements java.io.Serializable {
         this.mesa = mesa;
         this.caixa = caixa;
         this.descricao = descricao;
+        this.caixaOperador = caixaOperador;
     }
 
     public int getId() {
@@ -112,5 +116,13 @@ public class MacFilial implements java.io.Serializable {
             macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
         }
         return macFilial;
+    }
+    
+    public boolean isCaixaOperador() {
+        return caixaOperador;
+    }
+
+    public void setCaixaOperador(boolean caixaOperador) {
+        this.caixaOperador = caixaOperador;
     }
 }

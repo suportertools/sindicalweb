@@ -52,7 +52,7 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <h:panelGrid style="clear: both; margin-top: 20px; float: left; width: 400px;" columns="4">
+                            <h:panelGrid style="clear: both; margin-top: 20px; float: left; width: 100%;" columns="5">
                                 <p:column>
                                     <h:outputLabel value="Mac "/>
                                     <br />
@@ -75,6 +75,13 @@
                                     <p:selectOneMenu value="#{macFilialBean.idCaixa}" style="width: 200px">
                                         <f:selectItems value="#{macFilialBean.listaCaixa}"/>
                                     </p:selectOneMenu>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:selectBooleanCheckbox value="#{macFilialBean.macFilial.caixaOperador}" itemLabel="Caixa por Operador" style="margin-right: 20px">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:selectBooleanCheckbox>
                                 </p:column>
 
                                 <p:column>
