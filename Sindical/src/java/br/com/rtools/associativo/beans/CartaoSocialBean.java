@@ -16,16 +16,13 @@ import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.MacFilial;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.ImpressaoParaSocios;
-import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,15 +31,7 @@ import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 // import java.util.Vector;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.event.data.FilterEvent;
@@ -140,12 +129,25 @@ public class CartaoSocialBean implements Serializable {
         listaCarteirinha = db.pesquisaCarteirinha("iCNPJ", descricao, indexOrdem);
     }
 
-    public void impressoDias() {
+    /**
+     * dias == 0 (Hoje) dias == 1 (Ontem) dias == 2 (Ultimos 30 dias)
+     *
+     * @param dias
+     */
+    public void impressoDias(Integer dias) {
         por = "iDias";
         porLabel = "Pesquisa por Impressos / ÚLTIMOS 30 DIAS";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iDias", descricao, indexOrdem);
+        String tipo = "";
+        if (dias == 0) {
+            tipo = "iHoje";
+        } else if (dias == 1) {
+            tipo = "iOntem";
+        } else if (dias == 2) {
+            tipo = "iDias";
+        }
+        listaCarteirinha = db.pesquisaCarteirinha(tipo, descricao, indexOrdem);
     }
 
     public void pessoaNome() {
@@ -314,6 +316,8 @@ public class CartaoSocialBean implements Serializable {
 
             if (ImpressaoParaSocios.imprimirCarteirinha(list)) {
                 dao.commit();
+                listaCarteirinha.clear();
+                listaSelecionado.clear();
             } else {
                 dao.rollback();
             }
@@ -427,31 +431,9 @@ public class CartaoSocialBean implements Serializable {
             return null;
         }
 
-        try {
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            JasperReport jasper;
-            String nomeArq;
-
-            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_SOCIO.jasper"));
-            jasper = (JasperReport) JRLoader.loadObject(fl);
-            nomeArq = "etiqueta_coluna_";
-
-            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = nomeArq + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-
-        } catch (Exception e) {
-            return null;
-        }
+        Jasper.PART_NAME = "";
+        Jasper.PATH = "etiquetas";
+        Jasper.printReports("/Relatorios/ETIQUETA_SOCIO.jasper", "etiqueta_coluna", listax);
         return null;
     }
 
@@ -476,31 +458,9 @@ public class CartaoSocialBean implements Serializable {
             return null;
         }
 
-        try {
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            JasperReport jasper;
-            String nomeArq;
-
-            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/ETIQUETA_TERMICA_SOCIAL_RETRATO.jasper"));
-            jasper = (JasperReport) JRLoader.loadObject(fl);
-            nomeArq = "etiqueta_termica_";
-
-            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = nomeArq + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-
-        } catch (Exception e) {
-            return null;
-        }
+        Jasper.PART_NAME = "";
+        Jasper.PATH = "etiquetas";
+        Jasper.printReports("/Relatorios/ETIQUETA_TERMICA_SOCIAL_RETRATO.jasper", "etiqueta_termica", listax);
         return null;
     }
 

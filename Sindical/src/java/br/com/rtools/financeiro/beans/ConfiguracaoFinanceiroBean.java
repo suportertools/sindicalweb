@@ -41,16 +41,16 @@ public class ConfiguracaoFinanceiroBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar este registro!");
             }
         }
-    }        
-        
+    }
+
     public void load() {
 
     }
-    
-    public void alterModalTransferencia(){
-        if (!configuracaoFinanceiro.isTransferenciaAutomaticaCaixa()){
+
+    public void alterModalTransferencia() {
+        if (!configuracaoFinanceiro.isTransferenciaAutomaticaCaixa()) {
             configuracaoFinanceiro.setModalTransferencia(false);
-        }   
+        }
     }
 
     public ConfiguracaoFinanceiro getConfiguracaoFinanceiro() {
