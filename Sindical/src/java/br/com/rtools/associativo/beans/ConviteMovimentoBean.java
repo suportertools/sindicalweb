@@ -168,6 +168,9 @@ public class ConviteMovimentoBean implements Serializable {
         NovoLog novoLog = new NovoLog();
         conviteMovimento.setConviteServico((ConviteServico) dao.find(new ConviteServico(), Integer.parseInt(conviteServicos.get(idServico).getDescription())));
         dao.openTransaction();
+        if(conviteMovimento.getSisPessoa().getEndereco().getId() == -1) {
+            conviteMovimento.getSisPessoa().setEndereco(null);
+        }
         if (conviteMovimento.getSisPessoa().getId() == -1) {
             conviteMovimento.getSisPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             if (dao.save(conviteMovimento.getSisPessoa())) {
@@ -453,6 +456,9 @@ public class ConviteMovimentoBean implements Serializable {
         if (perfil.exists()) {
             fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/SisPessoa/" + conviteMovimento.getId() + "/perfil.png";
             fotoTempPerfil = "";
+        }
+        if(conviteMovimento.getSisPessoa().getEndereco() == null) {
+            conviteMovimento.getSisPessoa().setEndereco(new Endereco());
         }
         File documento = new File(arquivo + "/documento.png");
         if (documento.exists()) {

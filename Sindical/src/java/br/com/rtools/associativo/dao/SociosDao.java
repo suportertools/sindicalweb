@@ -120,4 +120,24 @@ public class SociosDao extends DB {
         return null;
     }
 
+    /**
+     * Retorna serviços pessoas que pertencem a sócios
+     *
+     * @param idPessoa
+     * @return
+     */
+    public List listServicoPessoaInSociosByPessoa(Integer idPessoa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S.servicoPessoa FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = true ");
+            query.setParameter("pessoa", idPessoa);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
 }

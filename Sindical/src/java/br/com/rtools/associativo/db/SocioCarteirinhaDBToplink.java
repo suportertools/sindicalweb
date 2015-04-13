@@ -7,6 +7,7 @@ import br.com.rtools.associativo.ModeloCarteirinhaCategoria;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,8 +93,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
 
     @Override
     public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem) {
-        Registro registro = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
-
+        Registro registro = (Registro) new Dao().find(new Registro(), 1);
         try {
             String textqry
                     = "     SELECT p.id,                                                    " // 0 
@@ -234,9 +234,41 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
 
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
-                            + "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
+                            + "    AND sc.dt_emissao is not null and sc.dt_emissao between current_date-30 and current_date";
                 } else {
-                    textqry += "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
+                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao between current_date-30 and current_date";
+                }
+            }
+
+            // HOJE
+            if (tipo.equals("iOntem")) {
+                if (registro.isCobrancaCarteirinha()) {
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                } else {
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                }
+
+                if (!descricao.isEmpty()) {
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
+                            + "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date-1";
+                } else {
+                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date-1";
+                }
+            }
+
+            // HOJE
+            if (tipo.equals("iHoje")) {
+                if (registro.isCobrancaCarteirinha()) {
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                } else {
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                }
+
+                if (!descricao.isEmpty()) {
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
+                            + "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date ";
+                } else {
+                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date";
                 }
             }
 

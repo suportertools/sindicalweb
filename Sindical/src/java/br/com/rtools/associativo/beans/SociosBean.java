@@ -542,6 +542,14 @@ public class SociosBean implements Serializable {
         }
     }
 
+    public void loadingImage() throws InterruptedException {
+        Thread.sleep(5000);
+        if (novoDependente.getId() != -1) {
+            salvarImagem();
+        }
+        // PF.closeDialog("dlg_loading_image");
+    }
+
     public void upload(FileUploadEvent event) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
@@ -560,6 +568,11 @@ public class SociosBean implements Serializable {
         if (Upload.enviar(cu, true)) {
             fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/" + novoDependente.getPessoa().getId() + "/perfil.png";
             //fotoPerfil = "";
+            try {
+                loadingImage();
+            } catch (Exception e) {
+
+            }
         } else {
             fotoTempPerfil = "";
             //fotoPerfil = "";
@@ -602,6 +615,10 @@ public class SociosBean implements Serializable {
         boolean error = false;
         if (!fotoTempPerfil.equals("")) {
             File des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
+            if (des.exists()) {
+                des.delete();
+            }
+            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".jpg");
             if (des.exists()) {
                 des.delete();
             }
@@ -652,7 +669,7 @@ public class SociosBean implements Serializable {
 
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
-        if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho, true)) {
+        if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho + "/" + novoDependente.getPessoa().getId(), true)) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/" + novoDependente.getPessoa().getId() + "/perfil.png"));
             if (f.exists()) {
                 fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/" + novoDependente.getPessoa().getId() + "/perfil.png";
@@ -660,8 +677,14 @@ public class SociosBean implements Serializable {
                 fotoTempPerfil = "";
             }
         }
-        RequestContext.getCurrentInstance().update(":formSocios:tab_view:i_panel_dados");
         RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
+        try {
+            // loadingImage();
+        } catch (Exception e) {
+
+        }
+        RequestContext.getCurrentInstance().update(":formSocios:tab_view:i_panel_dados");
+
     }
 
     public String getFotoTipTitular() {
@@ -1928,8 +1951,8 @@ public class SociosBean implements Serializable {
         String dataRef = DataHoje.dataReferencia(DataHoje.data());
         int dataHoje = DataHoje.converteDataParaRefInteger(dataRef);
         ServicoPessoaDB spdb = new ServicoPessoaDBToplink();
-        List<ServicoPessoa> list = spdb.listByPessoa(listDependentesInativos.get(index).getFisica().getPessoa().getId());
         SociosDao sociosDao = new SociosDao();
+        List<ServicoPessoa> list = sociosDao.listServicoPessoaInSociosByPessoa(listDependentesInativos.get(index).getFisica().getPessoa().getId());
         Dao dao = new Dao();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isAtivo()) {
