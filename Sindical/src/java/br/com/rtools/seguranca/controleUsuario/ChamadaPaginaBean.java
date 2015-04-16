@@ -82,6 +82,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String pesquisa(String pagina, String bean) throws IOException {
         GenericaSessao.remove(pagina + "Bean");
+        GenericaSessao.remove(bean);
         return metodoGenerico(1, pagina);
     }
 
