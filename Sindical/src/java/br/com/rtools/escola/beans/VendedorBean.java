@@ -1,11 +1,10 @@
 package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.VendedorDao;
+import br.com.rtools.escola.dao.VendedorDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
@@ -47,17 +46,17 @@ public class VendedorBean implements Serializable {
             vendedor = new Vendedor();
             return;
         }
-        DaoInterface di = new Dao();
-        di.openTransaction();
-        if (di.save(vendedor)) {
+        Dao dao = new Dao();
+        dao.openTransaction();
+        if (dao.save(vendedor)) {
             novoLog.save(
                     "ID " + vendedor.getId()
                     + " - Pessoa: (" + vendedor.getPessoa().getId() + ") " + vendedor.getPessoa().getNome()
             );
-            di.commit();
+            dao.commit();
             GenericaMensagem.info("Sucesso", "Registro inserido");
         } else {
-            di.rollback();
+            dao.rollback();
             GenericaMensagem.warn("Erro", "Ao inserir registro!");
         }
         listVendedores.clear();
@@ -65,28 +64,28 @@ public class VendedorBean implements Serializable {
     }
 
     public void delete(Vendedor v) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
-        di.openTransaction();
-        if (di.delete(v)) {
+        dao.openTransaction();
+        if (dao.delete(v)) {
             novoLog.delete(
                     "ID " + v.getId()
                     + " - Pessoa: (" + v.getPessoa().getId() + ") " + v.getPessoa().getNome()
             );
-            di.commit();
+            dao.commit();
             GenericaMensagem.info("Sucesso", "Registro excluído");
             listVendedores.clear();
             vendedor = new Vendedor();
         } else {
-            di.rollback();
+            dao.rollback();
             GenericaMensagem.warn("Erro", "Ao excluir registro!");
         }
     }
 
     public List<Vendedor> getListVendedores() {
         if (listVendedores.isEmpty()) {
-            DaoInterface di = new Dao();
-            listVendedores = (List<Vendedor>) di.list(new Vendedor(), true);
+            Dao dao = new Dao();
+            listVendedores = (List<Vendedor>) dao.list(new Vendedor(), true);
         }
         return listVendedores;
     }
