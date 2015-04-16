@@ -5,7 +5,7 @@ import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.MatriculaEscolaDao;
+import br.com.rtools.escola.dao.MatriculaEscolaDao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.impressao.ParametroEscolaCadastral;
@@ -21,7 +21,6 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -688,8 +687,8 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListFiliais() {
         if (listSelectItem[1].isEmpty()) {
-            DaoInterface di = new Dao();
-            List<Filial> list = (List<Filial>) di.list(new Filial(), true);
+            Dao dao = new Dao();
+            List<Filial> list = (List<Filial>) dao.list(new Filial(), true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[1].add(new SelectItem(i,
                         list.get(i).getFilial().getPessoa().getDocumento() + " / " + list.get(i).getFilial().getPessoa().getNome(),
@@ -701,8 +700,8 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListStatus() {
         if (listSelectItem[2].isEmpty()) {
-            DaoInterface di = new Dao();
-            List<EscStatus> list = (List<EscStatus>) di.list(new EscStatus());
+            Dao dao = new Dao();
+            List<EscStatus> list = (List<EscStatus>) dao.list(new EscStatus());
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[2].add(new SelectItem(i,
                         list.get(i).getDescricao(),
@@ -714,8 +713,8 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListMidia() {
         if (listSelectItem[3].isEmpty()) {
-            DaoInterface di = new Dao();
-            List<Midia> list = (List<Midia>) di.list(new Midia(), true);
+            Dao dao = new Dao();
+            List<Midia> list = (List<Midia>) dao.list(new Midia(), true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[3].add(new SelectItem(i,
                         list.get(i).getDescricao(),
@@ -727,8 +726,8 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListProfessor() {
         if (listSelectItem[4].isEmpty()) {
-            DaoInterface di = new Dao();
-            List<Professor> list = (List<Professor>) di.list(new Professor(), true);
+            Dao dao = new Dao();
+            List<Professor> list = (List<Professor>) dao.list(new Professor(), true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[4].add(new SelectItem(i,
                         list.get(i).getProfessor().getNome(),
@@ -740,7 +739,7 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListVendedor() {
         if (listSelectItem[5].isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             List<Vendedor> list = (List<Vendedor>) di.list(new Vendedor(), true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[5].add(new SelectItem(i,
