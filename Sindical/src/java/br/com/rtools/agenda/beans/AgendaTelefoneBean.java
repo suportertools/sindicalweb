@@ -6,8 +6,7 @@ import br.com.rtools.agenda.AgendaFavorito;
 import br.com.rtools.agenda.AgendaTelefone;
 import br.com.rtools.agenda.GrupoAgenda;
 import br.com.rtools.agenda.TipoTelefone;
-import br.com.rtools.agenda.db.AgendaTelefoneDB;
-import br.com.rtools.agenda.db.AgendaTelefoneDBToplink;
+import br.com.rtools.agenda.db.AgendaTelefoneDao;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
@@ -17,7 +16,6 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
@@ -79,18 +77,18 @@ public class AgendaTelefoneBean implements Serializable {
         endereco = new Endereco();
         usuario = new Usuario();
         listSelectItem = new ArrayList[4];
-        listSelectItem[0] = new ArrayList<SelectItem>();
-        listSelectItem[1] = new ArrayList<SelectItem>();
-        listSelectItem[2] = new ArrayList<SelectItem>();
-        listSelectItem[3] = new ArrayList<SelectItem>();
+        listSelectItem[0] = new ArrayList<>();
+        listSelectItem[1] = new ArrayList<>();
+        listSelectItem[2] = new ArrayList<>();
+        listSelectItem[3] = new ArrayList<>();
         indice = new Integer[5];
         indice[0] = 0;
         indice[1] = 0;
         indice[2] = 0;
         indice[3] = 0;
         indice[4] = 0;
-        listAgendaTelefones = new ArrayList<AgendaTelefone>();
-        listAgendaContato = new ArrayList<AgendaContato>();
+        listAgendaTelefones = new ArrayList<>();
+        listAgendaContato = new ArrayList<>();
         listAgendas = new ArrayList();
         descricaoPesquisa = "";
         descricaoDDD = "";
@@ -146,7 +144,7 @@ public class AgendaTelefoneBean implements Serializable {
             message = "Informar o tipo de endereço!";
             return;
         }
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         agenda.setGrupoAgenda((GrupoAgenda) di.find(new GrupoAgenda(), Integer.parseInt(getListGrupoAgendas().get(indice[2]).getDescription())));
         agenda.setTipoEndereco((TipoEndereco) di.find(new TipoEndereco(), Integer.parseInt(getListTipoEnderecos().get(indice[0]).getDescription())));
         if (pessoa != null) {
@@ -159,7 +157,7 @@ public class AgendaTelefoneBean implements Serializable {
         }
         NovoLog novoLog = new NovoLog();
         if (agenda.getId() == -1) {
-            AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
+            AgendaTelefoneDao agendaDB = new AgendaTelefoneDao();
             if (endereco != null) {
                 if (endereco.getId() != -1) {
                     agenda.setEndereco(endereco);
@@ -210,8 +208,8 @@ public class AgendaTelefoneBean implements Serializable {
 
     public void delete() {
         if (agenda.getId() != -1) {
-            DaoInterface di = new Dao();
-            AgendaTelefoneDB atdb = new AgendaTelefoneDBToplink();
+            Dao di = new Dao();
+            AgendaTelefoneDao atdb = new AgendaTelefoneDao();
             List<AgendaFavorito> agendaFavoritos = (List<AgendaFavorito>) atdb.listaFavoritoPorAgenda(agenda.getId());
             di.openTransaction();
             for (AgendaFavorito f : agendaFavoritos) {
@@ -322,13 +320,13 @@ public class AgendaTelefoneBean implements Serializable {
 
     public List<SelectItem> getListTipoEnderecos() {
         if (listSelectItem[0].isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             List<TipoEndereco> list = (List<TipoEndereco>) di.list("TipoEndereco", true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
             if (listSelectItem[0].isEmpty()) {
-                listSelectItem[0] = new ArrayList<SelectItem>();
+                listSelectItem[0] = new ArrayList<>();
             }
         }
         return listSelectItem[0];
@@ -336,7 +334,7 @@ public class AgendaTelefoneBean implements Serializable {
 
     public List<SelectItem> getListTipoTelefones() {
         if (listSelectItem[1].isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             List<TipoTelefone> list = (List<TipoTelefone>) di.list("TipoTelefone", true);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[1].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
@@ -352,17 +350,17 @@ public class AgendaTelefoneBean implements Serializable {
         listSelectItem[2].clear();
         List<GrupoAgenda> list;
         if (getTipoAgenda().equals("pesquisaAgendaTelefone")) {
-            AgendaTelefoneDB telefoneDB = new AgendaTelefoneDBToplink();
+            AgendaTelefoneDao telefoneDB = new AgendaTelefoneDao();
             list = (List<GrupoAgenda>) telefoneDB.listaGrupoAgendaPorUsuario(getUsuario().getId());
         } else {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             list = (List<GrupoAgenda>) di.list("GrupoAgenda", true);
         }
         for (int i = 0; i < list.size(); i++) {
             listSelectItem[2].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
         }
         if (listSelectItem[2].isEmpty()) {
-            listSelectItem[2] = new ArrayList<SelectItem>();
+            listSelectItem[2] = new ArrayList<>();
         }
         return listSelectItem[2];
     }
@@ -376,7 +374,7 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public List<AgendaTelefone> getListAgendaTelefones() {
-        AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
+        AgendaTelefoneDao agendaDB = new AgendaTelefoneDao();
         if (agenda.getId() != -1) {
             listAgendaTelefones = agendaDB.listaAgendaTelefone(agenda.getId());
         }
@@ -486,12 +484,12 @@ public class AgendaTelefoneBean implements Serializable {
             GenericaMensagem.warn("Validação", "Informar o tipo de telefone!");
             return null;
         }
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         NovoLog novoLog = new NovoLog();
         agendaTelefone.setTipoTelefone((TipoTelefone) di.find(new TipoTelefone(), Integer.parseInt(getListTipoTelefones().get(indice[1]).getDescription())));
         if (agenda.getId() != -1) {
             if (agendaTelefone.getId() == -1) {
-                AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
+                AgendaTelefoneDao agendaDB = new AgendaTelefoneDao();
                 agendaTelefone.setAgenda(agenda);
                 if (((AgendaTelefone) agendaDB.agendaTelefoneExiste(agendaTelefone)).getId() != -1) {
                     GenericaMensagem.warn("Validação", "Telefone já existe!");
@@ -527,7 +525,7 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public String removeAgendaTelefone(AgendaTelefone at) {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         at = (AgendaTelefone) di.find(at);
         di.openTransaction();
         if (di.delete(at)) {
@@ -573,8 +571,8 @@ public class AgendaTelefoneBean implements Serializable {
 
     public List<SelectItem> getListaDDD() {
         if (listSelectItem[3].isEmpty()) {
-            AgendaTelefoneDB agendaTelefoneDB = new AgendaTelefoneDBToplink();
-            List list = agendaTelefoneDB.DDDAgrupado();
+            AgendaTelefoneDao atd = new AgendaTelefoneDao();
+            List list = atd.DDDAgrupado();
             int i = 0;
             listSelectItem[3].add(new SelectItem(i, "DDD", ""));
             for (i = 0; i < list.size(); i++) {
@@ -610,7 +608,7 @@ public class AgendaTelefoneBean implements Serializable {
 
     public List<AgendaTelefone> getListAgendas() {
         if (listAgendas.isEmpty()) {
-            AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
+            AgendaTelefoneDao agendaDB = new AgendaTelefoneDao();
             int nrGrupoAgenda = 0;
             if (filtraPorGrupo) {
                 nrGrupoAgenda = Integer.parseInt(getListGrupoAgendas().get(indice[4]).getDescription());
@@ -680,18 +678,15 @@ public class AgendaTelefoneBean implements Serializable {
         if (idAgenda == -1 || idAgenda == 0) {
             return false;
         }
-        AgendaTelefoneDB agendaTelefoneDB = new AgendaTelefoneDBToplink();
-        AgendaFavorito af = agendaTelefoneDB.favorito(idAgenda, getUsuario().getId());
-        if (af == null) {
-            return false;
-        }
-        return true;
+        AgendaTelefoneDao atd = new AgendaTelefoneDao();
+        AgendaFavorito af = atd.favorito(idAgenda, getUsuario().getId());
+        return af != null;
     }
 
     public void addOrRemoveFavorito() {
-        AgendaTelefoneDB agendaTelefoneDB = new AgendaTelefoneDBToplink();
-        AgendaFavorito af = agendaTelefoneDB.favorito(agendaTelefone.getAgenda().getId(), usuario.getId());
-        DaoInterface di = new Dao();
+        AgendaTelefoneDao atd = new AgendaTelefoneDao();
+        AgendaFavorito af = atd.favorito(agendaTelefone.getAgenda().getId(), usuario.getId());
+        Dao di = new Dao();
         if (af == null) {
             af = new AgendaFavorito();
             af.setAgenda(agendaTelefone.getAgenda());
@@ -725,7 +720,7 @@ public class AgendaTelefoneBean implements Serializable {
     public List<AgendaContato> getListAgendaContato() {
         if (agenda.getId() != -1) {
             if (listAgendaContato.isEmpty()) {
-                DaoInterface di = new Dao();
+                Dao di = new Dao();
                 listAgendaContato = (List<AgendaContato>) di.listQuery(new AgendaContato(), "findByAgenda", new Object[]{agenda.getId()});
             }
         }
@@ -753,15 +748,18 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public void remove(String type) {
-        if (type.equals("pessoa")) {
-            pessoa = new Pessoa();
-        } else if (type.equals("endereco")) {
-            endereco = null;
-            agenda.setComplemento("");
-            agenda.setNumero("");
-            DaoInterface di = new Dao();
-            agenda.setTipoEndereco((TipoEndereco) di.find(new TipoEndereco(), 1));
-            indice[0] = 0;
+        switch (type) {
+            case "pessoa":
+                pessoa = new Pessoa();
+                break;
+            case "endereco":
+                endereco = null;
+                agenda.setComplemento("");
+                agenda.setNumero("");
+                Dao di = new Dao();
+                agenda.setTipoEndereco((TipoEndereco) di.find(new TipoEndereco(), 1));
+                indice[0] = 0;
+                break;
         }
         PF.update("form_agenda_telefone:i_panel_adicionar");
     }
@@ -776,7 +774,7 @@ public class AgendaTelefoneBean implements Serializable {
             return;
         }
         agendaContato.setAgenda(agenda);
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         if (agendaContato.getId() == -1) {
             for (AgendaContato lac : listAgendaContato) {
                 if (agendaContato.getContato().equals(lac.getContato())) {
@@ -797,13 +795,13 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public void editAgendaContato(AgendaContato ac) {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         agendaContato = (AgendaContato) di.rebind(ac);
     }
 
     public void removeAgendaContato(AgendaContato ac) {
         if (ac.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             if (di.delete(ac, true)) {
                 GenericaMensagem.info("Sucesso", "Contato removido");
                 agendaContato = new AgendaContato();
@@ -816,7 +814,7 @@ public class AgendaTelefoneBean implements Serializable {
 
     public void updateAgendaContato(AgendaContato ac) {
         if (ac.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             if (di.update(ac, true)) {
                 GenericaMensagem.info("Sucesso", "Contato atualiado");
                 listAgendaContato.clear();
