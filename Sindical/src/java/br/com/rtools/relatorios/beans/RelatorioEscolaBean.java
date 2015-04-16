@@ -8,7 +8,7 @@ import br.com.rtools.escola.MatriculaTurma;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.TurmaDao;
+import br.com.rtools.escola.dao.TurmaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
@@ -19,14 +19,13 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -39,13 +38,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -191,32 +183,6 @@ public class RelatorioEscolaBean implements Serializable {
 //            GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
 //            return;
 //        }
-        if (!Diretorio.criar("Arquivos/downloads/relatorios/ConviteClube")) {
-            GenericaMensagem.info("Sistema", "Erro ao criar diretório!");
-            return;
-        }
-        try {
-            FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-            try {
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) null);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_convite_clube_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/ConviteClube/");
-                salvaArquivos.salvaNaPasta(pathPasta);
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
-                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            }
-        } catch (JRException erro) {
-            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-        }
     }
 
     public List<SelectItem> getListaTipoRelatorios() {
@@ -303,8 +269,8 @@ public class RelatorioEscolaBean implements Serializable {
 
     public List<SelectItem> getListaVendedores() {
         if (listaVendedores.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<Vendedor> list = (List<Vendedor>) dB.listaObjeto("Vendedor");
+            Dao dao = new Dao();
+            List<Vendedor> list = (List<Vendedor>) dao.list(new Vendedor());
             int i = 0;
             for (Vendedor v : list) {
                 listaVendedores.add(new SelectItem(i, v.getPessoa().getNome(), "" + v.getId()));
@@ -320,8 +286,8 @@ public class RelatorioEscolaBean implements Serializable {
 
     public List<SelectItem> getListaProfessores() {
         if (listaProfessores.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<Professor> list = (List<Professor>) dB.listaObjeto("Professor");
+            Dao dao = new Dao();
+            List<Professor> list = (List<Professor>) dao.list(new Professor());
             int i = 0;
             for (Professor p : list) {
                 listaProfessores.add(new SelectItem(i, p.getProfessor().getNome(), "" + p.getId()));
@@ -556,10 +522,10 @@ public class RelatorioEscolaBean implements Serializable {
 
     public List<SelectItem> getListaMidia() {
         if (listaMidia.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<Midia> ms = (List<Midia>) sadb.listaObjeto("Midia");
-            for (int i = 0; i < ms.size(); i++) {
-                listaMidia.add(new SelectItem(i, ms.get(i).getDescricao(), "" + ms.get(i).getId()));
+            Dao dao = new Dao();
+            List<Midia> list = (List<Midia>) dao.list(new Midia());
+            for (int i = 0; i < list.size(); i++) {
+                listaMidia.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listaMidia;
@@ -571,10 +537,10 @@ public class RelatorioEscolaBean implements Serializable {
 
     public List<SelectItem> getListaStatus() {
         if (listaStatus.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<EscStatus> es = (List<EscStatus>) sadb.listaObjeto("EscStatus");
-            for (int i = 0; i < es.size(); i++) {
-                listaStatus.add(new SelectItem(i, es.get(i).getDescricao(), "" + es.get(i).getId()));
+            Dao dao = new Dao();
+            List<EscStatus> list = (List<EscStatus>) dao.list(new EscStatus());
+            for (int i = 0; i < list.size(); i++) {
+                listaStatus.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listaStatus;
