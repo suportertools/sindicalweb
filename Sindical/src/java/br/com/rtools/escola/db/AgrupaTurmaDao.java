@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class AgrupaTurmaDBToplink extends DB implements AgrupaTurmaDB {
+public class AgrupaTurmaDao extends DB  {
 
-    @Override
     public List pesquisaPorTurmaIntegral(int idTurma) {
         try {
             Query query = getEntityManager().createQuery(" SELECT AT FROM AgrupaTurma AS AT WHERE AT.turmaIntegral.id = :idTurma ");
