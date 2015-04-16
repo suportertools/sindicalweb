@@ -140,9 +140,9 @@ public class TurmaBean implements Serializable {
         DaoInterface di = new Dao();
         turma.setCursos((Servicos) di.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
         NovoLog novoLog = new NovoLog();
-        TurmaDB turmaDB = new TurmaDBToplink();
+        TurmaDao td = new TurmaDao();
         if (turma.getId() == -1) {
-            if (turmaDB.existeTurma(turma)) {
+            if (td.existeTurma(turma)) {
                 message = "Turma já existe!";
                 return;
             }
@@ -278,7 +278,7 @@ public class TurmaBean implements Serializable {
     public void addTurmaProfessor() {
         message = "";
         TurmaProfessor turmaProfessor = new TurmaProfessor();
-        TurmaDB turmaDB = new TurmaDBToplink();
+        TurmaDao td = new TurmaDao();
         DaoInterface di = new Dao();
         if (listProfessores.isEmpty()) {
             GenericaMensagem.warn("Validação", "Cadastrar professores!");
@@ -291,7 +291,7 @@ public class TurmaBean implements Serializable {
         turmaProfessor.setProfessor(professor);
         turmaProfessor.setComponenteCurricular(componenteCurricular);
         turmaProfessor.setTurma(turma);
-        if (turmaDB.existeTurmaProfessor(turmaProfessor)) {
+        if (td.existeTurmaProfessor(turmaProfessor)) {
             GenericaMensagem.warn("Validação", "Cadastro já existe!");
             return;
         }
@@ -388,9 +388,9 @@ public class TurmaBean implements Serializable {
 
     public List<TurmaProfessor> getListTurmaProfessor() {
         if (listTurmaProfessor.isEmpty()) {
-            TurmaDB turmaDB = new TurmaDBToplink();
+            TurmaDao td = new TurmaDao();
             if (turma.getId() != -1) {
-                listTurmaProfessor = turmaDB.listaTurmaProfessor(turma.getId());
+                listTurmaProfessor = td.listaTurmaProfessor(turma.getId());
             }
         }
         return listTurmaProfessor;
