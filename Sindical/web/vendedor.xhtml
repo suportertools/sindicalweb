@@ -45,11 +45,10 @@
                             </p:dataTable>
                         </p:panelGrid>                        
                         <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
-                            <center>
-                                <h:outputLabel value="#{vendedorBean.message}" id="i_mensagem"/>
-                                <br /><br />
-                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
-                            </center>
+                            <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="false" id="i_mensagem"/>
+                            <f:facet name="footer">
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />                                
+                            </f:facet>                            
                         </p:dialog>
                     </p:panel>
                 </h:form>
