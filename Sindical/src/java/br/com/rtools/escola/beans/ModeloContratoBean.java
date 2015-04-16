@@ -3,8 +3,7 @@ package br.com.rtools.escola.beans;
 import br.com.rtools.escola.MatriculaContrato;
 import br.com.rtools.escola.MatriculaContratoCampos;
 import br.com.rtools.escola.MatriculaContratoServico;
-import br.com.rtools.escola.db.MatriculaContratoDB;
-import br.com.rtools.escola.db.MatriculaContratoDBToplink;
+import br.com.rtools.escola.db.MatriculaContratoDao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Modulo;
@@ -127,8 +126,8 @@ public class ModeloContratoBean implements Serializable {
                 }
             }
             matriculaContrato.setModulo(modulo);
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
-            if (matriculaContratoDB.existeMatriculaContrato(matriculaContrato)) {
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
+            if (matriculaContratoDao.existeMatriculaContrato(matriculaContrato)) {
                 mensagem = "Contrato já existe!";
                 return;
             }
@@ -226,17 +225,17 @@ public class ModeloContratoBean implements Serializable {
             return;
         }
         DaoInterface di = new Dao();
-        MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+        MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
         if (matriculaContratoCampos.getId() == -1) {
-            if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "campo")) {
+            if (matriculaContratoDao.existeMatriculaContratoCampo(matriculaContratoCampos, "campo")) {
                 GenericaMensagem.warn("Sistema", "Variável já existe!");
                 return;
             }
-            if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "variavel")) {
+            if (matriculaContratoDao.existeMatriculaContratoCampo(matriculaContratoCampos, "variavel")) {
                 GenericaMensagem.warn("Sistema", "Campo já cadastrado!");
                 return;
             }
-            if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "tudo")) {
+            if (matriculaContratoDao.existeMatriculaContratoCampo(matriculaContratoCampos, "tudo")) {
                 GenericaMensagem.warn("Sistema", "Campo já cadastrado!");
                 return;
             }
@@ -294,8 +293,8 @@ public class ModeloContratoBean implements Serializable {
 
     public List<SelectItem> getListServicos() {
         if (listServicos.isEmpty()) {
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
-            List<Servicos> list = (List<Servicos>) matriculaContratoDB.listaServicosDispiniveis();
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
+            List<Servicos> list = (List<Servicos>) matriculaContratoDao.listaServicosDispiniveis();
             for (int i = 0; i < list.size(); i++) {
                 listServicos.add(new SelectItem(i, (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
             }
@@ -307,12 +306,12 @@ public class ModeloContratoBean implements Serializable {
         msgServico = "";
         if (matriculaContrato.getId() != -1) {
             int idServico = Integer.parseInt(getListServicos().get(idServicos).getDescription());
-            MatriculaContratoDB contratoDB = new MatriculaContratoDBToplink();
-            if (contratoDB.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
+            if (matriculaContratoDao.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
                 GenericaMensagem.warn("Validação", "Contrato já possui esse serviço!");
                 return;
             }
-            if (contratoDB.existeServicoMatriculaContrato(idServico)) {
+            if (matriculaContratoDao.existeServicoMatriculaContrato(idServico)) {
                 GenericaMensagem.warn("Validação", "Serviço já cadastrado para contrato (s)!");
                 return;
             }
@@ -375,9 +374,9 @@ public class ModeloContratoBean implements Serializable {
     public List<MatriculaContrato> getMatriculaContratos() {
         matriculaContratos.clear();
         if (matriculaContratos.isEmpty()) {
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
             if (getModulo().getId() != -1) {
-                matriculaContratos = matriculaContratoDB.pesquisaTodosPorModulo(modulo.getId());
+                matriculaContratos = matriculaContratoDao.pesquisaTodosPorModulo(modulo.getId());
             }
         }
         return matriculaContratos;
@@ -406,8 +405,8 @@ public class ModeloContratoBean implements Serializable {
     public List<MatriculaContratoServico> getListaMatriculaContratoServico() {
         if (matriculaContrato.getId() != -1) {
             if (listaMatriculaContratoServico.isEmpty()) {
-                MatriculaContratoDB db = new MatriculaContratoDBToplink();
-                listaMatriculaContratoServico = db.pesquisaMatriculaContratoServico(matriculaContrato.getId());
+                MatriculaContratoDao mcd = new MatriculaContratoDao();
+                listaMatriculaContratoServico = mcd.pesquisaMatriculaContratoServico(matriculaContrato.getId());
             }
         }
         return listaMatriculaContratoServico;
@@ -466,20 +465,20 @@ public class ModeloContratoBean implements Serializable {
 
     public List<MatriculaContratoCampos> getListaMatriculaContratoCampos(String tipoLista) {
         if (listaMatriculaContratoCampos.isEmpty()) {
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
             if (tipoLista.equals("this")) {
                 if (GenericaSessao.exists("idModulo")) {
                     int idMod = GenericaSessao.getInteger("idModulo");
                     if (idMod != 0) {
                         if (descricaoPesquisa.equals("")) {
-                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod);
+                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDao.listaMatriculaContratoCampo(idMod);
                         } else {
-                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod, descricaoPesquisa);
+                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDao.listaMatriculaContratoCampo(idMod, descricaoPesquisa);
                         }
                     }
                 }
             } else {
-                listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(Integer.parseInt(listModulos.get(idModulo).getDescription()));
+                listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDao.listaMatriculaContratoCampo(Integer.parseInt(listModulos.get(idModulo).getDescription()));
             }
         }
         return listaMatriculaContratoCampos;
@@ -491,8 +490,8 @@ public class ModeloContratoBean implements Serializable {
 
     public List<SelectItem> getListModulos() {
         if (listModulos.isEmpty()) {
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
-            List<Modulo> lista = (List<Modulo>) matriculaContratoDB.listaModulosMatriculaContratoCampos();
+            MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
+            List<Modulo> lista = (List<Modulo>) matriculaContratoDao.listaModulosMatriculaContratoCampos();
             for (int i = 0; i < lista.size(); i++) {
                 listModulos.add(new SelectItem(i, lista.get(i).getDescricao(), Integer.toString(lista.get(i).getId())));
             }
