@@ -1,8 +1,7 @@
 package br.com.rtools.agenda.beans;
 
 import br.com.rtools.agenda.AgendaContato;
-import br.com.rtools.agenda.db.AgendaTelefoneDB;
-import br.com.rtools.agenda.db.AgendaTelefoneDBToplink;
+import br.com.rtools.agenda.db.AgendaTelefoneDao;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
 import java.util.List;
@@ -22,7 +21,7 @@ public class AgendaNotificaoBean implements Serializable {
     }
 
     public List<AgendaContato> getListAniversariantes() {
-        AgendaTelefoneDB atdb = new AgendaTelefoneDBToplink();
+        AgendaTelefoneDao atdb = new AgendaTelefoneDao();
         List list = (List<AgendaContato>) atdb.pesquisaAniversariantesPorPeriodo();
         return list;
     }
