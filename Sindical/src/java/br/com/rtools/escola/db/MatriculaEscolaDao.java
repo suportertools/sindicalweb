@@ -20,9 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
+public class MatriculaEscolaDao extends DB {
 
-    @Override
     public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
         try {
             List<MatriculaEscola> list;
@@ -80,7 +79,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new ArrayList();
     }
 
-    @Override
     public MatriculaIndividual pesquisaCodigoMIndividual(int matriculaEscola) {
         try {
             Query query = getEntityManager().createQuery(" SELECT mi FROM MatriculaIndividual mi WHERE mi.matriculaEscola.id = :matriculaEscola ");
@@ -95,7 +93,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new MatriculaIndividual();
     }
 
-    @Override
     public MatriculaTurma pesquisaCodigoMTurma(int matriculaEscola) {
         try {
             Query query = getEntityManager().createQuery(" SELECT mt FROM MatriculaTurma mt WHERE mt.matriculaEscola.id = :matriculaEscola ");
@@ -110,7 +107,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new MatriculaTurma();
     }
 
-    @Override
     public PessoaComplemento pesquisaDataRefPessoaComplemto(int idPessoa) {
         try {
             Query query = getEntityManager().createQuery(" SELECT pes FROM PessoaComplemento pes WHERE pes.pessoa.id = :idPessoa ");
@@ -128,7 +124,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new PessoaComplemento();
     }
 
-    @Override
     public boolean verificaPessoaEnderecoDocumento(String tipoPessoa, int idPessoa) {
         try {
             Query query = getEntityManager().createQuery(" SELECT pes FROM PessoaEndereco pes WHERE pes.pessoa.id = :idPessoa and pes.pessoa.documento not like '0'");
@@ -165,7 +160,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
     }
 
-    @Override
     public boolean desfazerMovimento(MatriculaEscola me) {
         LoteDB loteDB = new LoteDBToplink();
         Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getEvt());
@@ -210,7 +204,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
     }
 
-    @Override
     public boolean existeMatriculaTurma(MatriculaTurma mt) {
         try {
             Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.aluno.id = :idAluno");
@@ -226,7 +219,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return false;
     }
 
-    @Override
     public boolean existeVagasDisponivel(MatriculaTurma mt) {
         int quantidadeVagas = mt.getTurma().getQuantidade();
         try {
@@ -246,7 +238,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return false;
     }
 
-    @Override
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
         try {
             Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
@@ -264,7 +255,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return false;
     }
 
-    @Override
     public List<EscolaAutorizados> listaPessoasAutorizas(int idMatricula) {
         try {
             Query query = getEntityManager().createQuery(" SELECT EA FROM EscolaAutorizados AS EA WHERE EA.matriculaEscola.id = :matricula");
@@ -279,7 +269,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new ArrayList();
     }
 
-    @Override
     public List<MatriculaTurma> pesquisaMatriculaEscolaPorTurma(int idTurma) {
         try {
             Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma");
@@ -294,7 +283,6 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         return new ArrayList();
     }
 
-    @Override
     public List<Servicos> listServicosPorMatriculaIndividual() {
         try {
             Query query = getEntityManager().createQuery(" SELECT MI.curso FROM MatriculaIndividual AS MI GROUP BY MI.curso ORDER BY MI.curso.descricao ASC ");
