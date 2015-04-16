@@ -284,7 +284,6 @@ public class MatriculaAcademiaBean implements Serializable {
                 return null;
             }
             SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
-            SociosDB sociosDB = new SociosDBToplink();
             SocioCarteirinhaDB scdb = new SocioCarteirinhaDBToplink();
             // PESQUISA CARTEIRINHA SEM MODELO
             String validadeCarteirinha = "";
@@ -460,6 +459,7 @@ public class MatriculaAcademiaBean implements Serializable {
             desabilitaCamposMovimento = true;
             desabilitaDiaVencimento = true;
         }
+        
         Dao dao = new Dao();
         for (int i = 0; i < listaModalidades.size(); i++) {
             AcademiaServicoValor asv = (AcademiaServicoValor) dao.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(i).getDescription()));
@@ -1072,11 +1072,11 @@ public class MatriculaAcademiaBean implements Serializable {
             if (desconto > Float.parseFloat(valor)) {
                 desconto = 0;
             }
-            if (Float.parseFloat(valor) - desconto > 0) {
+            if (Float.parseFloat(valor) - desconto >= 0) {
                 valorLiquido = valor;
                 valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - desconto);
-                float valorDesconto = desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor));
-                matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto);
+                float valorDesconto = Moeda.converteFloatR$Float(desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor)));
+                matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto); 
             }
         }
         valor = Moeda.converteR$(valor);
