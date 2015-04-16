@@ -1,8 +1,6 @@
 package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.EFinanceiro;
-import br.com.rtools.escola.db.EFinanceiroDB;
-import br.com.rtools.escola.db.EFinanceiroDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
@@ -11,7 +9,6 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -29,13 +26,13 @@ public class EFinanceiroBean implements java.io.Serializable {
     }
 
     public String adicionar() {
-        EFinanceiroDB db = new EFinanceiroDBToplink();
+        Dao dao = new Dao();
         if (getListaServicos().isEmpty()) {
             GenericaMensagem.warn("Atenção", "Lista de Multa vazia!");
             return null;
         }
 
-        Servicos serv = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
+        Servicos serv = (Servicos) dao.find(new Servicos(), Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
 
         for (EFinanceiro listaMulta : listaMultas) {
             if (listaMulta.getMulta().getId() == serv.getId()) {
@@ -47,7 +44,7 @@ public class EFinanceiroBean implements java.io.Serializable {
 
         eFinanceiro.setMulta(serv);
         eFinanceiro.setNrMultaCancelamento(Moeda.substituiVirgulaFloat(valorMulta));
-        if (db.insert(eFinanceiro)) {
+        if (dao.save(eFinanceiro, true)) {
             GenericaMensagem.info("Sucesso", "Multa Salva!");
         } else {
             GenericaMensagem.error("Erro", "Não foi possível salvar Multa!");
@@ -59,8 +56,8 @@ public class EFinanceiroBean implements java.io.Serializable {
     }
 
     public String excluir() {
-        EFinanceiroDB db = new EFinanceiroDBToplink();
-        if (db.delete(db.pesquisaCodigo(eFinanceiro.getId()))) {
+        Dao dao = new Dao();
+        if (dao.delete(eFinanceiro, true)) {
             GenericaMensagem.info("Sucesso", "Multa Excluída!");
         } else {
             GenericaMensagem.error("Erro", "Não foi possível excluir Multa!");
@@ -70,12 +67,12 @@ public class EFinanceiroBean implements java.io.Serializable {
     }
 
     public List<SelectItem> getListaServicos() {
-        List<SelectItem> listaSe = new Vector<SelectItem>();
+        List<SelectItem> listaSe = new ArrayList<>();
         int i = 0;
         ServicosDB db = new ServicosDBToplink();
         List select = db.pesquisaTodos(147);
         while (i < select.size()) {
-            listaSe.add(new SelectItem(new Integer(i),
+            listaSe.add(new SelectItem(i,
                     (String) ((Servicos) select.get(i)).getDescricao(),
                     Integer.toString(((Servicos) select.get(i)).getId())));
             i++;
@@ -100,9 +97,9 @@ public class EFinanceiroBean implements java.io.Serializable {
     }
 
     public List<EFinanceiro> getListaMultas() {
-        EFinanceiroDB db = new EFinanceiroDBToplink();
+        Dao dao = new Dao();
         if (listaMultas.isEmpty()) {
-            listaMultas = db.pesquisaTodos();
+            listaMultas = dao.list(new EFinanceiro());
         }
         return listaMultas;
     }
