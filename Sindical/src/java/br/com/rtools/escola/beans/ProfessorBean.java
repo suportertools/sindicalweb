@@ -1,11 +1,10 @@
 package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.Professor;
-import br.com.rtools.escola.db.ProfessorDao;
+import br.com.rtools.escola.dao.ProfessorDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class ProfessorBean implements java.io.Serializable {
     public void init() {
         professor = new Professor();
         message = "";
-        listProfessores = new ArrayList<Professor>();
+        listProfessores = new ArrayList<>();
     }
 
     @PreDestroy
@@ -49,12 +48,12 @@ public class ProfessorBean implements java.io.Serializable {
             message = "Professor já cadastrado!";
             return;
         }
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
-        di.openTransaction();
+        dao.openTransaction();
         if (professor.getId() == -1) {
-            if (!di.save(professor)) {
-                di.rollback();
+            if (!dao.save(professor)) {
+                dao.rollback();
                 message = "Erro ao salvar Professor!";
                 return;
             } else {
@@ -66,13 +65,13 @@ public class ProfessorBean implements java.io.Serializable {
                     + " - Comissão: " + professor.getNrComissao()
             );
         } else {
-            Professor p = (Professor) di.find(professor);
+            Professor p = (Professor) dao.find(professor);
             String beforeUpdate
                     = "ID " + p.getId()
                     + " - Pessoa: (" + p.getProfessor().getId() + ") " + p.getProfessor().getNome()
                     + " - Comissão: " + p.getNrComissao();
-            if (!di.update(professor)) {
-                di.rollback();
+            if (!dao.update(professor)) {
+                dao.rollback();
                 message = "Erro ao atualizar Professor!";
                 return;
             } else {
@@ -84,33 +83,33 @@ public class ProfessorBean implements java.io.Serializable {
                     + " - Comissão: " + professor.getNrComissao()
             );
         }
-        di.commit();
+        dao.commit();
         professor = new Professor();
         listProfessores.clear();
     }
 
-    public void edit(Professor p) {
-        DaoInterface di = new Dao();
-        professor = (Professor) di.rebind(p);
+    public void edaot(Professor p) {
+        Dao dao = new Dao();
+        professor = (Professor) dao.rebind(p);
     }
 
     public void delete() {
         if (professor.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao dao = new Dao();
             NovoLog novoLog = new NovoLog();
-            di.openTransaction();
-            if (di.delete(professor)) {
+            dao.openTransaction();
+            if (dao.delete(professor)) {
                 novoLog.delete(
                         "ID " + professor.getId()
                         + " - Pessoa: (" + professor.getProfessor().getId() + ") " + professor.getProfessor().getNome()
                         + " - Comissão: " + professor.getNrComissao()
                 );
-                di.commit();
+                dao.commit();
                 listProfessores.clear();
                 professor = new Professor();
                 message = "Cadastro excluído com sucesso!";
             } else {
-                di.rollback();
+                dao.rollback();
                 message = "Erro ao excluir Cadastro!";
             }
         }
@@ -118,21 +117,21 @@ public class ProfessorBean implements java.io.Serializable {
 
     public void delete(Professor p) {
         if (p.getId() != -1) {
-            DaoInterface di = new Dao();
-            di.openTransaction();
+            Dao dao = new Dao();
+            dao.openTransaction();
             NovoLog novoLog = new NovoLog();
-            if (di.delete(p)) {
+            if (dao.delete(p)) {
                 novoLog.delete(
                         "ID " + p.getId()
                         + " - Pessoa: (" + p.getProfessor().getId() + ") " + p.getProfessor().getNome()
                         + " - Comissão: " + p.getNrComissao()
                 );
-                di.commit();
+                dao.commit();
                 listProfessores.clear();
                 professor = new Professor();
                 message = "Cadastro excluído com sucesso!";
             } else {
-                di.rollback();
+                dao.rollback();
                 message = "Erro ao excluir Cadastro!";
             }
         }
@@ -159,8 +158,8 @@ public class ProfessorBean implements java.io.Serializable {
 
     public List<Professor> getListProfessores() {
         if (listProfessores.isEmpty()) {
-            DaoInterface di = new Dao();
-            listProfessores = (List<Professor>) di.list(new Professor(), true);
+            Dao dao = new Dao();
+            listProfessores = (List<Professor>) dao.list(new Professor(), true);
         }
         return listProfessores;
     }
