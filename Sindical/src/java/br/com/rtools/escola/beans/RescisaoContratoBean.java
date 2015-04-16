@@ -5,7 +5,7 @@ import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
-import br.com.rtools.escola.db.MatriculaEscolaDao;
+import br.com.rtools.escola.dao.MatriculaEscolaDao;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.Lote;
@@ -21,11 +21,10 @@ import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -239,43 +238,43 @@ public class RescisaoContratoBean implements Serializable {
         }
         Lote lote = null;
         Pessoa r = null;
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        sadb.abrirTransacao();
+        Dao dao = new Dao();
+        dao.openTransaction();
         if (!movimentos.isEmpty()) {
             for (int i = 0; i < movimentos.size(); i++) {
                 movimentos.get(i).setAtivo(false);
                 lote = movimentos.get(i).getLote();
                 r = movimentos.get(i).getPessoa();
-                if (!sadb.alterarObjeto(movimentos.get(i))) {
-                    sadb.desfazerTransacao();
+                if (!dao.update(movimentos.get(i))) {
+                    dao.rollback();
                     //GenericaMensagem.warn("Erro", "Ao inativar movimentos!");
                     mensagem = "Erro ao inativar movimentos!";
                     return;
                 }
             }
         }
-        matriculaEscola.setEscStatus((EscStatus) sadb.find("EscStatus", 3));
+        matriculaEscola.setEscStatus((EscStatus) dao.find(new EscStatus(), 3));
         matriculaEscola.setStatus(DataHoje.dataHoje());
         //matriculaEscola.setHabilitado(false);
-        if (!sadb.alterarObjeto(matriculaEscola)) {
-            sadb.desfazerTransacao();
+        if (!dao.update(matriculaEscola)) {
+            dao.rollback();
             //GenericaMensagem.warn("Erro", "Ao inativar matrícula!");
             mensagem = "Erro ao inativar matrícula!";
             return;
         }
-        if (gerarMovimentoMulta(sadb, lote, servicos, r)) {
+        if (gerarMovimentoMulta(dao, lote, servicos, r)) {
             movimentos.clear();
             // GenericaMensagem.info("Sucesso", "Matrícula rescindida com sucesso");
             mensagem = "Matrícula rescindida com sucesso";
-            sadb.comitarTransacao();
+            dao.commit();
         } else {
             //GenericaMensagem.warn("Erro", "Ao inativar matrícula!");
             mensagem = "Erro ao inativar matrícula!";
-            sadb.desfazerTransacao();
+            dao.rollback();
         }
     }
 
-    public boolean gerarMovimentoMulta(SalvarAcumuladoDB sadb, Lote lote, Servicos s, Pessoa p) {
+    public boolean gerarMovimentoMulta(Dao dao, Lote lote, Servicos s, Pessoa p) {
         if (lote == null) {
             return false;
         }
@@ -302,8 +301,8 @@ public class RescisaoContratoBean implements Serializable {
             float valorParcelaF;
             String nrCtrBoletoResp = "";
             String vecimentoString = "";
-            TipoServico tipoServico = (TipoServico) sadb.find(new TipoServico(), 6);
-            FTipoDocumento fTipoDocumento = (FTipoDocumento) sadb.find(new FTipoDocumento(), 2);
+            TipoServico tipoServico = (TipoServico) dao.find(new TipoServico(), 6);
+            FTipoDocumento fTipoDocumento = (FTipoDocumento) dao.find(new FTipoDocumento(), 2);
             for (int x = 0; x < (Integer.toString(matriculaEscola.getResponsavel().getId())).length(); x++) {
                 nrCtrBoletoResp += 0;
             }
@@ -339,14 +338,14 @@ public class RescisaoContratoBean implements Serializable {
                     lote.getEvt(),
                     "",
                     fTipoDocumento,
-                    (CondicaoPagamento) sadb.find("CondicaoPagamento", idCondicaoPagto),
+                    (CondicaoPagamento) dao.find(new CondicaoPagamento(), idCondicaoPagto),
                     lote.getStatus(),
                     null,
                     lote.isDescontoFolha(),
                     0);
 
-            if (!sadb.inserirObjeto(l)) {
-                sadb.desfazerTransacao();
+            if (!dao.save(l)) {
+                dao.rollback();
                 return false;
             }
 
@@ -391,13 +390,13 @@ public class RescisaoContratoBean implements Serializable {
                         fTipoDocumento,
                         0,
                         new MatriculaSocios());
-                if (!sadb.inserirObjeto(m)) {
-                    sadb.desfazerTransacao();
+                if (!dao.save(m)) {
+                    dao.rollback();
                     return false;
                 }
             }
         } catch (Exception e) {
-            sadb.desfazerTransacao();
+            dao.rollback();
             return false;
         }
         return true;
@@ -516,8 +515,7 @@ public class RescisaoContratoBean implements Serializable {
 
     public Registro getRegistro() {
         if (registro.getId() == -1) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            registro = (Registro) sadb.find("Registro", 1);
+            registro = (Registro) new Dao().find(new Registro(), 1);
         }
         return registro;
     }
