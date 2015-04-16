@@ -14,8 +14,7 @@ import br.com.rtools.associativo.db.SocioCarteirinhaDB;
 import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
-import br.com.rtools.escola.db.MatriculaEscolaDB;
-import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.escola.dao.MatriculaEscolaDao;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.Evt;
 import br.com.rtools.financeiro.FStatus;
@@ -229,8 +228,8 @@ public class MatriculaAcademiaBean implements Serializable {
         if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
             Dao dao = new Dao();
             Pessoa pResponsavel = matriculaAcademia.getServicoPessoa().getCobranca();
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-            PessoaComplemento pc = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(pResponsavel.getId());
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            PessoaComplemento pc = med.pesquisaDataRefPessoaComplemto(pResponsavel.getId());
             if (pc == null || pc.getId() == -1) {
                 pc = new PessoaComplemento();
                 pc.setPessoa(pResponsavel);
@@ -346,8 +345,8 @@ public class MatriculaAcademiaBean implements Serializable {
                 message = "Erro ao adicionar registro!";
                 return null;
             }
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-            pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            pessoaComplemento = med.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
             if (pessoaComplemento == null) {
                 pessoaComplemento = new PessoaComplemento();
                 pessoaComplemento.setNrDiaVencimento(idDiaVencimento);
@@ -495,8 +494,8 @@ public class MatriculaAcademiaBean implements Serializable {
         if (aluno.getId() != -1) {
             getResponsavel();
             if (responsavel.getId() != -1) {
-                MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-                PessoaComplemento pc = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                MatriculaEscolaDao med = new MatriculaEscolaDao();
+                PessoaComplemento pc = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
                 if (pc != null && pc.getId() != -1) {
                     this.idDiaVencimento = pc.getNrDiaVencimento();
                 } else {
@@ -784,7 +783,7 @@ public class MatriculaAcademiaBean implements Serializable {
     public Fisica getAluno() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
             disabled = false;
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
             if (GenericaSessao.exists("pesquisaFisicaTipo")) {
                 socios = new Socios();
                 mensagemInadinplente = "";
@@ -807,7 +806,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         }
                         if (responsavel.getId() != -1) {
                             pessoaComplemento = new PessoaComplemento();
-                            pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                            pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
                             if (pessoaComplemento != null && pessoaComplemento.getId() != -1) {
                                 this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                                 this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
@@ -846,7 +845,7 @@ public class MatriculaAcademiaBean implements Serializable {
                                     return null;
                                 }
                             }
-                            if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+                            if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
                                 matriculaAcademia.getServicoPessoa().setCobranca(resp);
                             }
                         } else {
@@ -855,7 +854,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         GenericaSessao.remove("juridicaPesquisa");
                         //                    verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
                         pessoaComplemento = new PessoaComplemento();
-                        pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
                         if (pessoaComplemento != null) {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                             this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
@@ -1155,12 +1154,12 @@ public class MatriculaAcademiaBean implements Serializable {
     public Juridica getJuridica() {
         if (GenericaSessao.exists("juridicaPesquisa")) {
             juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-            if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
                 responsavel = juridica.getPessoa();
                 if (responsavel.getId() != -1) {
                     pessoaComplemento = new PessoaComplemento();
-                    pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
                     if (pessoaComplemento != null) {
                         this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                     }
