@@ -3,14 +3,13 @@ package br.com.rtools.escola.beans;
 import br.com.rtools.escola.MatriculaContrato;
 import br.com.rtools.escola.MatriculaContratoCampos;
 import br.com.rtools.escola.MatriculaContratoServico;
-import br.com.rtools.escola.db.MatriculaContratoDao;
+import br.com.rtools.escola.dao.MatriculaContratoDao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.beans.UploadFilesBean;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 //import br.com.rtools.utilitarios.DataObject;
 //import br.com.rtools.utilitarios.Diretorio;
@@ -116,13 +115,13 @@ public class ModeloContratoBean implements Serializable {
             mensagem = "Informar a descrição!";
             return;
         }
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
         if (matriculaContrato.getId() == -1) {
             if (GenericaSessao.exists("idModulo")) {
                 int idMod = GenericaSessao.getInteger("idModulo");
                 if (idMod != 0) {
-                    modulo = (Modulo) di.find(new Modulo(), idMod);
+                    modulo = (Modulo) dao.find(new Modulo(), idMod);
                 }
             }
             matriculaContrato.setModulo(modulo);
@@ -131,28 +130,28 @@ public class ModeloContratoBean implements Serializable {
                 mensagem = "Contrato já existe!";
                 return;
             }
-            di.openTransaction();
-            if (di.save(matriculaContrato)) {
-                di.commit();
+            dao.openTransaction();
+            if (dao.save(matriculaContrato)) {
+                dao.commit();
                 novoLog.save("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
                 mensagem = "Registro inserido com sucesso.";
             } else {
-                di.rollback();
+                dao.rollback();
                 mensagem = "Falha ao inserir o registro!";
             }
         } else {
-            MatriculaContrato mc = (MatriculaContrato) di.find(matriculaContrato);
+            MatriculaContrato mc = (MatriculaContrato) dao.find(matriculaContrato);
             String beforeUpdate = "ID: " + mc.getId() + " - Título: " + mc.getTitulo() + " - Módulo: (" + mc.getModulo().getId() + ") " + mc.getModulo().getDescricao();
             matriculaContrato.setDataAtualizado(DataHoje.data());
-            di.openTransaction();
-            if (di.update(matriculaContrato)) {
+            dao.openTransaction();
+            if (dao.update(matriculaContrato)) {
                 novoLog.update(beforeUpdate, "ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
-                di.commit();
+                dao.commit();
                 matriculaContratos.clear();
                 mensagem = "Registro atualizado com sucesso.";
             } else {
-                di.rollback();
+                dao.rollback();
                 mensagem = "Falha ao atualizar o registro!";
             }
         }
@@ -161,35 +160,35 @@ public class ModeloContratoBean implements Serializable {
     public void delete() {
         if (matriculaContrato.getId() != -1) {
             NovoLog novoLog = new NovoLog();
-            DaoInterface di = new Dao();
-            di.openTransaction();
+            Dao dao = new Dao();
+            dao.openTransaction();
             for (int i = 0; i < listaMatriculaContratoServico.size(); i++) {
-                if (!di.delete(listaMatriculaContratoServico.get(i))) {
-                    di.rollback();
+                if (!dao.delete(listaMatriculaContratoServico.get(i))) {
+                    dao.rollback();
                     mensagem = "Falha ao excluir esse registro!";
                     return;
                 }
             }
-            if (di.delete(matriculaContrato)) {
-                di.commit();
+            if (dao.delete(matriculaContrato)) {
+                dao.commit();
                 novoLog.delete("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: (" + matriculaContrato.getModulo().getId() + ") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
                 clear();
                 mensagem = "Registro excluído com sucesso";
             } else {
-                di.rollback();
+                dao.rollback();
                 mensagem = "Falha ao excluir esse registro!";
             }
         }
     }
 
-    public String edit(MatriculaContrato mc) {
-        DaoInterface di = new Dao();
+    public String edaot(MatriculaContrato mc) {
+        Dao dao = new Dao();
         UploadFilesBean uploadFilesBean = new UploadFilesBean();
         uploadFilesBean.setPath("Arquivos/contrato/" + mc.getId());
         uploadFilesBean.getListFiles();
         GenericaSessao.put("uploadFilesBean", uploadFilesBean);
-        setMatriculaContrato((MatriculaContrato) di.find(new MatriculaContrato(), mc.getId()));
+        setMatriculaContrato((MatriculaContrato) dao.find(new MatriculaContrato(), mc.getId()));
         GenericaSessao.put("matriculaContratoPesquisa", matriculaContrato);
         GenericaSessao.put("linkClicado", true);
         listaMatriculaContratoServico.clear();
@@ -224,7 +223,7 @@ public class ModeloContratoBean implements Serializable {
             GenericaMensagem.warn("Sistema", "Informar a variável!");
             return;
         }
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         MatriculaContratoDao matriculaContratoDao = new MatriculaContratoDao();
         if (matriculaContratoCampos.getId() == -1) {
             if (matriculaContratoDao.existeMatriculaContratoCampo(matriculaContratoCampos, "campo")) {
@@ -239,26 +238,26 @@ public class ModeloContratoBean implements Serializable {
                 GenericaMensagem.warn("Sistema", "Campo já cadastrado!");
                 return;
             }
-            matriculaContratoCampos.setModulo((Modulo) di.find(new Modulo(), Integer.parseInt(listModulos2.get(idModulo2).getDescription())));
-            di.openTransaction();
-            if (di.save(matriculaContratoCampos)) {
-                di.commit();
+            matriculaContratoCampos.setModulo((Modulo) dao.find(new Modulo(), Integer.parseInt(listModulos2.get(idModulo2).getDescription())));
+            dao.openTransaction();
+            if (dao.save(matriculaContratoCampos)) {
+                dao.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido com sucesso.");
                 listaMatriculaContratoCampos.clear();
                 listModulos.clear();
                 idModulo = 0;
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.info("Erro", "Falha ao inserir o registro!");
             }
         } else {
-            di.openTransaction();
-            if (di.update(matriculaContratoCampos)) {
-                di.commit();
+            dao.openTransaction();
+            if (dao.update(matriculaContratoCampos)) {
+                dao.commit();
                 GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso.");
                 listaMatriculaContratoCampos.clear();
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.info("Erro", "Falha ao atualizar o registro!");
             }
         }
@@ -266,18 +265,18 @@ public class ModeloContratoBean implements Serializable {
     }
 
     public String removeCamposModuloContrato(MatriculaContratoCampos mcc) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (mcc.getId() != -1) {
-            di.openTransaction();
-            if (di.delete(mcc)) {
-                di.commit();
+            dao.openTransaction();
+            if (dao.delete(mcc)) {
+                dao.commit();
                 GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
                 listaMatriculaContratoCampos.clear();
                 listModulos.clear();
                 idModulo = 0;
                 matriculaContratoCampos = new MatriculaContratoCampos();
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.warn("Erro", "Falha ao excluir o registro!");
             }
         }
@@ -315,18 +314,18 @@ public class ModeloContratoBean implements Serializable {
                 GenericaMensagem.warn("Validação", "Serviço já cadastrado para contrato (s)!");
                 return;
             }
-            DaoInterface di = new Dao();
-            matriculaContratoServico.setServico((Servicos) (di.find(new Servicos(), idServico)));
+            Dao dao = new Dao();
+            matriculaContratoServico.setServico((Servicos) (dao.find(new Servicos(), idServico)));
             matriculaContratoServico.setContrato(matriculaContrato);
-            di.openTransaction();
-            if (di.save(matriculaContratoServico)) {
-                di.commit();
-                GenericaMensagem.info("Sucesso", "Serviço adicionado");
+            dao.openTransaction();
+            if (dao.save(matriculaContratoServico)) {
+                dao.commit();
+                GenericaMensagem.info("Sucesso", "Serviço adaocionado");
                 matriculaContratoServico = new MatriculaContratoServico();
                 listaMatriculaContratoServico.clear();
             } else {
-                GenericaMensagem.warn("Erro", "Ao adicionar este serviço!");
-                di.rollback();
+                GenericaMensagem.warn("Erro", "Ao adaocionar este serviço!");
+                dao.rollback();
             }
         }
     }
@@ -337,15 +336,15 @@ public class ModeloContratoBean implements Serializable {
             matriculaContratoServico = mcs;
         }
         if (matriculaContratoServico.getId() != -1) {
-            DaoInterface di = new Dao();
-            di.openTransaction();
-            if (di.delete(matriculaContratoServico)) {
-                di.commit();
+            Dao dao = new Dao();
+            dao.openTransaction();
+            if (dao.delete(matriculaContratoServico)) {
+                dao.commit();
                 GenericaMensagem.info("Sucesso", "Serviço removido");
                 listaMatriculaContratoServico.clear();
                 matriculaContratoServico = new MatriculaContratoServico();
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.warn("Erro", "Ao remover!");
             }
         }
@@ -436,8 +435,8 @@ public class ModeloContratoBean implements Serializable {
         if (GenericaSessao.exists("idModulo")) {
             int idMod = GenericaSessao.getInteger("idModulo");
             if (idMod != 0) {
-                DaoInterface di = new Dao();
-                modulo = (Modulo) di.find(new Modulo(), idMod);
+                Dao dao = new Dao();
+                modulo = (Modulo) dao.find(new Modulo(), idMod);
             }
         }
         return modulo;
@@ -521,8 +520,8 @@ public class ModeloContratoBean implements Serializable {
 
     public List<SelectItem> getListModulos2() {
         if (listModulos2.isEmpty()) {
-            DaoInterface di = new Dao();
-            List<Modulo> list = (List<Modulo>) di.list(new Modulo());
+            Dao dao = new Dao();
+            List<Modulo> list = (List<Modulo>) dao.list(new Modulo());
             for (int i = 0; i < list.size(); i++) {
                 listModulos2.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
