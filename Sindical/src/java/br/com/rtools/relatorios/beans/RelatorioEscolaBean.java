@@ -8,8 +8,7 @@ import br.com.rtools.escola.MatriculaTurma;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.TurmaDB;
-import br.com.rtools.escola.db.TurmaDBToplink;
+import br.com.rtools.escola.db.TurmaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
@@ -382,28 +381,35 @@ public class RelatorioEscolaBean implements Serializable {
     }
 
     public void close(String close) {
-        if (close.equals("aluno")) {
-            aluno = new Pessoa();
-            porAluno = false;
-        } else if (close.equals("resposanvel")) {
-            responsavel = new Pessoa();
-            porResponsavel = false;
-        } else if (close.equals("vendedor")) {
-            listaVendedores.clear();
-            idVendedor = 0;
-            porVendedor = false;
-        } else if (close.equals("professor")) {
-            listaProfessores.clear();
-            idProfessor = 0;
-            porProfessor = false;
-        } else if (close.equals("matricula")) {
-            dataMatriculaInicial = DataHoje.dataHoje();
-            dataMatriculaFinal = DataHoje.dataHoje();
-            porMatricula = false;
-        } else if (close.equals("validade")) {
-            dataInicioCurso = DataHoje.dataHoje();
-            dataFinalCurso = DataHoje.dataHoje();
-            porPeriodoCurso = false;
+        switch (close) {
+            case "aluno":
+                aluno = new Pessoa();
+                porAluno = false;
+                break;
+            case "resposanvel":
+                responsavel = new Pessoa();
+                porResponsavel = false;
+                break;
+            case "vendedor":
+                listaVendedores.clear();
+                idVendedor = 0;
+                porVendedor = false;
+                break;
+            case "professor":
+                listaProfessores.clear();
+                idProfessor = 0;
+                porProfessor = false;
+                break;
+            case "matricula":
+                dataMatriculaInicial = DataHoje.dataHoje();
+                dataMatriculaFinal = DataHoje.dataHoje();
+                porMatricula = false;
+                break;
+            case "validade":
+                dataInicioCurso = DataHoje.dataHoje();
+                dataFinalCurso = DataHoje.dataHoje();
+                porPeriodoCurso = false;
+                break;
         }
         RequestContext.getCurrentInstance().update("form_relatorio:id_panel");
     }
@@ -580,8 +586,8 @@ public class RelatorioEscolaBean implements Serializable {
 
     public List<SelectItem> getListaCursos() {
         if (listaCursos.isEmpty()) {
-            TurmaDB turmaDB = new TurmaDBToplink();
-            List<Turma> turmas = (List<Turma>) turmaDB.listaTurmaAtivaPorFilial(MacFilial.getAcessoFilial().getFilial().getId());
+            TurmaDao td = new TurmaDao();
+            List<Turma> turmas = (List<Turma>) td.listaTurmaAtivaPorFilial(MacFilial.getAcessoFilial().getFilial().getId());
             for (int i = 0; i < turmas.size(); i++) {
                 listaStatus.add(new SelectItem(i, turmas.get(i).getDescricao(), "" + turmas.get(i).getId()));
             }
