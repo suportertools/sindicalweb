@@ -5,8 +5,7 @@ import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
 import br.com.rtools.escola.Turma;
-import br.com.rtools.escola.db.MatriculaEscolaDB;
-import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.escola.db.MatriculaEscolaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
@@ -44,7 +43,7 @@ public class ConclusaoMatriculaBean implements Serializable {
         matriculaEscola = new MatriculaEscola();
         matriculaIndividual = new MatriculaIndividual();
         matriculaTurma = new MatriculaTurma();
-        listaMatriculaEscola = new ArrayList<ListaMatriculaEscola>();
+        listaMatriculaEscola = new ArrayList<>();
         matriculaEscolaSelecionado = null;
         turma = new Turma();
         mensagem = "";
@@ -224,8 +223,8 @@ public class ConclusaoMatriculaBean implements Serializable {
         if (GenericaSessao.exists("turmaPesquisa")) {
             listaMatriculaEscola.clear();
             turma = (Turma) GenericaSessao.getObject("turmaPesquisa", true);
-            MatriculaEscolaDB medb = new MatriculaEscolaDBToplink();
-            List<MatriculaTurma> matriculaTurmas = (List<MatriculaTurma>) medb.pesquisaMatriculaEscolaPorTurma(turma.getId());
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            List<MatriculaTurma> matriculaTurmas = (List<MatriculaTurma>) med.pesquisaMatriculaEscolaPorTurma(turma.getId());
             if (!matriculaTurmas.isEmpty()) {
                 dataConclusao = DataHoje.converteDataParaInteger(matriculaTurmas.get(0).getTurma().getDataTermino());
                 if (dataHoje <= dataConclusao) {
