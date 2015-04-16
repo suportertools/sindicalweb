@@ -11,7 +11,6 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
@@ -110,7 +109,7 @@ public class AcademiaServicoValorBean implements Serializable {
         for (int i = 0; i < listaAcademiaSemana.size(); i++) {
             if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana && status == false) {
                 if (listaAcademiaSemana.get(i).getAcademiaServicoValor() != null) {
-                    DaoInterface di = new Dao();
+                    Dao di = new Dao();
 
                     di.openTransaction();
 
@@ -146,7 +145,7 @@ public class AcademiaServicoValorBean implements Serializable {
     }
 
     public void save() {
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         if (listSelectItem[0].isEmpty()) {
             GenericaMensagem.warn("Sistema", "Cadastrar serviços!");
             return;
@@ -309,7 +308,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public void delete(AcademiaServicoValor asv) {
         if (asv.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             NovoLog novoLog = new NovoLog();
             AcademiaDao academiaDao = new AcademiaDao();
             di.openTransaction();
@@ -375,7 +374,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public List<Periodo> getListPeriodos() {
         if (listPeriodos.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             listPeriodos = (List<Periodo>) di.list(new Periodo(), true);
             if (!listPeriodos.isEmpty()) {
                 periodo = listPeriodos.get(0);
@@ -390,7 +389,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public List<AcademiaGrade> getListAcademiaGrades() {
         if (listAcademiaGrades.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             listAcademiaGrades = (List<AcademiaGrade>) di.list(new AcademiaGrade(), true);
             if (!listAcademiaGrades.isEmpty()) {
                 academiaGrade = listAcademiaGrades.get(0);
@@ -455,8 +454,9 @@ public class AcademiaServicoValorBean implements Serializable {
     }
 
     public Periodo getPeriodo() {
-        if (periodo == null)
+        if (periodo == null) {
             periodo = new Periodo();
+        }
         return periodo;
     }
 
@@ -522,7 +522,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public List<Semana> getListaSemana() {
         if (listaSemana.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             listaSemana = (List<Semana>) di.list(new Semana());
         }
         return listaSemana;
