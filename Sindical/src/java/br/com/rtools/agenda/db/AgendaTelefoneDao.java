@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
+public class AgendaTelefoneDao extends DB {
 
-    @Override
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery(" SELECT age FROM Agenda age ");
@@ -21,7 +20,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         }
     }
 
-    @Override
     public List<AgendaTelefone> listaAgendaTelefone(int idAgenda) {
         List list = new ArrayList();
         try {
@@ -37,7 +35,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return list;
     }
 
-    @Override
     public List pesquisaAgenda(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda) {
         List list = new ArrayList();
         String queryFiltroGrupoAgendaA = "";
@@ -111,7 +108,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return list;
     }
 
-    @Override
     public List pesquisaAgendaTelefone(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda, boolean isFavoritos, int idUsuario) {
         List list = new ArrayList();
         try {
@@ -260,7 +256,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return list;
     }
 
-    @Override
     public List pesquisaAgendaTelefonex(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda, boolean isFavoritos, int idUsuario) {
         if (!descricaoPesquisa.isEmpty() && !porPesquisa.equals("telefone")) {
             descricaoPesquisa = AnaliseString.removerAcentos(descricaoPesquisa);
@@ -474,7 +469,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new ArrayList();
     }
 
-    @Override
     public Agenda agendaExiste(Agenda agenda
     ) {
         String queryString = "";
@@ -500,7 +494,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new Agenda();
     }
 
-    @Override
     public AgendaTelefone agendaTelefoneExiste(AgendaTelefone agendaTelefone
     ) {
         try {
@@ -516,7 +509,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new AgendaTelefone();
     }
 
-    @Override
     public List DDDAgrupado() {
         try {
             String queryString = " SELECT ds_ddd FROM age_telefone GROUP BY ds_ddd ORDER BY ds_ddd ";
@@ -531,7 +523,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new ArrayList();
     }
 
-    @Override
     public AgendaFavorito favorito(int idAgenda, int idUsuario
     ) {
         try {
@@ -548,7 +539,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return null;
     }
 
-    @Override
     public List listaFavoritoPorAgenda(int idAgenda
     ) {
         try {
@@ -564,7 +554,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new ArrayList();
     }
 
-    @Override
     public List listaGrupoAgendaPorGrupoUsuario() {
         try {
             Query query = getEntityManager().createQuery("SELECT AGU.grupoAgenda FROM AgendaGrupoUsuario AS AGU GROUP BY AGU.grupoAgenda");
@@ -578,7 +567,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new ArrayList();
     }
 
-    @Override
     public List listaGrupoAgendaPorUsuario(int idUsuario
     ) {
         try {
@@ -615,7 +603,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisaAniversariantesPorPeriodo() {
         try {
             Query query = getEntityManager().createNativeQuery("SELECT id FROM age_contato WHERE is_notifica_aniversario = TRUE AND TO_CHAR(dt_nascimento, 'MM') = TO_CHAR(current_date, 'MM')");

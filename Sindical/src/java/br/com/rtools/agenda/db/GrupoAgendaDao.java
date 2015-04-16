@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class GrupoAgendaDBToplink extends DB implements GrupoAgendaDB {
+public class GrupoAgendaDao extends DB {
 
-    @Override
     public GrupoAgenda pesquisaCodigo(int id) {
         GrupoAgenda result = null;
         try {
@@ -20,7 +19,6 @@ public class GrupoAgendaDBToplink extends DB implements GrupoAgendaDB {
         return result;
     }
 
-    @Override
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("select age from GrupoAgenda age ");
@@ -30,7 +28,6 @@ public class GrupoAgendaDBToplink extends DB implements GrupoAgendaDB {
         }
     }
 
-    @Override
     public GrupoAgenda idGrupoAgenda(GrupoAgenda des_grupoAgenda) {
         GrupoAgenda result = null;
         String descricao = des_grupoAgenda.getDescricao().toLowerCase().toUpperCase();
@@ -43,7 +40,6 @@ public class GrupoAgendaDBToplink extends DB implements GrupoAgendaDB {
         return result;
     }
 
-    @Override
     public List pesquisaGrupoAgenda(String desc, String como) {
         String textQuery = null;
         if (como.equals("P")) {
