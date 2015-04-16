@@ -8,26 +8,6 @@ import javax.persistence.Query;
 
 public class GrupoAgendaDao extends DB {
 
-    public GrupoAgenda pesquisaCodigo(int id) {
-        GrupoAgenda result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("GrupoAgenda.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (GrupoAgenda) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select age from GrupoAgenda age ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public GrupoAgenda idGrupoAgenda(GrupoAgenda des_grupoAgenda) {
         GrupoAgenda result = null;
         String descricao = des_grupoAgenda.getDescricao().toLowerCase().toUpperCase();
