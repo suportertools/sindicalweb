@@ -3,10 +3,9 @@ package br.com.rtools.escola.beans;
 import br.com.rtools.escola.AgrupaTurma;
 import br.com.rtools.escola.ListaAgrupaTurma;
 import br.com.rtools.escola.Turma;
-import br.com.rtools.escola.db.AgrupaTurmaDao;
+import br.com.rtools.escola.dao.AgrupaTurmaDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
@@ -45,13 +44,13 @@ public class AgrupaTurmaBean implements Serializable {
     }
 
     public void save() {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (itensAgrupados.isEmpty()) {
-            GenericaMensagem.warn("Validação", "Pesquisar turma e adicionar itens a lista!");
+            GenericaMensagem.warn("Validação", "Pesquisar turma e adaocionar itens a lista!");
             return;
         }
         boolean erro = false;
-        di.openTransaction();
+        dao.openTransaction();
         int idTurmaIntegral = 0;
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).isIsIntegral()) {
@@ -68,23 +67,23 @@ public class AgrupaTurmaBean implements Serializable {
                         return;
                     }
                 }
-                if (!di.save(itensAgrupados.get(i).getAgrupaTurma())) {
+                if (!dao.save(itensAgrupados.get(i).getAgrupaTurma())) {
                     erro = true;
                     break;
                 }
             } else {
-                if (!di.update(itensAgrupados.get(i).getAgrupaTurma())) {
+                if (!dao.update(itensAgrupados.get(i).getAgrupaTurma())) {
                     erro = true;
                     break;
                 }
             }
         }
         if (erro) {
-            di.rollback();
+            dao.rollback();
             GenericaMensagem.warn("Erro", "Ao inserir registro(s)!");
             return;
         }
-        di.commit();
+        dao.commit();
         listAgrupaTurma.clear();
         itensAgrupados.clear();
         integral = false;
@@ -92,7 +91,7 @@ public class AgrupaTurmaBean implements Serializable {
         GenericaMensagem.info("Sucesso", "Registro(s) inserido(s) com sucesso");
     }
 
-    public void edit(AgrupaTurma at) {
+    public void edaot(AgrupaTurma at) {
         AgrupaTurmaDao agrupaTurmaDao = new AgrupaTurmaDao();
         List<AgrupaTurma> list = (List<AgrupaTurma>) agrupaTurmaDao.pesquisaPorTurmaIntegral(at.getTurmaIntegral().getId());
         itensAgrupados.clear();
@@ -114,20 +113,20 @@ public class AgrupaTurmaBean implements Serializable {
     public void delete(AgrupaTurma at) {
         AgrupaTurmaDao agrupaTurmaDao = new AgrupaTurmaDao();
         List<AgrupaTurma> list = (List<AgrupaTurma>) agrupaTurmaDao.pesquisaPorTurmaIntegral(at.getTurmaIntegral().getId());
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (!list.isEmpty()) {
-            di.openTransaction();
+            dao.openTransaction();
             for (int i = 0; i < list.size(); i++) {
-                AgrupaTurma at1 = (AgrupaTurma) di.find(new AgrupaTurma(), list.get(i).getId());
-                if (!di.delete(at1)) {
-                    di.rollback();
+                AgrupaTurma at1 = (AgrupaTurma) dao.find(new AgrupaTurma(), list.get(i).getId());
+                if (!dao.delete(at1)) {
+                    dao.rollback();
                     GenericaMensagem.warn("Erro", "Ao remover registro(s)!");
                     return;
                 }
             }
             NovoLog novoLog = new NovoLog();
             novoLog.delete(list.toString());
-            di.commit();
+            dao.commit();
             GenericaMensagem.info("Sucesso", "Registro(s) removido(s)");
         }
         listAgrupaTurma.clear();
@@ -172,7 +171,7 @@ public class AgrupaTurmaBean implements Serializable {
         integral = false;
     }
 
-    public void editItensList(ListaAgrupaTurma lat) {
+    public void edaotItensList(ListaAgrupaTurma lat) {
         for (int i = 0; i < itensAgrupados.size(); i++) {
             itensAgrupados.get(i).getAgrupaTurma().setTurmaIntegral(null);
             itensAgrupados.get(i).setIsIntegral(false);
@@ -220,8 +219,8 @@ public class AgrupaTurmaBean implements Serializable {
 
     public List<AgrupaTurma> getListAgrupaTurma() {
         if (listAgrupaTurma.isEmpty()) {
-            DaoInterface di = new Dao();
-            List<AgrupaTurma> list = (List<AgrupaTurma>) di.list(new AgrupaTurma(), true);
+            Dao dao = new Dao();
+            List<AgrupaTurma> list = (List<AgrupaTurma>) dao.list(new AgrupaTurma(), true);
             for (int i = 0; i < list.size(); i++) {
                 int idMemoria = list.get(i).getTurmaIntegral().getId();
                 if (idMemoria == list.get(i).getTurma().getId()) {
