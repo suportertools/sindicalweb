@@ -5,8 +5,7 @@ import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
-import br.com.rtools.escola.db.MatriculaEscolaDB;
-import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.escola.db.MatriculaEscolaDao;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.Lote;
@@ -71,9 +70,9 @@ public class RescisaoContratoBean implements Serializable {
         pessoa = new Pessoa();
         beneficiario = new Pessoa();
         registro = new Registro();
-        movimentos = new ArrayList<Movimento>();
-        movimentosRescisao = new ArrayList<Movimento>();
-        listaMesVencimento = new ArrayList<SelectItem>();
+        movimentos = new ArrayList<>();
+        movimentosRescisao = new ArrayList<>();
+        listaMesVencimento = new ArrayList<>();
         descricaoServico = "";
         mensagem = "";
         tipoRescisaoContrato = "";
@@ -113,9 +112,9 @@ public class RescisaoContratoBean implements Serializable {
                 titular = matriculaEscola.getResponsavel();
                 beneficiario = matriculaEscola.getAluno();
                 pesquisaMovimentosPorEvt(idEvt);
-                MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-                MatriculaIndividual mi = matriculaEscolaDB.pesquisaCodigoMIndividual(matriculaEscola.getId());
-                MatriculaTurma mt = matriculaEscolaDB.pesquisaCodigoMTurma(matriculaEscola.getId());
+                MatriculaEscolaDao matriculaEscolaDao = new MatriculaEscolaDao();
+                MatriculaIndividual mi = matriculaEscolaDao.pesquisaCodigoMIndividual(matriculaEscola.getId());
+                MatriculaTurma mt = matriculaEscolaDao.pesquisaCodigoMTurma(matriculaEscola.getId());
                 if (mi.getId() != -1) {
                     servicos = mi.getCurso();
                     descricaoServico = "Mátricula nº" + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao();
@@ -166,12 +165,12 @@ public class RescisaoContratoBean implements Serializable {
                 MovimentoDB mvDB = new MovimentoDBToplink();
                 if (matriculaEscola.getEscStatus().getId() != 3) {
                     List<Movimento> list = (List<Movimento>) mvDB.listaMovimentosDoLote(lote.getId());
-                    if (!list.isEmpty()) {                        
+                    if (!list.isEmpty()) {
                         for (Movimento list1 : list) {
                             if (list1.isAtivo()) {
                                 if (list1.getBaixa() == null) {
                                     data = DataHoje.converteDataParaInteger(list1.getVencimento());
-                                    if(i == 0) {
+                                    if (i == 0) {
                                         dataGeracao = list1.getLote().getEmissao();
                                     }
                                     if (data >= dataHoje) {
@@ -187,7 +186,7 @@ public class RescisaoContratoBean implements Serializable {
                     LoteDB loteDB = new LoteDBToplink();
                     List<Lote> lotes = loteDB.pesquisaLotesPorEvt(lote.getEvt().getId());
                     if (!lotes.isEmpty()) {
-                        List<Movimento> ms = new ArrayList<Movimento>();
+                        List<Movimento> ms = new ArrayList<>();
                         for (Lote l : lotes) {
                             ms.addAll(mvDB.listaMovimentosDoLote(l.getId()));
                         }
@@ -196,9 +195,9 @@ public class RescisaoContratoBean implements Serializable {
                             for (Movimento list1 : ms) {
                                 if (list1.isAtivo()) {
                                     if (list1.getBaixa() == null) {
-                                        if(i == 0) {
+                                        if (i == 0) {
                                             dataGeracao = list1.getLote().getEmissao();
-                                        }                                        
+                                        }
                                         data = DataHoje.converteDataParaInteger(list1.getVencimento());
                                         //if (data >= dataHoje) {
                                         if (list1.getTipoServico().getId() == 6) {
