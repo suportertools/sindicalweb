@@ -7,8 +7,7 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.escola.*;
 import br.com.rtools.escola.db.MatriculaContratoDao;
-import br.com.rtools.escola.db.MatriculaEscolaDB;
-import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.escola.db.MatriculaEscolaDao;
 import br.com.rtools.escola.db.TurmaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.financeiro.CondicaoPagamento;
@@ -791,7 +790,7 @@ public class MatriculaEscolaBean implements Serializable {
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
             matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), 1));
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
             FunctionsDB functionsDB = new FunctionsDBTopLink();
             int idNumeroVagas = functionsDB.vagasEscolaTurma(matriculaTurma.getTurma().getId());
             if (idNumeroVagas == 0 && !tipoMatricula.equals("Individual")) {
@@ -802,7 +801,7 @@ public class MatriculaEscolaBean implements Serializable {
                 mensagem = "Não existem mais vagas disponíveis para esta turma!";
                 return;
             }
-            pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(idPessoa);
+            pessoaComplemento = med.pesquisaDataRefPessoaComplemto(idPessoa);
             if (pessoaComplemento == null) {
                 pessoaComplemento = new PessoaComplemento();
                 pessoaComplemento.setNrDiaVencimento(idDiaVencimento);
@@ -827,13 +826,13 @@ public class MatriculaEscolaBean implements Serializable {
             String tipoMatriculaLog;
             if (sv.inserirObjeto(matriculaEscola)) {
                 if (tipoMatricula.equals("Turma")) {
-                    if (matriculaEscolaDB.existeVagasDisponivel(matriculaTurma)) {
+                    if (med.existeVagasDisponivel(matriculaTurma)) {
                         sv.desfazerTransacao();
                         mensagem = "Não existem mais vagas disponíveis para essa turma!";
                         return;
                     }
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
-                    if (matriculaEscolaDB.existeMatriculaTurma(matriculaTurma)) {
+                    if (med.existeMatriculaTurma(matriculaTurma)) {
                         sv.desfazerTransacao();
                         matriculaEscola.setId(-1);
                         matriculaTurma.setId(-1);
@@ -855,7 +854,7 @@ public class MatriculaEscolaBean implements Serializable {
                 } else {
                     setDesabilitaTurma(true);
                     matriculaIndividual.setMatriculaEscola(matriculaEscola);
-                    if (matriculaEscolaDB.existeMatriculaIndividual(matriculaIndividual)) {
+                    if (med.existeMatriculaIndividual(matriculaIndividual)) {
                         sv.desfazerTransacao();
                         matriculaEscola.setId(-1);
                         matriculaTurma.setId(-1);
@@ -949,7 +948,7 @@ public class MatriculaEscolaBean implements Serializable {
         escolaAutorizadosDetalhes = new EscolaAutorizados();
         getListaGridMEscola().clear();
         matriculaEscola = me;
-        MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+        MatriculaEscolaDao med = new MatriculaEscolaDao();
         desabilitaCampo = true;
         idDiaVencimentoPessoa = 0;
         if (matriculaEscola.getEvt() != null) {
@@ -975,8 +974,8 @@ public class MatriculaEscolaBean implements Serializable {
             }
         }
         setValorString(matriculaEscola.getValorTotalString());
-        matriculaIndividual = matriculaEscolaDB.pesquisaCodigoMIndividual(matriculaEscola.getId());
-        matriculaTurma = matriculaEscolaDB.pesquisaCodigoMTurma(matriculaEscola.getId());
+        matriculaIndividual = med.pesquisaCodigoMIndividual(matriculaEscola.getId());
+        matriculaTurma = med.pesquisaCodigoMTurma(matriculaEscola.getId());
 
         if (matriculaIndividual.getId() != -1) {
             //tipoMatricula = "Individual";
@@ -1054,8 +1053,8 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaEscola.setHabilitado(false);
                 return;
             }
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-            if (matriculaEscolaDB.desfazerMovimento(matriculaEscola)) {
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            if (med.desfazerMovimento(matriculaEscola)) {
                 listaMovimentos.clear();
                 desabilitaCamposMovimento = false;
                 db.abrirTransacao();
@@ -1482,8 +1481,8 @@ public class MatriculaEscolaBean implements Serializable {
                     GenericaMensagem.warn("Sistema", mensagem);
                     return;
                 }
-                MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-                if (matriculaEscolaDB.desfazerMovimento(matriculaEscola)) {
+                MatriculaEscolaDao med = new MatriculaEscolaDao();
+                if (med.desfazerMovimento(matriculaEscola)) {
                     listaMovimentos.clear();
                     desabilitaCamposMovimento = false;
                     bloqueiaComboDiaVencimento();
@@ -1517,7 +1516,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public Fisica getAluno() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
             if (GenericaSessao.exists("pesquisaFisicaTipo")) {
                 String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo");
                 if (tipoFisica.equals("aluno")) {
@@ -1538,7 +1537,7 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                     if (responsavel.getId() != -1) {
                         pessoaComplemento = new PessoaComplemento();
-                        pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
                         if (pessoaComplemento != null) {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                         }
@@ -1549,7 +1548,7 @@ public class MatriculaEscolaBean implements Serializable {
                         if (idade < 18) {
                             GenericaMensagem.warn("Validação", "Responsável deve ser MAIOR DE IDADE!");
                         }
-                        if (!matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", aluno.getPessoa().getId())) {
+                        if (!med.verificaPessoaEnderecoDocumento("fisica", aluno.getPessoa().getId())) {
                             GenericaMensagem.warn("Validação", "Responsável deve conter um ENDEREÇO!");
                         }
                     }
@@ -1566,7 +1565,7 @@ public class MatriculaEscolaBean implements Serializable {
                     FunctionsDB functionsDB = new FunctionsDBTopLink();
                     int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
                     if (idade >= 18) {
-                        if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+                        if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
                             matriculaEscola.setResponsavel(resp);
                             atualizaPessoaComplemento(0);
                         }
@@ -1960,7 +1959,7 @@ public class MatriculaEscolaBean implements Serializable {
     public List<ListaMatriculaEscola> getListaMatriculaEscolas() {
         if (!descricaoCurso.isEmpty() || !descricao.isEmpty()) {
             if (listaMatriculaEscolas.isEmpty()) {
-                MatriculaEscolaDB dB = new MatriculaEscolaDBToplink();
+                MatriculaEscolaDao dB = new MatriculaEscolaDao();
                 int idStatusI = idStatusFiltro;
                 if (idStatusI != 5) {
                     idStatusI = Integer.parseInt(listaStatus.get(idStatusFiltro).getDescription());
@@ -2328,13 +2327,13 @@ public class MatriculaEscolaBean implements Serializable {
     public Juridica getJuridica() {
         if (GenericaSessao.exists("juridicaPesquisa")) {
             juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
-            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-            if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
                 responsavel = juridica.getPessoa();
                 if (responsavel.getId() != -1) {
                     atualizaPessoaComplemento(1);
                     pessoaComplemento = new PessoaComplemento();
-                    pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
                     if (pessoaComplemento != null) {
                         this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                     }
@@ -2666,7 +2665,7 @@ public class MatriculaEscolaBean implements Serializable {
     public List<EscolaAutorizados> getListaEscolaAutorizadas() {
         if (matriculaEscola.getId() != -1) {
             if (listaEscolaAutorizadas.isEmpty()) {
-                MatriculaEscolaDB medb = new MatriculaEscolaDBToplink();
+                MatriculaEscolaDao medb = new MatriculaEscolaDao();
                 listaEscolaAutorizadas = medb.listaPessoasAutorizas(matriculaEscola.getId());
             }
         }
