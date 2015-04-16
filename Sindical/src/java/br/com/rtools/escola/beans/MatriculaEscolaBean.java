@@ -6,8 +6,7 @@ import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.escola.*;
-import br.com.rtools.escola.db.MatriculaContratoDB;
-import br.com.rtools.escola.db.MatriculaContratoDBToplink;
+import br.com.rtools.escola.db.MatriculaContratoDao;
 import br.com.rtools.escola.db.MatriculaEscolaDB;
 import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
 import br.com.rtools.escola.db.TurmaDB;
@@ -315,11 +314,11 @@ public class MatriculaEscolaBean implements Serializable {
             Turma turmax = new Turma();
             String contratoCurso;
             String contratoDiaSemana = "";
-            MatriculaContratoDB dB = new MatriculaContratoDBToplink();
+            MatriculaContratoDao mcd = new MatriculaContratoDao();
             if (tipoMatricula.equals("Individual")) {
-                matriculaContrato = dB.pesquisaCodigoServico(matriculaIndividual.getCurso().getId());
+                matriculaContrato = mcd.pesquisaCodigoServico(matriculaIndividual.getCurso().getId());
             } else {
-                matriculaContrato = dB.pesquisaCodigoServico(matriculaTurma.getTurma().getCursos().getId());
+                matriculaContrato = mcd.pesquisaCodigoServico(matriculaTurma.getTurma().getCursos().getId());
             }
             if (matriculaContrato == null) {
                 mensagem = "Não é possível gerar um contrato para este serviço. Para gerar um contrato acesse: Menu Escola > Suporte > Modelo Contrato.";
