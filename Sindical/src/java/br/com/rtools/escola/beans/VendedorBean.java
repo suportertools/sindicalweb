@@ -1,12 +1,12 @@
 package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.VendedorDB;
-import br.com.rtools.escola.db.VendedorDBToplink;
+import br.com.rtools.escola.db.VendedorDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,14 +21,12 @@ import javax.faces.bean.SessionScoped;
 public class VendedorBean implements Serializable {
 
     private Vendedor vendedor;
-    private String message;
     private List<Vendedor> listVendedores;
 
     @PostConstruct
     public void init() {
         vendedor = new Vendedor();
-        message = "";
-        listVendedores = new ArrayList<Vendedor>();
+        listVendedores = new ArrayList<>();
     }
 
     @PreDestroy
@@ -39,13 +37,13 @@ public class VendedorBean implements Serializable {
 
     public void save() {
         if (vendedor.getPessoa().getId() == -1) {
-            message = "Pesquise uma Pessoa para ser vendedora!";
+            GenericaMensagem.warn("Validação", "Pesquise uma Pessoa para ser vendedora!");
             return;
         }
         NovoLog novoLog = new NovoLog();
-        VendedorDB vendedorDB = new VendedorDBToplink();
-        if (vendedorDB.existeVendedor(vendedor)) {
-            message = "Este vendedor já existe!";
+        VendedorDao vd = new VendedorDao();
+        if (vd.existeVendedor(vendedor)) {
+            GenericaMensagem.warn("Validação", "Este vendedor já existe!");
             vendedor = new Vendedor();
             return;
         }
@@ -57,10 +55,10 @@ public class VendedorBean implements Serializable {
                     + " - Pessoa: (" + vendedor.getPessoa().getId() + ") " + vendedor.getPessoa().getNome()
             );
             di.commit();
-            message = "Registro inserido com sucesso!";
+            GenericaMensagem.info("Sucesso", "Registro inserido");
         } else {
             di.rollback();
-            message = "Erro ao inserir registro!";
+            GenericaMensagem.warn("Erro", "Ao inserir registro!");
         }
         listVendedores.clear();
         vendedor = new Vendedor();
@@ -76,12 +74,12 @@ public class VendedorBean implements Serializable {
                     + " - Pessoa: (" + v.getPessoa().getId() + ") " + v.getPessoa().getNome()
             );
             di.commit();
-            message = "Registro excluído com sucesso";
+            GenericaMensagem.info("Sucesso", "Registro excluído");
             listVendedores.clear();
             vendedor = new Vendedor();
         } else {
             di.rollback();
-            message = "Erro ao excluir registro!";
+            GenericaMensagem.warn("Erro", "Ao excluir registro!");
         }
     }
 
@@ -95,14 +93,6 @@ public class VendedorBean implements Serializable {
 
     public void setListVendedores(List<Vendedor> listVendedores) {
         this.listVendedores = listVendedores;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public Vendedor getVendedor() {
