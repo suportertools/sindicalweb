@@ -1,10 +1,10 @@
 package br.com.rtools.escola.beans;
 
+import br.com.rtools.escola.dao.TurmaDao;
 import br.com.rtools.escola.ComponenteCurricular;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.TurmaProfessor;
-import br.com.rtools.escola.db.*;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
@@ -12,7 +12,6 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -137,8 +136,8 @@ public class TurmaBean implements Serializable {
         if (turma.getHoraTermino().equals("__:__")) {
             turma.setHoraTermino("");
         }
-        DaoInterface di = new Dao();
-        turma.setCursos((Servicos) di.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
+        Dao dao = new Dao();
+        turma.setCursos((Servicos) dao.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
         NovoLog novoLog = new NovoLog();
         TurmaDao td = new TurmaDao();
         if (turma.getId() == -1) {
@@ -146,13 +145,13 @@ public class TurmaBean implements Serializable {
                 message = "Turma já existe!";
                 return;
             }
-            di.openTransaction();
-            if (!di.save(turma)) {
-                di.rollback();
+            dao.openTransaction();
+            if (!dao.save(turma)) {
+                dao.rollback();
                 message = "Erro ao salvar turma!";
                 return;
             }
-            di.commit();
+            dao.commit();
             novoLog.save(
                     "ID: " + turma.getId()
                     + " - Curso: (" + turma.getCursos().getId() + ") " + turma.getCursos().getDescricao()
@@ -166,7 +165,7 @@ public class TurmaBean implements Serializable {
             message = "Turma salva com sucesso!";
             listTurma.clear();
         } else {
-            Turma t = (Turma) di.find(turma);
+            Turma t = (Turma) dao.find(turma);
             String beforeUpdate
                     = "ID: " + t.getId()
                     + " - Curso: (" + t.getCursos().getId() + ") " + t.getCursos().getDescricao()
@@ -176,9 +175,9 @@ public class TurmaBean implements Serializable {
                     + " - Vagas: " + t.getQuantidade()
                     + " - Sala: " + t.getSala()
                     + " - Filial (" + t.getFilial().getFilial().getPessoa().getId() + ")";
-            di.openTransaction();
-            if (!di.update(turma)) {
-                di.rollback();
+            dao.openTransaction();
+            if (!dao.update(turma)) {
+                dao.rollback();
                 message = "Erro ao atualizar turma!";
                 return;
             }
@@ -192,15 +191,15 @@ public class TurmaBean implements Serializable {
                     + " - Sala: " + turma.getSala()
                     + " - Filial (" + turma.getFilial().getFilial().getPessoa().getId() + ")"
             );
-            di.commit();
+            dao.commit();
             message = "Turma atualizada com sucesso!";
             listTurma.clear();
         }
     }
 
-    public String edit(Turma t) throws ParseException {
-        DaoInterface di = new Dao();
-        Turma turmaC = (Turma) di.find(t);
+    public String edaot(Turma t) throws ParseException {
+        Dao dao = new Dao();
+        Turma turmaC = (Turma) dao.find(t);
         for (int i = 0; i < listServicos.size(); i++) {
             if (Integer.parseInt(listServicos.get(i).getDescription()) == t.getCursos().getId()) {
                 idServicos = i;
@@ -220,21 +219,21 @@ public class TurmaBean implements Serializable {
     }
 
     public void delete() {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (turma.getId() != -1) {
-            di.openTransaction();
+            dao.openTransaction();
             for (TurmaProfessor listaTurmaProfessor1 : listTurmaProfessor) {
                 if (listaTurmaProfessor1.getId() != -1) {
-                    if (!di.delete((TurmaProfessor) di.find(listaTurmaProfessor1))) {
-                        di.rollback();
+                    if (!dao.delete((TurmaProfessor) dao.find(listaTurmaProfessor1))) {
+                        dao.rollback();
                         message = "Erro ao excluir Professores!";
                         return;
                     }
                 }
             }
 
-            if (!di.delete(turma)) {
-                di.rollback();
+            if (!dao.delete(turma)) {
+                dao.rollback();
                 message = "Erro ao excluir Turma!";
                 return;
             }
@@ -249,7 +248,7 @@ public class TurmaBean implements Serializable {
                     + " - Sala: " + turma.getSala()
                     + " - Filial (" + turma.getFilial().getFilial().getPessoa().getId() + ")"
             );
-            di.commit();
+            dao.commit();
             message = "Cadastro excluído com sucesso!";
             turma = new Turma();
             clear();
@@ -259,15 +258,15 @@ public class TurmaBean implements Serializable {
     }
 
     public void removeTurmaProfessor(TurmaProfessor tp) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (tp.getId() != -1) {
             NovoLog novoLog = new NovoLog();
-            di.openTransaction();
-            if (!di.delete(tp)) {
-                di.rollback();
+            dao.openTransaction();
+            if (!dao.delete(tp)) {
+                dao.rollback();
                 GenericaMensagem.warn("Erro", "Ao remover este registro!");
             } else {
-                di.commit();
+                dao.commit();
                 novoLog.delete("Turma Professor - ID: " + tp.getId() + " - Turma: (" + tp.getId() + ") - Professor: (" + tp.getProfessor().getId() + ") " + tp.getProfessor().getProfessor().getNome());
                 GenericaMensagem.info("Sucesso", "Professor e Componente Curricular removidos com sucesso");
                 listTurmaProfessor.clear();
@@ -279,7 +278,7 @@ public class TurmaBean implements Serializable {
         message = "";
         TurmaProfessor turmaProfessor = new TurmaProfessor();
         TurmaDao td = new TurmaDao();
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         if (listProfessores.isEmpty()) {
             GenericaMensagem.warn("Validação", "Cadastrar professores!");
             return;
@@ -295,18 +294,18 @@ public class TurmaBean implements Serializable {
             GenericaMensagem.warn("Validação", "Cadastro já existe!");
             return;
         }
-        di.openTransaction();
+        dao.openTransaction();
         NovoLog novoLog = new NovoLog();
-        if (di.save(turmaProfessor)) {
+        if (dao.save(turmaProfessor)) {
             novoLog.save("Turma Professor - ID: " + turmaProfessor.getId() + " - Turma: (" + turmaProfessor.getId() + ") - Professor: (" + turmaProfessor.getProfessor().getId() + ") " + turmaProfessor.getProfessor().getProfessor().getNome());
-            GenericaMensagem.info("Sucesso", "Professor e Componente curricular adicionados");
-            di.commit();
+            GenericaMensagem.info("Sucesso", "Professor e Componente curricular adaocionados");
+            dao.commit();
             listTurmaProfessor.clear();
             professor = new Professor();
             componenteCurricular = new ComponenteCurricular();
         } else {
-            di.rollback();
-            GenericaMensagem.warn("Erro", "Ao adicionar este registro!");
+            dao.rollback();
+            GenericaMensagem.warn("Erro", "Ao adaocionar este registro!");
         }
     }
 
@@ -327,8 +326,8 @@ public class TurmaBean implements Serializable {
 
     public List<Professor> getListProfessor() {
         if (listProfessores.isEmpty()) {
-            DaoInterface di = new Dao();
-            listProfessores = (List<Professor>) di.list(new Professor(), true);
+            Dao dao = new Dao();
+            listProfessores = (List<Professor>) dao.list(new Professor(), true);
             if (!listProfessores.isEmpty()) {
                 professor = listProfessores.get(0);
             }
@@ -342,8 +341,8 @@ public class TurmaBean implements Serializable {
 
     public List<ComponenteCurricular> getListComponenteCurricular() {
         if (listComponenteCurricular.isEmpty()) {
-            DaoInterface di = new Dao();
-            listComponenteCurricular = (List<ComponenteCurricular>) di.list(new ComponenteCurricular(), true);
+            Dao dao = new Dao();
+            listComponenteCurricular = (List<ComponenteCurricular>) dao.list(new ComponenteCurricular(), true);
             if (!listComponenteCurricular.isEmpty()) {
                 componenteCurricular = listComponenteCurricular.get(0);
             }
@@ -402,8 +401,8 @@ public class TurmaBean implements Serializable {
 
     public List<Turma> getListTurma() {
         if (listTurma.isEmpty()) {
-            DaoInterface di = new Dao();
-            listTurma = di.list("Turma", true);
+            Dao dao = new Dao();
+            listTurma = dao.list("Turma", true);
         }
         return listTurma;
     }
