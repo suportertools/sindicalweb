@@ -5,7 +5,7 @@ import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
 import br.com.rtools.escola.Turma;
-import br.com.rtools.escola.db.MatriculaEscolaDao;
+import br.com.rtools.escola.dao.MatriculaEscolaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
