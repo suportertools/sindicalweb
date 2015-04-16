@@ -1,8 +1,7 @@
 package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.Professor;
-import br.com.rtools.escola.db.ProfessorDB;
-import br.com.rtools.escola.db.ProfessorDBToplink;
+import br.com.rtools.escola.db.ProfessorDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.Dao;
@@ -41,12 +40,12 @@ public class ProfessorBean implements java.io.Serializable {
     }
 
     public void save() {
-        ProfessorDB professorDB = new ProfessorDBToplink();
+        ProfessorDao pd = new ProfessorDao();
         if (professor.getProfessor().getId() == -1) {
             message = "Pesquise uma pessoa para ser Professor!";
             return;
         }
-        if (professorDB.existeProfessor(professor)) {
+        if (pd.existProfessor(professor)) {
             message = "Professor já cadastrado!";
             return;
         }
