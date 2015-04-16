@@ -394,7 +394,7 @@ public class MatriculaAcademiaBean implements Serializable {
             );
             di.commit();
             if (matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId() == 3) {
-                new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaValidade());
+                new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
             }
         }
         return null;
@@ -1213,7 +1213,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     numeroParcelas = 1;
                 }
                 if (periodo == 3) {
-                    new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaValidade());
+                    new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
                     if (!matriculaAcademia.isTaxa()) {
                         desabilitaCamposMovimento = true;
                         desabilitaDiaVencimento = true;
