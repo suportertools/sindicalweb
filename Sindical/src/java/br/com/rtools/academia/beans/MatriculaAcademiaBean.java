@@ -53,12 +53,11 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
@@ -74,14 +73,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -1768,28 +1759,15 @@ public class MatriculaAcademiaBean implements Serializable {
 //        }
     }
 
-    public void gerarCarne() throws Exception, JRException {
+    public void gerarCarne() throws Exception {
         if (matriculaAcademia.getEvt() != null) {
             if (listaMovimentos.size() > 0) {
                 //PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
                 List<CarneEscola> list = new ArrayList<>();
                 if (!list.isEmpty()) {
-                    JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(list);
-                    File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
-                    JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
-                    JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                    byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                    String nomeDownload = "carne_academia" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                    SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                    if (!new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes")).exists()) {
-                        File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes"));
-                        file.mkdir();
-                    }
-                    String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes");
-                    sa.salvaNaPasta(pathPasta);
-                    Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                    download.baixar();
-                    download.remover();
+                    Jasper.PATH = "downloads";
+                    Jasper.PART_NAME = "academia";
+                    Jasper.printReports("/Relatorios/CARNE.jasper", "carne", list);
                 }
             }
         }
