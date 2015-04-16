@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class TurmaDBToplink extends DB implements TurmaDB {
+public class TurmaDao extends DB {
 
-    @Override
     public List<TurmaProfessor> listaTurmaProfessor(int idTurma) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor TP WHERE TP.turma.id = " + idTurma + " ORDER BY TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC ");
@@ -20,7 +19,6 @@ public class TurmaDBToplink extends DB implements TurmaDB {
         }
     }
 
-    @Override
     public boolean existeTurma(Turma turma) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial AND T.sala = :sala ");
@@ -42,7 +40,6 @@ public class TurmaDBToplink extends DB implements TurmaDB {
 
     }
 
-    @Override
     public boolean existeTurmaProfessor(TurmaProfessor turmaProfessor) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor AS TP WHERE TP.turma.id = :idTurma AND TP.componenteCurricular.id = :idComponenteCurricular AND TP.professor.id = :idProfessor ");
@@ -58,23 +55,20 @@ public class TurmaDBToplink extends DB implements TurmaDB {
         }
         return false;
     }
-    
-    @Override
+
     public List listaTurmaAtiva() {
         return listaTurmaAtivaPorFilialServico(-1, -1);
     }
 
-    @Override
     public List listaTurmaAtivaPorFilial(int idFilial) {
         return listaTurmaAtivaPorFilialServico(idFilial, -1);
     }
-    
-    @Override
+
     public List listaTurmaAtivaPorFilialServico(int idFilial, int idServico) {
         try {
-            String queryFilial = idFilial > 0 ? " AND T.filial.id = "+idFilial : "";
-            String queryServico = idServico > 0 ? " AND T.cursos.id = "+idServico : "";
-            Query qry = getEntityManager().createQuery("SELECT T FROM Turma AS T WHERE T.dtTermino >= CURRENT_DATE "+queryFilial+" "+queryServico+" ORDER BY T.cursos.descricao ASC, T.sala ASC, T.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
+            String queryFilial = idFilial > 0 ? " AND T.filial.id = " + idFilial : "";
+            String queryServico = idServico > 0 ? " AND T.cursos.id = " + idServico : "";
+            Query qry = getEntityManager().createQuery("SELECT T FROM Turma AS T WHERE T.dtTermino >= CURRENT_DATE " + queryFilial + " " + queryServico + " ORDER BY T.cursos.descricao ASC, T.sala ASC, T.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;

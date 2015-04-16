@@ -5,9 +5,8 @@ import br.com.rtools.principal.DB;
 import java.util.List;
 import javax.persistence.Query;
 
-public class VendedorDBToplink extends DB implements VendedorDB {
+public class VendedorDao extends DB {
 
-    @Override
     public boolean existeVendedor(Vendedor vendedor) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT V FROM Vendedor V WHERE V.pessoa.id = :idPessoa ");
