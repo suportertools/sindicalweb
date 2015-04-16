@@ -6,7 +6,7 @@ import br.com.rtools.agenda.AgendaFavorito;
 import br.com.rtools.agenda.AgendaTelefone;
 import br.com.rtools.agenda.GrupoAgenda;
 import br.com.rtools.agenda.TipoTelefone;
-import br.com.rtools.agenda.db.AgendaTelefoneDao;
+import br.com.rtools.agenda.dao.AgendaTelefoneDao;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
