@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MatriculaContratoDBToplink extends DB implements MatriculaContratoDB {
+public class MatriculaContratoDao extends DB {
 
-    @Override
     public MatriculaContrato pesquisaCodigoServico(int servico) {
         MatriculaContrato result = null;
         try {
@@ -24,7 +23,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         return result;
     }
 
-    @Override
     public boolean existeMatriculaContrato(MatriculaContrato matriculaContrato) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT MC FROM MatriculaContrato AS MC WHERE MC.titulo = :titulo AND MC.modulo.id = :idModulo ");
@@ -38,7 +36,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         return false;
     }
 
-    @Override
     public boolean existeServicoMatriculaContrato(int idServico) {
         try {
             Query query = getEntityManager().createQuery(" SELECT MCS FROM MatriculaContratoServico AS MCS WHERE MCS.servicos.id = :idServico");
@@ -53,7 +50,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         return false;
     }
 
-    @Override
     public List pesquisaTodosPorModulo(int idModulo) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT mc FROM MatriculaContrato mc WHERE mc.modulo.id = :idModulo ");
@@ -67,7 +63,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         return new ArrayList();
     }
 
-    @Override
     public List<MatriculaContratoServico> pesquisaMatriculaContratoServico(int idMatriculaContrato) {
         List<MatriculaContratoServico> list;
         try {
@@ -80,7 +75,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
     }
 
-    @Override
     public boolean validaMatriculaContratoServico(int idMatriculaContrato, int idServico) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT mcs FROM MatriculaContratoServico mcs WHERE mcs.contrato.id = :idMatriculaContrato AND mcs.servicos.id = :idServico ");
@@ -95,7 +89,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         return false;
     }
 
-    @Override
     public boolean existeMatriculaContratoCampo(MatriculaContratoCampos mcc, String tipoVerificacao) {
         String queryCampo;
         if (tipoVerificacao.equals("campo")) {
@@ -120,12 +113,10 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
     }
 
-    @Override
     public List listaMatriculaContratoCampo(int idModulo) {
         return listaMatriculaContratoCampo(idModulo, "");
     }
 
-    @Override
     public List listaMatriculaContratoCampo(int idModulo, String descricaoPesquisa) {
         String filtroString = "";
         if (!descricaoPesquisa.equals("")) {
@@ -152,7 +143,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
     }
 
-    @Override
     public List listaModulosMatriculaContratoCampos() {
         List list = new ArrayList();
         try {
@@ -168,7 +158,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
     }
 
-    @Override
     public List<Servicos> listaServicosDispiniveis() {
         List list = new ArrayList();
         try {
