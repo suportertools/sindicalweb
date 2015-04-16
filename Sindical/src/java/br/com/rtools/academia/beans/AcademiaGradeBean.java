@@ -6,7 +6,6 @@ import br.com.rtools.academia.dao.AcademiaDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -79,7 +78,7 @@ public class AcademiaGradeBean implements Serializable {
             GenericaMensagem.info("Validação", "Hora inicio deve ser maior que hora fim");
             return;
         }
-        DaoInterface di = new Dao();
+        Dao di = new Dao();
         NovoLog novoLog = new NovoLog();
         String s = "";
         if (academiaGrade.getId() == -1) {
@@ -127,7 +126,7 @@ public class AcademiaGradeBean implements Serializable {
     public void updateSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
         AcademiaDao academiaDao = new AcademiaDao();
         AcademiaSemana as = academiaDao.pesquisaAcademiaSemana(academiaGrade.getId(), idSemana);
-        DaoInterface dao = new Dao();
+        Dao dao = new Dao();
         if (as != null) {
             dao.openTransaction();
             if (dao.delete((AcademiaSemana) dao.find(as))) {
@@ -154,7 +153,7 @@ public class AcademiaGradeBean implements Serializable {
 
     public void delete(AcademiaGrade ag) {
         if (ag.getId() != -1) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             di.openTransaction();
             NovoLog novoLog = new NovoLog();
             String s = "";
@@ -188,7 +187,7 @@ public class AcademiaGradeBean implements Serializable {
 
     public List<AcademiaGrade> getListaAcademiaGrades() {
         if (listaAcademiaGrades.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             listaAcademiaGrades = (List<AcademiaGrade>) di.list(new AcademiaGrade(), true);
         }
         return listaAcademiaGrades;
@@ -280,7 +279,7 @@ public class AcademiaGradeBean implements Serializable {
 
     public List<Semana> getListaSemana() {
         if (listaSemana.isEmpty()) {
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             listaSemana = (List<Semana>) di.list(new Semana());
         }
         return listaSemana;
