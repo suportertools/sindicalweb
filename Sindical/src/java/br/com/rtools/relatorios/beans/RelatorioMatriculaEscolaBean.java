@@ -5,8 +5,7 @@ import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.Vendedor;
-import br.com.rtools.escola.db.MatriculaEscolaDB;
-import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.escola.db.MatriculaEscolaDao;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.impressao.ParametroEscolaCadastral;
@@ -754,8 +753,8 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListCursos() {
         if (listSelectItem[6].isEmpty()) {
-            MatriculaEscolaDB dB = new MatriculaEscolaDBToplink();
-            List<Servicos> list = dB.listServicosPorMatriculaIndividual();
+            MatriculaEscolaDao med = new MatriculaEscolaDao();
+            List<Servicos> list = med.listServicosPorMatriculaIndividual();
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[6].add(new SelectItem(i,
                         list.get(i).getDescricao(),
