@@ -9,8 +9,7 @@ import br.com.rtools.escola.*;
 import br.com.rtools.escola.db.MatriculaContratoDao;
 import br.com.rtools.escola.db.MatriculaEscolaDB;
 import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
-import br.com.rtools.escola.db.TurmaDB;
-import br.com.rtools.escola.db.TurmaDBToplink;
+import br.com.rtools.escola.db.TurmaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.Evt;
@@ -58,13 +57,10 @@ import br.com.rtools.utilitarios.db.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,14 +71,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
@@ -476,7 +464,7 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinalExtenso", (DataHoje.dataExtenso(turmax.getDataTermino()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataExtenso", (DataHoje.dataExtenso(DataHoje.data()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicial", (turmax.getDataInicio())));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", (turmax.getDataTermino())));            
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", (turmax.getDataTermino())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$descontoExtenso", Moeda.converteR$Float(matriculaEscola.getDesconto() + matriculaEscola.getValorDescontoProporcional())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$desconto", Moeda.converteR$Float(matriculaEscola.getDesconto() + matriculaEscola.getValorDescontoProporcional())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", (Integer.toString(matriculaEscola.getNumeroParcelas()))));
@@ -629,12 +617,12 @@ public class MatriculaEscolaBean implements Serializable {
         }
     }
 
-    public void gerarCarne() throws Exception, JRException {
+    public void gerarCarne() throws Exception {
         if (matriculaEscola.getEvt() != null) {
             if (listaMovimentos.size() > 0) {
                 PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
                 PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
-                List<CarneEscola> list = new ArrayList<CarneEscola>();
+                List<CarneEscola> list = new ArrayList<>();
                 int j = 1;
                 for (Movimento listaMovimento : listaMovimentos) {
                     if (listaMovimento.getTipoServico().getId() != 5) {
@@ -642,23 +630,9 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                 }
                 if (!list.isEmpty()) {
-                    JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(list);
-                    
-                    File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
-                    JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
-                    JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                    byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                    String nomeDownload = "carne_escola" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                    SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                    if (!new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes")).exists()) {
-                        File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes"));
-                        file.mkdir();
-                    }
-                    String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes");
-                    sa.salvaNaPasta(pathPasta);
-                    Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                    download.baixar();
-                    download.remover();
+                    Jasper.PATH = "downloads";
+                    Jasper.PART_NAME = "escola";
+                    Jasper.printReports("/Relatorios/CARNE.jasper", "carne", list);
                 }
             }
         }
@@ -969,7 +943,7 @@ public class MatriculaEscolaBean implements Serializable {
         int i = id;
         return null;
     }
-    
+
     public String editar(MatriculaEscola me) {
         idStatusFiltro = 5;
         escolaAutorizadosDetalhes = new EscolaAutorizados();
@@ -1425,7 +1399,7 @@ public class MatriculaEscolaBean implements Serializable {
                                         -1,
                                         lote,
                                         plano5,
-                                        pessoaResponsavel, 
+                                        pessoaResponsavel,
                                         servicos,
                                         null,
                                         tipoServico,
@@ -2530,8 +2504,8 @@ public class MatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListaCursosDisponiveis() {
         if (listaCursosDisponiveis.isEmpty()) {
-            TurmaDB dB = new TurmaDBToplink();
-            List<Turma> list = (List<Turma>) dB.listaTurmaAtivaPorFilial(macFilial.getFilial().getId());
+            TurmaDao td = new TurmaDao();
+            List<Turma> list = (List<Turma>) td.listaTurmaAtivaPorFilial(macFilial.getFilial().getId());
             int idCurso = 0;
             int j = 0;
             for (Turma list1 : list) {
@@ -2560,8 +2534,8 @@ public class MatriculaEscolaBean implements Serializable {
     public List<Turma> getListaTurma() {
         if (listaTurma.isEmpty()) {
             if (!listaCursosDisponiveis.isEmpty()) {
-                TurmaDB dB = new TurmaDBToplink();
-                listaTurma = dB.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
+                TurmaDao td = new TurmaDao();
+                listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
             }
         }
         return listaTurma;
