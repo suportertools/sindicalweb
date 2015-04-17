@@ -40,11 +40,13 @@ public class ParametroRecibo {
     private String conveniada;
     private String lblVencimento;
     private String mensagem;
+    private String documento;
+    
 
     public ParametroRecibo(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, 
                            String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String responsavel, String idResponsavel, String idBaixa, String beneficiario, String servico, String vencimento, 
                            BigDecimal valorBaixa, String usuario, String dataPagamento, String horaPagamento, String formaPagamento1, String formaPagamento2, String formaPagamento3, String formaPagamento4, String formaPagamento5,
-                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String lblVencimento, String mensagem) {
+                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String lblVencimento, String mensagem, String documento) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -82,6 +84,7 @@ public class ParametroRecibo {
         this.conveniada = conveniada;
         this.lblVencimento = lblVencimento;
         this.mensagem = mensagem;
+        this.documento = documento;
     }
 
     public String getSinLogo() {
@@ -378,6 +381,14 @@ public class ParametroRecibo {
 
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
 

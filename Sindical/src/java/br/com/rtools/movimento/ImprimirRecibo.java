@@ -213,7 +213,8 @@ public class ImprimirRecibo {
                         formas[9],
                         (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
                         lblVencimento,
-                        mensagemConvenio
+                        mensagemConvenio,
+                        lista.get(i).getPessoa().getDocumento()
                     )
                 );
             }
