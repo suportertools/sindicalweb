@@ -8,7 +8,7 @@
             <f:event type="preRenderView" listener="${uploadBean.load}"/>  
         </f:metadata>
         <h:form id="form_upload_files" enctype="multipart/form-data" acceptcharset="UTF-8">
-            <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar" >
+            <p:dialog id="id_dgl_anexos" widgetVar="dlg_upload" modal="true"  header="Anexar" >
                 <p:fileUpload label="Procurar"
                               cancelLabel="Cancelar"
                               uploadLabel="Anexar"
@@ -16,7 +16,7 @@
                               multiple="false"
                               sizeLimit="204800"
                               fileUploadListener="#{uploadBean.upload}"
-                              oncomplete="PF('dgl_upload').hide()" onstart="PF('dlg_loading_image').show()"/>
+                              oncomplete="PF('dlg_upload').hide()" onstart="PF('dlg_loading_image').show()"/>
             </p:dialog>
             <p:dialog widgetVar="dlg_loading_image" modal="true" header="Carregando Imagem">
                 <p:ajax event="close" />
