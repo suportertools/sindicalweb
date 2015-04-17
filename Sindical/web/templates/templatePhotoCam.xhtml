@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <f:view>
+        <f:metadata>  
+            <f:event type="preRenderView" listener="${photoCamBean.load}"/>  
+        </f:metadata>
+        <h:form id="form_photocam_files">
+            <p:dialog id="i_captura" widgetVar="dlg_photocam" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
+                <h:panelGrid id="i_panel_photocam" columns="1">
+                    <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update="#{photoCamBean.updates}" />
+                    <h:column>
+                        <h:panelGrid columns="2">
+                            <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_photo').show(); PF('pc_photocam').capture(); PF('dlg_loading_photo').close()"/>
+                        </h:panelGrid>
+                    </h:column>
+                </h:panelGrid>                        
+            </p:dialog>
+            <p:dialog widgetVar="dlg_loading_photo" modal="true" header="Carregando Imagem">
+                <p:ajax event="close" />
+                <h:panelGrid style="width: 100%; text-align: center">
+                    <p:outputLabel value="Capturando e Processando Imagem" />
+                </h:panelGrid>
+            </p:dialog>            
+        </h:form>
+    </f:view>
+</ui:composition>

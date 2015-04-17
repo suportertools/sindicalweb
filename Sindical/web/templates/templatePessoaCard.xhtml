@@ -9,9 +9,7 @@
             <f:event type="preRenderView" listener="${sociosCardBean.load(pessoaCardBean.pessoa.id)}"/>  
         </f:metadata>
         <center>
-            <h:column rendered="#{!pessoaCardBean.getImagemPessoa('Imagens/Fotos').equals('')}">
-                <p:graphicImage value="#{pessoaCardBean.getImagemPessoa('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
-            </h:column>
+            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(pessoaCardBean.pessoa)}" alt="Sem foto" style="border: 3px solid gray; margin-bottom: 15px" width="150"/>
         </center>
         <f:facet name="header">
             <h:outputLabel value="#{pessoaCardBean.pessoa.nome}"  />
