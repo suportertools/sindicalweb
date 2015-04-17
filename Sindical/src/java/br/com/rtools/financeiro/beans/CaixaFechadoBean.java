@@ -312,84 +312,92 @@ public class CaixaFechadoBean implements Serializable{
         List<FormaPagamento> lista_fp_entrada = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "E");
         List<FormaPagamento> lista_fp_saida = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "S");
         
-        float dinheiro_transferencia = 0, dinheiro_baixa = 0, outros = 0, saldo_atual = 0;
-        float dinheiro_pagamento = 0, outros_pagamento = 0;
+        //float dinheiro_transferencia = 0, outros = 0;
+        //float dinheiro_pagamento = 0, outros_pagamento = 0;
+//        
+//        float transferencia_entrada = 0, transferencia_saida = 0, dinheiro_baixa = 0, cheque = 0, cheque_pre = 0, cartao_cre = 0, cartao_deb = 0, saldo_atual = 0;
+//        float deposito_bancario = 0, doc_bancario = 0, transferencia_bancaria = 0, ticket = 0, debito = 0, boleto = 0;
         
-        for (int i = 0; i < lista_tc.size(); i++){
-            dinheiro_transferencia = Moeda.somaValores(dinheiro_transferencia, lista_tc.get(i).getValor());
-        }
+        float valor_caixa = 0, outros = 0;
+        float valor_saida = 0;
         
-        // TOTAL TRANSFERENCIA
-//        for (int i = 0; i < lista_fp_entrada.size(); i++){
-//            if (lista_fp_entrada.get(i).getTipoPagamento().getId() == 3 || 
-//                lista_fp_entrada.get(i).getTipoPagamento().getId() == 4 || 
-//                lista_fp_entrada.get(i).getTipoPagamento().getId() == 5 ||
-//                lista_fp_entrada.get(i).getTipoPagamento().getId() == 11 ){
-//                total_transferencia = Moeda.somaValores(total_transferencia, lista_fp_entrada.get(i).getValor());
-//            }else{
-//                outros = Moeda.somaValores(outros, lista_fp_entrada.get(i).getValor());
-//            }
+//        for (int i = 0; i < lista_tc.size(); i++){
+//            dinheiro_transferencia = Moeda.somaValores(dinheiro_transferencia, lista_tc.get(i).getValor());
 //        }
-        //total_transferencia = Moeda.somaValores(total_transferencia, dinheiro_transferencia);
-        //total_transferencia = Moeda.converteUS$(somaValorTransferencia(fc, caixa));
         
         // TOTAL DINHEIRO
-        for (int i = 0; i < lista_fp_entrada.size(); i++){
-            if (lista_fp_entrada.get(i).getTipoPagamento().getId() == 3){
-                dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
-            }
-        }
+//        for (int i = 0; i < lista_fp_entrada.size(); i++){
+//            if (lista_fp_entrada.get(i).getTipoPagamento().getId() == 3){
+//                dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
+//            }
+//        }
         
         // TOTAL SAIDA
         for (int i = 0; i < lista_fp_saida.size(); i++){
-            if (lista_fp_saida.get(i).getTipoPagamento().getId() == 3){
-                dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
-            }else{
-                outros_pagamento = Moeda.somaValores(outros_pagamento, lista_fp_saida.get(i).getValor());
-            }
+            valor_saida = Moeda.somaValores(valor_saida, lista_fp_saida.get(i).getValor());
+//            if (lista_fp_saida.get(i).getTipoPagamento().getId() == 3){
+//                dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+//            }else{
+//                outros_pagamento = Moeda.somaValores(outros_pagamento, lista_fp_saida.get(i).getValor());
+//            }
         }
 
-        //List<Vector> lista = db.pesquisaSaldoAtual(caixa.getId());
+        // VALOR DO CAIXA
+        for (int i = 0; i < lista_fp_entrada.size(); i++){
+            if (lista_fp_entrada.get(i).getPlano5() != null && lista_fp_entrada.get(i).getPlano5().getId() == 1){
+                valor_caixa = Moeda.somaValores(valor_caixa,  lista_fp_entrada.get(i).getValor());
+            }else{
+                outros = Moeda.somaValores(outros,  lista_fp_entrada.get(i).getValor());
+            }
+        }
         List<Vector> lista = db.pesquisaSaldoAtualRelatorio(caixa.getId(), fc.getId());
         float valor_saldo_atual = 0;
-        
         if (!lista.isEmpty()){
             valor_saldo_atual = Moeda.converteUS$(Moeda.converteR$(lista.get(0).get(1).toString()));
-            //total_transferencia = Moeda.somaValores(valor_saldo_atual, total_transferencia);
         }
+        valor_caixa = Moeda.somaValores(valor_caixa, valor_saldo_atual);
+        valor_caixa = Moeda.subtracaoValores(valor_caixa, valor_saida);
         
-        float total_dinheiro = Moeda.somaValores(Moeda.somaValores(dinheiro_transferencia, dinheiro_baixa), valor_saldo_atual);
         
-        float soma = Moeda.somaValores(total_dinheiro, outros);
-        float soma_pagamento = Moeda.somaValores(dinheiro_pagamento, outros_pagamento);
-        float valor_minimo = Moeda.subtracaoValores(outros, soma_pagamento);
+        //float total_dinheiro = Moeda.somaValores(Moeda.somaValores(dinheiro_transferencia, dinheiro_baixa), valor_saldo_atual);
         
+        //float soma = Moeda.somaValores(total_dinheiro, outros);
+//        float soma_pagamento = Moeda.somaValores(dinheiro_pagamento, outros_pagamento);
+//        float valor_minimo = Moeda.subtracaoValores(outros, soma_pagamento);
 
-        //if (fechamentoCaixa.getValorFechamento() != soma){
-        if (Moeda.converteUS$(valort) != soma){
-            
-            //if (Moeda.converteUS$(valorTransferencia) > soma){
-            if (Moeda.converteUS$(valort) > fc.getValorFechamento()){
-                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÁXIMO R$ " + Moeda.converteR$Float(fc.getValorFechamento()));
+        if (valor_caixa != Moeda.converteUS$(valort)){
+            if (Moeda.converteUS$(valort) > valor_caixa){
+                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÁXIMO R$ " + Moeda.converteR$Float(valor_caixa));
                 return;
-
             }
-
 
             if (Moeda.converteUS$(valort) < outros){
                 GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÍNIMO R$ " + Moeda.converteR$Float(outros));
                 return;
-            }else if (Moeda.converteUS$(valort) >= outros){
-                //saldo_atual = Moeda.subtracaoValores(total_dinheiro, Moeda.subtracaoValores(Moeda.converteUS$(valorTransferencia), outros));
-                saldo_atual = Moeda.subtracaoValores(fc.getValorFechamento(),Moeda.converteUS$(valort));
+            }
+            
+            float saldo_atual = 0;
+            if (Moeda.converteUS$(valort) >= outros){
+                saldo_atual = Moeda.subtracaoValores(valor_caixa, Moeda.converteUS$(valort));
             }
             fc.setSaldoAtual(saldo_atual);
-        
         }
-        
-        //SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        //sv.abrirTransacao();
+
+//        if (Moeda.converteUS$(valort) != soma){
+//            if (Moeda.converteUS$(valort) > fc.getValorFechamento()){
+//                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÁXIMO R$ " + Moeda.converteR$Float(fc.getValorFechamento()));
+//                return;
+//            }
+//
+//            if (Moeda.converteUS$(valort) < outros){
+//                GenericaMensagem.warn("Erro", "Valor da Transferência deve ser no MÍNIMO R$ " + Moeda.converteR$Float(outros));
+//                return;
+//            }else if (Moeda.converteUS$(valort) >= outros){
+//                saldo_atual = Moeda.subtracaoValores(fc.getValorFechamento(),Moeda.converteUS$(valort));
+//            }
+//            fc.setSaldoAtual(saldo_atual);
+//        
+//        }
         
         Dao dao = new Dao();
         dao.openTransaction();
