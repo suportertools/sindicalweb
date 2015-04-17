@@ -1,6 +1,5 @@
 package br.com.rtools.financeiro;
 
-import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaSemCadastro;

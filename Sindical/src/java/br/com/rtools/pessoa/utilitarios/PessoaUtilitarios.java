@@ -17,15 +17,24 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
-public class PessoaUtilitarios {
+@ManagedBean(name = "pessoaUtilitariosBean")
+@ViewScoped
+public class PessoaUtilitarios implements Serializable {
 
     private Pessoa pessoa;
     private MacFilial macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
@@ -187,10 +196,64 @@ public class PessoaUtilitarios {
 
     /**
      * Retorna usuário da sessão
-     * 
-     * @return 
+     *
+     * @return
      */
     public Usuario getUsuarioSessao() {
         return usuarioSessao;
+    }
+
+    /**
+     * Retorna foto da pessoa
+     *
+     * @param pessoa
+     * @return
+     */
+    public String getFotoPessoaFisica(Pessoa pessoa) {
+        String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + pessoa.getId() + ".png";
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+        if (!f.exists()) {
+            foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + pessoa.getId() + ".jpg";
+            f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+            if (!f.exists()) {
+                if (pessoa.getFisica().getSexo().equals("F")) {
+                    foto = "/Imagens/user_female.png";
+                } else {
+                    foto = "/Imagens/user_male.png";
+                }
+            }
+        }
+        return foto;
+    }
+
+    /**
+     * Retorna foto da pessoa
+     *
+     * @param fisica
+     * @return
+     */
+    public String getFotoPessoaFisica(Fisica fisica) {
+        String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+        if (!f.exists()) {
+            foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".jpg";
+            f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+            if (!f.exists()) {
+                if (fisica.getSexo().equals("F")) {
+                    foto = "/Imagens/user_female.png";
+                } else {
+                    foto = "/Imagens/user_male.png";
+                }
+            }
+        }
+        return foto;
+    }
+
+    public void setMacFilial(MacFilial macFilial) {
+        this.macFilial = macFilial;
+    }
+
+    public void setUsuarioSessao(Usuario usuarioSessao) {
+        this.usuarioSessao = usuarioSessao;
     }
 }

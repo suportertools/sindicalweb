@@ -18,6 +18,8 @@ import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class MovimentoDBToplink extends DB implements MovimentoDB {
 
+    private Integer limit = null;
+
     @Override
     public Movimento pesquisaCodigo(int id) {
         Movimento result = null;
@@ -77,19 +79,19 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return result;
     }
-    
+
     @Override
     public List<Movimento> listaMovimentoPorNrCtrBoleto(String nrCtrBoleto) {
         List<Movimento> result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select m from Movimento m where m.nrCtrBoleto = '" +nrCtrBoleto+"' and m.ativo = true");
+            Query qry = getEntityManager().createQuery("select m from Movimento m where m.nrCtrBoleto = '" + nrCtrBoleto + "' and m.ativo = true");
             result = qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
-  
+
     public Movimento pesquisaPorId(int id) {
         Movimento result = null;
         try {
@@ -440,70 +442,74 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         String textQuery;
         switch (faixa_data) {
             case "recebimento":
-                if (!data_inicial.isEmpty() && data_final.isEmpty())
+                if (!data_inicial.isEmpty() && data_final.isEmpty()) {
                     qry_data = " and ba.dt_baixa >= '" + data_inicial;
-                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                } else if (!data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = " and ba.dt_baixa >= '" + data_inicial + "' and ba.dt_baixa <= '" + data_final + "'";
-                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                } else if (data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = "' and ba.dt_baixa <= '" + data_final + "'";
+                }
                 break;
             case "importacao":
-                if (!data_inicial.isEmpty() && data_final.isEmpty())
+                if (!data_inicial.isEmpty() && data_final.isEmpty()) {
                     qry_data = " and ba.dt_importacao >= '" + data_inicial;
-                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                } else if (!data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = " and ba.dt_importacao >= '" + data_inicial + "' and ba.dt_importacao <= '" + data_final + "'";
-                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                } else if (data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = "' and ba.dt_importacao <= '" + data_final + "'";
+                }
                 break;
             case "vencimento":
-                if (!data_inicial.isEmpty() && data_final.isEmpty())
-                    qry_data = " and m.dt_vencimento >= '" + data_inicial+"'";
-                else if (!data_inicial.isEmpty() && !data_final.isEmpty())
+                if (!data_inicial.isEmpty() && data_final.isEmpty()) {
+                    qry_data = " and m.dt_vencimento >= '" + data_inicial + "'";
+                } else if (!data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = " and m.dt_vencimento >= '" + data_inicial + "' and m.dt_vencimento <= '" + data_final + "'";
-                else if (data_inicial.isEmpty() && !data_final.isEmpty())
+                } else if (data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = "' and m.dt_vencimento <= '" + data_final + "'";
+                }
                 break;
             case "referencia":
-                
-                if (!referencia_inicial.isEmpty() && referencia_final.isEmpty()){
+
+                if (!referencia_inicial.isEmpty() && referencia_final.isEmpty()) {
                     String ini = referencia_inicial.substring(3, 7) + referencia_inicial.substring(0, 2);
-                    qry_data = " and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) >= '" + ini+"'";
-                }else if (!referencia_inicial.isEmpty() && !referencia_final.isEmpty()){
+                    qry_data = " and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) >= '" + ini + "'";
+                } else if (!referencia_inicial.isEmpty() && !referencia_final.isEmpty()) {
                     String ini = referencia_inicial.substring(3, 7) + referencia_inicial.substring(0, 2);
                     String fin = referencia_final.substring(3, 7) + referencia_final.substring(0, 2);
                     qry_data = " and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) >= '" + ini + "' and substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) <= '" + fin + "'";
-                }else if (referencia_inicial.isEmpty() && !referencia_final.isEmpty()){
+                } else if (referencia_inicial.isEmpty() && !referencia_final.isEmpty()) {
                     String fin = referencia_final.substring(3, 7) + referencia_final.substring(0, 2);
                     qry_data = "' substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) <= '" + fin + "'";
                 }
-                break;                
+                break;
         }
 
         if (id_servico != 0) {
             qry_servico = " and m.id_servicos = " + id_servico;
         }
-        
+
         if (id_tipo_servico != 0) {
             qry_tipo_servico = " and m.id_tipo_servico = " + id_tipo_servico;
         }
-        
+
         if (id_pessoa != -1) {
-            if (movimentoDaEmpresa){
+            if (movimentoDaEmpresa) {
                 qry_pessoa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + id_pessoa + " and dt_inativacao is null order by ds_nome)";
-                 ordem = "nome, ";
-            }else
+                ordem = "nome, ";
+            } else {
                 qry_pessoa = " and m.id_pessoa = " + id_pessoa;
+            }
         }
-        
-        if (!boleto_inicial.isEmpty() && boleto_final.isEmpty()){
+
+        if (!boleto_inicial.isEmpty() && boleto_final.isEmpty()) {
             qry_boleto = " and b.ds_boleto >= '" + boleto_inicial + "'";
-        }else if (!boleto_inicial.isEmpty() && !boleto_final.isEmpty()){
+        } else if (!boleto_inicial.isEmpty() && !boleto_final.isEmpty()) {
             qry_boleto = " and b.ds_boleto >= '" + boleto_inicial + "'"
-                       + " and b.ds_boleto <= '" + boleto_final + "'";
-        }else if (boleto_inicial.isEmpty() && !boleto_final.isEmpty()){
+                    + " and b.ds_boleto <= '" + boleto_final + "'";
+        } else if (boleto_inicial.isEmpty() && !boleto_final.isEmpty()) {
             qry_boleto = " and b.ds_boleto <= '" + boleto_final + "'";
         }
-        
+
         switch (tipo) {
             case "todos":
                 break;
@@ -515,10 +521,10 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 break;
             case "atrasadas":
                 qry_condicao = "   and m.id_baixa is null "
-                             + "   and m.dt_vencimento < '" + DataHoje.data() + "'";
+                        + "   and m.dt_vencimento < '" + DataHoje.data() + "'";
                 break;
         }
-        
+
 //        if (nrBoletos == true) {
 //            cntNrBoletos = " and b.ds_boleto >= '" + descNrBoletoIni + "'"
 //                    + " and b.ds_boleto <= '" + descNrBoletoFin + "'";
@@ -535,7 +541,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 //        } else {
 //            cntEmpresa = "";
 //        }
-
         if (ordenacao.equals("referencia")) {
             ordem += "substring(m.ds_referencia, 4, 8)|| substring(m.ds_referencia, 0, 3) desc";
         } else if (ordenacao.equals("vencimento")) {
@@ -593,11 +598,11 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return new Vector();
     }
-    
+
     public List<Vector> listaTodosMovimentos(boolean data, boolean contrib, boolean nrBoletos, boolean empresa, boolean tipo, String faixaData,
             Date descDataIni, Date descDataFin, String dtRefInicial, String dtRefFinal, int idContribuicao, int idTipoServico, String descNrBoletoIni,
             String descNrBoletoFin, int descEmpresa, String ordenacao, boolean movimentoDaEmpresa) {
@@ -639,9 +644,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            if (!movimentoDaEmpresa)
+            if (!movimentoDaEmpresa) {
                 cntEmpresa = " and m.id_pessoa = " + descEmpresa;
-            else{
+            } else {
                 cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
                 ordem = "nome, ";
             }
@@ -711,7 +716,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return new Vector();
     }
@@ -757,9 +762,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            if (!movimentoDaEmpresa)
+            if (!movimentoDaEmpresa) {
                 cntEmpresa = " and m.id_pessoa = " + descEmpresa;
-            else{
+            } else {
                 cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
                 ordem = "nome, ";
             }
@@ -824,12 +829,12 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 + "   and m.id_servicos = s.id "
                 + "   and m.id_tipo_servico = t.id " + cntData + cntContrib + cntNrBoletos + cntEmpresa + cntTipo
                 + " order by " + ordem + ", nome";
-        
+
         try {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return new ArrayList();
     }
@@ -875,9 +880,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            if (!movimentoDaEmpresa)
+            if (!movimentoDaEmpresa) {
                 cntEmpresa = " and m.id_pessoa = " + descEmpresa;
-            else{
+            } else {
                 cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
                 ordem = "nome, ";
             }
@@ -944,7 +949,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return new ArrayList();
     }
@@ -990,9 +995,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntNrBoletos = "";
         }
         if (empresa == true) {
-            if (!movimentoDaEmpresa)
+            if (!movimentoDaEmpresa) {
                 cntEmpresa = " and m.id_pessoa = " + descEmpresa;
-            else{
+            } else {
                 cntEmpresa = " and m.id_pessoa in (select id_pessoa from arr_contribuintes_vw where id_contabilidade = " + descEmpresa + " and dt_inativacao is null order by ds_nome)";
                 ordem = "nome, ";
             }
@@ -1060,7 +1065,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             Query qry = getEntityManager().createNativeQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return new ArrayList();
     }
@@ -1218,7 +1223,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + "  from fin_movimento as m  "
                     // ADICIONEI LOTE AQUI -- CASO FICAR PESADO TIRAR --
                     //+ " inner join fin_lote as l on (l.id = m.id_lote)  "
-                    
+
                     + " inner join arr_contribuintes_vw contr on (m.id_pessoa = contr.id_pessoa)  "
                     + " inner join pes_pessoa p          on (p.id = contr.id_pessoa)    "
                     + " inner join pes_juridica as pj on pj.id=contr.id_juridica "
@@ -1256,8 +1261,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " and contr.id_pessoa not in (select bl.id_pessoa from fin_bloqueia_servico_pessoa bl where bl.is_impressao is false and bl.id_servicos = " + idServico + " and '15/09/2013' >= bl.dt_inicio and '15/09/2013' <= bl.dt_fim)"
                     + " and m.ds_es = 'E' "
                     + " and m.id_tipo_Servico = " + idTipoServico
-                    + " and m.dt_Vencimento in " + datas + 
-                    " order by escritorio,razao;";
+                    + " and m.dt_Vencimento in " + datas
+                    + " order by escritorio,razao;";
 
             qry = getEntityManager().createNativeQuery(textQry);
             List listaBoletos = qry.getResultList();
@@ -1605,7 +1610,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return listMov;
         }
     }
-    
 
     @Override
     public List<Movimento> pesquisaMovPorNumDocumentoListBaixadoAss(String numero, int idContaCobranca) {
@@ -1671,7 +1675,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return listMov;
         }
     }
-    
+
     @Override
     public List<Movimento> pesquisaMovPorNumPessoaListBaixado(String numero, int idContaCobranca) {
         List vetor;
@@ -1738,6 +1742,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 //        return listMov;
 //        }
 //    }
+
     @Override
     public List<Movimento> listaMovimentosDoLote(int idLote) {
         try {
@@ -2142,15 +2147,15 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return new ArrayList();
         }
     }
-    
+
     @Override
     public List<Movimento> listaMovimentoBaixaOrder(int id_baixa) {
         try {
-            String textoQuery = 
-                    "   SELECT m.* " +
-                    "  FROM fin_movimento m " +
-                    " WHERE m.id_baixa = " + id_baixa +
-                    " ORDER BY m.id_pessoa, m.id_titular, m.dt_vencimento, m.id_beneficiario";
+            String textoQuery
+                    = "   SELECT m.* "
+                    + "  FROM fin_movimento m "
+                    + " WHERE m.id_baixa = " + id_baixa
+                    + " ORDER BY m.id_pessoa, m.id_titular, m.dt_vencimento, m.id_beneficiario";
             Query qry = getEntityManager().createNativeQuery(textoQuery, Movimento.class);
             return qry.getResultList();
         } catch (Exception e) {
@@ -2220,8 +2225,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    if (((Vector) vetor.get(i)).get(0) != null)
+                    if (((Vector) vetor.get(i)).get(0) != null) {
                         result = (Double) ((Vector) vetor.get(i)).get(0);
+                    }
                 }
             }
             return result;
@@ -2241,8 +2247,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    if (((Vector) vetor.get(i)).get(0) != null)
+                    if (((Vector) vetor.get(i)).get(0) != null) {
                         result = (Double) ((Vector) vetor.get(i)).get(0);
+                    }
                 }
             }
             return result;
@@ -2262,8 +2269,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    if (((Vector) vetor.get(i)).get(0) != null)
+                    if (((Vector) vetor.get(i)).get(0) != null) {
                         result = (Double) ((Vector) vetor.get(i)).get(0);
+                    }
                 }
             }
             return result;
@@ -2312,19 +2320,20 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
     }
 
-    /** 
+    /**
      * @param pessoa
-     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @param vencimento ( Caso a data vencimento seja definida como null, será
+     * passado o parâmetro )
      * @return List<Movimento> (Lista movimentos em débito da pessoa)
-     */    
+     */
     @Override
     public List<Movimento> listaDebitoPessoa(Pessoa pessoa, Date vencimento) {
         String queryString;
         if (vencimento == null) {
             queryString = " current_date ";
         } else {
-            queryString = "'"+vencimento+"'";
-        }        
+            queryString = "'" + vencimento + "'";
+        }
         try {
             Query qry = getEntityManager().createQuery("SELECT MOV FROM Movimento AS MOV WHERE MOV.pessoa.id = :idPessoa AND MOV.dtVencimento < :vencimento AND MOV.ativo = TRUE AND MOV.baixa IS NULL");
             qry.setParameter("idPessoa", pessoa.getId());
@@ -2340,7 +2349,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 
     /**
      * @param pessoa
-     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @param vencimento ( Caso a data vencimento seja definida como null, será
+     * passado o parâmetro )
      * @return boolean (true -> se existe débito / false -> caso não exista)
      */
     @Override
@@ -2349,17 +2359,17 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         if (vencimento == null) {
             queryString = " current_date ";
         } else {
-            queryString = "'"+vencimento+"'";
+            queryString = "'" + vencimento + "'";
         }
         try {
             Query qry = getEntityManager().createNativeQuery(
                     "          SELECT id                                         "
                     + "          FROM fin_movimento                             "
                     + "         WHERE id_pessoa = " + pessoa.getId() + "        "
-                            + "   AND dt_vencimento < "+queryString+"           "
-                            + "   AND is_ativo = TRUE                           "
-                            + "   AND id_baixa IS NULL                          "
-                            + " LIMIT 1                                         ");
+                    + "   AND dt_vencimento < " + queryString + "           "
+                    + "   AND is_ativo = TRUE                           "
+                    + "   AND id_baixa IS NULL                          "
+                    + " LIMIT 1                                         ");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return true;
@@ -2368,18 +2378,18 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return false;
     }
-    
+
     @Override
     public List<HistoricoEmissaoGuias> pesquisaHistoricoEmissaoGuias(int id_usuario) {
         try {
             //Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.usuario.id = "+id_usuario+" and heg.baixado = false");
             Query qry = getEntityManager().createNativeQuery(
-                    "SELECT heg.* " +
-                    "  FROM soc_historico_emissao_guias heg " +
-                    " INNER JOIN fin_movimento m ON m.id = heg.id_movimento " +
-                    " WHERE heg.id_usuario = " + id_usuario +
-                    "   AND heg.is_baixado = false " +
-                    "   AND m.is_ativo = TRUE", HistoricoEmissaoGuias.class
+                    "SELECT heg.* "
+                    + "  FROM soc_historico_emissao_guias heg "
+                    + " INNER JOIN fin_movimento m ON m.id = heg.id_movimento "
+                    + " WHERE heg.id_usuario = " + id_usuario
+                    + "   AND heg.is_baixado = false "
+                    + "   AND m.is_ativo = TRUE", HistoricoEmissaoGuias.class
             );
             List<HistoricoEmissaoGuias> list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -2390,114 +2400,201 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public HistoricoEmissaoGuias pesquisaHistoricoEmissaoGuiasPorMovimento(int id_usuario, int id_movimento) {
         try {
-            Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.movimento.id = "+id_movimento+" and heg.usuario.id = "+id_usuario+" and heg.baixado = false");
-            HistoricoEmissaoGuias result = (HistoricoEmissaoGuias)qry.getSingleResult();
+            Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.movimento.id = " + id_movimento + " and heg.usuario.id = " + id_usuario + " and heg.baixado = false");
+            HistoricoEmissaoGuias result = (HistoricoEmissaoGuias) qry.getSingleResult();
             return result;
         } catch (Exception e) {
             return new HistoricoEmissaoGuias();
         }
     }
-    
+
     @Override
     public Guia pesquisaGuias(int id_lote) {
         try {
-            Query qry = getEntityManager().createQuery("select g from Guia g where g.lote.id = "+id_lote);
+            Query qry = getEntityManager().createQuery("select g from Guia g where g.lote.id = " + id_lote);
             qry.setMaxResults(1);
-            Guia result = (Guia)qry.getSingleResult();
+            Guia result = (Guia) qry.getSingleResult();
             return result;
         } catch (Exception e) {
             return new Guia();
         }
     }
-    
+
     @Override
     public List<Movimento> pesquisaMovimentoCadastrado(String documento) {
-        String text_qry = 
-                "SELECT m " +
-                "  FROM Movimento m "+
-                " WHERE m.baixa.documentoBaixa LIKE '%"+documento+"%'";
+        String text_qry
+                = "SELECT m "
+                + "  FROM Movimento m "
+                + " WHERE m.baixa.documentoBaixa LIKE '%" + documento + "%'";
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }
     }
-    
+
     @Override
     public List<Impressao> listaImpressao(int id_movimento) {
-        String text_qry = 
-                "SELECT i " +
-                "  FROM Impressao i "+
-                " WHERE i.movimento.id = "+ id_movimento + 
-                " ORDER BY i.dtImpressao, i.dtVencimento DESC";
+        String text_qry
+                = "SELECT i "
+                + "  FROM Impressao i "
+                + " WHERE i.movimento.id = " + id_movimento
+                + " ORDER BY i.dtImpressao, i.dtVencimento DESC";
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }
     }
-    
+
     @Override
     public List<Movimento> listaMovimentoBeneficiarioServicoPeriodoAtivo(int id_beneficiario, int id_servico, int periodo_dias, boolean socio) {
         // LISTA TODOS MOVIMENTOS ATIVOS EM QUE O BENEFICIÁRIO id_beneficiario E A DATA ESTEJA ENTRE OS ULTIMOS periodo_dias
         String where;
-        
-        if (socio)
+
+        if (socio) {
             where = " WHERE m.id_matricula_socios = " + id_beneficiario;
-        else
+        } else {
             where = " WHERE m.id_beneficiario = " + id_beneficiario;
-        
-        String text_qry = 
-                "SELECT m.* " +
-                "  FROM fin_movimento m " +
-                " INNER JOIN fin_lote l ON l.id = m.id_lote " +
-                where +
-                "   AND m.is_ativo = true " +
-                "   AND m.id_servicos = " + id_servico +
-                "   AND (l.dt_emissao >= current_date - "+periodo_dias+" AND l.dt_emissao <= current_date) " +
-                " ORDER BY l.dt_emissao ";
+        }
+
+        String text_qry
+                = "SELECT m.* "
+                + "  FROM fin_movimento m "
+                + " INNER JOIN fin_lote l ON l.id = m.id_lote "
+                + where
+                + "   AND m.is_ativo = true "
+                + "   AND m.id_servicos = " + id_servico
+                + "   AND (l.dt_emissao >= current_date - " + periodo_dias + " AND l.dt_emissao <= current_date) "
+                + " ORDER BY l.dt_emissao ";
         try {
             Query qry = getEntityManager().createNativeQuery(text_qry, Movimento.class);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }
     }
-    
+
     @Override
     public List<Movimento> listaMovimentoBeneficiarioServicoMesVigente(int id_beneficiario, int id_servico, boolean socio) {
         // LISTA TODOS MOVIMENTOS ATIVOS EM QUE O BENEFICIÁRIO id_beneficiario E A DATA ESTEJA ENTRE O MES ATUAL
         String where;
         DataHoje dh = new DataHoje();
-        if (socio)
+        if (socio) {
             where = " WHERE m.id_matricula_socios = " + id_beneficiario;
-        else
+        } else {
             where = " WHERE m.id_beneficiario = " + id_beneficiario;
-        
-        String text_qry = 
-                "SELECT m.* " +
-                "  FROM fin_movimento m " +
-                " INNER JOIN fin_lote l ON l.id = m.id_lote " +
-                where +
-                "   AND m.is_ativo = true " +
-                "   AND m.id_servicos = " + id_servico +
-                "   AND (l.dt_emissao >= '"+dh.primeiroDiaDoMes(DataHoje.data())+"' AND l.dt_emissao <= '"+dh.ultimoDiaDoMes(DataHoje.data())+"') " +
-                " ORDER BY l.dt_emissao ";
+        }
+
+        String text_qry
+                = "SELECT m.* "
+                + "  FROM fin_movimento m "
+                + " INNER JOIN fin_lote l ON l.id = m.id_lote "
+                + where
+                + "   AND m.is_ativo = true "
+                + "   AND m.id_servicos = " + id_servico
+                + "   AND (l.dt_emissao >= '" + dh.primeiroDiaDoMes(DataHoje.data()) + "' AND l.dt_emissao <= '" + dh.ultimoDiaDoMes(DataHoje.data()) + "') "
+                + " ORDER BY l.dt_emissao ";
         try {
             Query qry = getEntityManager().createNativeQuery(text_qry, Movimento.class);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }
+    }
+
+    /**
+     * Retorna movimentos gerados no período
+     *
+     * @param id_pessoa
+     * @param id_servico
+     * @param dias
+     * @return
+     */
+    public List<Movimento> listaMovimentosUltimosDias(Integer id_pessoa, Integer id_servico, Integer dias) {
+        return listaMovimentosUltimosDias(id_pessoa, id_servico, null, dias, true, null);
+
+    }
+
+    /**
+     * Retorna movimentos gerados no período
+     *
+     * @param id_pessoa
+     * @param id_servico
+     * @param id_rotina
+     * @param dias
+     * @param tipo_pessoa (null ou 0 = id_pessoa; 1 = id_titular; 2
+     * id_beneficiario)
+     * @return
+     */
+    public List<Movimento> listaMovimentosUltimosDias(Integer id_pessoa, Integer id_servico, Integer id_rotina, Integer dias, Integer tipo_pessoa) {
+        return listaMovimentosUltimosDias(id_pessoa, id_servico, id_rotina, dias, true, tipo_pessoa);
+
+    }
+
+    /**
+     * Retorna movimentos gerados no período
+     *
+     * @param id_pessoa
+     * @param id_servico
+     * @param id_rotina
+     * @param tipo_pessoa (null ou 0 = id_pessoa; 1 = id_titular; 2
+     * id_beneficiario)
+     * @param dias (dias retroativos) Exemplo 10, trará uma lista de movimentos
+     * de acordo com específicado nos ultimos 10 dias
+     * @param ativo
+     * @return
+     */
+    public List<Movimento> listaMovimentosUltimosDias(Integer id_pessoa, Integer id_servico, Integer id_rotina, Integer dias, Boolean ativo, Integer tipo_pessoa) {
+        String tipo_pessoa_string = "id_pessoa";
+        if (tipo_pessoa == null || tipo_pessoa == 0) {
+            tipo_pessoa_string = "id_pessoa";
+        } else if (tipo_pessoa == 1) {
+            tipo_pessoa_string = "id_titular";
+        } else if (tipo_pessoa == 2) {
+            tipo_pessoa_string = "id_beneficiario";
+        }
+        String queryString = ""
+                + "     SELECT M.*                                                                      "
+                + "       FROM fin_movimento AS M                                                       "
+                + " INNER JOIN fin_lote      AS L ON L.id = M.id_lote                                   "
+                + "      WHERE M.dt_vencimento BETWEEN current_date - " + dias + " AND current_date     "
+                + "        AND M." + tipo_pessoa_string + " = " + id_pessoa
+                + "        AND M.id_servicos = " + id_servico;
+        if (id_rotina != null) {
+            queryString += " AND M.is_ativo = " + ativo;
+        }
+        if (ativo != null) {
+            queryString += " AND L.id_rotina = " + id_rotina;
+        }
+        queryString += " ORDER BY M.dt_vencimento DESC ";
+        if (limit != null) {
+            queryString += " LIMIT " + limit;
+        }
+        try {
+            Query query = getEntityManager().createNativeQuery(queryString, Movimento.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
     }
 }

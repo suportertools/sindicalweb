@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.beans.SociosBean;
+import br.com.rtools.associativo.dao.SociosDao;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
@@ -72,7 +73,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String renAbreEnd = "true";
     private String msgSocio = "";
     private String lblSocio = "";
-    private String pesquisaPor = "";
+    private String pesquisaPor = "pessoa";
     private String tipo = "";
     private String tipoSocio = "";
     private int indexPessoaFisica = 0;
@@ -112,8 +113,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private boolean visibleEditarEndereco = false;
     private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
+    private List<Socios> listaSocios = new ArrayList<>();
     private boolean chkDependente = false;
     private boolean pessoaOposicao = false;
+    private String validacao = "";
 
     private int indexEndereco = 0;
     private String strEndereco = "";
@@ -123,6 +126,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         GenericaSessao.put("fisicaBean", new FisicaBean());
         GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
         GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
+        GenericaSessao.remove("photoCamBean");
     }
 
     public String getEnderecoCobranca() {
@@ -432,7 +436,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
+    public String editarFisica(Pessoa p) {
+        FisicaDB fisicaDB = new FisicaDBToplink();
+        Fisica f = fisicaDB.pesquisaFisicaPorPessoa(p.getId());
+        return editarFisica(f);
+    }
+
     public String editarFisica(Fisica f) {
+        if (!listernerValidacao(f.getPessoa())) {
+            return null;
+        }
         if (fisica.getId() != f.getId()) {
             FacesContext context = FacesContext.getCurrentInstance();
             File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
@@ -1635,6 +1648,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 case "socioativo":
                     listaPessoaFisica = db.pesquisaPessoaSocio(descPesquisa, porPesquisa, comoPesquisa);
                     break;
+                case "socio_titular_ativo":
+                    listaPessoaFisica = db.pesquisaPessoaSocio(descPesquisa, porPesquisa, comoPesquisa, true);
+                    break;
                 case "pessoa":
                     listaPessoaFisica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
                     break;
@@ -1769,7 +1785,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
-        if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho, true)) {
+        if (PhotoCam.oncapture(captureEvent, "perfil", "", true)) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
             if (f.exists()) {
                 fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
@@ -1868,8 +1884,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (listaSocioInativo.isEmpty() && fisica.getId() != -1) {
             //listaSocioInativo = new SociosDBToplink().listaSocioTitularInativoPorPessoa(fisica.getPessoa().getId()); 
             listaSocioInativo = new SociosDBToplink().pesquisaSocioPorPessoaInativo(fisica.getPessoa().getId());
-            for(int i = 0; i < listaSocioInativo.size(); i++) {
-                if(fisica.getPessoa().getId() != listaSocioInativo.get(i).getMatriculaSocios().getTitular().getId()) {
+            for (int i = 0; i < listaSocioInativo.size(); i++) {
+                if (fisica.getPessoa().getId() != listaSocioInativo.get(i).getMatriculaSocios().getTitular().getId()) {
                     listaSocioInativo.clear();
                     break;
                 }
@@ -2032,5 +2048,80 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setTipoCadastro(Integer tipoCadastro) {
         this.tipoCadastro = tipoCadastro;
+    }
+
+    public List<Socios> getListaSocios() {
+        return listaSocios;
+    }
+
+    public void setListaSocios(List<Socios> listaSocios) {
+        this.listaSocios = listaSocios;
+    }
+
+    public void listenerSocios(Integer idPessoa) {
+        listaSocios.clear();
+        SociosDB sociosDB = new SociosDBToplink();
+        Socios s = sociosDB.pesquisaSocioPorPessoaAtivo(idPessoa);
+        if (s != null && s.getId() != -1) {
+            SociosDao sociosDao = new SociosDao();
+            listaSocios = sociosDao.pesquisaDependentePorMatricula(s.getMatriculaSocios().getId(), false);
+        }
+    }
+
+    public void listernerTipoPesquisa(String tipoValidacao) {
+        String descricao = "";
+        String como = "";
+        String por = "";
+        List list = new ArrayList();
+        FisicaBean fisicaBean = new FisicaBean();
+        if (GenericaSessao.exists("fisicaBean")) {
+            descricao = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getDescPesquisa();
+            list = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaFisica();
+            como = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getComoPesquisa();
+            por = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getPorPesquisa();
+            GenericaSessao.remove("fisicaBean");
+            GenericaSessao.remove("fisicaPesquisa");
+            fisicaBean.setDescPesquisa(descricao);
+            fisicaBean.setListaPessoaFisica(list);
+            fisicaBean.setComoPesquisa(como);
+            fisicaBean.setPorPesquisa(por);
+        }
+        fisicaBean.setValidacao(tipoValidacao);
+        if (tipoValidacao.equals("socio_titular_ativo")) {
+            fisicaBean.setPesquisaPor("socio_titular_ativo");
+        }
+        fisicaBean.getListaPessoaFisica();
+        GenericaSessao.put("fisicaBean", fisicaBean);
+    }
+
+    public String getValidacao() {
+        return validacao;
+    }
+
+    public void setValidacao(String validacao) {
+        this.validacao = validacao;
+    }
+
+    public Boolean listernerValidacao(Pessoa p) {
+        Socios s;
+        if (validacao.equals("socioativo") || validacao.equals("socio_titular_ativo")) {
+            SociosDB sociosDB = new SociosDBToplink();
+            s = sociosDB.pesquisaSocioPorPessoa(p.getId());
+            if (s.getId() == -1) {
+                GenericaMensagem.warn("Validação", "Pessoa não é sócia!");
+                return false;
+            }
+            if (!s.getServicoPessoa().isAtivo()) {
+                GenericaMensagem.warn("Validação", "Sócio está inátivo!");
+                return false;
+            }
+            if (validacao.equals("socio_titular_ativo")) {
+                if (s.getMatriculaSocios().getTitular().getId() != p.getId()) {
+                    GenericaMensagem.warn("Validação", "Sócio não é titular!");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

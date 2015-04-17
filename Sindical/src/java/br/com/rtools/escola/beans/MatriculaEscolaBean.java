@@ -474,7 +474,7 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataMatricula", DataHoje.dataExtenso(matriculaEscola.getDataMatriculaString(), 1)));
             float valorTotalComDesconto = 0;
             if (matriculaEscola.isDescontoProporcional()) {
-                FunctionsDB functionsDB = new FunctionsDBTopLink();
+                FunctionsDB functionsDB = new FunctionsDao();
                 String valorTotal = functionsDB.scriptSimples(" SUM(nr_valor) FROM fin_movimento WHERE id_tipo_servico = 1 AND id_lote = " + listaMovimentos.get(0).getLote().getId());
                 if (!valorTotal.isEmpty()) {
                     valorTotalComDesconto = Moeda.converteUS$(valorTotal) - matriculaEscola.getDesconto();
@@ -791,7 +791,7 @@ public class MatriculaEscolaBean implements Serializable {
         if (matriculaEscola.getId() == -1) {
             matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), 1));
             MatriculaEscolaDao med = new MatriculaEscolaDao();
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            FunctionsDB functionsDB = new FunctionsDao();
             int idNumeroVagas = functionsDB.vagasEscolaTurma(matriculaTurma.getTurma().getId());
             if (idNumeroVagas == 0 && !tipoMatricula.equals("Individual")) {
                 matriculaEscola.setId(-1);
@@ -1178,7 +1178,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void atualizaValor() {
         //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
-        FunctionsDB functionsDB = new FunctionsDBTopLink();
+        FunctionsDB functionsDB = new FunctionsDao();
         valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
         matriculaEscola.setDescontoAteVencimento(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1, null));
         vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null);
@@ -1319,7 +1319,7 @@ public class MatriculaEscolaBean implements Serializable {
                         Pessoa pessoaAluno = matriculaEscola.getAluno();
                         Pessoa pessoaResponsavelTitular = matriculaEscola.getResponsavel();
                         Pessoa pessoaResponsavel;
-                        FunctionsDB functionsDB = new FunctionsDBTopLink();
+                        FunctionsDB functionsDB = new FunctionsDao();
                         pessoaResponsavel = matriculaEscola.getResponsavel();
                         // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA) 03/09/2014 rogério pediu, que falou com a Élida do CAP
 //                        if (matriculaEscola.isDescontoFolha()) {
@@ -1543,7 +1543,7 @@ public class MatriculaEscolaBean implements Serializable {
                         }
                         matriculaEscola.setResponsavel(responsavel);
                     } else {
-                        FunctionsDB functionsDB = new FunctionsDBTopLink();
+                        FunctionsDB functionsDB = new FunctionsDao();
                         int idade = functionsDB.idade("dt_nascimento", "current_date", aluno.getPessoa().getId());
                         if (idade < 18) {
                             GenericaMensagem.warn("Validação", "Responsável deve ser MAIOR DE IDADE!");
@@ -1562,7 +1562,7 @@ public class MatriculaEscolaBean implements Serializable {
                 } else if (tipoFisica.equals("responsavel")) {
                     GenericaSessao.remove("pesquisaFisicaTipo");
                     Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
-                    FunctionsDB functionsDB = new FunctionsDBTopLink();
+                    FunctionsDB functionsDB = new FunctionsDao();
                     int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
                     if (idade >= 18) {
                         if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
@@ -1586,7 +1586,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public Pessoa getResponsavel() {
         if (aluno.getId() != -1) {
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            FunctionsDB functionsDB = new FunctionsDao();
             int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), matriculaEscola.isDescontoFolha());
             if (titularResponsavel > 0) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -2401,7 +2401,7 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public Juridica getEmpresa() {
-        FunctionsDB functionsDB = new FunctionsDBTopLink();
+        FunctionsDB functionsDB = new FunctionsDao();
         int titular = functionsDB.responsavel(matriculaEscola.getResponsavel().getId(), true);
         if (titular > 0) {
             JuridicaDB juridicaDB = new JuridicaDBToplink();
@@ -2428,7 +2428,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public int getVagasDisponiveis() {
         if (turma.getId() != -1) {
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            FunctionsDB functionsDB = new FunctionsDao();
             setVagasDisponiveis(functionsDB.vagasEscolaTurma(turma.getId()));
         }
         return vagasDisponiveis;
@@ -2491,7 +2491,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public int getIdadeAluno() {
         if (matriculaEscola.getAluno().getId() != -1) {
-            FunctionsDB fdb = new FunctionsDBTopLink();
+            FunctionsDB fdb = new FunctionsDao();
             idadeAluno = fdb.idade("dt_nascimento", "current_date", matriculaEscola.getAluno().getId());
         }
         return idadeAluno;

@@ -1,8 +1,8 @@
 package br.com.rtools.associativo;
 
 import br.com.rtools.financeiro.ServicoPessoa;
-import br.com.rtools.utilitarios.DataHoje;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,13 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "soc_socios")
 @NamedQuery(name = "Socios.pesquisaID", query = "select s from Socios s where s.id=:pid")
 public class Socios implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,6 +35,12 @@ public class Socios implements java.io.Serializable {
     private Parentesco parentesco;
     @Column(name = "nr_via_carteirinha", length = 10, nullable = true)
     private int nrViaCarteirinha;
+
+    // Campo auxiliares
+    @Transient
+    private Object object = new Object();
+    @Transient
+    private List list = new ArrayList();
 
     public Socios() {
         this.id = -1;
@@ -90,5 +96,21 @@ public class Socios implements java.io.Serializable {
 
     public void setNrViaCarteirinha(int nrViaCarteirinha) {
         this.nrViaCarteirinha = nrViaCarteirinha;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    public List getList() {
+        return list;
+    }
+
+    public void setList(List list) {
+        this.list = list;
     }
 }

@@ -17,7 +17,7 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.db.FunctionsDB;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class ControleUsuarioBean implements Serializable {
     private boolean habilitaLog = false;
 
     public void atualizaDemissionaSocios() {
-        FunctionsDB db = new FunctionsDBTopLink();
+        FunctionsDB db = new FunctionsDao();
         ConfiguracaoSocialBean csb = new ConfiguracaoSocialBean();
         csb.init();
         ConfiguracaoSocial cs = csb.getConfiguracaoSocial();

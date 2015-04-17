@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 
-public class FunctionsDBTopLink extends DB implements FunctionsDB {
+public class FunctionsDao extends DB implements FunctionsDB {
 
     /**
      * Trazer o responsável

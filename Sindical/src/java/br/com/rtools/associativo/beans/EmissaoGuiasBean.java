@@ -54,7 +54,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -853,7 +853,7 @@ public class EmissaoGuiasBean implements Serializable {
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
             listenerEnabledItensPedido();
-            if (new FunctionsDBTopLink().inadimplente(pessoa.getId())) {
+            if (new FunctionsDao().inadimplente(pessoa.getId())) {
                 GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
                 return null;
             }
@@ -868,7 +868,7 @@ public class EmissaoGuiasBean implements Serializable {
             SociosDB dbs = new SociosDBToplink();
             socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
             listenerEnabledItensPedido();
-            if (new FunctionsDBTopLink().inadimplente(pessoa.getId())) {
+            if (new FunctionsDao().inadimplente(pessoa.getId())) {
                 GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
                 return null;
             }
@@ -880,7 +880,7 @@ public class EmissaoGuiasBean implements Serializable {
                 pessoa = juridica.getPessoa();
                 socios = new Socios();
                 listenerEnabledItensPedido();
-                if (new FunctionsDBTopLink().inadimplente(pessoa.getId())) {
+                if (new FunctionsDao().inadimplente(pessoa.getId())) {
                     GenericaMensagem.error("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
                     return null;
                 }

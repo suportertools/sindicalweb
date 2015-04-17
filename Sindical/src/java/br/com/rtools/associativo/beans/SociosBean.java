@@ -27,7 +27,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -199,6 +199,7 @@ public class SociosBean implements Serializable {
     }
 
     public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
+        GenericaSessao.remove("photoCamBean");
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
@@ -388,7 +389,7 @@ public class SociosBean implements Serializable {
                 listaServicos.add(new SelectItem(0, servicoCategoria.getServicos().getDescricao(),
                         Integer.toString(servicoCategoria.getServicos().getId()))
                 );
-                valorServico = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+                valorServico = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
                 calculoValor();
                 calculoDesconto();
             } else {
@@ -398,32 +399,32 @@ public class SociosBean implements Serializable {
     }
 
     public void calculoDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         servicoPessoa.setNrDescontoString(Moeda.percentualDoValor(valorx, valorServico));
     }
 
     public void calculoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         valorServico = Moeda.valorDoPercentual(valorx, servicoPessoa.getNrDescontoString());
     }
 
     public void calculoNovoDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         novoDescontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, novoValorServico));
     }
 
     public void calculoNovoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         novoValorServico = Moeda.valorDoPercentual(valorx, novoDescontoSocial.getNrDescontoString());
     }
 
     public void calculoAlterarDesconto() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         descontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, alteraValorServico));
     }
 
     public void calculoAlterarValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDBTopLink().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         alteraValorServico = Moeda.valorDoPercentual(valorx, descontoSocial.getNrDescontoString());
     }
 
@@ -669,7 +670,7 @@ public class SociosBean implements Serializable {
 
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
-        if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho + "/" + novoDependente.getPessoa().getId(), true)) {
+        if (PhotoCam.oncapture(captureEvent, "perfil", "" + novoDependente.getPessoa().getId(), true)) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/" + novoDependente.getPessoa().getId() + "/perfil.png"));
             if (f.exists()) {
                 fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/" + novoDependente.getPessoa().getId() + "/perfil.png";

@@ -81,13 +81,13 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             field = "p.ds_documento";
         }
 
-        int maxResults = 300;
+        int maxResults = 1000;
         if (desc.length() == 1) {
             maxResults = 50;
         } else if (desc.length() == 2) {
-            maxResults = 150;
+            maxResults = 300;
         } else if (desc.length() == 3) {
-            maxResults = 200;
+            maxResults = 500;
         }
 
         textQuery = "   SELECT j.* "

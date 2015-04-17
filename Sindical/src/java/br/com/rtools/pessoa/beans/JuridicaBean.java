@@ -1128,6 +1128,35 @@ public class JuridicaBean implements Serializable {
         String strCompl;
         if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
             listaEnd = getPesquisaEndPorPessoa();
+            if(listaEnd.size() < 4) {
+                PessoaEndereco pe = (PessoaEndereco) listaEnd.get(0);
+                PessoaEndereco pe2 = new PessoaEndereco();
+                Dao dao = new Dao();
+                List<TipoEndereco> list = dao.find("TipoEndereco", new int[]{2,3,4,5});
+                List<TipoEndereco> listB = list;
+                for(int i = 0; i < listaEnd.size(); i++) {
+                    for(int y = 0; y < listB.size(); y++) {
+                        if(((PessoaEndereco) listaEnd.get(i)).getTipoEndereco().getId() == listB.get(y).getId()) {
+                            try {
+                                list.remove(listB.get(y));                                
+                            } catch (Exception e) {
+                                // e.getMessage();
+                            }
+                        }
+                    }                    
+                }
+                for(int i = 0; i < list.size(); i++) {
+                    pe2 = new PessoaEndereco();
+                    pe2.setComplemento(pe.getComplemento());
+                    pe2.setEndereco(pe.getEndereco());
+                    pe2.setNumero(pe.getNumero());
+                    pe2.setPessoa(pe.getPessoa());
+                    pe2.setTipoEndereco(list.get(i));
+                    dao.save(pe2, true);
+                }
+                listaEnd.clear();
+                listaEnd = getPesquisaEndPorPessoa();
+            }
             PessoaEndereco pesEn = (PessoaEndereco) (listaEnd.get(1));
             if (pesEn.getComplemento() == null || pesEn.getComplemento().isEmpty()) {
                 strCompl = " ";
