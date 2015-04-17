@@ -48,6 +48,7 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -59,7 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @ManagedBean
 @SessionScoped
-public class BaixaGeralBean {
+public class BaixaGeralBean implements Serializable {
 
     private String quitacao = DataHoje.data();
     private String vencimento = DataHoje.data();
@@ -111,7 +112,7 @@ public class BaixaGeralBean {
         tipoPagamento = (TipoPagamento) new Dao().find(new TipoPagamento(), Integer.valueOf(getListaTipoPagamento().get(idTipoPagamento).getDescription()));
     }
 
-    public void verificaValorDigitado(){
+    public void verificaValorDigitado() {
         float valor_troco = 0;
         boolean dinheiro = false;
         for (int i = 0; i < listaValores.size(); i++) {
@@ -123,7 +124,7 @@ public class BaixaGeralBean {
         if (dinheiro) {
             for (int i = 0; i < listaValores.size(); i++) {
                 if (listaValores.get(i).getTipoPagamento().getId() == 3) {
-                    float valorx =  Moeda.converteUS$(listaValores.get(i).getValor());
+                    float valorx = Moeda.converteUS$(listaValores.get(i).getValor());
                     float valordigitado = Moeda.converteUS$(listaValores.get(i).getValorDigitado());
                     if (valorx < valordigitado) {
                         valor_troco = Moeda.subtracaoValores(valordigitado, valorx);
@@ -133,8 +134,8 @@ public class BaixaGeralBean {
             }
         } else {
             valorTroco = "";
-        }        
-        
+        }
+
         //TipoPagamento tp = (TipoPagamento) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(, "TipoPagamento");
 //        if (Integer.parseInt( getListaTipoPagamento().get(idTipoPagamento).getDescription()) != 3){
 //            float valordigitado = Moeda.converteUS$(valor);
@@ -150,7 +151,7 @@ public class BaixaGeralBean {
 //            }
 //        }
     }
-    
+
     public void atualizaTipo() {
         //TipoPagamento tipoPagamento = (TipoPagamento) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoPagamento().get(idTipoPagamento)).getDescription()), "TipoPagamento");
         tipoPagamento = (TipoPagamento) new Dao().find(new TipoPagamento(), Integer.valueOf(getListaTipoPagamento().get(idTipoPagamento).getDescription()));
@@ -217,7 +218,10 @@ public class BaixaGeralBean {
                 return "menuPrincipal";
             } else if (url.equals("acessoNegado")) {
                 return "menuPrincipal";
-            }else{
+            } else if (url.equals("geracaoDebitosCartao")) {
+                GenericaSessao.put("lista_movimentos_baixados", listaMovimentos);
+                return "geracaoDebitosCartao";
+            } else {
                 return null;
             }
         } else {
@@ -236,31 +240,29 @@ public class BaixaGeralBean {
     }
 
     public void inserir() {
-        
+
         if (Moeda.converteUS$(valor) < 0) {
             GenericaMensagem.error("Atenção", "Valor negativo não é permitido!");
             return;
         }
-        
-        if (Moeda.converteUS$(total) == somaValoresGrid() && Moeda.converteUS$(total) != 0){
+
+        if (Moeda.converteUS$(total) == somaValoresGrid() && Moeda.converteUS$(total) != 0) {
             GenericaMensagem.error("Atenção", "Os valores já conferem!");
             return;
         }
-        
+
         float valorDigitado = 0;
         valorEditavel = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(total), somaValoresGrid()));
-        
-        if (Moeda.converteUS$(valor) > Moeda.converteUS$(valorEditavel)){
+
+        if (Moeda.converteUS$(valor) > Moeda.converteUS$(valorEditavel)) {
             valorDigitado = Moeda.converteUS$(valor);
             valor = valorEditavel;
-        }else
+        } else {
             valorDigitado = Moeda.converteUS$(valor);
-        
-        
-        
+        }
+
         //FTipoDocumentoDB tipoDocDB = new FTipoDocumentoDBToplink();
         //TipoPagamento tipoPagamento = tipoDocDB.pesquisaCodigoTipoPagamento(Integer.parseInt(((SelectItem) getListaTipoPagamento().get(idTipoPagamento)).getDescription()));
-
         // CHEQUE
         if (tipoPagamento.getId() == 4 || tipoPagamento.getId() == 5) {
             if (!getEs().isEmpty() && getEs().equals("S")) {
@@ -329,7 +331,7 @@ public class BaixaGeralBean {
             Plano5 pl = db.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBanco.get(idBanco).getDescription()));
             //lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, pl));
             listaValores.add(new ListValoresBaixaGeral(vencimento, valor, numero, tipoPagamento, null, null, pl, null, Moeda.converteR$Float(valorDigitado)));
-            
+
             numero = "";
         } else {
             //lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, null));
@@ -337,7 +339,7 @@ public class BaixaGeralBean {
         }
         desHabilitaConta = true;
         desHabilitaQuitacao = true;
-        
+
         verificaValorDigitado();
         valor = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(total), somaValoresGrid()));
     }
@@ -391,14 +393,14 @@ public class BaixaGeralBean {
                 select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,8,9,10");
                 idTipoPagamento = 0;
             } else {
-                if (tipo.equals("caixa")){
+                if (tipo.equals("caixa")) {
                     select = db.pesquisaCodigoTipoPagamentoIDS("2,3,4,5,6,7,8,9,10,11,13");
                     idTipoPagamento = 1;
-                }else{
+                } else {
                     select = db.pesquisaCodigoTipoPagamentoIDS("2,8,9,10,11,13");
                     idTipoPagamento = 0;
                 }
-                    
+
             }
             if (!select.isEmpty()) {
                 for (int i = 0; i < select.size(); i++) {
@@ -436,7 +438,6 @@ public class BaixaGeralBean {
         Caixa caixa = null;
         Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
-        
         Filial filial;
         Departamento departamento = new Departamento();
 
@@ -447,7 +448,7 @@ public class BaixaGeralBean {
             return mensagem = "Não é foi possível encontrar a filial no sistema!";
         }
 
-        if (!macFilial.isCaixaOperador()){
+        if (!macFilial.isCaixaOperador()) {
             if (tipo.equals("caixa")) {
                 if (macFilial.getCaixa() == null) {
                     return mensagem = "Não é possivel salvar baixa sem um caixa definido para esta estação!";
@@ -455,7 +456,7 @@ public class BaixaGeralBean {
 
                 caixa = macFilial.getCaixa();
             }
-        }else{
+        } else {
             FinanceiroDB db = new FinanceiroDBToplink();
             caixa = db.pesquisaCaixaUsuario(usuario.getId());
 
@@ -495,9 +496,9 @@ public class BaixaGeralBean {
         if (DataHoje.converte(quitacao) == null) {
             quitacao = DataHoje.data();
         }
-        
+
         for (int i = 0; i < listaValores.size(); i++) {
-            float valor = Moeda.converteUS$( String.valueOf(listaValores.get(i).getValor()) );
+            float valor = Moeda.converteUS$(String.valueOf(listaValores.get(i).getValor()));
             // CHEQUE
             if (listaValores.get(i).getTipoPagamento().getId() == 4 || listaValores.get(i).getTipoPagamento().getId() == 5) {
                 if (!getEs().isEmpty() && getEs().equals("S")) {
@@ -551,6 +552,7 @@ public class BaixaGeralBean {
             }
             retorna = true;
             mensagem = "Baixa realizada com sucesso!";
+            GenericaSessao.put("baixa_sucesso", true);
             visibleModal = true;
         }
         return null;

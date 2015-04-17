@@ -59,7 +59,7 @@ import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.db.FunctionsDB;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -393,7 +393,7 @@ public class MatriculaAcademiaBean implements Serializable {
             );
             di.commit();
             if (matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId() == 3) {
-                new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
+                new FunctionsDao().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
             }
         }
         return null;
@@ -531,7 +531,7 @@ public class MatriculaAcademiaBean implements Serializable {
         }
         if (cobranca == null) {
             Dao di = new Dao();
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            FunctionsDB functionsDB = new FunctionsDao();
             if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
                 int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
                 if (idResponsavel != -1) {
@@ -811,7 +811,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         calculaValorLiquido();
                         GenericaSessao.remove("juridicaPesquisa");
                         if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                            if (new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+                            if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
                                 responsavel = new Pessoa();
                                 matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
                                 mensagemInadinplente = "Aluno em Débito!";
@@ -825,11 +825,11 @@ public class MatriculaAcademiaBean implements Serializable {
                     case "responsavel":
                         socios = new Socios();
                         Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
-                        FunctionsDB functionsDB = new FunctionsDBTopLink();
+                        FunctionsDB functionsDB = new FunctionsDao();
                         int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
                         if (idade >= 18) {
                             if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                                if (new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+                                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
                                     mensagemInadinplente = "Aluno em Débito!";
                                     GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
                                     disabled = true;
@@ -871,7 +871,7 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public Pessoa getResponsavel() {
         if (aluno.getId() != -1) {
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            FunctionsDB functionsDB = new FunctionsDao();
             int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
             if (titularResponsavel > -1 && titularResponsavel > 0) {
                 Dao di = new Dao();
@@ -1085,7 +1085,7 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public void atualizaValor() {
         valor = "";
-        FunctionsDB functionsDB = new FunctionsDBTopLink();
+        FunctionsDB functionsDB = new FunctionsDao();
         valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
         Dao di = new Dao();
         AcademiaServicoValor asv = (AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(getListaPeriodosGrade().get(idPeriodoGrade).getDescription()));
@@ -1170,7 +1170,7 @@ public class MatriculaAcademiaBean implements Serializable {
             juridica = new Juridica();
             // verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
             if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                if (new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDBTopLink().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
                     GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
                     mensagemInadinplente = "Aluno em Débito!";
                     responsavel = new Pessoa();
@@ -1213,7 +1213,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     numeroParcelas = 1;
                 }
                 if (periodo == 3) {
-                    new FunctionsDBTopLink().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
+                    new FunctionsDao().gerarMensalidades(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().getReferenciaVigoracao());
                     if (!matriculaAcademia.isTaxa()) {
                         desabilitaCamposMovimento = true;
                         desabilitaDiaVencimento = true;

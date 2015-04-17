@@ -12,7 +12,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -47,7 +47,7 @@ public class GerarBoletoBean {
         getListaServicoSemCobranca();
         getListaPessoaSemComplemento();
         
-        new FunctionsDBTopLink().incluiPessoaComplemento();
+        new FunctionsDao().incluiPessoaComplemento();
 //        NAO USA --- EXCLUIR DEPOIS DE 01/04/2015
 //        getListaPessoaFisicaSemEndereco();
 //        getListaPessoaJuridicaSemEndereco();

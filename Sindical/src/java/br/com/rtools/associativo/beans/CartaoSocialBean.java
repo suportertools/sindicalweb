@@ -3,6 +3,7 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.AutorizaImpressaoCartao;
 import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.associativo.HistoricoCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.CategoriaDB;
@@ -19,6 +20,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.ImpressaoParaSocios;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -700,4 +702,111 @@ public class CartaoSocialBean implements Serializable {
         this.idFilial = idFilial;
     }
 
+    /**
+     * Médtodo genérico para geração de históricos de carteirinhas
+     *
+     * @param list (Movimentos gerados)
+     * @param idModelo
+     * @return
+     */
+    public static boolean isGerarHistoricoCarteirinhas(List<Movimento> list, Integer idModelo) {
+        return !CartaoSocialBean.gerarHistoricoCarteirinhas(list, idModelo).isEmpty();
+    }
+
+    /**
+     * Médtodo genérico para geração de históricos de carteirinhas
+     *
+     * @param list (Movimentos gerados)
+     * @param idCategoria
+     * @param idRotina
+     * @return
+     */
+    public static boolean isGerarHistoricoCarteirinhas(List<Movimento> list, Integer idCategoria, Integer idRotina) {
+        return !gerarHistoricoCarteirinhas(list, idCategoria, idRotina).isEmpty();
+    }
+
+    /**
+     * Médtodo genérico para geração de históricos de carteirinhas se retornar
+     * uma lista é que existem carteirinhas geradas.
+     *
+     * @param list
+     * @param idCategoria
+     * @param idRotina
+     * @return
+     */
+    public static List<HistoricoCarteirinha> gerarHistoricoCarteirinhas(List<Movimento> list, Integer idCategoria, Integer idRotina) {
+        SocioCarteirinhaDB socioCarteirinhaDB = new SocioCarteirinhaDBToplink();
+        ModeloCarteirinha modeloCarteirinha = socioCarteirinhaDB.pesquisaModeloCarteirinha(idCategoria, idRotina);
+        if (modeloCarteirinha != null) {
+            return gerarHistoricoCarteirinhas(list, modeloCarteirinha.getId());
+        }
+        return new ArrayList();
+    }
+
+    /**
+     *
+     * @param list
+     * @param idModelo
+     * @return
+     */
+    public static List<HistoricoCarteirinha> gerarHistoricoCarteirinhas(List<Movimento> list, Integer idModelo) {
+        HistoricoCarteirinha historicoCarteirinha;
+        SocioCarteirinhaDB socioCarteirinhaDB = new SocioCarteirinhaDBToplink();
+        Dao dao = new Dao();
+        dao.openTransaction();
+        List<HistoricoCarteirinha> carteirinhas = new ArrayList();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getMatriculaSocios() != null) {
+                historicoCarteirinha = new HistoricoCarteirinha();
+                historicoCarteirinha.setHora(DataHoje.hora());
+                historicoCarteirinha.setDescricao("Impressão de Carteirinha");
+                historicoCarteirinha.setEmissao(DataHoje.data());
+                historicoCarteirinha.setMovimento(list.get(i));
+                historicoCarteirinha.setCarteirinha(socioCarteirinhaDB.pesquisaCarteirinhaPessoa(list.get(i).getPessoa().getId(), idModelo));
+                if (!dao.save(historicoCarteirinha)) {
+                    dao.rollback();
+                    return new ArrayList();
+                }
+                carteirinhas.add(historicoCarteirinha);
+            }
+        }
+        if (carteirinhas.isEmpty()) {
+            dao.rollback();
+            return new ArrayList();
+        }
+        dao.commit();
+        return carteirinhas;
+    }
+
+    public void imprimirSocioCarteirinha(List list) {
+        if (list.isEmpty()) {
+            return;
+        }
+        Boolean isBeneficiario = false;
+        List<SocioCarteirinha> carteirinhas = new ArrayList<>();
+        String type = list.get(0).getClass().getSimpleName();
+        if (type.equals("HistoricoCarteirinha")) {
+            List<HistoricoCarteirinha> historicoCarteirinhas = list;
+            for (int i = 0; i < historicoCarteirinhas.size(); i++) {
+                carteirinhas.add(historicoCarteirinhas.get(i).getCarteirinha());
+                isBeneficiario = true;
+            }
+        } else {
+            carteirinhas = (List<SocioCarteirinha>) list;
+        }
+
+        SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
+        List listAux = new ArrayList();
+        for (int i = 0; i < list.size(); i++) {
+            carteirinhas.get(i).setEmissao(DataHoje.data());
+            new Dao().update(carteirinhas.get(i), true);
+            if(isBeneficiario) {
+                listAux.addAll(dbc.filtroCartao(((HistoricoCarteirinha) list.get(i)).getMovimento().getBeneficiario().getId()));
+            } else {
+                listAux.addAll(dbc.filtroCartao(carteirinhas.get(i).getPessoa().getId()));
+            }
+        }
+        ImpressaoParaSocios.imprimirCarteirinha(listAux);
+        GenericaSessao.put("cartao_social_sucesso", true);
+    }
 }

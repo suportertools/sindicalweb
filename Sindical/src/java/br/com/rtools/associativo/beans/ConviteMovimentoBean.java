@@ -623,7 +623,7 @@ public class ConviteMovimentoBean implements Serializable {
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "convite/" + getUsuario().getId();
         if (tipoCaptura.equals("perfil")) {
-            if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho, true)) {
+            if (PhotoCam.oncapture(captureEvent, "perfil", "", true)) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
                 if (f.exists()) {
                     fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
@@ -634,7 +634,7 @@ public class ConviteMovimentoBean implements Serializable {
             }
             RequestContext.getCurrentInstance().update("form_convite:i_panel_perfil");
         } else {
-            if (PhotoCam.oncapture(captureEvent, "documento", fotoTempCaminho, true)) {
+            if (PhotoCam.oncapture(captureEvent, "documento", "", true)) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/documento.png"));
                 if (f.exists()) {
                     fotoTempArquivo = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/documento.png";

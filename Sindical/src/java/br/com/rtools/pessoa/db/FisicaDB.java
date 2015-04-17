@@ -24,14 +24,16 @@ public interface FisicaDB {
 
     public List pesquisaPessoaSocio(String desc, String por, String como);
 
+    public List pesquisaPessoaSocio(String desc, String por, String como, Boolean titular);
+
     public List pesquisaPessoaSocioInativo(String desc, String por, String como);
 
     public Fisica idFisica(Fisica des_fisica);
 
     public List<Fisica> pesquisaFisicaPorDoc(String doc);
-    
+
     public List<Fisica> pesquisaFisicaPorDocRG(String doc);
-    
+
     public List<Fisica> pesquisaFisicaPorDoc(String doc, boolean like);
 
     public List pesquisaFisicaPorDocSemLike(String doc);
@@ -43,8 +45,8 @@ public interface FisicaDB {
     public List pesquisaFisicaPorNome(String nome);
 
     public List pesquisaPessoaSocioID(int id_pessoa);
-    
+
     public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente);
-    
+
     public Fisica pesquisaFisicaPorNomeNascimento(String nome, Date nascimento);
 }

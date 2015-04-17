@@ -23,7 +23,7 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.db.FunctionsDB;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -173,7 +173,7 @@ public class CobrancaMensalBean {
                 GenericaSessao.remove("fisicaPesquisa");
             }
             
-            FunctionsDB fc = new FunctionsDBTopLink();
+            FunctionsDB fc = new FunctionsDao();
             
             int id_resp = -1; 
             

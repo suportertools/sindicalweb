@@ -13,6 +13,7 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
+import br.com.rtools.utilitarios.PhotoCam;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -247,6 +248,7 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("photoCamBean");
         //}
         return metodoGenerico(2, "pessoaFisica");
     }
@@ -571,6 +573,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String socios() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sociosBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("photoCamBean");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
