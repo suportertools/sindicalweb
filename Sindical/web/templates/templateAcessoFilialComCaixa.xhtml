@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html">
+    <f:view>
+        <h:form id="templateAcessoFilialComCaixa">
+            <p:dialog widgetVar="dlg_block" modal="true" resizable="false" header="Importante!" width="400" draggable="false" closable="false" visible="#{!segurancaUtilitariosBean.existeMacFilialComCaixa}">
+                <p:outputLabel value="- Realizar acesso com filial que tenha caixa!" styleClass="font-color-red font-size-14" /><br /><br />
+                <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>
+                <f:facet name="footer">
+                    <h:panelGrid columns="2">
+                        <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
+                        <p:commandLink ajax="false" value="Acessar Macs" action="#{chamadaPaginaBean.pagina('macFilial')}" immediate="true" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" styleClass="font-color-red" actionListener="#{genericaSessao.putBoolean('back', true)}"/>
+                    </h:panelGrid>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </f:view>
+</ui:composition>
