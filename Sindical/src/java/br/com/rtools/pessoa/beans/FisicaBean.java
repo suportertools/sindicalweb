@@ -443,6 +443,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String editarFisica(Fisica f) {
+        GenericaSessao.remove("photoCamBean");
+        PhotoCam photoCam = new PhotoCam();
+        GenericaSessao.put("photoCamBean", photoCam);
         if (!listernerValidacao(f.getPessoa())) {
             return null;
         }
@@ -1135,8 +1138,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     des.delete();
                 }
             }
+            des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
             File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
-            boolean rename = src.renameTo(des);
+            boolean rename = false;
+            try {
+                rename = src.renameTo(des);
+            } catch (Exception e) {
+                rename = false;
+            }
             fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
             fotoTempPerfil = "";
 
@@ -1146,12 +1155,17 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
         if (!error) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
-            boolean delete = f.delete();
+            if(f.exists()) {
+                boolean delete = f.delete();                
+            }
         }
         if (fisica.getId() != -1) {
             Dao dao = new Dao();
             fisica.setDtFoto(DataHoje.dataHoje());
             dao.update(fisica, true);
+            GenericaSessao.remove("photoCamBean");
+            PhotoCam photoCam = new PhotoCam();
+            GenericaSessao.put("photoCamBean", photoCam);
         }
     }
 
@@ -1193,6 +1207,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 Dao dao = new Dao();
                 fisica.setDataFoto("");
                 dao.update(fisica, true);
+                GenericaSessao.remove("photoCamBean");
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -1784,6 +1799,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void capturar(CaptureEvent captureEvent) {
+        GenericaSessao.remove("photoCamBean");
+        PhotoCam photoCam = new PhotoCam();
+        GenericaSessao.put("photoCamBean", photoCam);
         String fotoTempCaminho = "foto/" + getUsuario().getId();
         if (PhotoCam.oncapture(captureEvent, "perfil", "", true)) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
@@ -1847,6 +1865,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (sucesso) {
             fotoTempPerfil = "";
             fotoPerfil = "";
+            GenericaSessao.remove("photoCamBean");
+            PhotoCam photoCam = new PhotoCam();
+            GenericaSessao.put("photoCamBean", photoCam);
             RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
         }
     }
