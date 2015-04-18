@@ -61,10 +61,12 @@ public class GeracaoDebitosCartaoBean implements Serializable {
     public void destroy() {
         GenericaSessao.remove("geracaoDebitosCartaoBean");
         GenericaSessao.remove("uploadBean");
+        GenericaSessao.remove("photoCamBean");
         GenericaSessao.remove("cartaoSocialBean");
         GenericaSessao.remove("fisicaPesquisa");
         GenericaSessao.remove("fisicaBean");
         GenericaSessao.remove("baixa_sucesso");
+        GenericaSessao.remove("cartao_social_sucesso");
         GenericaSessao.remove("listaMovimento");
         GenericaSessao.remove("lista_movimentos_baixados");
         GenericaSessao.remove("pessoaUtilitariosBean");
@@ -95,7 +97,6 @@ public class GeracaoDebitosCartaoBean implements Serializable {
             listHistoricoCarteirinhas.clear();
             selected = null;
             GenericaMensagem.info("Sucesso", "Cartão impresso com sucesso!");
-            selected = null;
         }
     }
 
@@ -172,6 +173,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
 
         dao.commit();
         listaSocios.clear();
+        GenericaSessao.put("caixa_banco", "caixa");
         GenericaSessao.put("listaMovimento", listMovimentos);
         GenericaMensagem.info("Sucesso", "Geração efetuada com sucesso!");
         return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).baixaGeral();
@@ -179,6 +181,19 @@ public class GeracaoDebitosCartaoBean implements Serializable {
     }
 
     public void clear(Integer tcase) {
+        // Limpa toda sessão
+        if (tcase == 0) {
+            GenericaSessao.remove("geracaoDebitosCartaoBean");
+        }
+        // Limpar e manter Sócio (Física)
+        if (tcase == 1) {
+            listaSocios.clear();
+            selected = null;
+            lote = new Lote();
+            listMovimentos = new ArrayList();
+            listHistoricoCarteirinhas.clear();
+            habilitaImpressao = false;
+        }
 
     }
 
@@ -256,6 +271,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
 
     public Boolean renderedUpload(Pessoa p) {
         if (registro.isFotoCartao()) {
+            Dao dao = new Dao();
             if (p.getFisica().getDtFoto() != null) {
                 return true;
             }

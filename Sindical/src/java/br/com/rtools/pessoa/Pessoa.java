@@ -11,6 +11,7 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -268,6 +269,9 @@ public class Pessoa implements Serializable {
         if (id != -1) {
             FisicaDB fisicaDB = new FisicaDBToplink();
             fisica = fisicaDB.pesquisaFisicaPorPessoa(id);
+            if(fisica.getId() != -1) {
+                fisica = (Fisica) new Dao().rebind(fisica);                
+            }
             fisica.setPessoa(null);
         }
         return fisica;

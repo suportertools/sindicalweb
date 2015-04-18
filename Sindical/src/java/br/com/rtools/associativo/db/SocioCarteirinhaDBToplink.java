@@ -201,7 +201,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // IMPRESSOS / EMPRESAS
             if (tipo.equals("iEmpresa")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
                 } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
@@ -214,7 +214,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // IMPRESSOS / CNPJ
             if (tipo.equals("iCNPJ")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
                 } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
@@ -227,7 +227,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // IMPRESSOS / ULTIMOS 30 DIAS
             if (tipo.equals("iDias")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
                 } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }

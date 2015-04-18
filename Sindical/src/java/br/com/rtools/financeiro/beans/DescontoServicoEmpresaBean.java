@@ -44,6 +44,7 @@ public class DescontoServicoEmpresaBean implements Serializable {
     private String message;
     private boolean desabilitaPesquisaNome;
     private boolean desabilitaPesquisaCNPJ;
+    private Boolean habilitaSubGrupo;
 
     @PostConstruct
     public void init() {
@@ -64,6 +65,7 @@ public class DescontoServicoEmpresaBean implements Serializable {
         desabilitaPesquisaNome = false;
         desabilitaPesquisaCNPJ = false;
         selectedServicos = null;
+        habilitaSubGrupo = false;
     }
 
     @PreDestroy
@@ -370,7 +372,11 @@ public class DescontoServicoEmpresaBean implements Serializable {
         if (descontoServicoEmpresa.getJuridica().getId() != -1) {
             if (listServicos.isEmpty()) {
                 DescontoServicoEmpresaDB dsedb = new DescontoServicoEmpresaDBTopLink();
-                listServicos = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa.getJuridica().getId(), Integer.parseInt(listSubGrupoFinanceiro.get(idSubGrupoFinanceiro).getDescription()));
+                if (habilitaSubGrupo) {
+                    listServicos = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa.getJuridica().getId(), Integer.parseInt(listSubGrupoFinanceiro.get(idSubGrupoFinanceiro).getDescription()));
+                } else {
+                    listServicos = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa.getJuridica().getId(), Integer.parseInt(listGrupoFinanceiro.get(idGrupoFinanceiro).getDescription()), null);
+                }
             }
         }
         return listServicos;
@@ -488,7 +494,7 @@ public class DescontoServicoEmpresaBean implements Serializable {
     }
 
     public List<SelectItem> getListSubGrupoFinanceiro() {
-        if (!listGrupoFinanceiro.isEmpty()) {
+        if (!listGrupoFinanceiro.isEmpty() && habilitaSubGrupo) {
             if (listSubGrupoFinanceiro.isEmpty()) {
                 FinanceiroDB financeiroDB = new FinanceiroDBToplink();
                 List<SubGrupoFinanceiro> list = financeiroDB.listaSubGrupo(Integer.parseInt(listGrupoFinanceiro.get(idGrupoFinanceiro).getDescription()));
@@ -521,5 +527,13 @@ public class DescontoServicoEmpresaBean implements Serializable {
 
     public void setSelectedServicos(List<Servicos> selectedServicos) {
         this.selectedServicos = selectedServicos;
+    }
+
+    public Boolean getHabilitaSubGrupo() {
+        return habilitaSubGrupo;
+    }
+
+    public void setHabilitaSubGrupo(Boolean habilitaSubGrupo) {
+        this.habilitaSubGrupo = habilitaSubGrupo;
     }
 }
