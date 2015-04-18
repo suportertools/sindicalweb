@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Geração de Débitos de Cartões</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <ui:include src="templates/templateAcessoFilialComCaixa.xhtml" />
+            <f:metadata>  
+                <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('geracaoDebitosCartao')}"/>  
+                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('geracaoDebitosCartao')}"/>  
+                <f:event type="preRenderView" listener="${photoCamBean.setABSOLUT_PATH('Imagens')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setPATH('Fotos')}"/>
+                <f:event type="preRenderView" listener="${geracaoDebitosCartaoBean.load()}"/>
+            </f:metadata>
+            <ui:include src="templates/templateUpload.xhtml" />
+            <ui:include src="templates/templatePhotoCam.xhtml" />
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:form id="form_gdc">
+                    <p:messages autoUpdate="true" closable="true" showDetail="true" showSummary="true" />
+                    <p:outputLabel value="Geração de Débitos de Cartões" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel>
+                        <h:panelGrid columns="3">
+                            <p:commandButton value="Pesquisar Sócio: " action="#{chamadaPaginaBean.pesquisa('pesquisaSocios')}" actionListener="#{fisicaBean.listernerTipoPesquisa('socioativo')}" icon="ui-icon-search"/>
+                            <p:outputLabel value="#{geracaoDebitosCartaoBean.fisica.pessoa.nome}" rendered="#{geracaoDebitosCartaoBean.fisica.id != -1}" styleClass="bold"/>
+                            <p:commandButton icon="ui-icon-contact" update=":form_gdc:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(geracaoDebitosCartaoBean.fisica.pessoa.id)}" title="Ver detalhes" rendered="#{geracaoDebitosCartaoBean.fisica.id != -1}"/>
+                        </h:panelGrid>
+                        <p:panel id="i_tbl" header="Titular / Dependente(s)" styleClass="margin-top-max">
+                            <p:dataTable value="#{geracaoDebitosCartaoBean.listaSocios}" var="socio" styleClass="margin-top-max" rendered="#{not empty geracaoDebitosCartaoBean.listaSocios}" selection="#{geracaoDebitosCartaoBean.selected}" rowKey="#{socio.id}" disabledSelection="#{geracaoDebitosCartaoBean.disabled(socio.servicoPessoa.pessoa, socio.object)}">
+                                <p:column selectionMode="multiple" width="20" styleClass="text-center" disabledSelection="#{not empty socio.object}" />
+                                <p:column headerText="Foto" width="80">
+                                    <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(socio.servicoPessoa.pessoa)}" style="width: 70px; height: auto;" cache="false"/>
+                                </p:column>
+                                <p:column headerText="Nome" styleClass="#{socio.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}">
+                                    #{socio.servicoPessoa.pessoa.nome }
+                                </p:column>
+                                <p:column headerText="Parentesco" styleClass="#{socio.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}">
+                                    #{socio.parentesco.parentesco}                                
+                                </p:column>
+                                <p:column headerText="Importante" styleClass="text-center">
+                                    <p:outputLabel value="CARTÃO GERADO: #{socio.object.lote.emissao}" rendered="#{socio.object != null}" />
+                                </p:column>
+                                <p:column width="30" styleClass="text-center">
+                                    <p:commandButton icon="ui-icon-contact" update=":form_gdc:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(socio.servicoPessoa.pessoa.id)}" title="Ver detalhes" />
+                                </p:column>
+                                <p:column width="100" styleClass="text-center" headerText="Foto">
+                                    <h:panelGrid columns="2" styleClass="sbb">
+                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener('Imagens', socio.servicoPessoa.pessoa.id, 'image/png,image/jpeg', true, true, 'form_gdc:i_tbl')}" />
+                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="ui-icon-image" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" actionListener="#{photoCamBean.listener('Imagens', socio.servicoPessoa.pessoa.id, true, true, 'form_gdc:i_tbl')}" />
+                                    </h:panelGrid>
+                                </p:column>
+                            </p:dataTable>                            
+                        </p:panel>
+                    </p:panel>
+                    <h:panelGrid columns="4" styleClass="margin-top-max">
+                        <p:commandButton value="Gerar Pagamento" onclick="PF('dlg_save').show()" rendered="#{empty geracaoDebitosCartaoBean.listHistoricoCarteirinhas}"/>
+                        <p:commandButton value="Novo" action="#{geracaoDebitosCartaoBean.clear(0)}" update="form_gdc" />
+                        <p:commandButton value="Limpar e manter sócio" action="#{geracaoDebitosCartaoBean.clear(1)}" update="form_gdc" />
+                        <p:commandButton ajax="false" value="Imprimir Cartões Baixados" action="#{cartaoSocialBean.imprimirSocioCarteirinha(geracaoDebitosCartaoBean.listHistoricoCarteirinhas)}" rendered="#{not empty geracaoDebitosCartaoBean.listHistoricoCarteirinhas}" icon="ui-icon-print"/>
+                    </h:panelGrid>
+                    <p:dialog header="Deseja salvar este Registro?" widgetVar="dlg_save" modal="true" closable="true">
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Sim" title="Salvar" action="#{geracaoDebitosCartaoBean.save}" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" update="form_gdc"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();"/>                                
+                            </h:panelGrid>
+                        </f:facet>
+                    </p:dialog>
+                    <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                        <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                        <p:panel id="i_pessoa_fisica_card">
+                            <ui:include src="templates/templatePessoaFisicaCard.xhtml" />
+                        </p:panel>
+                    </p:dialog>                    
+                </h:form>                
+            </p:panel>           
+        </f:view>
+    </h:body>
+</ui:composition>

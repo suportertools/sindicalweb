@@ -32,12 +32,12 @@
                             <div class="clear"></div>
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                                 <h:panelGrid columns="5">
-                                    <p:selectOneMenu id="i_pesquisa_por" value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
-                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl, i_panel_pesquisa" listener="#{fisicaBean.listaPessoaFisica.clear()}" global="false"/>
-                                        <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
-                                        <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
-                                        <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
-                                    </p:selectOneMenu>                             
+                                    <!-- <p:selectOneMenu id="i_pesquisa_por" value="# {fisicaBean.pesquisaPor}" style="margin-right: 30px; padding-right: 20px">
+                                        <p:ajax event="change" update="@this, id_desc_pesquisa, tbl, i_panel_pesquisa" listener="# {fisicaBean.listaPessoaFisica.clear()}" global="false"/>
+                                        <f:selectItem itemValue="pessoa"                itemLabel="Física"/>
+                                        <f:selectItem itemValue="socioativo"            itemLabel="Sócio Ativo"/>
+                                        <f:selectItem itemValue="socioinativo"          itemLabel="Sócio Inativos"/>
+                                    </p:selectOneMenu> -->
                                     <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}" placeholder="#{fisicaBean.porPesquisa.equals('endereco') ?  'Logradouro + Descrição Endereço + , + Número + - + Bairro' : ''}">
                                         <p:ajax event="change" update="@this" global="false" />
                                     </p:inputMask>
@@ -79,6 +79,7 @@
                             </p:panel>
 
                             <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                                <p:ajax event="rowToggle" listener="#{fisicaBean.listenerSocios(fisica.pessoa.id)}" />
                                 <p:column style="width:5%">  
                                     <p:rowToggler />  
                                 </p:column>  
@@ -126,11 +127,25 @@
                                     <h:panelGrid style="height: 40px" styleClass="sbb">
                                         <h:outputLabel value="Endereço: #{fisica.pessoa.pessoaEndereco.enderecoCompletoString} " styleClass="bold font-color-red"/>
                                     </h:panelGrid>
+                                    <p:panel header="Titular / Dependente(s)" rendered="#{not empty fisicaBean.listaSocios}">
+                                        <p:dataTable value="#{fisicaBean.listaSocios}" var="dependentes">
+                                            <p:column headerText="Nome">                                                
+                                                <p:commandLink action="#{fisicaBean.editarFisica(dependentes.servicoPessoa.pessoa)}" value="#{dependentes.servicoPessoa.pessoa.nome}" title="Editar pessoa" styleClass="#{dependentes.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}"/>
+                                            </p:column>
+                                            <p:column headerText="Parentesco" styleClass="#{dependentes.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}">
+                                                #{dependentes.parentesco.parentesco}
+                                            </p:column>
+                                        </p:dataTable>                                            
+                                    </p:panel>
+                                    <h:column>
+                                        <p:panel rendered="#{empty fisicaBean.listaSocios}">
+                                            <p:outputLabel value="NÃO SÓCIO" styleClass="bold font-color-red" style="font-size: 16pt!important"/>
+                                        </p:panel>
+                                    </h:column>
                                 </p:rowExpansion>
 
                                 <f:facet name="footer">Abra a lista para mais informações</f:facet>
                             </p:dataTable>
-
                             <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
                                 <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                                 <p:panel id="i_pessoa_fisica_card">
