@@ -17,4 +17,6 @@ public interface DescontoServicoEmpresaDB {
     public DescontoServicoEmpresa pesquisaDescontoServicoEmpresa(DescontoServicoEmpresa descontoServicoEmpresa);
 
     public List<Servicos> listaTodosServicosDisponiveis(Integer id_empresa, Integer id_subgrupo_financeiro);
+
+    public List<Servicos> listaTodosServicosDisponiveis(Integer id_empresa, Integer id_grupo_financeiro, Integer id_subgrupo_financeiro);
 }

@@ -762,7 +762,7 @@ public class CartaoSocialBean implements Serializable {
                 historicoCarteirinha.setDescricao("Impressão de Carteirinha");
                 historicoCarteirinha.setEmissao(DataHoje.data());
                 historicoCarteirinha.setMovimento(list.get(i));
-                historicoCarteirinha.setCarteirinha(socioCarteirinhaDB.pesquisaCarteirinhaPessoa(list.get(i).getPessoa().getId(), idModelo));
+                historicoCarteirinha.setCarteirinha(socioCarteirinhaDB.pesquisaCarteirinhaPessoa(list.get(i).getBeneficiario().getId(), idModelo));
                 if (!dao.save(historicoCarteirinha)) {
                     dao.rollback();
                     return new ArrayList();
@@ -800,7 +800,7 @@ public class CartaoSocialBean implements Serializable {
         for (int i = 0; i < list.size(); i++) {
             carteirinhas.get(i).setEmissao(DataHoje.data());
             new Dao().update(carteirinhas.get(i), true);
-            if(isBeneficiario) {
+            if (isBeneficiario) {
                 listAux.addAll(dbc.filtroCartao(((HistoricoCarteirinha) list.get(i)).getMovimento().getBeneficiario().getId()));
             } else {
                 listAux.addAll(dbc.filtroCartao(carteirinhas.get(i).getPessoa().getId()));

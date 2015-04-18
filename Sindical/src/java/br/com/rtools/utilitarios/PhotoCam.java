@@ -136,7 +136,11 @@ public class PhotoCam {
                 if (caminhoTemporario.isEmpty()) {
                     caminho = ABSOLUT_PATH + "/" + PATH;
                 } else {
-                    caminho = ABSOLUT_PATH + "/" + PATH + "/" + caminhoTemporario;
+                    if(caminhoTemporario.equals("PATH")) {
+                        caminho = ABSOLUT_PATH + "/" + PATH + "/" + caminhoTemporario;                        
+                    } else {
+                        caminho = ABSOLUT_PATH + "/" + caminhoTemporario;
+                    }
                 }
             }
             Diretorio.criar(caminho);

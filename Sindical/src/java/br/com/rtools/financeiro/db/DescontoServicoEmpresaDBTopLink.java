@@ -99,10 +99,21 @@ public class DescontoServicoEmpresaDBTopLink extends DB implements DescontoServi
 
     @Override
     public List<Servicos> listaTodosServicosDisponiveis(Integer id_empresa, Integer id_subgrupo_financeiro) {
+        return listaTodosServicosDisponiveis(id_empresa, null, id_subgrupo_financeiro);
+    }
+
+    @Override
+    public List<Servicos> listaTodosServicosDisponiveis(Integer id_empresa, Integer id_grupo_financeiro, Integer id_subgrupo_financeiro) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.situacao = 'A' AND S.id NOT IN (SELECT DSE.servicos.id FROM DescontoServicoEmpresa AS DSE WHERE DSE.juridica.id = :juridica ) AND S.subGrupoFinanceiro.id = :subGrupoFinanceiro ORDER BY S.descricao ASC");
+            Query query;
+            if (id_grupo_financeiro != null) {
+                query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.situacao = 'A' AND S.id NOT IN (SELECT DSE.servicos.id FROM DescontoServicoEmpresa AS DSE WHERE DSE.juridica.id = :juridica ) AND S.subGrupoFinanceiro.grupoFinanceiro.id = :grupoFinanceiro ORDER BY S.descricao ASC");
+                query.setParameter("grupoFinanceiro", id_grupo_financeiro);
+            } else {
+                query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.situacao = 'A' AND S.id NOT IN (SELECT DSE.servicos.id FROM DescontoServicoEmpresa AS DSE WHERE DSE.juridica.id = :juridica ) AND S.subGrupoFinanceiro.id = :subGrupoFinanceiro ORDER BY S.descricao ASC");
+                query.setParameter("subGrupoFinanceiro", id_subgrupo_financeiro);
+            }
             query.setParameter("juridica", id_empresa);
-            query.setParameter("subGrupoFinanceiro", id_subgrupo_financeiro);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
