@@ -38,6 +38,9 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
+                    <f:metadata>
+                        <f:event type="preRenderView" listener="${photoCamBean.load()}"/>
+                    </f:metadata>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="form_pessoa_fisica">
                             <h:outputScript name="tradutor_primefaces.js" library="js" /> 

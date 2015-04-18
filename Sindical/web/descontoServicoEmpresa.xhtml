@@ -36,17 +36,28 @@
                         </h:panelGrid>
                         <h:panelGrid columns="2" styleClass="margin-top-max">
                             <p:outputLabel value="Grupo Financeiro:" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" />
-                            <p:outputLabel value="SubGrupo Financeiro:" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" />
+                            <h:column>
+                                <h:panelGrid columns="2">
+                                    <p:outputLabel value="SubGrupo Financeiro:" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" />
+                                    <p:selectBooleanCheckbox value="#{descontoServicoEmpresaBean.habilitaSubGrupo}">
+                                        <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(1)}"/>
+                                    </p:selectBooleanCheckbox>                                    
+                                </h:panelGrid>
+                            </h:column>
                             <p:selectOneMenu value="#{descontoServicoEmpresaBean.idGrupoFinanceiro}" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" filter="true" filterMatchMode="startsWith">
                                 <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(1)}"/>
                                 <f:selectItem itemValue="" itemLabel="Selecionar" />
                                 <f:selectItems value="#{descontoServicoEmpresaBean.listGrupoFinanceiro}" />
-                            </p:selectOneMenu>                         
-                            <p:selectOneMenu value="#{descontoServicoEmpresaBean.idSubGrupoFinanceiro}" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" filter="true" filterMatchMode="startsWith">
-                                <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(2)}"/>
-                                <f:selectItem itemValue="" itemLabel="Selecionar" />
-                                <f:selectItems value="#{descontoServicoEmpresaBean.listSubGrupoFinanceiro}" />
                             </p:selectOneMenu>
+                            <h:column>
+                                <h:panelGrid rendered="#{descontoServicoEmpresaBean.habilitaSubGrupo}">
+                                    <p:selectOneMenu value="#{descontoServicoEmpresaBean.idSubGrupoFinanceiro}" rendered="#{not empty descontoServicoEmpresaBean.listGrupoFinanceiro}" filter="true" filterMatchMode="startsWith">
+                                        <p:ajax event="change" update="@this form_desconto" listener="#{descontoServicoEmpresaBean.clear(2)}"/>
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <f:selectItems value="#{descontoServicoEmpresaBean.listSubGrupoFinanceiro}" />
+                                    </p:selectOneMenu>                                
+                                </h:panelGrid>
+                            </h:column>
                         </h:panelGrid>
                         <f:facet name="footer">
                             <h:panelGrid columns="2">
