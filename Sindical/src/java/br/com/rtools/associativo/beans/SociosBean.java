@@ -598,6 +598,9 @@ public class SociosBean implements Serializable {
             }
         }
         if (sucesso) {
+            GenericaSessao.remove("photoCamBean");
+            PhotoCam photoCam = new PhotoCam();
+            GenericaSessao.put("photoCamBean", photoCam);
             Dao dao = new Dao();
             novoDependente.setDtFoto(null);
             dao.update(novoDependente, true);
@@ -643,7 +646,11 @@ public class SociosBean implements Serializable {
         if (!error) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
             boolean delete = f.delete();
+
         }
+        GenericaSessao.remove("photoCamBean");
+        PhotoCam photoCam = new PhotoCam();
+        GenericaSessao.put("photoCamBean", photoCam);
         GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
     }
 
