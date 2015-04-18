@@ -38,6 +38,9 @@
                     <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
+                    <f:metadata>
+                        <f:event type="preRenderView" listener="${photoCamBean.load()}"/>
+                    </f:metadata>                    
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Cadastro do Sócio" styleClass="fonteHeader" />
                         <h:form id="formSocios">
