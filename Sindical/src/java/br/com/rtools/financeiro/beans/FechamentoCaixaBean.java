@@ -5,7 +5,6 @@ import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaSaldo;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FechamentoCaixa;
-import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
@@ -24,8 +23,6 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,10 +32,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 
 @ManagedBean
 @SessionScoped
