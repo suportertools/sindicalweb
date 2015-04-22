@@ -39,13 +39,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -261,21 +254,24 @@ public final class FechamentoCaixaBean implements Serializable {
         }
         
         try {
-            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper"));
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+            Jasper.PATH = "download s";
+            Jasper.printReports("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper", "fechamento_caixa", lista);
             
-            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            res.setContentType("application/pdf");
-            res.setHeader("Content-disposition", "inline; filename=\"Resumo Fechamento Caixa.pdf\"");
-            res.getOutputStream().write(arquivo);
-            res.getCharacterEncoding();
-            FacesContext.getCurrentInstance().responseComplete();
+//            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper"));
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+//
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+//            
+//            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//            res.setContentType("application/pdf");
+//            res.setHeader("Content-disposition", "inline; filename=\"Resumo Fechamento Caixa.pdf\"");
+//            res.getOutputStream().write(arquivo);
+//            res.getCharacterEncoding();
+//            FacesContext.getCurrentInstance().responseComplete();
 
-        } catch (JRException | IOException e) {
+        } catch (Exception e) {
             e.getMessage();
         }        
     }
