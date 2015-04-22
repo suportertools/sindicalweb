@@ -19,6 +19,7 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -214,21 +215,23 @@ public final class FechamentoCaixaBean implements Serializable {
         }
         
         try {
-            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CAIXA_ANALITICO.jasper"));
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+            Jasper.PATH = "downloads";
+            Jasper.printReports("/Relatorios/CAIXA_ANALITICO.jasper", "analitico", lista);
+//            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CAIXA_ANALITICO.jasper"));
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+//
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+//            
+//            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//            res.setContentType("application/pdf");
+//            res.setHeader("Content-disposition", "inline; filename=\"Relatório Caixa Analítico.pdf\"");
+//            res.getOutputStream().write(arquivo);
+//            res.getCharacterEncoding();
+//            FacesContext.getCurrentInstance().responseComplete();
 
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
-            
-            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            res.setContentType("application/pdf");
-            res.setHeader("Content-disposition", "inline; filename=\"Relatório Caixa Analítico.pdf\"");
-            res.getOutputStream().write(arquivo);
-            res.getCharacterEncoding();
-            FacesContext.getCurrentInstance().responseComplete();
-
-        } catch (JRException | IOException e) {
+        } catch (Exception e) {
             e.getMessage();
         }        
     }
