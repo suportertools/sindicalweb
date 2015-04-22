@@ -78,7 +78,7 @@
                                     <p:column>
                                         <p:commandButton value="Adicionar uma Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosReceberSocialBean.pessoa.id == -1}"/>
                                         <p:commandButton value="Pesquisar outra Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosReceberSocialBean.pessoa.id != -1}"/>
-                                        <h:outputText value="#{movimentosReceberSocialBean.pessoa.nome}" title="#{movimentosReceberSocialBean.pessoa.nome}" style="margin-left: 20px; font-weight: bold"/>
+                                        <h:outputText value="#{movimentosReceberSocialBean.pessoa.nome} - #{movimentosReceberSocialBean.pessoa.documento}" title="#{movimentosReceberSocialBean.pessoa.nome} - #{movimentosReceberSocialBean.pessoa.documento}" style="margin-left: 20px; font-weight: bold"/>
                                     </p:column>
 
                                     <p:column>
