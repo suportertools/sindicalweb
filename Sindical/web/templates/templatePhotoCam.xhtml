@@ -8,12 +8,14 @@
             <f:event type="preRenderView" listener="${photoCamBean.load}"/>  
         </f:metadata>
         <h:form id="form_photocam_files">
-            <p:dialog id="i_captura" widgetVar="dlg_photocam" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
+            <p:dialog id="i_captura" widgetVar="dlg_photocam" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true" closeOnEscape="true">
+                <p:ajax event="close" listener="#{photoCamBean.close}" update="${photoCamBean.UPDATE}"/>
                 <h:panelGrid id="i_panel_photocam" columns="1">
-                    <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update="#{photoCamBean.updates}" />
+                    <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update="${photoCamBean.UPDATE}" />
                     <h:column>
                         <h:panelGrid columns="2">
-                            <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_photo').show(); PF('pc_photocam').capture(); PF('dlg_loading_photo').close()"/>
+                            <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_photo').show(); PF('pc_photocam').capture();" action="#{photoCamBean.waiting(5000)}" global="false" />
+                            <p:commandButton value="Atualizar" update="${photoCamBean.UPDATE}" global="false"/>
                         </h:panelGrid>
                     </h:column>
                 </h:panelGrid>                        
