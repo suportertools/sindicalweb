@@ -193,6 +193,10 @@ public class SociosBean implements Serializable {
         if (f.exists()) {
             f.delete();
         }
+        f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f.exists()) {
+            f.delete();
+        }
     }
 
     public void loadPessoaComplemento(Integer id_pessoa) {
@@ -615,7 +619,7 @@ public class SociosBean implements Serializable {
                     sucesso = f.delete();
                 }
             }
-        } else {
+        } else { 
             if (novoDependente.getId() != -1) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png"));
                 sucesso = f.delete();
