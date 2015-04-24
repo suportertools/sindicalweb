@@ -52,7 +52,7 @@
                         <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()"/>
                         <p:commandButton value="Novo" action="#{matriculaConvenioMedicoBean.clear}" update=":form_cm:"/>
                         <p:commandButton value="Inativar" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" rendered="#{matriculaConvenioMedicoBean.matriculaConvenioMedico.dtInativo == null}" />
-                        <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaConvenioMedico}" />                        
+                        <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pagina('pesquisaConvenioMedico')}" />
                     </h:panelGrid>
                 </h:form>
             </p:panel>           
