@@ -21,7 +21,7 @@
                 <f:view>
                     <h:form id="form_horarios">
                         <c:set scope="request" var="object" value="${horariosBean.horarios}"/>
-                        <p:panel styleClass="wrapper" style="border: 0px;">
+                        <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                             <p:outputLabel value="Cadastro de horários" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <p:messages autoUpdate="true" showDetail="true" showSummary="true" />                        

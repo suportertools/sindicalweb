@@ -20,7 +20,7 @@
         </f:subview>
         
         <f:view>
-            <p:panel styleClass="wrapper" style="border: 0px;">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_cnae">
                     <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
                     <h:outputText value="Cnae" styleClass="fonteHeader" />

@@ -14,7 +14,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_pesquisa_agenda_telefone">
                     <c:set scope="request" var="object" value="${agendaTelefoneBean.agendaTelefone}"/>
                     <p:dialog id="i_modal_detalhes" widgetVar="dgl_modal_detalhes"  modal="true" width="600" maximizable="true" header="Detalhes Contato" closeOnEscape="true">

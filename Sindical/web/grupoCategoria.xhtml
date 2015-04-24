@@ -27,7 +27,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Grupo Categoria" styleClass="fonteHeader" />
                         <h:form id="form_grupo_categoria">
                             <c:set scope="request" var="object" value="${grupoCategoriaBean.grupoCategoria}"/>

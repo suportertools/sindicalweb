@@ -19,7 +19,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_patronal">
                     <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                     <p:growl id="growl" showDetail="true"/> 

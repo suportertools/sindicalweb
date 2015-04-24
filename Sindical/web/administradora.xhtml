@@ -14,19 +14,20 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_administradora">
                     <p:outputLabel value="Administradora" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${administradoraBean.administradora}"/>
                     <div class="clear"></div>
+                    <p:messages autoUpdate="true" showDetail="true" showSummary="true" id="i_mensagem"/>
                     <p:panel id="id_administradora" styleClass="sbb margin-top-max">
                         <p:panelGrid columns="4">
-                            <p:commandButton value="Pessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa" id="id_pessoa_autoriza"/>
+                            <p:commandButton value="Pessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa" id="id_p_administradora"/>
                             <p:column>
-                                <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{administradoraBean.administradora.pessoa.id == -1}" for="id_administradora"/>
-                                <p:outputLabel id="idNome" value="#{administradoraBean.administradora.pessoa.nome}" rendered="#{administradoraBean.administradora.pessoa.id != -1}" for="id_administradora"/>
+                                <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{administradoraBean.administradora.pessoa.id == -1}" for="id_p_administradora"/>
+                                <p:outputLabel id="idNome" value="#{administradoraBean.administradora.pessoa.nome}" rendered="#{administradoraBean.administradora.pessoa.id != -1}" for="id_p_administradora"/>
                             </p:column>
-                            <p:commandButton value="Adicionar" action="#{administradoraBean.save}" oncomplete="PF('dlg_message').show()" update="id_administradora, i_mensagem, tbl" rendered="#{administradoraBean.administradora.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            <p:commandButton value="Adicionar" action="#{administradoraBean.save}" update="form_administradora" rendered="#{administradoraBean.administradora.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
                         </p:panelGrid>
                         <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
                             <p:dataTable value="#{administradoraBean.listAdministradoras}" var="administradora" emptyMessage="Nenhum registro(s) encontrado(s)">
@@ -37,19 +38,13 @@
                                     <h:outputLabel value="#{administradora.pessoa.nome}" styleClass="fontePadrao"/>
                                 </p:column>
                                 <p:column width="30">
-                                    <p:commandButton icon="ui-icon-trash" action="#{administradoraBean.delete(administradora)}" oncomplete="PF('dlg_message').show()" update=":form_administradora:tbl, :form_administradora:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{administradora.id}"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{administradoraBean.delete(administradora)}" update=":form_administradora:" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{administradora.id}"/>
                                 </p:column>
                                 <f:facet name="header">
                                     Relação de pessoas
                                 </f:facet>
                             </p:dataTable>
-                        </p:panelGrid>                        
-                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
-                            <h:outputLabel value="#{administradoraBean.message}" id="i_mensagem"/>
-                            <f:facet name="footer">
-                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
-                            </f:facet>
-                        </p:dialog>
+                        </p:panelGrid>
                     </p:panel>
                 </h:form>
             </p:panel>

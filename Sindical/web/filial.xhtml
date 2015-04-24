@@ -20,7 +20,7 @@
         </f:subview>
         
         <f:view>
-            <p:panel styleClass="wrapper" style="border: 0px;">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_filial">
                     <p:growl id="i_msg" showDetail="true" />  
                     <c:set scope="request" var="object" value="${filialBean.filial}"/>

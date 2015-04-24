@@ -17,9 +17,9 @@
             <ui:include src="templates/templateAcessoFilialComCaixa.xhtml" />
             <f:metadata>  
                 <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('geracaoDebitosCartao')}"/>  
-                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('geracaoDebitosCartao')}"/>  
-                <f:event type="preRenderView" listener="${photoCamBean.setABSOLUT_PATH('Imagens')}"/>
-                <f:event type="preRenderView" listener="${photoCamBean.setPATH('Fotos')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('geracaoDebitosCartao')}"/>
+                <f:event type="preRenderView" listener="${uploadBean.setUPDATE('form_gdc')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setUPDATE('form_gdc')}"/>                
                 <f:event type="preRenderView" listener="${geracaoDebitosCartaoBean.load()}"/>
             </f:metadata>
             <ui:include src="templates/templateUpload.xhtml" />
@@ -55,18 +55,19 @@
                                 </p:column>
                                 <p:column width="100" styleClass="text-center" headerText="Foto">
                                     <h:panelGrid columns="2" styleClass="sbb">
-                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener('Imagens', socio.servicoPessoa.pessoa.id, 'image/png,image/jpeg', true, true, 'form_gdc:i_tbl')}" />
-                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="ui-icon-image" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" actionListener="#{photoCamBean.listener('Imagens', socio.servicoPessoa.pessoa.id, true, true, 'form_gdc:i_tbl')}" />
+                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" action="#{uploadBean.listener('Imagens/Fotos', socio.servicoPessoa.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" />
+                                        <p:commandButton rendered="#{!geracaoDebitosCartaoBean.renderedUpload(socio.servicoPessoa.pessoa)}" icon="photocam"  title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener('Imagens/Fotos', socio.servicoPessoa.pessoa.id, true, true)}" global="false" update=":form_photocam_files:i_panel_photocam"/>
                                     </h:panelGrid>
                                 </p:column>
                             </p:dataTable>                            
                         </p:panel>
                     </p:panel>
-                    <h:panelGrid columns="4" styleClass="margin-top-max">
+                    <h:panelGrid columns="5" styleClass="margin-top-max">
                         <p:commandButton value="Gerar Pagamento" onclick="PF('dlg_save').show()" rendered="#{empty geracaoDebitosCartaoBean.listHistoricoCarteirinhas}"/>
                         <p:commandButton value="Novo" action="#{geracaoDebitosCartaoBean.clear(0)}" update="form_gdc" />
                         <p:commandButton value="Limpar e manter sócio" action="#{geracaoDebitosCartaoBean.clear(1)}" update="form_gdc" />
                         <p:commandButton ajax="false" value="Imprimir Cartões Baixados" action="#{cartaoSocialBean.imprimirSocioCarteirinha(geracaoDebitosCartaoBean.listHistoricoCarteirinhas)}" rendered="#{not empty geracaoDebitosCartaoBean.listHistoricoCarteirinhas}" icon="ui-icon-print"/>
+                        <p:commandLink value="Cartão Social" action="#{chamadaPaginaBean.cartaoSocial}" rendered="#{empty geracaoDebitosCartaoBean.listHistoricoCarteirinhas}"/>
                     </h:panelGrid>
                     <p:dialog header="Deseja salvar este Registro?" widgetVar="dlg_save" modal="true" closable="true">
                         <f:facet name="footer">

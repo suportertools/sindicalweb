@@ -15,11 +15,16 @@
         </f:subview>
         <f:view>
             <h:form id="form_pesquisa_cm">
-                <p:panel styleClass="wrapper no-border">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <h:outputText value="Pesquisa Convênio Médico" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
-                        <h:panelGrid columns="8">
+                        <h:panelGrid columns="10">
+                            <p:selectOneMenu value="#{matriculaConvenioMedicoBean.ativo}">
+                                <p:ajax event="change" update="@this, :form_pesquisa_cm:" listener="#{matriculaConvenioMedicoBean.listaConvenio.clear()}"/>
+                                <f:selectItem itemValue="true" itemLabel="Ativos"/>
+                                <f:selectItem itemValue="false"  itemLabel="Inativos"/>
+                            </p:selectOneMenu>                            
                             <p:outputLabel value="Pesquisar: "/>
                             <p:inputMask value="#{matriculaConvenioMedicoBean.descPesquisa}" rendered="#{matriculaConvenioMedicoBean.porPesquisa.equals('cpf')}" mask="999.999.999-99">
                                 <p:ajax event="change" update="@this" />
@@ -52,6 +57,9 @@
                         </p:column>
                         <p:column headerText="Nome" styleClass="text-center">
                             <p:outputLabel value="#{convenioMedico.servicoPessoa.pessoa.nome}" />
+                        </p:column>
+                        <p:column headerText="Convênio" styleClass="text-center">
+                            <p:outputLabel value="#{convenioMedico.servicoPessoa.servicos.descricao}" />
                         </p:column>
                     </p:dataTable>
                 </p:panel>

@@ -13,7 +13,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
                 <p:outputLabel value="Subgrupo Convênio" styleClass="fonteHeader" />
                 <p:panel style="clear: both;" styleClass="no-border"></p:panel>

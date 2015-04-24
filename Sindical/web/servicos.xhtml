@@ -21,7 +21,7 @@
                 </f:subview>
                 <f:view>    
                     <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
-                    <p:panel styleClass="wrapper no-border">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="form_servicos">
                             <c:set scope="request" var="object" value="${servicosBean.servicos}"/>
                             <p:outputLabel value="Cadastro de Serviços" styleClass="fonteHeader"/>
@@ -165,7 +165,7 @@
                                                     <p:inputText id="idValor" value="#{servicosBean.valorf}">
                                                         <p:ajax event="change" update="@this" />
                                                     </p:inputText>
-                                                    <p:outputLabel value=" Desconto até o vencimento: "  for="idDesconto"/>
+                                                    <p:outputLabel value=" Desconto até o vencimento (%): "  for="idDesconto"/>
                                                     <p:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" maxlength="100"> 
                                                         <p:ajax event="change" update="@this" />
                                                     </p:inputText>
@@ -230,14 +230,14 @@
                                                     <p:column headerText="Valor:  R$#{servicosBean.servicoValorDetalhe.valorString}" width="100" styleClass="text-center">
                                                         <p:column>
                                                             <p:inputText value="#{listServicosCategoriaDesconto.valorDescontoString}" styleClass="text-center font-color-red bold" size="5">
-                                                                <p:ajax event="blur" update=":form_servicos:id_tab_view:tblDesconto" listener="#{servicosBean.updateDescontoCategoriaValor(listServicosCategoriaDesconto)}" />
+                                                                <p:ajax event="change" update=":form_servicos:id_tab_view:tblDesconto" listener="#{servicosBean.updateDescontoCategoriaValor(listServicosCategoriaDesconto)}" global="false"/>
                                                             </p:inputText>
                                                         </p:column>
                                                     </p:column>
                                                     <p:column headerText="Desconto (%)" width="100" styleClass="text-center">
                                                         <p:column>
                                                             <p:spinner value="#{listServicosCategoriaDesconto.categoriaDesconto.desconto}" stepFactor="0.1" min="0" max="100" title="Código: #{listServicosCategoriaDesconto.categoriaDesconto.id}" size="8">
-                                                                <p:ajax event="change" update=":form_servicos:id_tab_view:tblDesconto" listener="#{servicosBean.updateDescontoCategoriaPercentual(listServicosCategoriaDesconto)}" />
+                                                                <p:ajax event="change" update=":form_servicos:id_tab_view:tblDesconto" listener="#{servicosBean.updateDescontoCategoriaPercentual(listServicosCategoriaDesconto)}" global="false"/>
                                                             </p:spinner>
                                                         </p:column>
                                                     </p:column>

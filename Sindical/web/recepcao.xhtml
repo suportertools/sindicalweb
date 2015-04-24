@@ -38,7 +38,7 @@
                     <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Recepção" styleClass="fonteHeader" />
                         <h:panelGrid style="clear: both;">
                             <h:form id="formRecepcao">
@@ -528,11 +528,16 @@
                                             <p:commandButton value="Gerar Senha" onclick="PF('dlg_gerar_senha').show()" rendered="#{recepcaoBean.agendamentoEdit.status.id != 3 and recepcaoBean.agendamentoEdit.status.id != 4 and recepcaoBean.agendamentoEdit.status.id != 7 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" />
                                             <p:commandButton value="Cancelar Agendamento" onclick="PF('dlg_cancelar').show()" rendered="#{recepcaoBean.agendamentoEdit.status.id != 3 and recepcaoBean.agendamentoEdit.status.id != 4 and recepcaoBean.agendamentoEdit.status.id != 7}" disabled="#{controleAcessoBean.botaoExcluir}" />
                                             <p:commandButton value="Voltar" action="#{recepcaoBean.fecharModal()}" oncomplete="PF('dlg_recepcao').hide()" global="false" />
-                                            <h:outputLabel value="MOTIVO DO CANCELAMENTO: " rendered="#{recepcaoBean.agendamentoEdit.status.id == 3}" style="margin-left: 20px; font-size: 11pt!important; color: red"/>
-                                            <h:outputLabel value="#{recepcaoBean.cancelamento.motivo}" rendered="#{recepcaoBean.agendamentoEdit.status.id == 3}" style="margin-left: 10px; font-size: 10pt!important"/>
                                             <p:commandButton value="Anexar documentos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
-                                            <p:commandButton value="Anexos (#{recepcaoBean.listFiles.size()})" oncomplete="PF('dgl_anexos').show();" id="id_btn_anexo" update=":form_recepcao_upload:" />
+                                            <p:commandButton value="Anexos (#{recepcaoBean.listFiles.size()})" oncomplete="PF('dgl_anexos').show();" id="id_btn_anexo" update=":form_recepcao_upload:" />                                            
                                         </h:panelGrid>
+                                        <p:panel header="MOTIVO CANCELAMENTO" rendered="#{recepcaoBean.agendamentoEdit.status.id == 3}" >
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel value="Data: #{recepcaoBean.cancelamento.data}" />                                                
+                                                <p:outputLabel value="Usuário: #{recepcaoBean.cancelamento.usuario.login}" />
+                                                <p:outputLabel value="Motivo: #{recepcaoBean.cancelamento.motivo}" />
+                                            </h:panelGrid>
+                                        </p:panel>
                                     </h:panelGrid>
                                 </p:dialog>
 

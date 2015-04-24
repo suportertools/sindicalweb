@@ -16,7 +16,7 @@
         <f:view>
             <ui:include src="templates/templateAcessoFilial.xhtml"/>
             <ui:include src="templates/templateStatus.xhtml"/>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_matricula_escola">
                     <h:outputScript name="script_primefaces.js" library="js" />
                     <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
@@ -68,7 +68,7 @@
                                             <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
                                             <h:panelGrid columns="2" rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
                                                 <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
-                                                <p:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
+                                                <p:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}" disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
                                                     <p:ajax event="change" update="idEmpresaResponsavelA" />
                                                 </p:selectBooleanCheckbox>
                                             </h:panelGrid>                                

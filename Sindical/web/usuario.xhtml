@@ -24,81 +24,102 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
+                    <f:metadata>  
+                        <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('usuario')}"/>  
+                        <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('usuario')}"/>
+                        <f:event type="preRenderView" listener="${uploadBean.setUPDATE(':form_u:i_photo_cam')}"/>
+                        <f:event type="preRenderView" listener="${photoCamBean.setUPDATE(':form_u:i_photo_cam')}"/>                        
+                    </f:metadata>
                     <ui:include src="templates/templateStatus.xhtml"/>
+                    <ui:include src="templates/templateUpload.xhtml" />
+                    <ui:include src="templates/templatePhotoCam.xhtml" />                    
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <p:outputLabel value="Cadastro de Usuários" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_u">
                             <c:set scope="request" var="object" value="${usuarioBean.usuario}" id="idObject"/>
                             <p:panel header="Usuário">
-                                <h:panelGrid columns="2" id="i_panel_user">
-                                    <h:column>                            
-                                        <p:commandButton id="idPesquisaPessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" />
+                                <h:panelGrid columns="2" id="i_panel_user" rowClasses="verticalAlignTop verticalAlignTop" style="width: 100%">
+                                    <h:column>
+                                        <h:panelGrid columns="2">
+                                            <h:column>                            
+                                                <p:commandButton id="idPesquisaPessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" />
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="#{usuarioBean.usuario.pessoa.nome}" />                            
+                                                <p:outputLabel for="idPesquisaPessoa" value=" Pesquisar pessoa > Nome do usuário"  rendered="#{usuarioBean.usuario.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Login: " />
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}">
+                                                    <p:ajax event="blur" update="@this" global="false"/>
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Email:  " />
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}">
+                                                    <p:ajax event="blur" update="@this"  global="false"/>
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Senha: " rendered="#{usuarioBean.disSenha}"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText type="password"  autocomplete="off" size="15" value="#{usuarioBean.usuario.senha}" rendered="#{usuarioBean.disSenha}">
+                                                    <p:ajax event="blur" update="@this"  global="false"/>
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Confirma senha: " rendered="#{usuarioBean.disSenha}"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText type="password" autocomplete="off" size="15" value="#{usuarioBean.confirmaSenha}" rendered="#{usuarioBean.disSenha}">
+                                                    <p:ajax event="blur" update="@this" global="false" />
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                            </h:column>
+                                            <h:column>
+                                                <p:commandLink action="#{usuarioBean.habilitaNovaSenha}" value="Alterar senha"  rendered="#{usuarioBean.disStrSenha}" update="i_panel_user"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Antiga: "  rendered="#{usuarioBean.disNovaSenha}"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText type="password"  value="#{usuarioBean.senhaAntiga}" autocomplete="off"  rendered="#{usuarioBean.disNovaSenha}">
+                                                    <p:ajax event="blur" update="@this"  global="false"/>
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Nova: "  rendered="#{usuarioBean.disNovaSenha}"/>
+                                            </h:column>
+                                            <h:column>
+                                                <p:inputText type="password"  value="#{usuarioBean.usuario.senha}" autocomplete="off" rendered="#{usuarioBean.disNovaSenha}" >
+                                                    <p:ajax event="blur" update="@this"  global="false"/>
+                                                </p:inputText>
+                                            </h:column>
+                                            <h:column>
+                                            </h:column>
+                                            <h:column>
+                                                <p:selectBooleanCheckbox id="idAtivaUsuario"  value="#{usuarioBean.usuario.ativo}" itemLabel="Ativo?">
+                                                    <p:ajax event="change" update="idAtivaUsuario"  global="false"/>
+                                                </p:selectBooleanCheckbox>
+                                            </h:column>                        
+                                        </h:panelGrid>
                                     </h:column>
                                     <h:column>
-                                        <p:outputLabel value="#{usuarioBean.usuario.pessoa.nome}" />                            
-                                        <p:outputLabel for="idPesquisaPessoa" value=" Pesquisar pessoa > Nome do usuário"  rendered="#{usuarioBean.usuario.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
+                                        <p:panel header="Foto" rendered="#{usuarioBean.usuario.id != -1}" style="float: right" id="i_photo_cam">
+                                            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(usuarioBean.usuario.pessoa)}" cache="false" width="130" />
+                                            <h:panelGrid columns="2" style="width: 100%" columnClasses="text-center" styleClass="margin-top-max">
+                                                <p:commandButton icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener('Imagens/Fotos', usuarioBean.usuario.pessoa.id, 'image/png,image/jpeg', true, true)}"  global="false" update=":form_upload_files:i_panel_anexos" />
+                                                <p:commandButton icon="photocam"  title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" actionListener="#{photoCamBean.listener('Imagens/Fotos', usuarioBean.usuario.pessoa.id, true, true)}" global="false" update=":form_photocam_files:i_panel_photocam" />
+                                            </h:panelGrid>
+                                        </p:panel>
                                     </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Login: " />
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}">
-                                            <p:ajax event="blur" update="@this" global="false"/>
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Email:  " />
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}">
-                                            <p:ajax event="blur" update="@this"  global="false"/>
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Senha: " rendered="#{usuarioBean.disSenha}"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText type="password"  autocomplete="off" size="15" value="#{usuarioBean.usuario.senha}" rendered="#{usuarioBean.disSenha}">
-                                            <p:ajax event="blur" update="@this"  global="false"/>
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Confirma senha: " rendered="#{usuarioBean.disSenha}"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText type="password" autocomplete="off" size="15" value="#{usuarioBean.confirmaSenha}" rendered="#{usuarioBean.disSenha}">
-                                            <p:ajax event="blur" update="@this" global="false" />
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                    </h:column>
-                                    <h:column>
-                                        <p:commandLink action="#{usuarioBean.habilitaNovaSenha}" value="Alterar senha"  rendered="#{usuarioBean.disStrSenha}" update="i_panel_user"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Antiga: "  rendered="#{usuarioBean.disNovaSenha}"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText type="password"  value="#{usuarioBean.senhaAntiga}" autocomplete="off"  rendered="#{usuarioBean.disNovaSenha}">
-                                            <p:ajax event="blur" update="@this"  global="false"/>
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Nova: "  rendered="#{usuarioBean.disNovaSenha}"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:inputText type="password"  value="#{usuarioBean.usuario.senha}" autocomplete="off" rendered="#{usuarioBean.disNovaSenha}" >
-                                            <p:ajax event="blur" update="@this"  global="false"/>
-                                        </p:inputText>
-                                    </h:column>
-                                    <h:column>
-                                    </h:column>
-                                    <h:column>
-                                        <p:selectBooleanCheckbox id="idAtivaUsuario"  value="#{usuarioBean.usuario.ativo}" itemLabel="Ativo?">
-                                            <p:ajax event="change" update="idAtivaUsuario"  global="false"/>
-                                        </p:selectBooleanCheckbox>
-                                    </h:column>                        
                                 </h:panelGrid>
                             </p:panel>
                             <h:panelGrid columns="4" styleClass="margin-top-max margin-bottom-max">

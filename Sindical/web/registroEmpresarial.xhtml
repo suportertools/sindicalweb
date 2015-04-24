@@ -14,7 +14,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:outputText value="Você não possui permissões para efetuar operações nesta rotina!" styleClass="fonteHeader" rendered="#{controleAcessoBean.botaoSalvar}" title="salvar / alterar / excluir"/>
                 <h:form id="form_registro_empresarial" rendered="#{!controleAcessoBean.botaoSalvar}">
                     <h:outputText value="Registro Empresarial" styleClass="fonteHeader" />

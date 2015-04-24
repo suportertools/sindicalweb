@@ -424,11 +424,24 @@
                                 <p:commandButton value="#{agendamentoBean.agendamento.id == -1 ? 'Agendar' : 'Alterar'}" action="#{agendamentoBean.save()}" disabled="#{controleAcessoBean.botaoSalvar}" update="formConcluirAgendamento" />
                                 <p:commandButton value="Voltar" actionListener="#{agendamentoBean.setVisibleModal(false)}" update="formConcluirAgendamento" onclick="PF('dlg_agendamento').hide()"/>
                                 <p:commandButton value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" />
-                                <p:commandButton value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" update="formConcluirAgendamento"/>
+                                <p:commandButton value="Cancelar Horário" onclick="PF('dlg_cancelar').show()" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" />
                                 <p:commandButton value="Imprimir Protocolo" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.agendamento.id != -1}" icon="ui-icon-print" ajax="false"/>
                             </h:panelGrid>
                             <!-- </p:scrollPanel> -->
                         </p:dialog>
+                        
+                        <p:dialog widgetVar="dlg_cancelar" header="Deseja realmente CANCELAR essa Homologação?" resizable="false" modal="true">
+                            <h:panelGrid columns="1" style="width: 100%">
+                                <h:outputLabel value="Digite o motivo para o cancelamento" style="color: red"/>
+                                <p:inputTextarea value="#{agendamentoBean.cancelamento.motivo}" rows="3" style="width: 100%"/>
+                            </h:panelGrid>                                
+                            <f:facet name="footer">
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Sim" oncomplete="PF('dlg_cancelar').hide()" action="#{agendamentoBean.cancelarHorario}" update="formConcluirAgendamento" title="Cancelar" icon="ui-icon-check"/>
+                                    <p:commandButton value="Não" onclick="PF('dlg_cancelar').hide()" icon="ui-icon-close"/>
+                                </h:panelGrid>                                
+                            </f:facet>
+                        </p:dialog>                        
 
                         <p:dialog widgetVar="dlg_transferir_horario" header="Transferir Horário" resizable="false" modal="true">
                             <h:panelGrid id="i_panel_transferir_horario" columns="2">
