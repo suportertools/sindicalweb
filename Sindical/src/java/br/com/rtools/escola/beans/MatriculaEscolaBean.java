@@ -1922,10 +1922,38 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void acaoPesquisaInicial() {
         setComoPesquisa("Inicial");
+        listaMatriculaEscolas.clear();
+        loadList();
     }
 
     public void acaoPesquisaParcial() {
         setComoPesquisa("Parcial");
+        listaMatriculaEscolas.clear();
+        loadList();
+    }
+
+    public void loadList() {
+        if (!descricaoCurso.isEmpty() || !descricao.isEmpty()) {
+            if (listaMatriculaEscolas.isEmpty()) {
+                MatriculaEscolaDao dB = new MatriculaEscolaDao();
+                int idStatusI = idStatusFiltro;
+                if (idStatusI != 5) {
+                    idStatusI = Integer.parseInt(listaStatus.get(idStatusFiltro).getDescription());
+                }
+                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa, idStatusI, MacFilial.getAcessoFilial().getFilial());
+                MatriculaIndividual mIndividual = null;
+                MatriculaTurma mTurma = null;
+                for (MatriculaEscola listaMatriculaEscola : list) {
+                    if (tipoMatricula.equals("Individual")) {
+                        mIndividual = (MatriculaIndividual) dB.pesquisaCodigoMIndividual(listaMatriculaEscola.getId());
+                        listaMatriculaEscolas.add(new ListaMatriculaEscola(listaMatriculaEscola, mIndividual, null, mIndividual.getCurso().getDescricao(), mIndividual.getDataInicioString() + " - " + mIndividual.getDataTerminoString()));
+                    } else {
+                        mTurma = dB.pesquisaCodigoMTurma(listaMatriculaEscola.getId());
+                        listaMatriculaEscolas.add(new ListaMatriculaEscola(listaMatriculaEscola, null, mTurma, mTurma.getTurma().getCursos().getDescricao(), mTurma.getTurma().getDataInicio() + " - " + mTurma.getTurma().getDataTermino()));
+                    }
+                }
+            }
+        }
     }
 
     public String getComoPesquisa() {
@@ -1961,27 +1989,6 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public List<ListaMatriculaEscola> getListaMatriculaEscolas() {
-        if (!descricaoCurso.isEmpty() || !descricao.isEmpty()) {
-            if (listaMatriculaEscolas.isEmpty()) {
-                MatriculaEscolaDao dB = new MatriculaEscolaDao();
-                int idStatusI = idStatusFiltro;
-                if (idStatusI != 5) {
-                    idStatusI = Integer.parseInt(listaStatus.get(idStatusFiltro).getDescription());
-                }
-                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa, idStatusI, MacFilial.getAcessoFilial().getFilial());
-                MatriculaIndividual mIndividual = null;
-                MatriculaTurma mTurma = null;
-                for (MatriculaEscola listaMatriculaEscola : list) {
-                    if (tipoMatricula.equals("Individual")) {
-                        mIndividual = (MatriculaIndividual) dB.pesquisaCodigoMIndividual(listaMatriculaEscola.getId());
-                        listaMatriculaEscolas.add(new ListaMatriculaEscola(listaMatriculaEscola, mIndividual, null, mIndividual.getCurso().getDescricao(), mIndividual.getDataInicioString() + " - " + mIndividual.getDataTerminoString()));
-                    } else {
-                        mTurma = dB.pesquisaCodigoMTurma(listaMatriculaEscola.getId());
-                        listaMatriculaEscolas.add(new ListaMatriculaEscola(listaMatriculaEscola, null, mTurma, mTurma.getTurma().getCursos().getDescricao(), mTurma.getTurma().getDataInicio() + " - " + mTurma.getTurma().getDataTermino()));
-                    }
-                }
-            }
-        }
         return listaMatriculaEscolas;
     }
 
