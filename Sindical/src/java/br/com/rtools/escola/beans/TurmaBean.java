@@ -197,7 +197,7 @@ public class TurmaBean implements Serializable {
         }
     }
 
-    public String edaot(Turma t) throws ParseException {
+    public String edit(Turma t) throws ParseException {
         Dao dao = new Dao();
         Turma turmaC = (Turma) dao.find(t);
         for (int i = 0; i < listServicos.size(); i++) {
