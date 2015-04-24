@@ -9,6 +9,7 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.ConfiguracaoHomologacao;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Feriados;
@@ -20,6 +21,7 @@ import br.com.rtools.impressao.beans.ProtocoloAgendamento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
@@ -87,6 +89,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private Registro registro = new Registro();
     private boolean visibleModal = false;
     private String tipoTelefone = "telefone";
+    private Cancelamento cancelamento = new Cancelamento();
 
     public AgendamentoBean() {
         macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
@@ -938,15 +941,25 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public String cancelarHorario() {
         PessoaEmpresaDB dbPesEmp = new PessoaEmpresaDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agendamento.setStatus((Status) salvarAcumuladoDB.find("Status", 3));
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
-            salvarAcumuladoDB.comitarTransacao();
-            GenericaMensagem.info("Sucesso", "Agendamento Cancelado!");
-        } else {
-            salvarAcumuladoDB.desfazerTransacao();
+        Dao dao = new Dao();
+        agendamento.setStatus((Status) dao.find(new Status(), 3));
+        dao.openTransaction();
+        if (!dao.update(agendamento)) {
+            GenericaMensagem.warn("Erro", "Ao cancelar horário!");
+            dao.rollback();
+            return "agendamento";
         }
+        cancelamento.setData(DataHoje.data());
+        cancelamento.setUsuario(new PessoaUtilitarios().getUsuarioSessao());
+        cancelamento.setAgendamento(agendamento);
+        if (!dao.save(cancelamento)) {
+            GenericaMensagem.warn("Erro", "Ao cancelar horário!");
+            dao.rollback();
+            return "agendamento";
+        }
+        GenericaMensagem.info("Sucesso", "Agendamento Cancelado!");
+        dao.commit();
+        cancelamento = new Cancelamento();
         pessoaEmpresa.setDtDemissao(null);
 
         PessoaEmpresa pem = dbPesEmp.pesquisaPessoaEmpresaPorFisica(pessoaEmpresa.getFisica().getId());
@@ -954,7 +967,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         if (pem.getId() == -1) {
             pessoaEmpresa.setPrincipal(true);
         }
-
         dbPesEmp.update(pessoaEmpresa);
         strEndereco = "";
         renderCancelarHorario = false;
@@ -1575,4 +1587,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void setTipoTelefone(String tipoTelefone) {
         this.tipoTelefone = tipoTelefone;
     }
+
+    public Cancelamento getCancelamento() {
+        return cancelamento;
+    }
+
+    public void setCancelamento(Cancelamento cancelamento) {
+        this.cancelamento = cancelamento;
+    }
+
 }

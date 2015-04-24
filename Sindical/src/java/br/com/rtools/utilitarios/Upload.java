@@ -1,6 +1,5 @@
 package br.com.rtools.utilitarios;
 
-import br.com.rtools.associativo.beans.GeracaoDebitosCartaoBean;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.db.FisicaDB;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -23,10 +23,9 @@ import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean(name = "uploadBean")
 @SessionScoped
-public class Upload {
+public class Upload implements Serializable {
 
     private ConfiguracaoUpload configuracaoUpload;
-    private static String ABSOLUT_PATH;
     private static String PATH;
     private static String PATH_FILE;
     private static String FILE_TEMP;
@@ -39,11 +38,11 @@ public class Upload {
     private static Boolean SHOW_MESSAGE;
     private static Boolean SUCCESS;
     private String rotinaNome;
+    private static String UPDATE;
 
     @PostConstruct
     public void init() {
-        ABSOLUT_PATH = "temp";
-        PATH = "";
+        PATH = "temp/foto/" + getUsuario().getId();
         PATH_FILE = "";
         FILE_TEMP = "";
         FILE_TEMP_NAME = "";
@@ -55,6 +54,7 @@ public class Upload {
         AUTO_SAVE = false;
         configuracaoUpload = new ConfiguracaoUpload();
         SUCCESS = false;
+        UPDATE = "";
         rotinaNome = "";
     }
 
@@ -94,21 +94,20 @@ public class Upload {
         REPLACE_FILES = replace_file;
     }
 
-    public void listener(String dir, String filename, String types, Boolean replace_file, Boolean autosave) {
-        listener(dir, filename, types, replace_file, autosave, "");
-
+    public void listener(String aPATH, String aFILENAME, String types, Boolean replace_file, Boolean autosave) {
+        listener(aPATH, aFILENAME, types, replace_file, autosave, "");
     }
 
     /**
      *
-     * @param dir
-     * @param filename
+     * @param aPATH
+     * @param aFILENAME
      * @param types
      * @param replace_file
      * @param autosave
      * @param update
      */
-    public void listener(String dir, String filename, String types, Boolean replace_file, Boolean autosave, String update) {
+    public void listener(String aPATH, String aFILENAME, String types, Boolean replace_file, Boolean autosave, String update) {
         types = types.replace(" ", "");
         update = update.replace(" ", "");
         TYPES = new ArrayList();
@@ -123,22 +122,17 @@ public class Upload {
             }
         }
         AUTO_SAVE = autosave;
-        ABSOLUT_PATH = dir;
-        if (ABSOLUT_PATH.toUpperCase().equals("IMAGENS")) {
-            if (PATH.isEmpty()) {
-                PATH = "Fotos";
-            }
-            filename = filename + ".png";
-        }
+        PATH = aPATH;
+        aFILENAME = aFILENAME + ".png";
         REPLACE_FILES = replace_file;
-        PATH_FILE = filename;
+        PATH_FILE = aFILENAME;
         SHOW_MESSAGE = true;
 
     }
 
     public void upload(FileUploadEvent event) {
         try {
-            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + ABSOLUT_PATH + "/" + PATH + "/" + PATH_FILE));
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
             if (f.exists()) {
                 boolean delete = f.delete();
             } else {
@@ -147,7 +141,7 @@ public class Upload {
             // Diretorio.criar("temp/foto/" + getUsuario().getId(), true);
             configuracaoUpload = new ConfiguracaoUpload();
             configuracaoUpload.setArquivo(event.getFile().getFileName());
-            configuracaoUpload.setDiretorio(ABSOLUT_PATH + "/" + PATH);
+            configuracaoUpload.setDiretorio(PATH);
             configuracaoUpload.setSubstituir(REPLACE_FILES);
             configuracaoUpload.setTiposPermitidos(TYPES);
             configuracaoUpload.setRenomear(PATH_FILE);
@@ -156,7 +150,7 @@ public class Upload {
             if (SUCCESS) {
                 complete();
                 if (!AUTO_SAVE) {
-                    FILE_TEMP = "/Cliente/" + getCliente() + "/" + ABSOLUT_PATH + "/" + "/" + PATH_FILE;
+                    FILE_TEMP = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
                     FILE_PERMANENT = "";
                 }
             } else {
@@ -274,6 +268,10 @@ public class Upload {
                 File novoNome = new File(diretorio + "/" + cu.getRenomear());
                 file.renameTo(novoNome);
             }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+            }
             return true;
         } catch (IOException e) {
             NovoLog log = new NovoLog();
@@ -336,19 +334,84 @@ public class Upload {
         if (SUCCESS) {
             Fisica f;
             Dao dao = new Dao();
-            if (rotinaNome.equals("geracaoDebitosCartao")) {
-                FisicaDB fisicaDB = new FisicaDBToplink();
-                f = fisicaDB.pesquisaFisicaPorPessoa(Integer.parseInt(PATH_FILE.replace(".png", "")));
-                f.setDtFoto(DataHoje.dataHoje());
-                if (dao.update(f, true)) {
-                    for (int i = 0; i < UPDATES.size(); i++) {
-                        PF.update(UPDATES.get(i).toString());
+            switch (rotinaNome) {
+                case "geracaoDebitosCartao":
+                case "pessoaFisica":
+                case "matriculaAcademia":
+                case "usuario":
+                    try {
+                        FisicaDB fisicaDB = new FisicaDBToplink();
+                        f = fisicaDB.pesquisaFisicaPorPessoa(Integer.parseInt(PATH_FILE.replace(".png", "")));
+                        f.setDtFoto(DataHoje.dataHoje());
+                        if (!dao.update(f, true)) {
+                            SUCCESS = false;
+                        }
+                    } catch (Exception e) {
+
                     }
-                }
-                UPDATES.clear();
-                TYPES.clear();
+                    TYPES.clear();
+                    break;
             }
+            if (SUCCESS) {
+                for (int i = 0; i < UPDATES.size(); i++) {
+                    PF.update(UPDATES.get(i).toString());
+                }
+            }
+            PATH = "temp/foto/" + getUsuario().getId();
+            PATH_FILE = "";
+            FILE_TEMP = "";
+            FILE_TEMP_NAME = "";
+            FILE_PERMANENT = "";
+            TYPES = new ArrayList();
+            REPLACE_FILES = false;
+            UPDATES = new ArrayList();
+            SHOW_MESSAGE = false;
+            AUTO_SAVE = false;
+            configuracaoUpload = new ConfiguracaoUpload();
+            SUCCESS = false;
+            UPDATES.clear();
         }
         SUCCESS = false;
+    }
+
+    public static String getPATH() {
+        return PATH;
+    }
+
+    public static void setPATH(String aPATH) {
+        PATH = aPATH;
+    }
+
+    public String getUPDATE() {
+        return UPDATE;
+    }
+
+    public void setUPDATE(String aUPDATE) {
+        UPDATE = aUPDATE;
+    }
+
+    public void waiting(Integer sleep) {
+        try {
+            Thread.sleep(sleep);
+            PF.closeDialog("dlg_loading_photo");
+        } catch (InterruptedException ex) {
+
+        }
+    }
+
+    public void close() {
+        PATH = "temp/foto/" + getUsuario().getId();
+        PATH_FILE = "";
+        FILE_TEMP = "";
+        FILE_TEMP_NAME = "";
+        FILE_PERMANENT = "";
+        TYPES = new ArrayList();
+        REPLACE_FILES = false;
+        UPDATES = new ArrayList();
+        SHOW_MESSAGE = false;
+        AUTO_SAVE = false;
+        configuracaoUpload = new ConfiguracaoUpload();
+        SUCCESS = false;
+        rotinaNome = "";
     }
 }

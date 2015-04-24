@@ -105,7 +105,7 @@ public class SociosDao extends DB {
                     + "            S.categoria      As categoria,               " // 2 - CATEGORIA
                     + "            S.filiacao       As filiacao,                " // 3 - FILIAÇÃO
                     + "            P.admissao       AS admissao,                " // 4 - ADMISSÃO
-                    + "            S.descricaoonto_folha AS descricaoonto_folha           " // 5 - DESCONTO FOLHA
+                    + "            S.desconto_folha AS desconto_folha           " // 5 - DESCONTO FOLHA
                     + "       FROM soc_socios_vw AS S                           "
                     + " INNER JOIN pes_pessoa_vw AS P ON P.codigo = S.codsocio  "
                     + "      WHERE P.e_id_pessoa = ?                            ";

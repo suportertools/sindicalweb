@@ -11,6 +11,7 @@ import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Recepcao;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.homologacao.Status;
+import br.com.rtools.homologacao.dao.HomologacaoDao;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.impressao.ParametroSenha;

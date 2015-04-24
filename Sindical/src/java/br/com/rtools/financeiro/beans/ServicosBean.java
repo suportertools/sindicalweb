@@ -312,6 +312,7 @@ public class ServicosBean implements Serializable {
     }
 
     public String edit(Servicos s) {
+        idAdministradora = null;
         servicos = s;
         GenericaSessao.put("pesquisaServicos", servicos);
         GenericaSessao.put("linkClicado", true);

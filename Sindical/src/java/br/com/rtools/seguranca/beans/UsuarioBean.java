@@ -90,6 +90,8 @@ public class UsuarioBean implements Serializable {
         GenericaSessao.remove("usuarioBean");
         GenericaSessao.remove("usuarioPesquisa");
         GenericaSessao.remove("pessoaPesquisa");
+        GenericaSessao.remove("uploadBean");
+        GenericaSessao.remove("photoCamBean");
     }
 
     public void clear() {

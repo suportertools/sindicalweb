@@ -1,11 +1,12 @@
 package br.com.rtools.associativo.lista;
 
 import br.com.rtools.pessoa.Fisica;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 
-public class ListaDependentes {
+public class ListaDependentes implements Serializable {
 
     private Fisica fisica;
     private Integer idParentesco;

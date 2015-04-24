@@ -160,7 +160,7 @@ public class ServicoPessoaBean implements Serializable {
     public String salvarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar) {
         ServicoContaCobrancaDB dbSCB = new ServicoContaCobrancaDBToplink();
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
-
+        servicoPessoa.setDescontoSocial((DescontoSocial) new Dao().find(new DescontoSocial(), 1));
         // --------------------------------------------
         if (getListaServicos().isEmpty()) {
             return "Cadastrar serviços!";

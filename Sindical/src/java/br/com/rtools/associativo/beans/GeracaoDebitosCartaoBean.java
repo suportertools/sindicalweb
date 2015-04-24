@@ -12,6 +12,7 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.beans.BaixaGeralBean;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
@@ -35,7 +36,7 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean
 @SessionScoped
 public class GeracaoDebitosCartaoBean implements Serializable {
-
+    
     private Fisica fisica;
     private List<Socios> listaSocios;
     private List<Socios> selected;
@@ -44,7 +45,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
     private List<Movimento> listMovimentos;
     private Boolean habilitaImpressao;
     private List<HistoricoCarteirinha> listHistoricoCarteirinhas;
-
+    
     @PostConstruct
     public void init() {
         fisica = new Fisica();
@@ -56,7 +57,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         listHistoricoCarteirinhas = new ArrayList();
         habilitaImpressao = false;
     }
-
+    
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("geracaoDebitosCartaoBean");
@@ -71,7 +72,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         GenericaSessao.remove("lista_movimentos_baixados");
         GenericaSessao.remove("pessoaUtilitariosBean");
     }
-
+    
     public void load() {
         if (GenericaSessao.exists("baixa_sucesso")) {
             if (GenericaSessao.exists("lista_movimentos_baixados")) {
@@ -99,7 +100,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
             GenericaMensagem.info("Sucesso", "Cartão impresso com sucesso!");
         }
     }
-
+    
     public String save() {
         if (fisica.getPessoa().getId() == -1) {
             GenericaMensagem.warn("Validação", "Pesquise uma pessoa para gerar!");
@@ -131,16 +132,16 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         lote.setDepartamento(serv.getDepartamento());
         lote.setCondicaoPagamento(cp);
         lote.setPlano5(serv.getPlano5());
-
+        
         dao.openTransaction();
         if (!dao.save(lote)) {
             GenericaMensagem.warn("Erro", "Ao salvar Lote!");
             dao.rollback();
             return null;
         }
-
+        
         TipoServico tipoServico = (TipoServico) dao.find(new TipoServico(), 1);
-
+        
         Movimento movimento;
         for (int i = 0; i < selected.size(); i++) {
             float valor = functionsDao.valorServico(selected.get(i).getServicoPessoa().getPessoa().getId(), serv.getId(), DataHoje.dataHoje(), 0, null);
@@ -170,16 +171,16 @@ public class GeracaoDebitosCartaoBean implements Serializable {
                 return null;
             }
         }
-
+        
         dao.commit();
         listaSocios.clear();
-        GenericaSessao.put("caixa_banco", "caixa");
+        BaixaGeralBean.listenerTipoCaixaSession("caixa");
         GenericaSessao.put("listaMovimento", listMovimentos);
         GenericaMensagem.info("Sucesso", "Geração efetuada com sucesso!");
         return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).baixaGeral();
         // return null;
     }
-
+    
     public void clear(Integer tcase) {
         // Limpa toda sessão
         if (tcase == 0) {
@@ -194,9 +195,9 @@ public class GeracaoDebitosCartaoBean implements Serializable {
             listHistoricoCarteirinhas.clear();
             habilitaImpressao = false;
         }
-
+        
     }
-
+    
     public Fisica getFisica() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
             fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
@@ -213,11 +214,11 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return fisica;
     }
-
+    
     public void setFisica(Fisica fisica) {
         this.fisica = fisica;
     }
-
+    
     public List<Socios> getListaSocios() {
         if (listaSocios.isEmpty()) {
             SociosDB sociosDB = new SociosDBToplink();
@@ -233,24 +234,24 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return listaSocios;
     }
-
+    
     public void setListaSocios(List<Socios> listaSocios) {
         this.listaSocios = listaSocios;
     }
-
+    
     public Fisica pessoaFisica(Pessoa p) {
         Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(p.getId());
         return f;
     }
-
+    
     public List<Socios> getSelected() {
         return selected;
     }
-
+    
     public void setSelected(List<Socios> selected) {
         this.selected = selected;
     }
-
+    
     public Movimento getMovimento(Pessoa p) {
         MovimentoDBToplink mdb = new MovimentoDBToplink();
         mdb.setLimit(1);
@@ -260,27 +261,27 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return null;
     }
-
+    
     public Registro getRegistro() {
         return registro;
     }
-
+    
     public void setRegistro(Registro registro) {
         this.registro = registro;
     }
-
+    
     public Boolean renderedUpload(Pessoa p) {
         if (registro.isFotoCartao()) {
             Dao dao = new Dao();
             if (p.getFisica().getDtFoto() != null) {
-                return true;
+                return false;
             }
         } else {
             return true;
         }
         return false;
     }
-
+    
     public Boolean disabled(Pessoa p, Movimento m) {
         if (registro.isFotoCartao()) {
             if (p.getFisica().getDtFoto() == null) {
@@ -293,19 +294,19 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return false;
     }
-
+    
     public Boolean getHabilitaImpressao() {
         return habilitaImpressao;
     }
-
+    
     public void setHabilitaImpressao(Boolean habilitaImpressao) {
         this.habilitaImpressao = habilitaImpressao;
     }
-
+    
     public List<HistoricoCarteirinha> getListHistoricoCarteirinhas() {
         return listHistoricoCarteirinhas;
     }
-
+    
     public void setListHistoricoCarteirinhas(List<HistoricoCarteirinha> listHistoricoCarteirinhas) {
         this.listHistoricoCarteirinhas = listHistoricoCarteirinhas;
     }

@@ -4,8 +4,6 @@ import br.com.rtools.arrecadacao.*;
 import br.com.rtools.arrecadacao.beans.OposicaoBean;
 import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.associativo.dao.SociosDao;
-import br.com.rtools.associativo.db.SociosDB;
-import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.associativo.lista.ListaSociosEmpresa;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.db.EnderecoDB;
@@ -1128,24 +1126,24 @@ public class JuridicaBean implements Serializable {
         String strCompl;
         if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
             listaEnd = getPesquisaEndPorPessoa();
-            if(listaEnd.size() < 4) {
+            if (listaEnd.size() < 4) {
                 PessoaEndereco pe = (PessoaEndereco) listaEnd.get(0);
                 PessoaEndereco pe2 = new PessoaEndereco();
                 Dao dao = new Dao();
-                List<TipoEndereco> list = dao.find("TipoEndereco", new int[]{2,3,4,5});
+                List<TipoEndereco> list = dao.find("TipoEndereco", new int[]{2, 3, 4, 5});
                 List<TipoEndereco> listB = list;
-                for(int i = 0; i < listaEnd.size(); i++) {
-                    for(int y = 0; y < listB.size(); y++) {
-                        if(((PessoaEndereco) listaEnd.get(i)).getTipoEndereco().getId() == listB.get(y).getId()) {
+                for (int i = 0; i < listaEnd.size(); i++) {
+                    for (int y = 0; y < listB.size(); y++) {
+                        if (((PessoaEndereco) listaEnd.get(i)).getTipoEndereco().getId() == listB.get(y).getId()) {
                             try {
-                                list.remove(listB.get(y));                                
+                                list.remove(listB.get(y));
                             } catch (Exception e) {
                                 // e.getMessage();
                             }
                         }
-                    }                    
+                    }
                 }
-                for(int i = 0; i < list.size(); i++) {
+                for (int i = 0; i < list.size(); i++) {
                     pe2 = new PessoaEndereco();
                     pe2.setComplemento(pe.getComplemento());
                     pe2.setEndereco(pe.getEndereco());
@@ -1424,11 +1422,13 @@ public class JuridicaBean implements Serializable {
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
         listaJuridica.clear();
+        loadList();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
         listaJuridica.clear();
+        loadList();
     }
 
     public void acaoPesquisaCnaeInicial() {
@@ -2188,21 +2188,22 @@ public class JuridicaBean implements Serializable {
 //    public void setListaJuridica(List<DataObject> listaJuridica) {
 //        this.listaJuridica = listaJuridica;
 //    }
-    public List<Juridica> getListaJuridica() {
-        if (listaJuridica.isEmpty()) {
-            JuridicaDB db = new JuridicaDBToplink();
-            boolean somenteContabilidadesx = false;
-            boolean somenteContribuintesAtivos = false;
-            switch (tipoFiltro) {
-                case "escritorios":
-                    somenteContabilidadesx = true;
-                    break;
-                case "contribuintes_ativos":
-                    somenteContribuintesAtivos = true;
-                    break;
-            }
-            listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa, somenteContabilidadesx, somenteContribuintesAtivos);
+    public void loadList() {
+        JuridicaDB db = new JuridicaDBToplink();
+        boolean somenteContabilidadesx = false;
+        boolean somenteContribuintesAtivos = false;
+        switch (tipoFiltro) {
+            case "escritorios":
+                somenteContabilidadesx = true;
+                break;
+            case "contribuintes_ativos":
+                somenteContribuintesAtivos = true;
+                break;
         }
+        listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa, somenteContabilidadesx, somenteContribuintesAtivos);
+    }
+
+    public List<Juridica> getListaJuridica() {
         return listaJuridica;
     }
 
@@ -2454,7 +2455,7 @@ public class JuridicaBean implements Serializable {
         bs[2] = false;
         juridicaBean.setDisabled(bs);
         juridicaBean.setTipoFiltro("contribuintes_ativos");
-        juridicaBean.getListaJuridica();
+        juridicaBean.loadList();
         GenericaSessao.put("juridicaBean", juridicaBean);
         GenericaSessao.put("tipoPesquisaPessoaJuridica", "todosecontribuintes");
     }
@@ -2469,7 +2470,7 @@ public class JuridicaBean implements Serializable {
         bs[2] = true;
         juridicaBean.setDisabled(bs);
         juridicaBean.setTipoFiltro("contribuintes_ativos");
-        juridicaBean.getListaJuridica();
+        juridicaBean.loadList();
         GenericaSessao.put("juridicaBean", juridicaBean);
         GenericaSessao.put("tipoPesquisaPessoaJuridica", "contribuintes");
     }
@@ -2484,7 +2485,7 @@ public class JuridicaBean implements Serializable {
         bs[2] = true;
         juridicaBean.setDisabled(bs);
         juridicaBean.setTipoFiltro("escritorios");
-        juridicaBean.getListaJuridica();
+        juridicaBean.loadList();
         GenericaSessao.put("juridicaBean", juridicaBean);
         GenericaSessao.put("tipoPesquisaPessoaJuridica", "escritorios");
     }

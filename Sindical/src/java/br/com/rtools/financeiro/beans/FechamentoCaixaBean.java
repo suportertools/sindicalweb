@@ -203,6 +203,7 @@ public final class FechamentoCaixaBean implements Serializable {
         
         try {
             Jasper.PATH = "downloads";
+            Jasper.PART_NAME = "";
             Jasper.printReports("/Relatorios/CAIXA_ANALITICO.jasper", "analitico", lista);
 //            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CAIXA_ANALITICO.jasper"));
 //            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
@@ -248,7 +249,8 @@ public final class FechamentoCaixaBean implements Serializable {
         }
         
         try {
-            Jasper.PATH = "download s";
+            Jasper.PATH = "downloads";
+            Jasper.PART_NAME = "";
             Jasper.printReports("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper", "fechamento_caixa", lista);
             
 //            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RESUMO_FECHAMENTO_CAIXA.jasper"));
