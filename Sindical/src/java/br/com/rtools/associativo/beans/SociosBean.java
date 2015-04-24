@@ -20,6 +20,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
@@ -33,6 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -183,6 +185,16 @@ public class SociosBean implements Serializable {
         listDependentesInativos = new ArrayList();
     }
 
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("uploadBean");
+        GenericaSessao.remove("photoCamBean");
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
+        if (f.exists()) {
+            f.delete();
+        }
+    }
+
     public void loadPessoaComplemento(Integer id_pessoa) {
         PessoaDB db = new PessoaDBToplink();
         PessoaComplemento pc = db.pesquisaPessoaComplementoPorPessoa(id_pessoa);
@@ -199,7 +211,10 @@ public class SociosBean implements Serializable {
     }
 
     public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
-        GenericaSessao.remove("photoCamBean");
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
+        if (f.exists()) {
+            f.delete();
+        }
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
@@ -498,8 +513,13 @@ public class SociosBean implements Serializable {
         for (int i = 0; i < listaDescontoSocial.size(); i++) {
             if (Integer.valueOf(listaDescontoSocial.get(i).getDescription()) == descontoSocial.getId()) {
                 index_desconto = i;
+                break;
             }
         }
+        descontoSocial = (DescontoSocial) new Dao().find(new DescontoSocial(), Integer.valueOf(listaDescontoSocial.get(index_desconto).getDescription()));
+        servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
+
+        calculoValor();
 
         PF.update("formSocios:i_panel_servicos");
     }
@@ -586,7 +606,15 @@ public class SociosBean implements Serializable {
         boolean sucesso = false;
         if (!fotoTempPerfil.equals("")) {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId() + "/perfil.png"));
-            sucesso = f.delete();
+            if (f.exists()) {
+                sucesso = f.delete();
+            }
+            if (!sucesso) {
+                f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId() + "/perfil.jpg"));
+                if (f.exists()) {
+                    sucesso = f.delete();
+                }
+            }
         } else {
             if (novoDependente.getId() != -1) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png"));
@@ -598,6 +626,7 @@ public class SociosBean implements Serializable {
             }
         }
         if (sucesso) {
+            getFotoTempPerfil();
             GenericaSessao.remove("photoCamBean");
             PhotoCam photoCam = new PhotoCam();
             GenericaSessao.put("photoCamBean", photoCam);
@@ -626,6 +655,7 @@ public class SociosBean implements Serializable {
             if (des.exists()) {
                 des.delete();
             }
+            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
             File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
             boolean rename = src.renameTo(des);
             //fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png";
@@ -654,27 +684,26 @@ public class SociosBean implements Serializable {
         GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
     }
 
-    public String getFotoPerfilDependente() {
-        if (!fotoTempPerfil.isEmpty()) {
-            return fotoTempPerfil;
-        }
-
-        String caminhoTemp = "/Cliente/" + getCliente() + "/Imagens/Fotos/";
-        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoTemp);
-        for (String imagensTipo1 : imagensTipo) {
-            File f = new File(arquivo + "/" + novoDependente.getPessoa().getId() + "." + imagensTipo1);
-            if (f.exists()) {
-                return caminhoTemp + "/" + novoDependente.getPessoa().getId() + "." + imagensTipo1;
-            }
-        }
-
-        if (novoDependente.getSexo().equals("M")) {
-            return "/Imagens/user_male.png";
-        } else {
-            return "/Imagens/user_female.png";
-        }
-    }
-
+//    public String getFotoPerfilDependente() {
+//        if (!fotoTempPerfil.isEmpty()) {
+//            return fotoTempPerfil;
+//        }
+//
+//        String caminhoTemp = "/Cliente/" + getCliente() + "/Imagens/Fotos/";
+//        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoTemp);
+//        for (String imagensTipo1 : imagensTipo) {
+//            File f = new File(arquivo + "/" + novoDependente.getPessoa().getId() + "." + imagensTipo1);
+//            if (f.exists()) {
+//                return caminhoTemp + "/" + novoDependente.getPessoa().getId() + "." + imagensTipo1;
+//            }
+//        }
+//
+//        if (novoDependente.getSexo().equals("M")) {
+//            return "/Imagens/user_male.png";
+//        } else {
+//            return "/Imagens/user_female.png";
+//        }
+//    }
     public void capturar(CaptureEvent captureEvent) {
         String fotoTempCaminho = "foto/" + getUsuario().getId();
         if (PhotoCam.oncapture(captureEvent, "perfil", "" + novoDependente.getPessoa().getId(), true)) {
@@ -1078,6 +1107,29 @@ public class SociosBean implements Serializable {
 
                     List<SelectItem> lista_si = (ArrayList<SelectItem>) listDependentes.get(i).getListParentesco();
                     Parentesco parentesco = dbPar.pesquisaCodigo(Integer.valueOf(lista_si.get(Integer.valueOf(Integer.toString(listDependentes.get(i).getIdParentesco()))).getDescription()));
+                    String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
+                    if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
+                        Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
+                        Integer verificaFuturo = DataHoje.converteDataParaInteger("30/06/2016");
+                        if (verificaFuturo < verificaHoje) {
+                            GenericaMensagem.warn("Atenção", "Entrar em contato com nosso suporte técnico!");
+                            return null;
+                        }
+                        if (!(parentesco.getParentesco().toUpperCase()).equals("TITULAR")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("ESPOSA")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("ESPOSO")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("SOGRA")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("SOGRO")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("PAI")
+                                && !(parentesco.getParentesco().toUpperCase()).equals("MÃE")) {
+                            validadeCarteirinha = ("30/06/2016");
+                            if (message) {
+                                GenericaMensagem.warn("Atenção", "Esta data de validade é provisória e este critério será mantido até o dia 30/06/2016, conforme solicitação do cliente, exceto para os graus de parentesco titular, esposa, sogra e paes.");
+                                message = false;
+
+                            }
+                        }
+                    }
 
                     ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(parentesco.getId(), servicoCategoria.getCategoria().getId());
 
@@ -1109,58 +1161,6 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             return null;
                         }
-                        String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
-                        if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
-                            Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
-                            Integer verificaFuturo = DataHoje.converteDataParaInteger("30/06/2016");
-                            if (verificaFuturo < verificaHoje) {
-                                GenericaMensagem.warn("Atenção", "Entrar em contato com nosso suporte técnico!");
-                                return null;
-                            }
-                            if (!(parentesco.getParentesco().toUpperCase()).equals("TITULAR")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("ESPOSA")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("ESPOSO")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("SOGRA")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("SOGRO")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("PAI")
-                                    && !(parentesco.getParentesco().toUpperCase()).equals("MÃE")) {
-                                validadeCarteirinha = ("30/06/2016");
-                                if (message) {
-                                    GenericaMensagem.warn("Atenção", "Esta data de validade é provisória e este critério será mantido até o dia 30/06/2016, conforme solicitação do cliente, exceto para os graus de parentesco titular, esposa, sogra e paes.");
-                                    message = false;
-
-                                }
-                            }
-                        }
-
-                        sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
-                        if (sc == null) {
-                            sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha, true);
-                        }
-                        if ((socios.getMatriculaSocios().getCategoria().isCartaoTitular() && socios.getParentesco().getId() == 1)
-                                || (socios.getMatriculaSocios().getCategoria().isCartaoDependente() && socios.getParentesco().getId() != 1)) {
-                            sc.setAtivo(true);
-                        } else {
-                            sc.setAtivo(false);
-                        }
-                        if (sc.getId() == -1) {
-                            if (!dao.save(sc)) {
-                                GenericaMensagem.error("Erro", "Não foi possivel salvar Sócio Carteirinha Dependente!");
-                                dao.rollback();
-                                return null;
-                            }
-
-                            sc.setCartao(sc.getId());
-                            dao.update(sc);
-                        } else {
-                            sc.setValidadeCarteirinha(validadeCarteirinha);
-                            if (!dao.update(sc)) {
-                                GenericaMensagem.error("Erro", "Não foi possivel atualizar Sócio Carteirinha Dependente!");
-                                dao.rollback();
-                                return null;
-                            }
-                        }
-
                         listDependentes.get(i).setValidadeCarteirinha(validadeCarteirinha);
                     }
 
@@ -1220,13 +1220,40 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             return null;
                         }
-                        //socioDependente.setValidadeCarteirinha((String) ((DataObject) listaDependentes.get(i)).getArgumento3());
                         socioDependente.setServicoPessoa(servicoPessoaDependente);
                         socioDependente.setMatriculaSocios(matriculaSocios);
                         socioDependente.setNrViaCarteirinha(listDependentes.get(i).getViaCarteirinha());
                         socioDependente.setParentesco(parentesco);
                         if (!dao.update(socioDependente)) {
                             GenericaMensagem.error("Erro", "Erro ao Salvar Sócio: " + listDependentes.get(i).getFisica().getPessoa().getNome());
+                            dao.rollback();
+                            return null;
+                        }
+                    }
+                    sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
+                    if (sc == null) {
+                        sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha, true);
+                        if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
+                            sc.setAtivo(true);
+                        } else {
+                            sc.setAtivo(false);
+                        }
+                        if (!dao.save(sc)) {
+                            GenericaMensagem.error("Erro", "Não foi possivel salvar Sócio Carteirinha Dependente!");
+                            dao.rollback();
+                            return null;
+                        }
+                        sc.setCartao(sc.getId());
+                        dao.update(sc);
+                    } else {
+                        if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
+                            sc.setAtivo(true);
+                        } else {
+                            sc.setAtivo(false);
+                            sc.setValidadeCarteirinha(validadeCarteirinha);
+                        }
+                        if (!dao.update(sc)) {
+                            GenericaMensagem.error("Erro", "Não foi possivel atualizar Sócio Carteirinha Dependente!");
                             dao.rollback();
                             return null;
                         }
@@ -1652,6 +1679,10 @@ public class SociosBean implements Serializable {
     }
 
     public String novoCadastroDependente() {
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
+        if (f.exists()) {
+            f.delete();
+        }
         novoDependente = new Fisica();
         fisicaPesquisa = new Fisica();
         temFoto = false;
@@ -1937,6 +1968,7 @@ public class SociosBean implements Serializable {
     }
 
     public void fechaModal() {
+        novoDependente = new Fisica();
         modelVisible = false;
         File del = new File(fotoTempPerfil);
         if (del.exists()) {
@@ -2355,10 +2387,10 @@ public class SociosBean implements Serializable {
         String foto = getFotoSocio();
         String path = "/Relatorios/FICHACADASTRO.jasper";
         String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
-        File fp = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"));
-        if (fp.exists()) {
-            path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
-        }
+//        File fp = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"));
+//        if (fp.exists()) {
+//            path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
+//        }
         File f = new File("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper");
         if (f.exists()) {
             pathVerso = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
@@ -2869,6 +2901,23 @@ public class SociosBean implements Serializable {
     }
 
     public String getFotoTempPerfil() {
+        if (novoDependente.getId() == -1) {
+            if (fotoTempPerfil.isEmpty()) {
+                String urlTemp = "/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png";
+                String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(urlTemp);
+                for (String imagensTipo1 : imagensTipo) {
+                    File f = new File(arquivo);
+                    if (f.exists()) {
+                        fotoTempPerfil = urlTemp;
+                        break;
+                    } else {
+                        fotoTempPerfil = "";
+                    }
+                }
+            }
+        } else {
+            fotoTempPerfil = "";
+        }
         return fotoTempPerfil;
     }
 
@@ -3019,6 +3068,15 @@ public class SociosBean implements Serializable {
     public void setListDependentesInativos(List<ListaDependentes> listDependentesInativos) {
         this.listDependentesInativos = listDependentesInativos;
     }
+
+    public String getPath() {
+        if (novoDependente.getId() == -1) {
+            return "temp/foto/" + new PessoaUtilitarios().getUsuarioSessao().getId();
+        } else {
+            return "Imagens/Fotos";
+        }
+    }
+
 }
 
 //    public void editarGenerico(Pessoa sessao, boolean reativar) {

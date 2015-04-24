@@ -3,10 +3,9 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.MatriculaConvenioMedico;
 import br.com.rtools.associativo.db.MatriculaConvenioMedicoDB;
 import br.com.rtools.associativo.db.MatriculaConvenioMedicoDBToplink;
-import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -28,6 +27,7 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     private String descPesquisa;
     private String porPesquisa;
     private String comoPesquisa;
+    private Boolean ativo;
     private List<MatriculaConvenioMedico> listaConvenio;
 
     @PostConstruct
@@ -42,6 +42,7 @@ public class MatriculaConvenioMedicoBean implements Serializable {
         porPesquisa = "nome";
         comoPesquisa = "";
         listaConvenio = new ArrayList();
+        ativo = true;
     }
 
     @PreDestroy
@@ -51,9 +52,10 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     }
 
     public void save() {
+        servicoPessoaBean = ((ServicoPessoaBean) GenericaSessao.getObject("servicoPessoaBean"));
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         NovoLog novoLog = new NovoLog();
-        if (servicoPessoaBean.getServicoPessoa().getPessoa().getId() == -1) {
+        if (servicoPessoaBean.getTitular().getId() == -1) {
             message = "Pesquise uma Pessoa!";
             return;
         }
@@ -64,7 +66,6 @@ public class MatriculaConvenioMedicoBean implements Serializable {
                 dbSalvar.desfazerTransacao();
                 return;
             }
-
             matriculaConvenioMedico.setServicoPessoa(servicoPessoaBean.getServicoPessoa());
             if (dbSalvar.inserirObjeto(matriculaConvenioMedico)) {
                 novoLog.save(""
@@ -118,21 +119,25 @@ public class MatriculaConvenioMedicoBean implements Serializable {
 
     public void delete() {
         if (servicoPessoaBean.getServicoPessoa().getId() != -1) {
-            DaoInterface dao = new Dao();
+            Dao dao = new Dao();
             NovoLog novoLog = new NovoLog();
             dao.openTransaction();
-            if (dao.delete(matriculaConvenioMedico)) {
-                if (dao.delete(matriculaConvenioMedico.getServicoPessoa())) {
-                    novoLog.delete(""
-                            + "ID: " + matriculaConvenioMedico.getId()
+            matriculaConvenioMedico.setDtInativo(DataHoje.dataHoje());
+            matriculaConvenioMedico.getServicoPessoa().setAtivo(false);
+            if (dao.update(matriculaConvenioMedico)) {
+                if (dao.update(matriculaConvenioMedico.getServicoPessoa())) {
+                    novoLog.delete(
+                            "ID: " + matriculaConvenioMedico.getId()
                             + " - Código: " + matriculaConvenioMedico.getCodigo()
                             + " - Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getPessoa().getNome()
                             + " - Cobrança (Pessoa): (" + matriculaConvenioMedico.getServicoPessoa().getCobranca().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getCobranca().getNome()
                             + " - Serviço Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getServicos().getDescricao()
                     );
+                    servicoPessoaBean.setServicoPessoa(matriculaConvenioMedico.getServicoPessoa());
                     dao.commit();
-                    GenericaSessao.put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoBean());
-                    ((MatriculaConvenioMedicoBean) GenericaSessao.getObject("matriculaConvenioMedicoBean")).setMessage("Matricula Excluida com sucesso!");
+                    // GenericaSessao.put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoBean());
+                    // ((MatriculaConvenioMedicoBean) GenericaSessao.getObject("matriculaConvenioMedicoBean")).setMessage("Matricula Excluida com sucesso!");
+                    message = "Matrícula Inativada!";
                 } else {
                     message = "Erro ao excluir serviço pessoa!";
                     dao.rollback();
@@ -147,8 +152,8 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     }
 
     public String edit(MatriculaConvenioMedico mcm) {
-        DaoInterface di = new Dao();
-        mcm = (MatriculaConvenioMedico) di.rebind(mcm);
+        Dao dao = new Dao();
+        mcm = (MatriculaConvenioMedico) dao.rebind(mcm);
         matriculaConvenioMedico = mcm;
         servicoPessoaBean.setServicoPessoa(matriculaConvenioMedico.getServicoPessoa());
         descPesquisa = "";
@@ -167,11 +172,20 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     public void acaoPesquisaInicial() {
         listaConvenio.clear();
         comoPesquisa = "I";
+        loadList();
     }
 
     public void acaoPesquisaParcial() {
         listaConvenio.clear();
         comoPesquisa = "P";
+        loadList();
+    }
+
+    public void loadList() {
+        if (!(descPesquisa.trim()).isEmpty()) {
+            MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
+            listaConvenio = db.pesquisaConvenioMedico(descPesquisa.trim(), porPesquisa, comoPesquisa, ativo);
+        }
     }
 
     public String getDescPesquisa() {
@@ -199,10 +213,6 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     }
 
     public List<MatriculaConvenioMedico> getListaConvenio() {
-        if (listaConvenio.isEmpty()) {
-            MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
-            listaConvenio = db.pesquisaConvenioMedico(descPesquisa, porPesquisa, comoPesquisa);
-        }
         return listaConvenio;
     }
 
@@ -224,5 +234,13 @@ public class MatriculaConvenioMedicoBean implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

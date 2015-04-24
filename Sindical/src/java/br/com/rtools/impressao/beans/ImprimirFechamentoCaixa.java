@@ -11,6 +11,7 @@ import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.impressao.ParametroFechamentoCaixa;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
@@ -224,24 +225,28 @@ public class ImprimirFechamentoCaixa {
             ));
         }
         try {
-            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/FECHAMENTO_CAIXA.jasper"));
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
-            
-            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            res.setContentType("application/pdf");
-            res.setHeader("Content-disposition", "inline; filename=\"Relatório Fechamento Caixa.pdf\"");
-            res.getOutputStream().write(arquivo);
-            res.getCharacterEncoding();
-            FacesContext.getCurrentInstance().responseComplete();
+            Jasper.PATH = "downloads";
+            Jasper.PART_NAME = "";
+            Jasper.printReports("/Relatorios/FECHAMENTO_CAIXA.jasper", "fechamento_caixa", lista);
+//            
+//            File file_jasper = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/FECHAMENTO_CAIXA.jasper"));
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(file_jasper);
+//
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+//            
+//            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//            res.setContentType("application/pdf");
+//            res.setHeader("Content-disposition", "inline; filename=\"Relatório Fechamento Caixa.pdf\"");
+//            res.getOutputStream().write(arquivo);
+//            res.getCharacterEncoding();
+//            FacesContext.getCurrentInstance().responseComplete();
 
 //            JasperViewer jrviewer = new JasperViewer(jasperPrint, false);
 //            jrviewer.setTitle("Relatório Fechamento Caixa");
 //            jrviewer.setVisible(true);
-        } catch (JRException | IOException e) {
+        } catch (Exception e) {
             e.getMessage();
         }
     }

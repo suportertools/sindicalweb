@@ -210,6 +210,23 @@ public class PessoaUtilitarios implements Serializable {
      * @return
      */
     public String getFotoPessoaFisica(Pessoa pessoa) {
+        return getFotoPessoaFisica(pessoa, 0);
+    }
+
+    /**
+     * Retorna foto da pessoa
+     *
+     * @param pessoa
+     * @param waiting
+     * @return
+     */
+    public String getFotoPessoaFisica(Pessoa pessoa, Integer waiting) {
+        if (waiting > 0) {
+            try {
+                Thread.sleep(waiting);
+            } catch (InterruptedException ex) {
+            }
+        }
         String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + pessoa.getId() + ".png";
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
         if (!f.exists()) {
@@ -233,6 +250,23 @@ public class PessoaUtilitarios implements Serializable {
      * @return
      */
     public String getFotoPessoaFisica(Fisica fisica) {
+        return getFotoPessoaFisica(fisica, 0);
+    }
+
+    /**
+     * Retorna foto da pessoa
+     *
+     * @param fisica
+     * @param waiting
+     * @return
+     */
+    public String getFotoPessoaFisica(Fisica fisica, Integer waiting) {
+        if (waiting > 0) {
+            try {
+                Thread.sleep(waiting);
+            } catch (InterruptedException ex) {
+            }
+        }
         String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
         if (!f.exists()) {

@@ -7,6 +7,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,11 @@ public class AdministradoraBean implements Serializable {
 
     public void save() {
         if (administradora.getPessoa().getId() == -1) {
-            message = "Pesquisar pessoa!";
+            GenericaMensagem.warn("Validação", "Pesquisar pessoa!");
         }
         for (int i = 0; i < listAdministradoras.size(); i++) {
             if (listAdministradoras.get(i).getPessoa().getId() == administradora.getPessoa().getId()) {
-                message = "Pessoa já cadastrada!";
+                GenericaMensagem.warn("Validação", "Pessoa já cadastrada!");
                 return;
             }
         }
@@ -53,11 +54,11 @@ public class AdministradoraBean implements Serializable {
                 di.commit();
                 NovoLog novoLog = new NovoLog();
                 novoLog.save("ID: " + administradora.getId() + " - Pessoa: (" + administradora.getPessoa().getId() + ") " + administradora.getPessoa().getNome());
-                message = "Registro inserido com sucesso";
+                GenericaMensagem.info("Sucesso", "Registro inserido");
                 listAdministradoras.clear();
             } else {
                 di.rollback();
-                message = "Erro ao adicionar registro!";
+                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
             }
         }
         administradora = new Administradora();
@@ -74,13 +75,13 @@ public class AdministradoraBean implements Serializable {
             di.openTransaction();
             if (di.delete(cac)) {
                 di.commit();
-                message = "Registro excluído com sucesso.";
+                GenericaMensagem.info("Sucesso", "Registro excluído");
                 NovoLog novoLog = new NovoLog();
                 novoLog.delete("ID: " + cac.getId() + " - Pessoa: (" + cac.getPessoa().getId() + ") " + cac.getPessoa().getNome());
                 listAdministradoras.clear();
             } else {
                 di.rollback();
-                message = "Erro ao excluir registro!";
+                GenericaMensagem.warn("Erro", "Ao excluir registro!");
             }
         }
     }

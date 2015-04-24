@@ -31,14 +31,14 @@ public class PessoaBean implements Serializable {
         comoPesquisa = "";
     }
 
-    public void loadListaPessoa(){
+    public void loadListaPessoa() {
         listaPessoa.clear();
         PessoaDB pesquisa = new PessoaDBToplink();
         if (!descPesquisa.isEmpty()) {
             listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
         }
     }
-    
+
     public Pessoa getPessoa() {
         return pessoa;
     }
@@ -183,7 +183,7 @@ public class PessoaBean implements Serializable {
     public String getMascaraPesquisa() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
     }
-    
+
     public void limparMascara() {
         descPesquisa = "";
     }

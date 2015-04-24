@@ -776,6 +776,14 @@ public class BaixaGeralBean implements Serializable {
         this.tipo = tipo;
     }
 
+    /**
+     *
+     * @param tipo (Tipos: caixa)
+     */
+    public static void listenerTipoCaixaSession(String tipo) {
+        GenericaSessao.put("caixa_banco", tipo);
+    }
+
     public String getBanco() {
         if (banco.isEmpty() && getListaMovimentos().size() == 1) {
             MovimentoDB db = new MovimentoDBToplink();
