@@ -24,6 +24,7 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -139,7 +140,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (f.exists()) {
             f.delete();
         }
-        f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png"));
+        f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
         if (f.exists()) {
             f.delete();
         }
@@ -459,12 +460,19 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String editarFisica(Fisica f) {
+        String url = (String) GenericaSessao.getString("urlRetorno");
+        fisica = f;
+        if (!listernerValidacao(f, url)) {
+            return null;
+        }
+        GenericaSessao.put("fisicaPesquisa", f);
+        if (!url.equals("pessoaFisica")) {
+            GenericaSessao.put("linkClicado", true);
+            return url;
+        }
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
-        fisica = f;
         GenericaSessao.remove("pessoaComplementoBean");
-        GenericaSessao.put("fisicaPesquisa", fisica);
-        String url = (String) GenericaSessao.getString("urlRetorno");
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -510,27 +518,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         showImagemFisica();
         GenericaSessao.put("linkClicado", true);
         existePessoaOposicaoPorPessoa();
-        if (url.equals("pessoaFisica")) {
-            File f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
-            if (f1.exists()) {
-                f1.delete();
-            }
-            f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png"));
-            if (f1.exists()) {
-                f1.delete();
-            }
-            fotoTempPerfil = "";
-            GenericaSessao.remove("photoCamBean");
-            GenericaSessao.remove("uploadBean");
-            PhotoCam photoCam = new PhotoCam();
-            Upload upload = new Upload();
-            GenericaSessao.put("uploadBean", photoCam);
-            GenericaSessao.put("uploadBean", upload);
+        File f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
+        if (f1.exists()) {
+            f1.delete();
         }
-
-        if (!listernerValidacao(f.getPessoa())) {
-            return null;
+        f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f1.exists()) {
+            f1.delete();
         }
+        fotoTempPerfil = "";
+        GenericaSessao.remove("photoCamBean");
+        GenericaSessao.remove("uploadBean");
+        PhotoCam photoCam = new PhotoCam();
+        Upload upload = new Upload();
+        GenericaSessao.put("uploadBean", photoCam);
+        GenericaSessao.put("uploadBean", upload);
         if (fisica.getId() != f.getId()) {
             FacesContext context = FacesContext.getCurrentInstance();
             File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
@@ -2148,11 +2150,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         String descricao = "";
         String como = "";
         String por = "";
-        List list = new ArrayList();
         FisicaBean fisicaBean = new FisicaBean();
         if (GenericaSessao.exists("fisicaBean")) {
             descricao = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getDescPesquisa();
-            list = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaFisica();
+            List list = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getListaPessoaFisica();
             como = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getComoPesquisa();
             por = ((FisicaBean) GenericaSessao.getObject("fisicaBean")).getPorPesquisa();
             GenericaSessao.remove("fisicaBean");
@@ -2178,27 +2179,61 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.validacao = validacao;
     }
 
-    public Boolean listernerValidacao(Pessoa p) {
+    public Boolean listernerValidacao(Fisica f, String tipoValidacao) {
+        pessoaOposicao = false;
+        Boolean permite = true;
+        Pessoa p = f.getPessoa();
         Socios s;
+        Integer count = 0;
+        if (validacao.isEmpty() && tipoValidacao.isEmpty()) {
+            return permite;
+        } else if (!tipoValidacao.isEmpty()) {
+            validacao = tipoValidacao;
+        }
+        // SÓCIO
         if (validacao.equals("socioativo") || validacao.equals("socio_titular_ativo")) {
             SociosDB sociosDB = new SociosDBToplink();
             s = sociosDB.pesquisaSocioPorPessoa(p.getId());
             if (s.getId() == -1) {
-                GenericaMensagem.warn("Validação", "Pessoa não é sócia!");
-                return false;
+                count++;
+                GenericaMensagem.warn("Mensagem " + count, "Pessoa não é sócia!");
+                permite = false;
             }
             if (!s.getServicoPessoa().isAtivo()) {
-                GenericaMensagem.warn("Validação", "Sócio está inátivo!");
-                return false;
+                GenericaMensagem.warn("Mensagem " + count, "Sócio está inátivo!");
+                count++;
+                permite = false;
             }
             if (validacao.equals("socio_titular_ativo")) {
                 if (s.getMatriculaSocios().getTitular().getId() != p.getId()) {
-                    GenericaMensagem.warn("Validação", "Sócio não é titular!");
-                    return false;
+                    count++;
+                    GenericaMensagem.warn("Mensagem " + count, "Sócio não é titular!");
+                    permite = false;
                 }
             }
         }
-        return true;
+        // OPOSIÇÃO
+        if (validacao.equals("matriculaEscola") || validacao.equals("matriculaAcademia") || validacao.equals("convenioMedico")) {
+            if (!p.getDocumento().isEmpty()) {
+                OposicaoDBToplink odbt = new OposicaoDBToplink();
+                if (odbt.existPessoaDocumentoPeriodo(p.getDocumento())) {
+                    count++;
+                    pessoaOposicao = true;
+                    GenericaMensagem.warn("Mensagem " + count, "Contém carta(s) de oposição!");
+                    permite = false;
+                }
+            }
+        }
+        // DÉBITOS
+        if (validacao.equals("matriculaEscola") || validacao.equals("matriculaAcademia") || validacao.equals("convenioMedico")) {
+            FunctionsDao functionsDao = new FunctionsDao();
+            if (functionsDao.inadimplente(p.getId())) {
+                count++;
+                GenericaMensagem.warn("Mensagem " + count, "Existe(m) débito(s)!");
+                permite = false;
+            }
+        }
+        return permite;
     }
 
     public String getPath() {

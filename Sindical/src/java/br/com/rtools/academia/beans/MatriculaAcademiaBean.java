@@ -210,7 +210,6 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public void clear() {
-
         GenericaSessao.remove("matriculaAcademiaBean");
         GenericaSessao.remove("fisicaPesquisa");
         GenericaSessao.remove("juridicaPesquisa");
