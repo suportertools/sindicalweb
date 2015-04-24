@@ -462,7 +462,7 @@ public class MatriculaAcademiaBean implements Serializable {
             desabilitaCamposMovimento = true;
             desabilitaDiaVencimento = true;
         }
-        
+
         Dao dao = new Dao();
         for (int i = 0; i < listaModalidades.size(); i++) {
             AcademiaServicoValor asv = (AcademiaServicoValor) dao.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(i).getDescription()));
@@ -613,18 +613,6 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public List<MatriculaAcademia> getListaAcademia() {
-        int id = 0;
-        if (idModalidadePesquisa != null) {
-            try {
-                id = Integer.parseInt(idModalidadePesquisa.toString());
-            } catch (NumberFormatException e) {
-                id = 0;
-            }
-        }
-        if (idModalidadePesquisa != null || !descricaoPesquisa.isEmpty()) {
-            AcademiaDao academiaDao = new AcademiaDao();
-            listaAcademia = academiaDao.pesquisaMatriculaAcademia("", porPesquisa, comoPesquisa, descricaoPesquisa, matriculaAtiva, id);
-        }
         return listaAcademia;
     }
 
@@ -1079,7 +1067,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 valorLiquido = valor;
                 valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - desconto);
                 float valorDesconto = Moeda.converteFloatR$Float(desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor)));
-                matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto); 
+                matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto);
             }
         }
         valor = Moeda.converteR$(valor);
@@ -1886,11 +1874,28 @@ public class MatriculaAcademiaBean implements Serializable {
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
         listaAcademia.clear();
+        loadList();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
         listaAcademia.clear();
+        loadList();
+    }
+
+    public void loadList() {
+        int id = 0;
+        if (idModalidadePesquisa != null) {
+            try {
+                id = Integer.parseInt(idModalidadePesquisa.toString());
+            } catch (NumberFormatException e) {
+                id = 0;
+            }
+        }
+        if (idModalidadePesquisa != null || !descricaoPesquisa.isEmpty()) {
+            AcademiaDao academiaDao = new AcademiaDao();
+            listaAcademia = academiaDao.pesquisaMatriculaAcademia("", porPesquisa, comoPesquisa, descricaoPesquisa, matriculaAtiva, id);
+        }
     }
 
     public String getMascaraPesquisa() {
