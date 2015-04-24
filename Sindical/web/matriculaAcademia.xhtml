@@ -20,9 +20,15 @@
             <f:metadata>  
                 <f:event type="preRenderView" listener="${matriculaAcademiaBean.load()}"/>  
             </f:metadata>             
-            <ui:include src="templates/templateAcessoFilial.xhtml"/>
+            <f:metadata>  
+                <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('matriculaAcademia')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('matriculaAcademia')}"/>
+                <f:event type="preRenderView" listener="${uploadBean.setUPDATE(':form_matricula_academia:i_photo_cam')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setUPDATE(':form_matricula_academia:i_photo_cam')}"/>
+            </f:metadata>
+            <ui:include src="templates/templateAcessoFilialComCaixa.xhtml" />
             <ui:include src="templates/templateStatus.xhtml" />
-            <div class="wrapper">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <p:outputLabel value="Matrícula Academia" styleClass="fonteHeader"/>
                 <div class="clear"></div>
                 <h:outputScript name="tradutor_primefaces.js" library="js" /> 
@@ -142,8 +148,12 @@
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
-                                        <p:panel header="Foto Aluno" rendered="#{matriculaAcademiaBean.alunoFoto}">
-                                            <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id}.png" width="130" />
+                                        <p:panel header="Foto Aluno" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1}" id="i_photo_cam">
+                                            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa)}" cache="false" width="130"/>
+                                            <h:panelGrid columns="2" style="width: 100%" columnClasses="text-center" styleClass="margin-top-max">
+                                                <p:commandButton icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener('Imagens/Fotos', matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" />  
+                                                <p:commandButton icon="photocam"  title="Capturar Foto" oncomplete="PF('dlg_photocam').show()" actionListener="#{photoCamBean.listener('Imagens/Fotos', matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id, true, true)}" global="false" update=":form_photocam_files:i_panel_photocam"/>
+                                            </h:panelGrid>
                                         </p:panel>
                                     </h:column>
                                 </h:panelGrid>
@@ -326,7 +336,9 @@
                         </p:panel>
                     </p:dialog>
                 </h:form>
-            </div>
+            </p:panel>
+            <ui:include src="templates/templateUpload.xhtml" />
+            <ui:include src="templates/templatePhotoCam.xhtml" />                
         </f:view>
     </h:body>
 </ui:composition>

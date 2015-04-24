@@ -17,7 +17,7 @@
             <f:metadata>  
                 <f:event type="preRenderView" listener="${configuracaoCnpjBean.load()}"/>  
             </f:metadata>            
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:outputText value="Você não possui permissões para efetuar operações nesta rotina!" styleClass="fonteHeader" rendered="#{controleAcessoBean.botaoSalvar}" title="salvar / alterar / excluir"/>
                 <h:form id="form_cnpj" rendered="#{!controleAcessoBean.botaoSalvar}">
                     <h:outputText value="Configuração Web Service - CNPJ" styleClass="fonteHeader" />

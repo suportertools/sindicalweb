@@ -14,7 +14,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_turma">
                     <p:outputLabel value="Pesquisar de Turma" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${turmaBean.turma}"/>

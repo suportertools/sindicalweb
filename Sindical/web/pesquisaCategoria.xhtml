@@ -14,7 +14,7 @@
     <f:view>
         <h:form id="form_pesquisa_categoria">
             <h:body>
-                <div class="wrapper">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <p:outputLabel value="Pesquisa Categoria" styleClass="fonteHEader"/>
                     <div class="clear"></div>
                     <p:dataTable value="#{categoriaBean.listCategoria}" var="categoria" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado">
@@ -28,7 +28,7 @@
                             #{categoria.grupoCategoria.grupoCategoria}
                         </p:column>
                     </p:dataTable>
-                </div>
+                </p:panel>
             </h:body>
         </h:form>
     </f:view>

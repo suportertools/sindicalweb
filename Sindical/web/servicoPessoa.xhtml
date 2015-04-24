@@ -8,17 +8,26 @@
         <f:view>
             <p:tabView>
                 <p:tab id="socios" title="Dados Pessoais" >
-                    <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" rendered="false"/>
-                    <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaSocios')}" />
-                    <h:panelGrid columns="2" styleClass="margin-top">
-                        <h:outputText value="Documento: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
-                        <h:outputText value="#{servicoPessoaBean.titular.pessoa.tipoDocumento.descricao} - #{servicoPessoaBean.titular.pessoa.documento} - " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
-                        <h:outputText value="Nome: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
-                        <h:outputText value="#{servicoPessoaBean.titular.pessoa.nome}" rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
-                        <p:outputLabel value="Endereço: " />
-                        <h:outputText value="#{servicoPessoaBean.strEndereco}" />
-                        <p:outputLabel value="Data de cadastro: " />
-                        <p:outputLabel id="idDtCadastro" value="#{servicoPessoaBean.servicoPessoa.emissao}" />
+                    <h:panelGrid columns="2" columnClasses="verticalAlignTop verticalAlignTop" style="width: 100%">
+                        <h:column>
+                            <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" rendered="false"/>
+                            <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaSocios')}" />
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Documento: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
+                                <h:outputText value="#{servicoPessoaBean.titular.pessoa.tipoDocumento.descricao} - #{servicoPessoaBean.titular.pessoa.documento} - " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
+                                <h:outputText value="Nome: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
+                                <h:outputText value="#{servicoPessoaBean.titular.pessoa.nome}" rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>
+                                <p:outputLabel value="Endereço: " />
+                                <h:outputText value="#{servicoPessoaBean.strEndereco}" />
+                                <p:outputLabel value="Data de cadastro: " />
+                                <p:outputLabel id="idDtCadastro" value="#{servicoPessoaBean.servicoPessoa.emissao}" />
+                            </h:panelGrid>
+                        </h:column>
+                        <h:column>
+                            <p:panel rendered="#{servicoPessoaBean.servicoPessoa.pessoa.id != -1}" styleClass="text-center">
+                                <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(servicoPessoaBean.servicoPessoa.pessoa)}" cache="false" width="130"/>
+                            </p:panel>
+                        </h:column>                        
                     </h:panelGrid>
                 </p:tab>
 
