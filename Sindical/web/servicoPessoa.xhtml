@@ -10,7 +10,7 @@
                 <p:tab id="socios" title="Dados Pessoais" >
                     <h:panelGrid columns="2" columnClasses="verticalAlignTop verticalAlignTop" style="width: 100%">
                         <h:column>
-                            <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" rendered="false"/>
+                            <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" rendered="false" actionListener="#{fisicaBean.listernerTipoPesquisa(chamadaPaginaBean.urlAtual)}"/>
                             <p:commandButton icon="ui-icon-search" title="Pesquisar Sócio" value="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaSocios')}" />
                             <h:panelGrid columns="2">
                                 <h:outputText value="Documento: " rendered="#{servicoPessoaBean.titular.pessoa.id != -1}"/>

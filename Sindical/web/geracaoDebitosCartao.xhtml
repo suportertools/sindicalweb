@@ -16,9 +16,11 @@
         <f:view>
             <ui:include src="templates/templateAcessoFilialComCaixa.xhtml" />
             <f:metadata>  
+                <f:event type="preRenderView" listener="${uploadBean.load()}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.load()}"/>
                 <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('geracaoDebitosCartao')}"/>  
-                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('geracaoDebitosCartao')}"/>
                 <f:event type="preRenderView" listener="${uploadBean.setUPDATE('form_gdc')}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('geracaoDebitosCartao')}"/>
                 <f:event type="preRenderView" listener="${photoCamBean.setUPDATE('form_gdc')}"/>                
                 <f:event type="preRenderView" listener="${geracaoDebitosCartaoBean.load()}"/>
             </f:metadata>

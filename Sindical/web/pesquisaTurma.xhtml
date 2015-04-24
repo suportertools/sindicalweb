@@ -36,7 +36,7 @@
                             <h:outputText value="#{turma.horaInicio} - #{turma.horaTermino}"/>
                         </p:column>
                         <p:column headerText="Curso">
-                            <p:commandLink value="#{turma.cursos.descricao}" action="#{turmaBean.editar(turma)}"/>
+                            <p:commandLink value="#{turma.cursos.descricao}" action="#{turmaBean.edit(turma)}"/>
                         </p:column>
                         <p:column headerText="Idade" styleClass="text-center">
                             <h:outputText value="#{turma.idadeInicial} à #{turma.idadeFim} ano(s)"/>
