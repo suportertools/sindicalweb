@@ -39,6 +39,13 @@ public class Upload implements Serializable {
     private static Boolean SUCCESS;
     private String rotinaNome;
     private static String UPDATE;
+    private static Integer SIZE;
+    private static Boolean MULTIPLE;
+    private static String LABEL;
+    private static String UPLOAD_LABEL;
+    private static String CANCEL_LABEL;
+    private static String MODE;
+    private static String MESSAGE_WAITING;
 
     @PostConstruct
     public void init() {
@@ -56,6 +63,13 @@ public class Upload implements Serializable {
         SUCCESS = false;
         UPDATE = "";
         rotinaNome = "";
+        SIZE = 204800;
+        MULTIPLE = false;
+        LABEL = "Procurar";
+        CANCEL_LABEL = "Cancelar";
+        UPLOAD_LABEL = "Anexar";
+        MODE = "advanced";
+        MESSAGE_WAITING = "Carregando e Processando Imagem";
     }
 
     @PreDestroy
@@ -130,6 +144,12 @@ public class Upload implements Serializable {
 
     }
 
+    public void upload(FileUploadEvent[] event) {
+        for (FileUploadEvent event1 : event) {
+            upload(event);
+        }
+    }
+
     public void upload(FileUploadEvent event) {
         try {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
@@ -149,7 +169,7 @@ public class Upload implements Serializable {
             SUCCESS = Upload.enviar(configuracaoUpload, true, SHOW_MESSAGE);
             if (SUCCESS) {
                 complete();
-                if (!AUTO_SAVE) {
+                if (!AUTO_SAVE && !MULTIPLE) {
                     FILE_TEMP = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
                     FILE_PERMANENT = "";
                 }
@@ -284,52 +304,6 @@ public class Upload implements Serializable {
         }
     }
 
-    public Usuario getUsuario() {
-        if (GenericaSessao.exists("sessaoUsuario")) {
-            return (Usuario) GenericaSessao.getObject("sessaoUsuario");
-        }
-        return new Usuario();
-    }
-
-    public String getCliente() {
-        if (GenericaSessao.exists("sessaoCliente")) {
-            return GenericaSessao.getString("sessaoCliente");
-        }
-        return "";
-    }
-
-    public String getFILE_TEMP() {
-        return FILE_TEMP;
-    }
-
-    public void setFILE_TEMP(String aFILE_TEMP) {
-        FILE_TEMP = aFILE_TEMP;
-    }
-
-    public String getFILE_PERMANENT() {
-        return FILE_PERMANENT;
-    }
-
-    public void setFILE_PERMANENT(String aFILE_PERMANENT) {
-        FILE_PERMANENT = aFILE_PERMANENT;
-    }
-
-    public Boolean getSUCCESS() {
-        return SUCCESS;
-    }
-
-    public void setSUCCESS(Boolean aSUCCESS) {
-        SUCCESS = aSUCCESS;
-    }
-
-    public String getRotinaNome() {
-        return rotinaNome;
-    }
-
-    public void setRotinaNome(String rotinaNome) {
-        this.rotinaNome = rotinaNome;
-    }
-
     public void complete() {
         if (SUCCESS) {
             Fisica f;
@@ -374,22 +348,6 @@ public class Upload implements Serializable {
         SUCCESS = false;
     }
 
-    public static String getPATH() {
-        return PATH;
-    }
-
-    public static void setPATH(String aPATH) {
-        PATH = aPATH;
-    }
-
-    public String getUPDATE() {
-        return UPDATE;
-    }
-
-    public void setUPDATE(String aUPDATE) {
-        UPDATE = aUPDATE;
-    }
-
     public void waiting(Integer sleep) {
         try {
             Thread.sleep(sleep);
@@ -413,5 +371,125 @@ public class Upload implements Serializable {
         configuracaoUpload = new ConfiguracaoUpload();
         SUCCESS = false;
         rotinaNome = "";
+        UPDATES.clear();
     }
+
+    public static String getPATH() {
+        return PATH;
+    }
+
+    public static void setPATH(String aPATH) {
+        PATH = aPATH;
+    }
+
+    public String getUPDATE() {
+        return UPDATE;
+    }
+
+    public void setUPDATE(String aUPDATE) {
+        UPDATE = aUPDATE;
+    }
+
+    public Integer getSIZE() {
+        return SIZE;
+    }
+
+    public void setSIZE(Integer aSIZE) {
+        SIZE = aSIZE;
+    }
+
+    public Usuario getUsuario() {
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            return (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        }
+        return new Usuario();
+    }
+
+    public String getCliente() {
+        if (GenericaSessao.exists("sessaoCliente")) {
+            return GenericaSessao.getString("sessaoCliente");
+        }
+        return "";
+    }
+
+    public String getFILE_TEMP() {
+        return FILE_TEMP;
+    }
+
+    public void setFILE_TEMP(String aFILE_TEMP) {
+        FILE_TEMP = aFILE_TEMP;
+    }
+
+    public String getFILE_PERMANENT() {
+        return FILE_PERMANENT;
+    }
+
+    public void setFILE_PERMANENT(String aFILE_PERMANENT) {
+        FILE_PERMANENT = aFILE_PERMANENT;
+    }
+
+    public Boolean getSUCCESS() {
+        return SUCCESS;
+    }
+
+    public void setSUCCESS(Boolean aSUCCESS) {
+        SUCCESS = aSUCCESS;
+    }
+
+    public Boolean getMULTIPLE() {
+        return MULTIPLE;
+    }
+
+    public void setMULTIPLE(Boolean aMULTIPLE) {
+        MULTIPLE = aMULTIPLE;
+    }
+
+    public String getRotinaNome() {
+        return rotinaNome;
+    }
+
+    public void setRotinaNome(String rotinaNome) {
+        this.rotinaNome = rotinaNome;
+    }
+
+    public String getLABEL() {
+        return LABEL;
+    }
+
+    public void setLABEL(String aLABEL) {
+        LABEL = aLABEL;
+    }
+
+    public String getUPLOAD_LABEL() {
+        return UPLOAD_LABEL;
+    }
+
+    public void setUPLOAD_LABEL(String aUPLOAD_LABEL) {
+        UPLOAD_LABEL = aUPLOAD_LABEL;
+    }
+
+    public String getCANCEL_LABEL() {
+        return CANCEL_LABEL;
+    }
+
+    public void setCANCEL_LABEL(String aCANCEL_LABEL) {
+        CANCEL_LABEL = aCANCEL_LABEL;
+    }
+
+    public String getMODE() {
+        return MODE;
+    }
+
+    public void setMODE(String aMODE) {
+        MODE = aMODE;
+    }
+
+    public String getMESSAGE_WAITING() {
+        return MESSAGE_WAITING;
+    }
+
+    public void setMESSAGE_WAITING(String aMESSAGE_WAITING) {
+        MESSAGE_WAITING = aMESSAGE_WAITING;
+    }
+
 }
