@@ -8,14 +8,30 @@
             <f:event type="preRenderView" listener="${photoCamBean.load}"/>  
         </f:metadata>
         <h:form id="form_photocam_files">
-            <p:dialog id="i_captura" widgetVar="dlg_photocam" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true" closeOnEscape="true">
-                <p:ajax event="close" listener="#{photoCamBean.close}" update="${photoCamBean.UPDATE}"/>
+            <p:dialog id="i_captura" widgetVar="dlg_photocam" modal="true" header="WebCam" resizable="true"  maximizable="true" minimizable="true" closeOnEscape="true" visible="#{photoCamBean.visible}" width="760">
+                <p:ajax event="close" listener="#{photoCamBean.close}" update="#{photoCamBean.UPDATE}"/>
                 <h:panelGrid id="i_panel_photocam" columns="1">
-                    <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update="${photoCamBean.UPDATE}" />
+                    <h:panelGrid columns="2" columnClasses="verticalAlignTop verticalAlignTop">
+                        <h:column>
+                            <p:panel header="Câmera" style="width: 350px; height: 300px" styleClass="text-center" >
+                                <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update="i_photocam_preview" rendered="#{photoCamBean.visible}" />
+                            </p:panel>
+                        </h:column>
+                        <h:column>
+                            <p:panel header="Pré-Visualização" style="width: 350px; height: 300px" styleClass="text-center">
+                                <p:poll async="true" interval="3" global="false" update="i_poll_photocam  i_photocam_preview" id="i_poll_photocam" stop="#{!photoCamBean.visible}"/>
+                                <p:outputPanel id="i_photocam_preview" autoUpdate="true" global="false" rendered="#{photoCamBean.visible}">
+                                    <p:graphicImage value="#{photoCamBean.FILE_PERMANENT}" cache="false" />                                    
+                                </p:outputPanel>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
                     <h:column>
-                        <h:panelGrid columns="2">
-                            <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_photo').show(); PF('pc_photocam').capture();" action="#{photoCamBean.waiting(5000)}" global="false" />
-                            <p:commandButton value="Atualizar" update="${photoCamBean.UPDATE}" global="false"/>
+                        <h:panelGrid columns="3">
+                            <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_photo').show();
+                                    PF('pc_photocam').capture();" action="#{photoCamBean.waiting(5000)}" global="false" />
+                            <p:commandButton value="Atualizar" update="i_photocam_preview" global="false"/>
+                            <p:commandButton value="Concluir" action="#{photoCamBean.closeRefresh()}" update=":form_photocam_files: #{photoCamBean.UPDATE}"/>
                         </h:panelGrid>
                     </h:column>
                 </h:panelGrid>                        
