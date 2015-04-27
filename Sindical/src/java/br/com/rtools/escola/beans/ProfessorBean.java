@@ -88,7 +88,7 @@ public class ProfessorBean implements java.io.Serializable {
         listProfessores.clear();
     }
 
-    public void edaot(Professor p) {
+    public void edit(Professor p) {
         Dao dao = new Dao();
         professor = (Professor) dao.rebind(p);
     }

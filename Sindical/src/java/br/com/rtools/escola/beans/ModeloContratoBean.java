@@ -182,7 +182,7 @@ public class ModeloContratoBean implements Serializable {
         }
     }
 
-    public String edaot(MatriculaContrato mc) {
+    public String edit(MatriculaContrato mc) {
         Dao dao = new Dao();
         UploadFilesBean uploadFilesBean = new UploadFilesBean();
         uploadFilesBean.setPath("Arquivos/contrato/" + mc.getId());

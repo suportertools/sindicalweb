@@ -91,7 +91,7 @@ public class AgrupaTurmaBean implements Serializable {
         GenericaMensagem.info("Sucesso", "Registro(s) inserido(s) com sucesso");
     }
 
-    public void edaot(AgrupaTurma at) {
+    public void edit(AgrupaTurma at) {
         AgrupaTurmaDao agrupaTurmaDao = new AgrupaTurmaDao();
         List<AgrupaTurma> list = (List<AgrupaTurma>) agrupaTurmaDao.pesquisaPorTurmaIntegral(at.getTurmaIntegral().getId());
         itensAgrupados.clear();
@@ -171,7 +171,7 @@ public class AgrupaTurmaBean implements Serializable {
         integral = false;
     }
 
-    public void edaotItensList(ListaAgrupaTurma lat) {
+    public void editItensList(ListaAgrupaTurma lat) {
         for (int i = 0; i < itensAgrupados.size(); i++) {
             itensAgrupados.get(i).getAgrupaTurma().setTurmaIntegral(null);
             itensAgrupados.get(i).setIsIntegral(false);
