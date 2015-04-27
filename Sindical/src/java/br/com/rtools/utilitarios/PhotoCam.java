@@ -28,17 +28,21 @@ public class PhotoCam implements Serializable {
     private static String FILE_TEMP;
     private static String FILE_TEMP_NAME;
     private static String FILE_PERMANENT;
+    private static String FILE_MEMORY;
     private static Boolean REPLACE_FILES;
     private static Boolean AUTO_SAVE;
     private static List UPDATES;
     private static String UPDATE;
     private static Boolean SHOW_MESSAGE;
     private static Boolean SUCCESS;
+    private Boolean load;
     private String rotinaNome;
     private Boolean visible;
+    private Integer stop;
 
     @PostConstruct
     public void init() {
+        load = false;
         PATH = "temp/foto/" + getUsuario().getId();
         PATH_FILE = "perfil";
         FILE_TEMP = "";
@@ -52,11 +56,15 @@ public class PhotoCam implements Serializable {
         rotinaNome = "";
         UPDATE = "";
         visible = false;
+        stop = 0;
+        FILE_MEMORY = "";
+//        deleteMemoryFile();
     }
 
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("photoCamBean");
+        GenericaSessao.remove("cropperBean");
     }
 
     public void load() {
@@ -111,6 +119,9 @@ public class PhotoCam implements Serializable {
         PATH_FILE = aFILENAME;
         SHOW_MESSAGE = true;
         visible = true;
+        stop = 4;
+        // FILE_MEMORY = "";
+        // deleteMemoryFile();
 
     }
 
@@ -148,7 +159,28 @@ public class PhotoCam implements Serializable {
         }
         String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(file_path_local);
         File f = new File(newFileName);
+        boolean success = false;
         FileImageOutputStream imageOutput;
+//        if (FILE_MEMORY.isEmpty()) {
+//            if (f.exists()) {
+//                Diretorio.criar("/temp/foto/" + getUsuarioId() + "/memory/");
+//                FILE_MEMORY = "/Cliente/" + getCliente() + "/temp/foto/" + getUsuarioId() + "/memory/" + photo;
+//                File fileMemory = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_MEMORY));
+//                if (fileMemory.exists()) {
+//                    success = fileMemory.delete();
+//                } else {
+//                    success = true;
+//                }
+//                if (success) {
+//                    File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(file_path_local));
+//                    try {
+//                        success = src.renameTo(fileMemory);
+//                    } catch (Exception e) {
+//                        e.getMessage();
+//                    }
+//                }
+//            }
+//        }
         try {
             imageOutput = new FileImageOutputStream(new File(newFileName));
             imageOutput.write(data, 0, data.length);
@@ -165,14 +197,21 @@ public class PhotoCam implements Serializable {
 
     public synchronized void capture(CaptureEvent captureEvent) throws InterruptedException {
         if (PhotoCam.oncapture(captureEvent, PATH_FILE, "", true)) {
+            load = true;
             complete();
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
-            if (f.exists()) {
-                FILE_PERMANENT = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
-            } else {
-                FILE_PERMANENT = "/Imagens/user_undefined.png";
+            int i = 0;
+            FILE_PERMANENT = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
+            if (!f.exists()) {
+                while (!f.exists()) {
+                    Thread.sleep(1000);
+                    if (i == 10) {
+                        FILE_PERMANENT = "/Imagens/user_undefined.png";
+                        break;
+                    }
+                    i++;
+                }
             }
-            // Thread.sleep(5000);
         }
 //        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
 //        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
@@ -183,6 +222,13 @@ public class PhotoCam implements Serializable {
             return (Usuario) GenericaSessao.getObject("sessaoUsuario");
         }
         return new Usuario();
+    }
+
+    public static Integer getUsuarioId() {
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            return ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId();
+        }
+        return -1;
     }
 
     public static String getCliente() {
@@ -201,10 +247,13 @@ public class PhotoCam implements Serializable {
     }
 
     public String getFILE_PERMANENT() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        if (load) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
 
+            }
+            load = false;
         }
         return FILE_PERMANENT;
     }
@@ -274,7 +323,6 @@ public class PhotoCam implements Serializable {
         try {
             Thread.sleep(sleep);
             PF.closeDialog("dlg_loading_photo");
-            PF.update(UPDATE);
         } catch (InterruptedException ex) {
 
         }
@@ -285,6 +333,11 @@ public class PhotoCam implements Serializable {
     }
 
     public void close() {
+        close(0);
+    }
+
+    public synchronized void close(Integer tCase) {
+        GenericaSessao.remove("cropperBean");
         SUCCESS = false;
         PATH = "temp/foto/" + getUsuario().getId();
         PATH_FILE = "perfil";
@@ -297,10 +350,20 @@ public class PhotoCam implements Serializable {
         SUCCESS = false;
         UPDATES = new ArrayList();
         visible = false;
+        stop = 0;
+        if (tCase == 0) {
+            deleteMemoryFile();
+        } else if (tCase == 1) {
+            moveMemoryFile();
+        }
     }
 
-    public String closeRefresh() {
-        close();
+    public void rollback() {
+        moveMemoryFile();
+    }
+
+    public String closeRefresh(Integer tCase) {
+        close(tCase);
         return rotinaNome;
     }
 
@@ -310,6 +373,61 @@ public class PhotoCam implements Serializable {
 
     public void setVisible(Boolean visible) {
         this.visible = visible;
+    }
+
+    public void listenerStop() {
+        if (stop > 0) {
+            stop--;
+        }
+    }
+
+    public Integer getStop() {
+        return stop;
+    }
+
+    public void setStop(Integer stop) {
+        this.stop = stop;
+    }
+
+    public String getFILE_MEMORY() {
+        return FILE_MEMORY;
+    }
+
+    public void setFILE_MEMORY(String aFILE_MEMORY) {
+        FILE_MEMORY = aFILE_MEMORY;
+    }
+
+    public void deleteMemoryFile() {
+//        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_MEMORY));
+//        if (f.exists()) {
+//            f.delete();
+//        }
+//        FILE_MEMORY = "";
+    }
+
+    public void moveMemoryFile() {
+//        File des = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT));
+//        if (des.exists()) {
+//            des.delete();
+//        }
+//        boolean rename = false;
+//        if (!FILE_PERMANENT.equals("/Imagens/user_undefined.png")) {
+//            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_MEMORY));
+//            try {
+//                rename = src.renameTo(des);
+//                FILE_MEMORY = "";
+//            } catch (Exception e) {
+//                rename = false;
+//            }
+//        }
+    }
+
+    public Boolean getLoad() {
+        return load;
+    }
+
+    public void setLoad(Boolean load) {
+        this.load = load;
     }
 
 }
