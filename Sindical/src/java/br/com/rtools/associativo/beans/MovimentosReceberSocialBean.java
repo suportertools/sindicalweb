@@ -10,7 +10,9 @@ import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.beans.ConfiguracaoFinanceiroBean;
+import br.com.rtools.financeiro.dao.ServicoPessoaDao;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -37,6 +39,7 @@ import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.AutenticaUsuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -94,7 +97,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     private String tipo = "";
     private String id_baixa = "";
     private String msgConfirma = "";
-    private String desconto = "0";
+    private String desconto = "0,00";
     private boolean chkSeleciona = false;
     private boolean addMais = false;
     private Pessoa pessoa = new Pessoa();
@@ -111,13 +114,15 @@ public class MovimentosReceberSocialBean implements Serializable {
     private final ConfiguracaoSocialBean csb = new ConfiguracaoSocialBean();
 
     private boolean pessoaJuridicaNaLista = false;
-    private List<DataObject> listaMesclar = new ArrayList();
-    private String boletoSelecionadoMesclar = "";
     private final ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
     private String motivoInativacao = "";
 
     private ControleAcessoBean cab = new ControleAcessoBean();
     private String referenciaPesquisa = "";
+    
+    private Socios socios;
+    private DataObject linhaSelecionada = new DataObject();
+    private String novoDesconto = "0,00";
     
     @PostConstruct
     public void init() {
@@ -127,9 +132,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     
         cab = (ControleAcessoBean) GenericaSessao.getObject("controleAcessoBean");
         
-        listaMesclar.add(new DataObject(0, "001"));
-        listaMesclar.add(new DataObject(1, "002"));
-        listaMesclar.add(new DataObject(2, "003"));
+        socios = new Socios();
     }
 
     @PreDestroy
@@ -138,45 +141,76 @@ public class MovimentosReceberSocialBean implements Serializable {
         GenericaSessao.remove("usuarioAutenticado");
     }    
     
-    public String cadastroPessoa(DataObject linha){
-        Movimento mov = (Movimento) new Dao().find(new Movimento(), (Integer) linha.getArgumento1());
+    public void cliqueCalculoJuros(DataObject linha){
+        linhaSelecionada = linha;
+        if (cab.verificaPermissao("calcularJurosSocial", 3)){
+            //PF.openDialog("dlg_autentica_usuario");
+            GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("calcularJurosSocial", 3, "formMovimentosReceber", "movimentosReceberSocialBean", "calculoJuros"));
+            return;
+        }
+
+        calculoJuros();
+        PF.update("formMovimentosReceber");
+    }
+    
+    public void calculoJuros(){
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        float[] valor = db.pesquisaValorAcrescimo((Integer)linhaSelecionada.getArgumento1());
+        
+        if ((Boolean) linhaSelecionada.getArgumento29()){
+            linhaSelecionada.setArgumento29(false);
+            //linhaSelecionada.setArgumento7("0,00");
+            linhaSelecionada.setArgumento9(Moeda.converteR$Float(Moeda.subtracaoValores( Moeda.converteUS$(linhaSelecionada.getArgumento9().toString()), valor[0])));
+        }else{
+            linhaSelecionada.setArgumento29(true);
+            //linhaSelecionada.setArgumento7(Moeda.converteR$Float(valor[0]));
+            linhaSelecionada.setArgumento9(Moeda.converteR$Float(valor[1]));
+        }
+        
+        calculoDesconto();
+    }
+    
+    public String cadastroPessoa(DataObject linha, Pessoa pessoax){
+        if (pessoax == null){
+            Movimento mov = (Movimento) new Dao().find(new Movimento(), (Integer) linha.getArgumento1());
+            pessoax = mov.getBeneficiario();
+        }
         
         FisicaDB dbf = new FisicaDBToplink();
-        Fisica f = dbf.pesquisaFisicaPorPessoa(mov.getBeneficiario().getId());
-        
+        Fisica f = dbf.pesquisaFisicaPorPessoa(pessoax.getId());
+
         if (f != null){
-            //ChamadaPaginaBean cpb = new ChamadaPaginaBean();
-            //GenericaSessao.put("chamadaPaginaBean", cpb);
-            
             String retorno =  ((ChamadaPaginaBean)GenericaSessao.getObject("chamadaPaginaBean")).pessoaFisica();
-            
-            
+
             FisicaBean fb = new FisicaBean();
-            fb.editarFisica(f);
-            //fb.editarFisicaParametro(f);
+            fb.editarFisica(f, true);
             GenericaSessao.put("fisicaBean", fb);
             return retorno;
         }
-        
+
         JuridicaDB dbj = new JuridicaDBToplink();
-        Juridica j = dbj.pesquisaJuridicaPorPessoa(mov.getBeneficiario().getId());
-        
+        Juridica j = dbj.pesquisaJuridicaPorPessoa(pessoax.getId());
+
         if (j != null){
             String retorno = (new ChamadaPaginaBean()).pessoaJuridica();
             JuridicaBean jb = new JuridicaBean();
-            jb.editar(j);
+            jb.editar(j, true);
             GenericaSessao.put("juridicaBean", jb);
             return retorno;
-        }
-        
+        }        
         return null;
     }
     
+    public void autorizarDesconto(){
+        GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("dlg_desconto", "autorizaDescontos", 3));
+    }
+    
     public void adicionarDesconto(){
+        desconto = novoDesconto;
         PF.closeDialog("dlg_autentica_usuario");
         PF.closeDialog("dlg_desconto");
         calculoDesconto();
-        
+        novoDesconto = "0,00";
         PF.update("formMovimentosReceber");
     }
     
@@ -231,6 +265,8 @@ public class MovimentosReceberSocialBean implements Serializable {
 
         if (!GerarMovimento.inativarArrayMovimento(listam, motivoInativacao, dao).isEmpty()) {
             GenericaMensagem.error("Atenção", "Ocorreu um erro em uma das exclusões, verifique o log!");
+            dao.rollback();
+            return;
         } else {
             GenericaMensagem.info("Sucesso", "Boletos foram excluídos!");
         }
@@ -239,20 +275,6 @@ public class MovimentosReceberSocialBean implements Serializable {
         dao.commit();
     }
 
-    public void mesclar() {
-        for (DataObject dh : listaMovimento) {
-
-            boleto = (String) dh.getArgumento17();
-            int id_lote = Integer.valueOf(dh.getArgumento27().toString());
-
-        }
-
-        PF.openDialog("i_dlg_mesclar");
-    }
-
-    public void concluirMescla() {
-        //boletoSelecionadoMesclar = boletoSelecionadoMesclar;
-    }
 
     public String caixaOuBanco() {
 
@@ -330,6 +352,7 @@ public class MovimentosReceberSocialBean implements Serializable {
                 porPesquisa = "todos";
                 listaMovimento.clear();
                 getListaMovimento();
+                socios = new Socios();
             }
             return;
         }
@@ -341,7 +364,8 @@ public class MovimentosReceberSocialBean implements Serializable {
             Pessoa p = db.pesquisaPessoaPorBoleto(descPesquisaBoleto, contaCobranca.getId());
             listaPessoa.clear();
             pessoa = new Pessoa();
-
+            socios = new Socios();
+            
             if (p != null) {
                 pessoa = p;
                 listaPessoa.add(p);
@@ -593,6 +617,71 @@ public class MovimentosReceberSocialBean implements Serializable {
         return false;
     }
 
+    public String refazerMovimentos() {
+        if (listaMovimento.isEmpty()) {
+            msgConfirma = "Não existem Movimentos para serem refeitos!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+
+        MovimentoDB db = new MovimentoDBToplink();
+        int qnt = 0;
+
+        List<Movimento> lm = new ArrayList();
+        
+        for (DataObject listaMovimento1 : listaMovimento) {
+            if ((Boolean) listaMovimento1.getArgumento0()) {
+                qnt++;
+                lm.add(db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento1.getArgumento1()))));
+            }
+        }
+
+        if (qnt == 0) {
+            msgConfirma = "Nenhum Movimentos selecionado!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+
+        if (baixado()) {
+            msgConfirma = "Existem Movimentos pagos, não podem ser refeitos!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
+        ServicoPessoaDao spd = new ServicoPessoaDao();
+        for(Movimento m : lm){
+            ServicoPessoa sp = spd.pesquisaServicoPessoa(m.getBeneficiario().getId(), m.getServicos().getId(), true);
+            
+            if(sp == null){
+                msgConfirma = "O SERVIÇO "+m.getServicos().getDescricao() + " para a PESSOA "+ m.getBeneficiario().getNome()+" não pode ser refeito!";
+                GenericaMensagem.warn("Atenção", msgConfirma);
+                return null;
+            }
+        }
+        
+//      PERMISSÃO DE ACESSO
+//        ControleAcessoBean cab = new ControleAcessoBean();
+//        Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+//        if (mov.getBaixa().getUsuario().getId() != user.getId()) {
+//            if (cab.getBotaoEstornarMensalidadesOutrosUsuarios()) {
+//                GenericaMensagem.error("Atenção", "Você não tem permissão para estornar esse movimento!");
+//                return null;
+//            }
+//        }
+
+        if (!GerarMovimento.refazerMovimentos(lm)) {
+            msgConfirma = "Não foi possível refazer movimentos";
+            GenericaMensagem.error("Erro", msgConfirma);
+            return null;
+        }
+
+        msgConfirma = "Boletos atualizados!";
+        GenericaMensagem.info("Sucesso", msgConfirma);
+        
+        listaMovimento.clear();
+        return null;
+    }
+    
     public String estornarBaixa() {
         if (listaMovimento.isEmpty()) {
             msgConfirma = "Não existem boletos para serem estornados!";
@@ -837,7 +926,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         float descPorcento = 0;
         float desc = 0;
         float acre = 0;
-        float calc = Moeda.substituiVirgulaFloat(getValorPraDesconto());
+        float calc = Moeda.substituiVirgulaFloat(getValorPraDesconto()); // VALOR PARA DESCONTO TEM QUE SER A SOMA DE TODOS OS VALORES CHECADOS (MENOS) IF SEM ACRESCIMO
         if (Moeda.converteUS$(desconto) > calc) {
             desconto = String.valueOf(calc);
         }
@@ -845,17 +934,40 @@ public class MovimentosReceberSocialBean implements Serializable {
         descPorcento = Moeda.multiplicarValores(Moeda.divisaoValores(Moeda.converteUS$(desconto), calc), 100);
 
         for (int i = 0; i < listaMovimento.size(); i++) {
+            MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+            float[] valorx = db.pesquisaValorAcrescimo((Integer) listaMovimento.get(i).getArgumento1());
+            
             if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
-                acre = Moeda.converteUS$(listaMovimento.get(i).getArgumento7().toString());
+            //    acre = Moeda.converteUS$(listaMovimento.get(i).getArgumento7().toString());
 
-                float valor_calc = Moeda.somaValores(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()), acre);
-                desc = Moeda.divisaoValores(Moeda.multiplicarValores(valor_calc, descPorcento), 100);
+            //    float valor_calc = Moeda.somaValores(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()), acre);
+                
+                
+                
+                
+                
 
-                listaMovimento.get(i).setArgumento8(Moeda.converteR$(String.valueOf(desc)));
-                listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(Moeda.subtracaoValores(valor_calc, desc))));
+                if ((Boolean)listaMovimento.get(i).getArgumento29()){
+                    float valox = valorx[1];
+                    desc = Moeda.divisaoValores(Moeda.multiplicarValores(valox, descPorcento), 100);
+                    listaMovimento.get(i).setArgumento8(Moeda.converteR$(String.valueOf(desc)));
+                    float calculo = Moeda.subtracaoValores(valox, desc);
+                    listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(calculo)));
+                }else{
+                    float valox = Moeda.subtracaoValores(valorx[1], valorx[0]);
+                    desc = Moeda.divisaoValores(Moeda.multiplicarValores(valox, descPorcento), 100);
+                    float calculo = Moeda.subtracaoValores(valox, desc);
+                    //calculo = Moeda.subtracaoValores(calculo, valorx[0]);
+                    listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(calculo)));
+                }
+                
             } else {
                 listaMovimento.get(i).setArgumento8("0,00");
-                listaMovimento.get(i).setArgumento9(Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()));
+                if ((Boolean)listaMovimento.get(i).getArgumento29())
+                    listaMovimento.get(i).setArgumento9(Moeda.converteR$Float(valorx[1]));
+                else
+                    listaMovimento.get(i).setArgumento9(Moeda.converteR$Float(Moeda.subtracaoValores(valorx[1], valorx[0])));
+                //listaMovimento.get(i).setArgumento9(Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()));
             }
         }
     }
@@ -879,7 +991,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 
             return Moeda.converteR$Float(soma);
         } else {
-            return "0";
+            return "0,00";
         }
     }
 
@@ -894,7 +1006,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 
             return Moeda.converteR$Float(soma);
         } else {
-            return "0";
+            return "0,00";
         }
     }
 
@@ -903,12 +1015,28 @@ public class MovimentosReceberSocialBean implements Serializable {
             float soma = 0;
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
+                    MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+                    float[] valorx = db.pesquisaValorAcrescimo((Integer) listaMovimento.get(i).getArgumento1());
+            
+                    if ((Boolean)listaMovimento.get(i).getArgumento29()){
+                        soma = Moeda.somaValores(soma, valorx[1]);
+                    }else{
+                        soma = Moeda.somaValores(soma, Moeda.subtracaoValores(valorx[1], valorx[0]));
+                    }
                 }
             }
             return Moeda.converteR$Float(soma);
+            
+            
+//            float soma = 0;
+//            for (int i = 0; i < listaMovimento.size(); i++) {
+//                if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
+//                    soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
+//                }
+//            }
+//            return Moeda.converteR$Float(soma);
         } else {
-            return "0";
+            return "0,00";
         }
     }
 
@@ -923,7 +1051,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             //return Moeda.converteR$Float(Moeda.subtracaoValores(soma, Moeda.converteUS$(desconto)));
             return Moeda.converteR$Float(soma);
         } else {
-            return "0";
+            return "0,00";
         }
     }
 
@@ -1088,8 +1216,9 @@ public class MovimentosReceberSocialBean implements Serializable {
                         //lista.get(i).get(18), // ARG 26 ID_BAIXA
                         lista.get(i).get(23), // ARG 26 ID_BAIXA
                         lista.get(i).get(15), // ARG 27 ID_LOTE
-                        (!descPesquisaBoleto.isEmpty() && descPesquisaBoleto.equals(lista.get(i).get(17))) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28
-                //(!descPesquisaBoleto.isEmpty() && descPesquisaBoleto == lista.get(i).get(17)) ? "tblListaBoleto" : "" // BOLETO PESQUISADO -- ARG 28
+                        (!descPesquisaBoleto.isEmpty() && descPesquisaBoleto.equals(lista.get(i).get(17))) ? "tblListaBoleto" : "", // BOLETO PESQUISADO -- ARG 28
+                        true, // ARG 29 JUROS
+                        lista.get(i).get(25) // ARG 30 NOME TITULAR
                 )
                 );
             }
@@ -1185,16 +1314,16 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public String getDesconto() {
         if (desconto.isEmpty()) {
-            desconto = "0";
+            desconto = "0,00";
         }
         return Moeda.converteR$(desconto);
     }
 
     public void setDesconto(String desconto) {
         if (desconto.isEmpty()) {
-            desconto = "0";
+            desconto = "0,00";
         }
-        this.desconto = Moeda.substituiVirgula(desconto);
+        this.desconto = Moeda.converteR$(desconto);
     }
 
     public String getMsgConfirma() {
@@ -1223,7 +1352,10 @@ public class MovimentosReceberSocialBean implements Serializable {
             if (!addMais) {
                 pessoa = new Pessoa();
                 pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-
+                
+                SociosDB dbs = new SociosDBToplink();
+                socios = dbs.pesquisaSocioPorPessoaAtivo(pessoa.getId());
+                
                 listaPessoa.clear();
 
                 listaPessoa.add(pessoa);
@@ -1346,23 +1478,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     public void setPessoaJuridicaNaLista(boolean pessoaJuridicaNaLista) {
         this.pessoaJuridicaNaLista = pessoaJuridicaNaLista;
     }
-
-    public List<DataObject> getListaMesclar() {
-        return listaMesclar;
-    }
-
-    public void setListaMesclar(List<DataObject> listaMesclar) {
-        this.listaMesclar = listaMesclar;
-    }
-
-    public String getBoletoSelecionadoMesclar() {
-        return boletoSelecionadoMesclar;
-    }
-
-    public void setBoletoSelecionadoMesclar(String boletoSelecionadoMesclar) {
-        this.boletoSelecionadoMesclar = boletoSelecionadoMesclar;
-    }
-
+    
     public String getMotivoInativacao() {
         return motivoInativacao;
     }
@@ -1385,6 +1501,36 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public void setCab(ControleAcessoBean cab) {
         this.cab = cab;
+    }
+
+    public Socios getSocios() {
+        return socios;
+    }
+
+    public void setSocios(Socios socios) {
+        this.socios = socios;
+    }
+
+    public DataObject getLinhaSelecionada() {
+        return linhaSelecionada;
+    }
+
+    public void setLinhaSelecionada(DataObject linhaSelecionada) {
+        this.linhaSelecionada = linhaSelecionada;
+    }
+
+    public String getNovoDesconto() {
+        if (novoDesconto.isEmpty()) {
+            novoDesconto = "0,00";
+        }
+        return Moeda.converteR$(novoDesconto);
+    }
+
+    public void setNovoDesconto(String novoDesconto) {
+        if (novoDesconto.isEmpty()) {
+            novoDesconto = "0,00";
+        }
+        this.novoDesconto = Moeda.converteR$(novoDesconto);
     }
 
 }

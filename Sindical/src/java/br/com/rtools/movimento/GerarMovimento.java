@@ -13,6 +13,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -641,7 +642,6 @@ public class GerarMovimento extends DB {
                     }
 
                     if (!dao.save(mi)) {
-                        dao.rollback();
                         return "Erro ao salvar Motivo de Inativação, verifique os logs!";
                     }
                     
@@ -1065,5 +1065,35 @@ public class GerarMovimento extends DB {
         lista_log[1] = lista_movimento;
         lista_log[2] = "Baixa concluída com Sucesso!";
         return lista_log;
+    }
+    
+    public static boolean refazerMovimentos(List<Movimento> lista_movimento){
+        Dao dao = new Dao();
+        dao.openTransaction();
+        
+        if (!inativarArrayMovimento(lista_movimento, "Movimento refeito por alteração nos dados cadastrais", null).isEmpty()) {
+            //dao.rollback();
+            return false;
+        }
+        
+        boolean commit = false;
+        for (Movimento m : lista_movimento) {
+            String vencto = m.getVencimento().substring(3);
+            
+            if (dao.liveSingle("select func_geramensalidades("+m.getBeneficiario().getId()+", '" + vencto+ "')", true) != null) {
+                commit = true;
+            } else{
+                dao.rollback();
+                return false;
+            }
+        }
+        
+        if (commit){
+            dao.commit();
+            return true;
+        }
+            
+        dao.rollback();
+        return false;
     }
 }

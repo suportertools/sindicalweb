@@ -41,8 +41,9 @@ public class ParametroBoletoSocial {
     private String quantidadeItens;    
     private String banco;    
     private String referenciaMensalidadesAtrasadas;
+    private String vencimentoServico;
 
-    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens, String banco, String referenciaMensalidadesAtrasadas) {
+    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens, String banco, String referenciaMensalidadesAtrasadas, String vencimentoServico) {
         this.sindicatoLogo = sindicatoLogo;
         this.sindicatoNome = sindicatoNome;
         this.codigo = codigo;
@@ -82,7 +83,8 @@ public class ParametroBoletoSocial {
         this.documentoResponsavel = documentoResponsavel;
         this.quantidadeItens = quantidadeItens;        
         this.banco = banco;        
-        this.referenciaMensalidadesAtrasadas = referenciaMensalidadesAtrasadas;        
+        this.referenciaMensalidadesAtrasadas = referenciaMensalidadesAtrasadas;  
+        this.vencimentoServico = vencimentoServico;
     }
    
     public String getSindicatoLogo() {
@@ -403,6 +405,14 @@ public class ParametroBoletoSocial {
 
     public void setReferenciaMensalidadesAtrasadas(String referenciaMensalidadesAtrasadas) {
         this.referenciaMensalidadesAtrasadas = referenciaMensalidadesAtrasadas;
+    }
+
+    public String getVencimentoServico() {
+        return vencimentoServico;
+    }
+
+    public void setVencimentoServico(String vencimentoServico) {
+        this.vencimentoServico = vencimentoServico;
     }
     
     

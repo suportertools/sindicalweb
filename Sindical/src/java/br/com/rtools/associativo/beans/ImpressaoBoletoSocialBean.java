@@ -347,7 +347,7 @@ public class ImpressaoBoletoSocialBean {
                         list_mov.get(0).setValor(Moeda.somaValores(valor_total, valor_total_atrasadas));
 
                         // ALTERAR O VENCIMENTO DA GUIA COLOCANDO O DIA DA PESSOA EM pes_complemento
-                        // O MÉTODO PADRÃO PEGA O VENCIMENTO DO MOCIMENTO
+                        // O MÉTODO PADRÃO PEGA O VENCIMENTO DO MOVIMENTO
                         PessoaComplemento pc = dbp.pesquisaPessoaComplementoPorPessoa(pessoa.getId());
                         String vencimento = DataHoje.converteData((Date) lista_socio.get(w).get(7));
 
@@ -355,8 +355,9 @@ public class ImpressaoBoletoSocialBean {
                             vencimento = pc.getNrDiaVencimento() + "/" + vencimento.substring(3);
                         }
 
-                        list_mov.get(0).setVencimento(vencimento);
-
+//                      QUANDO O VENCIMENTO FOR PELA TABELA fin_boleto.dt_vencimento (estrutura montada, falta adequar)                        
+//                      ADICIONAR NO CONSTRUTOR DE Boleto(Date vencimento) o Vencimento
+//                        list_mov.get(0).setVencimento(boletox.getVencimento());
                         if (boletox.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
                             cobranca = new CaixaFederalSindical(list_mov.get(0), boletox);
                             //swap[43] = "EXERC " + lista.get(i).getReferencia().substring(3);
@@ -423,7 +424,8 @@ public class ImpressaoBoletoSocialBean {
                                 pessoa.getTipoDocumento().getDescricao() + ": " + pessoa.getDocumento(),
                                 String.valueOf(lista_socio.size()),
                                 boletox.getContaCobranca().getContaBanco().getBanco().getNumero(),
-                                referenciaMensalidadesAtrasadas
+                                referenciaMensalidadesAtrasadas,
+                                vencimento.substring(3) // VENCIMENTO SERVIÇO
                         ));
                     }
 
