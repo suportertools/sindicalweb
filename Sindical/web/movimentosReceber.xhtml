@@ -176,8 +176,8 @@
                                             </h:column>
                                         </h:panelGrid>
                                         <h:panelGrid columns="2">
-                                            <p:commandButton update=":form_movimento_receber:tbl" value="OK" action="#{movimentosReceberBean.atualizaValorGrid('valor')}" onclick="PF('dlg_folha_empresa').close();" />
-                                            <p:commandButton value="Cancelar" onclick="PF('dlg_folha_empresa').close();"/>
+                                            <p:commandButton update=":form_movimento_receber:tbl" value="OK" action="#{movimentosReceberBean.atualizaValorGrid('valor')}" onclick="PF('dlg_folha_empresa').hide();" />
+                                            <p:commandButton value="Cancelar" onclick="PF('dlg_folha_empresa').hide();"/>
                                         </h:panelGrid>
                                     </p:tab>
                                     <p:tab title="Valor por Desconto Empregado">
@@ -195,8 +195,8 @@
                                             </p:inputText>
                                         </h:panelGrid>
                                         <h:panelGrid columns="2" styleClass="margin-top-max">
-                                            <p:commandButton disabled="#{movimentosReceberBean.mostrarPainel}" update=":form_movimento_receber:tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid('descontoEmpregado')}" onclick="PF('dlg_folha_empresa').close()"/>
-                                            <p:commandButton id="cancelar" value="Cancelar" onclick="PF('dlg_folha_empresa').close()"/>
+                                            <p:commandButton disabled="#{movimentosReceberBean.mostrarPainel}" update=":form_movimento_receber:tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid('descontoEmpregado')}" onclick="PF('dlg_folha_empresa').hide()"/>
+                                            <p:commandButton id="cancelar" value="Cancelar" onclick="PF('dlg_folha_empresa').hide()"/>
                                         </h:panelGrid>                                
                                     </p:tab>
                                 </p:tabView>
