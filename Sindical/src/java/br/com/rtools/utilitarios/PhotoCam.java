@@ -247,7 +247,7 @@ public class PhotoCam implements Serializable {
     }
 
     public String getFILE_PERMANENT() {
-        if (load) {
+        if (load != null && load) {
             try {
                 // ERA 5000
                 Thread.sleep(500);
