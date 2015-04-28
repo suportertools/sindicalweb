@@ -39,6 +39,8 @@
                 </f:subview>
                 <f:view>
                     <f:metadata>
+                        <f:event type="preRenderView" listener="${uploadBean.load()}"/>
+                        <f:event type="preRenderView" listener="${photoCamBean.load()}"/>
                         <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('pessoaFisica')}"/>
                         <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('pessoaFisica')}"/>
                         <f:event type="preRenderView" listener="${uploadBean.setUPDATE(':form_pessoa_fisica:i_tabview_fisica:i_panel_imagens')}"/>
@@ -258,10 +260,6 @@
                                                 </p:panel>
 
                                                 <h:panelGrid columns="3">
-                                                    <h:column rendered="false">
-                                                        <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" style="float: right"/>
-                                                        <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />                                                        
-                                                    </h:column>
                                                     <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, true, (fisicaBean.fisica.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam"/>
                                                     <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" />
                                                     <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" update="i_panel_imagens"/>
@@ -271,24 +269,6 @@
 
                                             </p:column>
                                         </h:panelGrid>
-
-                                        <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
-                                            <h:panelGrid id="i_panel_imagem" columns="1">
-
-                                                <h:column>
-                                                    <h:panelGrid columns="2">
-                                                        <p:commandButton value="Capturar Foto" onclick="PF('dlg_loading_image').show()" actionListener="#{fisicaBean.loadingImage()}" />
-                                                    </h:panelGrid>
-                                                </h:column>
-                                            </h:panelGrid>                        
-                                        </p:dialog>
-
-                                        <p:dialog widgetVar="dlg_loading_image" modal="true" header="Carregando Imagem">
-                                            <p:ajax event="close" update="i_panel_imagens" />
-                                            <h:panelGrid style="width: 100%; text-align: center">
-                                                <p:outputLabel value="Capturando e Processando Imagem" />
-                                            </h:panelGrid>
-                                        </p:dialog>
 
                                         <h:column rendered="#{fisicaBean.fisica.id != -1}">
                                             <p:panel style="margin-top: 10px" styleClass="fundoCinza">
@@ -308,7 +288,7 @@
                                                     <p:column>
                                                         <h:panelGrid columns="2" style="float: right;">
                                                             <p:column>
-                                                                <p:commandButton value="#{fisicaBean.lblSocio}" action="#{fisicaBean.associarFisica}" immediate="true"/>
+                                                                <p:commandButton value="#{fisicaBean.lblSocio}" action="#{fisicaBean.associarFisica}" immediate="true" />
                                                             </p:column>
 
                                                             <p:column rendered="#{fisicaBean.tipoCadastro != 3}">
@@ -657,7 +637,7 @@
 
                                 <h:panelGrid columns="8">
                                     <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_painel_salvar').show();"/>
-                                    <p:commandButton value="Novo" action="#{fisicaBean.novo}" update="form_pessoa_fisica"/>
+                                    <p:commandButton value="Novo" action="#{fisicaBean.novo}" />
                                     <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_painel_excluir').show();" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
                                     <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
@@ -761,19 +741,6 @@
                             </p:dialog>                           
                         </h:form>
                     </p:panel>
-
-                    <h:form id="form_pessoa_fisica_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
-                        <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar Foto" >
-                            <p:fileUpload label="Procurar"
-                                          cancelLabel="Cancelar"
-                                          uploadLabel="Anexar"
-                                          mode="advanced"                                          
-                                          multiple="false"
-                                          sizeLimit="204800"
-                                          fileUploadListener="#{fisicaBean.upload}"
-                                          oncomplete="PF('dgl_upload').hide()" onstart="PF('dlg_loading_image').show()"/>
-                        </p:dialog>
-                    </h:form>
                     <h:form id="form_aplicativos">
                         <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" />
                     </h:form>                    

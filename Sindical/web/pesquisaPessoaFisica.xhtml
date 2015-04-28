@@ -28,6 +28,7 @@
                 <f:view>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="form_pesquisa_pessoa">                
+                            <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
                             <h:outputText value="Pesquisa Pessoas Física" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
@@ -127,13 +128,16 @@
                                     <h:panelGrid style="height: 40px" styleClass="sbb">
                                         <h:outputLabel value="Endereço: #{fisica.pessoa.pessoaEndereco.enderecoCompletoString} " styleClass="bold font-color-red"/>
                                     </h:panelGrid>
-                                    <p:panel header="Titular / Dependente(s)" rendered="#{not empty fisicaBean.listaSocios}">
+                                    <p:panel header="Titular / Dependente(s) - Categoria: #{fisica.pessoa.socios.matriculaSocios.categoria.categoria} - Matrícula: #{fisica.pessoa.socios.matriculaSocios.nrMatricula}" rendered="#{not empty fisicaBean.listaSocios}">
                                         <p:dataTable value="#{fisicaBean.listaSocios}" var="dependentes">
                                             <p:column headerText="Nome">                                                
                                                 <p:commandLink action="#{fisicaBean.editarFisica(dependentes.servicoPessoa.pessoa)}" value="#{dependentes.servicoPessoa.pessoa.nome}" title="Editar pessoa" styleClass="#{dependentes.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}"/>
                                             </p:column>
                                             <p:column headerText="Parentesco" styleClass="#{dependentes.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}">
                                                 #{dependentes.parentesco.parentesco}
+                                            </p:column>
+                                            <p:column width="30">
+                                                <p:commandButton icon="ui-icon-contact" update=":form_pesquisa_pessoa:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(dependentes.servicoPessoa.pessoa.id)}" title="Ver detalhes" />
                                             </p:column>
                                         </p:dataTable>                                            
                                     </p:panel>

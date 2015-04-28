@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Relatório Convênio Médico</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>            
+        </f:subview>
+        <f:view>
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:outputScript name="tradutor_primefaces.js" library="js" />
+                <h:form id="form_relatorio">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Relatório Convênio Médico" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid  cellpadding="5" columns="6" id="i_ordernacao">
+                            <p:outputLabel value="Tipo de Relatório: " />
+                            <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioConvenioMedicoBean.index[0]}" style="padding-right: 10px;">
+                                <p:ajax event="change" update="@this i_ordernacao" global="false"/>
+                                <f:selectItems value="#{relatorioConvenioMedicoBean.listRelatorios}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Ordem: " styleClass="margin-left-max" rendered="#{not empty relatorioConvenioMedicoBean.listRelatorioOrdem}"/>
+                            <p:selectOneMenu value="#{relatorioConvenioMedicoBean.index[1]}" rendered="#{not empty relatorioConvenioMedicoBean.listRelatorioOrdem}">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{relatorioConvenioMedicoBean.listRelatorioOrdem}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </p:panel>                  
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 225px;" dynamic="true" activeIndex="#{relatorioConvenioMedicoBean.indexAccordion}" id="i_panel_accordion">
+                                <p:ajax event="tabChange" listener="#{relatorioConvenioMedicoBean.tipoRelatorioChange}" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" />
+                                <p:tab title="Resumo">
+                                    * Resumido
+                                </p:tab>
+                                <p:tab title="Avançado">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <h:panelGrid columns="1" styleClass="text-left">
+                                            <f:facet name="header">
+                                                <h:outputLabel value="Filtros" style="text-decoration: underline;"/>
+                                            </f:facet>                                        
+                                            <p:selectBooleanButton value="#{relatorioConvenioMedicoBean.filtro[0]}" onLabel="Subgrupo" offLabel="Subgrupo" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioConvenioMedicoBean.clear}" />
+                                            </p:selectBooleanButton>
+                                            <p:selectBooleanButton value="#{relatorioConvenioMedicoBean.filtro[1]}" onLabel="Convênio " offLabel="Convênio " offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioConvenioMedicoBean.clear}" />
+                                            </p:selectBooleanButton>
+                                            <p:selectBooleanButton value="#{relatorioConvenioMedicoBean.filtro[2]}" onLabel="Isentos" offLabel="Isentos " offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioConvenioMedicoBean.clear}" />
+                                            </p:selectBooleanButton>
+                                            <p:selectBooleanButton value="#{relatorioConvenioMedicoBean.filtro[3]}" onLabel="Faixa de Valor" offLabel="Faixa de Valor" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioConvenioMedicoBean.clear}" />
+                                            </p:selectBooleanButton>
+                                            <p:selectBooleanButton value="#{relatorioConvenioMedicoBean.filtro[4]}" onLabel="Situação" offLabel="Situação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioConvenioMedicoBean.clear}" />
+                                            </p:selectBooleanButton>
+                                        </h:panelGrid>                                        
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>
+                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 760px;" >
+                                <p:column rendered="#{relatorioConvenioMedicoBean.filtro[0]}">
+                                    <h:column>
+                                        <h:panelGrid columns="4">
+                                            <p:outputLabel value="Subgrupos " />
+                                            <p:selectOneMenu label="Selecionar subgrupos" value="#{relatorioConvenioMedicoBean.index[2]}">
+                                                <p:ajax event="change" />
+                                                <f:selectItems value="#{relatorioConvenioMedicoBean.listSubgrupo}" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioConvenioMedicoBean.close('subgrupo')}" title="Remover filtro"/>
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioConvenioMedicoBean.filtro[1]}">
+                                    <h:column>
+                                        <h:panelGrid columns="4">
+                                            <p:outputLabel value="Serviços " />
+                                            <p:selectOneMenu label="Selecionar serviços" value="#{relatorioConvenioMedicoBean.index[3]}">
+                                                <p:ajax event="change" />
+                                                <f:selectItems value="#{relatorioConvenioMedicoBean.listServicos}" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioConvenioMedicoBean.close('servicos')}" title="Remover filtro"/>
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioConvenioMedicoBean.filtro[2]}">
+                                    <h:column>
+                                        <h:panelGrid columns="4">
+                                            <p:outputLabel value="Isentos" />
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioConvenioMedicoBean.filtro[3]}">
+                                    <h:column>
+                                        <h:panelGrid columns="5">
+                                            <p:outputLabel value="Valor inicial: " />
+                                            <p:inputText value="#{relatorioConvenioMedicoBean.faixaValorInicialString}">
+                                                <p:ajax update="@this" event="change" global="false"/>
+                                            </p:inputText>
+                                            <p:outputLabel value="Valor final: " />                                        
+                                            <p:inputText value="#{relatorioConvenioMedicoBean.faixaValorFinalString}" converter="#{toCurrency}">
+                                                <p:ajax update="@this" event="change" global="false"/>
+                                            </p:inputText>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioConvenioMedicoBean.close('valor')}" title="Remover filtro"/>
+                                        </h:panelGrid>                                        
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioConvenioMedicoBean.filtro[4]}">
+                                    <h:column>
+                                        <h:panelGrid columns="4">
+                                            <p:outputLabel value="Situação" />
+                                            <p:selectOneMenu value="#{relatorioConvenioMedicoBean.situacao}" style="width: 50px">
+                                                <f:selectItem itemValue="A" itemLabel="A" />
+                                                <f:selectItem itemValue="I" itemLabel="I" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioConvenioMedicoBean.close('situacao')}" title="Remover filtro"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioConvenioMedicoBean.tipoRelatorio == 'Resumo'}">
+                                    * Resumido
+                                </p:column>
+                                <p:column rendered="#{relatorioConvenioMedicoBean.tipoRelatorio == 'Avançado'}">
+                                    <f:facet name="header">Filtro Avançado</f:facet>
+                                    <f:facet name="footer">Selecione os tipos de filtros disponíveis</f:facet>
+                                </p:column>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" id="i_btns" styleClass="margin-top-max" >
+                        <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioConvenioMedicoBean.visualizar()}" ajax="false" update="id_messages_growl" actionListener="#{relatorioConvenioMedicoBean.parametroConvenioMedico.clear}"/>
+                        <p:selectBooleanCheckbox itemLabel="Zip" value="#{jasperBean.COMPRESS_FILE}">
+                            <p:ajax update="@this" event="change" global="false"/>
+                        </p:selectBooleanCheckbox>
+                        <p:selectBooleanCheckbox itemLabel="Cabeçalho" value="#{jasperBean.IS_HEADER}">
+                            <p:ajax update="@this" event="change" global="false"/>
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>                    
+                </h:form>                            
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
