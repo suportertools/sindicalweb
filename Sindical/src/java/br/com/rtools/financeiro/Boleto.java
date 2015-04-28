@@ -1,5 +1,7 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.utilitarios.DataHoje;
+import java.util.Date;
 import javax.persistence.*;
 
 @Entity
@@ -22,6 +24,12 @@ public class Boleto implements java.io.Serializable {
     private String nrCtrBoleto;
     @Column(name = "is_ativo", columnDefinition = "boolean default true")
     private boolean ativo;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_vencimento")
+    private Date dtVencimento;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_vencimento_original")
+    private Date dtVencimentoOriginal;
 
     public Boleto() {
         this.id = -1;
@@ -30,15 +38,19 @@ public class Boleto implements java.io.Serializable {
         this.boletoComposto = "";
         this.nrCtrBoleto = "";
         this.ativo = true;
+        this.dtVencimento = null;
+        this.dtVencimentoOriginal = null;
     }
 
-    public Boleto(int id, ContaCobranca contaCobranca, int nrBoleto, String boletoComposto, String nrCtrBoleto, boolean ativo) {
+    public Boleto(int id, ContaCobranca contaCobranca, int nrBoleto, String boletoComposto, String nrCtrBoleto, boolean ativo, String vencimento, String vencimentoOriginal) {
         this.id = id;
         this.contaCobranca = contaCobranca;
         this.nrBoleto = nrBoleto;
         this.boletoComposto = boletoComposto;
         this.nrCtrBoleto = nrCtrBoleto;
         this.ativo = ativo;
+        this.dtVencimento = DataHoje.converte(vencimento);
+        this.dtVencimentoOriginal = DataHoje.converte(vencimentoOriginal);
     }
 
     public int getId() {
@@ -87,5 +99,29 @@ public class Boleto implements java.io.Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Date getDtVencimento() {
+        return dtVencimento;
+    }
+
+    public void setDtVencimento(Date dtVencimento) {
+        this.dtVencimento = dtVencimento;
+    }    
+
+    public String getVencimento() {
+        return DataHoje.converteData(dtVencimento);
+    }
+
+    public void setVencimento(String vencimento) {
+        this.dtVencimento = DataHoje.converte(vencimento);
+    }
+    
+    public String getVencimentoOriginal() {
+        return DataHoje.converteData(dtVencimentoOriginal);
+    }
+
+    public void setVencimentoOriginal(String vencimentoOriginal) {
+        this.dtVencimentoOriginal = DataHoje.converte(vencimentoOriginal);
     }
 }

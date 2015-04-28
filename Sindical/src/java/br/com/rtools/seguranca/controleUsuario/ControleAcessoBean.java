@@ -289,13 +289,10 @@ public class ControleAcessoBean implements Serializable {
             Method metodo = classe.getMethod("getId", new Class[]{});
             // id = (Integer) metodo.invoke(object, null);
             id = (Integer) metodo.invoke(object, (Object[]) null);
-        } catch (NoSuchMethodException e) {
-            //System.out.println(erro);
-        } catch (IllegalAccessException e) {
-            //System.out.println(erro);
-        } catch (InvocationTargetException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             //System.out.println(erro);
         }
+        
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         boolean retorno = true;
         if (user != null) {

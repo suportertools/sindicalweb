@@ -7,4 +7,5 @@ public interface MovimentosReceberSocialDB {
     public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia);
     public List dadosSocio(int id_lote);
     public Pessoa pesquisaPessoaPorBoleto(String boleto, int id_conta_cobranca);
+    public float[] pesquisaValorAcrescimo(int id_movimento);
 }
