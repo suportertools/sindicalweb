@@ -11,22 +11,23 @@
             <p:dialog widgetVar="dlg_upload" modal="true" header="Anexar" closeOnEscape="true">
                 <p:ajax event="close" listener="#{uploadBean.close}" />
                 <h:panelGrid id="i_panel_anexos">
-                    <p:fileUpload label="Procurar"
-                                  cancelLabel="Cancelar"
-                                  uploadLabel="Anexar"
-                                  mode="advanced"                                          
-                                  multiple="false"
-                                  sizeLimit="204800"
+                    <p:fileUpload label="#{uploadBean.LABEL}"
+                                  cancelLabel="#{uploadBean.CANCEL_LABEL}"
+                                  uploadLabel="#{uploadBean.UPLOAD_LABEL}"
+                                  mode="#{uploadBean.MODE}"                             
+                                  multiple="#{uploadBean.MULTIPLE}"
+                                  sizeLimit="#{uploadBean.SIZE}"
                                   fileUploadListener="#{uploadBean.upload}"
                                   oncomplete="PF('dlg_upload').hide()" 
                                   onstart="PF('dlg_loading_image').show()"
-                                  update="#{uploadBean.UPDATE}"/>
+                                  update="#{uploadBean.UPDATE}"
+                                  />
                 </h:panelGrid>
             </p:dialog>
-            <p:dialog widgetVar="dlg_loading_image" modal="true" header="Carregando Imagem">
+            <p:dialog widgetVar="dlg_loading_image" modal="true" header="Aguarde" resizable="false" dynamic="false">
                 <p:ajax event="close" />
                 <h:panelGrid style="width: 100%; text-align: center">
-                    <p:outputLabel value="Carregando e Processando Imagem" />
+                    <p:outputLabel value="#{uploadBean.MESSAGE_WAITING}" />
                 </h:panelGrid>
             </p:dialog>            
         </h:form>
