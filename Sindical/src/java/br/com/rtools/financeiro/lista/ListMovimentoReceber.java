@@ -1,7 +1,6 @@
 package br.com.rtools.financeiro.lista;
 
 import java.io.Serializable;
-import javax.swing.SizeRequirements;
 
 public class ListMovimentoReceber implements Serializable {
 

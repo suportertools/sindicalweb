@@ -8,7 +8,6 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.ServicoPessoa;
@@ -34,6 +33,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -44,6 +44,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
+import org.apache.commons.io.FileUtils;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.context.RequestContext;
@@ -125,25 +126,29 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String strEndereco = "";
     private Integer tipoCadastro = -1;
 
-    public void novo() {
-        GenericaSessao.put("fisicaBean", new FisicaBean());
-        GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
-        GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
-        GenericaSessao.remove("photoCamBean");
+    public String novo() {
+        GenericaSessao.remove("fisicaBean");
+        return "pessoaFisica";
+    }
+
+    @PostConstruct
+    public void init() {
+        // GenericaSessao.put("fisicaBean", new FisicaBean());
+        // GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
+        // GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
     }
 
     @PreDestroy
     public void destroy() {
-        GenericaSessao.remove("uploadBean");
-        GenericaSessao.remove("photoCamBean");
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
-        if (f.exists()) {
-            f.delete();
-        }
-        f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
-        if (f.exists()) {
-            f.delete();
-        }
+        GenericaSessao.remove("fisicaBean");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("enderecoPesquisa");
+        GenericaSessao.remove("enderecoNum");
+        GenericaSessao.remove("enderecoComp");
+        GenericaSessao.remove("pessoaComplementoBean");
+        GenericaSessao.remove("pesquisaEnderecoBean");
+        clear(0);
     }
 
     public String getEnderecoCobranca() {
@@ -460,13 +465,17 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String editarFisica(Fisica f) {
+        return editarFisica(f, false);
+    }
+
+    public String editarFisica(Fisica f, Boolean completo) {
         String url = (String) GenericaSessao.getString("urlRetorno");
         fisica = f;
         if (!listernerValidacao(f, url)) {
             return null;
         }
         GenericaSessao.put("fisicaPesquisa", f);
-        if (!url.equals("pessoaFisica")) {
+        if (!url.equals("pessoaFisica") && !completo) {
             GenericaSessao.put("linkClicado", true);
             return url;
         }
@@ -518,28 +527,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         showImagemFisica();
         GenericaSessao.put("linkClicado", true);
         existePessoaOposicaoPorPessoa();
-        File f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
-        if (f1.exists()) {
-            f1.delete();
-        }
-        f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
-        if (f1.exists()) {
-            f1.delete();
-        }
         fotoTempPerfil = "";
-        GenericaSessao.remove("photoCamBean");
-        GenericaSessao.remove("uploadBean");
-        PhotoCam photoCam = new PhotoCam();
-        Upload upload = new Upload();
-        GenericaSessao.put("uploadBean", photoCam);
-        GenericaSessao.put("uploadBean", upload);
-        if (fisica.getId() != f.getId()) {
-            FacesContext context = FacesContext.getCurrentInstance();
-            File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
-            if (fExiste.exists()) {
-                fExiste.delete();
-            }
-        }
+        clear(0);
         return url;
     }
 
@@ -1375,23 +1364,18 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
         GenericaSessao.put("sociosBean", new SociosBean());
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
+        clear(0);
         sb.loadSocio(p, reativar);
         return retorno;
     }
 
     public String associarFisica(Pessoa _pessoa) {
-//        GenericaSessao.put("fisicaPesquisa", (new FisicaDBToplink()).pesquisaFisicaPorPessoa(_pessoa.getId()));
-//        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
-//        GenericaSessao.put("reativarSocio", true);
-//        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
-
+        clear(0);
         String retorno = ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
         GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
         GenericaSessao.put("sociosBean", new SociosBean());
-
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
         sb.loadSocio(fisica.getPessoa(), true);
-
         return retorno;
     }
 
@@ -1926,6 +1910,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             fotoTempPerfil = "";
             fotoPerfil = "";
             RequestContext.getCurrentInstance().update("form_pessoa_fisica");
+            if (fisica.getId() != -1) {
+                fisica.setDtFoto(null);
+                new Dao().update(fisica, true);
+            }
         }
     }
 
@@ -2241,6 +2229,23 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             return "temp/foto/" + new PessoaUtilitarios().getUsuarioSessao().getId();
         } else {
             return "Imagens/Fotos";
+        }
+    }
+
+    public void clear(Integer tCase) {
+        if (tCase == 0) {
+            try {
+                GenericaSessao.remove("cropperBean");
+                GenericaSessao.remove("uploadBean");
+                GenericaSessao.remove("photoCamBean");
+                FileUtils.deleteDirectory(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("") + "/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId()));
+                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+                if (f.exists()) {
+                    f.delete();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

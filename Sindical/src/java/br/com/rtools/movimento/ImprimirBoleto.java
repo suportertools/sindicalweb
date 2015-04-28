@@ -48,7 +48,6 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -1390,21 +1389,24 @@ public class ImprimirBoleto {
             );
             dtSource = new JRBeanCollectionDataSource(vetor2);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
+            
+            Jasper.PART_NAME = "";
+            Jasper.printReports("planilha_acordo", ljasper);
             //* ------------- *//
-
-
-
-            JRPdfExporter exporter = new JRPdfExporter();
-            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
-
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
-            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
-            exporter.exportReport();
-
-            arquivo = retorno.toByteArray();
-
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
+//
+//
+//
+//            JRPdfExporter exporter = new JRPdfExporter();
+//            ByteArrayOutputStream retorno = new ByteArrayOutputStream();
+//
+//            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, ljasper);
+//            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, retorno);
+//            exporter.setParameter(JRPdfExporterParameter.IS_CREATING_BATCH_MODE_BOOKMARKS, Boolean.TRUE);
+//            exporter.exportReport();
+//
+//            arquivo = retorno.toByteArray();
+//
+//            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }

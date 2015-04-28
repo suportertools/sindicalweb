@@ -2,23 +2,30 @@ package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.io.FileUtils;
 
 @ManagedBean
 @SessionScoped
@@ -92,10 +99,31 @@ public class UsuarioBean implements Serializable {
         GenericaSessao.remove("pessoaPesquisa");
         GenericaSessao.remove("uploadBean");
         GenericaSessao.remove("photoCamBean");
+        clear(1);
+        clear(2);
     }
 
     public void clear() {
         GenericaSessao.remove("usuarioBean");
+    }
+
+    public void clear(Integer tCase) {
+        if (tCase == 1) {
+            try {
+                FileUtils.deleteDirectory(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("") + "/Cliente/" + getCliente() + "/temp/" + "foto/" + new SegurancaUtilitariosBean().getSessaoUsuario().getId()));
+                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+                if (f.exists()) {
+                    f.delete();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (tCase == 2) {
+            GenericaSessao.remove("cropperBean");
+            GenericaSessao.remove("uploadBean");
+            GenericaSessao.remove("photoCamBean");
+        }
     }
 
     public void save() {
@@ -256,11 +284,13 @@ public class UsuarioBean implements Serializable {
                 novoLog.delete("ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin());
                 destroy();
             }
-        }        
+        }
     }
 
     public String edit(Usuario usu) {
         usuario = usu;
+        clear(1);
+        clear(2);
         GenericaSessao.put("pessoaPesquisa", usuario.getPessoa());
         GenericaSessao.put("usuarioPesquisa", usuario);
         GenericaSessao.put("linkClicado", true);
@@ -578,7 +608,7 @@ public class UsuarioBean implements Serializable {
                 if (di.save(usuarioAcesso)) {
                     di.commit();
                     NovoLog novoLog = new NovoLog();
-                    novoLog.save("Usuário Acesso - ID: " + usuarioAcesso.getId() + " - Usuário (" + usuarioAcesso.getUsuario().getId() + ") " + usuarioAcesso.getUsuario().getLogin() + " - Permissão (" + usuarioAcesso.getPermissao().getId() + ") [Módulo: " + usuarioAcesso.getPermissao().getModulo().getDescricao() + " - Rotina: " +  usuarioAcesso.getPermissao().getRotina().getRotina()+ " - Evento: " +  usuarioAcesso.getPermissao().getEvento().getDescricao() +"]");
+                    novoLog.save("Usuário Acesso - ID: " + usuarioAcesso.getId() + " - Usuário (" + usuarioAcesso.getUsuario().getId() + ") " + usuarioAcesso.getUsuario().getLogin() + " - Permissão (" + usuarioAcesso.getPermissao().getId() + ") [Módulo: " + usuarioAcesso.getPermissao().getModulo().getDescricao() + " - Rotina: " + usuarioAcesso.getPermissao().getRotina().getRotina() + " - Evento: " + usuarioAcesso.getPermissao().getEvento().getDescricao() + "]");
                     GenericaMensagem.info("Sucesso", "Permissão adicionada");
                 } else {
                     di.rollback();
@@ -637,16 +667,16 @@ public class UsuarioBean implements Serializable {
         DaoInterface di = new Dao();
         di.openTransaction();
         NovoLog novoLog = new NovoLog();
-        String beforeUpdate = "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"] - Permite:" + ua.isPermite();
-        if(ua.isPermite()) {
+        String beforeUpdate = "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " + ua.getPermissao().getRotina().getRotina() + " - Evento: " + ua.getPermissao().getEvento().getDescricao() + "] - Permite:" + ua.isPermite();
+        if (ua.isPermite()) {
             ua.setPermite(false);
         } else {
             ua.setPermite(true);
-        }        
+        }
         if (di.update(ua)) {
-            novoLog.update(beforeUpdate, "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"] - Permite:" + ua.isPermite());
+            novoLog.update(beforeUpdate, "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " + ua.getPermissao().getRotina().getRotina() + " - Evento: " + ua.getPermissao().getEvento().getDescricao() + "] - Permite:" + ua.isPermite());
             di.commit();
-            GenericaMensagem.info("Sucesso", "Permissão de acesso atualizada"); 
+            GenericaMensagem.info("Sucesso", "Permissão de acesso atualizada");
             listaUsuarioAcesso.clear();
         } else {
             GenericaMensagem.warn("Erro", "Falha ao atualizar essa permisão!");
@@ -663,7 +693,7 @@ public class UsuarioBean implements Serializable {
         if (di.delete(ua)) {
             di.commit();
             NovoLog novoLog = new NovoLog();
-            novoLog.delete("Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"]");
+            novoLog.delete("Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " + ua.getPermissao().getRotina().getRotina() + " - Evento: " + ua.getPermissao().getEvento().getDescricao() + "]");
             listaUsuarioAcesso.clear();
             GenericaMensagem.info("Sucesso", "Permissão removida");
         } else {
@@ -767,5 +797,12 @@ public class UsuarioBean implements Serializable {
 
     public void setFiltrarUsuarioAtivo(boolean filtrarUsuarioAtivo) {
         this.filtrarUsuarioAtivo = filtrarUsuarioAtivo;
+    }
+
+    public String getCliente() {
+        if (GenericaSessao.exists("sessaoCliente")) {
+            return GenericaSessao.getString("sessaoCliente");
+        }
+        return "";
     }
 }

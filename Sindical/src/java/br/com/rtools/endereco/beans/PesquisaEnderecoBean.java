@@ -60,7 +60,7 @@ public class PesquisaEnderecoBean implements Serializable {
     }
 
     public List<Endereco> getListaEndereco() {
-        if(!cep.isEmpty()) {
+        if (cep != null && !cep.isEmpty()) {
             if (listaEndereco.isEmpty()) {
                 EnderecoDB db = new EnderecoDBToplink();
                 listaEndereco = db.pesquisaEnderecoCep(cep);

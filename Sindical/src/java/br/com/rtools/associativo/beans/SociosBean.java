@@ -26,10 +26,12 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +43,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
+import org.apache.commons.io.FileUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
@@ -189,11 +192,8 @@ public class SociosBean implements Serializable {
     public void destroy() {
         GenericaSessao.remove("uploadBean");
         GenericaSessao.remove("photoCamBean");
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
-        if (f.exists()) {
-            f.delete();
-        }
-        f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
         if (f.exists()) {
             f.delete();
         }
@@ -215,10 +215,6 @@ public class SociosBean implements Serializable {
     }
 
     public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
-        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png"));
-        if (f.exists()) {
-            f.delete();
-        }
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
@@ -619,7 +615,7 @@ public class SociosBean implements Serializable {
                     sucesso = f.delete();
                 }
             }
-        } else { 
+        } else {
             if (novoDependente.getId() != -1) {
                 File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png"));
                 sucesso = f.delete();
@@ -1969,9 +1965,19 @@ public class SociosBean implements Serializable {
         index_dependente = index;
 
         modelVisible = true;
+        Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f.exists()) {
+            f.delete();
+        }
     }
 
     public void fechaModal() {
+        Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f.exists()) {
+            f.delete();
+        }
         novoDependente = new Fisica();
         modelVisible = false;
         File del = new File(fotoTempPerfil);
@@ -1986,6 +1992,11 @@ public class SociosBean implements Serializable {
         if (del.exists()) {
             del.delete();
         }
+        File f1 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f1.exists()) {
+            f1.delete();
+        }
+        Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
         fotoTempPerfil = "";
         dependente = (Fisica) f;
 
