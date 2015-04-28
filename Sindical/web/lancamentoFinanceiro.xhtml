@@ -425,7 +425,7 @@
                                     <p:commandButton ajax="false" value="Baixar" action="#{lancamentoFinanceiroBean.telaBaixa()}" update="tbl_p" rendered="#{lancamentoFinanceiroBean.lote.id != -1}" title="Baixar este Lançamento" />
                                     <p:commandButton value="Estornar" onclick="PF('i_dlg_estornar').show()" rendered="#{lancamentoFinanceiroBean.lote.id != -1}" title="Estornar este Lançamento" />
                                     <p:commandButton value="Excluir este Lançamento" onclick="PF('i_dlg_ex_lancamento').show()" rendered="#{lancamentoFinanceiroBean.lote.id != -1}" title="Excluir este Lançamento" />
-                                    <p:commandButton value="Fechar esta Janela" action="#{lancamentoFinanceiroBean.fechaModal()}" onclick="PF('i_dlg_novo').close();"/>
+                                    <p:commandButton value="Fechar esta Janela" action="#{lancamentoFinanceiroBean.fechaModal()}" onclick="PF('i_dlg_novo').hide();"/>
                                     <br />
                                 </p:dialog>
 
@@ -526,7 +526,7 @@
                                                 <p:commandButton value="Novo" action="#{lancamentoFinanceiroBean.novoPedido()}" update="dlg_pedido" />
                                             </h:column>
 
-                                            <p:commandButton value="Concluir" action="#{lancamentoFinanceiroBean.closeModalPedido()}" onclick="PF('dlg_pedido').close();"/>
+                                            <p:commandButton value="Concluir" action="#{lancamentoFinanceiroBean.closeModalPedido()}" onclick="PF('dlg_pedido').hide();"/>
                                         </h:panelGrid>
                                     </f:facet>
 
