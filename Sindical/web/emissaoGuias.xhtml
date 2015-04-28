@@ -248,7 +248,7 @@
                             
                             <p:dialog widgetVar="dlg_tipo_pessoa"  modal="true" resizable="true" header="Pesquisar por pessoa" width="450">
                                 <h:panelGrid columns="3">
-                                    <p:commandButton value="Pessoa" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" icon="ui-icon-search"/>
+                                    <!-- <p:commandButton value="Pessoa" action="# {chamadaPaginaBean.pesquisa('pesquisaPessoa')}" icon="ui-icon-search"/> -->
                                     <p:commandButton value="Física / Sócio" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" icon="ui-icon-search"/>
                                     <p:commandButton value="Jurídica / Empresa" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search"/>
                                 </h:panelGrid>
@@ -321,7 +321,7 @@
                                                 <p:commandButton value="Novo" action="#{emissaoGuiasBean.novoPedido()}" update="dlg_pedido" />
                                             </h:column>
 
-                                            <p:commandButton value="Concluir" action="#{emissaoGuiasBean.closeModalPedido()}" onclick="PF('dlg_pedido').close();"/>
+                                            <p:commandButton value="Concluir" action="#{emissaoGuiasBean.closeModalPedido()}" onclick="PF('dlg_pedido').hide();"/>
                                         </h:panelGrid>
                                     </f:facet>
 
