@@ -129,18 +129,21 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     @Override
     public List<Servicos> listaServicoSituacao(int id_rotina, String situacao) {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "  SELECT S.servicos "
-                    + "  FROM ServicoRotina AS S"
-                    + " WHERE S.rotina.id = :rotina"
-                    + "   AND S.servicos.situacao = '" + situacao + "'");
-            qry.setParameter("rotina", id_rotina);
+            String queryString = ""
+                    + "  SELECT S.servicos "
+                    + "    FROM ServicoRotina AS S"
+                    + "   WHERE S.rotina.id = :rotina";
+            Query query = getEntityManager().createQuery(queryString);
+            if (situacao != null && !situacao.isEmpty()) {
+                queryString += " AND S.servicos.situacao = :situacao ";
+                query.setParameter("situacao", situacao);
 
-            return qry.getResultList();
+            }
+            query.setParameter("rotina", id_rotina);
+            return query.getResultList();
         } catch (Exception e) {
-
+            return new ArrayList();
         }
-        return new ArrayList();
     }
 
     @Override
@@ -156,8 +159,19 @@ public class ServicosDBToplink extends DB implements ServicosDB {
 
     @Override
     public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo) {
+        return listaServicosPorSubGrupoFinanceiro(subgrupo, 4);
+    }
+
+    @Override
+    public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo, Integer rotina) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.subGrupoFinanceiro.id = :subgrupo AND S.situacao = 'A' AND S.id NOT IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = 4 GROUP BY SR.servicos.id) ");
+            Query query;
+            if (rotina == 4) {
+                query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.subGrupoFinanceiro.id = :subgrupo AND S.situacao = 'A' AND S.id NOT IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = 4 GROUP BY SR.servicos.id) ");
+            } else {
+                query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.subGrupoFinanceiro.id = :subgrupo AND S.situacao = 'A' AND S.id IN (SELECT SR.servicos.id FROM ServicoRotina AS SR WHERE SR.rotina.id = :rotina GROUP BY SR.servicos.id) ");
+                query.setParameter("rotina", rotina);
+            }
             query.setParameter("subgrupo", subgrupo);
             List list = query.getResultList();
             if (!list.isEmpty()) {
@@ -168,4 +182,5 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         }
         return new ArrayList();
     }
+
 }

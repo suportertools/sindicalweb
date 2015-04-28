@@ -283,6 +283,9 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 } else {
                     textqry += " ";
                 }
+                if (registro.isFotoCartao()) {
+                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
+                }
             }
 
             // SOCIO / MATRICULA

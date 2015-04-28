@@ -29,8 +29,10 @@ public interface ServicosDB {
 
 //    public List<Servicos> pesquisaTodosServicos();
     public List<Servicos> listaServicoSituacao(int id_rotina, String situacao);
-    
+
     public List<Servicos> listaServicoSituacaoAtivo();
 
     public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo);
+
+    public List<Servicos> listaServicosPorSubGrupoFinanceiro(Integer subgrupo, Integer rotina);
 }

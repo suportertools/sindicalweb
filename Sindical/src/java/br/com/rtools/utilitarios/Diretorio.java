@@ -1,10 +1,12 @@
 package br.com.rtools.utilitarios;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import org.apache.commons.io.FileUtils;
 
 public class Diretorio {
 
@@ -79,6 +81,15 @@ public class Diretorio {
             }
             return false;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean remover(String diretorio, boolean recursive) {
+        try {
+            FileUtils.deleteDirectory(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio)));
+            return true;
+        } catch (IOException ex) {
             return false;
         }
     }

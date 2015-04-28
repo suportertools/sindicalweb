@@ -38,6 +38,7 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
+import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
@@ -50,6 +51,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -61,18 +63,23 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import org.apache.commons.io.FileUtils;
 
 @ManagedBean
 @SessionScoped
@@ -207,14 +214,38 @@ public class MatriculaAcademiaBean implements Serializable {
     @PreDestroy
     public void destroy() {
         clear();
+        clear(2);
     }
 
     public void clear() {
-        GenericaSessao.remove("matriculaAcademiaBean");
-        GenericaSessao.remove("fisicaPesquisa");
-        GenericaSessao.remove("juridicaPesquisa");
-        GenericaSessao.remove("uploadBean");
-        GenericaSessao.remove("photoCamBean");
+        clear(0);
+        clear(1);
+    }
+
+    public void clear(Integer tCase) {
+        if (tCase == 0) {
+            GenericaSessao.remove("matriculaAcademiaBean");
+            GenericaSessao.remove("fisicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
+            GenericaSessao.remove("uploadBean");
+            GenericaSessao.remove("photoCamBean");
+        }
+        if (tCase == 1) {
+            try {
+                FileUtils.deleteDirectory(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("") + "/Cliente/" + ControleUsuarioBean.getCliente() + "/temp/" + "foto/" + new SegurancaUtilitariosBean().getSessaoUsuario().getId()));
+                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+                if (f.exists()) {
+                    f.delete();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (tCase == 2) {
+            GenericaSessao.remove("cropperBean");
+            GenericaSessao.remove("uploadBean");
+            GenericaSessao.remove("photoCamBean");
+        }
     }
 
     public void salvarData() {
@@ -447,6 +478,7 @@ public class MatriculaAcademiaBean implements Serializable {
             );
             di.commit();
             clear();
+            clear(2);
         }
 
     }
@@ -508,6 +540,8 @@ public class MatriculaAcademiaBean implements Serializable {
         GenericaSessao.put("linkClicado", true);
         listaDiaParcela.clear();
         getListaDiaParcela();
+        clear(1);
+        clear(2);
         return "matriculaAcademia";
     }
 
@@ -763,6 +797,7 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public Fisica getAluno() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
+            clear(1);
             disabled = false;
             MatriculaEscolaDao med = new MatriculaEscolaDao();
             if (GenericaSessao.exists("pesquisaFisicaTipo")) {

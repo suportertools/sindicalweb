@@ -20,11 +20,15 @@ import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.db.FunctionsDao;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +36,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import org.apache.commons.io.FileUtils;
 
 @ManagedBean
 @SessionScoped
 public class GeracaoDebitosCartaoBean implements Serializable {
-    
+
     private Fisica fisica;
     private List<Socios> listaSocios;
     private List<Socios> selected;
@@ -45,7 +52,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
     private List<Movimento> listMovimentos;
     private Boolean habilitaImpressao;
     private List<HistoricoCarteirinha> listHistoricoCarteirinhas;
-    
+
     @PostConstruct
     public void init() {
         fisica = new Fisica();
@@ -57,7 +64,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         listHistoricoCarteirinhas = new ArrayList();
         habilitaImpressao = false;
     }
-    
+
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("geracaoDebitosCartaoBean");
@@ -71,8 +78,9 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         GenericaSessao.remove("listaMovimento");
         GenericaSessao.remove("lista_movimentos_baixados");
         GenericaSessao.remove("pessoaUtilitariosBean");
+        clear(2);
     }
-    
+
     public void load() {
         if (GenericaSessao.exists("baixa_sucesso")) {
             if (GenericaSessao.exists("lista_movimentos_baixados")) {
@@ -100,7 +108,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
             GenericaMensagem.info("Sucesso", "Cartão impresso com sucesso!");
         }
     }
-    
+
     public String save() {
         if (fisica.getPessoa().getId() == -1) {
             GenericaMensagem.warn("Validação", "Pesquise uma pessoa para gerar!");
@@ -132,16 +140,16 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         lote.setDepartamento(serv.getDepartamento());
         lote.setCondicaoPagamento(cp);
         lote.setPlano5(serv.getPlano5());
-        
+
         dao.openTransaction();
         if (!dao.save(lote)) {
             GenericaMensagem.warn("Erro", "Ao salvar Lote!");
             dao.rollback();
             return null;
         }
-        
+
         TipoServico tipoServico = (TipoServico) dao.find(new TipoServico(), 1);
-        
+
         Movimento movimento;
         for (int i = 0; i < selected.size(); i++) {
             float valor = functionsDao.valorServico(selected.get(i).getServicoPessoa().getPessoa().getId(), serv.getId(), DataHoje.dataHoje(), 0, null);
@@ -171,7 +179,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
                 return null;
             }
         }
-        
+
         dao.commit();
         listaSocios.clear();
         BaixaGeralBean.listenerTipoCaixaSession("caixa");
@@ -180,24 +188,41 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).baixaGeral();
         // return null;
     }
-    
-    public void clear(Integer tcase) {
+
+    public void clear(Integer tCase) {
         // Limpa toda sessão
-        if (tcase == 0) {
+        if (tCase == 0) {
             GenericaSessao.remove("geracaoDebitosCartaoBean");
+            clear(2);
         }
         // Limpar e manter Sócio (Física)
-        if (tcase == 1) {
+        if (tCase == 1) {
             listaSocios.clear();
             selected = null;
             lote = new Lote();
             listMovimentos = new ArrayList();
             listHistoricoCarteirinhas.clear();
             habilitaImpressao = false;
+            clear(2);
         }
-        
+        if (tCase == 2) {
+            try {
+                FileUtils.deleteDirectory(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("") + "/Cliente/" + ControleUsuarioBean.getCliente() + "/temp/" + "foto/" + new SegurancaUtilitariosBean().getSessaoUsuario().getId()));
+                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+                if (f.exists()) {
+                    f.delete();
+                }
+            } catch (IOException ex) {
+
+            }
+        }
+        if (tCase == 3) {
+            GenericaSessao.remove("cropperBean");
+            GenericaSessao.remove("uploadBean");
+            GenericaSessao.remove("photoCamBean");
+        }
     }
-    
+
     public Fisica getFisica() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
             fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
@@ -211,14 +236,15 @@ public class GeracaoDebitosCartaoBean implements Serializable {
             GenericaSessao.remove("listaMovimento");
             GenericaSessao.remove("cartaoSocialBean");
             GenericaSessao.remove("pessoaUtilitariosBean");
+            clear(2);
         }
         return fisica;
     }
-    
+
     public void setFisica(Fisica fisica) {
         this.fisica = fisica;
     }
-    
+
     public List<Socios> getListaSocios() {
         if (listaSocios.isEmpty()) {
             SociosDB sociosDB = new SociosDBToplink();
@@ -234,24 +260,24 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return listaSocios;
     }
-    
+
     public void setListaSocios(List<Socios> listaSocios) {
         this.listaSocios = listaSocios;
     }
-    
+
     public Fisica pessoaFisica(Pessoa p) {
         Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(p.getId());
         return f;
     }
-    
+
     public List<Socios> getSelected() {
         return selected;
     }
-    
+
     public void setSelected(List<Socios> selected) {
         this.selected = selected;
     }
-    
+
     public Movimento getMovimento(Pessoa p) {
         MovimentoDBToplink mdb = new MovimentoDBToplink();
         mdb.setLimit(1);
@@ -261,15 +287,15 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return null;
     }
-    
+
     public Registro getRegistro() {
         return registro;
     }
-    
+
     public void setRegistro(Registro registro) {
         this.registro = registro;
     }
-    
+
     public Boolean renderedUpload(Pessoa p) {
         if (registro.isFotoCartao()) {
             Dao dao = new Dao();
@@ -281,7 +307,7 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return false;
     }
-    
+
     public Boolean disabled(Pessoa p, Movimento m) {
         if (registro.isFotoCartao()) {
             if (p.getFisica().getDtFoto() == null) {
@@ -294,19 +320,19 @@ public class GeracaoDebitosCartaoBean implements Serializable {
         }
         return false;
     }
-    
+
     public Boolean getHabilitaImpressao() {
         return habilitaImpressao;
     }
-    
+
     public void setHabilitaImpressao(Boolean habilitaImpressao) {
         this.habilitaImpressao = habilitaImpressao;
     }
-    
+
     public List<HistoricoCarteirinha> getListHistoricoCarteirinhas() {
         return listHistoricoCarteirinhas;
     }
-    
+
     public void setListHistoricoCarteirinhas(List<HistoricoCarteirinha> listHistoricoCarteirinhas) {
         this.listHistoricoCarteirinhas = listHistoricoCarteirinhas;
     }
