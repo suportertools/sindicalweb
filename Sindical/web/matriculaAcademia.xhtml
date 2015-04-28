@@ -18,16 +18,19 @@
         </f:subview>
         <f:view>
             <f:metadata>  
-                <f:event type="preRenderView" listener="${matriculaAcademiaBean.load()}"/>  
-            </f:metadata>             
-            <f:metadata>  
+                <f:event type="preRenderView" listener="${matriculaAcademiaBean.load()}"/>
+                <f:event type="preRenderView" listener="${uploadBean.load()}"/>
+                <f:event type="preRenderView" listener="${photoCamBean.load()}"/>
                 <f:event type="preRenderView" listener="${uploadBean.setRotinaNome('matriculaAcademia')}"/>
                 <f:event type="preRenderView" listener="${photoCamBean.setRotinaNome('matriculaAcademia')}"/>
                 <f:event type="preRenderView" listener="${uploadBean.setUPDATE(':form_matricula_academia:i_photo_cam')}"/>
                 <f:event type="preRenderView" listener="${photoCamBean.setUPDATE(':form_matricula_academia:i_photo_cam')}"/>
+                <f:event type="preRenderView" listener="${uploadBean.setSIZE(204800)}"/>                
             </f:metadata>
             <ui:include src="templates/templateAcessoFilialComCaixa.xhtml" />
             <ui:include src="templates/templateStatus.xhtml" />
+            <ui:include src="templates/templateUpload.xhtml" />
+            <ui:include src="templates/templatePhotoCam.xhtml" />            
             <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <p:outputLabel value="Matrícula Academia" styleClass="fonteHeader"/>
                 <div class="clear"></div>
@@ -337,8 +340,6 @@
                     </p:dialog>
                 </h:form>
             </p:panel>
-            <ui:include src="templates/templateUpload.xhtml" />
-            <ui:include src="templates/templatePhotoCam.xhtml" />                
         </f:view>
     </h:body>
 </ui:composition>

@@ -9,19 +9,19 @@
         <title>Sindical - Menu Social</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-        
+
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }            
-            
-            
+
+
             .ui-widget-content .ui-menu-list .ui-corner-all .ui-helper-clearfix .ui-menu-child .ui-shadow{
                 margin-top: 20px!important;
             }
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>        
     </h:head>
 
@@ -63,7 +63,7 @@
                                     <p:menuitem value="Autorizar Carteirinha"   action="#{chamadaPaginaBean.autorizaCarteirinha()}"/>
                                     <p:menuitem value="Modelo de Carteirinha"   action="#{chamadaPaginaBean.modeloCarteirinha()}"/>
                                     <p:menuitem value="Administradora"          action="#{chamadaPaginaBean.pagina('administradora')}" />
-                                    
+
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" />
                                         <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" />
@@ -84,10 +84,10 @@
                                     <p:menuitem value="Retorno Banco (Social)" action="#{chamadaPaginaBean.retornoSocial()}" />
                                     <p:menuitem value="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" />
                                     <p:menuitem value="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" />
-                                    
+
                                     <p:menuitem value="Transf. Entre Caixas" onclick="i_dlg_t.show()"/>
                                     <p:menuitem value="Fechamento de Caixa" action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
-                                    
+
                                     <p:menuitem value="Ag. Cobrança Mensal"   action="#{chamadaPaginaBean.cobrancaMensal()}" />
                                 </p:submenu>    
 
@@ -98,10 +98,11 @@
                                     <p:menuitem value="Cartão Social"        action="#{chamadaPaginaBean.cartaoSocial}" />
                                     <p:menuitem value="Ficha Social Branco"  action="#{sociosBean.imprimirFichaSocialVazia()}" ajax="false"/>
                                     <p:menuitem value="Carnê Mensalidades"   action="#{chamadaPaginaBean.pagina('carneMensalidades')}" ajax="false"/>
+                                    <p:menuitem value="Convênio Médico"     action="#{chamadaPaginaBean.pagina('relatorioConvenioMedico')}" />
                                 </p:submenu>                            
                             </p:menubar> 
                         </p:panel>
-                        
+
                         <!-- TERMINAR MÉTODO DE ENVIO DE IMAGEM DO BOLETO / E VERSO -->
                         <p:panel id="i_panel_lateral_esq" style="border: 0px; width: 1024px; height: 350px; margin: 0 auto" rendered="false">
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both;  margin-top: 10px">
@@ -112,7 +113,7 @@
                                 </center>
                                 <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/BannerPromoBoleto.png" width="200" /><br />
                             </p:panel>
-                            
+
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; margin-top: 10px">
                                 <center>
                                     <h:panelGrid>
@@ -158,12 +159,12 @@
                             <h:panelGrid>
                                 <p:column>
                                     <p:commandButton global="false" value="Transferir" type="submit" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaBean.transferir()}" update="i_msg_t i_msg_t_g i_valor_t" style="clear: both; float: left" icon="ui-icon-check" />  
-                                    <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_t.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_t').hide()" style="float: left" icon="ui-icon-close"/>
                                 </p:column>
                             </h:panelGrid>
                         </p:dialog>   
                     </h:form>
-                    
+
                     <h:form id="imagem_boleto_social" enctype="multipart/form-data" acceptcharset="UTF-8">
                         <p:dialog id="i_dlg_anexo" widgetVar="dlg_upload" modal="true"  header="Alterar Imagem" >
                             <p:fileUpload label="Procurar"

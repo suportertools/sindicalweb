@@ -186,104 +186,104 @@
                                 </h:panelGrid>
                             </p:panel>
                             <p:messages id="i_msg" closable="true" showDetail="true"/>
-                            <p:dataTable value="#{extratoTelaBean.listaMovimentos}" var="linha" id="tbl" rows="500" rowStyleClass="#{linha.argumento26}" emptyMessage="Nenhum Boleto Pesquisado" scrollable="true" scrollHeight="300" paginator="true">
+                            <p:dataTable value="#{extratoTelaBean.listaMovimentos}" var="movimentos" id="tbl" rows="500" rowStyleClass="#{movimentos.argumento26}" emptyMessage="Nenhum Boleto Pesquisado" scrollable="true" scrollHeight="300" paginator="true">
                                 <p:column style="width:15px">  
                                     <p:rowToggler />  
                                 </p:column>  
 
                                 <p:column style="width:15px">
-                                    <p:selectBooleanCheckbox value="#{linha.argumento0}">
+                                    <p:selectBooleanCheckbox value="#{movimentos.argumento0}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:selectBooleanCheckbox>
                                 </p:column>
 
                                 <p:column headerText="CNPJ" rendered="#{(extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1) and configuracaoBean.resolucao.tipoResolucao.id != 2}" style="width: 110px">
-                                    <p:outputLabel value="#{linha.argumento4}"/>
+                                    <p:outputLabel value="#{movimentos.argumento4}"/>
                                 </p:column>
 
                                 <p:column headerText="Razão" rendered="#{extratoTelaBean.pessoa.id == -1 or extratoTelaBean.listaEmpresasPertencentes.size() gt 1}">
-                                    <p:outputLabel value="#{linha.argumento5}"/>
+                                    <p:outputLabel value="#{movimentos.argumento5}"/>
                                 </p:column>
 
                                 <p:column headerText="Boleto" style="width: 115px; text-align: center">
-                                    <p:outputLabel value="#{linha.argumento6}"/>
+                                    <p:outputLabel value="#{movimentos.argumento6}"/>
                                 </p:column>
 
                                 <p:column headerText="Contr. / Tipo" style="width: 110px">
-                                    <p:outputLabel value="#{linha.argumento7} - #{linha.argumento14}"/>
+                                    <p:outputLabel value="#{movimentos.argumento7} - #{movimentos.argumento14}"/>
                                 </p:column>
 
                                 <p:column headerText="Ref" style="width: 45px; text-align: center">
-                                    <p:outputLabel value="#{linha.argumento8}"/>
+                                    <p:outputLabel value="#{movimentos.argumento8}"/>
                                 </p:column>
 
                                 <p:column headerText="Vencto" style="width: 60px; text-align: center">
-                                    <h:column rendered="#{(linha.argumento21 == true) and (controleAcessoBean.botaoAlterarDataVenctoExtrato == false)}">
-                                        <p:commandLink value="#{linha.argumento9}" action="#{extratoTelaBean.carregaDataAntiga(linha.argumento1)}" oncomplete="PF('dlg_alterar_vencimento').show();" style="color: blue" update=":formExtratoTelaAlteraVencimento :formExtratoTela:i_msg">
+                                    <h:column rendered="#{(movimentos.argumento21 == true) and (controleAcessoBean.botaoAlterarDataVenctoExtrato == false)}">
+                                        <p:commandLink value="#{movimentos.argumento9}" action="#{extratoTelaBean.carregaDataAntiga(movimentos.argumento1)}" oncomplete="PF('dlg_alterar_vencimento').show();" style="color: blue" update=":formExtratoTelaAlteraVencimento :formExtratoTela:i_msg">
 
                                         </p:commandLink>
                                     </h:column> 
 
-                                    <h:column rendered="#{linha.argumento21 == false || controleAcessoBean.botaoAlterarDataVenctoExtrato == true}">
-                                        <p:outputLabel value="#{linha.argumento9}"/>
+                                    <h:column rendered="#{movimentos.argumento21 == false || controleAcessoBean.botaoAlterarDataVenctoExtrato == true}">
+                                        <p:outputLabel value="#{movimentos.argumento9}"/>
                                     </h:column>
                                 </p:column>
 
                                 <p:column headerText="Valor" style="width: 60px">
-                                    <p:outputLabel value="#{linha.argumento11}" style="float: right"/>
+                                    <p:outputLabel value="#{movimentos.argumento11}" style="float: right"/>
                                 </p:column>
 
                                 <p:column headerText="Quitação" style="text-align: center; width: 60px">
-                                    <p:outputLabel value="#{linha.argumento15}"/>
+                                    <p:outputLabel value="#{movimentos.argumento15}"/>
                                 </p:column>
 
                                 <p:column headerText="Vlr Baixa" style="width: 60px">
-                                    <p:outputLabel value="#{linha.argumento25}" style="float: right"/>
+                                    <p:outputLabel value="#{movimentos.argumento25}" style="float: right"/>
                                 </p:column>
 
                                 <p:column headerText="Taxa" style="width: 30px">
-                                    <p:outputLabel value="#{linha.argumento12}" style="float: right"/>
+                                    <p:outputLabel value="#{movimentos.argumento12}" style="float: right"/>
                                 </p:column>
                                 
                                 <p:column headerText="Ult. Imp" style="width: 30px; text-align: center">
-                                    <p:commandButton icon="ui-icon-print" oncomplete="PF('dlg_ultima_impressao').show()" rendered="#{extratoTelaBean.getUltimaImpressão(linha.argumento1)}" action="#{extratoTelaBean.verUltimaImpressão(linha.argumento1)}" title="Ver Lista de Impressões" update=":formExtratoTela:i_tbl_impressao" />
+                                    <p:commandButton icon="ui-icon-print" oncomplete="PF('dlg_ultima_impressao').show()" rendered="#{extratoTelaBean.getUltimaImpressão(movimentos.argumento1)}" action="#{extratoTelaBean.verUltimaImpressão(movimentos.argumento1)}" title="Ver Lista de Impressões" update=":formExtratoTela:i_tbl_impressao" />
                                 </p:column>
 
                                 <p:rowExpansion>
                                     <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
                                         <p:column>
                                             <p:outputLabel value="ID" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento1}"/>
+                                            <p:outputLabel value="#{movimentos.argumento1}"/>
                                         </p:column>
                                         
                                         <p:column>
                                             <p:outputLabel value="Lote" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento22}"/>
+                                            <p:outputLabel value="#{movimentos.argumento22}"/>
                                         </p:column>
                                         
                                         <p:column rendered="#{configuracaoBean.resolucao.tipoResolucao.id == 2}">
                                             <p:outputLabel value="CNPJ" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento4}"/>
+                                            <p:outputLabel value="#{movimentos.argumento4}"/>
                                         </p:column>
                                         
                                         <p:column>
                                             <p:outputLabel value="Beneficiário" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento23}"/>
+                                            <p:outputLabel value="#{movimentos.argumento23}"/>
                                         </p:column>
                                         
                                         <p:column>
                                             <p:outputLabel value="Filial" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento24}"/>
+                                            <p:outputLabel value="#{movimentos.argumento24}"/>
                                         </p:column>
                                         
                                         <p:column>
                                             <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento13}"/>
+                                            <p:outputLabel value="#{movimentos.argumento13}"/>
                                         </p:column>
                                         
                                         <p:column>
                                             <p:outputLabel value="Importação" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento10}"/>
+                                            <p:outputLabel value="#{movimentos.argumento10}"/>
                                         </p:column>
                                     </h:panelGrid>
                                 </p:rowExpansion>                                
@@ -363,7 +363,7 @@
                                     </h:column>
                                         
                                     <h:column>
-                                        <p:commandLink action="#{extratoTelaBean.imprimir}" title="Imprimir Boletos Selecionados" target="_blank" ajax="false">
+                                        <p:commandLink action="#{extratoTelaBean.imprimir}" title="Imprimir Boletos Selecionados" ajax="false">
                                             <p:commandButton icon="ui-icon-print" value="Imprimir" title="Imprimir Boletos Selecionados" ajax="false" style="margin-right: 20px"/>
                                         </p:commandLink>
                                     </h:column>

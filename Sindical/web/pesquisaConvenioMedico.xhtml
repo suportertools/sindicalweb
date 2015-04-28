@@ -61,6 +61,12 @@
                         <p:column headerText="Convênio" styleClass="text-center">
                             <p:outputLabel value="#{convenioMedico.servicoPessoa.servicos.descricao}" />
                         </p:column>
+                        <p:column headerText="Desc. em Folha" styleClass="text-center" width="50">
+                            <p:selectBooleanCheckbox value="#{convenioMedico.servicoPessoa.descontoFolha}" disabled="true"/>
+                        </p:column>
+                        <p:column headerText="Desconto (%)" styleClass="text-center" width="80">
+                            <p:outputLabel value="#{convenioMedico.servicoPessoa.nrDescontoString}" />
+                        </p:column>
                     </p:dataTable>
                 </p:panel>
 
