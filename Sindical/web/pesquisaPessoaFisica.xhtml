@@ -128,7 +128,7 @@
                                     <h:panelGrid style="height: 40px" styleClass="sbb">
                                         <h:outputLabel value="Endereço: #{fisica.pessoa.pessoaEndereco.enderecoCompletoString} " styleClass="bold font-color-red"/>
                                     </h:panelGrid>
-                                    <p:panel header="Titular / Dependente(s) - Categoria: #{fisica.pessoa.socios.matriculaSocios.categoria.categoria} - Matrícula: #{fisica.pessoa.socios.matriculaSocios.nrMatricula}" rendered="#{not empty fisicaBean.listaSocios}">
+                                    <p:panel header="Titular / Dependente(s) - Matrícula: #{fisica.pessoa.socios.matriculaSocios.nrMatricula} - Categoria: #{fisica.pessoa.socios.matriculaSocios.categoria.categoria}" rendered="#{not empty fisicaBean.listaSocios}">
                                         <p:dataTable value="#{fisicaBean.listaSocios}" var="dependentes">
                                             <p:column headerText="Nome">                                                
                                                 <p:commandLink action="#{fisicaBean.editarFisica(dependentes.servicoPessoa.pessoa)}" value="#{dependentes.servicoPessoa.pessoa.nome}" title="Editar pessoa" styleClass="#{dependentes.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}"/>
