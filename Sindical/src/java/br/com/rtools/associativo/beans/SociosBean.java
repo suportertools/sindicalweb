@@ -867,7 +867,7 @@ public class SociosBean implements Serializable {
 
         dao.openTransaction();
 
-        ServicoPessoa sp = (ServicoPessoa) dao.find("ServicoPessoa", servicoPessoa.getId());
+        ServicoPessoa sp = (ServicoPessoa) dao.find(new ServicoPessoa(), servicoPessoa.getId());
         if (sp == null) {
             GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa");
             dao.rollback();
