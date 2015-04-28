@@ -678,9 +678,7 @@ public class SociosBean implements Serializable {
             boolean delete = f.delete();
 
         }
-        GenericaSessao.remove("photoCamBean");
-        PhotoCam photoCam = new PhotoCam();
-        GenericaSessao.put("photoCamBean", photoCam);
+        ((PhotoCam) GenericaSessao.getObject("photoCamBean")).setFILE_PERMANENT("/Imagens/user_undefined.png");
         GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
     }
 
@@ -1244,7 +1242,12 @@ public class SociosBean implements Serializable {
                             return null;
                         }
                         sc.setCartao(sc.getId());
-                        dao.update(sc);
+                        sc = (SocioCarteirinha) dao.find(sc);
+                        if (!dao.update(sc)) {
+                            GenericaMensagem.error("Erro", "Não foi possivel salvar Sócio Carteirinha Dependente!");
+                            dao.rollback();
+                            return null;
+                        }
                     } else {
                         if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
                             sc.setAtivo(true);
@@ -1262,13 +1265,15 @@ public class SociosBean implements Serializable {
             }
             for (int i = 0; i < listDependentesInativos.size(); i++) {
                 Socios socioDependenteInativo = sociosDao.pesquisaDependenteInativoPorMatricula(listDependentesInativos.get(i).getFisica().getPessoa().getId(), socios.getMatriculaSocios().getId());
-                if (socioDependenteInativo.getServicoPessoa().isAtivo() != socios.getServicoPessoa().isDescontoFolha()) {
-                    socioDependenteInativo.getServicoPessoa().setDescontoFolha(socios.getServicoPessoa().isDescontoFolha());
-                    if (!dao.update(socioDependenteInativo)) {
-                        GenericaMensagem.error("Erro", "Erro ao atualizar sócio: " + listDependentesInativos.get(i).getFisica().getPessoa().getNome());
-                        dao.rollback();
-                        break;
-                    }
+                if(socioDependenteInativo != null) {
+                    if (socioDependenteInativo.getServicoPessoa().isAtivo() != socios.getServicoPessoa().isDescontoFolha()) {
+                        socioDependenteInativo.getServicoPessoa().setDescontoFolha(socios.getServicoPessoa().isDescontoFolha());
+                        if (!dao.update(socioDependenteInativo)) {
+                            GenericaMensagem.error("Erro", "Erro ao atualizar sócio: " + listDependentesInativos.get(i).getFisica().getPessoa().getNome());
+                            dao.rollback();
+                            break;
+                        }
+                    }                    
                 }
             }
         }
