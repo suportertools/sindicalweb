@@ -8,6 +8,7 @@ import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.ServicoPessoa;
@@ -127,20 +128,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private Integer tipoCadastro = -1;
 
     public String novo() {
-        GenericaSessao.remove("fisicaBean");
-        return "pessoaFisica";
-    }
-
-    @PostConstruct
-    public void init() {
-        // GenericaSessao.put("fisicaBean", new FisicaBean());
-        // GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
-        // GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
-    }
-
-    @PreDestroy
-    public void destroy() {
-        GenericaSessao.remove("fisicaBean");
+        GenericaSessao.put("fisicaBean", new FisicaBean());
+        GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
+        GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("fisicaPesquisa");
         GenericaSessao.remove("enderecoPesquisa");
@@ -149,6 +139,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         GenericaSessao.remove("pessoaComplementoBean");
         GenericaSessao.remove("pesquisaEnderecoBean");
         clear(0);
+        return "pessoaFisica";
+    }
+
+    @PostConstruct
+    public void init() {
+    }
+
+    @PreDestroy
+    public void destroy() {
+
     }
 
     public String getEnderecoCobranca() {
@@ -2201,25 +2201,37 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         }
         // OPOSIÇÃO
-        if (validacao.equals("matriculaEscola") || validacao.equals("matriculaAcademia") || validacao.equals("convenioMedico")) {
-            if (!p.getDocumento().isEmpty()) {
-                OposicaoDBToplink odbt = new OposicaoDBToplink();
-                if (odbt.existPessoaDocumentoPeriodo(p.getDocumento())) {
+        switch (validacao) {
+            case "matriculaEscola":
+            case "matriculaAcademia":
+            case "convenioMedico":
+                if (!p.getDocumento().isEmpty()) {
+                    OposicaoDBToplink odbt = new OposicaoDBToplink();
+                    if (odbt.existPessoaDocumentoPeriodo(p.getDocumento())) {
+                        count++;
+                        pessoaOposicao = true;
+                        GenericaMensagem.warn("Mensagem " + count, "Contém carta(s) de oposição!");
+                        permite = false;
+                    }
+                }
+                break;
+        }
+
+        // DÉBITOS
+        switch (validacao) {
+            case "convenioMedico":
+            case "matriculaEscola":
+            case "matriculaAcademia":
+            case "emissaoGuias":
+            case "lancamentoIndividual":
+            case "geracaoDebitosCartao":
+                FunctionsDao functionsDao = new FunctionsDao();
+                if (functionsDao.inadimplente(p.getId())) {
                     count++;
-                    pessoaOposicao = true;
-                    GenericaMensagem.warn("Mensagem " + count, "Contém carta(s) de oposição!");
+                    GenericaMensagem.warn("Mensagem " + count, "Existe(m) débito(s)!");
                     permite = false;
                 }
-            }
-        }
-        // DÉBITOS
-        if (validacao.equals("matriculaEscola") || validacao.equals("matriculaAcademia") || validacao.equals("convenioMedico")) {
-            FunctionsDao functionsDao = new FunctionsDao();
-            if (functionsDao.inadimplente(p.getId())) {
-                count++;
-                GenericaMensagem.warn("Mensagem " + count, "Existe(m) débito(s)!");
-                permite = false;
-            }
+                break;
         }
         return permite;
     }
