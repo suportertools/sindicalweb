@@ -130,7 +130,7 @@ public class SociosDao extends DB {
      */
     public Socios pesquisaDependenteInativoPorMatricula(Integer idPessoa, Integer idMatriculaSocios) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.matriculaSocios.id = :matriculaSocios AND S.servicoPessoa.ativo = true ");
+            Query query = getEntityManager().createQuery(" SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.matriculaSocios.id = :matriculaSocios AND S.servicoPessoa.ativo = false ");
             query.setParameter("pessoa", idPessoa);
             query.setParameter("matriculaSocios", idMatriculaSocios);
             List list = query.getResultList();
