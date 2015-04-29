@@ -30,25 +30,26 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Correção" styleClass="fonteHeader" />
+                        <div class="clear"></div>
                         <h:form id="formCorrecao">    
                             <c:set scope="request" var="object" value="${correcaoBean.correcao}"/>
-                            <h:panelGrid columns="4" style="clear: both">
+                            <h:panelGrid columns="3" style="width: 100%" id="i_panelgrid_edit">
                                 <p:column>
                                     <p:panel styleClass="fundoCinza" style="clear: both; height: 170px">
                                         <table>
                                             <tr>
                                                 <td align="right"><h:outputLabel value="Contribuição: " styleClass="fonteCorr"/></td>
-                                                <td><p:selectOneMenu id="idServicos" value="#{correcaoBean.idServicos}" style="width: 180px">
-                                                        <f:selectItems value="#{correcaoBean.listaServico}"/>
+                                                <td><p:selectOneMenu id="idServicos" value="#{correcaoBean.idServicos}" style="width: 180px" filterMatchMode="startsWith" filter="true">
+                                                        <f:selectItems value="#{correcaoBean.listServicos}"/>
                                                     </p:selectOneMenu>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td align="right"><h:outputLabel value="Índices: " styleClass="fonteCorr"/></td>
                                                 <td><p:selectOneMenu id="idIndices" value="#{correcaoBean.idIndices}" style="width: 180px">
-                                                        <f:selectItems value="#{correcaoBean.listaIndices}"/>
+                                                        <f:selectItems value="#{correcaoBean.listIndices}"/>
                                                     </p:selectOneMenu>
                                                 </td>
                                             </tr>
@@ -97,59 +98,49 @@
                                                 <td><p:inputText value="#{correcaoBean.correcao.jurosDiarios}" size="3"/></td>
                                             </tr>
                                             <tr>
-                                                <td align="right"><p:commandButton ajax="false" value="Novo" action="#{correcaoBean.novo()}"/></td>
-                                                <td><p:commandButton value="Salvar" action="#{correcaoBean.salvar()}" update="formCorrecao"/></td>
+                                                <td align="right"><p:commandButton ajax="false" value="Novo" action="#{correcaoBean.clear()}"/></td>
+                                                <td><p:commandButton value="Salvar" action="#{correcaoBean.save()}" update="formCorrecao"/></td>
                                             </tr>
                                         </table>
                                     </p:panel>
                                 </p:column>
                             </h:panelGrid>
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
-                            <p:dataTable  value="#{correcaoBean.listaCorrecao}" var="linha" id="tbl" emptyMessage="Nenhuma Correção foi encontrada!" styleClass="margin-top-max">
-                                    <p:column headerText="Excluir" style="text-align: center">
-                                        <p:commandButton icon="ui-icon-trash" action="#{correcaoBean.btnExcluir(linha)}" update=":formCorrecao" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                    </p:column>
-
-                                    <p:column headerText="Serviço">
-                                        <p:commandLink action="#{correcaoBean.editar(linha)}" value="#{linha.servicos.descricao}" update=":formCorrecao"/>
-                                    </p:column>
-
-                                    <p:column headerText="Índice">
-                                        <p:commandLink action="#{correcaoBean.editar(linha)}" value="#{linha.indice.descricao}" update=":formCorrecao"/>
-                                    </p:column>
-
-                                    <p:column headerText="Multa 1° Mês">
-                                        <h:outputText value="#{linha.multaPriMes}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Multa Apartir 2° Mês">
-                                        <h:outputText value="#{linha.multaApartir2Mes}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Juros 1° Mês">
-                                        <h:outputText value="#{linha.jurosPriMes}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Juros Apartir 2° Mês">
-                                        <h:outputText value="#{linha.jurosApartir2Mes}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Multa Por Funcionário">
-                                        <h:outputText value="#{linha.multaPorFuncionario}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Juros Diário">
-                                        <h:outputText value="#{linha.jurosDiarios}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Ref. Inicial">
-                                        <h:outputText value="#{linha.referenciaInicial}"/>
-                                    </p:column>
-
-                                    <p:column headerText="Ref. Final">
-                                        <h:outputText value="#{linha.referenciaFinal}"/>
-                                    </p:column>
-                               </p:dataTable>
+                            <p:dataTable  value="#{correcaoBean.listaCorrecao}" var="correcao" id="tbl" emptyMessage="Nenhuma Correção foi encontrada!" styleClass="margin-top-max" scrollHeight="250" scrollable="true">
+                                <p:column headerText="Serviço" sortBy="#{correcao.servicos.descricao}" width="250">
+                                    <p:commandLink action="#{correcaoBean.edit(correcao)}" value="#{correcao.servicos.descricao}" update=":formCorrecao:i_panelgrid_edit"/>
+                                </p:column>
+                                <p:column headerText="Índice" sortBy="#{correcao.indice.descricao}">
+                                    <p:commandLink action="#{correcaoBean.edit(correcao)}" value="#{correcao.indice.descricao}" update=":formCorrecao:i_panelgrid_edit"/>
+                                </p:column>
+                                <p:column headerText="Multa 1° Mês">
+                                    <h:outputText value="#{correcao.multaPriMes}"/>
+                                </p:column>
+                                <p:column headerText="Multa Apartir 2° Mês">
+                                    <h:outputText value="#{correcao.multaApartir2Mes}"/>
+                                </p:column>
+                                <p:column headerText="Juros 1° Mês">
+                                    <h:outputText value="#{correcao.jurosPriMes}"/>
+                                </p:column>
+                                <p:column headerText="Juros Apartir 2° Mês">
+                                    <h:outputText value="#{correcao.jurosApartir2Mes}"/>
+                                </p:column>
+                                <p:column headerText="Multa Por Funcionário">
+                                    <h:outputText value="#{correcao.multaPorFuncionario}"/>
+                                </p:column>
+                                <p:column headerText="Juros Diário">
+                                    <h:outputText value="#{correcao.jurosDiarios}"/>
+                                </p:column>
+                                <p:column headerText="Ref. Inicial">
+                                    <h:outputText value="#{correcao.referenciaInicial}"/>
+                                </p:column>
+                                <p:column headerText="Ref. Final">
+                                    <h:outputText value="#{correcao.referenciaFinal}"/>
+                                </p:column>
+                                <p:column styleClass="text-center" width="30">
+                                    <p:commandButton icon="ui-icon-trash" action="#{correcaoBean.delete(correcao)}" update=":formCorrecao:" disabled="#{controleAcessoBean.botaoExcluir}" title="Remover esta correção"/>
+                                </p:column>                                
+                            </p:dataTable>
                         </h:form>
                     </p:panel>
                 </f:view>
