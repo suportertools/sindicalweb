@@ -1,4 +1,4 @@
-package br.com.rtools.homologacao.db;
+package br.com.rtools.homologacao.dao;
 
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.pessoa.Filial;
@@ -9,19 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-/**
- * Use FeriadosDao
- *
- * @author rtools2
- * @deprecated
- */
-@Deprecated
-public class FeriadosDBToplink extends DB implements FeriadosDB {
+public class FeriadosDao extends DB {
 
-    @Override
     public List pesquisarPorData(String data) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT F from Feriados AS F WHERE F.dtData = :data");
+            Query qry = getEntityManager().createQuery("SELECT F FROM Feriados AS F WHERE F.dtData = :data");
             qry.setParameter("data", DataHoje.converte(data));
             return (qry.getResultList());
         } catch (Exception e) {
@@ -29,7 +21,6 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
         }
     }
 
-    @Override
     public boolean exiteFeriadoCidade(Feriados feriados) {
         String queryCidade = "";
         if (feriados.getCidade() != null) {
@@ -40,7 +31,8 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
             queryCidade = " AND F.cidade IS NULL ";
         }
         try {
-            Query qry = getEntityManager().createQuery(" SELECT F FROM Feriados AS F WHERE F.dtData = :data " + queryCidade);
+            String queryString = " SELECT F FROM Feriados AS F WHERE F.dtData = :data " + queryCidade;
+            Query qry = getEntityManager().createQuery(queryString);
             qry.setParameter("data", DataHoje.converte(feriados.getData()));
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -51,7 +43,6 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
         return false;
     }
 
-    @Override
     public List pesquisarPorDataFilial(String data, Filial filial) {
         try {
             Query queryFilial = getEntityManager().createQuery("SELECT PE FROM PessoaEndereco AS PE WHERE PE.pessoa.id = :idPessoa");
@@ -75,7 +66,6 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisarPorDataFilialEData(String data, Filial filial) {
         try {
             Query queryFilial = getEntityManager().createQuery("SELECT PE FROM PessoaEndereco AS PE WHERE PE.pessoa.id = :idPessoa");
@@ -96,7 +86,8 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
                             listaFeriadosString = "," + ((List) list.get(i)).get(0).toString();
                         }
                     }
-                    Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F WHERE F.id IN (" + listaFeriadosString + ")");
+                    Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F WHERE F.id IN ( :listaFeriadosString )");
+                    query.setParameter(":listaFeriadosString", listaFeriadosString);
                     list.clear();
                     list = query.getResultList();
                     if (!list.isEmpty()) {
@@ -110,7 +101,6 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisaTodosFeriados() {
         try {
             Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC ");

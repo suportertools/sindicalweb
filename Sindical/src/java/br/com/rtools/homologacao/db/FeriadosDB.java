@@ -5,6 +5,13 @@ import br.com.rtools.pessoa.Filial;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+/**
+ * Use FeriadosDao
+ *
+ * @author rtools2
+ * @deprecated
+ */
+@Deprecated
 public interface FeriadosDB {
 
     public EntityManager getEntityManager();
@@ -16,6 +23,6 @@ public interface FeriadosDB {
     public List pesquisarPorDataFilial(String data, Filial filial);
 
     public List pesquisarPorDataFilialEData(String data, Filial filial);
-    
-     public List pesquisaTodosFeriados();
+
+    public List pesquisaTodosFeriados();
 }

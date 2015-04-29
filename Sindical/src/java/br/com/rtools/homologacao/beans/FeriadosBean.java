@@ -4,8 +4,7 @@ import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.homologacao.Feriados;
-import br.com.rtools.homologacao.db.FeriadosDB;
-import br.com.rtools.homologacao.db.FeriadosDBToplink;
+import br.com.rtools.homologacao.dao.FeriadosDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
@@ -74,7 +73,7 @@ public class FeriadosBean implements Serializable {
     }
 
     public void save() {
-        FeriadosDB db = new FeriadosDBToplink();
+        FeriadosDao feriadosDao = new FeriadosDao();
         DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
         if (feriados.getId() == -1) {
@@ -109,7 +108,7 @@ public class FeriadosBean implements Serializable {
                     } else {
                         f.setData(dh.incrementarAnos(i, dataPadrao));
                     }
-                    if (!db.exiteFeriadoCidade(f)) {
+                    if (!feriadosDao.exiteFeriadoCidade(f)) {
                         if (di.save(f, true)) {
                             novoLog.save(
                                     "ID: " + f.getId()
@@ -129,7 +128,7 @@ public class FeriadosBean implements Serializable {
                 replicar = false;
                 anos = 0;
             } else {
-                if (db.exiteFeriadoCidade(feriados)) {
+                if (feriadosDao.exiteFeriadoCidade(feriados)) {
                     message = "Feriado já cadastrado!";
                     GenericaMensagem.warn("Validação", message);
                     return;
@@ -279,8 +278,8 @@ public class FeriadosBean implements Serializable {
 
     public List<Feriados> getListFeriados() {
         if (listFeriados.isEmpty()) {
-            FeriadosDB feriadosDB = new FeriadosDBToplink();
-            listFeriados = feriadosDB.pesquisaTodosFeriados();
+            FeriadosDao feriadosDao = new FeriadosDao();
+            listFeriados = feriadosDao.pesquisaTodosFeriados();
             eventModel = new DefaultScheduleModel();
             List<Feriados> list = new ArrayList<>();
             for (int i = 0; i < listFeriados.size(); i++) {

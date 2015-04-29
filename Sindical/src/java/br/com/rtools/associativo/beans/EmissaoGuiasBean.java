@@ -5,7 +5,6 @@ import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.SubGrupoConvenio;
-import br.com.rtools.associativo.dao.EmissaoGuiasDao;
 import br.com.rtools.associativo.db.ConvenioServicoDB;
 import br.com.rtools.associativo.db.ConvenioServicoDBToplink;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;

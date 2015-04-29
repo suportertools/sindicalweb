@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 
-public class LancamentoIndividualDBToplink extends DB implements LancamentoIndividualDB{
+public class LancamentoIndividualDBToplink extends DB implements LancamentoIndividualDB {
+
     @Override
     public List pesquisaResponsavel(int id_pessoa, boolean desconto_folha) {
-        try{
-            String textqry = " select func_responsavel("+id_pessoa+", "+desconto_folha+");";
-            
+        try {
+            String textqry = " select func_responsavel(" + id_pessoa + ", " + desconto_folha + ");";
+
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();
@@ -24,12 +25,12 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List pesquisaContribuinteLancamento(int id_pessoa) {
-        try{
-            String textqry = " select * from arr_contribuintes_vw where id_pessoa = "+id_pessoa+" and motivo = 'FECHOU'";
-            
+        try {
+            String textqry = " select * from arr_contribuintes_vw where id_pessoa = " + id_pessoa + " and motivo = 'FECHOU'";
+
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();
@@ -38,13 +39,13 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List pesquisaMovimentoFisica(int id_pessoa) {
-        try{
-            String textqry = " select * from fin_movimento m where dt_vencimento < now() and m.id_pessoa = " +id_pessoa+ " and m.id_baixa is null "+
-                             "   and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4)";
-            
+        try {
+            String textqry = " select * from fin_movimento m where dt_vencimento < now() and m.id_pessoa = " + id_pessoa + " and m.id_baixa is null "
+                    + "   and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4)";
+
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();
@@ -52,26 +53,26 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
             e.getMessage();
         }
         return new ArrayList();
-    }    
-    
+    }
+
     @Override
     public List<Juridica> listaEmpresaConveniada(int id_servico) {
-        try{
+        try {
             List<Vector> vetor = new ArrayList<Vector>();
             List result = new ArrayList();
-            String textqry = " select j.id from pes_pessoa as p " +
-                             " inner join pes_juridica as j on j.id_pessoa = p.id " +
-                             " inner join soc_convenio as c on c.id_juridica = j.id " +
-                             " inner join soc_convenio_servico as cs on cs.id_convenio_sub_grupo = c.id_convenio_sub_grupo " +
-                             "   and cs.id_servico = "+id_servico;
-            
+            String textqry = " select j.id from pes_pessoa as p "
+                    + " inner join pes_juridica as j on j.id_pessoa = p.id "
+                    + " inner join soc_convenio as c on c.id_juridica = j.id "
+                    + " inner join soc_convenio_servico as cs on cs.id_convenio_sub_grupo = c.id_convenio_sub_grupo "
+                    + "   and cs.id_servico = " + id_servico;
+
             Query qry = getEntityManager().createNativeQuery(textqry);
-            
+
             vetor = qry.getResultList();
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    result.add((Juridica)sv.pesquisaCodigo( ((Integer) ((Vector) vetor.get(i)).get(0)), "Juridica"));
+                    result.add((Juridica) sv.pesquisaCodigo(((Integer) ((Vector) vetor.get(i)).get(0)), "Juridica"));
                 }
             }
 
@@ -81,46 +82,37 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<Juridica> listaEmpresaConveniadaPorSubGrupo(int id_sub_grupo) {
-        try{
-            List<Vector> vetor = new ArrayList<Vector>();
-            List result = new ArrayList();
-            String textqry = "  SELECT j.id " +
-                             "    FROM pes_juridica j " +
-                             "   INNER JOIN soc_convenio c ON j.id = c.id_juridica " +
-                             "   INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
-                             "   INNER JOIN soc_convenio_sub_grupo s ON s.id = c.id_convenio_sub_grupo " +
-                             "   INNER JOIN soc_convenio_grupo g ON g.id = s.id_grupo_convenio " +
-                             "  where s.id = "+id_sub_grupo;
-            
-            Query qry = getEntityManager().createNativeQuery(textqry);
-            
-            vetor = qry.getResultList();
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            if (!vetor.isEmpty()) {
-                for (int i = 0; i < vetor.size(); i++) {
-                    result.add((Juridica)sv.pesquisaCodigo( ((Integer) ((Vector) vetor.get(i)).get(0)), "Juridica"));
-                }
-            }
+        try {
+            String textqry = " "
+                    + "     SELECT J.*                                                           "
+                    + "       FROM pes_juridica AS J                                             "
+                    + " INNER JOIN soc_convenio AS C ON J.id = C.id_juridica                     "
+                    + " INNER JOIN pes_pessoa   AS P ON P.id = J.id_pessoa                       "
+                    + " INNER JOIN soc_convenio_sub_grupo AS S ON S.id = C.id_convenio_sub_grupo "
+                    + " INNER JOIN soc_convenio_grupo     AS G ON G.id = S.id_grupo_convenio     "
+                    + "      WHERE S.id = ?                                                      "
+                    + "   ORDER BY P.ds_nome ASC                                                 ";
 
-            return result;
+            Query query = getEntityManager().createNativeQuery(textqry, Juridica.class);
+            query.setParameter("1", id_sub_grupo);
+            return query.getResultList();
         } catch (Exception e) {
-            e.getMessage();
+            return new ArrayList();
         }
-        return new ArrayList();
     }
-    
+
     @Override
     public List<Spc> listaSerasa(int id_pessoa) {
-        try{
+        try {
             List<Spc> result = new ArrayList();
-            
-            String textqry = " select s from Spc s where s.pessoa.id = "+id_pessoa+" and s.dtSaida is null";
-            
+
+            String textqry = " select s from Spc s where s.pessoa.id = " + id_pessoa + " and s.dtSaida is null";
+
             Query qry = getEntityManager().createQuery(textqry);
-            
+
             result = qry.getResultList();
             return result;
         } catch (Exception e) {
@@ -128,12 +120,12 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<Vector> pesquisaServicoValor(int id_pessoa, int id_servico) {
-        try{
-            String textqry = " select func_valor_servico("+id_pessoa+", "+id_servico+", current_date, 0, 0) ";
-            
+        try {
+            String textqry = " select func_valor_servico(" + id_pessoa + ", " + id_servico + ", current_date, 0, 0) ";
+
             Query qry = getEntityManager().createNativeQuery(textqry);
             return qry.getResultList();
         } catch (Exception e) {
@@ -142,4 +134,3 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
         return new ArrayList();
     }
 }
-

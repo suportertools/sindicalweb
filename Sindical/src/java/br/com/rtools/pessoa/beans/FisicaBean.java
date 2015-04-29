@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -127,12 +128,17 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String strEndereco = "";
     private Integer tipoCadastro = -1;
 
+    private List<Fisica> selectedFisica = new ArrayList<>();
+
+    private Boolean multiple = false;
+
     public String novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
         GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
         GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("fisicaPesquisaList");
         GenericaSessao.remove("enderecoPesquisa");
         GenericaSessao.remove("enderecoNum");
         GenericaSessao.remove("enderecoComp");
@@ -458,6 +464,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
+    public String complete() {
+        String url = (String) GenericaSessao.getString("urlRetorno");
+        GenericaSessao.put("fisicaPesquisaList", selectedFisica);
+        GenericaSessao.put("linkClicado", true);        
+        multiple = false;
+        return url;
+    }
+
     public String editarFisica(Pessoa p) {
         FisicaDB fisicaDB = new FisicaDBToplink();
         Fisica f = fisicaDB.pesquisaFisicaPorPessoa(p.getId());
@@ -469,6 +483,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String editarFisica(Fisica f, Boolean completo) {
+        selectedFisica.clear();
+        multiple = false;
         String url = (String) GenericaSessao.getString("urlRetorno");
         fisica = f;
         if (!listernerValidacao(f, url)) {
@@ -2155,6 +2171,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (tipoValidacao.equals("socio_titular_ativo")) {
             fisicaBean.setPesquisaPor("socio_titular_ativo");
         }
+        if (tipoValidacao.equals("multiple")) {
+            fisicaBean.setMultiple(true);
+        }
         fisicaBean.getListaPessoaFisica();
         GenericaSessao.put("fisicaBean", fisicaBean);
     }
@@ -2259,5 +2278,25 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public Boolean getMultiple() {
+        return multiple;
+    }
+
+    public void setMultiple(Boolean multiple) {
+        this.multiple = multiple;
+    }
+
+    public List<Fisica> getSelectedFisica() {
+        return selectedFisica;
+    }
+
+    public void setSelectedFisica(List<Fisica> selectedFisica) {
+        this.selectedFisica = selectedFisica;
+    }
+
+    public void removeSelected(Fisica f) {
+        selectedFisica.remove(f);
     }
 }
