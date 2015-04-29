@@ -80,8 +80,8 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
         index[2] = 0;
         index[3] = 0;
         index[4] = 0;
-        tipoRelatorio = "Resumo";
-        indexAccordion = "Resumo";
+        tipoRelatorio = "Avançado";
+        indexAccordion = "Avançado";
         tipo = "todos";
         listSelectItem = new ArrayList[5];
         listSelectItem[0] = new ArrayList<>();
