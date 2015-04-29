@@ -7,7 +7,10 @@ import java.util.Date;
 
 public abstract class Cobranca {
 
-    protected Movimento movimento;
+    //protected Movimento movimento;
+    protected Integer id_pessoa;
+    protected Float valor;
+    protected Date vencimento;
     protected Boleto boleto;
     public final static String bancoDoBrasil = "001";
     public final static String caixaFederal = "104";
@@ -21,9 +24,15 @@ public abstract class Cobranca {
     public final static int SINDICAL = 2;
     public final static int SIGCB = 3;
 
-    public Cobranca(Movimento movimento, Boleto boleto) {
-        setMovimento(movimento);
-        setBoleto(boleto);
+//    public Cobranca(Movimento movimento, Boleto boleto) {
+//        setMovimento(movimento);
+//        setBoleto(boleto);
+//    }
+    public Cobranca(Integer id_pessoa, float valor, Date vencimento, Boleto boleto) {
+        this.id_pessoa = id_pessoa;
+        this.valor = valor;
+        this.vencimento = vencimento;
+        this.boleto = boleto;
     }
 
     public abstract String moduloDez(String composicao);
@@ -62,7 +71,6 @@ public abstract class Cobranca {
             i--;
         }
 
-
         if (soma < 11) {
             if ((soma == 1) || (soma == 0)) {
                 return "1"; // a subtração abaixo pode resultar em 10 caso a soma seja "1". Apesar de ser um caso raro, estamos tratando esse posível erro.
@@ -77,6 +85,31 @@ public abstract class Cobranca {
         } else {
             return Integer.toString(11 - (soma % 11));
         }
+    }
+
+    public static Cobranca retornaCobranca(Integer id_pessoa, Float valor, Date vencimento, Boleto boleto) {
+        Cobranca cobranca = null;
+        if (boleto.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
+            // ÚNICO CASO QUE UTILIZA O id_pessoa
+            cobranca = new CaixaFederalSindical(id_pessoa, valor, vencimento, boleto);
+        } else if ((boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal)) && (boleto.getContaCobranca().getLayout().getId() == Cobranca.SICOB)) {
+            cobranca = new CaixaFederalSicob(null, valor, vencimento, boleto);
+        } else if ((boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal)) && (boleto.getContaCobranca().getLayout().getId() == Cobranca.SIGCB)) {
+            cobranca = new CaixaFederalSigCB(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.itau)) {
+            cobranca = new Itau(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bancoDoBrasil)) {
+            cobranca = new BancoDoBrasil(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.real)) {
+            cobranca = new Real(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bradesco)) {
+            cobranca = new Bradesco(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.santander)) {
+            cobranca = new Santander(null, valor, vencimento, boleto);
+        } else if (boleto.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.sicoob)) {
+            cobranca = new Sicoob(null, valor, vencimento, boleto);
+        }
+        return cobranca;
     }
 
     public String getNossoNumeroFormatado() {
@@ -100,11 +133,11 @@ public abstract class Cobranca {
         this.boleto = boleto;
     }
 
-    public Movimento getMovimento() {
-        return movimento;
-    }
-
-    public void setMovimento(Movimento movimento) {
-        this.movimento = movimento;
-    }
+//    public Movimento getMovimento() {
+//        return movimento;
+//    }
+//
+//    public void setMovimento(Movimento movimento) {
+//        this.movimento = movimento;
+//    }
 }

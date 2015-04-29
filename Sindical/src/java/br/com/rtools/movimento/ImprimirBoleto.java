@@ -228,30 +228,13 @@ public class ImprimirBoleto {
                 Movimento mov = lista.get(i);
                 mov.setVencimento(listaVencimentos.get(i));
 
+                cobranca = Cobranca.retornaCobranca(mov.getPessoa().getId(), mov.getValor(), mov.getDtVencimento(), boletox);
+                
                 if (boletox.getContaCobranca().getLayout().getId() == Cobranca.SINDICAL) {
-                    cobranca = new CaixaFederalSindical(mov, boletox);
                     swap[43] = "EXERC " + lista.get(i).getReferencia().substring(3);
                     swap[42] = "BLOQUETO DE CONTRIBUIÇÃO SINDICAL URBANA.";
-                } else if ((boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal))
-                        && (boletox.getContaCobranca().getLayout().getId() == Cobranca.SICOB)) {
-                    cobranca = new CaixaFederalSicob(mov, boletox);
-                } else if ((boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.caixaFederal))
-                        && (boletox.getContaCobranca().getLayout().getId() == Cobranca.SIGCB)) {
-                    cobranca = new CaixaFederalSigCB(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.itau)) {
-                    cobranca = new Itau(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bancoDoBrasil)) {
-                    cobranca = new BancoDoBrasil(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.real)) {
-                    cobranca = new Real(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.bradesco)) {
-                    cobranca = new Bradesco(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.santander)) {
-                    cobranca = new Santander(mov, boletox);
-                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.sicoob)) {
-                    cobranca = new Sicoob(mov, boletox);
                 }
-
+                
                 try {
                     swap[0] = jurDB.pesquisaJuridicaPorPessoa(lista.get(i).getPessoa().getId()).getContabilidade().getPessoa().getNome();
                 } catch (Exception e) {
