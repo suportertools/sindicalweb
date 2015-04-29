@@ -7,67 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class CorrecaoDBToplink extends DB implements CorrecaoDB {
+public class CorrecaoDao extends DB implements CorrecaoDB {
 
-    public boolean insert(Correcao correcao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(correcao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(Correcao correcao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(correcao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(Correcao correcao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(correcao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select c from Correcao c");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return new ArrayList();
-        }
-    }
-
-    public Correcao pesquisaCodigo(int id) {
-        Correcao result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Correcao.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Correcao) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
+    @Override
     public List pesquisaRefValida(Servicos servicos, String refInicial, String refFinal) {
         String d1 = refInicial.substring(3, 7) + refInicial.substring(0, 2);
         String d2 = refFinal.substring(3, 7) + refFinal.substring(0, 2);
@@ -86,6 +28,7 @@ public class CorrecaoDBToplink extends DB implements CorrecaoDB {
         }
     }
 
+    @Override
     public Correcao pesquisaCorrecao(Servicos servicos, String referencia) {
         Correcao correcao = null;
         referencia = referencia.substring(3, 7) + referencia.substring(0, 2);
