@@ -1663,12 +1663,6 @@
         </navigation-case>
         
         <navigation-case>
-            <from-outcome>redirect</from-outcome>
-            <to-view-id>/redirect.jsf</to-view-id>
-            <redirect/>
-        </navigation-case>
-        
-        <navigation-case>
             <from-outcome>relatorioFechamentoGuias</from-outcome>
             <to-view-id>/relatorioFechamentoGuias.jsf</to-view-id>
             <redirect/>
