@@ -4,7 +4,7 @@ import br.com.rtools.financeiro.Correcao;
 import br.com.rtools.financeiro.Indice;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.CorrecaoDB;
-import br.com.rtools.financeiro.db.CorrecaoDBToplink;
+import br.com.rtools.financeiro.db.CorrecaoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -28,13 +28,17 @@ public class CorrecaoBean implements Serializable {
     private int idIndices = 0;
     private Correcao correcao;
     private List<Correcao> listaCorrecao;
+    private List<SelectItem> listServicos;
+    private List<SelectItem> listIndices;
 
     @PostConstruct
     public void init() {
         idServicos = 0;
         idIndices = 0;
         correcao = new Correcao();
-        listaCorrecao = new ArrayList<Correcao>();
+        listaCorrecao = new ArrayList<>();
+        listServicos = new ArrayList<>();
+        listIndices = new ArrayList<>();
     }
 
     @PreDestroy
@@ -42,18 +46,18 @@ public class CorrecaoBean implements Serializable {
         GenericaSessao.remove("correcaoBean");
     }
 
-    public String salvar() {
-        CorrecaoDB db = new CorrecaoDBToplink();
-        DaoInterface di = new Dao();
+    public void save() {
+        CorrecaoDB db = new CorrecaoDao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
-        Servicos servico = (Servicos) di.find(new Servicos(), Integer.parseInt(getListaServico().get(idServicos).getDescription()));
-        correcao.setIndice((Indice) di.find(new Indice(), Integer.parseInt(getListaIndices().get(idIndices).getDescription())));
+        Servicos servico = (Servicos) dao.find(new Servicos(), Integer.parseInt(getListServicos().get(idServicos).getDescription()));
+        correcao.setIndice((Indice) dao.find(new Indice(), Integer.parseInt(getListIndices().get(idIndices).getDescription())));
         correcao.setServicos(servico);
         if (correcao.getId() == -1) {
             if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
                 List dd = db.pesquisaRefValida(servico, correcao.getReferenciaInicial(), correcao.getReferenciaFinal());
                 if (Integer.parseInt(String.valueOf((Long) dd.get(0))) == 0) {
-                    if (di.save(correcao, true)) {
+                    if (dao.save(correcao, true)) {
                         novoLog.save(
                                 "ID: " + correcao.getId()
                                 + " - Índice: (" + correcao.getIndice().getId() + ") "
@@ -80,7 +84,7 @@ public class CorrecaoBean implements Serializable {
                 GenericaMensagem.warn("Validação", "Referencia Invalida!");
             }
         } else if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
-            Correcao c = (Correcao) di.find(correcao);
+            Correcao c = (Correcao) dao.find(correcao);
             String beforeUpdate
                     = "ID: " + c.getId()
                     + " - Índice: (" + c.getIndice().getId() + ") "
@@ -92,7 +96,7 @@ public class CorrecaoBean implements Serializable {
                     + " - Multa por Funcionário: " + correcao.getMultaPorFuncionario()
                     + " - Multa 1º Mês: " + c.getMultaPriMes()
                     + " - Multa >= 2º Mês: " + c.getMultaApartir2Mes();
-            if (di.update(correcao, true)) {
+            if (dao.update(correcao, true)) {
                 novoLog.update(beforeUpdate,
                         "ID: " + correcao.getId()
                         + " - Índice: (" + correcao.getIndice().getId() + ") "
@@ -116,18 +120,14 @@ public class CorrecaoBean implements Serializable {
             GenericaMensagem.warn("Validação", "Referencia Invalida!");
         }
         listaCorrecao.clear();
-        return null;
     }
 
-    public String novo() {
-        correcao = new Correcao();
-        idIndices = 0;
-        idServicos = 0;
-        listaCorrecao.clear();
+    public String clear() {
+        GenericaSessao.remove("correcaoBean");
         return "correcao";
     }
 
-    public String btnExcluir(Correcao co) {
+    public void delete(Correcao co) {
         correcao = co;
         DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
@@ -149,58 +149,32 @@ public class CorrecaoBean implements Serializable {
             GenericaMensagem.warn("Erro", "Erro ao excluir Correção!");
         }
         correcao = new Correcao();
+        listIndices.clear();
+        listServicos.clear();
         listaCorrecao.clear();
-        return null;
     }
 
-    public String editar(Correcao co) {
+    public void edit(Correcao co) {
         correcao = co;
-        for (int i = 0; i < getListaServico().size(); i++) {
-            if (Integer.parseInt(getListaServico().get(i).getDescription()) == correcao.getServicos().getId()) {
-                setIdServicos(i);
+        for (int i = 0; i < getListServicos().size(); i++) {
+            if (Integer.parseInt(getListServicos().get(i).getDescription()) == correcao.getServicos().getId()) {
+                idServicos = i;
                 break;
             }
         }
-        for (int i = 0; i < getListaIndices().size(); i++) {
-            if (Integer.parseInt(getListaIndices().get(i).getDescription()) == correcao.getIndice().getId()) {
-                setIdIndices(i);
+        for (int i = 0; i < getListIndices().size(); i++) {
+            if (Integer.parseInt(getListIndices().get(i).getDescription()) == correcao.getIndice().getId()) {
+                idIndices = i;
                 break;
             }
         }
-        return null;
     }
 
     public List<Correcao> getListaCorrecao() {
         if (listaCorrecao.isEmpty()) {
-            CorrecaoDB db = new CorrecaoDBToplink();
-            listaCorrecao = db.pesquisaTodos();
+            listaCorrecao = new Dao().list(new Correcao(), true);
         }
         return listaCorrecao;
-    }
-
-    public List<SelectItem> getListaServico() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        List select = new Dao().list(new Servicos(), true);
-        while (i < select.size()) {
-            result.add(new SelectItem(i,
-                    (String) ((Servicos) select.get(i)).getDescricao(),
-                    Integer.toString(((Servicos) select.get(i)).getId())));
-            i++;
-        }
-        return result;
-    }
-
-    public List<SelectItem> getListaIndices() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        DaoInterface di = new Dao();
-        List select = di.list(new Indice(), true);
-        for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(i,
-                    ((Indice) select.get(i)).getDescricao(),
-                    Integer.toString(((Indice) select.get(i)).getId())));
-        }
-        return result;
     }
 
     public int getIdServicos() {
@@ -229,5 +203,39 @@ public class CorrecaoBean implements Serializable {
 
     public void setListaCorrecao(List listaCorrecao) {
         this.listaCorrecao = listaCorrecao;
+    }
+
+    public List<SelectItem> getListServicos() {
+        if (listServicos.isEmpty()) {
+            List<Servicos> list = new Dao().list(new Servicos(), true);
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    idServicos = i;
+                }
+                listServicos.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+            }
+        }
+        return listServicos;
+    }
+
+    public void setListServicos(List<SelectItem> listServicos) {
+        this.listServicos = listServicos;
+    }
+
+    public List<SelectItem> getListIndices() {
+        if (listIndices.isEmpty()) {
+            List<Indice> list = new Dao().list(new Indice(), true);
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    idIndices = i;
+                }
+                listIndices.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+            }
+        }
+        return listIndices;
+    }
+
+    public void setListIndices(List<SelectItem> listIndices) {
+        this.listIndices = listIndices;
     }
 }
