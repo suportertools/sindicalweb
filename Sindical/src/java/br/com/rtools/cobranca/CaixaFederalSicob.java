@@ -3,11 +3,12 @@ package br.com.rtools.cobranca;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.utilitarios.Moeda;
+import java.util.Date;
 
 public class CaixaFederalSicob extends Cobranca {
 
-    public CaixaFederalSicob(Movimento movimento, Boleto boleto) {
-        super(movimento, boleto);
+    public CaixaFederalSicob(Integer id_pessoa, Float valor, Date vencimento, Boleto boleto) {
+        super(id_pessoa, valor, vencimento, boleto);
     }
 
     @Override
@@ -70,15 +71,15 @@ public class CaixaFederalSicob extends Cobranca {
     public String codigoBarras() {
         String codigoBarras = "";
         codigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
-        codigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        codigoBarras += fatorVencimento(vencimento);   // fator de vencimento
         int i = 0;
 
-        int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
+        int tam = Moeda.limparPonto(Moeda.converteR$Float(valor)).length();
         while (i != (10 - tam)) { // zeros
             codigoBarras += "0";
             i++;
         }
-        codigoBarras += Moeda.limparPonto(Float.toString(movimento.getValor())); // valor
+        codigoBarras += Moeda.limparPonto(Float.toString(valor)); // valor
         codigoBarras += boleto.getBoletoComposto();       // nosso numero
         codigoBarras += boleto.getContaCobranca().getContaBanco().getAgencia();
         codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente

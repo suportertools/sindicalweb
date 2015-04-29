@@ -116,6 +116,14 @@ public class Boleto implements java.io.Serializable {
     public void setVencimento(String vencimento) {
         this.dtVencimento = DataHoje.converte(vencimento);
     }
+
+    public Date getDtVencimentoOriginal() {
+        return dtVencimentoOriginal;
+    }
+
+    public void setDtVencimentoOriginal(Date dtVencimentoOriginal) {
+        this.dtVencimentoOriginal = dtVencimentoOriginal;
+    }
     
     public String getVencimentoOriginal() {
         return DataHoje.converteData(dtVencimentoOriginal);

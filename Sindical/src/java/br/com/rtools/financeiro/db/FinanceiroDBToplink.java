@@ -747,47 +747,50 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         try {
             Query qry = getEntityManager().createNativeQuery(
                     " SELECT " +
-                    "       id_fin_lote, " +
-                    "       id_fin_movimento, " +
-                    "       nr_ctr_boleto, " +
-                    "       id_lote_boleto, " +
-                    "       processamento, " +
-                    "       codigo," +
-                    "       responsavel," +
-                    "       vencimento," +
-                    "       matricula," +
-                    "       grupo_categoria," +
-                    "       categoria," +
-                    "       servico," +
-                    "       id_beneficiario," +
-                    "       nome_beneficiario," +
-                    "       valor," +
-                    "       mensalidades_corrigidas," +
-                    "       mensagem_boleto," +
-                    "       banco," +
-                    "       agencia," +
-                    "       cedente," +
-                    "       boleto," +
-                    "       email," +
-                    "       nome_filial," +
-                    "       site_filial," +
-                    "       cnpj_filial," +
-                    "       tel_filial," +
-                    "       endereco_filial," +
-                    "       bairro_filial," +
-                    "       cidade_filial," +
-                    "       uf_filial," +
-                    "       cep_filial," +
-                    "       logradouro_responsavel," +
-                    "       endereco_responsavel," +
-                    "       cep_responsavel," +
-                    "       uf_responsavel," +
-                    "       cidade_responsavel," +
-                    "       informativo," +
-                    "       local_pagamento " +
+                    "       id_fin_lote, " + // 0
+                    "       id_fin_movimento, " + // 1
+                    "       nr_ctr_boleto, " + // 2
+                    "       id_lote_boleto, " + // 3
+                    "       processamento, " + // 4
+                    "       codigo," + // 5
+                    "       responsavel," + // 6
+                    "       vencimento," + // 7
+                    "       matricula," + // 8
+                    "       grupo_categoria," + // 9
+                    "       categoria," + // 10
+                    "       servico," + // 11
+                    "       id_beneficiario," + // 12
+                    "       nome_beneficiario," + // 13
+                    "       valor," + // 14
+                    "       mensalidades_corrigidas," + // 15
+                    "       mensagem_boleto," + // 16
+                    "       banco," + // 17
+                    "       agencia," + // 18
+                    "       cedente," + // 19
+                    "       boleto," + // 20
+                    "       email," + // 21
+                    "       nome_filial," + // 22
+                    "       site_filial," + // 23
+                    "       cnpj_filial," + // 24
+                    "       tel_filial," + // 25
+                    "       endereco_filial," + // 26
+                    "       bairro_filial," + // 27
+                    "       cidade_filial," + // 28
+                    "       uf_filial," + // 29
+                    "       cep_filial," + // 30
+                    "       logradouro_responsavel," + // 31
+                    "       endereco_responsavel," + // 32
+                    "       cep_responsavel," + // 33
+                    "       uf_responsavel," + // 34
+                    "       cidade_responsavel," + // 35
+                    "       informativo," + // 36
+                    "       local_pagamento, " + // 37
+                    "       vencimento_movimento, " + // 38
+                    "       vencimento_boleto, " + // 39
+                    "       vencimento_original_boleto " + // 40
                     "   FROM soc_boletos_vw " +
                     "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
-                    "  ORDER BY responsavel, codigo, nome_beneficiario "
+                    "  ORDER BY responsavel, vencimento_movimento, codigo, nome_beneficiario "
             );
             return qry.getResultList();
         } catch (Exception e) {
@@ -837,7 +840,10 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "       uf_responsavel," +
                     "       cidade_responsavel," +
                     "       informativo," +
-                    "       local_pagamento " +
+                    "       local_pagamento, " +
+                    "       vencimento_movimento, " +
+                    "       vencimento_boleto, " +
+                    "       vencimento_original_boleto " +
                     "   FROM soc_boletos_vw" +
                     "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
                     "  GROUP BY " +
@@ -877,8 +883,11 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "       uf_responsavel," +
                     "       cidade_responsavel," +
                     "       informativo," +
-                    "       local_pagamento " +
-                    "  ORDER BY responsavel, codigo, nome_titular ";
+                    "       local_pagamento, " +
+                    "       vencimento_movimento, " +
+                    "       vencimento_boleto, " +
+                    "       vencimento_original_boleto " +
+                    "  ORDER BY responsavel, vencimento_movimento, codigo, nome_titular ";
             
             Query qry = getEntityManager().createNativeQuery(text_qry);
             return qry.getResultList();

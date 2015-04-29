@@ -1,21 +1,20 @@
 package br.com.rtools.cobranca;
 
 import br.com.rtools.financeiro.Boleto;
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.util.Date;
 
 public class CaixaFederalSindical extends Cobranca {
 
-    public CaixaFederalSindical(Movimento movimento, Boleto boleto) {
-        super(movimento, boleto);
+    public CaixaFederalSindical(Integer id_pessoa, float valor, Date vencimento, Boleto boleto) {
+        super(id_pessoa, valor, vencimento, boleto);
     }
 
-    //
     @Override
     public String codigoBarras() {
         JuridicaDB jurDB = new JuridicaDBToplink();
@@ -31,23 +30,23 @@ public class CaixaFederalSindical extends Cobranca {
         }
         String codigoBarras = "";
         codigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
-        codigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        codigoBarras += fatorVencimento(vencimento);   // fator de vencimento
         int i = 0;
 
-        int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
+        int tam = Moeda.limparPonto(Moeda.converteR$Float(valor)).length();
         while (i != (10 - tam)) { // zeros
             codigoBarras += "0";
             i++;
         }
-        codigoBarras += Moeda.limparPonto(Float.toString(movimento.getValor())); // valor
+        codigoBarras += Moeda.limparPonto(Float.toString(valor)); // valor
         codigoBarras += "97";
         codigoBarras += boleto.getContaCobranca().getSicasSindical();
-        codigoBarras += jurDB.pesquisaJuridicaPorPessoa(movimento.getPessoa().getId()).getCnae().getNumero().substring(0, 1);
+        codigoBarras += jurDB.pesquisaJuridicaPorPessoa(id_pessoa).getCnae().getNumero().substring(0, 1);
         //codigoBarras += "1";
         codigoBarras += ent;
         codigoBarras += "77";
         codigoBarras += boleto.getBoletoComposto();       // nosso numero
-        codigoBarras += jurDB.pesquisaJuridicaPorPessoa(movimento.getPessoa().getId()).getCnae().getNumero().substring(1, 3);
+        codigoBarras += jurDB.pesquisaJuridicaPorPessoa(id_pessoa).getCnae().getNumero().substring(1, 3);
         codigoBarras = codigoBarras.substring(0, 4) + moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
         int dd = codigoBarras.length();
         return codigoBarras;

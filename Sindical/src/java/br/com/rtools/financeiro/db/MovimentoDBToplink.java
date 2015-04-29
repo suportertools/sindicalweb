@@ -76,6 +76,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " where b.nrCtrBoleto = " + nrCtrBoleto);
             result = (Boleto) qry.getSingleResult();
         } catch (Exception e) {
+            e.getMessage();
         }
         return result;
     }

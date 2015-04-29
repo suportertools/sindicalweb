@@ -1,13 +1,13 @@
 package br.com.rtools.cobranca;
 
 import br.com.rtools.financeiro.Boleto;
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.utilitarios.Moeda;
+import java.util.Date;
 
 public class Santander extends Cobranca {
 
-    public Santander(Movimento movimento, Boleto boleto) {
-        super(movimento, boleto);
+    public Santander(Integer id_pessoa, Float valor, Date vencimento, Boleto boleto) {
+        super(id_pessoa, valor, vencimento, boleto);
     }
 
     @Override
@@ -99,12 +99,11 @@ public class Santander extends Cobranca {
         String iniCodigoBarras = "", fimCodigoBarras = "";
         iniCodigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
         
-        fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        fimCodigoBarras += fatorVencimento(vencimento);   // fator de vencimento
         
-        String valor = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor()));
-        int tam = valor.length();
+        int tam = Moeda.limparPonto(Moeda.converteR$Float(valor)).length();
         
-        fimCodigoBarras += "0000000000".substring(0, 10-tam) + valor; // valor
+        fimCodigoBarras += "0000000000".substring(0, 10-tam) + Moeda.limparPonto(Moeda.converteR$Float(valor)); // valor
         
         fimCodigoBarras += "9";
         

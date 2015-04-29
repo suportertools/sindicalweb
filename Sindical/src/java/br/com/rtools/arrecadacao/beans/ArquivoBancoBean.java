@@ -702,16 +702,16 @@ public final class ArquivoBancoBean implements Serializable {
         Cobranca cob = null;
         switch (bol.getContaCobranca().getContaBanco().getBanco().getId()) {
             case ArquivoRetorno.BANCO_BRASIL:
-                cob = new BancoDoBrasil(mov, bol);
+                cob = new BancoDoBrasil(null, mov.getValor(), mov.getDtVencimento(), bol);
                 return cob.moduloOnze(bol.getContaCobranca().getContaBanco().getAgencia());
             case ArquivoRetorno.CAIXA_FEDERAL:
-                cob = new CaixaFederalSicob(mov, bol);
+                cob = new CaixaFederalSicob(null, mov.getValor(), mov.getDtVencimento(), bol);
                 return cob.moduloOnze(bol.getContaCobranca().getContaBanco().getAgencia());
             case ArquivoRetorno.ITAU:
-                cob = new br.com.rtools.cobranca.Itau(mov, bol);
+                cob = new br.com.rtools.cobranca.Itau(null, mov.getValor(), mov.getDtVencimento(), bol);
                 return cob.moduloOnze(bol.getContaCobranca().getContaBanco().getAgencia());
             case ArquivoRetorno.REAL:
-                cob = new br.com.rtools.cobranca.Real(mov, bol);
+                cob = new br.com.rtools.cobranca.Real(null, mov.getValor(), mov.getDtVencimento(), bol);
                 return cob.moduloOnze(bol.getContaCobranca().getContaBanco().getAgencia());
         }
         return "";

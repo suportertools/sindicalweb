@@ -7,8 +7,8 @@ import br.com.rtools.utilitarios.Moeda;
 import java.util.Date;
 
 public class Sicoob extends Cobranca {
-    public Sicoob(Movimento movimento, Boleto boleto) {
-        super(movimento, boleto);
+    public Sicoob(Integer id_pessoa, Float valor, Date vencimento, Boleto boleto) {
+        super(id_pessoa, valor, vencimento, boleto);
     }
 
     @Override
@@ -73,12 +73,11 @@ public class Sicoob extends Cobranca {
         iniCodigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
         
         //fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
-        fimCodigoBarras += fatorVencimentoSicoob(movimento.getDtVencimento());   // fator de vencimento
+        fimCodigoBarras += fatorVencimentoSicoob(vencimento);   // fator de vencimento
         
-        String valor = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor()));
-        int tam = valor.length();
+        int tam = Moeda.limparPonto(Moeda.converteR$Float(valor)).length();
         
-        fimCodigoBarras += "0000000000".substring(0, 10-tam) + valor; // valor
+        fimCodigoBarras += "0000000000".substring(0, 10-tam) + Moeda.limparPonto(Moeda.converteR$Float(valor)); // valor
         
         fimCodigoBarras += boleto.getContaCobranca().getCarteira();       // carteira
         
