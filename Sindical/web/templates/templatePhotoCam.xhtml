@@ -42,8 +42,7 @@
                     </h:panelGrid>
                     <h:column>
                         <h:panelGrid columns="4" id="i_panel_photocam_actions">
-                            <p:commandButton value="Capturar Foto" onclick="PF('pc_photocam').capture();
-                                    PF('dlg_loading_photo').show();" action="#{photoCamBean.waiting(0)}" global="false" disabled="#{cropperBean.cut}"/>
+                            <p:commandButton value="Capturar Foto" onclick="PF('pc_photocam').capture(); PF('dlg_loading_photo').show();" action="#{photoCamBean.waiting(0)}" global="false" disabled="#{cropperBean.cut}" actionListener="#{photoCamBean.waiting}" />
                             <p:commandButton value="Atualizar" update="i_photocam_preview_image" global="false" disabled="#{cropperBean.cut}"/>
                             <p:commandButton value="Concluir" action="#{photoCamBean.closeRefresh(0)}" disabled="#{cropperBean.cut}"/>
                             <p:commandButton value="Desfazer" action="#{photoCamBean.closeRefresh(1)}" rendered="false" disabled="#{cropperBean.cut}"/>
