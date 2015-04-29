@@ -1,20 +1,8 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
-import br.com.rtools.associativo.MensalidadesAtrasadas;
-import br.com.rtools.associativo.dao.ImpressaoBoletoSocialDao;
-import br.com.rtools.cobranca.BancoDoBrasil;
-import br.com.rtools.cobranca.Bradesco;
-import br.com.rtools.cobranca.CaixaFederalSicob;
-import br.com.rtools.cobranca.CaixaFederalSigCB;
-import br.com.rtools.cobranca.CaixaFederalSindical;
 import br.com.rtools.cobranca.Cobranca;
-import br.com.rtools.cobranca.Itau;
-import br.com.rtools.cobranca.Real;
-import br.com.rtools.cobranca.Santander;
-import br.com.rtools.cobranca.Sicoob;
 import br.com.rtools.financeiro.Boleto;
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -25,7 +13,6 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.beans.JuridicaBean;
@@ -33,8 +20,6 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
-import br.com.rtools.pessoa.db.PessoaDB;
-import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
@@ -344,7 +329,10 @@ public class ImpressaoBoletoSocialBean {
                         }
                         valor_boleto = Moeda.somaValores(valor_total, valor_total_atrasadas);
                     }
-                    String mensagemAtrasadas = "Mensalidades Atrasadas Corrigidas de "+list_at.get(0).substring(3)+" até "+list_at.get(list_at.size()-1).substring(3);
+                    String mensagemAtrasadas = "Mensalidades Atrasadas Corrigidas";
+                    if (!list_at.isEmpty()){
+                        mensagemAtrasadas = "Mensalidades Atrasadas Corrigidas de "+list_at.get(0).substring(3)+" até "+list_at.get(list_at.size()-1).substring(3);
+                    }
                     if (cobranca == null){
                         cobranca = Cobranca.retornaCobranca(null, valor_boleto, boleto.getDtVencimento(), boleto);
                     }
