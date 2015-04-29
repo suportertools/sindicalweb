@@ -2,10 +2,8 @@ package br.com.rtools.homologacao.beans;
 
 import br.com.rtools.homologacao.CancelarHorario;
 import br.com.rtools.homologacao.Horarios;
-import br.com.rtools.homologacao.db.CancelarHorarioDB;
-import br.com.rtools.homologacao.db.CancelarHorarioDBToplink;
-import br.com.rtools.homologacao.db.HorariosDB;
-import br.com.rtools.homologacao.db.HorariosDBToplink;
+import br.com.rtools.homologacao.dao.CancelarHorarioDao;
+import br.com.rtools.homologacao.dao.HorariosDao;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
@@ -67,7 +65,7 @@ public class CancelarHorarioBean implements Serializable {
         }
 
         Dao dao = new Dao();
-        CancelarHorarioDB db = new CancelarHorarioDBToplink();
+        CancelarHorarioDao db = new CancelarHorarioDao();
         CancelarHorario ch;
         boolean erro = false;
         Usuario u = (Usuario) GenericaSessao.getObject("sessaoUsuario");
@@ -171,7 +169,7 @@ public class CancelarHorarioBean implements Serializable {
 
         Dao dao = new Dao();
         Filial f = (Filial) dao.find(new Filial(), Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()));
-        HorariosDB horariosDB = new HorariosDBToplink();
+        HorariosDao horariosDao = new HorariosDao();
         DataHoje dataHoje = new DataHoje();
         List listDatas = new ArrayList();
         int i = 0;
@@ -194,7 +192,7 @@ public class CancelarHorarioBean implements Serializable {
         }
         boolean erro = false;
         List<Horarios> horarioses = new ArrayList<>();
-        CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
+        CancelarHorarioDao cancelarHorarioDao = new CancelarHorarioDao();
         CancelarHorario ch;
         Usuario u = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         dao.openTransaction();
@@ -203,30 +201,30 @@ public class CancelarHorarioBean implements Serializable {
             cancelarHorario = new CancelarHorario();
             strDataInicial = listDatas.get(z).toString();
             if (!habilitaSemana && !habilitaHorarios) {
-                horarioses = horariosDB.pesquisaTodosPorFilial(f.getId(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
+                horarioses = horariosDao.pesquisaTodosPorFilial(f.getId(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
             } else if (habilitaSemana && !habilitaHorarios) {
                 if (listSemana.isEmpty()) {
                     return;
                 }
                 if (DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)) == Integer.parseInt(listSemana.get(idSemana).getDescription())) {
-                    horarioses = horariosDB.pesquisaTodosPorFilial(f.getId(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
+                    horarioses = horariosDao.pesquisaTodosPorFilial(f.getId(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
                 }
             } else if (!habilitaSemana && habilitaHorarios) {
                 if (listHorarios.isEmpty()) {
                     return;
                 }
-                horarioses = horariosDB.pesquisaPorHorarioFilial(f.getId(), listHorarios.get(idHorario).getDescription());
+                horarioses = horariosDao.pesquisaPorHorarioFilial(f.getId(), listHorarios.get(idHorario).getDescription());
             } else if (habilitaSemana && habilitaHorarios) {
                 if (DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)) == Integer.parseInt(listSemana.get(idSemana).getDescription())) {
                     if (listHorarios.isEmpty() || listSemana.isEmpty()) {
                         return;
                     }
-                    horarioses = horariosDB.pesquisaPorHorarioFilial(f.getId(), listHorarios.get(idHorario).getDescription(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
+                    horarioses = horariosDao.pesquisaPorHorarioFilial(f.getId(), listHorarios.get(idHorario).getDescription(), DataHoje.diaDaSemana(DataHoje.converte(strDataInicial)));
                 }
             }
             erro = false;
             for (int x = 0; x < horarioses.size(); x++) {
-                ch = cancelarHorarioDB.pesquisaCancelamentoHorario(DataHoje.converte(strDataInicial), horarioses.get(x).getId(), f.getId());
+                ch = cancelarHorarioDao.pesquisaCancelamentoHorario(DataHoje.converte(strDataInicial), horarioses.get(x).getId(), f.getId());
                 cancelarHorario.setUsuario(u);
                 if (ch.getId() == -1) {
                     cancelarHorario.setFilial(f);
@@ -325,8 +323,8 @@ public class CancelarHorarioBean implements Serializable {
     public List<SelectItem> getListaHorariosDisponiveis() {
         getListaHorariosCancelados();
         List<SelectItem> result = new ArrayList<>();
-        CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-        List<Horarios> select = cancelarHorarioDB.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, false);
+        HorariosDao horariosDao = new HorariosDao();
+        List<Horarios> select = horariosDao.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, false);
         if (select.isEmpty()) {
             desabilitaBotoes = true;
             idHorariosDisponiveis = 0;
@@ -371,13 +369,13 @@ public class CancelarHorarioBean implements Serializable {
         listaHorariosCancelados.clear();
         switch (getTipoCancelamento()) {
             case "Dia": {
-                CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-                listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
+                CancelarHorarioDao cancelarHorarioDao = new CancelarHorarioDao();
+                listaHorariosCancelados = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
                 break;
             }
             case "Período": {
-                CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-                listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
+                CancelarHorarioDao cancelarHorarioDao = new CancelarHorarioDao();
+                listaHorariosCancelados = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
                 break;
             }
         }
@@ -420,7 +418,7 @@ public class CancelarHorarioBean implements Serializable {
         nrQuantidadeCancelado = 0;
         nrQuantidadeDisponivel = 0;
         if (getTipoCancelamento().equals("Dia")) {
-            CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
+            CancelarHorarioDao cancelarHorarioDao = new CancelarHorarioDao();
             int idHorariox = -1;
             if (!getListaHorariosDisponiveis().isEmpty()) {
                 idHorariox = Integer.parseInt(getListaHorariosDisponiveis().get(idHorariosDisponiveis).getDescription());
@@ -431,7 +429,7 @@ public class CancelarHorarioBean implements Serializable {
                 idHorariosDisponiveis = 0;
             }
             if (horarios.getId() != -1) {
-                CancelarHorario cancelarHorarioA = cancelarHorarioDB.pesquisaCancelamentoHorario(data, idHorariox, Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
+                CancelarHorario cancelarHorarioA = cancelarHorarioDao.pesquisaCancelamentoHorario(data, idHorariox, Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
                 if (cancelarHorarioA != null) {
                     if (horarios.getQuantidade() > 0) {
                         if (cancelarHorarioA.getQuantidade() > horarios.getQuantidade()) {
@@ -563,24 +561,24 @@ public class CancelarHorarioBean implements Serializable {
     }
 
     public void excluirCancelamentos() {
-        CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
+        CancelarHorarioDao cancelarHorarioDao = new CancelarHorarioDao();
         List<CancelarHorario> list = new ArrayList();
         switch (getTipoCancelamento()) {
             case "Dia":
-                list = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
+                list = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
                 break;
             case "Período":
                 if (!habilitaSemana && !habilitaHorarios) {
-                    list = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
+                    list = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
                 } else if (habilitaSemana && !habilitaHorarios) {
                     if (listSemana.isEmpty()) {
                         return;
                     }
-                    list = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, Integer.parseInt(listSemana.get(idSemana).getDescription()));
+                    list = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, Integer.parseInt(listSemana.get(idSemana).getDescription()));
                 } else if (!habilitaSemana && habilitaHorarios) {
-                    list = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, listHorarios.get(idHorario).getDescription());
+                    list = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, listHorarios.get(idHorario).getDescription());
                 } else if (habilitaSemana && habilitaHorarios) {
-                    list = cancelarHorarioDB.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, Integer.parseInt(listSemana.get(idSemana).getDescription()), listHorarios.get(idHorario).getDescription());
+                    list = cancelarHorarioDao.listaTodosHorariosCancelados(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal, Integer.parseInt(listSemana.get(idSemana).getDescription()), listHorarios.get(idHorario).getDescription());
                 }
                 break;
             default:
@@ -679,12 +677,12 @@ public class CancelarHorarioBean implements Serializable {
 
     public List<SelectItem> getListHorarios() {
         if (listHorarios.isEmpty()) {
-            HorariosDB horariosDB = new HorariosDBToplink();
+            HorariosDao horariosDao = new HorariosDao();
             List list;
             if (habilitaSemana) {
-                list = horariosDB.listaHorariosAgrupadosPorFilialSemana(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), Integer.parseInt(getListSemana().get(idSemana).getDescription()));
+                list = horariosDao.listaHorariosAgrupadosPorFilialSemana(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), Integer.parseInt(getListSemana().get(idSemana).getDescription()));
             } else {
-                list = horariosDB.listaHorariosAgrupadosPorFilialSemana(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), null);
+                list = horariosDao.listaHorariosAgrupadosPorFilialSemana(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), null);
             }
             for (int i = 0; i < list.size(); i++) {
                 listHorarios.add(new SelectItem(i, list.get(i).toString(), "" + list.get(i).toString()));

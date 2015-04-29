@@ -96,6 +96,10 @@ public class GeracaoDebitosCartaoBean implements Serializable {
                 listMovimentos.clear();
                 GenericaSessao.remove("baixa_sucesso");
                 if (!listHistoricoCarteirinhas.isEmpty()) {
+                    for (int i = 0; i < listHistoricoCarteirinhas.size(); i++) {
+                        listHistoricoCarteirinhas.get(i).getCarteirinha().setEmissao(DataHoje.data());
+                        new Dao().update(listHistoricoCarteirinhas.get(i).getCarteirinha(), true);
+                    }
                     GenericaMensagem.info("Sucesso", "Operação realizada com sucesso. Você já pode emitir seus cartões.");
                     return;
                 }

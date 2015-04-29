@@ -1,8 +1,7 @@
 package br.com.rtools.homologacao.beans;
 
 import br.com.rtools.homologacao.Horarios;
-import br.com.rtools.homologacao.db.HorariosDB;
-import br.com.rtools.homologacao.db.HorariosDBToplink;
+import br.com.rtools.homologacao.dao.HorariosDao;
 import br.com.rtools.homologacao.lista.ListaHorarios;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.sistema.Semana;
@@ -61,7 +60,7 @@ public class HorariosBean implements Serializable {
     }
 
     public void save() {
-        HorariosDB db = new HorariosDBToplink();
+        HorariosDao horariosDao = new HorariosDao();
         Dao dao = new Dao();
         if (comIntervalo) {
             if ((intervalo < 10) || (intervalo > 30)) {
@@ -83,7 +82,7 @@ public class HorariosBean implements Serializable {
             horarios.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(getListFiliais().get(idFilial).getDescription())));
             horarios.setSemana((Semana) dao.find(new Semana(), Integer.parseInt(getListSemana().get(idSemana).getDescription())));
             quantidade = horarios.getQuantidade();
-            if (!db.pesquisaPorHorarioFilial(horarios.getFilial().getId(), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
+            if (!horariosDao.pesquisaPorHorarioFilial(horarios.getFilial().getId(), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
                 GenericaMensagem.warn("Validação", "Horário já cadastrado!");
                 return;
             }
@@ -120,7 +119,7 @@ public class HorariosBean implements Serializable {
                         horarios.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(getListFiliais().get(idFilial).getDescription())));
                     }
                     horarios.setSemana((Semana) dao.find(new Semana(), Integer.parseInt(getListSemana().get(idSemana).getDescription())));
-                    if (!db.pesquisaPorHorarioFilial(Integer.parseInt(getListFiliais().get(idFilial).getDescription()), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
+                    if (!horariosDao.pesquisaPorHorarioFilial(Integer.parseInt(getListFiliais().get(idFilial).getDescription()), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
                         horarios = new Horarios();
                         continue;
                     }
@@ -147,7 +146,7 @@ public class HorariosBean implements Serializable {
                 return;
             }
 
-            List hors = db.pesquisaPorHorarioFilial(Integer.parseInt(getListFiliais().get(idFilial).getDescription()), horarios.getHora(), Integer.parseInt(getListSemana().get(idSemana).getDescription()));
+            List hors = horariosDao.pesquisaPorHorarioFilial(Integer.parseInt(getListFiliais().get(idFilial).getDescription()), horarios.getHora(), Integer.parseInt(getListSemana().get(idSemana).getDescription()));
             if (horarios.getId() == -1) {
                 if (!hors.isEmpty()) {
                     GenericaMensagem.warn("Validação", "Horário já cadastrado!");
@@ -344,7 +343,7 @@ public class HorariosBean implements Serializable {
 
     public List<ListaHorarios> getListHorarios() {
         if (listHorarios.isEmpty()) {
-            HorariosDB db = new HorariosDBToplink();
+            HorariosDao db = new HorariosDao();
             List<Horarios> list = db.pesquisaTodosPorFilial(Integer.parseInt(getListFiliais().get(idFilial).getDescription()), Integer.parseInt(getListSemana().get(idSemana).getDescription()));
             for (Horarios h : list) {
                 if (h.isAtivo()) {

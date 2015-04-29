@@ -2,6 +2,13 @@ package br.com.rtools.homologacao.db;
 
 import java.util.List;
 
+/**
+ * Use HorariosDao
+ *
+ * @author rtools2
+ * @deprecated
+ */
+@Deprecated
 public interface HorariosDB {
 
     public List pesquisaTodosPorFilial(int idFilial, int idDiaSemana);

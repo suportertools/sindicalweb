@@ -6,6 +6,13 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+/**
+ * Use CancelarHorarioDao
+ *
+ * @author rtools2
+ * @deprecated
+ */
+@Deprecated
 public interface CancelarHorarioDB {
 
     public EntityManager getEntityManager();

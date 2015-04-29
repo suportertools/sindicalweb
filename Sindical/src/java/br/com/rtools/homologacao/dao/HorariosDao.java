@@ -1,20 +1,15 @@
-package br.com.rtools.homologacao.db;
+package br.com.rtools.homologacao.dao;
 
+import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.DataHoje;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Query;
 
-/**
- * Use HorariosDao
- *
- * @author rtools2
- * @deprecated
- */
-@Deprecated
-public class HorariosDBToplink extends DB implements HorariosDB {
+public class HorariosDao extends DB {
 
-    @Override
     public List pesquisaTodosPorFilial(int idFilial, int idDiaSemana) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT H FROM Horarios H WHERE H.filial.id = :idFilial AND H.semana.id = :idDiaSemana ORDER BY H.hora");
@@ -29,7 +24,6 @@ public class HorariosDBToplink extends DB implements HorariosDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisaPorHorarioFilial(int idFilial, String horario, int idSemana) {
         try {
             Query qry = getEntityManager().createQuery(
@@ -46,7 +40,6 @@ public class HorariosDBToplink extends DB implements HorariosDB {
         return new ArrayList();
     }
 
-    @Override
     public List listaHorariosAgrupadosPorFilialSemana(Integer idFilial, Integer idSemana) {
         try {
             Query query;
@@ -68,7 +61,6 @@ public class HorariosDBToplink extends DB implements HorariosDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisaPorHorarioFilial(Integer idFilial, String horario) {
         try {
             Query qry = getEntityManager().createQuery(
@@ -82,5 +74,26 @@ public class HorariosDBToplink extends DB implements HorariosDB {
         } catch (Exception e) {
         }
         return new ArrayList();
+    }
+
+    public List<Horarios> listaTodosHorariosDisponiveisPorFilial(int idFilial, Date date, boolean isCancelados) {
+        List result = new ArrayList();
+        int diaDaSemana;
+        String diaSemanaWhere = "";
+        String dataWhere = "";
+        if (isCancelados == false) {
+            diaDaSemana = DataHoje.diaDaSemana(date);
+            diaSemanaWhere = " AND h.semana.id = " + diaDaSemana;
+        }
+        try {
+            Query qry = getEntityManager().createQuery("SELECT h FROM Horarios h WHERE " + dataWhere + " h.filial.id = :pfilial" + diaSemanaWhere + " ORDER BY H.hora ASC");
+            qry.setParameter("pfilial", idFilial);
+            if (!qry.getResultList().isEmpty()) {
+                result = (qry.getResultList());
+            }
+        } catch (Exception e) {
+            return result;
+        }
+        return result;
     }
 }

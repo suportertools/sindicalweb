@@ -14,6 +14,7 @@ import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Status;
+import br.com.rtools.homologacao.dao.FeriadosDao;
 import br.com.rtools.homologacao.db.*;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.*;
@@ -600,13 +601,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     }
 
     public boolean pesquisarFeriado() {
-        FeriadosDB db = new FeriadosDBToplink();
-        List<Feriados> listFeriados = db.pesquisarPorDataFilialEData(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
+        FeriadosDao feriadosDao = new FeriadosDao();
+        List<Feriados> listFeriados = feriadosDao.pesquisarPorDataFilialEData(DataHoje.converteData(getData()), getSindicatoFilial().getFilial());
         if (!listFeriados.isEmpty()) {
             GenericaMensagem.info("Feriado", listFeriados.get(0).getNome());
             return true;
         } else {
-            listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
+            listFeriados = feriadosDao.pesquisarPorData(DataHoje.converteData(getData()));
             PessoaEndereco pe = ((PessoaEndereco) ((List) new PessoaEnderecoDBToplink().pesquisaEndPorPessoa(getSindicatoFilial().getFilial().getFilial().getPessoa().getId())).get(0));
             if (!listFeriados.isEmpty()) {
                 for (int i = 0; i < listFeriados.size(); i++) {

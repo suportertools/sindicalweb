@@ -249,6 +249,7 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("photoCamBean");
+        GenericaSessao.remove("fisicaPesquisaList");
         //}
         return metodoGenerico(2, "pessoaFisica");
     }

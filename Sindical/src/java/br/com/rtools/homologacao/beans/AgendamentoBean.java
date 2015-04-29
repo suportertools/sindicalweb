@@ -16,6 +16,7 @@ import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Status;
+import br.com.rtools.homologacao.dao.FeriadosDao;
 import br.com.rtools.homologacao.db.*;
 import br.com.rtools.impressao.beans.ProtocoloAgendamento;
 import br.com.rtools.movimento.ImprimirBoleto;
@@ -453,13 +454,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public boolean pesquisarFeriado() {
-        FeriadosDB feriadosDB = new FeriadosDBToplink();
+        FeriadosDao feriadosDao = new FeriadosDao();
         if (macFilial.getFilial().getFilial().getId() != -1) {
-            List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
+            List<Feriados> feriados = feriadosDao.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
             if (!feriados.isEmpty()) {
                 return true;
             } else {
-                List<Feriados> listFeriados = (List<Feriados>) feriadosDB.pesquisarPorData(DataHoje.converteData(getData()));
+                List<Feriados> listFeriados = (List<Feriados>) feriadosDao.pesquisarPorData(DataHoje.converteData(getData()));
                 if (!listFeriados.isEmpty()) {
                     for (Feriados f : listFeriados) {
                         if (f.getCidade() == null) {
@@ -1467,9 +1468,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void mensagemAgendamento() {
-        FeriadosDB feriadosDB = new FeriadosDBToplink();
+        FeriadosDao feriadosDao = new FeriadosDao();
         if (macFilial.getFilial().getFilial().getId() != -1) {
-            List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
+            List<Feriados> feriados = feriadosDao.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
             if (!feriados.isEmpty()) {
                 String msg = "";
                 for (int i = 0; i < feriados.size(); i++) {
