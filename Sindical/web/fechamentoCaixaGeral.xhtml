@@ -58,7 +58,7 @@
                                 </p:column>
                                 
                                 <p:column headerText="Valor" style="width: 80px; text-align: right">
-                                    <p:commandLink value="#{fechamentoCaixaGeralBean.converteMoeda(linha.argumento0[4])}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
+                                    <p:commandLink value="#{fechamentoCaixaGeralBean.converteValor(linha.argumento0[4])}" action="#{fechamentoCaixaGeralBean.loadListaDetalhesFechamento(linha.argumento0[6], linha.argumento0[5])}" update=":formFechamentoCaixaGeral:tbl2" oncomplete="PF('dlg_detalhes_fechamento').show()"/>
                                 </p:column>
                                 
                                 <p:column headerText="Operador" rendered="false">
@@ -107,7 +107,7 @@
                                     </p:column>
 
                                     <p:column headerText="Valor" style="width: 80px; text-align: center">
-                                        <h:outputText value="#{fechamentoCaixaGeralBean.converteMoeda(linha[1])}"/>
+                                        <h:outputText value="#{fechamentoCaixaGeralBean.converteValor(linha[1])}"/>
                                     </p:column>
                                 </p:dataTable>
                                 <br /><br />
@@ -120,7 +120,7 @@
                                     <p:outputLabel value="Data: " />
                                     <p:outputLabel value="#{fechamentoCaixaGeralBean.fechamento.data}" style="font-weight: bold"/>
                                     <p:outputLabel value="Valor: " />
-                                    <p:outputLabel value="#{fechamentoCaixaGeralBean.converteMoeda(fechamentoCaixaGeralBean.fechamento.valorFechamento)}" style="font-weight: bold"/>
+                                    <p:outputLabel value="#{fechamentoCaixaGeralBean.converteValor(fechamentoCaixaGeralBean.fechamento.valorFechamento)}" style="font-weight: bold"/>
                                 </h:panelGrid>
                                 <br /><br />
                                 <h:panelGrid columns="2">

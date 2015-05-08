@@ -132,14 +132,13 @@ public class ServicosDBToplink extends DB implements ServicosDB {
             String queryString = ""
                     + "  SELECT S.servicos "
                     + "    FROM ServicoRotina AS S"
-                    + "   WHERE S.rotina.id = :rotina";
-            Query query = getEntityManager().createQuery(queryString);
+                    + "   WHERE S.rotina.id = " + id_rotina;
+            
             if (situacao != null && !situacao.isEmpty()) {
-                queryString += " AND S.servicos.situacao = :situacao ";
-                query.setParameter("situacao", situacao);
-
+                queryString += " AND S.servicos.situacao = '"+situacao+"'";
             }
-            query.setParameter("rotina", id_rotina);
+            
+            Query query = getEntityManager().createQuery(queryString);
             return query.getResultList();
         } catch (Exception e) {
             return new ArrayList();

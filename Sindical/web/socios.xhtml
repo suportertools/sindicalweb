@@ -582,7 +582,7 @@
                                                         </p:column>
                                                     </h:panelGrid>
                                                 </p:panel>
-                                                <h:panelGrid columns="2" style="margin-top: 10px; width: 200px">
+                                                <h:panelGrid columns="3" style="margin-top: 10px; width: 100%">
                                                     <p:column>
                                                         <h:outputLabel value="Sexo"/><br />
                                                         <p:selectOneRadio value="#{sociosBean.novoDependente.sexo}">
@@ -593,8 +593,8 @@
                                                     </p:column>
 
                                                     <h:column>
-                                                        <h:outputLabel value="Estado Civil" style="margin-left: 20px;"/><br />
-                                                        <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px; margin-left: 20px;">
+                                                        <h:outputLabel value="Estado Civil" style=""/><br />
+                                                        <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px;">
                                                             <p:ajax event="change" update="@this" global="false" />
                                                             <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
                                                             <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
@@ -605,6 +605,11 @@
                                                             <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
                                                             <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
                                                         </p:selectOneMenu>
+                                                    </h:column>
+                                                    
+                                                    <h:column>
+                                                        <p:outputLabel value="Naturalidade" /><br />                                                
+                                                        <p:commandButton  icon="ui-icon-search" value="#{sociosBean.novoDependente.naturalidade}" action="#{chamadaPaginaBean.cidade}" title="Pesquisar outra Naturalidade" style="margin-right: 10px"/>
                                                     </h:column>
                                                 </h:panelGrid>
 

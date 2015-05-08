@@ -1,6 +1,7 @@
 package br.com.rtools.utilitarios;
 
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -250,7 +251,20 @@ public class Jasper {
                 JasperPrint print;
                 JRBeanCollectionDataSource dtSource;
                 List listFilesZip = new ArrayList();
-                Integer idUsuario = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId();
+                
+                // DEU ERRO NO MOMENTO EM QUE FOI IMPRIMIR UM RELATÓRIO PELA WEB, ONDE NÃO SE TEM Usuario
+                // RETORNO NULL
+                // DATA DE ALTERAÇÃO 07/05/2015
+                // CHAMADO 736 - Priscila
+                // Integer idUsuario = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId();
+                
+                Usuario u = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+                Pessoa p = (u != null) ? u.getPessoa() : (Pessoa) GenericaSessao.getObject("sessaoUsuarioAcessoWeb");
+                Integer idPessoa =  p.getId();
+                
+                // -----------------------------------------------------------------------------------------------------
+                // -----------------------------------------------------------------------------------------------------
+                
                 if (Jasper.PATH.isEmpty()) {
                     realPath = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/" + fileName + "/";
                 } else {
@@ -318,7 +332,8 @@ public class Jasper {
                         if (b.length > MEGABYTE) {
                             bytes = new byte[MEGABYTE * 500];
                         }
-                        downloadName = fileName + PART_NAME + "_" + idUsuario + "_page_" + (i + 1) + "_" + UUID.randomUUID() + ".pdf";
+                        //downloadName = fileName + PART_NAME + "_" + idUsuario + "_page_" + (i + 1) + "_" + UUID.randomUUID() + ".pdf";
+                        downloadName = fileName + PART_NAME + "_" + idPessoa + "_page_" + (i + 1) + "_" + UUID.randomUUID() + ".pdf";
                         try {
                             File file = new File(dirPath + "/" + downloadName);
                             listFilesZip.add(dirPath + "/" + downloadName);
@@ -339,9 +354,11 @@ public class Jasper {
                         // b = null;
                         LIST_FILE_GENERATED.add(dirPath + "/" + downloadName);
                     }
-                    downloadName = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
+                    //downloadName = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
+                    downloadName = fileName + PART_NAME + "_" + idPessoa + "_" + uuid + "." + COMPRESS_EXTENSION;
                     if (!NO_COMPACT) {
-                        Compact.OUT_FILE = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
+                        //Compact.OUT_FILE = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
+                        Compact.OUT_FILE = fileName + PART_NAME + "_" + idPessoa + "_" + uuid + "." + COMPRESS_EXTENSION;
                         Compact.setListFiles(listFilesZip);
                         Compact.PATH_OUT_FILE = realPath;
                         try {

@@ -873,7 +873,7 @@ public class ExtratoTelaBean implements Serializable {
 //       return null;
 //   }
     public String imprimirPromissoria() {
-        List<Movimento> listaC = new ArrayList<Movimento>();
+        List<Movimento> listaC = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
         Acordo acordo = new Acordo();

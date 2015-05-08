@@ -71,7 +71,7 @@ public class Fisica implements java.io.Serializable {
         this.serie = "";
         this.sexo = "M";
         this.dtNascimento = null;
-        this.nacionalidade = "";
+        this.nacionalidade = "Brasileira(o)";
         this.naturalidade = "";
         this.orgaoEmissaoRG = "";
         this.ufEmissaoRG = "";

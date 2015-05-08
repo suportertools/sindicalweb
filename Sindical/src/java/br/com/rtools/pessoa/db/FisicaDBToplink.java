@@ -4,6 +4,7 @@ import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Types;
 import java.util.ArrayList;
 import java.util.Date;
@@ -652,7 +653,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
 
     @Override
     public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente) {
-        List lista = new Vector<Object>();
+        List lista = new Vector();
         String textQuery = "SELECT sp FROM ServicoPessoa sp WHERE sp.ativo = TRUE";
 
         if (dependente) {
@@ -669,6 +670,39 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             return lista;
         }
         return lista;
+    }
+    
+    @Override
+    public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa) {
+        String textQuery = "SELECT sp.dt_emissao AS emissao, \n" +
+                            "       p.ds_nome AS nome, \n" +
+                            "       sp.desconto_folha AS desconto_folha, \n" +
+                            "       sp.nr_desconto AS desconto, \n" +
+                            "       sp.ds_ref_vigoracao AS referencia_vigoracao, \n" +
+                            "       sp.ds_ref_validade AS referencia_validade, \n" +
+                            "       s.ds_descricao AS descricao, \n" +
+                            "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, null) AS valor \n" +
+                            "  FROM fin_servico_pessoa sp \n" +
+                            " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n" +
+                            " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n" +
+                            // socios com vigoração ativa ** ?
+                            //" INNER JOIN soc_socios soc ON soc.id_servico_pessoa = sp.id \n" +
+                            //" INNER JOIN matr_socios ma ON ma.id = soc.id_matricula_socios \n" +
+                            " WHERE sp.is_ativo = TRUE \n";
+        
+        if (somenteDestaPessoa)
+            textQuery += " AND sp.id_pessoa = "+id_pessoa+" \n";
+        else
+            textQuery += " AND sp.id_cobranca = ( select func_titular_da_pessoa("+id_pessoa+") ) \n";
+        
+        Query qry = getEntityManager().createNativeQuery(textQuery);
+        
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 
     @Override

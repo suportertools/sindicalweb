@@ -146,7 +146,7 @@ public class FechamentoCaixaGeralBean implements Serializable {
         return DataHoje.converteData(data);
     }
     
-    public String converteMoeda(String valor){
+    public String converteValor(String valor){
         return Moeda.converteR$(valor);
     }
 

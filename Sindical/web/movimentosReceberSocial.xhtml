@@ -14,7 +14,7 @@
             .ui-button { padding: 3px!important; }
 
             .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
-                background: #ECF3FE;
+                //background: #ECF3FE;
             }
             .tblListaBoleto{
                 background-color: #39ff9c!important;
@@ -78,7 +78,7 @@
                                     <p:column>
                                         <p:commandButton value="Adicionar uma Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosReceberSocialBean.pessoa.id == -1}"/>
                                         <p:commandButton value="Pesquisar outra Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" rendered="#{movimentosReceberSocialBean.pessoa.id != -1}"/>
-                                        <h:column rendered="#{movimentosReceberSocialBean.pessoa.tipoDocumento.id == 1}">
+                                        <h:column rendered="#{movimentosReceberSocialBean.pessoa.tipoDocumento.id == 1 and false == true}">
                                             <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(movimentosReceberSocialBean.pessoa)}" cache="false" width="130" rendered="#{movimentosReceberSocialBean.pessoa.id != -1}"/>
                                         </h:column>
                                         <p:commandLink value="#{movimentosReceberSocialBean.pessoa.nome} - #{movimentosReceberSocialBean.pessoa.documento}" 
@@ -187,13 +187,20 @@
                                 </p:column>
                             </h:panelGrid>
                             
+                            <h:panelGrid columns="2" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}">
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="Anexar Boletos" action="#{movimentosReceberSocialBean.clickAnexarMovimentos}" title="Anexar Boletos" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}"  onclick="PF('dlg_anexar_boletos').show()" update="panel_anexar_boletos" disabled="#{movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 3) or movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 1)}"/>
+                                </p:column>
+                            </h:panelGrid>
+                            
                             <h:panelGrid style="clear: both; width: 100%">
                                 <p:messages id="i_msg" showDetail="true" closable="true" />  
                             </h:panelGrid>
 
                             <p:dataTable value="#{movimentosReceberSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!" rowStyleClass="#{linha.argumento28}">
                                 <f:facet name="header">
-                                    <p:commandButton id="toggler" type="button" value="Colunas" style="float:right" icon="ui-icon-calculator" />
+                                    <p:commandButton id="toggler" type="button" value="Colunas" style="float: right" icon="ui-icon-calculator" />
                                     <p:columnToggler datasource="tbl" trigger="toggler" />
                                 </f:facet>
                                 
@@ -219,7 +226,7 @@
                                 <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() gt 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}">
                                     <p:commandLink value="#{linha.argumento13}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
-
+                                
                                 <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() ge 1 and movimentosReceberSocialBean.pessoaJuridicaNaLista}">
                                     <p:commandLink value="#{linha.argumento30}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
@@ -285,8 +292,11 @@
                                     </h:commandLink>
                                 </p:column>
                                 
-                                <p:column style="width: 40px; text-align: center" headerText="Juros">
-                                    <p:commandButton icon="#{(linha.argumento29 == true) ? 'ui-icon-check' : 'ui-icon-close'}" title="Tirar juros deste Movimento" action="#{movimentosReceberSocialBean.cliqueCalculoJuros(linha)}" />
+                                <p:column style="width: 40px; text-align: center">
+                                    <f:facet name="header">
+                                        <p:commandButton icon="#{(movimentosReceberSocialBean.booAcrescimo == true) ? 'ui-icon-check' : 'ui-icon-close'}" title="Tirar Acréscimo" action="#{movimentosReceberSocialBean.cliqueCalculoAcrescimo(null)}" />                                    
+                                    </f:facet>
+                                    <p:commandButton icon="#{(linha.argumento29 == true) ? 'ui-icon-check' : 'ui-icon-close'}" title="Tirar Acréscimo deste Movimento" action="#{movimentosReceberSocialBean.cliqueCalculoAcrescimo(linha)}" />
                                 </p:column>
                                 
                                 <p:rowExpansion>
@@ -307,8 +317,8 @@
                                         </p:column>
                                     </h:panelGrid>
                                 </p:rowExpansion>
-                                
                             </p:dataTable>      
+                                
 
                             <p:dialog widgetVar="dlg_refazer" header="Refazer Movimentos" resizable="false" width="400" modal="true">
                                 <h:panelGrid>
@@ -347,12 +357,157 @@
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosReceberSocialBean.inativarMovimentos()}" update="formMovimentosReceber" onclick="PF('i_dlg_estorno').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_anexar_boletos" header="Selecione os Boletos a serem Anexados" resizable="false" width="800" modal="true" position="top">
+                                    
+                                <h:panelGrid id="panel_anexar_boletos">
+                                    <p:messages autoUpdate="false" closable="true" showDetail="true" />
+                                    <p:outputLabel value="Boletos Disponiveis" style="font-size: 13pt!important; font-weight: bold"/>
+                                    <p:dataTable var="linha" value="#{movimentosReceberSocialBean.listaBoletosAbertos}" selectionMode="multiple" selection="#{movimentosReceberSocialBean.listaBoletosAbertosSelecionados}" rowKey="#{linha.argumento0[0]}" emptyMessage="Nenhum Boleto Encontrado!" scrollable="true" scrollHeight="200">
+                                        
+                                        <p:column style="width:15px">  
+                                            <p:rowToggler />  
+                                        </p:column>  
+                                        
+                                        <p:column headerText="Número"  style="text-align: right">
+                                            <h:outputText value="#{linha.argumento0[2]}" />
+                                        </p:column>
 
-                            <p:dialog widgetVar="dlg_anexar_boletor" header="Selecione os Boletos a serem Anexados" resizable="false" width="600" modal="true">
-                                <p:commandButton value="Concluir" type="submit" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Fechar" type="button"  onclick="PF('dlg_anexar').hide()" style="float: left" icon="ui-icon-close"/>       
+                                        <p:column headerText="Valor" style="width: 80px; text-align: right">
+                                            <h:outputText value="#{movimentosReceberSocialBean.converteValor(linha.argumento0[3])}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="Vencimento" style="width: 100px; text-align: center">
+                                            <p:commandButton value="#{movimentosReceberSocialBean.converteData(linha.argumento0[4])}" action="#{movimentosReceberSocialBean.selecionaVencimentoBoleto(linha.argumento0[0])}" oncomplete="PF('dlg_vencimento_boleto').show()" update=":formMovimentosReceber:panelAlterarVencimento" rendered="#{!movimentosReceberSocialBean.cab.verificarPermissao('alterarVencimentoBoletoSocial', 3)}"/>
+                                            <p:outputLabel value="#{movimentosReceberSocialBean.converteData(linha.argumento0[4])}" rendered="#{movimentosReceberSocialBean.cab.verificarPermissao('alterarVencimentoBoletoSocial', 3)}" style="font-size: 11pt!important"/>
+                                        </p:column>
+                                        
+                                        <p:rowExpansion>
+                                            <h:outputLabel value="Movimentos do Boleto #{linha.argumento0[2]}" style="font-weight: bold" rendered="false" />
+                                            <p:dataTable value="#{linha.argumento2}" var="linha_movimento">
+                                                <p:column headerText="ID" style="width: 80px; text-align: center" rendered="false">
+                                                    <h:outputLabel value="#{linha_movimento.id}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Titular">
+                                                    <h:outputLabel value="#{linha_movimento.titular.nome}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Beneficiário">
+                                                    <h:outputLabel value="#{linha_movimento.beneficiario.nome}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Serviços">
+                                                    <h:outputLabel value="#{linha_movimento.servicos.descricao}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Valor" style="text-align: right; width: 80px">
+                                                    <h:outputLabel value="R$ #{linha_movimento.valorString}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Anexo" style="text-align: center; width: 40px">
+                                                    <p:commandButton icon="ui-icon-close" actionListener="#{movimentosReceberSocialBean.clickRemoverMovimentos(linha_movimento)}" oncomplete="PF('dlg_confirma_desanexar').show()"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:commandButton value="Imprimir Boleto" action="#{movimentosReceberSocialBean.imprimirBoletos(linha.argumento0[0])}" ajax="false" onclick="this.form.target = '_blank'"/>
+                                        </p:rowExpansion>
+                                    </p:dataTable>
+                                    
+                                    <br />
+                                    
+                                    <p:outputLabel value="Movimentos Sem Boleto" style="font-size: 13pt!important; font-weight: bold; color: red"/>
+                                    <p:dataTable var="linha" value="#{movimentosReceberSocialBean.listaMovimentosAnexo}" selection="#{movimentosReceberSocialBean.listaMovimentosAnexoSelecionados}" rowKey="#{linha.id}" emptyMessage="Nenhum Movimento Encontrado para Anexar!">
+                                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                                        
+                                        <p:column headerText="Titular">
+                                            <h:outputText value="#{linha.titular.nome}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="Beneficiário">
+                                            <h:outputText value="#{linha.beneficiario.nome}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="Serviço">
+                                            <h:outputText value="#{linha.servicos.descricao}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="Valor" style="width: 80px; text-align: right">
+                                            <h:outputText value="#{movimentosReceberSocialBean.converteValor(linha.valor)}" />
+                                        </p:column>
+                                        
+                                        <p:column headerText="Vencimento" style="width: 80px; text-align: center">
+                                            <h:outputText value="#{movimentosReceberSocialBean.converteData(linha.dtVencimento)}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>
+                                    
+                                <p:commandButton value="Anexar" onclick="PF('dlg_confirma_anexar').show()" style="clear: both; float: left" icon="ui-icon-check" />  
+                                <p:commandButton value="Criar novo Boleto" onclick="PF('dlg_confirma_criar_novo_boleto').show()" style="float: left" icon="ui-icon-document" />
+                                <p:commandButton value="Fechar" type="button"  onclick="PF('dlg_anexar_boletos').hide()" style="float: left" icon="ui-icon-close" />       
                             </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_vencimento_boleto" header="Alterar vencimento deste Boleto" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente ALTERAR o vencimento?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid id="panelAlterarVencimento">
+                                    
+                                    <h:panelGrid columns="1">
+                                        <h:outputLabel value="Vencimento Anterior" />
+                                        <p:inputText value="#{movimentosReceberSocialBean.objectVencimento.argumento0.vencimento}" style="width: 80px; text-align: center;" readonly="true"/>
+                                    </h:panelGrid>
 
+                                    <h:panelGrid columns="1">
+                                        <h:outputLabel value="Digite o NOVO VENCIMENTO para esse Boleto" style="color: red"/>
+                                        <p:inputMask value="#{movimentosReceberSocialBean.objectVencimento.argumento1}" mask="99/99/9999" style="width: 80px; text-align: center"/>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Alterar Vencimento" action="#{movimentosReceberSocialBean.alterarVencimento()}" oncomplete="PF('dlg_vencimento_boleto').hide()" type="submit" update="formMovimentosReceber:panel_anexar_boletos" style="clear: both; float: left" icon="ui-icon-check" />  
+                                    <p:commandButton value="Voltar" type="button" onclick="PF('dlg_vencimento_boleto').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_confirma_anexar" header="Anexar Boletos" resizable="false" width="400" modal="true" >
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente ANEXAR esses movimentos?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Anexar" action="#{movimentosReceberSocialBean.anexarMovimentos()}" oncomplete="PF('dlg_confirma_anexar').hide()" type="submit" update="formMovimentosReceber:panel_anexar_boletos" style="clear: both; float: left" icon="ui-icon-check" />  
+                                    <p:commandButton value="Não" type="button" onclick="PF('dlg_confirma_anexar').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_confirma_desanexar" header="Remover Movimento" resizable="false" width="400" modal="true" >
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente RETIRAR este movimento deste boleto?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Remover" action="#{movimentosReceberSocialBean.removerMovimento()}" oncomplete="PF('dlg_confirma_desanexar').hide()" type="submit" update="formMovimentosReceber:panel_anexar_boletos" style="clear: both; float: left" icon="ui-icon-check" />  
+                                    <p:commandButton value="Não" type="button" onclick="PF('dlg_confirma_desanexar').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_confirma_criar_novo_boleto" header="Novo Boleto" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente CRIAR UM NOVO BOLETO com esses movimentos?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="1">
+                                    <h:outputLabel value="Digite um Vencimento para esse Boleto" style="color: red"/>
+                                    <p:inputMask value="#{movimentosReceberSocialBean.vencimentoNovoBoleto}" mask="99/99/9999" style="width: 80px; text-align: center"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Criar" action="#{movimentosReceberSocialBean.criarBoletos()}" oncomplete="PF('dlg_confirma_criar_novo_boleto').hide()" type="submit" update="formMovimentosReceber:panel_anexar_boletos" style="clear: both; float: left" icon="ui-icon-check" />  
+                                    <p:commandButton value="Não" type="button" onclick="PF('dlg_confirma_criar_novo_boleto').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
                             <p:dialog widgetVar="i_dlg_dados" header="Ver Mais" resizable="false" modal="true">
                                 <h:panelGrid id="i_dados">
                                     <h:panelGrid columns="4" style="width: 100%">
@@ -460,14 +615,14 @@
                         </h:form>
 
                         <h:form id="formAutenticaUsuario">
-                            <p:dialog widgetVar="dlg_autentica_usuario" modal="true" header="Autenticar Usuário" width="380" >
+                            <p:dialog widgetVar="dlg_autentica_usuario" modal="true" header="Autenticar Usuário" width="380">
                                 <p:ajax event="close" listener="#{autenticaUsuario.clear()}" update="i_autentica_usuario"/>
                                 <h:panelGrid id="i_autentica_usuario">
                                     <p:messages autoUpdate="false" closable="true" showDetail="true" />
                                     <h:panelGrid columns="2">
                                         <h:column>
                                             <p:outputLabel value="Login" /><br />
-                                            <p:inputText value="#{autenticaUsuario.login}" />    
+                                            <p:inputText id="i_login" value="#{autenticaUsuario.login}" />    
                                         </h:column>
 
                                         <h:column>

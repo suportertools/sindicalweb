@@ -109,10 +109,11 @@ public class TurmaBean implements Serializable {
             int dataInicioInteger = DataHoje.converteDataParaInteger(turma.getDataInicio());
             int dataFinalInteger = DataHoje.converteDataParaInteger(turma.getDataTermino());
             int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
-            if (dataInicioInteger < dataHojeInteger) {
-                message = "A data inicial do curso deve ser maior ou igual a data de hoje!";
-                return;
-            }
+            // IF COMENTADO POR CONTA DE LANÇAMENTO DE TURMA QUE JÁ INICIARAM
+//            if (dataInicioInteger < dataHojeInteger) {
+//                message = "A data inicial do curso deve ser maior ou igual a data de hoje!";
+//                return;
+//            }
             if (dataFinalInteger < dataHojeInteger) {
                 message = "A data final do curso deve ser maior ou igual a data de hoje!";
                 return;
@@ -312,9 +313,9 @@ public class TurmaBean implements Serializable {
     public List<SelectItem> getListServicos() {
         if (listServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List list = db.listaServicoSituacao(150, "A");
+            List<Servicos> list = db.listaServicoSituacao(150, "A");
             for (int i = 0; i < list.size(); i++) {
-                listServicos.add(new SelectItem((int) i, (String) ((Servicos) list.get(i)).getDescricao(), Integer.toString(((Servicos) list.get(i)).getId())));
+                listServicos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listServicos;

@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
+import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.beans.SociosBean;
 import br.com.rtools.associativo.dao.SociosDao;
@@ -11,7 +12,6 @@ import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
-import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -109,18 +110,18 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean readyOnlineNaturalidade = true;
     private boolean disabledNaturalidade = false;
     private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
-    private List<Socios> listaSocioInativo = new ArrayList<Socios>();
+    private List<Socios> listaSocioInativo = new ArrayList();
     private String mask = "";
 
     private Endereco enderecox = new Endereco();
-    private List<PessoaEndereco> listaPessoaEndereco = new ArrayList<PessoaEndereco>();
+    private List<PessoaEndereco> listaPessoaEndereco = new ArrayList();
     private String numero = "";
     private String complemento = "";
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private boolean visibleEditarEndereco = false;
-    private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
-    private List<Socios> listaSocios = new ArrayList<>();
-    private boolean chkDependente = false;
+    private List<DataObject> listaServicoPessoa = new ArrayList();
+    private List<Socios> listaSocios = new ArrayList();
+    private boolean chkSomenteDestaPessoa = false;
     private boolean pessoaOposicao = false;
     private String validacao = "";
 
@@ -128,9 +129,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String strEndereco = "";
     private Integer tipoCadastro = -1;
 
-    private List<Fisica> selectedFisica = new ArrayList<>();
+    private List<Fisica> selectedFisica = new ArrayList();
 
     private Boolean multiple = false;
+    
+    private String somaValoresHistorico = "0,00";
 
     public String novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
@@ -2036,24 +2039,32 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.visibleEditarEndereco = visibleEditarEndereco;
     }
 
-    public List<ServicoPessoa> getListaServicoPessoa() {
+    public List<DataObject> getListaServicoPessoa() {
         if (fisica.getId() != -1 && listaServicoPessoa.isEmpty()) {
             FisicaDB db = new FisicaDBToplink();
-            listaServicoPessoa = db.listaServicoPessoa(fisica.getPessoa().getId(), chkDependente);
+            //listaServicoPessoa = db.listaServicoPessoa(fisica.getPessoa().getId(), chkDependente);
+            Integer id_categoria = (getSocios()!= null && socios.getId() != -1) ? socios.getMatriculaSocios().getCategoria().getId() : null;
+            
+            List<Vector> result = db.listaHistoricoServicoPessoa(fisica.getPessoa().getId(),id_categoria, chkSomenteDestaPessoa);
+            somaValoresHistorico = "0,00";
+            for (Vector linha : result){
+                listaServicoPessoa.add(new DataObject(linha, null));
+                somaValoresHistorico = Moeda.converteR$Float( Moeda.somaValores(Moeda.converteUS$(somaValoresHistorico), ((Double) linha.get(7)).floatValue()) );
+            }
         }
         return listaServicoPessoa;
     }
 
-    public void setListaServicoPessoa(List<ServicoPessoa> listaServicoPessoa) {
+    public void setListaServicoPessoa(List<DataObject> listaServicoPessoa) {
         this.listaServicoPessoa = listaServicoPessoa;
     }
 
-    public boolean isChkDependente() {
-        return chkDependente;
+    public boolean isChkSomenteDestaPessoa() {
+        return chkSomenteDestaPessoa;
     }
 
-    public void setChkDependente(boolean chkDependente) {
-        this.chkDependente = chkDependente;
+    public void setChkSomenteDestaPessoa(boolean chkSomenteDestaPessoa) {
+        this.chkSomenteDestaPessoa = chkSomenteDestaPessoa;
     }
 
     public String getStrEndereco() {
@@ -2299,4 +2310,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void removeSelected(Fisica f) {
         selectedFisica.remove(f);
     }
+    
+    public String converteData(Date data){
+        return DataHoje.converteData(data);
+    }
+    
+    public String converteMoeda(String valor){
+        return Moeda.converteR$(valor);
+    }
+
+    public String getSomaValoresHistorico() {
+        return somaValoresHistorico;
+    }
+
+    public void setSomaValoresHistorico(String somaValoresHistorico) {
+        this.somaValoresHistorico = somaValoresHistorico;
+    }
+
 }

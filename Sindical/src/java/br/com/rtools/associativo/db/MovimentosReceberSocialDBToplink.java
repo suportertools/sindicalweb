@@ -1,7 +1,9 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import javax.persistence.Query;
 public class MovimentosReceberSocialDBToplink extends DB implements MovimentosReceberSocialDB {
 
     @Override
-    public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia) {
+    public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia, String tipoPessoa) {
         try {
             if (id_pessoa.isEmpty()) {
                 return new ArrayList();
@@ -56,7 +58,6 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                     + " left join pes_pessoa as us on us.id=u.id_pessoa \n"
                     + " left join pes_juridica as j on j.id_pessoa=m.id_pessoa \n";
 
-            //String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, b.ds_nome ";
             String order_by = "";
             String where = "";
             String ands = "";
@@ -64,27 +65,27 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
             switch (por_status) {
                 case "todos":
                     ands = where + " where (m.id_pessoa in (" + id_responsavel + ") or (m.id_beneficiario in (" + id_pessoa + ") and j.id is null)) and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                    order_by = " order by m.dt_vencimento asc, p.ds_nome, t.ds_nome, b.ds_nome, se.ds_descricao \n";
-                    //order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
+                    order_by =  (tipoPessoa.equals("fisica")) ? " order by m.dt_vencimento asc, p.ds_nome, t.ds_nome, b.ds_nome, se.ds_descricao \n" 
+                                                              : "";
                     break;
                 case "abertos":
                     ands = where + " where (m.id_pessoa in (" + id_responsavel + ") or (m.id_beneficiario in (" + id_pessoa + ") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
                     order_by = " order by m.dt_vencimento asc, p.ds_nome, t.ds_nome, b.ds_nome, se.ds_descricao \n";
-                    //order_by = " order by m.dt_vencimento asc, p.ds_nome, b.ds_nome, se.ds_descricao \n";
                     break;
                 case "quitados":
                     ands = where + " where (m.id_pessoa in (" + id_responsavel + ") or (m.id_beneficiario in (" + id_pessoa + ") and j.id is null)) and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                    order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    order_by = (tipoPessoa.equals("fisica")) ? " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n" 
+                                                             : "";
                     break;
                 case "atrasados":
                     ands = where + " where (m.id_pessoa in (" + id_responsavel + ") or (m.id_beneficiario in (" + id_pessoa + ") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento < current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                    order_by = " order by m.dt_vencimento, p.ds_nome, t.ds_nome, se.ds_descricao \n";
-                    //order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    order_by = (tipoPessoa.equals("fisica")) ? " order by m.dt_vencimento, p.ds_nome, t.ds_nome, se.ds_descricao \n"
+                                                             : "";
                     break;
                 case "vencer":
                     ands = where + " where (m.id_pessoa in (" + id_responsavel + ") or (m.id_beneficiario in (" + id_pessoa + ") and j.id is null)) and m.id_baixa is null and m.is_ativo = true and m.dt_vencimento > current_date and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) \n";
-                    order_by = " order by m.dt_vencimento, p.ds_nome, t.ds_nome, se.ds_descricao \n";
-                    //order_by = " order by bx.dt_baixa asc, m.dt_vencimento, p.ds_nome, se.ds_descricao \n";
+                    order_by = (tipoPessoa.equals("fisica")) ? " order by m.dt_vencimento, p.ds_nome, t.ds_nome, se.ds_descricao \n" 
+                                                             : "";
                     break;
             }
 
@@ -169,5 +170,99 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
         }
         return valor;
     }
-
+    
+    @Override
+    public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa){
+        String textqry
+            = " SELECT b.id, b.nr_ctr_boleto, b.nr_boleto, sum(m.nr_valor), b.dt_vencimento \n" +
+                "  FROM fin_boleto b \n" +
+                " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
+                " WHERE m.id_pessoa = "+id_pessoa+" \n" +
+                "   AND m.is_ativo = true \n" +
+                "   AND b.dt_vencimento >= CURRENT_DATE \n" +
+                "   AND (m.ds_documento IS NOT NULL AND m.ds_documento <> '') \n" +
+                "   AND (m.nr_ctr_boleto IS NOT NULL AND m.nr_ctr_boleto <> '') \n" +
+                " GROUP BY b.id, b.nr_ctr_boleto, b.nr_boleto, b.dt_vencimento \n" +
+                " ORDER BY b.dt_vencimento";
+        
+        Query qry = getEntityManager().createNativeQuery(textqry);
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<Movimento> listaMovimentosAbertosAnexarAgrupado(int id_pessoa){
+        String textqry
+            = " SELECT m.* \n" +
+                "  FROM fin_movimento m \n" +
+                "  LEFT JOIN fin_boleto b ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
+                " INNER JOIN pes_pessoa pt ON pt.id = m.id_titular \n" +
+                " INNER JOIN pes_pessoa pb ON pb.id = m.id_beneficiario \n" +
+                " WHERE m.id_pessoa = "+id_pessoa+" \n" +
+                "   AND m.is_ativo = true \n" +
+                "   AND (m.ds_documento IS NULL OR m.ds_documento = '') \n" +
+                "   AND (m.nr_ctr_boleto IS NULL OR m.nr_ctr_boleto = '') \n" +
+                "   -- AND b.dt_vencimento >= CURRENT_DATE QUANDO ATUALIZAR OS CAMPOS NULOS \n" +
+                //"   AND m.dt_vencimento >= CURRENT_DATE -- ATÉ ATUALIZAR OS CAMPOS NULOS \n" +
+                "   AND m.id_baixa IS NULL \n" +
+                " ORDER BY pt.ds_nome, pb.ds_nome, m.dt_vencimento";
+        
+        Query qry = getEntityManager().createNativeQuery(textqry, Movimento.class);
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<Movimento> listaMovimentosPorNrCtrBoleto(String nr_ctr_boleto){
+//        String textqry
+//            = " SELECT m " +
+//                "  FROM Movimento m " +
+//                " WHERE m.nrCtrBoleto = '"+nr_ctr_boleto+"'" +
+//                " ORDER BY m.titular.nome, m.beneficiario.nome, m.dtVencimento";
+        String textqry
+            = " SELECT m.* " +
+                "  FROM fin_movimento m " +
+                " INNER JOIN fin_boleto b ON b.nr_ctr_boleto = m.nr_ctr_boleto " +
+                " INNER JOIN pes_pessoa pt ON pt.id = m.id_titular \n" +
+                " INNER JOIN pes_pessoa pb ON pb.id = m.id_beneficiario \n" +
+                " WHERE m.is_ativo = true " +
+                "   AND m.nr_ctr_boleto = '"+nr_ctr_boleto+"'" +
+                " ORDER BY pt.ds_nome, pb.ds_nome, m.dt_vencimento";
+                
+        Query qry = getEntityManager().createNativeQuery(textqry, Movimento.class);
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public Pessoa responsavelBoleto(String nr_ctr_boleto){
+        String textqry
+            = " SELECT m.id_pessoa \n " +
+              "  FROM fin_boleto b \n " +
+              " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n " +
+              " WHERE b.nr_ctr_boleto = '"+nr_ctr_boleto+"' \n " +
+              " GROUP BY m.id_pessoa";
+                
+        Query qry = getEntityManager().createNativeQuery(textqry);
+        List<Vector> result = qry.getResultList();
+        
+        try{
+            return (Pessoa) new Dao().find(new Pessoa(), result.get(0).get(0));
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return null;
+    }
 }

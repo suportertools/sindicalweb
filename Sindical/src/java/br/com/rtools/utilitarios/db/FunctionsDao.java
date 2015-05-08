@@ -3,6 +3,7 @@ package br.com.rtools.utilitarios.db;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.ConfiguracaoFinanceiro;
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.Dao;
@@ -236,6 +237,27 @@ public class FunctionsDao extends DB implements FunctionsDB {
     public Boolean gerarMensalidadesBoolean(Integer id_pessoa, String referencia) {
         try {
             Query query = getEntityManager().createNativeQuery("SELECT func_geramensalidades(" + id_pessoa + ", '" + referencia + "')");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+    
+    public Boolean gerarBoletoSocial(List<Movimento> lista_movimento, String vencimento) {
+        String ids = "";
+        for (Movimento movimento : lista_movimento){
+            if (ids.isEmpty())
+                ids = ""+movimento.getId();
+            else
+                ids += ", "+movimento.getId();
+        }
+         
+        try {
+            Query query = getEntityManager().createNativeQuery("select func_gerar_boleto_ass('{"+ids+"}','"+vencimento +"');");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;

@@ -46,6 +46,7 @@ import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
+import br.com.rtools.utilitarios.AutenticaUsuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
@@ -123,6 +124,8 @@ public class EmissaoGuiasBean implements Serializable {
     private Fisica fisicaNovoCadastro = new Fisica();
 
     private ControleAcessoBean cab = new ControleAcessoBean();
+    
+    private String novoDesconto = "0,00";
 
     @PostConstruct
     public void init() {
@@ -183,7 +186,14 @@ public class EmissaoGuiasBean implements Serializable {
         GenericaSessao.remove("usuarioAutenticado");
     }
 
+        
+    public void autorizarDesconto(){
+        GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("dlg_desconto", "autorizaDescontos", 3));
+    }
+    
+    
     public void adicionarDesconto() {
+        desconto = novoDesconto;
         PF.closeDialog("dlg_autentica_usuario");
         PF.closeDialog("dlg_desconto");
         PF.update("form_eg:i_panel_servicos");
@@ -1348,5 +1358,13 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void setCab(ControleAcessoBean cab) {
         this.cab = cab;
+    }
+
+    public String getNovoDesconto() {
+        return novoDesconto;
+    }
+
+    public void setNovoDesconto(String novoDesconto) {
+        this.novoDesconto = novoDesconto;
     }
 }
