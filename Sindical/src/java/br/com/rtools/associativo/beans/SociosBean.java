@@ -26,12 +26,10 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
-import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +41,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
-import org.apache.commons.io.FileUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CaptureEvent;
 import org.primefaces.event.FileUploadEvent;
@@ -117,7 +114,9 @@ public class SociosBean implements Serializable {
     private List<ListaDependentes> listDependentes;
     private List<ListaDependentes> listDependentesAtivos;
     private List<ListaDependentes> listDependentesInativos;
-
+    
+    
+    
     public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
@@ -768,6 +767,8 @@ public class SociosBean implements Serializable {
         } else {
             novoDependente = fisicaPesquisa;
         }
+        
+        loadNaturalidadeDependente();
     }
 
     public void inativarSocio() {
@@ -1457,6 +1458,7 @@ public class SociosBean implements Serializable {
         modelVisible = false;
         index_dependente = 0;
         novoDependente = new Fisica();
+        PF.update("formSocios");
         RequestContext.getCurrentInstance().execute("PF('dlg_dependente').hide()");
     }
 
@@ -1531,11 +1533,11 @@ public class SociosBean implements Serializable {
                 if (s.getMatriculaSocios().getTitular().getId() == socios.getMatriculaSocios().getTitular().getId()) {
                     salvarImagem();
                     getFotoSocio();
-                    GenericaMensagem.error("Validação", "Pessoa já é dependente nesta matrícula!");
+                    //GenericaMensagem.error("Validação", "Pessoa já é dependente nesta matrícula!");
                 } else {
                     GenericaMensagem.error("Validação", "Esta pessoa já é sócia em outra matrícula para o(a) titular " + s.getMatriculaSocios().getTitular().getNome());
+                    return false;
                 }
-                return false;
             }
         }
         List<Socios> list = sociosDao.listaPorPessoa(novoDependente.getPessoa().getId());
@@ -1691,6 +1693,7 @@ public class SociosBean implements Serializable {
         novoDependente = new Fisica();
         fisicaPesquisa = new Fisica();
         temFoto = false;
+        loadNaturalidadeDependente();
         return null;
     }
 
@@ -1975,8 +1978,31 @@ public class SociosBean implements Serializable {
         if (f.exists()) {
             f.delete();
         }
+        
+        loadNaturalidadeDependente();
     }
-
+    
+    public void loadNaturalidadeDependente(){
+        if (GenericaSessao.exists("cidadePesquisa")) {
+            Cidade cidade = (Cidade) GenericaSessao.getObject("cidadePesquisa", true);
+            novoDependente.setNaturalidade( cidade.getCidade() +" - "+ cidade.getUf() );
+            return;
+        }
+        
+        if (novoDependente.getId() == -1 || novoDependente.getNaturalidade().isEmpty()){
+            PessoaEnderecoDB dbPes = new PessoaEnderecoDBToplink();
+            Dao dao = new Dao();
+            Filial fili = (Filial) dao.find(new Filial(), 1);
+            if (fili != null) {
+                Pessoa pes = fili.getMatriz().getPessoa();
+                if (pes.getId() != -1) {
+                    Cidade cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();
+                    novoDependente.setNaturalidade( cidade.getCidade() +" - "+ cidade.getUf() );
+                }
+            }
+        }
+    }
+    
     public void fechaModal() {
         Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
@@ -2592,8 +2618,8 @@ public class SociosBean implements Serializable {
         List<GrupoCidades> cids = (List<GrupoCidades>) dao.list(new GrupoCidades(), true);
         if (socios.getId() == -1 && matriculaSocios.getId() == -1) {
             PessoaEndereco ende = db.pesquisaEndPorPessoaTipo(servicoPessoa.getPessoa().getId(), 3);
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-                matriculaSocios.setCidade((Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa"));
+            if (GenericaSessao.exists("cidadePesquisa")) {
+                matriculaSocios.setCidade((Cidade) GenericaSessao.getObject("cidadePesquisa"));
             } else if (ende != null && ende.getId() != -1) {
                 for (int i = 0; i < cids.size(); i++) {
                     if (cids.get(i).getCidade().getId() == ende.getEndereco().getCidade().getId()) {
@@ -2605,9 +2631,9 @@ public class SociosBean implements Serializable {
             } else {
                 matriculaSocios.setCidade(((PessoaEndereco) db.pesquisaEndPorPessoaTipo(1, 3)).getEndereco().getCidade());
             }
-        } else if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-            matriculaSocios.setCidade((Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        } else if (GenericaSessao.exists("cidadePesquisa")) {
+            matriculaSocios.setCidade((Cidade) GenericaSessao.getObject("cidadePesquisa", !modelVisible));
+            //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
         }
         return matriculaSocios;
     }
@@ -2870,6 +2896,9 @@ public class SociosBean implements Serializable {
     }
 
     public Fisica getNovoDependente() {
+        if (GenericaSessao.exists("cidadePesquisa")){
+            loadNaturalidadeDependente();
+        }
         return novoDependente;
     }
 
@@ -3096,7 +3125,6 @@ public class SociosBean implements Serializable {
             return "Imagens/Fotos";
         }
     }
-
 }
 
 //    public void editarGenerico(Pessoa sessao, boolean reativar) {

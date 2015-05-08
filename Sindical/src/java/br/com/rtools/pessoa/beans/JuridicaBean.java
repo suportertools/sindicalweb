@@ -248,7 +248,7 @@ public class JuridicaBean implements Serializable {
                     }
 
                     dao.commit();
-
+                    in.close();
                 }
             } catch (IOException | JSONException e) {
 

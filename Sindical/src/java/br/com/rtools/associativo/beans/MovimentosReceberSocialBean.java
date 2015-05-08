@@ -1,11 +1,13 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Baixa;
+import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Guia;
@@ -21,6 +23,7 @@ import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.impressao.ParametroEncaminhamento;
 import br.com.rtools.movimento.GerarMovimento;
+import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.movimento.ImprimirRecibo;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
@@ -124,6 +127,22 @@ public class MovimentosReceberSocialBean implements Serializable {
     private DataObject linhaSelecionada = new DataObject();
     private String novoDesconto = "0,00";
     
+    private boolean booAcrescimo = true;
+    
+    private List<DataObject> listaBoletosAbertos = new ArrayList();
+    private List<DataObject> listaBoletosAbertosSelecionados = new ArrayList();
+    
+//    private List<DataObject> listaMovimentosAnexo = new ArrayList();
+//    private List<DataObject> listaMovimentosAnexoSelecionados = new ArrayList();
+    
+    private List<Movimento> listaMovimentosAnexo = new ArrayList();
+    private List<Movimento> listaMovimentosAnexoSelecionados = new ArrayList();
+    
+    private String vencimentoNovoBoleto = "";
+    private Movimento movimentoRemover = null;
+    
+    private DataObject objectVencimento = new DataObject(new Boleto(), "");
+    
     @PostConstruct
     public void init() {
 
@@ -141,22 +160,237 @@ public class MovimentosReceberSocialBean implements Serializable {
         GenericaSessao.remove("usuarioAutenticado");
     }    
     
-    public void cliqueCalculoJuros(DataObject linha){
-        linhaSelecionada = linha;
-        if (cab.verificaPermissao("calcularJurosSocial", 3)){
-            //PF.openDialog("dlg_autentica_usuario");
-            GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("calcularJurosSocial", 3, "formMovimentosReceber", "movimentosReceberSocialBean", "calculoJuros"));
+    public void alterarVencimento(){
+        String vencimentox = objectVencimento.getArgumento1().toString();
+        if (DataHoje.menorData(vencimentox, DataHoje.data())){
+            GenericaMensagem.warn("Atençao", "Data de vencimento nao pode ser MENOR que data atual!");
             return;
         }
+        
+        Boleto boletox = (Boleto) objectVencimento.getArgumento0();
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        
+        boletox.setVencimento(vencimentox);
+        
+        if (!dao.update(boletox)){
+            GenericaMensagem.error("Error", "Nao foi possivel alterar vencimento do Boleto! Tente Novamente.");
+            return;
+        }
+        
+        dao.commit();
+        
+        GenericaMensagem.info("Sucesso", "Vencimento Alterado para "+ vencimentox);
+        
+        objectVencimento = new DataObject(new Boleto(), "");
+        loadBoletosAbertos();
+    }
+        
+    public void selecionaVencimentoBoleto(Integer id_boleto){
+        Boleto boletox = (Boleto) new Dao().find(new Boleto(), id_boleto);
+        
+        if (boletox != null){
+            // BOLETO COM VENCIMENTO ANTERIOR , NOVO VENCIMENTO
+            objectVencimento = new DataObject(boletox, "");
+        }
+    }
+    
+    public void removerMovimento(){
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        movimentoRemover.setNrCtrBoleto("");
+        movimentoRemover.setDocumento("");
 
-        calculoJuros();
+        if (!dao.update(movimentoRemover)){
+            GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
+            return;
+        }
+        
+        dao.commit();
+        
+        loadBoletosAbertos();
+        loadMovimentosAnexo();
+        movimentoRemover = null;
+    }
+    
+    public void loadBoletosAbertos(){
+        listaBoletosAbertos.clear();
+        listaBoletosAbertosSelecionados.clear();
+        
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        
+        List<Vector> result = db.listaBoletosAbertosAgrupado(pessoa.getId());
+        
+        for (List linha : result){
+            
+            listaBoletosAbertos.add(
+                    new DataObject(
+                            linha,  // ARGUMENTO 0 || 0 - fin_boleto.id, 1 - fin_boleto.nr_ctr_boleto, sum(fin.movimento.nr_valor)
+                            new Dao().find(new Boleto(), linha.get(0)),    // ARGUMENTO 1 || Boleto 
+                            db.listaMovimentosPorNrCtrBoleto(linha.get(1).toString()) // ARGUMENTO 2 || List<Movimento>
+                    )
+            );
+            
+        }
+    }
+    
+    public void loadMovimentosAnexo(){
+        listaMovimentosAnexo.clear();
+        listaMovimentosAnexoSelecionados.clear();
+        
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        
+        listaMovimentosAnexo = db.listaMovimentosAbertosAnexarAgrupado(pessoa.getId());
+//        
+//        for (Movimento linha : result){
+//            
+//            listaMovimentosAnexo.add(
+//                    new DataObject(
+//                            linha,  // ARGUMENTO 0 || 0 - Movimento
+//                            null    // ARGUMENTO 1 ||
+//                    )
+//            );
+//        }
+    }
+    
+    public void clickRemoverMovimentos(Movimento movimento){
+        movimentoRemover = (Movimento) new Dao().rebind(movimento);
+    }
+    
+    public void clickAnexarMovimentos(){
+        loadBoletosAbertos();
+        loadMovimentosAnexo();
+        
+        vencimentoNovoBoleto = "";
+    }
+    
+    public void anexarMovimentos(){
+        if (listaBoletosAbertosSelecionados.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Selecione um Boleto para Anexar Movimentos");
+            return;
+        }
+        
+        if (listaBoletosAbertosSelecionados.size() > 1){
+            GenericaMensagem.warn("Atenção", "Apenas 1 Boleto pode ser selecionado para Anexar!");
+            return;
+        }
+        
+        if (listaMovimentosAnexoSelecionados.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Selecione ao menos 1 Movimento para Anexar!");
+            return;
+        }
+        
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        for(Movimento mov : listaMovimentosAnexoSelecionados){
+            //Movimento mov = (Movimento) dao.find(selecionados.getArgumento0());
+            
+            mov.setNrCtrBoleto( ((Boleto)listaBoletosAbertosSelecionados.get(0).getArgumento1()).getNrCtrBoleto() );
+            mov.setDocumento( ((Boleto)listaBoletosAbertosSelecionados.get(0).getArgumento1()).getBoletoComposto() );
+            
+            if (!dao.update(mov)){
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
+                return;
+            }
+        }
+//        for(DataObject selecionados : listaMovimentosAnexoSelecionados){
+//            Movimento mov = (Movimento) dao.find(selecionados.getArgumento0());
+//            
+//            mov.setNrCtrBoleto( ((Boleto)listaBoletosAbertosSelecionados.get(0).getArgumento1()).getNrCtrBoleto() );
+//            mov.setDocumento( ((Boleto)listaBoletosAbertosSelecionados.get(0).getArgumento1()).getBoletoComposto() );
+//            
+//            if (!dao.update(mov)){
+//                GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
+//                return;
+//            }
+//        }
+        
+        dao.commit();
+        
+        GenericaMensagem.info("Sucesso", "Movimentos Anexados ao Boleto " + ((Boleto)listaBoletosAbertosSelecionados.get(0).getArgumento1()).getBoletoComposto());
+        loadBoletosAbertos();
+        loadMovimentosAnexo();
+    }
+    
+    public void criarBoletos(){
+        if (listaMovimentosAnexoSelecionados.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Selecione ao menos 1 Movimento para Criar um novo Boleto!");
+            return;
+        }
+        
+        if (vencimentoNovoBoleto.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Digite um VENCIMENTO para este novo Boleto!");
+            return;
+        }
+        
+        if (DataHoje.menorData(vencimentoNovoBoleto, DataHoje.data())){
+            GenericaMensagem.warn("Atenção", "VENCIMENTO não pode ser menor que Data de Hoje!");
+            return;
+        }
+        
+        FunctionsDao f = new FunctionsDao();
+        
+        if (f.gerarBoletoSocial(listaMovimentosAnexoSelecionados, vencimentoNovoBoleto)){
+            GenericaMensagem.info("Sucesso", "Boleto Criado para o vencimento "+vencimentoNovoBoleto);
+            loadBoletosAbertos();
+            loadMovimentosAnexo();
+        }else
+            GenericaMensagem.error("Erro", "Não foi possível gerar Boleto!");
+        
+    }
+    
+    public void imprimirBoletos(int id_boleto){
+        Boleto boletox = (Boleto) new Dao().find(new Boleto(), id_boleto);
+        
+        ImprimirBoleto ib = new ImprimirBoleto();
+        ib.imprimirBoletoSocial(boletox, false);
+        ib.visualizar(null);
+    }
+    
+    public void cliqueCalculoAcrescimo(DataObject linha){
+        if (linha != null){
+            linhaSelecionada = linha;
+            if (cab.verificaPermissao("calcularJurosSocial", 3)){
+                //PF.openDialog("dlg_autentica_usuario");
+                GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("calcularJurosSocial", 3, "formMovimentosReceber", "movimentosReceberSocialBean", "calculoAcrescimo"));
+                return;
+            }
+            calculoAcrescimo();
+        }else{
+            if (cab.verificaPermissao("calcularJurosSocial", 3)){
+                //PF.openDialog("dlg_autentica_usuario");
+                GenericaSessao.put("AutenticaUsuario", new AutenticaUsuario("calcularJurosSocial", 3, "formMovimentosReceber", "movimentosReceberSocialBean", "calculoTodosAcrescimo"));
+                return;
+            }
+            calculoTodosAcrescimo();
+        }
+
         PF.update("formMovimentosReceber");
     }
     
-    public void calculoJuros(){
+    public void calculoTodosAcrescimo(){
+        booAcrescimo = (booAcrescimo) ? false : true;
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        for (DataObject linha : listaMovimento){
+            float[] valor = db.pesquisaValorAcrescimo((Integer)linha.getArgumento1());
+            if (!booAcrescimo){
+                linha.setArgumento29(false);
+                linha.setArgumento9(Moeda.converteR$Float(Moeda.subtracaoValores( Moeda.converteUS$(linha.getArgumento9().toString()), valor[0])));
+            }else{
+                linha.setArgumento29(true);
+                linha.setArgumento9(Moeda.converteR$Float(valor[1]));
+            }
+        }
+        calculoDesconto();
+    }
+    
+    public void calculoAcrescimo(){
+        
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
         float[] valor = db.pesquisaValorAcrescimo((Integer)linhaSelecionada.getArgumento1());
-        
         if ((Boolean) linhaSelecionada.getArgumento29()){
             linhaSelecionada.setArgumento29(false);
             //linhaSelecionada.setArgumento7("0,00");
@@ -979,6 +1213,14 @@ public class MovimentosReceberSocialBean implements Serializable {
     public void listenerPesquisa() {
         
     }
+    
+    public String converteData(Date data){
+        return DataHoje.converteData( data );
+    }
+    
+    public String converteValor(String valor){
+        return Moeda.converteR$(valor);
+    }
 
     public String getTotal() {
         if (!listaMovimento.isEmpty()) {
@@ -1149,7 +1391,12 @@ public class MovimentosReceberSocialBean implements Serializable {
                 id_responsavel = id_responsavel + String.valueOf(listaPessoaQry.get(i).getId());
             }
             
-            List<Vector> lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa);
+            List<Vector> lista = null;
+            if ( dbf.pesquisaFisicaPorPessoa(pessoa.getId()) != null ){
+                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa, "fisica");
+            }else
+                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa, "juridica");
+                
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
@@ -1368,6 +1615,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             calculoDesconto();
             pessoaJuridicaNaListaxx();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+            booAcrescimo = true;
         }
         return pessoa;
     }
@@ -1531,6 +1779,86 @@ public class MovimentosReceberSocialBean implements Serializable {
             novoDesconto = "0,00";
         }
         this.novoDesconto = Moeda.converteR$(novoDesconto);
+    }
+
+    public boolean isBooAcrescimo() {
+        return booAcrescimo;
+    }
+
+    public void setBooAcrescimo(boolean booAcrescimo) {
+        this.booAcrescimo = booAcrescimo;
+    }
+
+    public List<DataObject> getListaBoletosAbertos() {
+        return listaBoletosAbertos;
+    }
+
+    public void setListaBoletosAbertos(List<DataObject> listaBoletosAbertos) {
+        this.listaBoletosAbertos = listaBoletosAbertos;
+    }
+
+    public List<DataObject> getListaBoletosAbertosSelecionados() {
+        return listaBoletosAbertosSelecionados;
+    }
+
+    public void setListaBoletosAbertosSelecionados(List<DataObject> listaBoletosAbertosSelecionados) {
+        this.listaBoletosAbertosSelecionados = listaBoletosAbertosSelecionados;
+    }
+
+//    public List<DataObject> getListaMovimentosAnexo() {
+//        return listaMovimentosAnexo;
+//    }
+//
+//    public void setListaMovimentosAnexo(List<DataObject> listaMovimentosAnexo) {
+//        this.listaMovimentosAnexo = listaMovimentosAnexo;
+//    }
+//
+//    public List<DataObject> getListaMovimentosAnexoSelecionados() {
+//        return listaMovimentosAnexoSelecionados;
+//    }
+//
+//    public void setListaMovimentosAnexoSelecionados(List<DataObject> listaMovimentosAnexoSelecionados) {
+//        this.listaMovimentosAnexoSelecionados = listaMovimentosAnexoSelecionados;
+//    }
+    
+    public List<Movimento> getListaMovimentosAnexo() {
+        return listaMovimentosAnexo;
+    }
+
+    public void setListaMovimentosAnexo(List<Movimento> listaMovimentosAnexo) {
+        this.listaMovimentosAnexo = listaMovimentosAnexo;
+    }
+
+    public List<Movimento> getListaMovimentosAnexoSelecionados() {
+        return listaMovimentosAnexoSelecionados;
+    }
+
+    public void setListaMovimentosAnexoSelecionados(List<Movimento> listaMovimentosAnexoSelecionados) {
+        this.listaMovimentosAnexoSelecionados = listaMovimentosAnexoSelecionados;
+    }
+
+    public String getVencimentoNovoBoleto() {
+        return vencimentoNovoBoleto;
+    }
+
+    public void setVencimentoNovoBoleto(String vencimentoNovoBoleto) {
+        this.vencimentoNovoBoleto = vencimentoNovoBoleto;
+    }
+
+    public Movimento getMovimentoRemover() {
+        return movimentoRemover;
+    }
+
+    public void setMovimentoRemover(Movimento movimentoRemover) {
+        this.movimentoRemover = movimentoRemover;
+    }
+
+    public DataObject getObjectVencimento() {
+        return objectVencimento;
+    }
+
+    public void setObjectVencimento(DataObject objectVencimento) {
+        this.objectVencimento = objectVencimento;
     }
 
 }

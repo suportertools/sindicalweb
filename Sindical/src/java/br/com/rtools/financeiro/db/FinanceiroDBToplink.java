@@ -790,7 +790,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "       vencimento_original_boleto " + // 40
                     "   FROM soc_boletos_vw " +
                     "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "') " +
-                    "  ORDER BY responsavel, vencimento_movimento, codigo, nome_beneficiario "
+                    "  ORDER BY responsavel, nome_titular, vencimento_movimento, codigo, nome_beneficiario "
             );
             return qry.getResultList();
         } catch (Exception e) {
@@ -817,7 +817,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "       ''," +
                     "       codigo_titular," +
                     "       nome_titular," +
-                    "       SUM(valor)," +
+                    "       SUM(valor_sem_acrescimo)," +
                     "       mensalidades_corrigidas," +
                     "       mensagem_boleto," +
                     "       banco," +
@@ -887,7 +887,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "       vencimento_movimento, " +
                     "       vencimento_boleto, " +
                     "       vencimento_original_boleto " +
-                    "  ORDER BY responsavel, vencimento_movimento, codigo, nome_titular ";
+                    "  ORDER BY responsavel, nome_titular, vencimento_movimento, codigo, nome_titular ";
             
             Query qry = getEntityManager().createNativeQuery(text_qry);
             return qry.getResultList();

@@ -20,7 +20,6 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean
 @SessionScoped
 public class MatriculaConvenioMedicoBean implements Serializable {
-
     private MatriculaConvenioMedico matriculaConvenioMedico;
     private ServicoPessoaBean servicoPessoaBean;
     private String message;
@@ -115,6 +114,7 @@ public class MatriculaConvenioMedicoBean implements Serializable {
 
     public void clear() {
         GenericaSessao.remove("matriculaConvenioMedicoBean");
+        GenericaSessao.remove("servicoPessoaBean");
     }
 
     public void delete() {

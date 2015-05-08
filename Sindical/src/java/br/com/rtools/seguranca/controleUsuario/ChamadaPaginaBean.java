@@ -592,7 +592,7 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String convenioMedico() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("convenioMedicoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaConvenioMedicoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("servicoPessoaBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");

@@ -17,6 +17,7 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,17 +191,22 @@ public class ServicoPessoaBean implements Serializable {
 
         PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
         PessoaEmpresa pe = null;
-        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
-            pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
-            if (pe.getId() != -1) {
-                servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
-            } else {
-                servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-            }
-        } else {
-            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        }
 
+// SE DESCONTO FOLHA = true NAO SALVAR EM cobranca ID EMPRESA -- alterado na data 08/05/2015 ( ID da tarefa de referencia 388 * inicialmente alterado no cadastro de socios )
+//        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
+//            pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
+//            if (pe.getId() != -1) {
+//                servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
+//            } else {
+//                servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//            }
+//        } else {
+//            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//        }
+        
+        FunctionsDao dbf = new FunctionsDao();
+        servicoPessoa.setCobranca(dbf.titularDaPessoa(servicoPessoa.getPessoa().getId()));
+        
         if (servicoPessoa.getPessoa().getId() != -1) {
             if (servicoPessoa.getId() == -1) {
                 servicoPessoa.setDescontoSocial((DescontoSocial) dbSalvar.find(new DescontoSocial(), 1));
@@ -243,20 +249,23 @@ public class ServicoPessoaBean implements Serializable {
             servicoPessoa.setBanco(false);
         }
         // --------------------------------------------
+// SE DESCONTO FOLHA = true NAO SALVAR EM cobranca ID EMPRESA -- alterado na data 08/05/2015 ( ID da tarefa de referencia 388 * inicialmente alterado no cadastro de socios )
+//        PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
+//        PessoaEmpresa pe = null;
+//        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
+//            pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
+//            if (pe.getId() != -1) {
+//                servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
+//            } else {
+//                servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//            }
+//        } else {
+//            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+//        }
 
-        PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
-        PessoaEmpresa pe = null;
-        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
-            pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
-            if (pe.getId() != -1) {
-                servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
-            } else {
-                servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-            }
-        } else {
-            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        }
-
+        FunctionsDao dbf = new FunctionsDao();
+        servicoPessoa.setCobranca(dbf.titularDaPessoa(servicoPessoa.getPessoa().getId()));
+        
         if (servicoPessoa.getPessoa().getId() != -1) {
             if (dbSalvar.alterarObjeto(servicoPessoa)) {
                 return "";

@@ -1,5 +1,7 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.utilitarios.DataHoje;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "fin_movimento_boleto")
@@ -22,17 +26,22 @@ public class MovimentoBoleto implements java.io.Serializable {
     @JoinColumn(name = "id_boleto", referencedColumnName = "id")
     @ManyToOne
     private Boleto boleto;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_lancamento")
+    private Date dtLancamento;
 
     public MovimentoBoleto() {
         this.id = -1;
         this.movimento = new Movimento();
         this.boleto = new Boleto();
+        this.dtLancamento = DataHoje.dataHoje();
     }
     
-    public MovimentoBoleto(int id, Movimento movimento, Boleto boleto) {
+    public MovimentoBoleto(int id, Movimento movimento, Boleto boleto, Date dtLancamento) {
         this.id = id;
         this.movimento = movimento;
         this.boleto = boleto;
+        this.dtLancamento = dtLancamento;
     }
 
     public int getId() {
@@ -58,6 +67,20 @@ public class MovimentoBoleto implements java.io.Serializable {
     public void setBoleto(Boleto boleto) {
         this.boleto = boleto;
     }
+
+    public Date getDtLancamento() {
+        return dtLancamento;
+    }
+
+    public void setDtLancamento(Date dtLancamento) {
+        this.dtLancamento = dtLancamento;
+    }
     
-    
+    public String getLancamento() {
+        return DataHoje.converteData(dtLancamento);
+    }
+
+    public void setLancamento(String lancamento) {
+        this.dtLancamento = DataHoje.converte(lancamento);
+    }
 }

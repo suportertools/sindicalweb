@@ -4,6 +4,7 @@ import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.EntityManager;
 
 public interface FisicaDB {
@@ -48,5 +49,7 @@ public interface FisicaDB {
 
     public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente);
 
+    public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa);
+    
     public Fisica pesquisaFisicaPorNomeNascimento(String nome, Date nascimento);
 }

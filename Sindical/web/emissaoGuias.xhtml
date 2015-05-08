@@ -121,8 +121,8 @@
                                         <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto and !emissaoGuiasBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="opacity: 100!important; font-weight: bold; color: black">
                                             <p:ajax event="change" update="i_panel_servicos" />
                                         </p:inputText>
-                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto and emissaoGuiasBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="opacity: 100!important; font-weight: bold; color: black" onclick="PF('dlg_autentica_usuario').show()" readonly="true">
-                                            
+                                        <p:inputText size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.servicox.produto and emissaoGuiasBean.cab.verificarPermissao('autorizaDescontos', 3)}" style="opacity: 100!important; font-weight: bold; color: black">
+                                            <p:ajax event="click" listener="#{emissaoGuiasBean.autorizarDesconto}" />
                                         </p:inputText>
                                     </h:column>
                                     
@@ -180,7 +180,7 @@
                             <p:dialog widgetVar="dlg_desconto" modal="true" header="Inserir Desconto" width="200">  
                                 <h:panelGrid>
                                     <p:outputLabel value="Digite o valor do Desconto" />
-                                    <p:inputText value="#{emissaoGuiasBean.desconto}" style="width: 100px; text-align: right">
+                                    <p:inputText value="#{emissaoGuiasBean.novoDesconto}" style="width: 100px; text-align: right">
                                         <p:ajax event="change" update="@this" />
                                     </p:inputText>
                                 </h:panelGrid>
@@ -371,7 +371,7 @@
                                 <h:panelGrid columns="2">
                                     <h:column>
                                         <br />
-                                        <p:commandButton icon="ui-icon-check" value="Validar" action="#{autenticaUsuario.validarUsuario('dlg_desconto', 'autorizaDescontos', 3)}" update="i_autentica_usuario"/>
+                                        <p:commandButton icon="ui-icon-check" value="Validar" action="#{autenticaUsuario.validarUsuario()}" update="i_autentica_usuario"/>
                                     </h:column>
                                     
                                     <h:column>

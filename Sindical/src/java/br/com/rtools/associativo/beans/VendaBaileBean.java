@@ -32,6 +32,8 @@ public class VendaBaileBean implements Serializable {
     private BVenda venda = new BVenda();
     private List<Mesa> listaMesa = new ArrayList();
     private List<Integer> listaQuantidade = new ArrayList();
+    
+    private Boolean todos = false;
 
     public void adicionarMesa() {
         int idEmb = Integer.parseInt(listaMesasBaile.get(idMesaBaile).getDescription());
@@ -55,25 +57,26 @@ public class VendaBaileBean implements Serializable {
         }
     }
 
-//    public void adicionarMesa(EventoBaileMapa ebm) {
-//        for (int i = 0; i < listaMesa.size(); i++) {
-//            if (listaMesa.get(i).getEventoBaileMapa().getId() == ebm.getId()) {
-//                listaMesa.remove(i);
-//                return;
-//            }
-//        }
-//        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//        listaMesa.add(new Mesa(-1, null, (AStatus) sv.find("AStatus", 1), ebm));
-//    }
-//
-//    public void removerMesa(Mesa me) {
-//        for (int i = 0; i < listaMesa.size(); i++) {
-//            if (listaMesa.get(i).getEventoBaileMapa().getId() == me.getEventoBaileMapa().getId()) {
-//                listaMesa.remove(i);
-//                return;
-//            }
-//        }
-//    }
+    public void adicionarMesa(EventoBaileMapa ebm) {
+        for (int i = 0; i < listaMesa.size(); i++) {
+            if (listaMesa.get(i).getEventoBaileMapa().getId() == ebm.getId()) {
+                listaMesa.remove(i);
+                return;
+            }
+        }
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        listaMesa.add(new Mesa(-1, null, (AStatus) sv.find("AStatus", 1), ebm));
+    }
+
+    public void removerMesa(Mesa me) {
+        for (int i = 0; i < listaMesa.size(); i++) {
+            if (listaMesa.get(i).getEventoBaileMapa().getId() == me.getEventoBaileMapa().getId()) {
+                listaMesa.remove(i);
+                return;
+            }
+        }
+    }
+    
     public String retornaStatus(EventoBaileMapa ebm) {
         for (Mesa listaMesa1 : listaMesa) {
             if (listaMesa1.getEventoBaileMapa().getId() == ebm.getId()) {
@@ -85,12 +88,12 @@ public class VendaBaileBean implements Serializable {
 
     public void salvar() {
         if (fisica.getId() == -1) {
-            GenericaMensagem.warn("Erro", "Pesquise uma pessoa para salvar esta venda!");
+            GenericaMensagem.warn("Atenção", "Pesquise uma pessoa para salvar esta venda!");
             return;
         }
 
         if (listaMesa.isEmpty()) {
-            GenericaMensagem.warn("Erro", "Lista de Mesa esta vazia!");
+            GenericaMensagem.warn("Atenção", "Lista de Mesa esta vazia!");
         }
     }
 
@@ -141,7 +144,7 @@ public class VendaBaileBean implements Serializable {
 
     public Fisica getFisica() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
-            fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa");
+            fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
         }
         return fisica;
     }
@@ -167,7 +170,7 @@ public class VendaBaileBean implements Serializable {
     }
 
     public List<SelectItem> getListaMesasBaile() {
-        if (listaMesasBaile.isEmpty()) {
+        if (listaMesasBaile.isEmpty() && !listaEventoBaile.isEmpty()) {
             EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
             //List<Mesa> list = (List<Mesa>) eventoBaileDB.listaMesasEvento(Integer.parseInt(listaEventoBaile.get(indexEventoBaile).getDescription()));
             List<EventoBaileMapa> list = (List<EventoBaileMapa>) eventoBaileDB.listaBaileMapaDisponiveis(Integer.parseInt(listaEventoBaile.get(indexEventoBaile).getDescription()));
@@ -188,6 +191,14 @@ public class VendaBaileBean implements Serializable {
 
     public void setIdMesaBaile(int idMesaBaile) {
         this.idMesaBaile = idMesaBaile;
+    }
+
+    public Boolean getTodos() {
+        return todos;
+    }
+
+    public void setTodos(Boolean todos) {
+        this.todos = todos;
     }
 
 }
