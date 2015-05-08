@@ -24,10 +24,9 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                     + "     m.ds_referencia, \n"
                     + "     m.dt_vencimento as vencimento, \n"
                     + "     func_valor(m.id) as valor, \n"
-                    //+ "     m.nr_valor as valor, "
                     + "     func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as acrescimo, \n"
                     + "     m.nr_desconto as desconto, \n"
-                    + "     m.nr_valor+func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as vl_calculado, \n"
+                    + "     func_valor(m.id)+func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as vl_calculado, \n"
                     + "     bx.dt_baixa, \n"
                     + "     nr_valor_baixa as valor_pago,  \n"
                     + "     m.ds_es as es, \n"
@@ -158,7 +157,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
         float[] valor = new float[2];
         String textqry
                 = " SELECT func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as acrescimo, "
-                + "        m.nr_valor+func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as valor "
+                + "        func_valor(m.id)+func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as valor "
                 + "   FROM fin_movimento m "
                 + "  WHERE m.id = " + id_movimento;
         try {
