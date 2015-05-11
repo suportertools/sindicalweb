@@ -1155,46 +1155,42 @@ public class MovimentosReceberSocialBean implements Serializable {
         }
         return null;
     }
-
+    
     public void calculoDesconto() {
         float descPorcento = 0;
         float desc = 0;
-        float acre = 0;
         float calc = Moeda.substituiVirgulaFloat(getValorPraDesconto()); // VALOR PARA DESCONTO TEM QUE SER A SOMA DE TODOS OS VALORES CHECADOS (MENOS) IF SEM ACRESCIMO
+        float calculo_total_aberto = 0;
+        
         if (Moeda.converteUS$(desconto) > calc) {
             desconto = String.valueOf(calc);
         }
 
         descPorcento = Moeda.multiplicarValores(Moeda.divisaoValores(Moeda.converteUS$(desconto), calc), 100);
-
+        List<DataObject> linha = new ArrayList();
+        
         for (int i = 0; i < listaMovimento.size(); i++) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
             float[] valorx = db.pesquisaValorAcrescimo((Integer) listaMovimento.get(i).getArgumento1());
             
-            if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
-            //    acre = Moeda.converteUS$(listaMovimento.get(i).getArgumento7().toString());
-
-            //    float valor_calc = Moeda.somaValores(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()), acre);
-                
-                
-                
-                
-                
-
+            if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {   
+                float calculo = 0;
                 if ((Boolean)listaMovimento.get(i).getArgumento29()){
                     float valox = valorx[1];
                     desc = Moeda.divisaoValores(Moeda.multiplicarValores(valox, descPorcento), 100);
                     listaMovimento.get(i).setArgumento8(Moeda.converteR$(String.valueOf(desc)));
-                    float calculo = Moeda.subtracaoValores(valox, desc);
+                    calculo = Moeda.converteFloatR$Float(Moeda.subtracaoValores(valox, desc));
                     listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(calculo)));
+                    
+                    
+                    linha.add(listaMovimento.get(i));
                 }else{
                     float valox = Moeda.subtracaoValores(valorx[1], valorx[0]);
                     desc = Moeda.divisaoValores(Moeda.multiplicarValores(valox, descPorcento), 100);
-                    float calculo = Moeda.subtracaoValores(valox, desc);
-                    //calculo = Moeda.subtracaoValores(calculo, valorx[0]);
+                    calculo = Moeda.converteFloatR$Float(Moeda.subtracaoValores(valox, desc));
                     listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(calculo)));
                 }
-                
+                calculo_total_aberto = Moeda.somaValores(calculo_total_aberto, calculo);
             } else {
                 listaMovimento.get(i).setArgumento8("0,00");
                 if ((Boolean)listaMovimento.get(i).getArgumento29())
@@ -1204,8 +1200,43 @@ public class MovimentosReceberSocialBean implements Serializable {
                 //listaMovimento.get(i).setArgumento9(Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()));
             }
         }
-    }
+        
+        // CORRIGE OS VALORES QUE NÃO CORRESPONDE OS CENTAVOS APÓS DESCONTO
+        // ex. VALOR 27,00 DESCONTO 20,00 VALOR CALCULADO 6,99
+        // ADICIONA 0,01 CENTAVO NO ULTIMO MOVIMENTO SELECIONADO
+        float calcx = Moeda.subtracaoValores(calc, Moeda.converteUS$(desconto));
+        if (calcx != Moeda.converteFloatR$Float(calculo_total_aberto)){
+            if (calculo_total_aberto > calcx){
+                int quantidade = Integer.valueOf(Moeda.limparVirgula( Moeda.converteR$Float(Moeda.subtracaoValores(calculo_total_aberto, calcx)) ));
+                for (int i = 0; i < quantidade; i++){
+                    // SOMA O DESCONTO
+                    float vld = Moeda.converteUS$(linha.get(i).getArgumento8().toString());
+                    vld = Moeda.somaValores(vld, Float.parseFloat("0.01"));
+                    linha.get(i).setArgumento8(Moeda.converteR$Float(vld));
 
+                    // SUBTRAI DO VALOR CALCULADO
+                    float vlc = Moeda.converteUS$(linha.get(i).getArgumento9().toString());
+                    vlc = Moeda.subtracaoValores(vlc, Float.parseFloat("0.01"));
+                    linha.get(i).setArgumento9(Moeda.converteR$Float(vlc));
+                }
+            }else{
+                int quantidade = Integer.valueOf(Moeda.limparVirgula( Moeda.converteR$Float(Moeda.subtracaoValores(calcx, calculo_total_aberto)) ));
+                for (int i = 0; i < quantidade; i++){
+                    // SUBTRAI DO DESCONTO
+                    float vld = Moeda.converteUS$(linha.get(i).getArgumento8().toString());
+                    vld = Moeda.subtracaoValores(vld, Float.parseFloat("0.01"));
+                    linha.get(i).setArgumento8(Moeda.converteR$Float(vld));
+                    
+                    // SOMA O VALOR CALCULADO
+                    float vlc = Moeda.converteUS$(linha.get(i).getArgumento9().toString());
+                    vlc = Moeda.somaValores(vlc, Float.parseFloat("0.01"));
+                    linha.get(i).setArgumento9(Moeda.converteR$Float(vlc));
+                }
+            }
+        }
+        // ------------------------------------------------------------------
+    }
+    
     public void atualizarStatus() {
         listaMovimento.clear();
     }
@@ -1287,7 +1318,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             float soma = 0;
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
-                    soma = Moeda.somaValores(soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
+                    soma = Moeda.somaValores( soma, Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()) );
                 }
             }
             //return Moeda.converteR$Float(Moeda.subtracaoValores(soma, Moeda.converteUS$(desconto)));
@@ -1343,11 +1374,13 @@ public class MovimentosReceberSocialBean implements Serializable {
     }
 
     public void marcarTodos() {
-        for (int i = 0; i < listaMovimento.size(); i++) {
-            listaMovimento.get(i).setArgumento0(chkSeleciona);
+        for (DataObject listaMovimento1 : listaMovimento) {
+            listaMovimento1.setArgumento0(chkSeleciona);
         }
+        
+        calculoDesconto();
     }
-
+    
     public List<DataObject> getListaMovimento() {
         if (listaMovimento.isEmpty() && !listaPessoa.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
