@@ -34,23 +34,31 @@
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="2">
                                     <h:column>
-                                        <h:outputText value="Baile"/><br />
+                                        <h:outputText value="Baile" style="font-weight: bold"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:selectBooleanCheckbox value="#{vendaBaileBean.todos}" itemLabel="Mostrar Todos" />
+                                    </h:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid>
+                                    <h:column>
                                         <p:selectOneMenu value="#{vendaBaileBean.indexEventoBaile}" style="width: 500px; padding-right: 20px">
                                             <f:selectItems value="#{vendaBaileBean.listaEventoBaile}" />
                                         </p:selectOneMenu>
                                     </h:column>
                                 </h:panelGrid>
                                 
-                                <p:selectBooleanCheckbox value="#{vendaBaileBean.todos}" itemLabel="Todos" />
-
                                 <h:panelGrid id="i_panel_pessoa" columns="2">
                                     <p:commandButton ajax="false" value="Adicionar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" rendered="#{vendaBaileBean.fisica.id == -1}"/>
                                     <p:outputLabel value="#{vendaBaileBean.fisica.pessoa.nome}" rendered="#{vendaBaileBean.fisica.id != -1}" style="font-size: 13pt!important"/>
                                     <p:commandButton icon="ui-icon-trash" action="#{vendaBaileBean.removerFisica}" update="i_panel_pessoa" rendered="#{vendaBaileBean.fisica.id != -1}" />
                                 </h:panelGrid>
                             </p:panel>
+                            
                             <br />
-                            <h:panelGrid columns="2">
+                            
+                            <h:panelGrid columns="2" rendered="false">
                                 <p:commandLink value="Vender Mesa" style="font-size: 12pt!important" onclick="PF('i_dlg_mapa_x').show()"/>
                                 <p:commandLink value="Vender Convite" style="font-size: 12pt!important; margin-left: 30px;" onclick="PF('i_dlg_mapa').show()"/>
                             </h:panelGrid>
@@ -90,13 +98,20 @@
                         </h:form>
 
                         <h:form id="formVendasBaileTbl">
-                            <h:panelGrid columns="6">
-                                <p:outputLabel value="Mesa: " />
-                                <p:selectOneMenu value="#{vendaBaileBean.idMesaBaile}">
-                                    <f:selectItems value="#{vendaBaileBean.listaMesasBaile}" />
-                                </p:selectOneMenu>
-                                <p:commandButton action="#{vendaBaileBean.adicionarMesa}" value="Adicionar" update="tbl" />
-                            </h:panelGrid>                          
+                            <h:panelGrid columns="2">
+                                <p:column>
+                                    <p:outputLabel value="Mesa" /><br />
+                                    <p:selectOneMenu value="#{vendaBaileBean.idMesaBaile}">
+                                        <f:selectItems value="#{vendaBaileBean.listaMesasBaile}" />
+                                    </p:selectOneMenu>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton action="#{vendaBaileBean.adicionarMesa}" value="Adicionar" update="tbl" />
+                                </p:column>
+                            </h:panelGrid>
+                            
                             <p:dataTable value="#{vendaBaileBean.listaMesa}" var="mesa" id="tbl" emptyMessage="Nenhuma mesa adicionada!" styleClass="margin-top-max">
                                 <p:column headerText="Serviços">
                                     <h:outputLabel value="#{mesa.eventoBaileMapa.eventoBaile.evento.descricaoEvento.descricao}" />
