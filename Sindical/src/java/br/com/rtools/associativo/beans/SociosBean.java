@@ -2431,22 +2431,15 @@ public class SociosBean implements Serializable {
 
     public String imprimirFichaSocial() {
         String foto = getFotoSocio();
-        String path = "/Relatorios/FICHACADASTRO.jasper";
-        String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
-//        File fp = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"));
-//        if (fp.exists()) {
-//            path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
-//        }
-        File f = new File("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper");
-        if (f.exists()) {
-            pathVerso = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
-        }
+        
+        String path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
+        String pathVerso = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTROVERSO.jasper";
+        
         Diretorio.criar("Arquivos/downloads/fichas");
-        String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
+        //String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
         ImpressaoParaSocios.comDependente(
-                caminhoDiretorio,
                 "ficha_" + socios.getId() + "_" + socios.getServicoPessoa().getPessoa().getId() + ".pdf",
-                "/Relatorios/FICHACADASTRO.jasper",
+                path,
                 pathVerso,
                 socios,
                 pessoaEmpresa,

@@ -283,7 +283,7 @@ public class ImpressaoParaSocios {
         return true;
     }
 
-    public static void comDependente(String pathPasta, String nomeDownload, String path, String pathVerso, Socios socios, PessoaEmpresa pessoaEmpresa, MatriculaSocios matriculaSocios, boolean imprimirVerso, String fotoSocio) {
+    public static void comDependente(String nomeDownload, String path, String pathVerso, Socios socios, PessoaEmpresa pessoaEmpresa, MatriculaSocios matriculaSocios, boolean imprimirVerso, String fotoSocio) {
         Dao dao = new Dao();
         Registro registro = (Registro) dao.find(new Registro(), 1);
         Fisica fisica = new Fisica();
