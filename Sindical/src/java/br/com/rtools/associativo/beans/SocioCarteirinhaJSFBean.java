@@ -23,6 +23,7 @@ import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -250,9 +251,9 @@ public class SocioCarteirinhaJSFBean {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
-            Collection listaSocios = new ArrayList<FichaSocial>();
+            Collection listaSocios = new ArrayList();
 
-            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"));
             JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
@@ -419,7 +420,7 @@ public class SocioCarteirinhaJSFBean {
                                 sindicato.getPessoa().getEmail1(),
                                 sindicato.getPessoa().getSite(),
                                 sindicato.getPessoa().getTelefone1(),
-                                ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
+                                ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"),
                                 dados[29],
                                 fisica.getRecadastro(),
                                 dados[30],
@@ -503,7 +504,7 @@ public class SocioCarteirinhaJSFBean {
                                     "",
                                     "",
                                     "",
-                                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
+                                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"),
                                     "",
                                     null, "", "", "", "", ""));
                         }
@@ -553,7 +554,7 @@ public class SocioCarteirinhaJSFBean {
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
 
-            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            File fl = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"));
             JasperReport jasper = (JasperReport) JRLoader.loadObject(fl);
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
@@ -720,7 +721,7 @@ public class SocioCarteirinhaJSFBean {
                                 sindicato.getPessoa().getEmail1(),
                                 sindicato.getPessoa().getSite(),
                                 sindicato.getPessoa().getTelefone1(),
-                                ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROVERSO.jasper"),
+                                ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"),
                                 dados[29],
                                 fisica.getRecadastro(),
                                 dados[30],
