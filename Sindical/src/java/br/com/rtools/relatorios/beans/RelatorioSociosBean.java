@@ -468,16 +468,23 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(75)), // EMAIL 1
                     getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
                     getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
-                    getConverteNullString(result.get(i).get(78)) // CONTABILIDADE - EMAIL
+                    getConverteNullString(result.get(i).get(78)), // CONTABILIDADE - EMAIL
+                    getConverteNullString(result.get(i).get(79)), // ADMISSAO EMPRESA DEMISSIONADA
+                    getConverteNullString(result.get(i).get(80)), // DEMISSAO EMPRESA DEMISSIONADA
+                    getConverteNullString(result.get(i).get(81)), // CNPJ EMPRESA DEMISSIONADA
+                    getConverteNullString(result.get(i).get(82)), // EMPRESA DEMISSIONADA
+                    getConverteNullString(result.get(i).get(83)) // IDADE
             ));
 //            if (i == 2392){
 //                break;
 //            }
         }
+        
         if (lista.isEmpty()) {
             GenericaMensagem.warn("Sistema", "Nenhum registro encontrado!");
             return null;
         }
+        
         Jasper.PART_NAME = AnaliseString.removerAcentos(relatorios.getNome().toLowerCase());
         Jasper.PART_NAME = Jasper.PART_NAME.replace("/", "");
         Jasper.PATH = "downloads";

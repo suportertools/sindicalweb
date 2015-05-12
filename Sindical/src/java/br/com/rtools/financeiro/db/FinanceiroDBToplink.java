@@ -283,25 +283,26 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List listaMovimentoCaixa(int id_caixa, String es, Integer id_usuario) {
         try {
-            String and = (id_usuario == null) ? "" : " and u.id = "+id_usuario;
-            Query qry = getEntityManager().createNativeQuery("select distinct(tp.id), " +
-                                                        "       m.ds_es, " +
-                                                        "	b.dt_baixa, " +
-                                                        "	b.id_caixa, " +
-                                                        "	p.ds_nome, " +
-                                                        "	tp.ds_descricao, " +
-                                                        "	f.nr_valor, " +
-                                                        "       cx.id_filial, " +
-                                                        "       b.id " +
-                                                        " from fin_forma_pagamento as f " +
-                                                        " inner join fin_baixa as b on b.id=f.id_baixa " +
-                                                        " inner join seg_usuario as u on u.id=b.id_usuario " +
-                                                        " inner join pes_pessoa as p on p.id=u.id_pessoa " +
-                                                        " inner join fin_movimento as m on m.id_baixa=b.id " +
-                                                        " inner join fin_tipo_pagamento tp on tp.id = f.id_tipo_pagamento " +
-                                                        " inner join fin_caixa as cx on cx.id = b.id_caixa " +
-                                                        " where b.id_caixa = "+id_caixa+" and b.id_fechamento_caixa is null " +
-                                                        "   and m.ds_es = '"+es+"' "+ and);
+            String and = (id_usuario == null) ? "" : " AND u.id = "+id_usuario;
+            Query qry = getEntityManager().createNativeQuery(
+                                                        "SELECT distinct(f.id), \n " +
+                                                        "       m.ds_es, \n " +
+                                                        "	b.dt_baixa, \n " +
+                                                        "	b.id_caixa, \n " +
+                                                        "	p.ds_nome, \n " +
+                                                        "	tp.ds_descricao, \n " +
+                                                        "	f.nr_valor, \n " +
+                                                        "       cx.id_filial, \n " +
+                                                        "       b.id \n " +
+                                                        "  FROM fin_forma_pagamento AS f \n " +
+                                                        " INNER JOIN fin_baixa AS b ON b.id=f.id_baixa \n " +
+                                                        " INNER JOIN seg_usuario AS u ON u.id=b.id_usuario \n " +
+                                                        " INNER JOIN pes_pessoa AS p ON p.id=u.id_pessoa \n " +
+                                                        " INNER JOIN fin_movimento AS m ON m.id_baixa=b.id \n " +
+                                                        " INNER JOIN fin_tipo_pagamento AS tp ON tp.id = f.id_tipo_pagamento \n " +
+                                                        " INNER JOIN fin_caixa AS cx ON cx.id = b.id_caixa \n " +
+                                                        " WHERE b.id_caixa = "+id_caixa+" AND b.id_fechamento_caixa IS NULL \n " +
+                                                        "   AND m.ds_es = '"+es+"' \n "+ and);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();

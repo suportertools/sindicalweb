@@ -54,7 +54,7 @@
                             <p:outputLabel value="Cadastro Física" styleClass="fonteHeader"/>
                             <c:set scope="request" var="object" value="${fisicaBean.fisica}"/>
                             <div class="clear"></div>
-                            <h:panelGrid id="i_p_o" >
+                            <h:panelGrid id="i_p_o">
                                 <p:panel style="border: 1px dashed red;" rendered="#{fisicaBean.pessoaOposicao}">
                                     <h:outputLabel value="Pessoa cadastrada em oposição!" styleClass="bold"/>
                                 </p:panel>
@@ -68,7 +68,7 @@
                                         <h:panelGrid id="i_panel_dados" columns="2" style="height: 400px; width: 100%">
                                             <p:column>
                                                 <p:panel styleClass="fundoCinza">
-                                                    <h:panelGrid columns="4">
+                                                    <h:panelGrid columns="5">
                                                         <p:column>
                                                             <p:outputLabel value="Cadastrado"/><br />
                                                             <p:calendar size="8" value="#{fisicaBean.fisica.pessoa.dtCriacao}" pattern="dd/MM/yyyy" yearRange="c-1:c+1" mask="99/99/9999" locale="pt_BR">
@@ -93,9 +93,14 @@
                                                         <p:column>
                                                             <p:outputLabel value="Nascimento" /><br />
                                                             <p:calendar size="8" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" mask="99/99/9999" converterMessage="Data de nascimento inválida - Formato 01/01/1900"  locale="pt_BR">
-                                                                <p:ajax event="dateSelect" update="@this"  listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
-                                                                <p:ajax event="change" update="@this"  />
+                                                                <p:ajax event="dateSelect" update="@this i_idade"  listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
+                                                                <p:ajax event="change" update="@this i_idade"  />
                                                             </p:calendar>
+                                                        </p:column>
+                                                        
+                                                        <p:column>
+                                                            <br />
+                                                            <p:outputLabel id="i_idade" value="#{fisicaBean.idade()}" style="font-weight: bold; font-size: 12pt!important"/>
                                                         </p:column>
                                                     </h:panelGrid>
 

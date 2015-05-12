@@ -1,4 +1,4 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
@@ -33,15 +33,25 @@
                         <h:form id="formLancamentoIndividual">
                             <p:panel id="i_panel_pessoa" styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="2">
-                                    <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica()}" title="Pesquisar Pessoa Física"/>
-                                    <p:outputLabel value="Pesquisar Pessoa Física" rendered="#{lancamentoIndividualBean.fisica.id == -1}"/>
-                                    <p:outputLabel value="#{lancamentoIndividualBean.fisica.pessoa.nome}" rendered="#{lancamentoIndividualBean.fisica.id != -1}"/>
+                                    <p:column>
+                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica()}" title="Pesquisar Pessoa Física"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Pesquisar Pessoa Física" rendered="#{lancamentoIndividualBean.fisica.id == -1}"/>
+                                        <p:outputLabel value="#{lancamentoIndividualBean.fisica.pessoa.nome}" rendered="#{lancamentoIndividualBean.fisica.id != -1}"/>
+                                    </p:column>
                                 </h:panelGrid>
 
                                 <h:panelGrid columns="2">
-                                    <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa()}" title="Alterar Responsável"/>
-                                    <p:outputLabel value="Alterar Responsável" title="Pessoa Responsável" rendered="#{lancamentoIndividualBean.responsavel.id == -1}"/>
-                                    <p:outputLabel value="#{lancamentoIndividualBean.responsavel.nome}" title="Pessoa Responsável" />
+                                    <p:column>
+                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa()}" title="Alterar Responsável"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Alterar Responsável" title="Pessoa Responsável" rendered="#{lancamentoIndividualBean.responsavel.id == -1}"/>
+                                        <p:outputLabel value="#{lancamentoIndividualBean.responsavel.nome}" title="Pessoa Responsável" />
+                                    </p:column>
                                 </h:panelGrid>
 
                                 <h:panelGrid columns="1">

@@ -150,96 +150,114 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
             boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias) {
+        
+        String p_demissao="";
+        
+        if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()){
+            p_demissao = " , pempresa.admissao_empresa_demissionada, \n" + // 79
+                         "   pempresa.demissao_empresa_demissionada, \n" + // 80
+                         "   pempresa.cnpj_empresa_demissionada, \n" + // 81
+                         "   pempresa.empresa_demissionada \n " ; // 82
+        }else{
+            p_demissao = " , null AS admissao_empresa_demissionada, \n" + // 79
+                         "   null AS demissao_empresa_demissionada, \n" + // 80
+                         "   null AS cnpj_empresa_demissionada, \n" + // 81
+                         "   null AS empresa_demissionada \n " ; // 82
+        }
+        
         String textQry = ""
                 + "SELECT "
-                + "           ''                  AS sindLogo,                  " // 0
-                + "           sind.jurSite        AS sindSite,                  " // 1
-                + "           sind.jurNome        AS sinnome,                   " // 2
-                + "           sind.jurEndereco    AS sinendereco,               " // 3
-                + "           sind.jurLogradouro  AS sinlogradouro,             " // 4
-                + "           sind.jurNumero      AS sinnumero,                 " // 5
-                + "           sind.jurComplemento AS sincomplemento,            " // 6
-                + "           sind.jurBairro      AS sinbairro,                 " // 7
-                + "           substring(sind.jurCep,1,5)||'-'||substring(sind.jurCep,6,3)  AS sincep,   "
-                + "           sind.jurCidade      AS sincidade,                 " // 9
-                + "           sind.jurUf          AS sinuF,                     " // 10
-                + "           sind.jurDocumento   AS sindocumento,              " // 11
-                + "           p.codigo,                                         " // 12
-                + "           p.cadastro,                                       " // 13
-                + "           p.nome,                                           " // 14
-                + "           p.cpf,                                            " // 15
-                + "           p.telefone,                                       " // 16
-                + "           p.ds_uf_emissao_rg,                               " // 17
-                + "           p.estado_civil,                                   " // 18
-                + "           p.ctps,                                           " // 19
-                + "           p.pai,                                            " // 20
-                + "           p.sexo,                                           " // 21
-                + "           p.mae,                                            " // 22
-                + "           p.nacionalidade,                                  " // 23
-                + "           p.nit,                                            " // 24
-                + "           p.ds_orgao_emissao_rg,                            " // 25
-                + "           p.ds_pis,                                         " // 26
-                + "           p.ds_serie,                                       " // 27
-                + "           p.dt_aposentadoria,                               " // 28
-                + "           p.ds_naturalidade,                                " // 29
-                + "           p.recadastro,                                     " // 30
-                + "           p.dt_nascimento,                                  " // 31
-                + "           p.dt_foto,                                        " // 32
-                + "           p.ds_rg,                                          " // 33
-                + "           foto,                                             " // 34
-                + "           p.logradouro,                                     " // 35
-                + "           p.endereco,                                       " // 36
-                + "           p.numero,                                         " // 37
-                + "           p.complemento,                                    " // 38
-                + "           p.bairro,                                         " // 39
-                + "           p.cidade,                                         " // 40
-                + "           p.uf,                                             " // 41
-                + "           p.cep,                                            " // 42
-                + "           p.setor,                                          " // 43
-                + "           p.admissao,                                       " // 44
-                + "           p.profissao,                                      " // 45
-                + "           p.fantasia,                                       " // 46
-                + "           p.empresa,                                        " // 47
-                + "           p.cnpj,                                           " // 48
-                + "           p.e_telefone,                                     " // 49
-                + "           p.e_logradouro,                                   " // 50
-                + "           p.e_endereco,                                     " // 51
-                + "           p.e_numero,                                       " // 52
-                + "           p.e_complemento,                                  " // 53
-                + "           p.e_bairro,                                       " // 54
-                + "           p.e_cidade,                                       " // 55
-                + "           p.e_uf,                                           " // 56
-                + "           p.e_cep,                                          " // 57
-                + "           titular,                                          " // 58
-                + "           so.codsocio,                                      " // 59
-                + "           pt.ds_nome as titular,                            " // 60
-                + "           so.parentesco,                                    " // 61
-                + "           so.matricula,                                     " // 62
-                + "           so.categoria,                                     " // 63
-                + "           so.grupo_categoria,                               " // 64
-                + "           so.filiacao,                                      " // 65
-                + "           so.inativacao,                                    " // 66
-                + "           so.votante,                                       " // 67
-                + "           so.grau,                                          " // 68
-                + "           so.nr_desconto,                                   " // 69
-                + "           so.desconto_folha,                                " // 70
-                + "           so.tipo_cobranca,                                 " // 71
-                + "           so.cod_tipo_cobranca,                             " // 72
-                + "           p.telefone2,                                      " // 73
-                + "           p.telefone3,                                      " // 74           
-                + "           p.email,                                          " // 75
-                + "           PC.ds_nome,                                       " // 76
-                + "           PJC.ds_contato,                                   " // 77
-                + "           PC.ds_telefone1                                   " // 78
-                + "      FROM pes_pessoa_vw      AS p                           "
-                + "INNER JOIN soc_socios_vw      AS so   ON so.codsocio     = p.codigo              "
-                + "INNER JOIN pes_juridica_vw    AS sind ON sind.id_pessoa  = 1                     "
-                + "INNER JOIN pes_pessoa         AS pt   ON pt.id           = so.titular            "
-                + " LEFT JOIN pes_juridica       AS J    ON J.id            = P.e_id                "
-                + " LEFT JOIN pes_juridica       AS PJC  ON PJC.id          = J.id_contabilidade    "
-                + " LEFT JOIN pes_pessoa         AS PC   ON PC.id           = PJC.id_pessoa         ";
+                + "           ''                  AS sindLogo,                  \n " // 0
+                + "           sind.jurSite        AS sindSite,                  \n " // 1
+                + "           sind.jurNome        AS sinnome,                   \n " // 2
+                + "           sind.jurEndereco    AS sinendereco,               \n " // 3
+                + "           sind.jurLogradouro  AS sinlogradouro,             \n " // 4
+                + "           sind.jurNumero      AS sinnumero,                 \n " // 5
+                + "           sind.jurComplemento AS sincomplemento,            \n " // 6
+                + "           sind.jurBairro      AS sinbairro,                 \n " // 7
+                + "           substring(sind.jurCep,1,5)||'-'||substring(sind.jurCep,6,3)  AS sincep,   \n "
+                + "           sind.jurCidade      AS sincidade,                 \n " // 9
+                + "           sind.jurUf          AS sinuF,                     \n " // 10
+                + "           sind.jurDocumento   AS sindocumento,              \n " // 11
+                + "           p.codigo,                                         \n " // 12
+                + "           p.cadastro,                                       \n " // 13
+                + "           p.nome,                                           \n " // 14
+                + "           p.cpf,                                            \n " // 15
+                + "           p.telefone,                                       \n " // 16
+                + "           p.ds_uf_emissao_rg,                               \n " // 17
+                + "           p.estado_civil,                                   \n " // 18
+                + "           p.ctps,                                           \n " // 19
+                + "           p.pai,                                            \n " // 20
+                + "           p.sexo,                                           \n " // 21
+                + "           p.mae,                                            \n " // 22
+                + "           p.nacionalidade,                                  \n " // 23
+                + "           p.nit,                                            \n " // 24
+                + "           p.ds_orgao_emissao_rg,                            \n " // 25
+                + "           p.ds_pis,                                         \n " // 26
+                + "           p.ds_serie,                                       \n " // 27
+                + "           p.dt_aposentadoria,                               \n " // 28
+                + "           p.ds_naturalidade,                                \n " // 29
+                + "           p.recadastro,                                     \n " // 30
+                + "           p.dt_nascimento,                                  \n " // 31
+                + "           p.dt_foto,                                        \n " // 32
+                + "           p.ds_rg,                                          \n " // 33
+                + "           foto,                                             \n " // 34
+                + "           p.logradouro,                                     \n " // 35
+                + "           p.endereco,                                       \n " // 36
+                + "           p.numero,                                         \n " // 37
+                + "           p.complemento,                                    \n " // 38
+                + "           p.bairro,                                         \n " // 39
+                + "           p.cidade,                                         \n " // 40
+                + "           p.uf,                                             \n " // 41
+                + "           p.cep,                                            \n " // 42
+                + "           p.setor,                                          \n " // 43
+                + "           p.admissao,                                       \n " // 44
+                + "           p.profissao,                                      \n " // 45
+                + "           p.fantasia,                                       \n " // 46
+                + "           p.empresa,                                        \n " // 47
+                + "           p.cnpj,                                           \n " // 48
+                + "           p.e_telefone,                                     \n " // 49
+                + "           p.e_logradouro,                                   \n " // 50
+                + "           p.e_endereco,                                     \n " // 51
+                + "           p.e_numero,                                       \n " // 52
+                + "           p.e_complemento,                                  \n " // 53
+                + "           p.e_bairro,                                       \n " // 54
+                + "           p.e_cidade,                                       \n " // 55
+                + "           p.e_uf,                                           \n " // 56
+                + "           p.e_cep,                                          \n " // 57
+                + "           titular,                                          \n " // 58
+                + "           so.codsocio,                                      \n " // 59
+                + "           pt.ds_nome as titular,                            \n " // 60
+                + "           so.parentesco,                                    \n " // 61
+                + "           so.matricula,                                     \n " // 62
+                + "           so.categoria,                                     \n " // 63
+                + "           so.grupo_categoria,                               \n " // 64
+                + "           so.filiacao,                                      \n " // 65
+                + "           so.inativacao,                                    \n " // 66
+                + "           so.votante,                                       \n " // 67
+                + "           so.grau,                                          \n " // 68
+                + "           so.nr_desconto,                                   \n " // 69
+                + "           so.desconto_folha,                                \n " // 70
+                + "           so.tipo_cobranca,                                 \n " // 71
+                + "           so.cod_tipo_cobranca,                             \n " // 72
+                + "           p.telefone2,                                      \n " // 73
+                + "           p.telefone3,                                      \n " // 74           
+                + "           p.email,                                          \n " // 75
+                + "           PC.ds_nome,                                       \n " // 76
+                + "           PJC.ds_contato,                                   \n " // 77
+                + "           PC.ds_telefone1                                   \n " // 78
+                + "           "+p_demissao+",                                   \n " 
+                + "           func_idade(p.dt_nascimento,CURRENT_DATE) AS idade \n " // 83
+                + "      FROM pes_pessoa_vw      AS p                           \n "
+                + "INNER JOIN soc_socios_vw      AS so   ON so.codsocio     = p.codigo              \n "
+                + "INNER JOIN pes_juridica_vw    AS sind ON sind.id_pessoa  = 1                     \n "
+                + "INNER JOIN pes_pessoa         AS pt   ON pt.id           = so.titular            \n "
+                + " LEFT JOIN pes_juridica       AS J    ON J.id            = P.e_id                \n "
+                + " LEFT JOIN pes_juridica       AS PJC  ON PJC.id          = J.id_contabilidade    \n "
+                + " LEFT JOIN pes_pessoa         AS PC   ON PC.id           = PJC.id_pessoa         \n ";
 
         String filtro = "";
+        String innerjoin = "";
 
         if (relatorio.getQry() == null || relatorio.getQry().isEmpty()) {
             filtro = " WHERE ";
@@ -248,123 +266,124 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         }
         // MATRICULA --------------------
         if (booMatricula) {
-            filtro += " so.matricula >= " + matricula_inicial + " AND so.matricula <= " + matricula_final;
+            filtro += " so.matricula >= " + matricula_inicial + " AND so.matricula <= " + matricula_final +" \n ";
         } else {
-            filtro += " so.matricula >= 0 AND so.matricula <= 9999999";
+            filtro += " so.matricula >= 0 AND so.matricula <= 9999999"+" \n ";
         }
 
         //filtro += relatorio.getQry(); 
         // IDADE ------------
         if (booIdade) {
-            filtro += " AND extract(year FROM age(p.dt_nascimento)) >= " + idade_inicial + " AND extract(year FROM age(p.dt_nascimento)) <= " + idade_final;
+            filtro += " AND extract(year FROM age(p.dt_nascimento)) >= " + idade_inicial + " AND extract(year FROM age(p.dt_nascimento)) <= " + idade_final+" \n ";
         }
 
         // GRUPO CATEGORIA ----------------
         if (booGrupo) {
             if (!ids_gc.isEmpty()) {
-                filtro += " AND so.id_grupo_categoria IN(" + ids_gc + ")";
+                filtro += " AND so.id_grupo_categoria IN(" + ids_gc + ")"+" \n ";
             }
 
             if (!ids_gc.isEmpty()) {
-                filtro += " AND so.id_categoria IN(" + ids_c + ")";
+                filtro += " AND so.id_categoria IN(" + ids_c + ")"+" \n ";
             }
         }
 
         // SEXO --------------------
         if (booSexo) {
-            filtro += " AND p.sexo = '" + tipo_sexo + "'";
+            filtro += " AND p.sexo = '" + tipo_sexo + "'"+" \n ";
         }
 
         // PARENTESCO ------------------
         if (booGrau) {
             if (!ids_parentesco.isEmpty()) {
-                filtro += " AND so.id_parentesco IN(" + ids_parentesco + ")";
+                filtro += " AND so.id_parentesco IN(" + ids_parentesco + ")"+" \n ";
             }
         }
 
         if (booFoto) {
             if (tipo_foto.equals("com")) {
-                filtro += " AND p.dt_foto IS NOT NULL";
+                filtro += " AND p.dt_foto IS NOT NULL"+" \n ";
             } else if (tipo_foto.equals("sem")) {
-                filtro += " AND p.dt_foto IS NULL";
+                filtro += " AND p.dt_foto IS NULL"+" \n ";
             }
         }
 
         if (booCarteirinha) {
             if (tipo_carteirinha.equals("com")) {
-                filtro += " AND so.codsocio IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)";
+                filtro += " AND so.codsocio IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)"+" \n ";
             } else if (tipo_carteirinha.equals("sem")) {
-                filtro += " AND so.codsocio NOT IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)";
+                filtro += " AND so.codsocio NOT IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)"+" \n ";
             }
         }
 
         if (booTipoPagamento) {
-            filtro += " AND so.cod_tipo_cobranca IN(" + ids_pagamento + ")";
+            filtro += " AND so.cod_tipo_cobranca IN(" + ids_pagamento + ")"+" \n ";
         }
 
         if (booCidadeSocio) {
-            filtro += " AND p.id_cidade IN(" + ids_cidade_socio + ")";
+            filtro += " AND p.id_cidade IN(" + ids_cidade_socio + ")"+" \n ";
         }
 
         if (booCidadeEmpresa) {
-            filtro += " AND p.e_id_cidade IN(" + ids_cidade_empresa + ")";
+            filtro += " AND p.e_id_cidade IN(" + ids_cidade_empresa + ")"+" \n ";
         }
 
         if (booAniversario) {
-            filtro += " AND substring(text(p.dt_nascimento),6,2) IN('" + meses_aniversario + "')";
+            filtro += " AND substring(text(p.dt_nascimento),6,2) IN('" + meses_aniversario + "')"+" \n ";
 
-            filtro += " AND substring(text(p.dt_nascimento),9,2) >= '" + dia_inicial + "'"
-                    + " AND substring(text(p.dt_nascimento),9,2) <= '" + dia_final + "'";
+            filtro += " AND substring(text(p.dt_nascimento),9,2) >= '" + dia_inicial + "'"+" \n "
+                    + " AND substring(text(p.dt_nascimento),9,2) <= '" + dia_final + "'"+" \n ";
         }
 
         if (booData) {
             // DATA DE CADASTRO ---------------
             if (!dt_cadastro.isEmpty() && !dt_cadastro_fim.isEmpty()) {
-                filtro += " AND p.cadastro >= '" + dt_cadastro + "' AND p.cadastro <= '" + dt_cadastro_fim + "'";
+                filtro += " AND p.cadastro >= '" + dt_cadastro + "' AND p.cadastro <= '" + dt_cadastro_fim + "'"+" \n ";
             } else if (!dt_cadastro.isEmpty()) {
-                filtro += " AND p.cadastro = '" + dt_cadastro + "'";
+                filtro += " AND p.cadastro = '" + dt_cadastro + "'"+" \n ";
             }
 
             // DATA DE RECADASTRO -------------
             if (!dt_recadastro.isEmpty() && !dt_recadastro_fim.isEmpty()) {
-                filtro += " AND p.recadastro >= '" + dt_recadastro + "' AND p.recadastro <= '" + dt_recadastro_fim + "'";
+                filtro += " AND p.recadastro >= '" + dt_recadastro + "' AND p.recadastro <= '" + dt_recadastro_fim + "'"+" \n ";
             } else if (!dt_recadastro.isEmpty()) {
-                filtro += " AND p.recadastro = '" + dt_recadastro + "'";
+                filtro += " AND p.recadastro = '" + dt_recadastro + "'"+" \n ";
             }
 
             // DATA DE DEMISSAO ----------------
             if (!dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
-                filtro += " AND p.demissao >= '" + dt_demissao + "' AND p.demissao <= '" + dt_demissao_fim + "'";
-            } //            else if (!dt_demissao.isEmpty())
-            //                filtro += " and p.demissao = '"+dt_demissao+"'";
-            else {
-                filtro += " AND (p.principal = true OR p.principal IS NULL) ";
-                //filtro += " and p.demissao is null ";
+                innerjoin += " INNER JOIN (SELECT id_fisica, pe.dt_admissao AS admissao_empresa_demissionada, dt_demissao AS demissao_empresa_demissionada, p.ds_documento as cnpj_empresa_demissionada, p.ds_nome as empresa_demissionada \n"
+                           + "               FROM pes_pessoa_empresa pe \n "
+                           + "              INNER JOIN pes_juridica j ON j.id = pe.id_juridica \n "
+                           + "              INNER JOIN pes_pessoa p ON p.id = j.id_pessoa \n "
+                           + "              WHERE pe.dt_demissao >= '" + dt_demissao + "' \n "
+                           + "                AND pe.dt_demissao <= '" + dt_demissao_fim + "' \n "
+                           + " ) AS pempresa ON pempresa.id_fisica = p.id_fisica \n ";
             }
 
             // DATA DE FILIACAO DO SOCIO ----------------
             if (!dt_admissao_socio.isEmpty() && !dt_admissao_socio_fim.isEmpty()) {
-                filtro += " AND so.filiacao >= '" + dt_admissao_socio + "' AND so.filiacao <= '" + dt_admissao_socio_fim + "'";
+                filtro += " AND so.filiacao >= '" + dt_admissao_socio + "' AND so.filiacao <= '" + dt_admissao_socio_fim + "'"+" \n ";
             } else if (!dt_admissao_socio.isEmpty()) {
-                filtro += " AND so.filiacao = '" + dt_admissao_socio + "'";
+                filtro += " AND so.filiacao = '" + dt_admissao_socio + "'"+" \n ";
             }
 
             // DATA DE ADMISSAO EMPRESA
             if (!dt_admissao_empresa.isEmpty() && !dt_admissao_empresa_fim.isEmpty()) {
-                filtro += " AND p.admissao >= '" + dt_admissao_empresa + "' AND p.admissao <= '" + dt_admissao_empresa_fim + "'";
+                filtro += " AND p.admissao >= '" + dt_admissao_empresa + "' AND p.admissao <= '" + dt_admissao_empresa_fim + "'"+" \n ";
             } else if (!dt_admissao_empresa.isEmpty()) {
-                filtro += " AND p.admissao = '" + dt_admissao_empresa + "'";
+                filtro += " AND p.admissao = '" + dt_admissao_empresa + "'"+" \n ";
             }
 
             // DATA APOSENTADORIA
             if (!data_aposentadoria.isEmpty() && !data_aposentadoria_fim.isEmpty()) {
-                filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'";
+                filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'"+" \n ";
             } else if (!data_aposentadoria.isEmpty()) {
-                filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'";
+                filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'"+" \n ";
             }
 
         } else {
-            filtro += " AND (p.principal = true OR p.principal IS NULL) ";
+            filtro += " AND (p.principal = true OR p.principal IS NULL) "+" \n ";
             //filtro += " and p.demissao is null ";
         }
 
@@ -443,7 +462,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             }
         }
         try {
-            String queryString = textQry + filtro;
+            String queryString = textQry +innerjoin+ filtro;
             Query qry = getEntityManager().createNativeQuery(queryString);
 //            String novaQuery = textQry + filtro;
             return qry.getResultList();

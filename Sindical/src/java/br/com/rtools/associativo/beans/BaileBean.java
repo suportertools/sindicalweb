@@ -7,6 +7,7 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -20,6 +21,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -67,7 +70,28 @@ public class BaileBean implements Serializable {
     DataHoje dataHoje = new DataHoje();
     private List<EventoBaileMapa> listaMesas = new ArrayList();
     private EventoBaileMapa ebmSelecionado = new EventoBaileMapa();
+    private int idCategoria = 0;
+    private List<SelectItem> listaCategoria = new ArrayList();
 
+    @PostConstruct
+    public void init(){
+        loadCategoria();
+    }
+    
+    @PreDestroy
+    public void destroy(){
+        GenericaSessao.remove("baileBean");
+    }
+    
+    public void loadCategoria(){
+        List<Categoria> result = new Dao().list(new Categoria());
+        
+        listaCategoria.clear();
+        for (int i = 0; i < result.size(); i++){
+            listaCategoria.add(new SelectItem(i, result.get(i).getCategoria(), ""+result.get(i).getId()));
+        }
+    }
+    
     public void uploadMapa(FileUploadEvent event) {
         UploadedFile uploadedFile = event.getFile();
         try {
@@ -903,6 +927,22 @@ public class BaileBean implements Serializable {
 
     public void setIdNrMesa(int idNrMesa) {
         this.idNrMesa = idNrMesa;
+    }
+
+    public List<SelectItem> getListaCategoria() {
+        return listaCategoria;
+    }
+
+    public void setListaCategoria(List<SelectItem> listaCategoria) {
+        this.listaCategoria = listaCategoria;
+    }
+
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
     }
 
 }

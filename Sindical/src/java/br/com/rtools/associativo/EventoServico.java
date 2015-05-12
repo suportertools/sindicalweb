@@ -33,6 +33,11 @@ public class EventoServico implements java.io.Serializable {
     private boolean individual;
     @Column(name = "ds_descricao")
     private String descricao;
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id")
+    @OneToOne
+    private Categoria categoria;
+    @Column(name = "is_socio", nullable = false, columnDefinition = "DEFAULT false")
+    private boolean socio;
 
     public EventoServico() {
         this.id = -1;
@@ -41,15 +46,19 @@ public class EventoServico implements java.io.Serializable {
         this.mesa = false;
         this.individual = true;
         this.descricao = "";
+        this.categoria = null;
+        this.socio = false;
     }
 
-    public EventoServico(int id, AEvento aEvento, Servicos servicos, boolean isMesa, boolean isIndividual, String descricao) {
+    public EventoServico(int id, AEvento aEvento, Servicos servicos, boolean isMesa, boolean isIndividual, String descricao, Categoria categoria, boolean socio) {
         this.id = id;
         this.aEvento = aEvento;
         this.servicos = servicos;
         this.mesa = isMesa;
         this.individual = isIndividual;
         this.descricao = descricao;
+        this.categoria = categoria;
+        this.socio = socio;
     }
 
     public int getId() {
@@ -98,5 +107,21 @@ public class EventoServico implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public boolean isSocio() {
+        return socio;
+    }
+
+    public void setSocio(boolean socio) {
+        this.socio = socio;
     }
 }

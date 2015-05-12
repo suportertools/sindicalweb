@@ -134,6 +134,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private Boolean multiple = false;
     
     private String somaValoresHistorico = "0,00";
+    
+    public String idade(){
+        if (!fisica.getNascimento().isEmpty()){
+            DataHoje dh = new DataHoje();
+            return dh.calcularIdade(fisica.getNascimento())+ " anos";
+        }else{
+            DataHoje dh = new DataHoje();
+            return "0 anos";
+        }
+    }
 
     public String novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
