@@ -1,7 +1,10 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FTipoDocumento;
@@ -30,9 +33,11 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -502,8 +507,8 @@ public class LancamentoIndividualBean {
         FisicaDB dbf = new FisicaDBToplink();
         LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
 
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null){
-            responsavel = (Pessoa)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")){
+            responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
             
             Juridica jur = dbj.pesquisaJuridicaPorPessoa(responsavel.getId());
@@ -544,13 +549,33 @@ public class LancamentoIndividualBean {
                     return responsavel = new Pessoa();
                 }
                 
-                // VERIFICA SE PESSOA É MAIOR DE IDADE
-                DataHoje dh = new DataHoje();
-                int idade = dh.calcularIdade(fi.getNascimento());
-                if (idade < 18){
-                    GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
-                    return responsavel = new Pessoa();
+                
+                SociosDB dbs = new SociosDBToplink();
+                Socios soc = dbs.pesquisaSocioPorPessoaAtivo(responsavel.getId());
+                
+                // CASO NÃO SEJA SÓCIO ---
+                if (soc.getId() == -1){
+                    DataHoje dh = new DataHoje();
+                    int idade = dh.calcularIdade(fi.getNascimento());
+                    if (idade < 18){
+                        GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
+                        return responsavel = new Pessoa();
+                    }
+                }else{
+                    FunctionsDao dbfunc = new FunctionsDao();
+                    Pessoa p = dbfunc.titularDaPessoa(responsavel.getId());
+                    // CASO SEJA SÓCIO NÃO TITULAR
+                    if (p.getId() != responsavel.getId()){
+                        // VERIFICA SE PESSOA É MAIOR DE IDADE
+                        DataHoje dh = new DataHoje();
+                        int idade = dh.calcularIdade(fi.getNascimento());
+                        if (idade < 18){
+                            GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
+                            return responsavel = new Pessoa();
+                        }
+                    }                    
                 }
+                
                 
                 // VERIFICA SE A PESSOA CONTEM LISTA DE ENDERECO -------
                 List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
@@ -575,15 +600,35 @@ public class LancamentoIndividualBean {
                     return responsavel = new Pessoa();
                 }
                 
-                // VERIFICA SE PESSOA É MAIOR DE IDADE
-                DataHoje dh = new DataHoje();
-                int idade = dh.calcularIdade(fisica.getNascimento());
-                if (idade < 18){
-                    GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
-                    return responsavel = new Pessoa();
+
+                SociosDB dbs = new SociosDBToplink();
+                Socios soc = dbs.pesquisaSocioPorPessoaAtivo(fisica.getPessoa().getId());
+                
+                // CASO NÃO SEJA SÓCIO ---
+                if (soc.getId() == -1){
+                    DataHoje dh = new DataHoje();
+                    int idade = dh.calcularIdade(fisica.getNascimento());
+                    if (idade < 18){
+                        GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
+                        return responsavel = new Pessoa();
+                    }
+                }else{
+                    FunctionsDao dbfunc = new FunctionsDao();
+                    Pessoa p = dbfunc.titularDaPessoa(fisica.getPessoa().getId());
+                    // CASO SEJA SÓCIO NÃO TITULAR
+                    if (p.getId() != fisica.getPessoa().getId()){
+                        // VERIFICA SE PESSOA É MAIOR DE IDADE
+                        DataHoje dh = new DataHoje();
+                        int idade = dh.calcularIdade(fisica.getNascimento());
+                        if (idade < 18){
+                            GenericaMensagem.warn("Atenção", "Esta pessoa não é maior de idade, não poderá ser responsável!");
+                            return responsavel = new Pessoa();
+                        }
+                    }                    
                 }
                 
                 // VERIFICA SE A PESSOA CONTEM LISTA DE ENDERECO -------
+                // NÃO NECESSÁRIAMENTE JURIDICA COMO ESTA NO NOME DO MÉTODO
                 List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(fisica.getPessoa().getId());
                 if (lista_pe.isEmpty()){
                     GenericaMensagem.warn("Atenção", "Esta pessoa não possui endereço cadastrado, não poderá ser responsável!");

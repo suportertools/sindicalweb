@@ -31,7 +31,7 @@
                     <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Impressão Individual" styleClass="fonteHeader" />
                         <h:form id="formImpressaoIndividual">
                             <c:set scope="request" var="object" value="${processamentoIndividualBean.processamento}"/>

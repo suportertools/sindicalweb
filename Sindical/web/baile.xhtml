@@ -65,7 +65,7 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="formBaile">
                             <h:outputText value="Baile" styleClass="fonteHeader" />
                             <c:set scope="request" var="object" value="${baileBean.eventoBaile}"/>
@@ -127,13 +127,13 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <!-- <p:panel rendered="# {baileBean.eventoBaile.id != -1}" style="border: 0px"> -->
+                            <!-- <p:panel rendered="# { baileBean.eventoBaile.id != -1}" style="border: 0px"> -->
                             <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" /> 
                             <p:panel style="border: 0px; margin-top: 10px">
                                 <p:outputLabel value="Serviço Valor" style="font-size: 13pt!important" />
                                 <hr />
 
-                                <h:panelGrid id="i_panel_tipo" columns="6" style="width: 100%">
+                                <h:panelGrid id="i_panel_tipo" columns="8" style="width: 100%">
                                     <h:column>
                                         <h:outputLabel value="Tipo"/>
                                         <p:selectOneRadio value="#{baileBean.eventoServico.mesa}">
@@ -171,6 +171,20 @@
                                         <p:inputText value="#{baileBean.eventoServicoValor.idadeInicial}" maxlength="3" size="1" style="margin-left: 20px"/>
                                         <h:outputLabel value=" à " />
                                         <p:inputText value="#{baileBean.eventoServicoValor.idadeFinal}" maxlength="3" size="1" />
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{baileBean.eventoServico.socio}" itemLabel="Sócio">
+                                            <p:ajax event="change" update="i_panel_tipo" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+                                    
+                                    <h:column rendered="#{baileBean.eventoServico.socio}">
+                                        <h:outputLabel value="Categoria"  style="margin-left: 20px"/><br />
+                                        <p:selectOneMenu value="#{baileBean.idCategoria}" style="margin-left: 20px; padding-right: 20px">
+                                            <f:selectItems value="#{baileBean.listaCategoria}" />
+                                        </p:selectOneMenu>
                                     </h:column>
 
                                     <h:column>
@@ -252,7 +266,7 @@
                         <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="900" modal="true" height="800">
                             < ! - - O CONTEUDO DESSE MODAL DE MAPA ESTA NO ARQUIVO  rascunho.txt EM AREA DE TRABALHO, CONTINUAR POR ELE - -  >
                             <h:form id="formBaileMapa" enctype="multipart/form-data">
-                                <p:fileUpload fileUploadListener="# {baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
+                                <p:fileUpload fileUploadListener="# { baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
                                               update=":formBaile:i_msg :formBaileComp:i_img" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpeg|png)$/" />
                             </h:form>
                             <h:form id="formBaileComp">
@@ -266,8 +280,8 @@
                         < ! - - <h:form id="formBaileMesa">
                             <p:dialog widgetVar="i_dlg_mesa" header="Adicionar Mesa" modal="true" resizable="false" width="300">
                                 <h:outputLabel value="Número da Mesa" /><br /><br />
-                                <p:inputText size="2" value="# {baileBean.nrMesa}" />
-                                <p:commandButton value="OK" action="# {baileBean.salvarMesa()}" update=":formBaileComp formBaileMesa" oncomplete="i_dlg_mesa.hide()"/>
+                                <p:inputText size="2" value="# { baileBean.nrMesa}" />
+                                <p:commandButton value="OK" action="# { baileBean.salvarMesa()}" update=":formBaileComp formBaileMesa" oncomplete="i_dlg_mesa.hide()"/>
                             </p:dialog>
                         </h:form> -->
                     </p:panel>
