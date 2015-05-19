@@ -1669,6 +1669,12 @@
         </navigation-case>
         
         <navigation-case>
+            <from-outcome>javaClassLoader</from-outcome>
+            <to-view-id>/javaClassLoader.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
             <from-outcome>descontoPromocional</from-outcome>
             <to-view-id>/descontoPromocional.jsf</to-view-id>
             <redirect/>
