@@ -14,6 +14,7 @@ import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -22,57 +23,108 @@ import javax.persistence.Query;
 
 public class MatriculaEscolaDao extends DB {
 
+//    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
+//        try {
+//            List<MatriculaEscola> list;
+//            String complementoQuery = "";
+//            Query query;
+//            String queryString = "";
+//            if (tipoMatricula.equals("Individual")) {
+//                if (!descricaoCurso.equals("")) {
+//                    complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
+//                }
+//                if (filial != null) {
+//                    if (filial.getId() != -1) {
+//                        queryString = " mi.matriculaEscola.filial.id = " + filial.getId() + " AND ";
+//                    }
+//                }
+//                if (filtroStatus != 0 && filtroStatus != 5) {
+//                    queryString += " mi.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
+//                }
+//                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " + queryString + " UPPER(mi.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
+//            } else {
+//                if (!descricaoCurso.equals("")) {
+//                    complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
+//                }
+//                if (filial != null) {
+//                    if (filial.getId() != -1) {
+//                        queryString = " mt.matriculaEscola.filial.id = " + filial.getId() + " AND ";
+//                    }
+//                }
+//                if (filtroStatus != 0 && filtroStatus != 5) {
+//                    queryString += " mt.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
+//                }
+//                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " + queryString + " UPPER(mt.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
+//            }
+//            if (comoPesquisa.equals("Inicial")) {
+//                query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");
+//                if (!descricaoCurso.equals("")) {
+//                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
+//                }
+//                if (!descricaoCurso.equals("")) {
+//                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
+//                }
+//            } else if (comoPesquisa.equals("Parcial")) {
+//                query.setParameter("descricaoAluno", "%" + descricao.toUpperCase() + "%");
+//                if (!descricaoCurso.equals("")) {
+//                    query.setParameter("descricaoCurso", "%" + descricaoCurso.toUpperCase() + "%");
+//                }
+//            }
+//            list = query.getResultList();
+//            if (!list.isEmpty()) {
+//                return list;
+//            }
+//        } catch (Exception e) {
+//            e.getMessage();
+//        }
+//        return new ArrayList();
+//    }
     public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
         try {
-            List<MatriculaEscola> list;
-            String complementoQuery = "";
-            Query query;
-            String queryString = "";
+            String text = "", inner = "", filter = "";
+            
+            text =  "SELECT me.* \n " +
+                    "  FROM matr_escola me \n " +
+                    " INNER JOIN fin_servico_pessoa sp ON sp.id = me.id_servico_pessoa \n " +
+                    " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n " + 
+                    " INNER JOIN esc_status es ON es.id = me.id_status \n ";
+            if (filtroStatus != 0 && filtroStatus != 5) {
+                filter += " WHERE es.id = " + filtroStatus + " \n ";
+            }else{
+                filter += " WHERE es.id IN (SELECT id FROM esc_status) \n ";
+            }
+            
             if (tipoMatricula.equals("Individual")) {
-                if (!descricaoCurso.equals("")) {
-                    complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
-                }
-                if (filial != null) {
-                    if (filial.getId() != -1) {
-                        queryString = " mi.matriculaEscola.filial.id = " + filial.getId() + " AND ";
-                    }
-                }
-                if (filtroStatus != 0 && filtroStatus != 5) {
-                    queryString += " mi.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
-                }
-                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " + queryString + " UPPER(mi.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
-            } else {
-                if (!descricaoCurso.equals("")) {
-                    complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
-                }
-                if (filial != null) {
-                    if (filial.getId() != -1) {
-                        queryString = " mt.matriculaEscola.filial.id = " + filial.getId() + " AND ";
-                    }
-                }
-                if (filtroStatus != 0 && filtroStatus != 5) {
-                    queryString += " mt.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
-                }
-                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " + queryString + " UPPER(mt.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
+                inner +=  " INNER JOIN esc_matr_individual mi ON mi.id_matr_escola = me.id \n ";
+            }else{
+                inner +=  " INNER JOIN esc_matr_turma mt ON mt.id_matr_escola = me.id \n ";
             }
-            if (comoPesquisa.equals("Inicial")) {
-                query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");
-                if (!descricaoCurso.equals("")) {
-                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
-                }
-                if (!descricaoCurso.equals("")) {
-                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
-                }
-            } else if (comoPesquisa.equals("Parcial")) {
-                query.setParameter("descricaoAluno", "%" + descricao.toUpperCase() + "%");
-                if (!descricaoCurso.equals("")) {
-                    query.setParameter("descricaoCurso", "%" + descricaoCurso.toUpperCase() + "%");
-                }
+            
+            if (porPesquisa.equals("aluno")) {
+                inner +=  " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n ";
+            }else{
+                inner +=  " INNER JOIN pes_pessoa p ON p.id = sp.id_cobranca \n ";
             }
-            list = query.getResultList();
-            if (!list.isEmpty()) {
-                return list;
+            
+            
+            if (!descricaoCurso.isEmpty()){
+                descricaoCurso = AnaliseString.normalizeLower(descricaoCurso);
+                descricaoCurso = (comoPesquisa.equals("Inicial") ? descricaoCurso+"%" : "%"+descricaoCurso+"%");                
+                filter += " AND LOWER(FUNC_TRANSLATE(s.ds_descricao)) LIKE '"+descricaoCurso+"' \n ";
             }
+            
+            if (!descricao.isEmpty()){
+                descricao = AnaliseString.normalizeLower(descricao);
+                descricao = (comoPesquisa.equals("Inicial") ? descricao+"%" : "%"+descricao+"%");
+                filter += " AND LOWER(FUNC_TRANSLATE(p.ds_nome)) LIKE '"+descricao+"' \n ";
+            }
+            
+            if (filial != null){
+                inner += "  INNER JOIN pes_filial f ON f.id = me.id_filial AND f.id = " + filial.getId() + " \n ";
+            }
+            Query qry = getEntityManager().createNativeQuery(text + inner + filter, MatriculaEscola.class);
+            
+            return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
         }
@@ -208,7 +260,7 @@ public class MatriculaEscolaDao extends DB {
         try {
             Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.aluno.id = :idAluno");
             query.setParameter("idTurma", mt.getTurma().getId());
-            query.setParameter("idAluno", mt.getMatriculaEscola().getAluno().getId());
+            query.setParameter("idAluno", mt.getMatriculaEscola().getServicoPessoa().getPessoa().getId());
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;
@@ -242,7 +294,7 @@ public class MatriculaEscolaDao extends DB {
         try {
             Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
             query.setParameter("idCurso", mi.getCurso().getId());
-            query.setParameter("idAluno", mi.getMatriculaEscola().getAluno().getId());
+            query.setParameter("idAluno", mi.getMatriculaEscola().getServicoPessoa().getId());
             query.setParameter("dataInicio", mi.getDataInicio());
             query.setParameter("dataTermino", mi.getDataTermino());
             List list = query.getResultList();

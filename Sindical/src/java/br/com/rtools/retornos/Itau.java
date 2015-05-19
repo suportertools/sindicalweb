@@ -2,17 +2,15 @@ package br.com.rtools.retornos;
 
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.ArquivoRetorno;
 import br.com.rtools.utilitarios.GenericaRetorno;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 
 public class Itau extends ArquivoRetorno {
     private String linha = "", 
@@ -72,7 +70,13 @@ public class Itau extends ArquivoRetorno {
                                 }
                             } catch (Exception e) {
                             }
-                            valorPago = ((String) lista.get(i)).substring(253, 266); //ok
+                            
+                            valorPago = ((String) lista.get(i)).substring(253, 266); //ok VALOR PAGO + TAXA segundo o arquivo
+                            float valorx = Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(valorPago)), 100);
+                            float taxax = Moeda.divisaoValores(Moeda.substituiVirgulaFloat(Moeda.converteR$(valorTaxa)), 100);
+                            String valorlenght = Moeda.converteR$Float(Moeda.somaValores(valorx, taxax)).replace(".", "").replace(",", "");
+                            valorPago = "0000000000000".substring(0, 13 - valorlenght.length()) + valorlenght;
+                            
                             dataPagamento = ((String) lista.get(i)).substring(295, 301);//ok
                             dataPagamento = dataPagamento.substring(0, dataPagamento.length() - 2) + "20" + dataPagamento.substring(dataPagamento.length() - 2, dataPagamento.length());
 

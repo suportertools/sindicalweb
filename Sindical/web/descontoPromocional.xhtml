@@ -1,0 +1,189 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Desconto Promocional</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Desconto Promocional" styleClass="fonteHeader" />
+                        <h:form id="formDescontoPromocional">
+                            <p:panel id="panelGrupo" styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="3">
+                                    <p:column>
+                                        <p:outputLabel value="Grupo" /><br />
+                                        <p:selectOneMenu value="#{descontoPromocionalBean.idGrupoFinanceiro}" style="padding-right: 20px; opacity: 0.7" disabled="#{descontoPromocionalBean.descontoPromocional.id != -1}">
+                                            <p:ajax event="change" update="formDescontoPromocional" listener="#{descontoPromocionalBean.loadListSubGrupoFinanceiro()}"/>
+                                            <f:selectItems value="#{descontoPromocionalBean.listGrupoFinanceiro}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column>
+                                        <p:outputLabel value="Sub Grupo" /><br />
+                                        <p:selectOneMenu value="#{descontoPromocionalBean.idSubGrupoFinanceiro}" style="padding-right: 20px; opacity: 0.7" disabled="#{descontoPromocionalBean.descontoPromocional.id != -1}">
+                                            <p:ajax event="change" update="formDescontoPromocional" listener="#{descontoPromocionalBean.loadServicos()}"/>
+                                            <f:selectItems value="#{descontoPromocionalBean.listSubGrupoFinanceiro}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column>
+                                        <p:outputLabel value="Serviços" /><br />
+                                        <p:selectOneMenu value="#{descontoPromocionalBean.idServicos}" style="max-width: 300px; opacity: 0.7" disabled="#{descontoPromocionalBean.descontoPromocional.id != -1}">
+                                            <p:ajax event="change" update="formDescontoPromocional"/>
+                                            <f:selectItems value="#{descontoPromocionalBean.listServicos}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:messages autoUpdate="false" closable="true" showDetail="true" />
+                            <br />
+                            
+                            <h:panelGrid id="panelValor" columns="7">
+                                <p:column>
+                                    <p:outputLabel value="Desconto (%)" style="font-weight: bold" /><br />
+                                    <p:inputText value="#{descontoPromocionalBean.descontoPromocional.desconto}" size="8"  style="text-align: right">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column>
+                                    <p:outputLabel value="Categoria" style="font-weight: bold"/><br />
+                                    <p:selectOneMenu value="#{descontoPromocionalBean.idCategoria}" style="padding-right: 20px; opacity: 0.7" disabled="#{descontoPromocionalBean.descontoPromocional.id != -1}">
+                                        <p:ajax event="change" update="@this"/>
+                                        <f:selectItems value="#{descontoPromocionalBean.listCategoria}" />
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column>
+                                    <p:outputLabel value="Ref. Inicial" /><br />
+                                    <p:inputMask value="#{descontoPromocionalBean.descontoPromocional.referenciaInicial}" mask="99/9999" size="6"/>
+                                </p:column>
+
+                                <p:column>
+                                    <p:outputLabel value="Ref. Final" /><br />
+                                    <p:inputMask value="#{descontoPromocionalBean.descontoPromocional.referenciaFinal}" mask="99/9999" size="6"/>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="#{(descontoPromocionalBean.descontoPromocional.id == -1) ? 'Salvar' : 'Alterar'}" onclick="PF('dlg_salvar').show()" />
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="Novo" action="#{descontoPromocionalBean.clear}" update="formDescontoPromocional"/>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="Excluir" onclick="PF('dlg_excluir').show()" rendered="#{descontoPromocionalBean.descontoPromocional.id != -1}"/>
+                                </p:column>
+                            </h:panelGrid>
+                            <br />
+                            
+                            <h:panelGrid columns="1">
+                                <p:selectOneMenu value="#{descontoPromocionalBean.filtroPor}" style="padding-right: 20px">
+                                    <p:ajax event="change" update="tbl" listener="#{descontoPromocionalBean.loadListDataObject()}"/>
+                                    <f:selectItem itemValue="todos" itemLabel="TODOS"/>
+                                    <f:selectItem itemValue="naoVencidos" itemLabel="NÃO VENCIDOS"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            
+                            <p:dataTable id="tbl" var="linha" value="#{descontoPromocionalBean.listDataObject}" emptyMessage="Nenhum Desconto Encontrado!">
+                                <p:column headerText="Serviço">
+                                    <p:commandLink value="#{linha.argumento1[1]}" action="#{descontoPromocionalBean.edit(linha)}" update="formDescontoPromocional"/>
+                                </p:column>
+                                
+                                <p:column headerText="Categoria">
+                                    <p:commandLink value="#{linha.argumento1[2]}" action="#{descontoPromocionalBean.edit(linha)}" update="formDescontoPromocional"/>
+                                </p:column>
+                                
+                                <p:column headerText="Valor" style="width: 100px; text-align: right">
+                                    <p:outputLabel value="#{descontoPromocionalBean.converteMoeda(linha.argumento1[3])}" />
+                                </p:column>
+                                
+                                <p:column headerText="Desconto (%)" style="width: 100px; text-align: right">
+                                    <p:outputLabel value="#{linha.argumento1[4]}" />
+                                </p:column>
+                                
+                                <p:column headerText="Valor Final" style="width: 100px; text-align: right">
+                                    <p:outputLabel value="#{linha.argumento2}" />
+                                </p:column>
+                                
+                                <p:column headerText="Ref. Inicial" style="width: 60px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento1[5]}" />
+                                </p:column>
+                                
+                                <p:column headerText="Ref. Final" style="width: 60px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento1[6]}" />
+                                </p:column>
+                                
+                                <p:column headerText="Idade Inicial" style="width: 60px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento1[7]}" />
+                                </p:column>
+                                
+                                <p:column headerText="Idade Final" style="width: 60px; text-align: center">
+                                    <p:outputLabel value="#{linha.argumento1[8]}" />
+                                </p:column>
+                            </p:dataTable>
+                            
+                            
+                            <p:dialog widgetVar="dlg_salvar" header="Salvar Desconto Promocional" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente SALVAR esse desconto?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Sim" action="#{descontoPromocionalBean.save()}" update="formDescontoPromocional" onclick="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_excluir" header="Excluir Desconto Promocional" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente excluir esse desconto?" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Sim" action="#{descontoPromocionalBean.delete()}" update="formDescontoPromocional" onclick="PF('dlg_excluir').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" onclick="PF('dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

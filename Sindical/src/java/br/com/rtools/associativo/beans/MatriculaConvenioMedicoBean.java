@@ -58,8 +58,17 @@ public class MatriculaConvenioMedicoBean implements Serializable {
             message = "Pesquise uma Pessoa!";
             return;
         }
-        dbSalvar.abrirTransacao();
+        
+        MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
+        List<MatriculaConvenioMedico> result = db.listaConvenioPessoa(servicoPessoaBean.getTitular().getPessoa().getId(), Integer.valueOf(servicoPessoaBean.getListaServicos().get(servicoPessoaBean.getIdServico()).getDescription()));
+        
         if (servicoPessoaBean.getServicoPessoa().getId() == -1) {
+            if (result.size() >= 1){
+                message = "Pessoa já contém Convênio Ativo!";
+                return;
+            }
+            
+            dbSalvar.abrirTransacao();
             message = servicoPessoaBean.salvarServicoPessoa(null, dbSalvar);
             if (!message.isEmpty()) {
                 dbSalvar.desfazerTransacao();
@@ -81,6 +90,12 @@ public class MatriculaConvenioMedicoBean implements Serializable {
                 dbSalvar.desfazerTransacao();
             }
         } else {
+            if (result.size() >= 1 && (servicoPessoaBean.getServicoPessoa().getServicos().getId() != result.get(0).getServicoPessoa().getServicos().getId())){
+                message = "Pessoa já contém Convênio Ativo!";
+                return;
+            }
+            dbSalvar.abrirTransacao();
+            
             message = servicoPessoaBean.atualizarServicoPessoa(null, dbSalvar);
 
             if (!message.isEmpty()) {

@@ -84,8 +84,8 @@ public class Turma implements Serializable {
             int quantidade, String sala, String descricao, int idadeInicial, int idadeFim) {
         this.id = id;
         this.cursos = cursos;
-        setDataInicio(dataInicio);
-        setDataTermino(dataTermino);
+        this.dtInicio = DataHoje.converte(dataInicio);
+        this.dtTermino = DataHoje.converte(dataTermino);
         this.horaInicio = horaInicio;
         this.horaTermino = horaTermino;
         this.segunda = segunda;
@@ -106,8 +106,8 @@ public class Turma implements Serializable {
     public Turma() {
         this.id = -1;
         this.cursos = new Servicos();
-        setDataInicio("");
-        setDataTermino("");
+        this.dtInicio = DataHoje.dataHoje();
+        this.dtTermino = null;
         this.horaInicio = "";
         this.horaTermino = "";
         this.segunda = false;

@@ -92,7 +92,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     }
 
     @Override
-    public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem) {
+    public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem, Integer id_filial) {
         Registro registro = (Registro) new Dao().find(new Registro(), 1);
         try {
             String textqry
@@ -317,6 +317,10 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
 
             textqry += " AND sc.is_ativo = true "; // SE NÃO FOR SÓCIO (ACADEMIA)
 
+            if (id_filial != null){
+                textqry += " AND s.id_filial = " + id_filial;
+            }
+            
             // GROUP DA QUERY
             textqry += " "
                     + " GROUP BY p.id,                                       "

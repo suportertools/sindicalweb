@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.db;
 
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import java.util.Date;
@@ -52,4 +53,6 @@ public interface FisicaDB {
     public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa);
     
     public Fisica pesquisaFisicaPorNomeNascimento(String nome, Date nascimento);
+    
+    public List<Vector> listaMovimentoFisica(Integer id_pessoa, String status, String tipo_pesquisa);
 }

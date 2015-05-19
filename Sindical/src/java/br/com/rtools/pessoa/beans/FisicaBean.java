@@ -1,8 +1,8 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
-import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
 import br.com.rtools.associativo.beans.SociosBean;
 import br.com.rtools.associativo.dao.SociosDao;
 import br.com.rtools.associativo.db.SociosDB;
@@ -12,6 +12,7 @@ import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
@@ -91,7 +92,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean renderJuridicaPesquisa = false;
     public List itens = new ArrayList();
     private List<DataObject> listaPessoa = new ArrayList();
-    private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
+    private List<Fisica> listaPessoaFisica = new ArrayList();
     private List<PessoaEmpresa> listaPessoaEmpresa = new ArrayList();
     private final List<SelectItem> listaProfissoes = new ArrayList();
     private List<SelectItem> listaPaises = new ArrayList();
@@ -135,12 +136,42 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     
     private String somaValoresHistorico = "0,00";
     
+    private List<Vector> listaMovimento = new ArrayList();
+    private String tipoStatusMovimento = "abertos";
+    private String tipoPesquisaMovimento = "responsavel";
+    
+    @PostConstruct
+    public void init() {
+    }
+
+    @PreDestroy
+    public void destroy() {
+
+    }
+    
+    public String telaMovimentosReceberSocial(){
+        String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).movimentosReceberSocial();
+        
+        GenericaSessao.put("movimentosReceberSocialBean", new MovimentosReceberSocialBean());
+        GenericaSessao.put("pessoaPesquisa", fisica.getPessoa());
+        
+        return retorno;
+    }
+    
+    public void loadListaMovimento(){
+        if (fisica.getId() != -1){
+            listaMovimento.clear();
+
+            FisicaDB db = new FisicaDBToplink();
+
+            listaMovimento = db.listaMovimentoFisica(fisica.getPessoa().getId(), tipoStatusMovimento, tipoPesquisaMovimento);
+        }
+    }
+    
     public String idade(){
         if (!fisica.getNascimento().isEmpty()){
-            DataHoje dh = new DataHoje();
-            return dh.calcularIdade(fisica.getNascimento())+ " anos";
+            return new DataHoje().calcularIdade(fisica.getNascimento())+ " anos";
         }else{
-            DataHoje dh = new DataHoje();
             return "0 anos";
         }
     }
@@ -161,14 +192,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return "pessoaFisica";
     }
 
-    @PostConstruct
-    public void init() {
-    }
-
-    @PreDestroy
-    public void destroy() {
-
-    }
 
     public String getEnderecoCobranca() {
         for (PessoaEndereco pe : listaPessoaEndereco) {
@@ -558,6 +581,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         existePessoaOposicaoPorPessoa();
         fotoTempPerfil = "";
         clear(0);
+        loadListaMovimento();
         return url;
     }
 
@@ -1750,6 +1774,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void accordion(TabChangeEvent event) {
         indexPessoaFisica = ((TabView) event.getComponent()).getActiveIndex();
+        
+        if (indexPessoaFisica == 5){
+            loadListaMovimento();
+        }
     }
 
     public String getIndexNovoEndereco() {
@@ -2335,6 +2363,30 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setSomaValoresHistorico(String somaValoresHistorico) {
         this.somaValoresHistorico = somaValoresHistorico;
+    }
+
+    public List<Vector> getListaMovimento() {
+        return listaMovimento;
+    }
+
+    public void setListaMovimento(List<Vector> listaMovimento) {
+        this.listaMovimento = listaMovimento;
+    }
+    
+    public String getTipoStatusMovimento() {
+        return tipoStatusMovimento;
+    }
+
+    public void setTipoStatusMovimento(String tipoStatusMovimento) {
+        this.tipoStatusMovimento = tipoStatusMovimento;
+    }
+
+    public String getTipoPesquisaMovimento() {
+        return tipoPesquisaMovimento;
+    }
+
+    public void setTipoPesquisaMovimento(String tipoPesquisaMovimento) {
+        this.tipoPesquisaMovimento = tipoPesquisaMovimento;
     }
 
 }

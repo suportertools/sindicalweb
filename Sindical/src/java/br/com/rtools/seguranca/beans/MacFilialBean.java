@@ -327,8 +327,8 @@ public class MacFilialBean implements Serializable {
         }
         ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setFilial(s);
         GenericaSessao.put("acessoFilial", mf);
-        if(GenericaSessao.exists("back")) {
         GenericaSessao.put("linkClicado", true);
+        if(GenericaSessao.exists("back")) {
             String back = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).getUrlAtual();
             GenericaSessao.remove("back");
             return back;

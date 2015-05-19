@@ -61,7 +61,7 @@
                             </h:panelGrid>
                             <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both; width: 100%">
                                 <p:tabView id="i_tabview_fisica" activeIndex="#{fisicaBean.indexPessoaFisica}" style="width: 100%">
-                                    <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered"/> 
+                                    <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered i_tabview_fisica"/> 
                                     <p:tab title="Cadastro Pessoal">                            
                                         <h:outputScript name="script_primefaces.js" library="js" />
                                         <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true"  closable="true"/>
@@ -557,6 +557,62 @@
                                             <ui:param name="idPessoa" value="#{fisicaBean.fisica.pessoa.id}" />  
                                         </ui:include>
                                     </p:tab>
+                                    
+                                    <p:tab title="Movimento">
+                                        <p:outputLabel value="Lista de Movimentos" style="font-weight: bold"/>
+                                        <br /><br />
+                                        <h:panelGrid columns="2">
+                                            <p:column>
+                                                <p:outputLabel value="PESSOA SENDO" style="font-weight: bold"/><br />
+                                                <p:selectOneMenu value="#{fisicaBean.tipoPesquisaMovimento}" style="margin-right: 30px; padding-right: 20px">
+                                                    <p:ajax event="change" update="@this tbl_movimento" listener="#{fisicaBean.loadListaMovimento()}"/>
+                                                    <f:selectItem itemValue="responsavel" itemLabel="Responsável"/>
+                                                    <f:selectItem itemValue="titular" itemLabel="Titular"/>
+                                                    <f:selectItem itemValue="beneficiario" itemLabel="Beneficiário"/>
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="SITUAÇÃO" style="font-weight: bold"/><br />
+                                                <p:selectOneMenu value="#{fisicaBean.tipoStatusMovimento}" style="margin-right: 30px; padding-right: 20px">
+                                                    <p:ajax event="change" update="@this tbl_movimento" listener="#{fisicaBean.loadListaMovimento()}"/>
+                                                    <f:selectItem itemValue="todos" itemLabel="Todos"/>
+                                                    <f:selectItem itemValue="abertos" itemLabel="Em Aberto"/>
+                                                    <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                        </h:panelGrid>
+                                        
+                                        <p:dataTable id="tbl_movimento" value="#{fisicaBean.listaMovimento}" var="linha" emptyMessage="Nenhum Movimento Encontrado" scrollable="true" scrollHeight="400">
+                                            <p:column headerText="Responsável" style="text-align: center" rendered="#{fisicaBean.tipoPesquisaMovimento ne 'responsavel'}">
+                                                <p:outputLabel value="#{linha[1]}" />
+                                            </p:column>
+                                            <p:column headerText="Titular" rendered="#{fisicaBean.tipoPesquisaMovimento ne 'titular'}">
+                                                <p:outputLabel value="#{linha[2]}" />
+                                            </p:column>
+                                            <p:column headerText="Beneficiário" rendered="#{fisicaBean.tipoPesquisaMovimento ne 'beneficiario'}">
+                                                <p:outputLabel value="#{linha[3]}" />
+                                            </p:column>
+                                            <p:column headerText="Ref." style="width: 60px; text-align: center">
+                                                <p:outputLabel value="#{linha[4]}" />
+                                            </p:column>
+                                            <p:column headerText="Vencimento" style="width: 80px; text-align: center">
+                                                <p:outputLabel value="#{fisicaBean.converteData(linha[5])}" />
+                                            </p:column>
+                                            <p:column headerText="Serviço" style="width: 100px;">
+                                                <p:outputLabel value="#{linha[6]}" />
+                                            </p:column>
+                                            <p:column headerText="Tipo" style="width: 60px; text-align: center">
+                                                <p:outputLabel value="#{linha[7]}" />
+                                            </p:column>
+                                            <p:column headerText="Valor" style="width: 80px; text-align: right">
+                                                <p:outputLabel value="R$ #{fisicaBean.converteMoeda(linha[8])}" />
+                                            </p:column>
+                                            <p:column headerText="Pagamento" style="width: 80px; text-align: center">
+                                                <p:outputLabel value="#{fisicaBean.converteData(linha[9])}" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
                                 </p:tabView>
 
                                 <!-- ENDEREÇO -->
@@ -659,7 +715,7 @@
                                     <p:commandButton value="Novo" action="#{fisicaBean.novo}" />
                                     <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_painel_excluir').show();" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
-                                    <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
+                                    <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" action="#{fisicaBean.telaMovimentosReceberSocial}"/>
                                     <h:column>
                                         <h:panelGrid id="i_app_message" rendered="#{biometriaBean.openBiometria and fisicaBean.fisica.id != -1}" columns="3">
                                             <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" disabled="#{biometriaBean.biometria != null and !biometriaBean.biometria.ativo}"/>

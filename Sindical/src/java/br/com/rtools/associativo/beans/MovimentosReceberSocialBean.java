@@ -1,6 +1,5 @@
 package br.com.rtools.associativo.beans;
 
-import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
@@ -13,6 +12,7 @@ import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoPessoa;
+import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.financeiro.beans.ConfiguracaoFinanceiroBean;
 import br.com.rtools.financeiro.dao.ServicoPessoaDao;
 import br.com.rtools.financeiro.db.FinanceiroDB;
@@ -142,6 +142,10 @@ public class MovimentosReceberSocialBean implements Serializable {
     private Movimento movimentoRemover = null;
     
     private DataObject objectVencimento = new DataObject(new Boleto(), "");
+    private boolean chkBoletosAtrasados = false;
+    
+    private String criterioReferencia = "";
+    private String criterioLoteBaixa = "";
     
     @PostConstruct
     public void init() {
@@ -159,6 +163,24 @@ public class MovimentosReceberSocialBean implements Serializable {
         //GenericaSessao.remove("movimentosReceberSocialBean");
         GenericaSessao.remove("usuarioAutenticado");
     }    
+    
+    public void clickCriteriosDeBusca(){
+        //criterioReferencia = ((referenciaPesquisa.isEmpty()) ? criterioReferencia : referenciaPesquisa);
+    }
+    
+    public void limparCriteriosDeBusca(){
+        criterioReferencia = "";
+        criterioLoteBaixa = "";
+        
+        listaMovimento.clear();
+        //referenciaPesquisa = "";
+    }
+    
+    public TransferenciaCaixa transferenciaCaixa(int id_fechamento_caixa_saida){
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        List<TransferenciaCaixa> l = db.transferenciaCaixa(id_fechamento_caixa_saida);
+        return (l.isEmpty()) ? new TransferenciaCaixa() : l.get(0);
+    }
     
     public void alterarVencimento(){
         String vencimentox = objectVencimento.getArgumento1().toString();
@@ -221,7 +243,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
         
-        List<Vector> result = db.listaBoletosAbertosAgrupado(pessoa.getId());
+        List<Vector> result = db.listaBoletosAbertosAgrupado(pessoa.getId(), chkBoletosAtrasados);
         
         for (List linha : result){
             
@@ -260,6 +282,8 @@ public class MovimentosReceberSocialBean implements Serializable {
     }
     
     public void clickAnexarMovimentos(){
+        chkBoletosAtrasados = false;
+        
         loadBoletosAbertos();
         loadMovimentosAnexo();
         
@@ -475,6 +499,11 @@ public class MovimentosReceberSocialBean implements Serializable {
             GenericaMensagem.warn("Atenção", "Boletos BAIXADOS não podem ser excluídos!");
             return;
         }
+        
+        if (fechadosCaixa()) {
+            GenericaMensagem.warn("Atenção", "Boletos COM CAIXA FECHADO não podem ser estornados!");
+            return;
+        }
 
         if (acordados()) {
             GenericaMensagem.warn("Atenção", "Boletos do tipo ACORDO não podem ser excluídos!");
@@ -642,10 +671,10 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     }
 
-    public String recibo(int id_movimento) {
+    public String recibo(Movimento mov) {
         ImprimirRecibo ir = new ImprimirRecibo();
 
-        ir.recibo(id_movimento);
+        ir.recibo(mov.getId());
 
         return null;
     }
@@ -832,6 +861,17 @@ public class MovimentosReceberSocialBean implements Serializable {
         }
         return false;
     }
+    
+    public boolean fechadosCaixa() {
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        for (int i = 0; i < listaMovimento.size(); i++) {
+            if ( ((Boolean) listaMovimento.get(i).getArgumento0()) && 
+                (((Movimento) listaMovimento.get(i).getArgumento1()).getBaixa() != null) && (((Movimento) listaMovimento.get(i).getArgumento1()).getBaixa().getFechamentoCaixa() != null)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean semValor() {
         for (int i = 0; i < listaMovimento.size(); i++) {
@@ -930,7 +970,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         for (int i = 0; i < listaMovimento.size(); i++) {
             if ((Boolean) listaMovimento.get(i).getArgumento0()) {
                 qnt++;
-                mov = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
+                mov = (Movimento) listaMovimento.get(i).getArgumento1();
             }
         }
 
@@ -946,11 +986,16 @@ public class MovimentosReceberSocialBean implements Serializable {
             return null;
         }
 
-        ControleAcessoBean cab = new ControleAcessoBean();
+        //ControleAcessoBean cab = new ControleAcessoBean();
 
         if (!baixado()) {
             msgConfirma = "Existem boletos que não foram pagos para estornar!";
             GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
+        if (fechadosCaixa()) {
+            GenericaMensagem.warn("Atenção", "Boletos COM CAIXA FECHADO não podem ser estornados!");
             return null;
         }
 
@@ -1045,7 +1090,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         if (!listaMovimento.isEmpty()) {
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-                    movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
+                    movimento = (Movimento) listaMovimento.get(i).getArgumento1();
 
                     movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
                     movimento.setJuros(Moeda.converteUS$(listaMovimento.get(i).getArgumento20().toString()));
@@ -1081,13 +1126,13 @@ public class MovimentosReceberSocialBean implements Serializable {
         return null;
     }
 
-    public String telaMovimento(int id_movimento) {
+    public String telaMovimento(Movimento mov) {
         List lista = new ArrayList();
-        MovimentoDB db = new MovimentoDBToplink();
-        Movimento movimento = new Movimento();
+        //MovimentoDB db = new MovimentoDBToplink();
+        //Movimento movimento = new Movimento();
 
 //                    movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
-        movimento = db.pesquisaCodigo(id_movimento);
+        //movimento = db.pesquisaCodigo(id_movimento);
 
 //                    movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
 //                    movimento.setJuros(Moeda.converteUS$( listaMovimento.get(i).getArgumento20().toString()));
@@ -1098,7 +1143,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 //                    movimento.setValor(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()));
         // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
 //                    movimento.setValorBaixa(Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
-        lista.add(movimento);
+        lista.add(mov);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).alterarMovimento();
     }
@@ -1127,7 +1172,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         if (!listaMovimento.isEmpty()) {
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-                    movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
+                    movimento = (Movimento) listaMovimento.get(i).getArgumento1();
 
                     movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
                     movimento.setJuros(Moeda.converteUS$(listaMovimento.get(i).getArgumento20().toString()));
@@ -1171,7 +1216,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         
         for (int i = 0; i < listaMovimento.size(); i++) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
-            float[] valorx = db.pesquisaValorAcrescimo((Integer) listaMovimento.get(i).getArgumento1());
+            float[] valorx = db.pesquisaValorAcrescimo( ((Movimento) listaMovimento.get(i).getArgumento1()).getId() );
             
             if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {   
                 float calculo = 0;
@@ -1242,7 +1287,11 @@ public class MovimentosReceberSocialBean implements Serializable {
     }
 
     public void listenerPesquisa() {
-        
+        listaMovimento.clear();
+//        
+//        if (criterioReferencia.isEmpty() && !referenciaPesquisa.isEmpty()){
+//            referenciaPesquisa = "";
+//        }
     }
     
     public String converteData(Date data){
@@ -1289,7 +1338,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
                     MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
-                    float[] valorx = db.pesquisaValorAcrescimo((Integer) listaMovimento.get(i).getArgumento1());
+                    float[] valorx = db.pesquisaValorAcrescimo( ((Movimento) listaMovimento.get(i).getArgumento1()).getId() );
             
                     if ((Boolean)listaMovimento.get(i).getArgumento29()){
                         soma = Moeda.somaValores(soma, valorx[1]);
@@ -1425,10 +1474,14 @@ public class MovimentosReceberSocialBean implements Serializable {
             }
             
             List<Vector> lista = null;
+            //String ref = ((criterioReferencia.isEmpty()) ? referenciaPesquisa : criterioReferencia);
+            //criterioReferencia = ((referenciaPesquisa.isEmpty()) ? criterioReferencia : referenciaPesquisa);
+            //referenciaPesquisa = ((criterioReferencia.isEmpty()) ? referenciaPesquisa : criterioReferencia);
+            
             if ( dbf.pesquisaFisicaPorPessoa(pessoa.getId()) != null ){
-                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa, "fisica");
+                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, criterioReferencia, "fisica", criterioLoteBaixa);
             }else
-                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, referenciaPesquisa, "juridica");
+                lista = db.pesquisaListaMovimentos(id_pessoa, id_responsavel, porPesquisa, criterioReferencia, "juridica", criterioLoteBaixa);
                 
             //float soma = 0;
             boolean chk = false, disabled = false;
@@ -1468,7 +1521,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 
                 listaMovimento.add(new DataObject(
                         chk, // ARG 0
-                        lista.get(i).get(14), // ARG 1 ID_MOVIMENTO
+                        (Movimento) new Dao().find(new Movimento(), lista.get(i).get(14)), // ARG 1 Movimento
                         lista.get(i).get(0), // ARG 2 SERVICO
                         lista.get(i).get(1), // ARG 3 TIPO_SERVICO
                         lista.get(i).get(2), // ARG 4 REFERENCIA
@@ -1507,7 +1560,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         }
         return listaMovimento;
     }
-
+    
     public void setListaMovimento(List<DataObject> listaMovimento) {
         this.listaMovimento = listaMovimento;
     }
@@ -1892,6 +1945,30 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public void setObjectVencimento(DataObject objectVencimento) {
         this.objectVencimento = objectVencimento;
+    }
+
+    public boolean isChkBoletosAtrasados() {
+        return chkBoletosAtrasados;
+    }
+
+    public void setChkBoletosAtrasados(boolean chkBoletosAtrasados) {
+        this.chkBoletosAtrasados = chkBoletosAtrasados;
+    }
+
+    public String getCriterioReferencia() {
+        return criterioReferencia;
+    }
+
+    public void setCriterioReferencia(String criterioReferencia) {
+        this.criterioReferencia = criterioReferencia;
+    }
+
+    public String getCriterioLoteBaixa() {
+        return criterioLoteBaixa;
+    }
+
+    public void setCriterioLoteBaixa(String criterioLoteBaixa) {
+        this.criterioLoteBaixa = criterioLoteBaixa;
     }
 
 }

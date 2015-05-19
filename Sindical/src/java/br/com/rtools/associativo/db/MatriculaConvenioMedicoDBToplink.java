@@ -58,4 +58,24 @@ public class MatriculaConvenioMedicoDBToplink extends DB implements MatriculaCon
             return new ArrayList<>();
         }
     }
+    
+    @Override
+    public List<MatriculaConvenioMedico> listaConvenioPessoa(int id_pessoa, int id_servico){
+        String text = "SELECT mm.* \n" +
+                      "  FROM matr_convenio_medico mm \n " +
+                      " INNER JOIN fin_servico_pessoa sp ON sp.id = mm.id_servico_pessoa \n " +
+                      " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n " +
+                      " WHERE sp.id_pessoa = "+id_pessoa+" \n " +
+                      "   AND mm.dt_inativo is null \n " +
+                      "   AND sp.id_servico = "+id_servico;
+        
+        Query qry = getEntityManager().createNativeQuery(text, MatriculaConvenioMedico.class);
+        
+        try {
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList();
+        }
+    }
 }
