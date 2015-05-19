@@ -45,7 +45,7 @@ public class FeriadosBean implements Serializable {
     private Feriados feriados;
     private String message;
     private List<SelectItem> listCidade;
-    private int index;
+    private Integer index;
     private boolean chkCidades;
     private List<Feriados> listFeriados;
     private ScheduleModel eventModel;
@@ -57,11 +57,11 @@ public class FeriadosBean implements Serializable {
     public void init() {
         feriados = new Feriados();
         message = "";
-        listCidade = new ArrayList<SelectItem>();
+        listCidade = new ArrayList();
         index = 0;
         chkCidades = false;
-        listFeriados = new ArrayList<Feriados>();
-        eventModel = null;
+        listFeriados = new ArrayList();
+        eventModel = new DefaultScheduleModel();
         replicar = false;
         anos = 0;
         ano = Integer.parseInt(DataHoje.livre(new Date(), "YYYY"));
@@ -120,7 +120,7 @@ public class FeriadosBean implements Serializable {
                     }
                     f = new Feriados();
                 }
-                eventModel = null;
+                eventModel = new DefaultScheduleModel();
                 listFeriados.clear();
                 message = "Feriado adicionado com sucesso!";
                 GenericaMensagem.info("Sucesso", message);
@@ -142,7 +142,7 @@ public class FeriadosBean implements Serializable {
                     );
                     message = "Feriado adicionado com sucesso!";
                     GenericaMensagem.info("Sucesso", message);
-                    eventModel = null;
+                    eventModel = new DefaultScheduleModel();
                     feriados = new Feriados();
                     listFeriados.clear();
                     replicar = false;
@@ -175,7 +175,7 @@ public class FeriadosBean implements Serializable {
                 );
                 message = "Registro atualizado com sucesso!";
                 GenericaMensagem.info("Sucesso", message);
-                eventModel = null;
+                eventModel = new DefaultScheduleModel();
                 feriados = new Feriados();
                 listFeriados.clear();
             } else {
@@ -206,7 +206,7 @@ public class FeriadosBean implements Serializable {
                 );
                 message = "Registro excluído com sucesso";
                 GenericaMensagem.info("Sucesso", message);
-                eventModel = null;
+                eventModel = new DefaultScheduleModel();
                 listFeriados.clear();
             } else {
                 message = "Erro ao excluir registro!";
@@ -260,11 +260,11 @@ public class FeriadosBean implements Serializable {
         this.message = message;
     }
 
-    public int getIndex() {
+    public Integer getIndex() {
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(Integer index) {
         this.index = index;
     }
 

@@ -1,6 +1,7 @@
 package br.com.rtools.associativo.db;
 
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.Dao;
@@ -13,7 +14,7 @@ import javax.persistence.Query;
 public class MovimentosReceberSocialDBToplink extends DB implements MovimentosReceberSocialDB {
 
     @Override
-    public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia, String tipoPessoa) {
+    public List pesquisaListaMovimentos(String id_pessoa, String id_responsavel, String por_status, String referencia, String tipoPessoa, String lote_baixa) {
         try {
             if (id_pessoa.isEmpty()) {
                 return new ArrayList();
@@ -90,6 +91,10 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
 
             if (!referencia.isEmpty()) {
                 ands += " and m.ds_referencia = '" + referencia + "' \n";
+            }
+            
+            if (!lote_baixa.isEmpty()) {
+                ands += " and m.id_baixa = " + lote_baixa + " \n";
             }
 
             textqry += ands + order_by;
@@ -171,18 +176,19 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
     }
     
     @Override
-    public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa){
+    public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa, boolean atrasados){
         String textqry
             = " SELECT b.id, b.nr_ctr_boleto, b.nr_boleto, sum(m.nr_valor), b.dt_vencimento \n" +
                 "  FROM fin_boleto b \n" +
                 " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
                 " WHERE m.id_pessoa = "+id_pessoa+" \n" +
                 "   AND m.is_ativo = true \n" +
-                "   AND b.dt_vencimento >= CURRENT_DATE \n" +
+                ((atrasados) ? "" : "   AND b.dt_vencimento >= CURRENT_DATE \n") +
                 "   AND (m.ds_documento IS NOT NULL AND m.ds_documento <> '') \n" +
                 "   AND (m.nr_ctr_boleto IS NOT NULL AND m.nr_ctr_boleto <> '') \n" +
+                "   AND b.dt_vencimento IS NOT NULL \n" +
                 " GROUP BY b.id, b.nr_ctr_boleto, b.nr_boleto, b.dt_vencimento \n" +
-                " ORDER BY b.dt_vencimento";
+                ((atrasados) ? " ORDER BY b.dt_vencimento DESC" : " ORDER BY b.dt_vencimento");
         
         Query qry = getEntityManager().createNativeQuery(textqry);
         try{
@@ -208,7 +214,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                 "   -- AND b.dt_vencimento >= CURRENT_DATE QUANDO ATUALIZAR OS CAMPOS NULOS \n" +
                 //"   AND m.dt_vencimento >= CURRENT_DATE -- ATÉ ATUALIZAR OS CAMPOS NULOS \n" +
                 "   AND m.id_baixa IS NULL \n" +
-                " ORDER BY pt.ds_nome, pb.ds_nome, m.dt_vencimento";
+                " ORDER BY m.dt_vencimento DESC, pt.ds_nome, pb.ds_nome";
         
         Query qry = getEntityManager().createNativeQuery(textqry, Movimento.class);
         try{
@@ -264,4 +270,22 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
         }
         return null;
     }
+    
+    @Override
+    public List<TransferenciaCaixa> transferenciaCaixa(Integer id_fechamento_caixa_saida){
+        String textqry
+            = " SELECT tc " +
+              "  FROM TransferenciaCaixa tc " +
+              " WHERE tc.fechamentoSaida.id = "+ id_fechamento_caixa_saida;
+                
+        Query qry = getEntityManager().createQuery(textqry);
+        
+        try{
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
 }

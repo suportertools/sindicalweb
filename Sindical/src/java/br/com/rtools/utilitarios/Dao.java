@@ -432,6 +432,7 @@ public class Dao extends DB implements DaoInterface {
         if (object == null) {
             return null;
         }
+        
         if (objectId == null) {
             int id;
             try {

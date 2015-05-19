@@ -67,7 +67,7 @@ public class ConclusaoMatriculaBean implements Serializable {
 
     public void save() {
         HomologacaoDB hdb = new HomologacaoDBToplink();
-        List list = hdb.pesquisaPessoaDebito(matriculaEscola.getResponsavel().getId(), DataHoje.data());
+        List list = hdb.pesquisaPessoaDebito(matriculaEscola.getServicoPessoa().getCobranca().getId(), DataHoje.data());
         if (!list.isEmpty()) {
             mensagem = "Responsável possui débitos!";
             return;
@@ -105,8 +105,8 @@ public class ConclusaoMatriculaBean implements Serializable {
         dao.openTransaction();
         MatriculaEscola me = (MatriculaEscola) dao.find(new MatriculaEscola(), matriculaEscola.getId());
         String beforeUpdate = "Mudança de Status - Matrícula " + me.getId()
-                + " - Aluno: " + me.getAluno().getId() + " - " + me.getAluno().getNome()
-                + " - Responsável: " + me.getResponsavel().getId() + " - " + me.getResponsavel().getNome()
+                + " - Aluno: " + me.getServicoPessoa().getPessoa().getId() + " - " + me.getServicoPessoa().getPessoa().getNome()
+                + " - Responsável: " + me.getServicoPessoa().getCobranca().getId() + " - " + me.getServicoPessoa().getCobranca().getNome()
                 + " - Status: " + me.getEscStatus().getDescricao()
                 + " - Filial: " + me.getFilial().getFilial().getPessoa().getId();
         NovoLog novoLog = new NovoLog();
@@ -124,8 +124,8 @@ public class ConclusaoMatriculaBean implements Serializable {
             }
             novoLog.update(beforeUpdate,
                     " Matrícula " + matriculaEscola.getId()
-                    + " - Aluno: " + matriculaEscola.getAluno().getId() + " - " + matriculaEscola.getAluno().getNome()
-                    + " - Responsável: " + matriculaEscola.getResponsavel().getId() + " - " + matriculaEscola.getResponsavel().getNome()
+                    + " - Aluno: " + matriculaEscola.getServicoPessoa().getPessoa().getId() + " - " + matriculaEscola.getServicoPessoa().getPessoa().getNome()
+                    + " - Responsável: " + matriculaEscola.getServicoPessoa().getCobranca().getId() + " - " + matriculaEscola.getServicoPessoa().getCobranca().getNome()
                     + " - Status: " + matriculaEscola.getEscStatus().getDescricao()
                     + " - Filial: " + matriculaEscola.getFilial().getFilial().getPessoa().getId() + servicoString);
         } else {
@@ -157,7 +157,7 @@ public class ConclusaoMatriculaBean implements Serializable {
             dataConclusao = DataHoje.converteDataParaInteger(lme.getMatriculaTurma().getTurma().getDataTermino());
             if (dataHoje > dataConclusao) {
                 if (lme.getMatriculaEscola().getEscStatus().getId() != 3 || lme.getMatriculaEscola().getEscStatus().getId() != 4 && lme.getMatriculaEscola().getEscStatus().getId() == 2) {
-                    List list = hdb.pesquisaPessoaDebito(matriculaEscola.getResponsavel().getId(), DataHoje.data());
+                    List list = hdb.pesquisaPessoaDebito(matriculaEscola.getServicoPessoa().getCobranca().getId(), DataHoje.data());
                     if (!list.isEmpty()) {
                         dao.rollback();
                         return;

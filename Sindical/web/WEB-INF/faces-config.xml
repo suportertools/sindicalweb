@@ -1668,6 +1668,12 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>descontoPromocional</from-outcome>
+            <to-view-id>/descontoPromocional.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

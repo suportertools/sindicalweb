@@ -62,6 +62,7 @@ public class CartaoSocialBean implements Serializable {
     private Integer lastIndex = 0;
 
     public CartaoSocialBean() {
+        getListFilial();
         this.naoImpressoTodos();
     }
 
@@ -88,7 +89,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Lista de TODOS NÃO IMPRESSOS";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", "", indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", "", indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void naoImpressoEmpresa() {
@@ -96,7 +97,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Não Impressos / EMPRESAS";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void naoImpressoCNPJ() {
@@ -104,7 +105,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Não Impressos / CNPJ";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("niCNPJ", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("niCNPJ", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void impressoTodos() {
@@ -112,7 +113,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Lista de TODOS IMPRESSOS";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", "", indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", "", indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void impressoEmpresa() {
@@ -120,7 +121,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Impressos / EMPRESAS";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void impressoCNPJ() {
@@ -128,7 +129,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Impressos / CNPJ";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iCNPJ", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iCNPJ", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     /**
@@ -149,7 +150,7 @@ public class CartaoSocialBean implements Serializable {
         } else if (dias == 2) {
             tipo = "iDias";
         }
-        listaCarteirinha = db.pesquisaCarteirinha(tipo, descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha(tipo, descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void pessoaNome() {
@@ -157,7 +158,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Pessoa / NOME";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void sociosMatricula() {
@@ -165,7 +166,7 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Sócio / MATRÍCULA";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void pessoaID() {
@@ -174,7 +175,7 @@ public class CartaoSocialBean implements Serializable {
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         if (!descricao.isEmpty()) {
-            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         } else {
             listaCarteirinha = new ArrayList<Vector>();
         }
@@ -185,45 +186,45 @@ public class CartaoSocialBean implements Serializable {
         porLabel = "Pesquisa por Pessoa / CPF";
 
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iCPF", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iCPF", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
     }
 
     public void pesquisar() {
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         if (por.equals("niEmpresa")) {
-            listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("niCNPJ")) {
-            listaCarteirinha = db.pesquisaCarteirinha("niCNPJ", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("niCNPJ", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iEmpresa")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iCNPJ")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iCNPJ", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iCNPJ", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iDias")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iDias", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iDias", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iNome")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iID")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iMatricula")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
 
         if (por.equals("iCPF")) {
-            listaCarteirinha = db.pesquisaCarteirinha("iCPF", descricao, indexOrdem);
+            listaCarteirinha = db.pesquisaCarteirinha("iCPF", descricao, indexOrdem, ((listFilial.get(idFilial).getDescription() != null) ? Integer.valueOf(listFilial.get(idFilial).getDescription()) : null));
         }
     }
 
@@ -679,7 +680,7 @@ public class CartaoSocialBean implements Serializable {
             }
             List<Filial> list = new Dao().list(new Filial(), true);
             int i = 0;
-            listFilial.add(new SelectItem(i, "Todas", "" + 0));
+            listFilial.add(new SelectItem(i, "TODAS", null));
             for (i = 1; i < list.size(); i++) {
                 if (idFilial == list.get(i).getFilial().getId()) {
                     idFilial = i;

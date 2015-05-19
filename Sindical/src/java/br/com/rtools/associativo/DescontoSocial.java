@@ -60,7 +60,7 @@ public class DescontoSocial implements java.io.Serializable {
     public String getNrDescontoString() {
         return String.valueOf(nrDesconto);
     }
-
+    
     public void setNrDescontoString(String nrDescontoString) {
         try{
             this.nrDesconto = Float.valueOf(nrDescontoString.replace(",", "."));

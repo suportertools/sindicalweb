@@ -6,10 +6,14 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Cadastro de Matrícula</title>
+        <title>Matrícula Escola</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body>
+    <!-- INICIA DIV wrap e main -->
+    <div id="wrapx">
+        <div id="mainx">
+        <!-- INICIA DIV wrap e main -->  
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
@@ -38,9 +42,9 @@
                                     </h:column>
                                     <h:column>
                                         <h:panelGrid columns="8">
-                                            <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt">
-                                                <p:ajax event="dateSelect" update="@this i_panel_salvar_movimento" listener="#{matriculaEscolaBean.onDateSelect}" />
-                                            </p:calendar>
+                                            <p:inputMask id="idDataMatricula" value="#{matriculaEscolaBean.servicoPessoa.emissao}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" mask="99/99/9999">
+                                                <p:ajax event="change" update="@this i_panel_salvar_movimento" />
+                                            </p:inputMask>
                                             <p:outputLabel value=" Status: " />
                                             <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" disabled="true">
                                                 <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
@@ -61,14 +65,14 @@
                                     <p:commandButton icon="ui-icon-search" value="Aluno" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" />
                                     <h:column>
                                         <h:panelGrid columns="8">
-                                            <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
-                                            <p:commandLink id="idAluno" value="#{matriculaEscolaBean.matriculaEscola.aluno.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" update="i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(matriculaEscolaBean.matriculaEscola.aluno.id)}" title="Ver detalhes"/>
-                                            <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" styleClass="margin-left-max"/>
+                                            <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id == -1}" for="idPesquisarAluno"/>
+                                            <p:commandLink id="idAluno" value="#{matriculaEscolaBean.servicoPessoa.pessoa.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" update="i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(matriculaEscolaBean.servicoPessoa.pessoa.id)}" title="Ver detalhes"/>
+                                            <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" styleClass="margin-left-max"/>
                                             <p:outputLabel  value=" - MATRÍCULA #{matriculaEscolaBean.socios.matriculaSocios.nrMatricula}"  rendered="#{matriculaEscolaBean.socios.id != -1}" style="font-weight: bold"/>
                                             <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
                                             <h:panelGrid columns="2" rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
-                                                <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
-                                                <p:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}" disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
+                                                <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
+                                                <p:selectBooleanCheckbox value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" disabled="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
                                                     <p:ajax event="change" update="idEmpresaResponsavelA" />
                                                 </p:selectBooleanCheckbox>
                                             </h:panelGrid>                                
@@ -77,18 +81,18 @@
                                     <p:outputLabel value="Responsável: "  style="margin-left: 8px" for="idPesquisarAluno" />
                                     <h:column>
                                         <h:panelGrid columns="3">
-                                            <p:commandLink id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.matriculaEscola.responsavel.id)}" title="Ver detalhes"/>
+                                            <p:commandLink id="idResp" value="#{matriculaEscolaBean.servicoPessoa.cobranca.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.servicoPessoa.cobranca.id)}" title="Ver detalhes"/>
                                             <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
                                             <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
                                         <h:panelGrid id="idEmpresaResponsavelA">
-                                            <p:outputLabel  value="Empresa: " rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}"/>
+                                            <p:outputLabel  value="Empresa: " rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}"/>
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
-                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
+                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
                                     </h:column>
@@ -109,13 +113,13 @@
                             <h:column>
                                 <h:column rendered="#{matriculaEscolaBean.alunoFoto}">
                                     <p:panel header="Foto Aluno">
-                                        <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaEscolaBean.matriculaEscola.aluno.id}.png" width="130" />
+                                        <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaEscolaBean.servicoPessoa.pessoa.id}.png" width="130" />
                                     </p:panel>
                                 </h:column>
                             </h:column>
                         </h:panelGrid>
                         <p:messages autoUpdate="true" closable="true" showDetail="true"/>
-                        <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}">
+                        <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}">
                             <p:ajax event="tabChange" listener="#{matriculaEscolaBean.tipoMatriculaPor}" update=":form_matricula_escola:idTabela"/> 
                             <p:tab title="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" > 
                                 <p:commandButton value="Selecionar Turma" onclick="PF('dgl_painel_seleciona_turma').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search"/> 
@@ -176,22 +180,22 @@
                                     <p:outputLabel value="Data Inicío:"  for="idDataInicio"/>
                                     <h:column>
                                         <h:panelGrid columns="3">
-                                            <p:calendar id="idDataInicio" size="6" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataInicio}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" readonlyInput="true">
-                                                <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.matriculaIndividual.listenerInicio}"/>
-                                            </p:calendar>
+                                            <p:inputMask id="idDataInicio" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataInicioString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
+                                                <p:ajax event="change" update="@this :form_matricula_escola:" />
+                                            </p:inputMask>
                                             <p:outputLabel value="Data Término: "  for="idDataTermino"/>
-                                            <p:calendar id="idDataTermino" size="6" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataTermino}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" readonlyInput="true">
-                                                <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.matriculaIndividual.listenerTermino}"/>
-                                            </p:calendar>
+                                            <p:inputMask id="idDataTermino" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataTerminoString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
+                                                <p:ajax event="change" update="@this :form_matricula_escola:" />
+                                            </p:inputMask>
                                         </h:panelGrid>
                                     </h:column>
                                     <p:outputLabel value="Horário:" />
                                     <h:column>
-                                        <p:inputMask mask="99:99" id="idHoraInicio"  value="#{matriculaEscolaBean.matriculaIndividual.inicio}" size="1" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                        <p:inputMask mask="99:99" id="idHoraInicio"  value="#{matriculaEscolaBean.matriculaIndividual.inicio}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" />
                                         </p:inputMask>
                                         <p:outputLabel value=" às " />
-                                        <p:inputMask mask="99:99" id="idHoraTermino"  value="#{matriculaEscolaBean.matriculaIndividual.termino}" size="1" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                        <p:inputMask mask="99:99" id="idHoraTermino"  value="#{matriculaEscolaBean.matriculaIndividual.termino}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" />
                                         </p:inputMask>
                                         <p:outputLabel value=" horas " />
@@ -242,9 +246,6 @@
                                         <p:column>
                                             <p:outputLabel value="Desconto Vecto" style="font-weight: bold; text-align: center;"/>
                                         </p:column>
-                                        <p:column rendered="#{matriculaEscolaBean.descontoProporcional}">
-                                            <p:outputLabel value="Desconto Proporcional" style="color: blue; font-weight: bold;" />
-                                        </p:column>
                                         <p:column>
                                             <p:outputLabel value="Valor Liquído" style="font-weight: bold; text-align: center;" />
                                         </p:column>
@@ -274,26 +275,24 @@
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" style="text-align: right;"  onclick="selectInputText(this);" >
+                                        <p:inputText id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.servicoPessoa.nrDescontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" style="text-align: right;"  onclick="selectInputText(this);" >
                                             <f:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="@this idTabela" />
                                         </p:inputText>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento" onclick="selectInputText(this);" style="text-align: right;">
+                                        <p:inputText id="idDescontoVencimento" size="5" maxlength="10" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento" onclick="selectInputText(this);" style="text-align: right;">
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
                                         </p:inputText>
-                                    </p:column>
-                                    <p:column style="text-align: center"  rendered="#{matriculaEscolaBean.descontoProporcional}">
-                                        <p:inputText readonly="true" dir="RTL" id="idDescPro" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.valorDescontoProporcional}" title="Desconto proporcional" disabled="true" style="color: blue;"/>
                                     </p:column>
                                     <p:column style="text-align: center">
                                         <p:inputText readonly="true" dir="RTL" id="idValorLiquido" size="5" maxlength="10" value="#{matriculaEscolaBean.valorLiquido}" title="Valor Liquído"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                                     </p:column>
                                     <p:column style="text-align: center">
-                                        <p:selectOneMenu id="cbNumeros" value="#{matriculaEscolaBean.matriculaEscola.numeroParcelas}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" style="padding-right: 10px">
+                                        <p:selectOneMenu id="cbNumeros" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" style="padding-right: 10px" rendered="false">
                                             <p:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
                                             <f:selectItems value="#{matriculaEscolaBean.listaNumeros}" />
                                         </p:selectOneMenu>
+                                        <p:outputLabel value="#{matriculaEscolaBean.numeroParcelas}" style="font-weight: bold; font-size: 11pt!important"/>
                                     </p:column>
                                     <p:column style="text-align: center">
                                         <p:selectOneMenu value="#{matriculaEscolaBean.idDiaParcela}" style="padding-right: 10px" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
@@ -317,9 +316,6 @@
                                     </p:column>
                                 </p:row>
                             </p:panelGrid>
-                            <p:selectBooleanButton id="idDescontoProporcional" value="#{matriculaEscolaBean.descontoProporcional}" rendered="#{matriculaEscolaBean.showDescontoProporcional}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" onLabel="Desconto Proporcional" offLabel="Desconto Proporcional" styleClass="margin-top-max">
-                                <p:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
-                            </p:selectBooleanButton>
                         </p:panel>
                         <h:panelGrid columns="15" id="idPainelMenus" styleClass="margin-top-max">
                             <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
@@ -542,7 +538,7 @@
                             <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                             <p:panel id="i_pessoa_fisica_card">
                                 <ui:include src="templates/templatePessoaFisicaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.matriculaEscola.aluno.id}" />
+                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.pessoa.id}" />
                                 </ui:include>      
                             </p:panel>
                         </p:dialog>       
@@ -550,7 +546,7 @@
                             <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                             <p:panel id="i_pessoa_card">
                                 <ui:include src="templates/templatePessoaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.matriculaEscola.responsavel.id}" />
+                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.cobranca.id}" />
                                 </ui:include>      
                             </p:panel>
                         </p:dialog>       
@@ -566,5 +562,15 @@
                 </h:form>
             </p:panel>
         </f:view>
+        <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>    
     </h:body>
 </ui:composition>

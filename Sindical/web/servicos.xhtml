@@ -26,12 +26,8 @@
                             <c:set scope="request" var="object" value="${servicosBean.servicos}"/>
                             <p:outputLabel value="Cadastro de Serviços" styleClass="fonteHeader"/>
                             <div class="clear"></div>
-                            <p:panel id="id_painel_servicos">
-                                <f:facet name="header">
-                                    Serviço: #{servicosBean.servicos.descricao}
-                                </f:facet>
+                            <h:panelGrid id="id_painel_servicos">
                                 <div class="clear"></div>
-                                <p:panel styleClass="no-border">
                                     <p:tabView id="id_tab_view" activeIndex="#{servicosBean.activeIndex}">
                                         <p:tab id="servico" title="Serviços">
                                             <p:panelGrid columns="2" styleClass="sbb">
@@ -97,6 +93,7 @@
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.agrupaBoleto}" itemLabel="Agrupa boletos" />
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.produto}" itemLabel="Produto" />
                                                 <p:selectBooleanCheckbox value="#{servicosBean.servicos.valorFixo}" itemLabel="Valor Fixo" />
+                                                <p:selectBooleanCheckbox value="#{servicosBean.servicos.cursoRenovacao}" itemLabel="Renovação Automática Escola" />
                                             </p:panelGrid>
 
                                             <p:separator />
@@ -248,14 +245,13 @@
                                             </p:panel>
                                         </p:tab>
                                     </p:tabView>
-                                </p:panel>
                                 <p:panelGrid columns="4" id="id_acao" styleClass="sbb">
                                     <p:commandButton onclick="PF('dlg_save').show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
                                     <p:commandButton ajax="false" value="Novo" title="Novo registro / Limpar" action="#{servicosBean.novo}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show()" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
                                     <p:commandButton styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaServicos}" title="Pesquisar serviços"/>
                                 </p:panelGrid>
-                            </p:panel>
+                            </h:panelGrid>
                             <p:dialog widgetVar="dlg_save" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                                 <f:facet name="footer">
                                     <p:panelGrid columns="2" styleClass="sbb">

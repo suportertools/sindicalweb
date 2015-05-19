@@ -20,7 +20,7 @@ public interface SocioCarteirinhaDB {
 
     public List pesquisaSocioCarteirinhaSocio(int idSocio);
 
-    public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem);
+    public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem, Integer id_filial);
     
     //public List listaFiltro(String indexFiltro, String descEmpresa, String indexOrdem, boolean fantasia);
 

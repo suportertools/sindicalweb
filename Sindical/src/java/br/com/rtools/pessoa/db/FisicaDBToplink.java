@@ -1,11 +1,10 @@
 package br.com.rtools.pessoa.db;
 
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
-import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -721,5 +720,51 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         } catch (Exception e) {
         }
         return null;
+    }
+    
+    @Override
+    public List<Vector> listaMovimentoFisica(Integer id_pessoa, String status, String tipo_pesquisa){
+        String text = 
+                  " SELECT m.id, pr.ds_nome, pt.ds_nome, pb.ds_nome, m.ds_referencia, m.dt_vencimento, s.ds_descricao, ts.ds_descricao, func_valor(m.id) as valor, b.dt_baixa \n "
+                + "   FROM fin_movimento m "
+                + "  INNER JOIN pes_pessoa pr ON pr.id = m.id_pessoa \n "
+                + "  INNER JOIN pes_pessoa pt ON pt.id = m.id_titular \n "
+                + "  INNER JOIN pes_pessoa pb ON pb.id = m.id_beneficiario \n "
+                + "  INNER JOIN fin_servicos s ON s.id = m.id_servicos \n "
+                + "  INNER JOIN fin_tipo_servico ts ON ts.id = m.id_tipo_servico \n "
+                + "   LEFT JOIN fin_baixa b ON b.id = m.id_baixa \n "
+                + "  WHERE m.is_ativo = true ";
+        String and = "";
+        
+        switch (tipo_pesquisa) {
+            case "responsavel":
+                and += " AND m.id_pessoa = "+id_pessoa;
+                break;
+            case "titular":
+                and += " AND m.id_titular = "+id_pessoa;
+                break;
+            case "beneficiario":
+                and += " AND m.id_beneficiario = "+id_pessoa;
+                break;
+        }
+        
+        switch (status) {
+            case "todos":
+                break;
+            case "abertos":
+                and += " AND m.id_baixa IS NULL";
+                break;
+            case "quitados":
+                and += " AND m.id_baixa IS NOT NULL";
+                break;
+        }
+        
+        try{
+            Query qry = getEntityManager().createNativeQuery(text + and + " ORDER BY m.dt_vencimento DESC, pb.ds_nome");
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 }

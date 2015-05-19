@@ -127,7 +127,7 @@
                                     </p:selectOneMenu>
                                 </p:column>
 
-                                <p:column>
+                                <p:column rendered="false">
                                     <h:outputText value="Ref" /><br />
                                     <p:inputMask size="6" value="#{movimentosReceberSocialBean.referenciaPesquisa}" style="margin-right: 20px;" mask="99/9999">
                                         <p:ajax event="change" update="@this i_panel tbl i_msg" listener="#{movimentosReceberSocialBean.atualizarStatus()}"/>
@@ -187,10 +187,15 @@
                                 </p:column>
                             </h:panelGrid>
                             
-                            <h:panelGrid columns="2" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}">
+                            <h:panelGrid id="panelAnexar" columns="2" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}" style="width: 100%">
                                 <p:column>
                                     <br />
                                     <p:commandButton value="Anexar Boletos" action="#{movimentosReceberSocialBean.clickAnexarMovimentos}" title="Anexar Boletos" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}"  onclick="PF('dlg_anexar_boletos').show()" update="panel_anexar_boletos" disabled="#{movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 3) or movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 1)}"/>
+                                </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandLink value="Critérios de Busca" onclick="PF('dlg_busca').show()" style="color: blue;float: right; font-size: 10pt!important; font-weight: bold" action="#{movimentosReceberSocialBean.clickCriteriosDeBusca}" update="panelCriterios"/>
                                 </p:column>
                             </h:panelGrid>
                             
@@ -316,10 +321,63 @@
                                             <p:outputLabel value="#{linha.argumento14}"/>
                                         </p:column>
                                     </h:panelGrid>
+                                    
+                                    <p:panel header="Dados do Fechamento" rendered="#{linha.argumento1.baixa.fechamentoCaixa != null}">
+                                        <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
+                                            <p:column style="width: 40px" rendered="false">
+                                                <p:outputLabel value="ID" style="font-weight: bold"/><br />
+                                                <p:outputLabel value="#{linha.argumento1.baixa.fechamentoCaixa.id}"/>
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Operador" style="font-weight: bold"/><br />
+                                                <p:outputLabel value="#{linha.argumento1.baixa.fechamentoCaixa.usuario.pessoa.nome}"/>
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Caixa" style="font-weight: bold"/><br />
+                                                <p:outputLabel value="#{movimentosReceberSocialBean.transferenciaCaixa(linha.argumento1.baixa.fechamentoCaixa.id).caixaSaida.descricao}"/>
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Data Fechamento" style="font-weight: bold"/><br />
+                                                <p:outputLabel value="#{linha.argumento1.baixa.fechamentoCaixa.data}"/>
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Operador que Fechou" style="font-weight: bold"/><br />
+                                                <p:outputLabel value="#{movimentosReceberSocialBean.transferenciaCaixa(linha.argumento1.baixa.fechamentoCaixa.id).usuario.pessoa.nome}"/>
+                                            </p:column>
+                                        </h:panelGrid>
+                                    </p:panel>
                                 </p:rowExpansion>
                             </p:dataTable>      
                                 
 
+                            <p:dialog widgetVar="dlg_busca" header="Critérios de Pesquisa" resizable="false" width="400" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Filtrar lista de movimentos por" style="font-size: 11pt!important; font-weight: bold"/>
+                                </h:panelGrid>
+                                <br />
+                                <h:panelGrid id="panelCriterios" columns="2">
+                                    <p:column>
+                                        <p:outputLabel value="Referência" /><br />
+                                        <p:inputMask value="#{movimentosReceberSocialBean.criterioReferencia}" mask="99/9999" size="6"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Lote Baixa" /><br />
+                                        <p:inputText value="#{movimentosReceberSocialBean.criterioLoteBaixa}" style="width: 80px"/>
+                                    </p:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="3">
+                                    <p:commandButton value="Filtrar" type="submit" action="#{movimentosReceberSocialBean.listenerPesquisa()}" update="formMovimentosReceber" onclick="PF('dlg_busca').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Limpar Busca" action="#{movimentosReceberSocialBean.limparCriteriosDeBusca()}" style="float: left" icon="ui-icon-close" update="panelCriterios formMovimentosReceber"/>
+                                    <p:commandButton value="Fechar" type="button" onclick="PF('dlg_busca').hide()" style="float: left" icon="ui-icon-close" update="formMovimentosReceber"/>       
+                                </h:panelGrid>
+                            </p:dialog>
+                            
                             <p:dialog widgetVar="dlg_refazer" header="Refazer Movimentos" resizable="false" width="400" modal="true">
                                 <h:panelGrid>
                                     <p:outputLabel value="Deseja realmente REFAZER esses movimentos?" style="font-size: 11pt!important"/>
@@ -363,6 +421,10 @@
                                 <h:panelGrid id="panel_anexar_boletos">
                                     <p:messages autoUpdate="false" closable="true" showDetail="true" />
                                     <p:outputLabel value="Boletos Disponiveis" style="font-size: 13pt!important; font-weight: bold"/>
+                                    <p:selectBooleanCheckbox itemLabel="Boletos Atrasados" value="#{movimentosReceberSocialBean.chkBoletosAtrasados}" style="float: right">
+                                        <p:ajax event="change" update="panel_anexar_boletos" listener="#{movimentosReceberSocialBean.loadBoletosAbertos()}"/>
+                                    </p:selectBooleanCheckbox>
+                                    
                                     <p:dataTable var="linha" value="#{movimentosReceberSocialBean.listaBoletosAbertos}" selectionMode="multiple" selection="#{movimentosReceberSocialBean.listaBoletosAbertosSelecionados}" rowKey="#{linha.argumento0[0]}" emptyMessage="Nenhum Boleto Encontrado!" scrollable="true" scrollHeight="200">
                                         
                                         <p:column style="width:15px">  
@@ -416,7 +478,7 @@
                                     <br />
                                     
                                     <p:outputLabel value="Movimentos Sem Boleto" style="font-size: 13pt!important; font-weight: bold; color: red"/>
-                                    <p:dataTable var="linha" value="#{movimentosReceberSocialBean.listaMovimentosAnexo}" selection="#{movimentosReceberSocialBean.listaMovimentosAnexoSelecionados}" rowKey="#{linha.id}" emptyMessage="Nenhum Movimento Encontrado para Anexar!">
+                                    <p:dataTable var="linha" value="#{movimentosReceberSocialBean.listaMovimentosAnexo}" selection="#{movimentosReceberSocialBean.listaMovimentosAnexoSelecionados}" rowKey="#{linha.id}" emptyMessage="Nenhum Movimento Encontrado para Anexar!" scrollable="true" scrollHeight="200">
                                         <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
                                         
                                         <p:column headerText="Titular">

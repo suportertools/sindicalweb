@@ -108,8 +108,8 @@ public class RescisaoContratoBean implements Serializable {
             matriculaEscola = (MatriculaEscola) GenericaSessao.getObject("matriculaEscolaPesquisa", true);
             if (matriculaEscola.getEvt() != null) {
                 this.idEvt = matriculaEscola.getEvt().getId();
-                titular = matriculaEscola.getResponsavel();
-                beneficiario = matriculaEscola.getAluno();
+                titular = matriculaEscola.getServicoPessoa().getCobranca();
+                beneficiario = matriculaEscola.getServicoPessoa().getPessoa();
                 pesquisaMovimentosPorEvt(idEvt);
                 MatriculaEscolaDao matriculaEscolaDao = new MatriculaEscolaDao();
                 MatriculaIndividual mi = matriculaEscolaDao.pesquisaCodigoMIndividual(matriculaEscola.getId());
@@ -122,7 +122,7 @@ public class RescisaoContratoBean implements Serializable {
                     descricaoServico = "Mátricula nº" + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao() + " - Descrição: " + mt.getTurma().getDescricao();
                 }
                 PessoaDB pessoaDB = new PessoaDBToplink();
-                PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getResponsavel().getId());
+                PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getServicoPessoa().getCobranca().getId());
                 if (pc.getId() != -1) {
                     diaVencimento = pc.getNrDiaVencimento();
                 }
@@ -303,10 +303,10 @@ public class RescisaoContratoBean implements Serializable {
             String vecimentoString = "";
             TipoServico tipoServico = (TipoServico) dao.find(new TipoServico(), 6);
             FTipoDocumento fTipoDocumento = (FTipoDocumento) dao.find(new FTipoDocumento(), 2);
-            for (int x = 0; x < (Integer.toString(matriculaEscola.getResponsavel().getId())).length(); x++) {
+            for (int x = 0; x < (Integer.toString(matriculaEscola.getServicoPessoa().getCobranca().getId())).length(); x++) {
                 nrCtrBoletoResp += 0;
             }
-            nrCtrBoletoResp += matriculaEscola.getResponsavel().getId();
+            nrCtrBoletoResp += matriculaEscola.getServicoPessoa().getCobranca().getId();
             if (numeroParcelas > 0) {
                 valorParcelaF = Moeda.substituiVirgulaFloat(valorMulta) / numeroParcelas;
             } else {
