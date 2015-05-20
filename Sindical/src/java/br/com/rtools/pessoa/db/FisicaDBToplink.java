@@ -138,6 +138,28 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  INNER JOIN pes_pessoa_empresa PE ON F.id = PE.id_fisica    "
                         + "       WHERE PE.ds_codigo LIKE '" + desc + "'                "
                         + "    ORDER BY P.ds_nome LIMIT " + maxResults;
+            } else if (por.equals("matricula")) {
+                desc = desc.replace("%", "");
+                try {
+                    Integer.parseInt(desc);
+                } catch (Exception e) {
+                    return new ArrayList();
+                }
+                textQuery
+                        = "      SELECT F.* "
+                        + "        FROM pes_fisica AS F                                                         "
+                        + "  INNER JOIN pes_pessoa AS P ON P.id = F.id_pessoa                                   "
+                        + "       WHERE P.id IN (                                                               "
+                        + "              SELECT P2.id                                                           "
+                        + "                FROM fin_servico_pessoa  AS SP                                       "
+                        + "          INNER JOIN soc_socios          AS S    ON S.id_servico_pessoa  = SP.id     "
+                        + "          INNER JOIN matr_socios         AS MS   ON MS.id = S.id_matricula_socios    "
+                        + "          INNER JOIN pes_pessoa          AS P2   ON P2.id = SP.id_pessoa             "
+                        + "               WHERE SP.is_ativo = TRUE  "
+                        + "                 AND ms.nr_matricula = " + desc.replace("%", "");
+                textQuery += " AND SP.id_pessoa = MS.id_titular ";
+                textQuery += " ) "
+                        + "  ORDER BY P.ds_nome LIMIT " + maxResults;
             } else {
 
                 textQuery = "    SELECT F.*                                             "
@@ -248,7 +270,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     try {
                         Integer.parseInt(desc);
                     } catch (Exception e) {
-                        return new ArrayList();                        
+                        return new ArrayList();
                     }
                     textQuery
                             = "      SELECT F.* "
@@ -670,35 +692,36 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         }
         return lista;
     }
-    
+
     @Override
     public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa) {
-        String textQuery = "SELECT sp.dt_emissao AS emissao, \n" +
-                            "       p.ds_nome AS nome, \n" +
-                            "       sp.desconto_folha AS desconto_folha, \n" +
-                            "       sp.nr_desconto AS desconto, \n" +
-                            "       sp.ds_ref_vigoracao AS referencia_vigoracao, \n" +
-                            "       sp.ds_ref_validade AS referencia_validade, \n" +
-                            "       s.ds_descricao AS descricao, \n" +
-                            "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, null) AS valor \n" +
-                            "  FROM fin_servico_pessoa sp \n" +
-                            " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n" +
-                            " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n" +
-                            // socios com vigoração ativa ** ?
-                            //" INNER JOIN soc_socios soc ON soc.id_servico_pessoa = sp.id \n" +
-                            //" INNER JOIN matr_socios ma ON ma.id = soc.id_matricula_socios \n" +
-                            " WHERE sp.is_ativo = TRUE \n";
-        
-        if (somenteDestaPessoa)
-            textQuery += " AND sp.id_pessoa = "+id_pessoa+" \n";
-        else
-            textQuery += " AND sp.id_cobranca = ( select func_titular_da_pessoa("+id_pessoa+") ) \n";
-        
+        String textQuery = "SELECT sp.dt_emissao AS emissao, \n"
+                + "       p.ds_nome AS nome, \n"
+                + "       sp.desconto_folha AS desconto_folha, \n"
+                + "       sp.nr_desconto AS desconto, \n"
+                + "       sp.ds_ref_vigoracao AS referencia_vigoracao, \n"
+                + "       sp.ds_ref_validade AS referencia_validade, \n"
+                + "       s.ds_descricao AS descricao, \n"
+                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, null) AS valor \n"
+                + "  FROM fin_servico_pessoa sp \n"
+                + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n"
+                + " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n"
+                + // socios com vigoração ativa ** ?
+                //" INNER JOIN soc_socios soc ON soc.id_servico_pessoa = sp.id \n" +
+                //" INNER JOIN matr_socios ma ON ma.id = soc.id_matricula_socios \n" +
+                " WHERE sp.is_ativo = TRUE \n";
+
+        if (somenteDestaPessoa) {
+            textQuery += " AND sp.id_pessoa = " + id_pessoa + " \n";
+        } else {
+            textQuery += " AND sp.id_cobranca = ( select func_titular_da_pessoa(" + id_pessoa + ") ) \n";
+        }
+
         Query qry = getEntityManager().createNativeQuery(textQuery);
-        
-        try{
+
+        try {
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();
@@ -721,11 +744,11 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         }
         return null;
     }
-    
+
     @Override
-    public List<Vector> listaMovimentoFisica(Integer id_pessoa, String status, String tipo_pesquisa){
-        String text = 
-                  " SELECT m.id, pr.ds_nome, pt.ds_nome, pb.ds_nome, m.ds_referencia, m.dt_vencimento, s.ds_descricao, ts.ds_descricao, func_valor(m.id) as valor, b.dt_baixa \n "
+    public List<Vector> listaMovimentoFisica(Integer id_pessoa, String status, String tipo_pesquisa) {
+        String text
+                = " SELECT m.id, pr.ds_nome, pt.ds_nome, pb.ds_nome, m.ds_referencia, m.dt_vencimento, s.ds_descricao, ts.ds_descricao, func_valor(m.id) as valor, b.dt_baixa \n "
                 + "   FROM fin_movimento m "
                 + "  INNER JOIN pes_pessoa pr ON pr.id = m.id_pessoa \n "
                 + "  INNER JOIN pes_pessoa pt ON pt.id = m.id_titular \n "
@@ -735,19 +758,19 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 + "   LEFT JOIN fin_baixa b ON b.id = m.id_baixa \n "
                 + "  WHERE m.is_ativo = true ";
         String and = "";
-        
+
         switch (tipo_pesquisa) {
             case "responsavel":
-                and += " AND m.id_pessoa = "+id_pessoa;
+                and += " AND m.id_pessoa = " + id_pessoa;
                 break;
             case "titular":
-                and += " AND m.id_titular = "+id_pessoa;
+                and += " AND m.id_titular = " + id_pessoa;
                 break;
             case "beneficiario":
-                and += " AND m.id_beneficiario = "+id_pessoa;
+                and += " AND m.id_beneficiario = " + id_pessoa;
                 break;
         }
-        
+
         switch (status) {
             case "todos":
                 break;
@@ -758,11 +781,11 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 and += " AND m.id_baixa IS NOT NULL";
                 break;
         }
-        
-        try{
+
+        try {
             Query qry = getEntityManager().createNativeQuery(text + and + " ORDER BY m.dt_vencimento DESC, pb.ds_nome");
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();

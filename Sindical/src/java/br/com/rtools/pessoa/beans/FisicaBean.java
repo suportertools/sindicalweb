@@ -12,7 +12,6 @@ import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
@@ -133,13 +132,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private List<Fisica> selectedFisica = new ArrayList();
 
     private Boolean multiple = false;
-    
+
     private String somaValoresHistorico = "0,00";
-    
+
     private List<Vector> listaMovimento = new ArrayList();
     private String tipoStatusMovimento = "abertos";
     private String tipoPesquisaMovimento = "responsavel";
-    
+
     @PostConstruct
     public void init() {
     }
@@ -148,18 +147,18 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void destroy() {
 
     }
-    
-    public String telaMovimentosReceberSocial(){
+
+    public String telaMovimentosReceberSocial() {
         String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).movimentosReceberSocial();
-        
+
         GenericaSessao.put("movimentosReceberSocialBean", new MovimentosReceberSocialBean());
         GenericaSessao.put("pessoaPesquisa", fisica.getPessoa());
-        
+
         return retorno;
     }
-    
-    public void loadListaMovimento(){
-        if (fisica.getId() != -1){
+
+    public void loadListaMovimento() {
+        if (fisica.getId() != -1) {
             listaMovimento.clear();
 
             FisicaDB db = new FisicaDBToplink();
@@ -167,11 +166,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             listaMovimento = db.listaMovimentoFisica(fisica.getPessoa().getId(), tipoStatusMovimento, tipoPesquisaMovimento);
         }
     }
-    
-    public String idade(){
-        if (!fisica.getNascimento().isEmpty()){
-            return new DataHoje().calcularIdade(fisica.getNascimento())+ " anos";
-        }else{
+
+    public String idade() {
+        if (!fisica.getNascimento().isEmpty()) {
+            return new DataHoje().calcularIdade(fisica.getNascimento()) + " anos";
+        } else {
             return "0 anos";
         }
     }
@@ -191,7 +190,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         clear(0);
         return "pessoaFisica";
     }
-
 
     public String getEnderecoCobranca() {
         for (PessoaEndereco pe : listaPessoaEndereco) {
@@ -503,7 +501,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String complete() {
         String url = (String) GenericaSessao.getString("urlRetorno");
         GenericaSessao.put("fisicaPesquisaList", selectedFisica);
-        GenericaSessao.put("linkClicado", true);        
+        GenericaSessao.put("linkClicado", true);
         multiple = false;
         return url;
     }
@@ -519,7 +517,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String editarFisica(Fisica f, Boolean completo) {
-        selectedFisica.clear();
+        selectedFisica = new ArrayList<>();
         multiple = false;
         String url = (String) GenericaSessao.getString("urlRetorno");
         fisica = f;
@@ -1460,14 +1458,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String getPorPesquisa() {
         return porPesquisa;
     }
+    public String getDescPesquisa() {
+        if (porPesquisa.equals("matricula")) {
+            try {
+                Integer.parseInt(descPesquisa);
+            } catch (Exception e) {
+                this.descPesquisa = "";
+            }
+        }
+        return descPesquisa;
+    }
 
     public void setDescPesquisa(String descPesquisa) {
         this.descPesquisa = descPesquisa;
     }
 
-    public String getDescPesquisa() {
-        return descPesquisa;
-    }
 
     public PessoaProfissao getPessoaProfissao() {
         return pessoaProfissao;
@@ -1774,8 +1779,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void accordion(TabChangeEvent event) {
         indexPessoaFisica = ((TabView) event.getComponent()).getActiveIndex();
-        
-        if (indexPessoaFisica == 5){
+
+        if (indexPessoaFisica == 5) {
             loadListaMovimento();
         }
     }
@@ -2081,13 +2086,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (fisica.getId() != -1 && listaServicoPessoa.isEmpty()) {
             FisicaDB db = new FisicaDBToplink();
             //listaServicoPessoa = db.listaServicoPessoa(fisica.getPessoa().getId(), chkDependente);
-            Integer id_categoria = (getSocios()!= null && socios.getId() != -1) ? socios.getMatriculaSocios().getCategoria().getId() : null;
-            
-            List<Vector> result = db.listaHistoricoServicoPessoa(fisica.getPessoa().getId(),id_categoria, chkSomenteDestaPessoa);
+            Integer id_categoria = (getSocios() != null && socios.getId() != -1) ? socios.getMatriculaSocios().getCategoria().getId() : null;
+
+            List<Vector> result = db.listaHistoricoServicoPessoa(fisica.getPessoa().getId(), id_categoria, chkSomenteDestaPessoa);
             somaValoresHistorico = "0,00";
-            for (Vector linha : result){
+            for (Vector linha : result) {
                 listaServicoPessoa.add(new DataObject(linha, null));
-                somaValoresHistorico = Moeda.converteR$Float( Moeda.somaValores(Moeda.converteUS$(somaValoresHistorico), ((Double) linha.get(7)).floatValue()) );
+                somaValoresHistorico = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(somaValoresHistorico), ((Double) linha.get(7)).floatValue()));
             }
         }
         return listaServicoPessoa;
@@ -2348,12 +2353,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void removeSelected(Fisica f) {
         selectedFisica.remove(f);
     }
-    
-    public String converteData(Date data){
+
+    public String converteData(Date data) {
         return DataHoje.converteData(data);
     }
-    
-    public String converteMoeda(String valor){
+
+    public String converteMoeda(String valor) {
         return Moeda.converteR$(valor);
     }
 
@@ -2372,7 +2377,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setListaMovimento(List<Vector> listaMovimento) {
         this.listaMovimento = listaMovimento;
     }
-    
+
     public String getTipoStatusMovimento() {
         return tipoStatusMovimento;
     }

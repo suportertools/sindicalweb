@@ -3,6 +3,7 @@ package br.com.rtools.seguranca.controleUsuario;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.ContadorAcessos;
@@ -14,6 +15,7 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
 import br.com.rtools.utilitarios.PhotoCam;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +25,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
@@ -240,6 +243,11 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String pessoaFisica() {
+        String urlTemp = "/Cliente/" + getCliente() + "/temp/" + "foto/" + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() + "/perfil.png";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(urlTemp);
+        if (new File(arquivo).exists()) {
+            new File(arquivo).delete();
+        }
         //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("fisicaBean")){
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
@@ -260,6 +268,11 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String usuario() {
+        String urlTemp = "/Cliente/" + getCliente() + "/temp/" + "foto/" + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() + "/perfil.png";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(urlTemp);
+        if (new File(arquivo).exists()) {
+            new File(arquivo).delete();
+        }
         //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("usuarioBean")){
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioPesquisa");
