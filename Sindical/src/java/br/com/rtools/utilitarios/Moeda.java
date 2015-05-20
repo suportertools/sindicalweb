@@ -148,6 +148,18 @@ public final class Moeda {
         return (aBig.add(bBig)).floatValue();
     }
 
+    public static Float somaValores(Float[] f) {
+        try {
+            float t = 0;
+            for (int i = 0; i < f.length; i++) {
+                t += (float) f[i];
+            }
+            return new BigDecimal(Float.toString(t)).floatValue();
+        } catch (Exception e) {
+            return (float) 0;
+        }
+    }
+
     public static String incremento(String a, String b) { // a = boleto somado   ,  b = 1
         BigDecimal aBig = new BigDecimal(a);
         BigDecimal bBig = new BigDecimal(b);
@@ -222,14 +234,14 @@ public final class Moeda {
         }
         return result;
     }
-    
-    public static String percentualDoValor(String valorFixo, String valorCalculo){
+
+    public static String percentualDoValor(String valorFixo, String valorCalculo) {
         float v1 = Moeda.subtracaoValores(Moeda.converteUS$(valorFixo), Moeda.converteUS$(valorCalculo));
         float v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, Moeda.converteUS$(valorFixo)), 100);
         return Moeda.converteR$Float(v2);
     }
-    
-    public static String valorDoPercentual(String valorFixo, String percentual){
+
+    public static String valorDoPercentual(String valorFixo, String percentual) {
         //v = servicoValorDetalhe.getValor() - (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() / 100) * servicoValorDetalhe.getValor();
         float v = Moeda.converteUS$(valorFixo) - (Moeda.converteUS$(percentual) / 100) * Moeda.converteUS$(valorFixo);
         return Moeda.converteR$Float(v);
