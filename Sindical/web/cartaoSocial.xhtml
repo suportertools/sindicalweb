@@ -74,36 +74,54 @@
                                     <h:outputLabel value="#{cartaoSocialBean.porLabel}" />
                                 </p:panel>
                                 <p:panel rendered="#{cartaoSocialBean.por == 'niEmpresa' or cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iDias'}">
-                                    <p:inputText id="b_nome_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
-                                    <p:watermark for="b_nome_empresa" value="Digite o Nome da Empresa" />
-                                    <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    <h:panelGrid columns="3">
+                                        <h:column>
+                                            <p:inputText id="b_nome_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
+                                            <p:watermark for="b_nome_empresa" value="Digite o Nome da Empresa" />                                            
+                                        </h:column>
+                                        <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>                                        
+                                    </h:panelGrid>
                                 </p:panel>
 
                                 <p:panel rendered="#{cartaoSocialBean.por == 'niCNPJ' or cartaoSocialBean.por == 'iCNPJ'}" styleClass="fundoCinza" style="font-weight: bold">
                                     <h:outputLabel value="#{cartaoSocialBean.porLabel}" />
                                 </p:panel>
                                 <p:panel rendered="#{cartaoSocialBean.por == 'niCNPJ' or cartaoSocialBean.por == 'iCNPJ'}">
-                                    <p:inputMask id="b_cnpj_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}" mask="99.999?.999/9999-99"/>
-                                    <p:watermark for="b_cnpj_empresa" value="Digite o CNPJ da Empresa" />
-                                    <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    <h:panelGrid columns="3">
+                                        <h:column>
+                                            <p:inputMask id="b_cnpj_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}" mask="99.999?.999/9999-99"/>
+                                            <p:watermark for="b_cnpj_empresa" value="Digite o CNPJ da Empresa" />
+                                        </h:column>                                    
+                                        <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    </h:panelGrid>
                                 </p:panel>
 
                                 <p:panel rendered="#{cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iMatricula' or cartaoSocialBean.por == 'iID'}" styleClass="fundoCinza" style="font-weight: bold">
                                     <h:outputLabel value="#{cartaoSocialBean.porLabel}" />
                                 </p:panel>
                                 <p:panel rendered="#{cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iMatricula' or cartaoSocialBean.por == 'iID'}">
-                                    <p:inputText id="b_nome_socio" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
-                                    <p:watermark for="b_nome_socio" value="Digite sua pesquisa" />
-                                    <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    <h:panelGrid columns="3">
+                                        <h:column>
+                                            <p:inputText id="b_nome_socio" style="width: 420px" value="#{cartaoSocialBean.descricao}">
+                                                <p:ajax event="change" update="@this" />
+                                            </p:inputText>
+                                            <p:watermark for="b_nome_socio" value="Digite sua pesquisa" />                                            
+                                        </h:column>                                    
+                                        <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    </h:panelGrid>
                                 </p:panel>
 
                                 <p:panel rendered="#{cartaoSocialBean.por == 'iCPF'}" styleClass="fundoCinza" style="font-weight: bold">
                                     <h:outputLabel value="#{cartaoSocialBean.porLabel}" />
                                 </p:panel>
                                 <p:panel rendered="#{cartaoSocialBean.por == 'iCPF'}">
-                                    <p:inputMask id="b_cpf_socio" mask="999?.999.999-99" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
-                                    <p:watermark for="b_cpf_socio" value="Digite o CPF do Sócio" />
-                                    <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    <h:panelGrid columns="3">
+                                        <h:column>
+                                            <p:inputMask id="b_cpf_socio" mask="999?.999.999-99" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
+                                            <p:watermark for="b_cpf_socio" value="Digite o CPF do Sócio" />
+                                        </h:column>
+                                        <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
+                                    </h:panelGrid>
                                 </p:panel>
 
                                 <p:panel styleClass="fundoCinza" style="font-weight: bold">
@@ -120,7 +138,7 @@
 
                             </h:panelGrid>
 
-                            <p:panel id="i_panel_botoes" styleClass="fundoCinza margin-top-max"  style="float: right; font-weight: bold; width: 200px" >
+                            <p:panel id="i_panel_botoes" styleClass="fundoCinza margin-top-max"  style="float: right; font-weight: bold; width: 200px">
                                 <p:commandLink ajax="false" value="Imprimir" action="#{cartaoSocialBean.imprimirCarteirinha()}" 
                                                rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
 

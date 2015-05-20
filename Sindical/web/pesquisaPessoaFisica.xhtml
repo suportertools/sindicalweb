@@ -39,14 +39,14 @@
                                         <f:selectItem itemValue="socioativo"            itemLabel="Sócio Ativo"/>
                                         <f:selectItem itemValue="socioinativo"          itemLabel="Sócio Inativos"/>
                                     </p:selectOneMenu> -->
-                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}" placeholder="#{fisicaBean.porPesquisa.equals('endereco') ?  'Logradouro + Descrição Endereço + , + Número + - + Bairro' : ''}">
+                                    <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mask}" placeholder="#{fisicaBean.porPesquisa eq 'endereco' ?  'Logradouro + Descrição Endereço + , + Número + - + Bairro' : ''}">
                                         <p:ajax event="change" update="@this" global="false" />
                                     </p:inputMask>
                                     <h:column>
                                         <h:panelGrid id="i_por">
                                             <h:column>
                                                 <h:panelGrid columns="2">
-                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{!fisicaBean.pesquisaPor.equals('pessoa')}">
+                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{fisicaBean.pesquisaPor ne 'pessoa'}">
                                                         <p:ajax event="change" update="@this i_panel_pesquisa id_desc_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
                                                         <f:selectItem itemValue="nome"     itemLabel="Nome"/>
                                                         <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
@@ -57,33 +57,38 @@
                                                         <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
                                                         <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
                                                     </p:selectOneMenu>
-                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{fisicaBean.pesquisaPor.equals('pessoa')}">
+                                                    <p:selectOneMenu value="#{fisicaBean.porPesquisa}" style="padding-right: 20px" rendered="#{fisicaBean.pesquisaPor eq 'pessoa'}">
                                                         <p:ajax event="change" update="@this i_panel_pesquisa" global="false" listener="#{fisicaBean.mascaraPesquisaFisica}"/>
-                                                        <f:selectItem itemValue="nome"     itemLabel="Nome"/>
-                                                        <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                                                        <f:selectItem itemValue="rg"      itemLabel="RG" />
-                                                        <f:selectItem itemValue="email1" itemLabel="E-mail 1" />
-                                                        <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
-                                                        <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
-                                                        <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
+                                                        <f:selectItem itemValue="nome"      itemLabel="Nome"/>
+                                                        <f:selectItem itemValue="cpf"       itemLabel="CPF"/>
+                                                        <f:selectItem itemValue="rg"        itemLabel="RG" />
+                                                        <f:selectItem itemValue="email1"    itemLabel="E-mail 1" />
+                                                        <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
+                                                        <f:selectItem itemValue="endereco"  itemLabel="Endereço"/>
+                                                        <f:selectItem itemValue="codigo"    itemLabel="Código do Funcionário"/>
+                                                        <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
                                                     </p:selectOneMenu>
-                                                    <p:commandLink rendered="#{fisicaBean.porPesquisa.equals('endereco')}" onclick="PF('dlg_wiki').show()" value="Ajuda" global="false"/>
+                                                    <p:commandLink rendered="#{fisicaBean.porPesquisa eq 'endereco'}" onclick="PF('dlg_wiki').show()" value="Ajuda" global="false"/>
+                                                    <p:outputLabel value="Titulares / Ativos" rendered="#{fisicaBean.porPesquisa eq 'matricula'}" styleClass="font-color-red bold" />
                                                 </h:panelGrid>
                                             </h:column>
                                         </h:panelGrid>
                                     </h:column>
-                                    <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
-                                    <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
-                                    <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update="i_panel_pesquisa tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
+                                    <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa eq 'cpf'}"/>
+                                    <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa ne 'cpf'}"/>
+                                    <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update="i_panel_pesquisa tbl" rendered="#{fisicaBean.porPesquisa ne 'cpf'}"/>
                                 </h:panelGrid>
                                 <p:focus for="id_desc_pesquisa" />
                             </p:panel>
 
-                            <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                            <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true" rowKey="#{fisica.id}" paginator="true" selection="#{fisicaBean.selectedFisica}">
                                 <p:ajax event="rowToggle" listener="#{fisicaBean.listenerSocios(fisica.pessoa.id)}" />
+
+                                <p:column selectionMode="multiple" width="25" styleClass="text-center" rendered="#{fisicaBean.multiple}" />
+
                                 <p:column style="width:5%">  
                                     <p:rowToggler />  
-                                </p:column>  
+                                </p:column>
 
                                 <p:column headerText="Nome">
                                     <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.pessoa.nome}"/>
@@ -148,8 +153,35 @@
                                     </h:column>
                                 </p:rowExpansion>
 
-                                <f:facet name="footer">Abra a lista para mais informações</f:facet>
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="1" styleClass="sbb">
+                                        <h:column>
+                                            Abra a lista para mais informações                                            
+                                        </h:column>
+                                        <h:column>
+                                            <p:commandButton value="Ver selecionados" rendered="#{fisicaBean.multiple}" update=":form_pesquisa_pessoa:i_pessoa_fisica_selecteds" onclick="PF('dlg_selecteds').show()" />
+                                        </h:column>
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dataTable>
+                            <p:dialog widgetVar="dlg_selecteds" modal="true" resizable="false" height="250" width="600" header="Selecionados">
+                                <h:panelGrid id="i_pessoa_fisica_selecteds">
+                                    <p:dataTable value="#{fisicaBean.selectedFisica}" var="fisicaPesquisa" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true" >
+                                        <p:column headerText="Nome">
+                                            <p:outputLabel value="#{fisicaPesquisa.pessoa.nome}" />
+                                        </p:column>
+                                        <p:column headerText="CPF" width="100"  styleClass="text-center">
+                                            <p:outputLabel value="#{fisicaPesquisa.pessoa.documento}" />
+                                        </p:column>
+                                        <p:column width="30" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-close" action="#{fisicaBean.removeSelected(fisicaPesquisa)}" update=":form_pesquisa_pessoa:i_pessoa_fisica_selecteds :form_pesquisa_pessoa:tbl"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>
+                                <f:facet name="footer" rendered="#{empty fisicaBean.selectedFisica}">
+                                    <p:commandButton value="Concluir e Retornar" action="#{fisicaBean.complete()}" />
+                                </f:facet>
+                            </p:dialog>                            
                             <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
                                 <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
                                 <p:panel id="i_pessoa_fisica_card">

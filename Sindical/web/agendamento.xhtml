@@ -37,7 +37,7 @@
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Agendamento de Homologação" styleClass="fonteHeader" />
                         <h:form id="formAgendamento">
-                            <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" />
+                            <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" delay="10" />
                             <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
                             <h:panelGrid style="margin: 0 auto; width: 100%; clear: both">
                                 <p:panel styleClass="fundoCinza">
