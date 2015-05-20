@@ -6,6 +6,7 @@ import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.seguranca.Usuario;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,8 @@ import javax.faces.context.FacesContext;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.servlet.ServletContext;
 import org.primefaces.event.CaptureEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 @ManagedBean(name = "photoCamBean")
 @SessionScoped
@@ -38,10 +41,12 @@ public class PhotoCam implements Serializable {
     private Boolean load;
     private String rotinaNome;
     private Boolean visible;
-    private Integer stop;
+    private Integer stop;    
+    private StreamedContent streamedContent;    
 
     @PostConstruct
     public void init() {
+        streamedContent = null;
         load = false;
         PATH = "temp/foto/" + getUsuario().getId();
         PATH_FILE = "perfil";
@@ -195,14 +200,16 @@ public class PhotoCam implements Serializable {
         }
     }
 
-    public synchronized void capture(CaptureEvent captureEvent) throws InterruptedException {
+    public synchronized String capture(CaptureEvent captureEvent) throws InterruptedException {
         if (PhotoCam.oncapture(captureEvent, PATH_FILE, "", true)) {
             load = true;
             complete();
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
             int i = 0;
             FILE_PERMANENT = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
-            if (!f.exists()) {
+                if (!f.exists()) {
+                InputStream stream = this.getClass().getResourceAsStream(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT));
+                streamedContent = new DefaultStreamedContent(stream, "image/png");
                 while (!f.exists()) {
                     Thread.sleep(1000);
                     if (i == 10) {
@@ -213,6 +220,7 @@ public class PhotoCam implements Serializable {
                 }
             }
         }
+        return null;
 //        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
 //        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
     }
@@ -430,5 +438,21 @@ public class PhotoCam implements Serializable {
     public void setLoad(Boolean load) {
         this.load = load;
     }
+    
+      
+    public StreamedContent FileDocumentacaoController() {    
+        InputStream stream = this.getClass().getResourceAsStream("C:/teste/CeWolf.pdf");    
+        streamedContent = new DefaultStreamedContent(stream, "image/png");  
+          
+        return streamedContent;  
+    }    
+        
+    public StreamedContent getStreamedContent() {    
+        return streamedContent;    
+    }    
+    
+    public void setStreamedContent(StreamedContent streamedContent) {    
+        this.streamedContent = streamedContent;    
+    }     
 
 }
