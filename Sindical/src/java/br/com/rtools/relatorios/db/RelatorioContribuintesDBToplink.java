@@ -52,7 +52,7 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
 
     @Override
     public List listaRelatorioContribuintes(Relatorios relatorios, String emails, String condicao, String escritorio, String tipoPCidade, String cidade, String ordem, String cnaes,
-            int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros, String convencoes,
+            int idTipoEndereco, String idEndereco, String cTipo, String inCentroComercial, String dsNumero, String idGrupos, String bairros, String convencoes,
             String dataCadastroInicial, String dataCadastroFinal) {
         List result = new ArrayList();
         String textQuery = "";
@@ -104,7 +104,8 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                     + "   left join end_cidade             as ccon  on econ.id_cidade = ccon.id"
                     + "   left join end_logradouro         as lcon  on lcon.id = econ.id_logradouro"
                     + "   left join end_descricao_endereco as decon on decon.id = econ.id_descricao_endereco"
-                    + "   left join end_bairro             as bcon  on bcon.id = econ.id_bairro";
+                    + "   left join end_bairro             as bcon  on bcon.id = econ.id_bairro"
+                    + "   LEFT JOIN pes_centro_comercial   AS CECOM ON CECOM.id_juridica = j.id ";
 
             // CONVENCAO GRUPO --------------------------------------------
             String cg_where = "", cg_and = "";
@@ -116,46 +117,63 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
             }
 
             // CONDICAO -----------------------------------------------------
-            if (condicao.equals("contribuintes")) {
-                textQuery += " where (j.id in (select c.id_juridica from arr_contribuintes_vw c " + cg_where + ") ) ";
-            } else if (condicao.equals("ativos")) {
-                textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is null " + cg_and + ") ";
-            } else if (condicao.equals("inativos")) {
-                textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is not null " + cg_and + ")";
-            } else if (condicao.equals("naoContribuinte")) {
-                textQuery += "  where (j.id not in (select c.id_juridica from arr_contribuintes_vw c " + cg_where + ")) ";
+            switch (condicao) {
+                case "contribuintes":
+                    textQuery += " where (j.id in (select c.id_juridica from arr_contribuintes_vw c " + cg_where + ") ) ";
+                    break;
+                case "ativos":
+                    textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is null " + cg_and + ") ";
+                    break;
+                case "inativos":
+                    textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is not null " + cg_and + ")";
+                    break;
+                case "naoContribuinte":
+                    textQuery += "  where (j.id not in (select c.id_juridica from arr_contribuintes_vw c " + cg_where + ")) ";
+                    break;
             }
 
             // ESCRITORIO ---------------------------------------------------
-            if (escritorio.equals("todos")) {
-            } else if (escritorio.equals("semEscritorio")) {
-                textQuery += " and j.id_contabilidade is null ";
-            } else if (escritorio.equals("comEscritorio")) {
-                textQuery += " and j.id_contabilidade is not null ";
-            } else {
-                textQuery += " and j.id_contabilidade = " + Integer.parseInt(escritorio);
+            switch (escritorio) {
+                case "todos":
+                    break;
+                case "semEscritorio":
+                    textQuery += " and j.id_contabilidade is null ";
+                    break;
+                case "comEscritorio":
+                    textQuery += " and j.id_contabilidade is not null ";
+                    break;
+                default:
+                    textQuery += " and j.id_contabilidade = " + Integer.parseInt(escritorio);
+                    break;
             }
 
             // ENVIO DE LOGIN SENHA
-            if (emails.equals("e")) {
-                textQuery += " and j.id_pessoa in (select ee.id_pessoa from pes_envio_emails ee where ee.ds_operacao = 'Login e Senha') ";
-            } else if (emails.equals("n")) {
-                textQuery += " and j.id_pessoa not in (select ee.id_pessoa from pes_envio_emails ee where ee.ds_operacao = 'Login e Senha') ";
-
+            switch (emails) {
+                case "e":
+                    textQuery += " and j.id_pessoa in (select ee.id_pessoa from pes_envio_emails ee where ee.ds_operacao = 'Login e Senha') ";
+                    break;
+                case "n":
+                    textQuery += " and j.id_pessoa not in (select ee.id_pessoa from pes_envio_emails ee where ee.ds_operacao = 'Login e Senha') ";
+                    break;
             }
 
             // CIDADE -------------------------------------------------------
-            if (tipoPCidade.equals("todas")) {
-                textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
-                        + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)";
-            } else if (tipoPCidade.equals("especificas") || tipoPCidade.equals("local")) {
-                textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
-                        + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)"
-                        + " and e.id_cidade = " + Integer.parseInt(cidade);
-            } else if (tipoPCidade.equals("outras")) {
-                textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
-                        + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)"
-                        + " and e.id_cidade <> " + Integer.parseInt(cidade);
+            switch (tipoPCidade) {
+                case "todas":
+                    textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
+                            + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)";
+                    break;
+                case "especificas":
+                case "local":
+                    textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
+                            + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)"
+                            + " and e.id_cidade = " + Integer.parseInt(cidade);
+                    break;
+                case "outras":
+                    textQuery += " and (pe.id_tipo_endereco = " + idTipoEndereco + " or pe.id_tipo_endereco is null)"
+                            + " and (pecon.id_tipo_endereco = 5 or pecon.id_tipo_endereco is null)"
+                            + " and e.id_cidade <> " + Integer.parseInt(cidade);
+                    break;
             }
 
             // CENTRO COMERCIAL --------------------------------------------
@@ -166,6 +184,10 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                     textQuery += " and pe.id not in (select pe2.id from pes_pessoa_endereco pe2 where pe2.id_tipo_endereco = 5 and pe2.id_endereco in (" + idEndereco + ") and pe2.ds_numero in (" + dsNumero + "))";
                 }
             }
+
+//            if (!inCentroComercial.isEmpty()) {
+//                textQuery += " AND CECOM.id IN (" + inCentroComercial + ") ";
+//            }
 
             if (bairros.length() != 0) {
                 textQuery += " and b.id in (" + bairros + ")";
@@ -186,16 +208,22 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
             }
             // ORDEM ------------------------------------------------------------------------
             if (relatorios.getQryOrdem() == null || relatorios.getQryOrdem().isEmpty()) {
-                if (ordem.equals("razao")) {
-                    textQuery += " order by p.ds_nome ";
-                } else if (ordem.equals("documento")) {
-                    textQuery += " order by p.ds_documento ";
-                } else if (ordem.equals("endereco")) {
-                    textQuery += " order by c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
-                } else if (ordem.equals("cep")) {
-                    textQuery += " order by e.ds_cep, c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
-                } else if (ordem.equals("escritorio")) {
-                    textQuery += " order by conpes.ds_nome,p.ds_nome ";
+                switch (ordem) {
+                    case "razao":
+                        textQuery += " order by p.ds_nome ";
+                        break;
+                    case "documento":
+                        textQuery += " order by p.ds_documento ";
+                        break;
+                    case "endereco":
+                        textQuery += " order by c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
+                        break;
+                    case "cep":
+                        textQuery += " order by e.ds_cep, c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
+                        break;
+                    case "escritorio":
+                        textQuery += " order by conpes.ds_nome,p.ds_nome ";
+                        break;
                 }
             } else {
                 textQuery += " ORDER BY " + relatorios.getQryOrdem();

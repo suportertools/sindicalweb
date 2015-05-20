@@ -45,9 +45,9 @@ public class BaixaBoletoBean {
         List<Movimento> listaQuery = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         String pesquisado;
-        
+
         getListBoletos().clear();
-        
+
         if (caixaBanco.equals("banco"))
             listaQuery = db.movimentosAberto(getPessoa().getId(), true);
         else
@@ -68,9 +68,9 @@ public class BaixaBoletoBean {
                     Moeda.converteR$(Float.toString(listaQuery.get(i).getCorrecao())), // correcao
                     Moeda.converteR$(Float.toString(listaQuery.get(i).getDesconto())), // desconto
                     Moeda.converteR$(somarValorRecebido(Float.toString(listaQuery.get(i).getValor()),
-                    Float.toString(listaQuery.get(i).getMulta()),
-                    Float.toString(listaQuery.get(i).getJuros()),
-                    Float.toString(listaQuery.get(i).getCorrecao()),
+                                    Float.toString(listaQuery.get(i).getMulta()),
+                                    Float.toString(listaQuery.get(i).getJuros()),
+                                    Float.toString(listaQuery.get(i).getCorrecao()),
                     Float.toString(listaQuery.get(i).getDesconto()))), // valor pago
                     false,
                     null);
@@ -78,7 +78,7 @@ public class BaixaBoletoBean {
             converteDescontoFora(i, (String) ((DataObject) getListBoletos().get(i)).getArgumento7());
         }
     }
-    
+
     public List<SelectItem> getListaServicoCobranca() {
         List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
         int i = 0;
@@ -92,16 +92,16 @@ public class BaixaBoletoBean {
                 servicoCobranca.add(
                         new SelectItem(
                         new Integer(i),
-                        select.get(i).getServicos().getDescricao() + " - "
-                        + select.get(i).getContaCobranca().getSicasSindical(),//SICAS NO CASO DE SINDICAL
-                        Integer.toString(select.get(i).getId())));
+                                select.get(i).getServicos().getDescricao() + " - "
+                                + select.get(i).getContaCobranca().getSicasSindical(),//SICAS NO CASO DE SINDICAL
+                                Integer.toString(select.get(i).getId())));
             } else {
                 servicoCobranca.add(
                         new SelectItem(
                         new Integer(i),
-                        select.get(i).getServicos().getDescricao() + " - "
-                        + select.get(i).getContaCobranca().getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
-                        Integer.toString(select.get(i).getId())));
+                                select.get(i).getServicos().getDescricao() + " - "
+                                + select.get(i).getContaCobranca().getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
+                                Integer.toString(select.get(i).getId())));
             }
             i++;
         }
@@ -117,7 +117,7 @@ public class BaixaBoletoBean {
     public synchronized String baixarBoletos(DataObject dob) {
         Movimento mov;
         List<Movimento> lista = new ArrayList();
-        
+
         if (dob == null){
             for (DataObject listBoleto : getListBoletos()) {
                 if ((Boolean) listBoleto.getArgumento8() == true) {
@@ -149,7 +149,7 @@ public class BaixaBoletoBean {
             }
             lista.add(mov);
         }
-        
+
         if (!lista.isEmpty()) {
             GenericaSessao.put("listaMovimento", lista);
         } else {
@@ -161,7 +161,7 @@ public class BaixaBoletoBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
     }
-    
+
 //    public synchronized String baixarBoletos() {
 //        if (!listBoletos.isEmpty()) {
 //            Movimento mov = null;
@@ -226,13 +226,13 @@ public class BaixaBoletoBean {
     public void atualizaValoresGrid(DataObject dob) {
         converteDesconto(dob);
         dob.setArgumento7(
-            somarValorRecebido(
-                Moeda.converteR$(dob.getArgumento2().toString()),
-                Moeda.converteR$(dob.getArgumento3().toString()),
-                Moeda.converteR$(dob.getArgumento4().toString()),
-                Moeda.converteR$(dob.getArgumento5().toString()),
+                somarValorRecebido(
+                        Moeda.converteR$(dob.getArgumento2().toString()),
+                        Moeda.converteR$(dob.getArgumento3().toString()),
+                        Moeda.converteR$(dob.getArgumento4().toString()),
+                        Moeda.converteR$(dob.getArgumento5().toString()),
                 Moeda.converteR$(dob.getArgumento6().toString())
-            )
+                )
         );
 // aqui descomentar
         converteValor(dob);

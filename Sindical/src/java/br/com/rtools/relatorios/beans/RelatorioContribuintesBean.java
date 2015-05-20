@@ -3,89 +3,115 @@ package br.com.rtools.relatorios.beans;
 import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.GrupoCidade;
-import br.com.rtools.arrecadacao.db.ConvencaoDB;
-import br.com.rtools.arrecadacao.db.ConvencaoDBToplink;
 import br.com.rtools.endereco.Bairro;
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
 import br.com.rtools.impressao.ParametroContribuintes;
 import br.com.rtools.pessoa.CentroComercial;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoEndereco;
-import br.com.rtools.pessoa.db.*;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
+import br.com.rtools.utilitarios.Jasper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
 public class RelatorioContribuintesBean implements Serializable {
 
-    private String radioOrdem = "razao";
-    private String radioCidades = "todas";
-    private String radioEscritorios = "todos";
-    private String radioCentroComercial = "nenhum";
-    private String dataCadastroInicial = "";
-    private String dataCadastroFinal = "";
+    private String radioOrdem;
+    private String radioCidades;
+    private String radioEscritorios;
+    private String radioCentroComercial;
+    private String dataCadastroInicial;
+    private String dataCadastroFinal;
 //    private String comboCondicao = "contribuintes";
-    private String comboCondicao = "ativos";
-    private boolean chkConvencao = true;
-    private boolean chkConvencaoPesquisa = false;
-    private boolean chkCnaeConvencao = true;
-    private boolean chkGrupo = false;
-    private boolean carregaConvencao = true;
-    private boolean carregaCnaeConvencao = true;
-    private boolean carregaGrupo = true;
-    private String idEmails = "t";
-    private int idCidades = 0;
-    private int idRelatorios = 0;
-    private int idContabilidade = 0;
-    private int idTipoEndereco = 0;
-    private List resultConvencao = new ArrayList();
-    private List resultCnaeConvencao = new ArrayList();
-    private List<DataObject> listaCentroComercial = new ArrayList();
-    private List<DataObject> listaGrupo = new ArrayList();
-    private Bairro bairro = new Bairro();
-    private List<Convencao> listaConvencaos = new ArrayList<Convencao>();
+    private String comboCondicao;
+    private boolean chkConvencao;
+    private boolean chkConvencaoPesquisa;
+    private boolean chkCnaeConvencao;
+    private boolean chkGrupo;
+    private boolean carregaConvencao;
+    private boolean carregaCnaeConvencao;
+    private boolean carregaGrupo;
+    private String idEmails;
+    private int idCidades;
+    private int idRelatorios;
+    private int idContabilidade;
+    private int idTipoEndereco;
+    private List resultConvencao;
+    private List resultCnaeConvencao;
+    private List<DataObject> listaCentroComercial;
+    private List<DataObject> listaGrupo;
+    private Bairro bairro;
+    private List<Convencao> listaConvencaos;
     private Convencao[] convencaoSelecionada;
-    private List<GrupoCidade> listaGrupoCidades = new ArrayList<GrupoCidade>();
+    private List<GrupoCidade> listaGrupoCidades;
     private GrupoCidade[] grupoCidadeSelecionada;
-    private List<CentroComercial> listaCentrosComerciais = new ArrayList<CentroComercial>();
+    private List<CentroComercial> listaCentrosComerciais;
     private CentroComercial[] centroComercialSelecionado;
-    private List<CnaeConvencao> listaCnaeConvencaos = new ArrayList<CnaeConvencao>();
+    private List<CnaeConvencao> listaCnaeConvencaos;
     private CnaeConvencao[] cnaeConvencaoSelecionado;
-    List<SelectItem> listaTipoRelatorios = new ArrayList<SelectItem>();
-    List<SelectItem> listaTipoEndereco = new ArrayList<SelectItem>();
+    List<SelectItem> listaTipoRelatorios;
+    List<SelectItem> listaTipoEndereco;
+
+    @PostConstruct
+    public void init() {
+        radioOrdem = "razao";
+        radioCidades = "todas";
+        radioEscritorios = "todos";
+        radioCentroComercial = "nenhum";
+        dataCadastroInicial = "";
+        dataCadastroFinal = "";
+        //    private String comboCondicao = "contribuintes";
+        comboCondicao = "ativos";
+        chkConvencao = true;
+        chkConvencaoPesquisa = false;
+        chkCnaeConvencao = true;
+        chkGrupo = false;
+        carregaConvencao = true;
+        carregaCnaeConvencao = true;
+        carregaGrupo = true;
+        idEmails = "t";
+        idCidades = 0;
+        idRelatorios = 0;
+        idContabilidade = 0;
+        idTipoEndereco = 0;
+        resultConvencao = new ArrayList();
+        resultCnaeConvencao = new ArrayList();
+        listaCentroComercial = new ArrayList();
+        listaGrupo = new ArrayList();
+        bairro = new Bairro();
+        listaConvencaos = new ArrayList<>();
+        convencaoSelecionada = null;
+        listaGrupoCidades = new ArrayList<>();
+        grupoCidadeSelecionada = null;
+        listaCentrosComerciais = new ArrayList<>();
+        centroComercialSelecionado = null;
+        listaCnaeConvencaos = new ArrayList<>();
+        cnaeConvencaoSelecionado = null;
+        listaTipoRelatorios = new ArrayList<>();
+        listaTipoEndereco = new ArrayList<>();
+    }
 
     public void visualizar() {
         String escritorio = "";
@@ -96,46 +122,52 @@ public class RelatorioContribuintesBean implements Serializable {
 
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioContribuintesDB dbContri = new RelatorioContribuintesDBToplink();
-        CidadeDB dbCidade = new CidadeDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         Cidade cidade;
         Juridica contabilidade;
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(listaTipoRelatorios.get(idRelatorios).getDescription()));
-        TipoEndereco tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoEndereco.get(idTipoEndereco).getDescription()), "TipoEndereco");
+        TipoEndereco tipoEndereco = (TipoEndereco) new Dao().find(new TipoEndereco(), Integer.parseInt(listaTipoEndereco.get(idTipoEndereco).getDescription()));
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         String condicao = comboCondicao;
 
         // ESCRITORIO DO RELATORIO -----------------------------------------------------------
-        if (radioEscritorios.equals("todos")) {
-            escritorio = "todos";
-        } else if (radioEscritorios.equals("semEscritorio")) {
-            escritorio = "semEscritorio";
-        } else if (radioEscritorios.equals("comEscritorio")) {
-            escritorio = "comEscritorio";
-        } else if (radioEscritorios.equals("especifico")) {
-            contabilidade = dbJur.pesquisaCodigo(Integer.parseInt(getListaContabilidades().get(idContabilidade).getDescription()));
-            escritorio = Integer.toString(contabilidade.getId());
+        switch (radioEscritorios) {
+            case "todos":
+                escritorio = "todos";
+                break;
+            case "semEscritorio":
+                escritorio = "semEscritorio";
+                break;
+            case "comEscritorio":
+                escritorio = "comEscritorio";
+                break;
+            case "especifico":
+                contabilidade = (Juridica) new Dao().find(new Juridica(), Integer.parseInt(getListaContabilidades().get(idContabilidade).getDescription()));
+                escritorio = Integer.toString(contabilidade.getId());
+                break;
         }
 
         // CIDADE DO RELATORIO -----------------------------------------------------------
         String cidades = "";
-        if (radioCidades.equals("especificas")) {
-            cidade = dbCidade.pesquisaCodigo(Integer.parseInt(getListaCidades().get(idCidades).getDescription()));
-            cidades = Integer.toString(cidade.getId());
-        } else if (radioCidades.equals("local")) {
-            cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
-            cidades = Integer.toString(cidade.getId());
-        } else if (radioCidades.equals("outras")) {
-            cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
-            cidades = Integer.toString(cidade.getId());
+        switch (radioCidades) {
+            case "especificas":
+                cidade = (Cidade) new Dao().find(new Cidade(), Integer.parseInt(getListaCidades().get(idCidades).getDescription()));
+                cidades = Integer.toString(cidade.getId());
+                break;
+            case "local":
+                cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
+                cidades = Integer.toString(cidade.getId());
+                break;
+            case "outras":
+                cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
+                cidades = Integer.toString(cidade.getId());
+                break;
         }
 
         // BAIRRO DO RELATORIO -----------------------------------------------------------
         if (bairro.getId() != -1) {
             List<Bairro> listaBairro = new ArrayList();
-            listaBairro.add((Bairro) salvarAcumuladoDB.pesquisaCodigo(bairro.getId(), "Bairro"));
+            listaBairro.add((Bairro) new Dao().find(bairro));
             if (!listaBairro.isEmpty()) {
                 for (int i = 0; i < listaBairro.size(); i++) {
                     if (bairros.length() > 0 && i != listaBairro.size()) {
@@ -151,18 +183,16 @@ public class RelatorioContribuintesBean implements Serializable {
         List idsEnderecos;
         if (!radioCentroComercial.equals("nenhum")) {
             String centroComercialSelecionados = "";
-            if (centroComercialSelecionado != null) {
+            if (centroComercialSelecionado != null && centroComercialSelecionado.length > 0) {
                 int icc = 0;
                 for (CentroComercial centroComercial : centroComercialSelecionado) {
                     if (icc == 0) {
-                        centroComercialSelecionados = Integer.toString(centroComercial.getId());
+                        centroComercialSelecionados = Integer.toString(centroComercial.getJuridica().getId());
                     } else {
-                        centroComercialSelecionados += "," + Integer.toString(centroComercial.getId());
+                        centroComercialSelecionados += "," + Integer.toString(centroComercial.getJuridica().getId());
                     }
                     icc++;
                 }
-            }
-            if (centros.length() > 0) {
                 idsEnderecos = dbContri.listaCentros(centroComercialSelecionados);
                 for (int i = 0; i < idsEnderecos.size(); i++) {
                     if (enderecos.length() > 0 && i != idsEnderecos.size()) {
@@ -175,6 +205,9 @@ public class RelatorioContribuintesBean implements Serializable {
                     //} else
                     //    enderecos += idsEnderecos.get(i).get(2);
                 }
+            } else {
+                GenericaMensagem.warn("Sistema", "Selecione pelo menos um centro comercial.");
+                return;
             }
         }
 
@@ -218,88 +251,84 @@ public class RelatorioContribuintesBean implements Serializable {
                 ic++;
             }
         }
-        Juridica sindicato = dbJur.pesquisaCodigo(1);
+        String inCentroComercial = "";
+        Juridica sindicato = (Juridica) new Dao().find(new Juridica(), 1);
         PessoaEndereco endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         @SuppressWarnings("UseOfObsoleteCollectionType")
         List<List> result = new ArrayList();
         if (convencaoSelecionada != null) {
-            result = dbContri.listaRelatorioContribuintes(relatorios, idEmails, condicao, escritorio, radioCidades, cidades, radioOrdem, cnaeConvencaoSelecionados, tipoEndereco.getId(), enderecos, radioCentroComercial, numeros, gruposCidadesSelecionados, bairros, convencoesSelecionadas, dataCadastroInicial, dataCadastroFinal);
+            result = dbContri.listaRelatorioContribuintes(relatorios, idEmails, condicao, escritorio, radioCidades, cidades, radioOrdem, cnaeConvencaoSelecionados, tipoEndereco.getId(), enderecos, radioCentroComercial, inCentroComercial, numeros, gruposCidadesSelecionados, bairros, convencoesSelecionadas, dataCadastroInicial, dataCadastroFinal);
         }
         if (result.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
         }
+        FacesContext faces = FacesContext.getCurrentInstance();
+        List<ParametroContribuintes> list = new ArrayList<>();
         try {
-            FacesContext faces = FacesContext.getCurrentInstance();
-            Collection listaContrs = new ArrayList<ParametroContribuintes>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
-            try {
-                for (int i = 0; i < result.size(); i++) {
-                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            sindicato.getPessoa().getNome(),
-                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                            endSindicato.getEndereco().getLogradouro().getDescricao(),
-                            endSindicato.getNumero(),
-                            endSindicato.getComplemento(),
-                            endSindicato.getEndereco().getBairro().getDescricao(),
-                            endSindicato.getEndereco().getCep(),
-                            endSindicato.getEndereco().getCidade().getCidade(),
-                            endSindicato.getEndereco().getCidade().getUf(),
-                            sindicato.getPessoa().getTelefone1(),
-                            sindicato.getPessoa().getEmail1(),
-                            sindicato.getPessoa().getSite(),
-                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                            sindicato.getPessoa().getDocumento(),
-                            getConverteNullInt((result.get(i)).get(0)), // ID
-                            getConverteNullString((result.get(i)).get(1)), // NOME PESSOA
-                            getConverteNullString((result.get(i)).get(4)), // DESCRICAO ENDERECO
-                            getConverteNullString((result.get(i)).get(3)), // LOGRADOURO
-                            getConverteNullString((result.get(i)).get(7)), // NUMERO
-                            getConverteNullString((result.get(i)).get(8)), // COMPLEMENTO
-                            getConverteNullString((result.get(i)).get(11)), // BAIRRO
-                            getConverteNullString((result.get(i)).get(9)), // CEP
-                            getConverteNullString((result.get(i)).get(5)), // CIDADE
-                            getConverteNullString((result.get(i)).get(6)), // UF
-                            getConverteNullString((result.get(i)).get(12)), // TELEFONE
-                            getConverteNullString((result.get(i)).get(13)), // EMAIL
-                            getConverteNullString((result.get(i)).get(14)), // TIPO DOCUMENTO
-                            getConverteNullString((result.get(i)).get(2)), // DOCUMENTO
-                            getConverteNullInt((result.get(i)).get(15)), //ID CNAE
-                            getConverteNullString((result.get(i)).get(16)), // NUMERO CNAE
-                            getConverteNullString((result.get(i)).get(17)), // DESCRICAO CNAE
-                            getConverteNullInt((result.get(i)).get(18)), // ID CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(10)), // NOME CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(20)), // DESCRICAO ENDERECO CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(19)), // LOGRADOURO CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(24)), // NUMERO CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(25)), // COMPLEMENTO CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(21)), // BAIRRO CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(26)), // CEP CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(22)), // CIDADE CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(23)), // UF CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(27)), // TELEFONE CONTABILIDADE
-                            getConverteNullString((result.get(i)).get(28)) // EMAIL CONTABILIDADE
-                    ));
-                }
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
-                JasperPrint print = JasperFillManager.fillReport(
-                        jasper,
-                        null,
-                        dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-                String nomeDownload = "relatorio_contribuintes_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-                sa.salvaNaPasta(pathPasta);
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
-                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            for (int i = 0; i < result.size(); i++) {
+                list.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        sindicato.getPessoa().getNome(),
+                        endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                        endSindicato.getEndereco().getLogradouro().getDescricao(),
+                        endSindicato.getNumero(),
+                        endSindicato.getComplemento(),
+                        endSindicato.getEndereco().getBairro().getDescricao(),
+                        endSindicato.getEndereco().getCep(),
+                        endSindicato.getEndereco().getCidade().getCidade(),
+                        endSindicato.getEndereco().getCidade().getUf(),
+                        sindicato.getPessoa().getTelefone1(),
+                        sindicato.getPessoa().getEmail1(),
+                        sindicato.getPessoa().getSite(),
+                        sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                        sindicato.getPessoa().getDocumento(),
+                        getConverteNullInt((result.get(i)).get(0)), // ID
+                        getConverteNullString((result.get(i)).get(1)), // NOME PESSOA
+                        getConverteNullString((result.get(i)).get(4)), // DESCRICAO ENDERECO
+                        getConverteNullString((result.get(i)).get(3)), // LOGRADOURO
+                        getConverteNullString((result.get(i)).get(7)), // NUMERO
+                        getConverteNullString((result.get(i)).get(8)), // COMPLEMENTO
+                        getConverteNullString((result.get(i)).get(11)), // BAIRRO
+                        getConverteNullString((result.get(i)).get(9)), // CEP
+                        getConverteNullString((result.get(i)).get(5)), // CIDADE
+                        getConverteNullString((result.get(i)).get(6)), // UF
+                        getConverteNullString((result.get(i)).get(12)), // TELEFONE
+                        getConverteNullString((result.get(i)).get(13)), // EMAIL
+                        getConverteNullString((result.get(i)).get(14)), // TIPO DOCUMENTO
+                        getConverteNullString((result.get(i)).get(2)), // DOCUMENTO
+                        getConverteNullInt((result.get(i)).get(15)), //ID CNAE
+                        getConverteNullString((result.get(i)).get(16)), // NUMERO CNAE
+                        getConverteNullString((result.get(i)).get(17)), // DESCRICAO CNAE
+                        getConverteNullInt((result.get(i)).get(18)), // ID CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(10)), // NOME CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(20)), // DESCRICAO ENDERECO CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(19)), // LOGRADOURO CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(24)), // NUMERO CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(25)), // COMPLEMENTO CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(21)), // BAIRRO CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(26)), // CEP CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(22)), // CIDADE CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(23)), // UF CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(27)), // TELEFONE CONTABILIDADE
+                        getConverteNullString((result.get(i)).get(28)) // EMAIL CONTABILIDADE
+                ));
             }
-        } catch (JRException erro) {
+            Jasper.printReports(relatorios.getJasper(), relatorios.getNome(), (Collection) list);
+//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
+//                JasperPrint print = JasperFillManager.fillReport(
+//                        jasper,
+//                        null,
+//                        dtSource);
+//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//
+//                String nomeDownload = "relatorio_contribuintes_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+//                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+//                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
+//                sa.salvaNaPasta(pathPasta);
+//                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+//                download.baixar();
+//                download.remover();
+        } catch (Exception erro) {
             GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
@@ -352,22 +381,21 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public List<SelectItem> getListaTipoEndereco() {
         if (listaTipoEndereco.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<TipoEndereco> list = (List<TipoEndereco>) salvarAcumuladoDB.pesquisaObjeto(new int[]{2, 3, 4, 5}, "TipoEndereco");
+            List<TipoEndereco> list = (List<TipoEndereco>) new Dao().find("TipoEndereco", new int[]{2, 3, 4, 5});
             for (int i = 0; i < list.size(); i++) {
-                listaTipoEndereco.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listaTipoEndereco.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaTipoEndereco;
     }
 
     public List<SelectItem> getListaContabilidades() {
-        List<SelectItem> contabilidades = new Vector<SelectItem>();
+        List<SelectItem> contabilidades = new ArrayList<>();
         int i = 0;
         RelatorioContribuintesDB db = new RelatorioContribuintesDBToplink();
         List select = db.pesquisaContabilidades();
         while (i < select.size()) {
-            contabilidades.add(new SelectItem(new Integer(i),
+            contabilidades.add(new SelectItem(i,
                     (String) ((Juridica) select.get(i)).getPessoa().getNome() + " - "
                     + (String) ((Juridica) select.get(i)).getPessoa().getDocumento(),
                     Integer.toString(((Juridica) select.get(i)).getId())));
@@ -378,13 +406,11 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public List getListaConvencoesx() {
         if (carregaConvencao) {
-            ConvencaoDB db = new ConvencaoDBToplink();
-            List listConv = new ArrayList();
             resultConvencao = new ArrayList();
-            listConv = db.pesquisaTodos();
+            List list = new Dao().list(new Convencao(), true);
             DataObject dtObject;
-            for (int i = 0; i < listConv.size(); i++) {
-                dtObject = new DataObject(true, ((Convencao) (listConv.get(i))));
+            for (int i = 0; i < list.size(); i++) {
+                dtObject = new DataObject(true, ((Convencao) (list.get(i))));
                 resultConvencao.add(dtObject);
             }
             carregaConvencao = false;
@@ -580,12 +606,21 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public void setRadioCentroComercial(String radioCentroComercial) {
         this.radioCentroComercial = radioCentroComercial;
+        if (radioCentroComercial.equals("sem")) {
+            getListaCentrosComerciais();
+            centroComercialSelecionado = new CentroComercial[listaCentrosComerciais.size()];
+            for (int i = 0; i < listaCentrosComerciais.size(); i++) {
+                centroComercialSelecionado[i] = listaCentrosComerciais.get(i);
+            }
+        }
+        if (radioCentroComercial.equals("com")) {
+            idTipoEndereco = 3;
+        }
     }
 
     public List<DataObject> getListaCentroComercialx() {
         if (listaCentroComercial.isEmpty() && !radioCentroComercial.equals("nenhum")) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List list = (List<CentroComercial>) salvarAcumuladoDB.listaObjeto("CentroComercial", true);
+            List list = (List<CentroComercial>) new Dao().list(new CentroComercial(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaCentroComercial.add(new DataObject(false, list.get(i)));
             }
@@ -655,8 +690,7 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public List<Convencao> getListaConvencaos() {
         if (listaConvencaos.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaConvencaos = (List<Convencao>) salvarAcumuladoDB.listaObjeto("Convencao");
+            listaConvencaos = (List<Convencao>) new Dao().list(new Convencao());
         }
         return listaConvencaos;
     }
@@ -706,8 +740,7 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public List<CentroComercial> getListaCentrosComerciais() {
         if (listaCentrosComerciais.isEmpty() && !radioCentroComercial.equals("nenhum")) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaCentrosComerciais = (List<CentroComercial>) salvarAcumuladoDB.listaObjeto("CentroComercial", true);
+            listaCentrosComerciais = (List<CentroComercial>) new Dao().list(new CentroComercial(), true);
         } else if (radioCentroComercial.equals("nenhum")) {
             listaCentrosComerciais.clear();
         }
