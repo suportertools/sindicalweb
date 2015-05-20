@@ -1,10 +1,10 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Relatório de Contribuintes</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -14,9 +14,10 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
-                <h:form id="form_relatorio_contribuintes">            
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:form id="form_relatorio_contribuintes">
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <p:messages showDetail="true" showSummary="true" autoUpdate="true" />
                     <h:outputText value="Relatório de Contribuintes" styleClass="fonteHeader"/>
                     <div class="clear"></div>
                     <p:panel styleClass="fundoCinza">
@@ -106,28 +107,41 @@
                                 </p:panel>
                             </p:tab>
                             <p:tab title="Centro Comercial">
-                                <p:panel header="Centro Comercial">
-                                    <p:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}">
-                                        <p:ajax event="change" update="tbl_centro_comercial"/>
-                                        <f:selectItem itemValue="com"    itemLabel="Com"/>
-                                        <f:selectItem itemValue="sem"    itemLabel="Sem"/>
-                                        <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
-                                    </p:selectOneRadio>
-                                    <p:panel id="tbl_centro_comercial" styleClass="margin-top-max no-border">
-                                        <p:dataTable value="#{relatorioContribuintesBean.listaCentrosComerciais}" var="centroComercial" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.centroComercialSelecionado}"  rowKey="#{centroComercial.id}" scrollHeight="180" scrollable="true">
-                                            <p:column selectionMode="multiple" width="20" styleClass="text-center" />
-                                            <p:column headerText="Centro Comerciais">
-                                                <h:outputText value="#{centroComercial.tipoCentroComercial.descricao}"/>
-                                            </p:column>
-                                            <p:column headerText="Empresa">
-                                                <p:outputLabel value="#{centroComercial.juridica.pessoa.nome}"/>
-                                            </p:column>
-                                        </p:dataTable>                                
-                                    </p:panel>
+                                <p:panel>
+                                    <f:facet name="header">
+                                        <h:panelGrid columns="2">
+                                            <h:column>
+                                                <h:outputLabel value="Centro Comercial: " />
+                                            </h:column>
+                                            <h:column>
+                                                <h:selectOneMenu id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}">
+                                                    <p:ajax event="change" update="@this tbl_centro_comercial :form_relatorio_contribuintes:idTipoEndereco"/>
+                                                    <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
+                                                    <f:selectItem itemValue="com"    itemLabel="Com"/>
+                                                    <f:selectItem itemValue="sem"    itemLabel="Sem"/>
+                                                </h:selectOneMenu>                                            
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </f:facet>
+                                    <h:panelGrid columns="1">
+                                        <h:column>
+                                            <h:panelGrid id="tbl_centro_comercial" styleClass="no-border">
+                                                <p:dataTable value="#{relatorioContribuintesBean.listaCentrosComerciais}" var="centroComercial" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.centroComercialSelecionado}"  rowKey="#{centroComercial.id}" scrollHeight="180" scrollable="true" disabledTextSelection="#{relatorioContribuintesBean.radioCentroComercial eq 'sem'}" disabledSelection="#{relatorioContribuintesBean.radioCentroComercial eq 'sem'}" rendered="#{relatorioContribuintesBean.radioCentroComercial ne 'nenhum'}">
+                                                    <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                                    <p:column headerText="Centro Comerciais">
+                                                        <h:outputText value="#{centroComercial.tipoCentroComercial.descricao}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Empresa">
+                                                        <p:outputLabel value="#{centroComercial.juridica.pessoa.nome}"/>
+                                                    </p:column>
+                                                </p:dataTable>                                
+                                            </h:panelGrid>                                        
+                                        </h:column>
+                                    </h:panelGrid>
                                 </p:panel>
                             </p:tab>
-                            <p:tab title="Data">
-                                <p:panel header="Data">
+                            <p:tab title="Data de Cadastro">
+                                <p:panel header="Data de Cadastro">
                                     <h:panelGrid id="i_datas" columns="4">
                                         <p:inputMask value="#{relatorioContribuintesBean.dataCadastroInicial}" mask="99/99/9999" size="8">
                                             <p:ajax event="blur" update="@this" />
@@ -135,7 +149,7 @@
                                         <p:inputMask value="#{relatorioContribuintesBean.dataCadastroFinal}" mask="99/99/9999" size="8">
                                             <p:ajax event="blur" update="@this" />
                                         </p:inputMask>
-                                        <p:commandButton value="Limpar datas" title="Limpar datas" action="#{relatorioContribuintesBean.limparData}" styleClass="margin-top-max" update="i_datas"/>
+                                        <p:commandButton value="Limpar datas" title="Limpar datas" action="#{relatorioContribuintesBean.limparData}" update="i_datas"/>
                                     </h:panelGrid>
                                 </p:panel>
                             </p:tab>
@@ -181,7 +195,10 @@
                             </p:tab>
                         </p:tabView>
                     </h:panelGrid>
-                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioContribuintesBean.visualizar}" ajax="false" styleClass="margin-top-max" update="id_messages_growl"/>
+                    <h:panelGrid columns="3" styleClass="margin-top-max">
+                        <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioContribuintesBean.visualizar}" ajax="false" update="id_messages_growl"/>
+                        <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar"/>
+                    </h:panelGrid>
                 </h:form>
             </p:panel>
         </f:view>

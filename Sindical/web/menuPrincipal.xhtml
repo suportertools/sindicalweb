@@ -13,17 +13,17 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu-label .ui-inputfield{}
-            
+
             .column01{
                 width: 15%;
                 vertical-align: top;
             }
-            
+
             .column02{
                 width: 65%;
                 vertical-align: top;
             }
-            
+
             .column03{
                 width: 20%;
                 vertical-align: top;
@@ -60,10 +60,11 @@
                                     </p:submenu>  
                                     <p:separator />  
                                     <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pagina('pesquisaLog')}" title="Registro de atividades"  />
-                                    <p:submenu label="Sistema" rendered="#{controleUsuarioBean.clienteString.equals('Rtools')}">
-                                        <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" />                                            
+                                    <p:submenu label="Sistema">
+                                        <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" rendered="#{controleUsuarioBean.clienteString eq 'Rtools'}"/>
+                                        <p:menuitem value="Class Loader"        action="#{chamadaPaginaBean.pagina('javaClassLoader')}" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" />
                                     </p:submenu> 
-                                    <p:submenu label="Ordem Serviço" rendered="#{controleUsuarioBean.clienteString.equals('Rtools')}"> 
+                                    <p:submenu label="Ordem Serviço" rendered="#{controleUsuarioBean.clienteString eq 'Rtools'}"> 
                                         <p:menuitem value="Ordem Serviço"    />
                                         <p:menuitem value="Prioridade" />                                            
                                         <p:menuitem value="Status" />                                            
@@ -125,7 +126,7 @@
                                     </p:submenu>
                                 </p:submenu>
                             </p:menubar> 
-                            
+
                             <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'" rendered="false"/>
 
                             <h:panelGrid columns="3" columnClasses="column01, column02, column03" style="width: 100%">
@@ -135,7 +136,7 @@
                                             <h:panelGrid>
                                                 <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
                                             </h:panelGrid>
-                                        
+
                                             <p:commandLink action="#{chamadaPaginaBean.pagina('pesquisaAgendaTelefone','agendaTelefone')}" title="Pesquisa Agenda Telefônica" style="clear: both" actionListener="#{agendaTelefoneBean.putType('pesquisaAgendaTelefone')}">
                                                 <h:graphicImage value="/Imagens/-icone-agenda-telefone.jpg" width="120" /><br />
                                             </p:commandLink>

@@ -26,6 +26,7 @@
                 <!-- INICIA DIV wrap e main -->  
                 <f:subview id="header">
                     <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateAcessoFilialComCaixa.xhtml"/>
                 </f:subview>
                 <f:view>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
@@ -119,31 +120,31 @@
 
                                 <p:column headerText="Valor" style="width: 82px">
                                     <p:inputText size="8" value="#{linha.argumento2}" style="text-align: right">
-                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                        <p:ajax event="change" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
                                     </p:inputText>
                                 </p:column>
 
                                 <p:column headerText="Multa" style="width: 60px">
                                     <p:inputText id="i_multa" maxlength="20" size="8" value="#{linha.argumento3}" style="text-align: right; width: 60px">
-                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                        <p:ajax event="change" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
                                     </p:inputText>
                                 </p:column>
 
                                 <p:column headerText="Juros" style="width: 60px">
                                     <p:inputText maxlength="20" size="8" value="#{linha.argumento4}" style="text-align: right; width: 60px">
-                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                        <p:ajax event="change" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
                                     </p:inputText>
                                 </p:column>
 
                                 <p:column headerText="Correção" style="width: 60px">
                                     <p:inputText maxlength="10" size="8" value="#{linha.argumento5}" style="text-align: right; width: 60px">
-                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                        <p:ajax event="change" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
                                     </p:inputText>
                                 </p:column>
 
                                 <p:column headerText="Desconto" style="width: 82px">
                                     <p:inputText maxlength="10" size="8" value="#{linha.argumento6}" style="text-align: right">
-                                        <p:ajax event="blur" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
+                                        <p:ajax event="change" listener="#{baixaBoletoBean.atualizaValoresGrid(linha)}" update="@this i_valor_pago"/>
                                     </p:inputText>
                                 </p:column>
 
