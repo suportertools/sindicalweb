@@ -279,7 +279,8 @@ public class Jasper {
                     Jasper.PART_NAME = AnaliseString.removerAcentos(Jasper.PART_NAME);
                     Jasper.PART_NAME = "_" + Jasper.PART_NAME;
                 }
-                UUID uuid = UUID.randomUUID();
+                UUID uuidX = UUID.randomUUID();
+                String uuid = uuidX.toString().replace("-", "_");
                 if (COMPRESS_FILE && COMPRESS_LIMIT > 0) {
                     if (!jasperListExport.isEmpty()) {
                         GenericaMensagem.info("Sistema", "Não é possível comprimir uma lista de Jasper!");
@@ -415,8 +416,12 @@ public class Jasper {
                         }
                     } catch (IOException | JRException e) {
                         System.out.println(e);
+                        IS_DOWNLOAD = false;
+                        COMPRESS_FILE = false;
                         return;
                     } catch (OutOfMemoryError e) {
+                        IS_DOWNLOAD = false;
+                        COMPRESS_FILE = false;
                         MemoryUsage heapUsage = memoryBean.getHeapMemoryUsage();
                         long maxMemory = heapUsage.getMax() / MEGABYTE;
                         long usedMemory = heapUsage.getUsed() / MEGABYTE;
