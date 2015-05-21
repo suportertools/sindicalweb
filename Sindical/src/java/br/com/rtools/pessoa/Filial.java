@@ -37,19 +37,23 @@ public class Filial implements BaseEntity, Serializable {
     private Juridica filial;
     @Column(name = "nr_centro_custo")
     private int centroCusto;
+    @Column(name = "nr_quantidade_agendamentos_por_empresa")
+    private int quantidadeAgendamentosPorEmpresa;
 
     public Filial() {
         this.id = -1;
         this.matriz = new Juridica();
         this.filial = new Juridica();
         this.centroCusto = 0;
+        this.quantidadeAgendamentosPorEmpresa = 50;
     }
 
-    public Filial(int id, Juridica matriz, Juridica filial, int centroCusto) {
+    public Filial(int id, Juridica matriz, Juridica filial, int centroCusto, int quantidadeAgendamentosPorEmpresa) {
         this.id = id;
         this.matriz = matriz;
         this.filial = filial;
         this.centroCusto = centroCusto;
+        this.quantidadeAgendamentosPorEmpresa = quantidadeAgendamentosPorEmpresa;
     }
 
     @Override
@@ -121,6 +125,14 @@ public class Filial implements BaseEntity, Serializable {
 
     @Override
     public String toString() {
-        return "Filial{" + "id=" + id + ", matriz=" + matriz.getId() + ", filial=" + filial.getId() + ", centroCusto=" + centroCusto + '}';
+        return "Filial{" + "id=" + id + ", matriz=" + matriz.getId() + ", filial=" + filial.getId() + ", centroCusto=" + centroCusto + ", quantidadeAgendamentosPorEmpresa=" + quantidadeAgendamentosPorEmpresa + '}';
+    }
+
+    public int getQuantidadeAgendamentosPorEmpresa() {
+        return quantidadeAgendamentosPorEmpresa;
+    }
+
+    public void setQuantidadeAgendamentosPorEmpresa(int quantidadeAgendamentosPorEmpresa) {
+        this.quantidadeAgendamentosPorEmpresa = quantidadeAgendamentosPorEmpresa;
     }
 }

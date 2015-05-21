@@ -99,7 +99,7 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
-            return new ArrayList<Parentesco>();
+            return new ArrayList();
         }
     }
 
@@ -117,7 +117,7 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
-            return new ArrayList<Parentesco>();
+            return new ArrayList();
         }
     }
 
@@ -133,7 +133,7 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
             );
             return qry.getResultList();
         } catch (Exception e) {
-            return new ArrayList<>();
+            return new ArrayList();
         }
     }
 

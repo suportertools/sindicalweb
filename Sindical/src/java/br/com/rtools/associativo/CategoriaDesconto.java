@@ -1,5 +1,6 @@
 package br.com.rtools.associativo;
 
+import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.Servicos;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,27 +20,27 @@ public class CategoriaDesconto implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @JoinColumn(name = "id_servico", referencedColumnName = "id", nullable = false)
-    @ManyToOne
-    private Servicos servicos;
     @JoinColumn(name = "id_categoria", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Categoria categoria;
     @Column(name = "nr_desconto", nullable = false)
     private float desconto;
+    @JoinColumn(name = "id_servico_valor", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    private ServicoValor servicoValor;
 
     public CategoriaDesconto() {
         this.id = -1;
-        this.servicos = new Servicos();
         this.categoria = new Categoria();
         this.desconto = 0;
+        this.servicoValor = new ServicoValor();
     }
 
-    public CategoriaDesconto(int id, Servicos servicos, Categoria categoria, float desconto) {
+    public CategoriaDesconto(int id, Categoria categoria, float desconto, ServicoValor servicoValor) {
         this.id = id;
-        this.servicos = servicos;
         this.categoria = categoria;
         this.desconto = desconto;
+        this.servicoValor = servicoValor;
     }
 
     public int getId() {
@@ -48,14 +49,6 @@ public class CategoriaDesconto implements java.io.Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Servicos getServicos() {
-        return servicos;
-    }
-
-    public void setServicos(Servicos servicos) {
-        this.servicos = servicos;
     }
 
     public Categoria getCategoria() {
@@ -72,5 +65,13 @@ public class CategoriaDesconto implements java.io.Serializable {
 
     public void setDesconto(float desconto) {
         this.desconto = desconto;
+    }
+
+    public ServicoValor getServicoValor() {
+        return servicoValor;
+    }
+
+    public void setServicoValor(ServicoValor servicoValor) {
+        this.servicoValor = servicoValor;
     }
 }
