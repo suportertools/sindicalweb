@@ -1775,9 +1775,11 @@ public class ImprimirBoleto {
                  else {
                     lista_socio = db.listaBoletoSocioJuridica(boleto.getNrCtrBoleto()); // NR_CTR_BOLETO
                     Juridica j = dbj.pesquisaJuridicaPorPessoa(pessoa.getId());
-                    String doc = (!j.getContabilidade().getPessoa().getDocumento().isEmpty() && !j.getContabilidade().getPessoa().getDocumento().equals("0") ) ? j.getContabilidade().getPessoa().getDocumento() + " - " : " ";
+                    String doc = (j.getContabilidade() != null && 
+                                  !j.getContabilidade().getPessoa().getDocumento().isEmpty() && 
+                                  !j.getContabilidade().getPessoa().getDocumento().equals("0") ) ? j.getContabilidade().getPessoa().getDocumento() + " - " : " ";
                     
-                    contabilidade = (j.getContabilidade() != null) ? "CONTABILIDADE : " + doc +j.getContabilidade().getPessoa().getNome() : "";
+                    contabilidade = (j.getContabilidade() != null) ? "CONTABILIDADE : " + doc + j.getContabilidade().getPessoa().getNome() : "";
                 }
                 
                 Cobranca cobranca = null;
