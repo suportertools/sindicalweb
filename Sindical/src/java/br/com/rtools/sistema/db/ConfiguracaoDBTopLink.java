@@ -8,7 +8,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
-
     @Override
     public boolean existeIdentificador(Configuracao configuracao) {
         try {
