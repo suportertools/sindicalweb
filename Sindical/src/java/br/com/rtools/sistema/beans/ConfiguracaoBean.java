@@ -229,7 +229,6 @@ public class ConfiguracaoBean implements Serializable {
         ConfiguracaoUpload cu = new ConfiguracaoUpload();
         cu.setArquivo(event.getFile().getFileName());
         cu.setDiretorio("Imagens");
-        //cu.setArquivo("l");
         cu.setSubstituir(true);
         cu.setRenomear("LogoCliente" + ".png");
         cu.setEvent(event);
