@@ -9,6 +9,10 @@
         <title>Filial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }   
+        </style>
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -31,19 +35,39 @@
                             <h:column>
                                 <p:commandButton value="Adicionar uma Filial" rendered="#{filialBean.filial.filial.pessoa.id == -1}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"/>
                                 <h:outputText value="#{filialBean.filial.filial.pessoa.documento} - #{filialBean.filial.filial.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{filialBean.filial.filial.pessoa.id != -1}"/>
-                                <p:commandButton value="Salvar" action="#{filialBean.btnAddFilial}" rendered="#{filialBean.filial.filial.pessoa.id != -1}" title="Adicionar esta empresa como Filial" style="margin-left: 20px" update=":form_filial:"/>
+                                <p:commandButton icon="ui-icon-close" rendered="#{filialBean.filial.filial.pessoa.id != -1}" action="#{filialBean.removerFilial}" update="form_filial"/>
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid columns="2" rendered="#{filialBean.filial.filial.pessoa.id != -1}">
+                            <h:column>
+                                <p:outputLabel value="Quantidade de Agendamentos por Empresa"/><br />
+                                <p:inputText value="#{filialBean.filial.quantidadeAgendamentosPorEmpresa}" style="width: 250px; text-align: right"/>
+                            </h:column>
+                            <h:column>
+                                <br />
+                                <p:commandButton value="Salvar" action="#{filialBean.btnAddFilial}" title="Adicionar esta empresa como Filial" style="margin-left: 20px" update=":form_filial:"/>
                             </h:column>
                         </h:panelGrid>
                     </p:panel>
                     
                     <h:panelGrid id="i_panel_grid" style="float: left; margin-top: 15px; width: 100%" columns="1">
-                        <p:dataTable value="#{filialBean.listaFilialSemMatriz}" var="filial" id="tbl">                                    
+                        <p:dataTable value="#{filialBean.listaFilialSemMatriz}" var="filial" id="tbl" editable="true" editMode="cell">
+                            <p:ajax event="cellEdit" listener="#{filialBean.onCellEdit}" update="form_filial:i_msg"/>
+                            
                             <p:column styleClass="text-center" width="25">
                                 <p:commandButton icon="ui-icon-trash" action="#{filialBean.delete(filial)}" update=":form_filial:"/>
                             </p:column>
 
                             <p:column headerText="Doc / Filial">
                                 <h:outputText value="#{filial.filial.pessoa.documento} - #{filial.filial.pessoa.nome}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Qnt. Agendamentos" style="width: 100px; text-align: right">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{filial.quantidadeAgendamentosPorEmpresa}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{filial.quantidadeAgendamentosPorEmpresa}" style="width:96%" label="Qnt. Agendamentos"/></f:facet>
+                                </p:cellEditor>
                             </p:column>
                         </p:dataTable>         
                     </h:panelGrid>   

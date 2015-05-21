@@ -414,7 +414,7 @@ public class SociosDBToplink extends DB implements SociosDB {
         textQry = "select cd "
                 + "  from CategoriaDesconto cd"
                 + " where cd.categoria.id = " + socios.getMatriculaSocios().getCategoria().getId()
-                + "   and cd.servicos.id = " + idServico;
+                + "   and cd.servicoValor.servicos.id = " + idServico;
         try {
             qry = getEntityManager().createQuery(textQry);
             categoriaDesconto = (CategoriaDesconto) qry.getSingleResult();

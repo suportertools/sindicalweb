@@ -512,7 +512,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 
         for (DataObject dh : listaMovimento) {
             if ((Boolean) dh.getArgumento0()) {
-                int id_movimento = Integer.valueOf(dh.getArgumento1().toString());
+                int id_movimento =  ((Movimento)dh.getArgumento1()).getId();
                 Movimento mov = (Movimento) new Dao().find(new Movimento(), id_movimento);
                 listam.add(mov);
             }

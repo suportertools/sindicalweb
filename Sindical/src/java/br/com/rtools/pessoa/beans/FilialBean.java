@@ -3,8 +3,6 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.FilialCidade;
@@ -22,9 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.CellEditEvent;
 
 @ManagedBean
 @SessionScoped
@@ -32,7 +33,6 @@ public class FilialBean {
 
     private Filial filial;
     private List<Filial> listaFilial;
-    private String renderAdicionar;
     private int idFilial;
     private List<DataObject> listaCidade;
     private boolean adicionarLista;
@@ -41,18 +41,55 @@ public class FilialBean {
     @PostConstruct
     public void init() {
         filial = new Filial();
-        listaFilial = new ArrayList();;
-        renderAdicionar = "false";
+        listaFilial = new ArrayList();
         idFilial = 0;
         listaCidade = new ArrayList();
         adicionarLista = false;
-        result = new ArrayList<SelectItem>();
+        result = new ArrayList();
     }
 
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("filialBean");
         GenericaSessao.remove("juridicaPesquisa");
+    }
+    
+    public void onCellEdit(CellEditEvent event) {
+        Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+        
+        Dao dao = new Dao();
+        Filial fx = (Filial) dao.find(new Filial(), listaFilial.get(event.getRowIndex()).getId());
+        fx.setQuantidadeAgendamentosPorEmpresa((Integer) newValue);
+        
+
+        dao.openTransaction();
+        if (!dao.update(fx)){
+            dao.rollback();
+            GenericaMensagem.error("Erro", "Não foi possível atualizar filial");
+            return;
+        }
+        dao.commit();
+        GenericaMensagem.info("Sucesso", "Filial Atualizada!");
+    }
+    
+    public void updateFilial(Filial filialx){
+        
+        Dao dao = new Dao();
+
+        dao.openTransaction();
+        if (!dao.update(filialx)){
+            dao.rollback();
+            GenericaMensagem.error("Erro", "Não foi possível atualizar filial");
+            return;
+        }
+
+        dao.commit();
+        
+    }
+    
+    public void removerFilial(){
+        filial = new Filial();
     }
 
     public void clear() {
@@ -117,7 +154,6 @@ public class FilialBean {
         }
         listaFilial.clear();
         filial = new Filial();
-        renderAdicionar = "false";
     }
 
     public void saveCidadeFilial(Cidade cid, int index) {
@@ -211,15 +247,6 @@ public class FilialBean {
             listaFilial = db.pesquisaTodos();
         }
         return listaFilial;
-    }
-
-    public String getRenderAdicionar() {
-        if (filial.getFilial().getId() != -1) {
-            renderAdicionar = "true";
-        } else {
-            renderAdicionar = "false";
-        }
-        return renderAdicionar;
     }
 
     public int getIdFilial() {

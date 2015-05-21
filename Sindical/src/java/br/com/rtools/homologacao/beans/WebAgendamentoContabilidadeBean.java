@@ -182,7 +182,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             return;
         }
 
-        List<Agendamento> ag = new ArrayList<Agendamento>();
+        List<Agendamento> ag = new ArrayList();
         List<Horarios> horario;
 
         HomologacaoDB db = new HomologacaoDBToplink();
@@ -375,6 +375,14 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             case 1: {
+                HomologacaoDB db = new HomologacaoDBToplink();
+                
+                List<Agendamento> list_a = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, empresa.getPessoa().getId());
+                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()){
+                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de "+sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
+                    return;
+                }
+                
                 if (data.getDay() == 6 || data.getDay() == 0) {
                     GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
                     return;

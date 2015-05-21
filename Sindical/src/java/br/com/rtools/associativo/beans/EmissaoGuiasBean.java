@@ -602,13 +602,24 @@ public class EmissaoGuiasBean implements Serializable {
             }
         }
         float descontox = Moeda.converteUS$(desconto);
+        Pessoa pessoa_movimento = null;
+        
+        // Se o beneficiário for sócio então id_titular e id_pessoa do movimento será o titular.
+        // Se o beneficiário NÃO for sócio então id_titular e  id_pessoa será o próprio beneficiário.
+        // CHAMADO 775
+        FunctionsDao dbfunc = new FunctionsDao();
+        if (socios.getId() != -1) {
+            pessoa_movimento = dbfunc.titularDaPessoa(pessoa.getId());
+        }else{
+            pessoa_movimento = pessoa;
+        }
         listaMovimento.add(
                 new ListMovimentoEmissaoGuias(
                         new Movimento(
                                 -1,
                                 new Lote(),
                                 servicos.getPlano5(),
-                                pessoa,
+                                pessoa_movimento,
                                 servicos,
                                 null, // BAIXA
                                 (TipoServico) di.find(new TipoServico(), 1), // TIPO SERVICO
@@ -620,7 +631,7 @@ public class EmissaoGuiasBean implements Serializable {
                                 true, // ATIVO
                                 "E", // ES
                                 false, // OBRIGACAO
-                                pessoa, // PESSOA TITULAR
+                                pessoa_movimento, // PESSOA TITULAR
                                 pessoa, // PESSOA BENEFICIARIO
                                 "", // DOCUMENTO
                                 "", // NR_CTR_BOLETO

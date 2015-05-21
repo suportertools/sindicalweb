@@ -333,11 +333,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             return;
         }
-
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            return;
-        }
+//
+//        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+//            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+//            return;
+//        }
 
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
@@ -478,6 +478,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                     //msgConfirma = "Agendamento realizado com sucesso!";
                     GenericaMensagem.info("Sucesso", "Agendamento Concluído!");
                     setAgendamentoProtocolo(agendamento);
+                    listaHorarios.clear();
                     PF.openDialog("dlg_protocolo");
                 } else {
                     //msgConfirma = "Erro ao salvar protocolo!";
@@ -491,6 +492,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                     //msgConfirma = "Agendamento atualizado com sucesso!";
                     GenericaMensagem.info("Sucesso", "Agendamento Atualizado!");
                     setAgendamentoProtocolo(agendamento);
+                    listaHorarios.clear();
                 } else {
                     //msgConfirma = "Erro ao atualizar protocolo!";
                     GenericaMensagem.error("Atenção", "Erro ao atualizar Protocolo!");
@@ -514,6 +516,14 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             // STATUS DISPONÍVEL
             case 1: {
+                HomologacaoDB db = new HomologacaoDBToplink();
+                
+                List<Agendamento> list_a = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, juridica.getPessoa().getId());
+                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()){
+                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de "+sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
+                    return;
+                }
+                
                 if (data.getDay() == 6 || data.getDay() == 0) {
                     GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
                     return;
@@ -589,7 +599,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         Dao dao = new Dao();
         ImprimirBoleto imp = new ImprimirBoleto();
         List<Movimento> lista = new ArrayList();
-        List<Float> listaValores = new ArrayList<Float>();
+        List<Float> listaValores = new ArrayList();
         for (int i = 0; i < listaEmDebito.size(); i++) {
             Movimento m = (Movimento) dao.find(new Movimento(), (Integer) ((List) listaEmDebito.get(i)).get(0));
             lista.add(m);

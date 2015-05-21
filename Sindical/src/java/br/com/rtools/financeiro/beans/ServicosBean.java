@@ -25,6 +25,7 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -42,7 +43,7 @@ public class ServicosBean implements Serializable {
 
     private Servicos servicos;
     private ServicoValor servicoValor;
-    private ServicoValor servicoValorDetalhe;
+    //private ServicoValor servicoValorDetalhe;
     private CategoriaDesconto categoriaDesconto;
     private List<ServicoValor> listServicoValor;
     private List<Servicos> listServicos;
@@ -84,7 +85,7 @@ public class ServicosBean implements Serializable {
         descPesquisa = "";
         message = "";
         servicoValor = new ServicoValor();
-        servicoValorDetalhe = new ServicoValor();
+        //servicoValorDetalhe = new ServicoValor();
         valorf = "0";
         taxa = "0";
         desconto = "0";
@@ -168,7 +169,7 @@ public class ServicosBean implements Serializable {
     }
 
     public void save() {
-        if (servicos.getDescricao().equals("")) {
+        if (servicos.getDescricao().isEmpty()) {
             message = "Informe o nome do serviço a ser cadastrado!";
             return;
         }
@@ -260,7 +261,7 @@ public class ServicosBean implements Serializable {
                         novoLog.save(
                                 "Categoria - Desconto - ID: " + categoria.getId()
                                 + " - Descrição: " + categoria.getCategoria().getCategoria()
-                                + " - Serviços: (" + categoria.getServicos().getId() + ") " + categoria.getServicos().getDescricao()
+                                + " - Serviços: (" + categoria.getServicoValor().getServicos().getId() + ") " + categoria.getServicoValor().getServicos().getDescricao()
                                 + " - Desconto: " + categoria.getDesconto()
                         );
                     }
@@ -269,13 +270,13 @@ public class ServicosBean implements Serializable {
                     String beforeUpdate
                             = "Categoria - Desconto - ID: " + cd.getId()
                             + " - Descrição: " + cd.getCategoria().getCategoria()
-                            + " - Serviços: (" + cd.getServicos().getId() + ") " + cd.getServicos().getDescricao()
+                            + " - Serviços: (" + cd.getServicoValor().getServicos().getId() + ") " + cd.getServicoValor().getServicos().getDescricao()
                             + " - Desconto: " + cd.getDesconto();
                     if (di.update(categoria)) {
                         novoLog.update(beforeUpdate,
                                 "Categoria - Desconto - ID: " + categoria.getId()
                                 + " - Descrição: " + categoria.getCategoria().getCategoria()
-                                + " - Serviços: (" + categoria.getServicos().getId() + ") " + categoria.getServicos().getDescricao()
+                                + " - Serviços: (" + categoria.getServicoValor().getServicos().getId() + ") " + categoria.getServicoValor().getServicos().getDescricao()
                                 + " - Desconto: " + categoria.getDesconto()
                         );
                     }
@@ -385,7 +386,7 @@ public class ServicosBean implements Serializable {
                             novoLog.delete(
                                     "Categoria - Desconto - ID: " + cd.getId()
                                     + " - Descrição: " + cd.getCategoria().getCategoria()
-                                    + " - Serviços: (" + cd.getServicos().getId() + ") " + cd.getServicos().getDescricao()
+                                    + " - Serviços: (" + cd.getServicoValor().getServicos().getId() + ") " + cd.getServicoValor().getServicos().getDescricao()
                                     + " - Desconto: " + cd.getDesconto()
                             );
                         }
@@ -439,7 +440,7 @@ public class ServicosBean implements Serializable {
     }
 
     public List<ServicoValor> getListServicoValor() {
-        servicoValorDetalhe = new ServicoValor();
+        //servicoValorDetalhe = new ServicoValor();
         ServicoValorDB servicoValorDB = new ServicoValorDBToplink();
         listServicoValor.clear();
         listServicoValor = servicoValorDB.pesquisaServicoValor(servicos.getId());
@@ -447,7 +448,7 @@ public class ServicosBean implements Serializable {
             listServicoValor = new ArrayList<>();
         } else {
             if (!listServicoValor.isEmpty()) {
-                servicoValorDetalhe = listServicoValor.get(0);
+            //    servicoValorDetalhe = listServicoValor.get(0);
                 //valorCategoriaDesconto = Moeda.converteR$Float(servicoValorDetalhe.getValor());
             }
         }
@@ -470,9 +471,10 @@ public class ServicosBean implements Serializable {
         servicoValor.setDescontoAteVenc(Moeda.substituiVirgulaFloat(desconto));
         boolean existeValor = true;
         if (existeValor) {
+            di.openTransaction();
             if (servicoValor.getId() == -1) {
                 servicoValor.setServicos(servicos);
-                if (di.save(servicoValor, true)) {
+                if (di.save(servicoValor)) {
                     novoLog.save(
                             "Serviço Valor - "
                             + "ID: " + servicoValor.getId()
@@ -482,14 +484,21 @@ public class ServicosBean implements Serializable {
                             + " - Taxa: " + servicoValor.getTaxa()
                             + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                     );
+                    
+                    List<Categoria> listc = new Dao().list(new Categoria());
+                    for (Categoria c : listc){
+                        CategoriaDesconto cd = new CategoriaDesconto(-1, c, 0, servicoValor);
+                        di.save(cd);
+                    }
+                    di.commit();
                     GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
                     listServicoValor.clear();
-                    servicoValor = new ServicoValor();
                     servicoValor = new ServicoValor();
                     valorf = "0";
                     desconto = "0";
                     taxa = "0";
                 } else {
+                    di.rollback();
                     GenericaMensagem.warn("Validação", "Este valor para o serviço já existe no sistema.");
                 }
             } else {
@@ -502,7 +511,7 @@ public class ServicosBean implements Serializable {
                         + " - Desconto: " + sv.getDescontoAteVenc()
                         + " - Taxa: " + sv.getTaxa()
                         + " - Idade: " + sv.getIdadeIni() + " - " + sv.getIdadeFim();
-                if (di.update(servicoValor, true)) {
+                if (di.update(servicoValor)) {
                     novoLog.update(beforeUpdate,
                             "Serviço Valor - "
                             + "ID: " + servicoValor.getId()
@@ -512,9 +521,18 @@ public class ServicosBean implements Serializable {
                             + " - Taxa: " + servicoValor.getTaxa()
                             + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                     );
+                    List<Categoria> listc = new Dao().list(new Categoria());
+                    CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
+                    
+                    for (Categoria c : listc){
+                        if (db.listaCategoriaDescontoCategoriaServicoValor(c.getId(), servicoValor.getId()).isEmpty()){
+                            CategoriaDesconto cd = new CategoriaDesconto(-1, c, 0, servicoValor);
+                            di.save(cd);
+                        }
+                    }
+                    di.commit();
                     GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
                     listServicoValor.clear();
-                    servicoValor = new ServicoValor();
                     servicoValor = new ServicoValor();
                     valorf = "0";
                     desconto = "0";
@@ -522,6 +540,7 @@ public class ServicosBean implements Serializable {
                     textoBtnServico = "Adicionar";
                 } else {
                     GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+                    di.rollback();
                 }
             }
             listServicosCategoriaDesconto.clear();
@@ -557,19 +576,27 @@ public class ServicosBean implements Serializable {
 
     public void removeServicoValor(ServicoValor sv) {
         Dao di = new Dao();
-        boolean clean = false;
         if (sv != null) {
             if (sv.getId() != -1) {
-                if (servicoValor.getId() == sv.getId()) {
-                    clean = true;
-                }
                 servicoValor = sv;
             }
         }
+        
         NovoLog novoLog = new NovoLog();
         textoBtnServico = "Adicionar";
         if (servicoValor.getId() != -1) {
-            if (di.delete(servicoValor, true)) {
+            CategoriaDescontoDB db = new CategoriaDescontoDBToplink();
+            List<CategoriaDesconto> listc = db.listaCategoriaDescontoServicoValor(servicoValor.getId());
+            
+            for (CategoriaDesconto cd : listc){
+                if (!di.delete(di.find(cd))){
+                    di.rollback();
+                    GenericaMensagem.error("Erro", "Não foi possível excluir registro!");
+                    return;
+                }
+            }
+            
+            if (di.delete(servicoValor, false)) {
                 novoLog.delete(
                         "Serviço Valor - "
                         + "ID: " + servicoValor.getId()
@@ -579,12 +606,11 @@ public class ServicosBean implements Serializable {
                         + " - Taxa: " + servicoValor.getTaxa()
                         + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                 );
-//                if (clean) {
+                di.commit();
                 servicoValor = new ServicoValor();
                 valorf = "0";
                 desconto = "0";
                 taxa = "0";
-//                }
                 listServicoValor.clear();
                 GenericaMensagem.info("Sucesso", "Registro excluido com sucesso");
                 textoBtnServico = "Adicionar";
@@ -690,11 +716,11 @@ public class ServicosBean implements Serializable {
         List<Categoria> listaCategoria = categoriaDescontoDB.pesquisaCategoriasSemServico(servicos.getId());
         listCategoriaDesconto = categoriaDescontoDB.pesquisaTodosPorServico(servicos.getId());
         if (listCategoriaDesconto == null) {
-            listCategoriaDesconto = new ArrayList<>();
+            listCategoriaDesconto = new ArrayList();
         }
         if ((listaCategoria != null) && (this.servicos.getId() != -1)) {
             for (Categoria c : listaCategoria) {
-                listCategoriaDesconto.add(new CategoriaDesconto(-1, this.servicos, c, 0));
+                listCategoriaDesconto.add(new CategoriaDesconto(-1, c, 0, servicoValor)); // AQUI VERIFICAR
             }
         }
         return listCategoriaDesconto;
@@ -707,14 +733,23 @@ public class ServicosBean implements Serializable {
     public void updateDescontoCategoriaPercentual(ListServicosCategoriaDesconto lscd) {
         float v = 0;
         for (int i = 0; i < listServicosCategoriaDesconto.size(); i++) {
-            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getCategoria().getId() == lscd.getCategoriaDesconto().getCategoria().getId()) {
+            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getId() == lscd.getCategoriaDesconto().getId()) {
                 if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() > 100) {
                     listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(100);
                 }
-                v = servicoValorDetalhe.getValor() - (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() / 100) * servicoValorDetalhe.getValor();
+                v = listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getServicoValor().getValor() - (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() / 100) * listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getServicoValor().getValor();
                 listServicosCategoriaDesconto.get(i).setValorDesconto(Moeda.converteFloatR$Float(v));
             }
         }
+//        for (int i = 0; i < listServicosCategoriaDesconto.size(); i++) {
+//            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getCategoria().getId() == lscd.getCategoriaDesconto().getCategoria().getId()) {
+//                if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() > 100) {
+//                    listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(100);
+//                }
+//                v = servicoValorDetalhe.getValor() - (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getDesconto() / 100) * servicoValorDetalhe.getValor();
+//                listServicosCategoriaDesconto.get(i).setValorDesconto(Moeda.converteFloatR$Float(v));
+//            }
+//        }
     }
 
     public void updateDescontoCategoriaValor(ListServicosCategoriaDesconto lscd) {
@@ -728,10 +763,10 @@ public class ServicosBean implements Serializable {
 //        p= 50 
 
         for (int i = 0; i < listServicosCategoriaDesconto.size(); i++) {
-            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getCategoria().getId() == lscd.getCategoriaDesconto().getCategoria().getId()) {
-                if (listServicosCategoriaDesconto.get(i).getValorDesconto() <= servicoValorDetalhe.getValor()) {
-                    v1 = Moeda.subtracaoValores(servicoValorDetalhe.getValor(), listServicosCategoriaDesconto.get(i).getValorDesconto());
-                    v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, servicoValorDetalhe.getValor()), 100);
+            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getId() == lscd.getCategoriaDesconto().getId()) {
+                if (listServicosCategoriaDesconto.get(i).getValorDesconto() <= listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getServicoValor().getValor()) {
+                    v1 = Moeda.subtracaoValores(listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getServicoValor().getValor(), listServicosCategoriaDesconto.get(i).getValorDesconto());
+                    v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getServicoValor().getValor()), 100);
                     listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(Moeda.converteFloatR$Float(v2));
                 } else {
                     updateDescontoCategoriaPercentual(lscd);
@@ -739,6 +774,20 @@ public class ServicosBean implements Serializable {
                 //listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(v);
             }
         }
+        
+        // METODO ANTERIOR QUE PEGAVA O VALOR TOTAL DO SERVIÇO
+//        for (int i = 0; i < listServicosCategoriaDesconto.size(); i++) {
+//            if (listServicosCategoriaDesconto.get(i).getCategoriaDesconto().getCategoria().getId() == lscd.getCategoriaDesconto().getCategoria().getId()) {
+//                if (listServicosCategoriaDesconto.get(i).getValorDesconto() <= servicoValorDetalhe.getValor()) {
+//                    v1 = Moeda.subtracaoValores(servicoValorDetalhe.getValor(), listServicosCategoriaDesconto.get(i).getValorDesconto());
+//                    v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, servicoValorDetalhe.getValor()), 100);
+//                    listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(Moeda.converteFloatR$Float(v2));
+//                } else {
+//                    updateDescontoCategoriaPercentual(lscd);
+//                }
+//                //listServicosCategoriaDesconto.get(i).getCategoriaDesconto().setDesconto(v);
+//            }
+//        }
     }
 
     public CategoriaDesconto getCategoriaDesconto() {
@@ -826,21 +875,22 @@ public class ServicosBean implements Serializable {
         this.idSubGrupo = idSubGrupo;
     }
 
-    public ServicoValor getServicoValorDetalhe() {
-        return servicoValorDetalhe;
-    }
-
-    public void setServicoValorDetalhe(ServicoValor servicoValorDetalhe) {
-        this.servicoValorDetalhe = servicoValorDetalhe;
-    }
+//    public ServicoValor getServicoValorDetalhe() {
+//        return servicoValorDetalhe;
+//    }
+//
+//    public void setServicoValorDetalhe(ServicoValor servicoValorDetalhe) {
+//        this.servicoValorDetalhe = servicoValorDetalhe;
+//    }
 
     public String valorCategoriaDesconto(CategoriaDesconto cd) {
         // Quanto é 50% de 1000?
         // É 0,5 multiplicado por 1000 => 0,5  x 1000 = 500
         // Y = 1000 + 0,2  x 1000
         float v = 0;
-        if (servicoValorDetalhe.getId() != -1) {
-            v = servicoValorDetalhe.getValor() + (cd.getDesconto() / 100) * servicoValorDetalhe.getValor();
+        if (cd.getServicoValor().getId() != -1) {
+            //v = servicoValorDetalhe.getValor() + (cd.getDesconto() / 100) * servicoValorDetalhe.getValor();
+            v = cd.getServicoValor().getValor() + (cd.getDesconto() / 100) * cd.getServicoValor().getValor();
             return Moeda.converteR$Float(v);
         }
         return "0,00";
@@ -853,7 +903,8 @@ public class ServicosBean implements Serializable {
             float v = 0;
             for (CategoriaDesconto cd : cds) {
                 lscd.setCategoriaDesconto(cd);
-                v = servicoValorDetalhe.getValor() - (cd.getDesconto() / 100) * servicoValorDetalhe.getValor();
+                //v = servicoValorDetalhe.getValor() - (cd.getDesconto() / 100) * servicoValorDetalhe.getValor();
+                v = cd.getServicoValor().getValor() - (cd.getDesconto() / 100) * cd.getServicoValor().getValor();
                 lscd.setValorDesconto(v);
                 listServicosCategoriaDesconto.add(lscd);
                 lscd = new ListServicosCategoriaDesconto();
@@ -918,9 +969,13 @@ public class ServicosBean implements Serializable {
         indexParentesco = 0;
         listaParentesco.clear();
         listaDescontoDependente.clear();
-        valorDependente = servicoValorDetalhe.getValorString();
-        updateDescontoCategoriaDependenteValor();
+        valorDependente = cd.getServicoValor().getValorString();//servicoValorDetalhe.getValorString();
         categoriaDesconto = cd;
+        updateDescontoCategoriaDependenteValor();
+        
+        //oncomplete="PF('dlg_desconto_dependente').show()" update=":form_servicos:i_desconto_dependente"
+        PF.update("form_servicos:i_desconto_dependente");
+        PF.openDialog("dlg_desconto_dependente");
     }
 
     public List<SelectItem> getListaParentesco() {
@@ -946,14 +1001,16 @@ public class ServicosBean implements Serializable {
         if (descontoDepentende.getDesconto() > 100) {
             descontoDepentende.setDesconto(100);
         }
-        v = servicoValorDetalhe.getValor() - (descontoDepentende.getDesconto() / 100) * servicoValorDetalhe.getValor();
+        //v = servicoValorDetalhe.getValor() - (descontoDepentende.getDesconto() / 100) * servicoValorDetalhe.getValor();
+        v = categoriaDesconto.getServicoValor().getValor() - (descontoDepentende.getDesconto() / 100) * categoriaDesconto.getServicoValor().getValor();
         //descontoDepentende.setDesconto(Moeda.converteFloatR$Float(v));
         valorDependente = Moeda.converteR$Float(v);
     }
 
     public String linhaDescontoCategoriaDependentePercentual(float desconto) {
         float v = 0;
-        v = servicoValorDetalhe.getValor() - (desconto / 100) * servicoValorDetalhe.getValor();
+        //v = servicoValorDetalhe.getValor() - (desconto / 100) * servicoValorDetalhe.getValor();
+        v = categoriaDesconto.getServicoValor().getValor() - (desconto / 100) * categoriaDesconto.getServicoValor().getValor();
         return Moeda.converteR$Float(v);
     }
 
@@ -961,9 +1018,9 @@ public class ServicosBean implements Serializable {
         float v = 0;
         float v1 = 0;
         float v2 = 0;
-        if (Moeda.converteUS$(valorDependente) <= servicoValorDetalhe.getValor()) {
-            v1 = Moeda.subtracaoValores(servicoValorDetalhe.getValor(), Moeda.converteUS$(valorDependente));
-            v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, servicoValorDetalhe.getValor()), 100);
+        if (Moeda.converteUS$(valorDependente) <= categoriaDesconto.getServicoValor().getValor()) {
+            v1 = Moeda.subtracaoValores(categoriaDesconto.getServicoValor().getValor(), Moeda.converteUS$(valorDependente));
+            v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, categoriaDesconto.getServicoValor().getValor()), 100);
             descontoDepentende.setDesconto(Moeda.converteFloatR$Float(v2));
         } else {
             updateDescontoCategoriaDependentePercentual();
@@ -997,7 +1054,7 @@ public class ServicosBean implements Serializable {
         }
 
         descontoDepentende = new CategoriaDescontoDependente();
-        valorDependente = servicoValorDetalhe.getValorString();
+        valorDependente = categoriaDesconto.getServicoValor().getValorString();
         listaDescontoDependente.clear();
         indexParentesco = 0;
         listaParentesco.clear();
@@ -1035,7 +1092,7 @@ public class ServicosBean implements Serializable {
             }
         }
 
-        valorDependente = servicoValorDetalhe.getValorString();
+        valorDependente = categoriaDesconto.getServicoValor().getValorString();//servicoValorDetalhe.getValorString();
         listaDescontoDependente.clear();
         indexParentesco = 0;
         listaParentesco.clear();

@@ -76,7 +76,7 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             Query qry = getEntityManager().createQuery(
                     "select c "
                     + "  from Categoria c"
-                    + " where c.id not in (select cd.categoria.id from CategoriaDesconto cd where cd.servicos.id = :id)");
+                    + " where c.id not in (select cd.categoria.id from CategoriaDesconto cd where cd.servicoValor.servicos.id = :id)");
             qry.setParameter("id", idServicos);
             return (qry.getResultList());
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
     @Override
     public List pesquisaTodosPorServico(int idServicos) {
         try {
-            Query qry = getEntityManager().createQuery("select cd from CategoriaDesconto cd where cd.servicos.id = :id");
+            Query qry = getEntityManager().createQuery("select cd from CategoriaDesconto cd where cd.servicoValor.servicos.id = :id order by cd.categoria.categoria, cd.servicoValor.idadeIni");
             qry.setParameter("id", idServicos);
             return (qry.getResultList());
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             Query qry = getEntityManager().createQuery(
                     "select cd "
                     + "  from CategoriaDesconto cd "
-                    + " where cd.servicos.id = :idS"
+                    + " where cd.servicoValor.servicos.id = :idS"
                     + "   and cd.categoria.id = :idC");
             qry.setParameter("idS", idServicos);
             qry.setParameter("idC", idCategoria);
@@ -128,9 +128,10 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             return qry.getResultList();
         } catch (Exception e) {
             //e.getMessage();
-            return new ArrayList<CategoriaDescontoDependente>();
+            return new ArrayList();
         }
     }
+    
     @Override
     public CategoriaDescontoDependente pesquisaDescontoDependentePorCategoria(int id_parentesco, int id_categoria_desconto) {
         try {
@@ -149,4 +150,36 @@ public class CategoriaDescontoDBToplink extends DB implements CategoriaDescontoD
             return null;
         }
     }
+    
+    @Override
+    public List<CategoriaDesconto> listaCategoriaDescontoCategoriaServicoValor(int id_categoria, int id_servico_valor) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT cd.* " +
+                    "   FROM soc_categoria_desconto cd " +
+                    "  WHERE cd.id_categoria = " +id_categoria +
+                    "    AND cd.id_servico_valor = " + id_servico_valor, CategoriaDesconto.class
+            );
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            //e.getMessage();
+            return new ArrayList();
+        }
+    }    
+    
+    public List<CategoriaDesconto> listaCategoriaDescontoServicoValor(int id_servico_valor) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT cd.* " +
+                    "   FROM soc_categoria_desconto cd " +
+                    "  WHERE cd.id_servico_valor = " + id_servico_valor, CategoriaDesconto.class
+            );
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            //e.getMessage();
+            return new ArrayList();
+        }
+    }    
 }
