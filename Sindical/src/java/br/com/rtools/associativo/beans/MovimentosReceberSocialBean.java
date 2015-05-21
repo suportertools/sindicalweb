@@ -399,7 +399,8 @@ public class MovimentosReceberSocialBean implements Serializable {
         booAcrescimo = (booAcrescimo) ? false : true;
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
         for (DataObject linha : listaMovimento){
-            float[] valor = db.pesquisaValorAcrescimo((Integer)linha.getArgumento1());
+            //float[] valor = db.pesquisaValorAcrescimo((Integer)linha.getArgumento1());
+            float[] valor = db.pesquisaValorAcrescimo( ((Movimento)linha.getArgumento1()).getId() );
             if (!booAcrescimo){
                 linha.setArgumento29(false);
                 linha.setArgumento9(Moeda.converteR$Float(Moeda.subtracaoValores( Moeda.converteUS$(linha.getArgumento9().toString()), valor[0])));
@@ -414,7 +415,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     public void calculoAcrescimo(){
         
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
-        float[] valor = db.pesquisaValorAcrescimo((Integer)linhaSelecionada.getArgumento1());
+        float[] valor = db.pesquisaValorAcrescimo( ((Movimento)linhaSelecionada.getArgumento1()).getId() );
         if ((Boolean) linhaSelecionada.getArgumento29()){
             linhaSelecionada.setArgumento29(false);
             //linhaSelecionada.setArgumento7("0,00");
@@ -430,7 +431,8 @@ public class MovimentosReceberSocialBean implements Serializable {
     
     public String cadastroPessoa(DataObject linha, Pessoa pessoax){
         if (pessoax == null){
-            Movimento mov = (Movimento) new Dao().find(new Movimento(), (Integer) linha.getArgumento1());
+            //Movimento mov = (Movimento) new Dao().find(new Movimento(), (Integer) linha.getArgumento1());
+            Movimento mov = (Movimento) linha.getArgumento1();
             pessoax = mov.getBeneficiario();
         }
         
@@ -906,7 +908,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         for (DataObject listaMovimento1 : listaMovimento) {
             if ((Boolean) listaMovimento1.getArgumento0()) {
                 qnt++;
-                lm.add(db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento1.getArgumento1()))));
+                lm.add( (Movimento) listaMovimento1.getArgumento1() );
             }
         }
 
