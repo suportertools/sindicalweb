@@ -24,7 +24,7 @@
                         <h:panelGrid cellpadding="7" columns="2">
                             <p:outputLabel value="Tipo de Relatório: " />
                             <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioCertificadosBean.index[0]}" style="padding-right: 10px;">
-                                <p:ajax event="change" update="@this" global="false" />
+                                <p:ajax event="change" update="@this i_acoes" global="false" />
                                 <f:selectItems value="#{relatorioCertificadosBean.listaTipoRelatorios}"/>
                             </p:selectOneMenu>
                         </h:panelGrid>
@@ -190,9 +190,12 @@
                             </p:panel>
                         </h:column>
                     </h:panelGrid>
-                    <h:panelGrid columns="2">
+                    <h:panelGrid columns="2" id="i_acoes">
                         <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioCertificadosBean.visualizar()}" styleClass="margin-top-max" ajax="false"/>
                         <p:commandButton value="Não solicitaram certidões" icon="ui-icon-disk" title="Endereços - Não solicitaram certidões" action="#{relatorioCertificadosBean.export()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" />
+                        <p:selectBooleanCheckbox itemLabel="Exportar Excel" styleClass="margin-top-max" value="#{jasperBean.EXPORT_TO_EXCEL}" disabled="#{!relatorioCertificadosBean.relatorios.excel}">
+                            <p:ajax event="change" update="@this" />
+                        </p:selectBooleanCheckbox>                        
                     </h:panelGrid>
                 </h:form>
             </p:panel>

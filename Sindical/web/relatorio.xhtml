@@ -56,6 +56,12 @@
                                     </p:selectBooleanCheckbox>
                                     <h:outputLabel value="Nome Grupo:" />
                                     <p:inputText size="30" maxlength="100" value="#{relatorioBean.relatorio.nomeGrupo}" />
+                                    <h:column />
+                                    <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.excel}" itemLabel="Excel">
+                                        <p:ajax event="change" update="@this i_panel" />
+                                    </p:selectBooleanCheckbox>                                    
+                                    <h:outputLabel value="Campos excel:" rendered="#{relatorioBean.relatorio.excel}"/>
+                                    <p:inputTextarea maxlength="255" value="#{relatorioBean.relatorio.camposExcel}" rendered="#{relatorioBean.relatorio.excel}" placeholder="Delimitar com ; (ponto e virgula)" rows="5" cols="100"/>
                                 </h:panelGrid>
                             </p:panel>
 

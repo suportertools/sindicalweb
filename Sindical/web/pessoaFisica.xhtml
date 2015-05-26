@@ -100,7 +100,7 @@
                                                                 <p:ajax event="change" update="@this i_idade"  />
                                                             </p:calendar>
                                                         </p:column>
-                                                        
+
                                                         <p:column>
                                                             <br />
                                                             <p:outputLabel id="i_idade" value="#{fisicaBean.idade()}" style="font-weight: bold; font-size: 12pt!important"/>
@@ -538,7 +538,7 @@
                                             <p:column headerText="Serviço">
                                                 <p:outputLabel value="#{linha.argumento0[6]}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Valor" style="width: 80px; text-align: right">
                                                 <p:outputLabel value="#{fisicaBean.converteMoeda(linha.argumento0[7])}" />
                                             </p:column>
@@ -560,7 +560,7 @@
                                             <ui:param name="idPessoa" value="#{fisicaBean.fisica.pessoa.id}" />  
                                         </ui:include>
                                     </p:tab>
-                                    
+
                                     <p:tab title="Movimento">
                                         <p:outputLabel value="Lista de Movimentos" style="font-weight: bold"/>
                                         <br /><br />
@@ -574,7 +574,7 @@
                                                     <f:selectItem itemValue="beneficiario" itemLabel="Beneficiário"/>
                                                 </p:selectOneMenu>
                                             </p:column>
-                                            
+
                                             <p:column>
                                                 <p:outputLabel value="SITUAÇÃO" style="font-weight: bold"/><br />
                                                 <p:selectOneMenu value="#{fisicaBean.tipoStatusMovimento}" style="margin-right: 30px; padding-right: 20px">
@@ -585,7 +585,7 @@
                                                 </p:selectOneMenu>
                                             </p:column>
                                         </h:panelGrid>
-                                        
+
                                         <p:dataTable id="tbl_movimento" value="#{fisicaBean.listaMovimento}" var="linha" emptyMessage="Nenhum Movimento Encontrado" scrollable="true" scrollHeight="400">
                                             <p:column headerText="Responsável" style="text-align: center" rendered="#{fisicaBean.tipoPesquisaMovimento ne 'responsavel'}">
                                                 <p:outputLabel value="#{linha[1]}" />
@@ -721,9 +721,11 @@
                                     <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" action="#{fisicaBean.telaMovimentosReceberSocial}"/>
                                     <h:column>
                                         <h:panelGrid id="i_app_message" rendered="#{biometriaBean.openBiometria and fisicaBean.fisica.id != -1}" columns="3">
-                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" disabled="#{biometriaBean.biometria != null and !biometriaBean.biometria.ativo}"/>
-                                            <p:commandButton value="Leitor Biométrico" image="leitor-biometrico-off" rendered="#{!biometriaBean.status}" disabled="#{!biometriaBean.status}"  title="Offline" />
-                                            <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dl_delete_biometria').show()" style="color: red"/>
+                                            <h:column>
+                                                <p:commandButton value="Leitor Biométrico" icon="leitor-biometrico-on" rendered="#{biometriaBean.status}" title="Online" action="#{biometriaBean.gravar(fisicaBean.fisica.pessoa)}" onclick="PF('dlg_waiting_biometria').show()" update=":form_aplicativos:" immediate="true" />
+                                            </h:column>
+                                            <p:commandButton value="Leitor Biométrico" icon="leitor-biometrico-off" rendered="#{!biometriaBean.status}" disabled="#{!biometriaBean.status}"  title="Offline" />
+                                            <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dlg_delete_biometria').show()" style="color: red"/>
                                         </h:panelGrid>                                        
                                     </h:column>
                                 </h:panelGrid>              
@@ -775,10 +777,10 @@
                                 </p:dialog>
 
                                 <!-- EXCLUIR BIOMETRIA -->
-                                <p:dialog modal="true" width="400" widgetVar="dl_delete_biometria" closable="true" header="Deseja excluir esta biometria?">
+                                <p:dialog modal="true" width="400" widgetVar="dlg_delete_biometria" closable="true" header="Deseja excluir esta biometria?">
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Sim" title="Salvar" action="#{biometriaBean.delete(fisicaBean.fisica.pessoa)}" update="i_painel_mensagem, i_panel_pessoa_fisica" oncomplete="PF('dl_delete_biometria').hide(); PF('dlg_painel_mensagem').show();" />
-                                        <p:commandButton value="Não" title="Cancelar" oncomplete="PF('dl_delete_biometria').hide();"/>
+                                        <p:commandButton value="Sim" title="Salvar" action="#{biometriaBean.delete(fisicaBean.fisica.pessoa)}" update="i_painel_mensagem, i_panel_pessoa_fisica" oncomplete="PF('dlg_delete_biometria').hide(); PF('dlg_painel_mensagem').show();" />
+                                        <p:commandButton value="Não" title="Cancelar" oncomplete="PF('dlg_delete_biometria').hide();"/>
                                     </h:panelGrid>
                                 </p:dialog>
 
@@ -816,11 +818,14 @@
                                 <p:panel id="i_pesquisa_endereco" styleClass="no-border">                                    
                                     <ui:include src="templates/templatePesquisaEndereco.xhtml" />    
                                 </p:panel>
-                            </p:dialog>                           
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                     <h:form id="form_aplicativos">
-                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" />
+                        <p:dialog widgetVar="dlg_waiting_biometria" modal="true" resizable="false" header="Aguarde..." closable="false" visible="#{biometriaBean.disabled}">
+                            <h:outputLabel value="Não feche essa janela durante a operação. Caso apresente erros contate o administrador do sisteme ou reinicie o aplicativo da leitura." />
+                        </p:dialog>
+                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5"/>
                     </h:form>                    
                 </f:view>
 
