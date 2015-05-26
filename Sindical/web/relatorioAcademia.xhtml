@@ -23,7 +23,7 @@
                         <h:panelGrid  cellpadding="5" columns="2">
                             <p:outputLabel value="Tipo de Relatório: " />
                             <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioAcademiaBean.index[0]}" style="padding-right: 10px;">
-                                <p:ajax event="change" update="@this" global="false"/>
+                                <p:ajax event="change" update="@this i_btns" global="false"/>
                                 <f:selectItems value="#{relatorioAcademiaBean.listTipoRelatorios}"/>
                             </p:selectOneMenu>
                         </h:panelGrid>
@@ -191,6 +191,9 @@
                     </h:panelGrid>
                     <h:panelGrid columns="3" id="i_btns">
                         <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioAcademiaBean.print()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" />
+                        <p:selectBooleanCheckbox itemLabel="Exportar Excel" styleClass="margin-top-max" value="#{jasperBean.EXPORT_TO_EXCEL}" disabled="#{!relatorioAcademiaBean.relatorios.excel}">
+                            <p:ajax event="change" update="@this" />
+                        </p:selectBooleanCheckbox>
                     </h:panelGrid>                                                           
                 </h:form>                          
             </p:panel>

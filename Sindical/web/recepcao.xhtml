@@ -479,6 +479,11 @@
                                                 <h:outputLabel value="Razão Social" style="font-weight: bold"/><br />
                                                 <h:outputLabel value="#{recepcaoBean.agendamentoEdit.pessoaEmpresa.juridica.pessoa.nome}" />
                                             </h:column>
+                                            
+                                            <h:column>
+                                                <h:outputLabel value="Convenção" style="font-weight: bold" styleClass="margin-left-max"/><br />
+                                                <h:outputLabel value="#{recepcaoBean.agendamentoEdit.pessoaEmpresa.juridica.cnaeConvencao.convencao.descricao}" styleClass="margin-left-max" />
+                                            </h:column>
 
                                             <h:column rendered="#{recepcaoBean.agendamentoEdit.pessoaEmpresa.juridica.pessoa.telefone1 != '' or recepcaoBean.agendamentoEdit.pessoaEmpresa.juridica.pessoa.telefone2 != ''}">
                                                 <h:outputLabel value="Telefone" style="font-weight: bold; margin-left: 20px"/><br />

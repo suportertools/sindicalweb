@@ -37,7 +37,7 @@
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Agendamento de Homologação" styleClass="fonteHeader" />
                         <h:form id="formAgendamento">
-                            <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" delay="10" />
+                            <p:poll global="false" interval="#{agendamentoBean.configuracaoHomologacao.tempoRefreshAgendamento}" update="tbl" delay="10" stop="#{agendamentoBean.visibleModal}" autoStart="true"/>
                             <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
                             <h:panelGrid style="margin: 0 auto; width: 100%; clear: both">
                                 <p:panel styleClass="fundoCinza">
@@ -354,6 +354,13 @@
                                     </h:column>
                                 </h:panelGrid>
 
+                                <h:panelGrid columns="1">
+                                    <h:column>
+                                        <h:outputText value="Convenção" style="font-weight: bold"/><br />
+                                        <h:outputText value="#{agendamentoBean.juridica.cnaeConvencao.convencao.descricao}"/>
+                                    </h:column>
+                                </h:panelGrid>
+                                
                                 <h:panelGrid columns="1">
                                     <h:column>
                                         <h:outputText value="Endereço da Empresa" style="font-weight: bold"/><br />

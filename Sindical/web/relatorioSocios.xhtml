@@ -103,6 +103,9 @@
                                         <p:selectBooleanCheckbox value="#{jasperBean.IS_HEADER}" itemLabel="Com cabeçalho">
                                             <p:ajax event="change" update="@this" listener="#{jasperBean.setTYPE('paisagem')}" />
                                         </p:selectBooleanCheckbox>
+                                        <p:selectBooleanCheckbox itemLabel="Exportar Excel" value="#{jasperBean.EXPORT_TO_EXCEL}">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:selectBooleanCheckbox>                                        
                                     </h:panelGrid>
                                 </h:column>
 

@@ -260,6 +260,11 @@
                             </h:column>
 
                             <h:column>
+                                <h:outputText value="Convenção" style="font-weight: bold" styleClass="margin-left-max"/><br />
+                                <h:outputText value="#{homologacaoBean.juridica.cnaeConvencao.convencao.descricao}" styleClass="margin-left-max"/>
+                            </h:column>
+                            
+                            <h:column>
                                 <h:outputText value="Status" style="margin-left: 20px; font-weight: bold"/><br />
                                 <h:outputText value="#{homologacaoBean.statusEmpresa}" style="margin-left: 20px; #{homologacaoBean.statusEmpresa.equals('EM DÉBITO') ? 'color: red; font-weight: bold' : 'font-weight: bold'}"/>
                             </h:column>
