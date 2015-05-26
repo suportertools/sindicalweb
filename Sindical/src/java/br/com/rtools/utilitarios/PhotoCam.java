@@ -41,8 +41,8 @@ public class PhotoCam implements Serializable {
     private Boolean load;
     private String rotinaNome;
     private Boolean visible;
-    private Integer stop;    
-    private StreamedContent streamedContent;    
+    private Integer stop;
+    private StreamedContent streamedContent;
 
     @PostConstruct
     public void init() {
@@ -207,7 +207,7 @@ public class PhotoCam implements Serializable {
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
             int i = 0;
             FILE_PERMANENT = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
-                if (!f.exists()) {
+            if (!f.exists()) {
                 InputStream stream = this.getClass().getResourceAsStream(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT));
                 streamedContent = new DefaultStreamedContent(stream, "image/png");
                 while (!f.exists()) {
@@ -304,12 +304,16 @@ public class PhotoCam implements Serializable {
                 case "pessoaFisica":
                 case "matriculaAcademia":
                 case "usuario":
+                case "socios":
                     try {
-                        FisicaDB fisicaDB = new FisicaDBToplink();
-                        f = fisicaDB.pesquisaFisicaPorPessoa(Integer.parseInt(PATH_FILE.replace(".png", "")));
-                        f.setDtFoto(DataHoje.dataHoje());
-                        if (!dao.update(f, true)) {
-                            SUCCESS = false;
+                        Integer id = Integer.parseInt(PATH_FILE.replace(".png", ""));
+                        if (id != -1) {
+                            FisicaDB fisicaDB = new FisicaDBToplink();
+                            f = fisicaDB.pesquisaFisicaPorPessoa(id);
+                            f.setDtFoto(DataHoje.dataHoje());
+                            if (!dao.update(f, true)) {
+                                SUCCESS = false;
+                            }
                         }
                     } catch (Exception e) {
 
@@ -438,21 +442,20 @@ public class PhotoCam implements Serializable {
     public void setLoad(Boolean load) {
         this.load = load;
     }
-    
-      
-    public StreamedContent FileDocumentacaoController() {    
-        InputStream stream = this.getClass().getResourceAsStream("C:/teste/CeWolf.pdf");    
-        streamedContent = new DefaultStreamedContent(stream, "image/png");  
-          
-        return streamedContent;  
-    }    
-        
-    public StreamedContent getStreamedContent() {    
-        return streamedContent;    
-    }    
-    
-    public void setStreamedContent(StreamedContent streamedContent) {    
-        this.streamedContent = streamedContent;    
-    }     
+
+    public StreamedContent FileDocumentacaoController() {
+        InputStream stream = this.getClass().getResourceAsStream("C:/teste/CeWolf.pdf");
+        streamedContent = new DefaultStreamedContent(stream, "image/png");
+
+        return streamedContent;
+    }
+
+    public StreamedContent getStreamedContent() {
+        return streamedContent;
+    }
+
+    public void setStreamedContent(StreamedContent streamedContent) {
+        this.streamedContent = streamedContent;
+    }
 
 }
