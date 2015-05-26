@@ -72,6 +72,7 @@ public class RelatorioCertificadosBean implements Serializable {
     private String indexAccordion;
     private String ano;
     private String order;
+    private Relatorios relatorios;
 
     @PostConstruct
     public void init() {
@@ -120,12 +121,12 @@ public class RelatorioCertificadosBean implements Serializable {
     }
 
     public void visualizar() {
-        Relatorios relatorios = null;
+        Relatorios relatoriosx = null;
         if (!getListaTipoRelatorios().isEmpty()) {
             RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
-            relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
+            relatoriosx = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
         }
-        if (relatorios == null) {
+        if (relatoriosx == null) {
             return;
         }
         String detalheRelatorio = "";
@@ -245,7 +246,7 @@ public class RelatorioCertificadosBean implements Serializable {
 
                 }
             }
-            List list = relatorioCertificadosDao.find(relatorios, pEmpresa, tipoPeriodo, periodoString, inRepisStatus, inCertidaoTipo, inCidadeBase);
+            List list = relatorioCertificadosDao.find(relatoriosx, pEmpresa, tipoPeriodo, periodoString, inRepisStatus, inCertidaoTipo, inCidadeBase);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -301,7 +302,12 @@ public class RelatorioCertificadosBean implements Serializable {
         }
         Jasper.IS_HEADER = true;
         Jasper.TYPE = "paisagem";
-        Jasper.printReports(relatorios.getJasper(), "certificados", (Collection) listParametroCertificados);
+        if (relatoriosx.getExcel()) {
+            Jasper.EXCEL_FIELDS = relatoriosx.getCamposExcel();
+        } else {
+            Jasper.EXCEL_FIELDS = "";
+        }
+        Jasper.printReports(relatoriosx.getJasper(), "certificados", (Collection) listParametroCertificados);
     }
 
     public void export() throws FileNotFoundException, IOException {
@@ -837,6 +843,19 @@ public class RelatorioCertificadosBean implements Serializable {
             }
         }
 
+    }
+
+    public Relatorios getRelatorios() {
+        try {
+            if (relatorios.getId() != index[0]) {
+                Jasper.EXPORT_TO_EXCEL = false;
+            }
+            relatorios = (Relatorios) new Dao().find(new Relatorios(), index[0]);
+        } catch (Exception e) {
+            relatorios = new Relatorios();
+            Jasper.EXPORT_TO_EXCEL = false;
+        }
+        return relatorios;
     }
 
 }

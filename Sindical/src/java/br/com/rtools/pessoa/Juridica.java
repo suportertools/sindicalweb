@@ -1,5 +1,8 @@
 package br.com.rtools.pessoa;
 
+import br.com.rtools.arrecadacao.CnaeConvencao;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
 import java.util.Date;
@@ -294,5 +297,14 @@ public class Juridica implements Serializable {
     @Override
     public String toString() {
         return "Juridica{" + "id=" + id + ", pessoa=" + pessoa + ", fantasia=" + fantasia + ", cnae=" + cnae + ", contabilidade=" + contabilidade + ", inscricaoEstadual=" + inscricaoEstadual + ", inscricaoMunicipal=" + inscricaoMunicipal + ", contato=" + contato + ", responsavel=" + responsavel + ", porte=" + porte + ", dtAbertura=" + dtAbertura + ", dtFechamento=" + dtFechamento + ", emailEscritorio=" + emailEscritorio + ", cobrancaEscritorio=" + cobrancaEscritorio + '}';
+    }
+
+    public CnaeConvencao getCnaeConvencao() {
+        CnaeConvencaoDB dB = new CnaeConvencaoDBToplink();
+        CnaeConvencao cnaeConvencao = dB.pesquisaCnaeComConvencao(cnae.getId());
+        if (cnaeConvencao != null) {
+            return cnaeConvencao;
+        }
+        return null;
     }
 }

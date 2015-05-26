@@ -1,18 +1,46 @@
 package br.com.rtools.impressao;
 
+import javax.persistence.Column;
+
+/**
+ *
+ * @author rtools2
+ */
 public class ParametroAcademiaCadastral {
 
     private String detalhes_relatorio;
+    @Column(name = "Aluno")
     private String aluno_nome;
+    @Column(name = "Idade")
     private String aluno_idade;
+    @Column(name = "Nascimento")
     private String aluno_nascimento;
+    @Column(name = "Sexo")
     private String aluno_sexo;
+    @Column(name = "Cidade")
     private String aluno_cidade;
+    @Column(name = "Serviço")
     private String servico;
+    @Column(name = "Período")
     private String periodo;
+    @Column(name = "Responsável")
     private String responsavel_nome;
+    @Column(name = "Emissão")
     private String emissao;
 
+    /**
+     *
+     * @param detalhes_relatorio
+     * @param aluno_nome
+     * @param aluno_idade
+     * @param aluno_nascimento
+     * @param aluno_sexo
+     * @param aluno_cidade
+     * @param servico
+     * @param periodo
+     * @param responsavel_nome
+     * @param emissao
+     */
     public ParametroAcademiaCadastral(String detalhes_relatorio, String aluno_nome, String aluno_idade, String aluno_nascimento, String aluno_sexo, String aluno_cidade, String servico, String periodo, String responsavel_nome, String emissao) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.aluno_nome = aluno_nome;
@@ -26,10 +54,18 @@ public class ParametroAcademiaCadastral {
         this.emissao = emissao;
     }
 
+    /**
+     * Nome
+     *
+     * @see aaaa
+     * @return
+     */
+    // ALUNO
     public String getAluno_nome() {
         return aluno_nome;
     }
 
+    // ALUNO
     public void setAluno_nome(String aluno_nome) {
         this.aluno_nome = aluno_nome;
     }

@@ -1458,6 +1458,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String getPorPesquisa() {
         return porPesquisa;
     }
+
     public String getDescPesquisa() {
         if (porPesquisa.equals("matricula")) {
             try {
@@ -1472,7 +1473,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setDescPesquisa(String descPesquisa) {
         this.descPesquisa = descPesquisa;
     }
-
 
     public PessoaProfissao getPessoaProfissao() {
         return pessoaProfissao;
@@ -1779,6 +1779,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void accordion(TabChangeEvent event) {
         indexPessoaFisica = ((TabView) event.getComponent()).getActiveIndex();
+
+        if (indexPessoaFisica == 3) {
+            listaServicoPessoa.clear();
+        }
 
         if (indexPessoaFisica == 5) {
             loadListaMovimento();

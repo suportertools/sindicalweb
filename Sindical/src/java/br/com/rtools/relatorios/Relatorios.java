@@ -26,7 +26,11 @@ public class Relatorios implements java.io.Serializable {
     @Column(name = "is_por_folha")
     private Boolean porFolha;
     @Column(name = "ds_nome_grupo", length = 100)
-    private String nomeGrupo;    
+    private String nomeGrupo;
+    @Column(name = "is_excel")
+    private Boolean excel;
+    @Column(name = "ds_campos_excel", length = 255)
+    private String camposExcel;
 
     public Relatorios() {
         this.id = -1;
@@ -37,9 +41,11 @@ public class Relatorios implements java.io.Serializable {
         this.qryOrdem = "";
         this.porFolha = false;
         this.nomeGrupo = "";
+        this.excel = false;
+        this.camposExcel = "";
     }
 
-    public Relatorios(int id, Rotina rotina, String nome, String jasper, String qry, String qryOrdem, Boolean porFolha, String nomeGrupo) {
+    public Relatorios(int id, Rotina rotina, String nome, String jasper, String qry, String qryOrdem, Boolean porFolha, String nomeGrupo, Boolean excel, String camposExcel) {
         this.id = -1;
         this.rotina = rotina;
         this.nome = nome;
@@ -48,6 +54,8 @@ public class Relatorios implements java.io.Serializable {
         this.qryOrdem = qryOrdem;
         this.porFolha = porFolha;
         this.nomeGrupo = nomeGrupo;
+        this.excel = excel;
+        this.camposExcel = camposExcel;
     }
 
     public int getId() {
@@ -112,5 +120,21 @@ public class Relatorios implements java.io.Serializable {
 
     public void setNomeGrupo(String nomeGrupo) {
         this.nomeGrupo = nomeGrupo;
+    }
+
+    public Boolean getExcel() {
+        return excel;
+    }
+
+    public void setExcel(Boolean excel) {
+        this.excel = excel;
+    }
+
+    public String getCamposExcel() {
+        return camposExcel;
+    }
+
+    public void setCamposExcel(String camposExcel) {
+        this.camposExcel = camposExcel;
     }
 }

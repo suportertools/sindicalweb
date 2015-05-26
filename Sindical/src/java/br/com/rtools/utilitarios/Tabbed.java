@@ -17,10 +17,13 @@ import org.primefaces.event.TabCloseEvent;
 public class Tabbed {
 
     private String title;
+    private String activeIndex;
+    private Boolean dinamic;
 
     @PostConstruct
     public void init() {
         title = "";
+        activeIndex = "";
     }
 
     @PreDestroy
@@ -42,5 +45,13 @@ public class Tabbed {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getActiveIndex() {
+        return activeIndex;
+    }
+
+    public void setActiveIndex(String activeIndex) {
+        this.activeIndex = activeIndex;
     }
 }
