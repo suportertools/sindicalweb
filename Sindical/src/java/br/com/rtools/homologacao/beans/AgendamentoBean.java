@@ -1,7 +1,10 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.arrecadacao.Oposicao;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
+import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.endereco.Endereco;

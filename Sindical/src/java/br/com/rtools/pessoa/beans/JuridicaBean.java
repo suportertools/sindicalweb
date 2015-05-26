@@ -803,7 +803,12 @@ public class JuridicaBean implements Serializable {
         juridica = j;
         if (!completo) {
             if (url != null && !url.isEmpty() && !url.equals("pessoaJuridica")) {
-                GenericaSessao.remove("juridicaBean");
+                switch (url) {
+                    case "agendamento":
+                        break;
+                    default:
+                        GenericaSessao.remove("juridicaBean");
+                }
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
                 return url;
             }

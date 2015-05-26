@@ -702,7 +702,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 + "       sp.ds_ref_vigoracao AS referencia_vigoracao, \n"
                 + "       sp.ds_ref_validade AS referencia_validade, \n"
                 + "       s.ds_descricao AS descricao, \n"
-                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, null) AS valor \n"
+                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, " + id_categoria + ") AS valor \n"
                 + "  FROM fin_servico_pessoa sp \n"
                 + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n"
                 + " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n"

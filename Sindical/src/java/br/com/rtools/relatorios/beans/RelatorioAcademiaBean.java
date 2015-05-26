@@ -2,7 +2,6 @@ package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.dao.AcademiaDao;
-import br.com.rtools.arrecadacao.dao.RaisDao;
 import br.com.rtools.impressao.ParametroAcademiaCadastral;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
@@ -17,6 +16,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.PF;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ public class RelatorioAcademiaBean implements Serializable {
     private String indexAccordion;
     private String order;
     private String sexo;
+    private Relatorios relatorios;
 
     @PostConstruct
     public void init() {
@@ -81,6 +82,7 @@ public class RelatorioAcademiaBean implements Serializable {
         responsavel = new Pessoa();
         sexo = "";
         tipo = "todos";
+        Jasper.EXPORT_TO_EXCEL = false;
     }
 
     @PreDestroy
@@ -92,11 +94,11 @@ public class RelatorioAcademiaBean implements Serializable {
         GenericaSessao.remove("tipoPesquisaPessoaJuridica");
     }
 
-    public void print() {
+    public void print() throws FileNotFoundException {
         print(0);
     }
 
-    public void print(int tcase) {
+    public void print(int tcase) throws FileNotFoundException {
         Relatorios relatorios = null;
         if (!getListTipoRelatorios().isEmpty()) {
             RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
@@ -202,8 +204,15 @@ public class RelatorioAcademiaBean implements Serializable {
             pacs.add(pac);
         }
         if (!pacs.isEmpty()) {
+            if (relatorios.getExcel()) {
+                Jasper.EXCEL_FIELDS = relatorios.getCamposExcel();
+            } else {
+                Jasper.EXCEL_FIELDS = "";
+            }
             Jasper.printReports(relatorios.getJasper(), "academia", (Collection) pacs);
+
         }
+
     }
 
     public List<SelectItem> getListTipoRelatorios() {
@@ -211,6 +220,9 @@ public class RelatorioAcademiaBean implements Serializable {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(275);
             for (int i = 0; i < list.size(); i++) {
+                if(i == 0) {
+                    index[0] = list.get(i).getId();
+                }
                 listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
             }
             if (listSelectItem[0].isEmpty()) {
@@ -512,5 +524,18 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public void setSelectedPeriodos(List selectedPeriodos) {
         this.selectedPeriodos = selectedPeriodos;
+    }
+
+    public Relatorios getRelatorios() {
+        try {
+            if(relatorios.getId() != index[0]) {
+                Jasper.EXPORT_TO_EXCEL = false;                
+            }
+            relatorios = (Relatorios) new Dao().find(new Relatorios(), index[0]);
+        } catch (Exception e) {
+            relatorios = new Relatorios();
+            Jasper.EXPORT_TO_EXCEL = false;
+        }
+        return relatorios;
     }
 }

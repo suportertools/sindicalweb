@@ -3,6 +3,7 @@ package br.com.rtools.seguranca.controleUsuario;
 import br.com.rtools.associativo.ConfiguracaoSocial;
 import br.com.rtools.associativo.beans.ConfiguracaoSocialBean;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.*;
@@ -20,6 +21,9 @@ import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -67,12 +71,51 @@ public class ControleUsuarioBean implements Serializable {
         }
     }
 
-    public String validacao() throws Exception {
-        String pagina = null;
+    public boolean block() throws Exception {
         String nomeCliente = null;
         if (GenericaSessao.exists("sessaoCliente")) {
             nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
         }
+        if (nomeCliente == null) {
+            return true;
+        }
+        if (nomeCliente.equals("Rtools") || nomeCliente.equals("Sindical") || nomeCliente.equals("ComercioLimeira")) {
+            return true;
+        }
+        ResultSet rs;
+        PreparedStatement ps;
+        DBExternal dBExternal = new DBExternal();
+        try {
+            ps = dBExternal.getConnection().prepareStatement(
+                    "   SELECT *                    "
+                    + "   FROM sis_configuracao     "
+                    + "  WHERE ds_identifica = ?    "
+                    + "  LIMIT 1                    "
+            );
+            ps.setString(1, nomeCliente);
+            rs = ps.executeQuery();
+            if(!rs.next()) {
+                return true;
+            }
+            while (rs.next()) {
+                Boolean ativo = Boolean.parseBoolean(rs.getString("is_ativo"));
+                if (ativo) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.getMessage();
+            return true;
+        }
+        return false;
+    }
+
+    public String validacao() throws Exception {
+        if (!block()) {
+            GenericaMensagem.warn("Sistema. Entre em contato com nosso suporte técnico. (16) 3964-6117", "Entre em contato com nosso suporte técnico.");
+            return null;
+        }
+        String pagina = null;
         NovoLog log = new NovoLog();
         if (macFilial != null) {
             Object objs[] = new Object[2];
@@ -87,7 +130,7 @@ public class ControleUsuarioBean implements Serializable {
                 filial += " - " + macFilial.getDescricao();
             }
             if (macFilial.getCaixa() != null) {
-                if(macFilial.getCaixa().getCaixa() > 0) {
+                if (macFilial.getCaixa().getCaixa() > 0) {
                     filial += " - Caixa: " + macFilial.getCaixa().getCaixa();
                 }
             }
