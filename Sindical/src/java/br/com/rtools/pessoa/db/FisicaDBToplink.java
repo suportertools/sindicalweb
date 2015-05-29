@@ -735,7 +735,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         try {
             Query query = getEntityManager().createQuery("SELECT F FROM Fisica AS F WHERE UPPER(F.pessoa.nome) LIKE :nome AND F.dtNascimento = :nascimento");
             query.setParameter("nascimento", nascimento);
-            query.setParameter("nome", nome);
+            query.setParameter("nome", nome.trim());
             List list = query.getResultList();
             if (!list.isEmpty() && list.size() == 1) {
                 return (Fisica) query.getSingleResult();
@@ -748,7 +748,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     @Override
     public List<Vector> listaMovimentoFisica(Integer id_pessoa, String status, String tipo_pesquisa) {
         String text
-                = " SELECT m.id, pr.ds_nome, pt.ds_nome, pb.ds_nome, m.ds_referencia, m.dt_vencimento, s.ds_descricao, ts.ds_descricao, func_valor(m.id) as valor, b.dt_baixa \n "
+                = " SELECT m.id, pr.ds_nome, pt.ds_nome, pb.ds_nome, m.ds_referencia, m.dt_vencimento, s.ds_descricao, ts.ds_descricao, func_valor(m.id) as valor, b.dt_baixa, m.ds_documento, pu.ds_nome as nome_usuario, mi.ds_historico, mi.dt_data \n "
                 + "   FROM fin_movimento m "
                 + "  INNER JOIN pes_pessoa pr ON pr.id = m.id_pessoa \n "
                 + "  INNER JOIN pes_pessoa pt ON pt.id = m.id_titular \n "
@@ -756,7 +756,10 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 + "  INNER JOIN fin_servicos s ON s.id = m.id_servicos \n "
                 + "  INNER JOIN fin_tipo_servico ts ON ts.id = m.id_tipo_servico \n "
                 + "   LEFT JOIN fin_baixa b ON b.id = m.id_baixa \n "
-                + "  WHERE m.is_ativo = true ";
+                + "   LEFT JOIN fin_movimento_inativo mi ON mi.id_movimento = m.id \n "
+                + "   LEFT JOIN seg_usuario u ON u.id = mi.id_usuario \n "
+                + "   LEFT JOIN pes_pessoa pu ON pu.id = u.id_pessoa \n "
+                + ((!status.equals("excluidos")) ? "  WHERE m.is_ativo = true " : " WHERE m.is_ativo = false ");
         String and = "";
 
         switch (tipo_pesquisa) {

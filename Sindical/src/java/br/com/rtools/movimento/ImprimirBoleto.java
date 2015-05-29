@@ -1807,54 +1807,56 @@ public class ImprimirBoleto {
 
                 int qntItens = 0;
                 for (int w = 0; w < lista_socio.size(); w++) {
-                    qntItens++;
-                    float valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
-                    lista.add(new ParametroBoletoSocial(
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO SINDICATO
-                            filial.getFilial().getPessoa().getNome(),
-                            lista_socio.get(w).get(5).toString(), // CODIGO
-                            lista_socio.get(w).get(6).toString(), // RESPONSAVEL
-                            boleto.getVencimento(), // VENCIMENTO
-                            (lista_socio.get(w).get(8) == null) ? "" : lista_socio.get(w).get(8).toString(), // MATRICULA
-                            (lista_socio.get(w).get(10) == null) ? "" : lista_socio.get(w).get(10).toString(), // CATEGORIA
-                            (lista_socio.get(w).get(9) == null) ? "" : lista_socio.get(w).get(9).toString(), // GRUPO
-                            lista_socio.get(w).get(12).toString(), // CODIGO BENEFICIARIO
-                            lista_socio.get(w).get(13).toString(), // BENEFICIARIO
-                            lista_socio.get(w).get(11).toString(), // SERVICO
-                            Moeda.converteR$Float(valor), // VALOR
-                            Moeda.converteR$Float(valor_total), // VALOR TOTAL
-                            //Moeda.converteR$(lista_socio.get(w).get(15).toString()), // VALOR ATRASADAS
-                            Moeda.converteR$Float(valor_total_atrasadas), // VALOR ATRASADAS
-                            Moeda.converteR$Float(Moeda.somaValores(valor_total, valor_total_atrasadas)), // VALOR ATÉ VENCIMENTO
-                            file_promo == null ? null : file_promo.getAbsolutePath(), // LOGO PROMOÇÃO
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(boleto.getContaCobranca().getContaBanco().getBanco().getLogo().trim()), // LOGO BANCO
-                            lista_socio.get(w).get(16).toString(), // MENSAGEM
-                            lista_socio.get(w).get(18).toString(), // AGENCIA
-                            cobranca.representacao(), // REPRESENTACAO
-                            lista_socio.get(w).get(19).toString(), // CODIGO CEDENTE
-                            lista_socio.get(w).get(20).toString(), // NOSSO NUMENTO
-                            DataHoje.converteData((Date) lista_socio.get(w).get(4)), // PROCESSAMENTO
-                            cobranca.codigoBarras(), // CODIGO DE BARRAS
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/serrilha.GIF"), // SERRILHA
-                            lista_socio.get(w).get(31).toString() + " " + lista_socio.get(w).get(32).toString(), // ENDERECO RESPONSAVEL
-                            lista_socio.get(w).get(26).toString() + " " + lista_socio.get(w).get(27).toString(), // ENDERECO FILIAL
-                            lista_socio.get(w).get(35).toString() + " " + lista_socio.get(w).get(34).toString() + " " + lista_socio.get(w).get(33).toString(), // COMPLEMENTO RESPONSAVEL
-                            lista_socio.get(w).get(28).toString() + " - " + lista_socio.get(w).get(29).toString() + " " + lista_socio.get(w).get(30).toString(), // COMPLEMENTO FILIAL
-                            lista_socio.get(w).get(24).toString(), // CNPJ FILIAL
-                            lista_socio.get(w).get(25).toString(), // TELEFONE FILIAL
-                            lista_socio.get(w).get(21).toString(), // EMAIL FILIAL
-                            lista_socio.get(w).get(23).toString(), // SITE FILIAL
-                            file_promo_verso == null ? null : file_promo_verso.getAbsolutePath(), // LOGO BOLETO VERSO SOCIAL
-                            lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
-                            lista_socio.get(w).get(36).toString(), // INFORMATIVO
-                            pessoa.getTipoDocumento().getDescricao() + ": " + pessoa.getDocumento(),
-                            //String.valueOf(lista_socio.size()), // QUANTIDADE DE ITENS PARA MOSTRAR OS ATRASADOS TAMBEḾ
-                            String.valueOf(qntItens), // QUANTIDADE DE ITENS
-                            boleto.getContaCobranca().getContaBanco().getBanco().getNumero(),
-                            mensagemAtrasadas,
-                            boleto.getVencimento().substring(3), // VENCIMENTO SERVIÇO
-                            contabilidade // CONTABILIDADE DA PESSOA JURÍDICA
-                    ));
+                    if (DataHoje.maiorData(DataHoje.converteData((Date) lista_socio.get(w).get(38)), "01/"+DataHoje.converteData((Date) lista_socio.get(w).get(40)).substring(3))) {
+                        qntItens++; 
+                        float valor = Moeda.converteUS$(lista_socio.get(w).get(14).toString());
+                        lista.add(new ParametroBoletoSocial(
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO SINDICATO
+                                filial.getFilial().getPessoa().getNome(),
+                                lista_socio.get(w).get(5).toString(), // CODIGO
+                                lista_socio.get(w).get(6).toString(), // RESPONSAVEL
+                                boleto.getVencimento(), // VENCIMENTO
+                                (lista_socio.get(w).get(8) == null) ? "" : lista_socio.get(w).get(8).toString(), // MATRICULA
+                                (lista_socio.get(w).get(10) == null) ? "" : lista_socio.get(w).get(10).toString(), // CATEGORIA
+                                (lista_socio.get(w).get(9) == null) ? "" : lista_socio.get(w).get(9).toString(), // GRUPO
+                                lista_socio.get(w).get(12).toString(), // CODIGO BENEFICIARIO
+                                lista_socio.get(w).get(13).toString(), // BENEFICIARIO
+                                lista_socio.get(w).get(11).toString(), // SERVICO
+                                Moeda.converteR$Float(valor), // VALOR
+                                Moeda.converteR$Float(valor_total), // VALOR TOTAL
+                                //Moeda.converteR$(lista_socio.get(w).get(15).toString()), // VALOR ATRASADAS
+                                Moeda.converteR$Float(valor_total_atrasadas), // VALOR ATRASADAS
+                                Moeda.converteR$Float(Moeda.somaValores(valor_total, valor_total_atrasadas)), // VALOR ATÉ VENCIMENTO
+                                file_promo == null ? null : file_promo.getAbsolutePath(), // LOGO PROMOÇÃO
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(boleto.getContaCobranca().getContaBanco().getBanco().getLogo().trim()), // LOGO BANCO
+                                lista_socio.get(w).get(16).toString(), // MENSAGEM
+                                lista_socio.get(w).get(18).toString(), // AGENCIA
+                                cobranca.representacao(), // REPRESENTACAO
+                                lista_socio.get(w).get(19).toString(), // CODIGO CEDENTE
+                                lista_socio.get(w).get(20).toString(), // NOSSO NUMENTO
+                                DataHoje.converteData((Date) lista_socio.get(w).get(4)), // PROCESSAMENTO
+                                cobranca.codigoBarras(), // CODIGO DE BARRAS
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/serrilha.GIF"), // SERRILHA
+                                lista_socio.get(w).get(31).toString() + " " + lista_socio.get(w).get(32).toString(), // ENDERECO RESPONSAVEL
+                                lista_socio.get(w).get(26).toString() + " " + lista_socio.get(w).get(27).toString(), // ENDERECO FILIAL
+                                lista_socio.get(w).get(35).toString() + " " + lista_socio.get(w).get(34).toString() + " " + lista_socio.get(w).get(33).toString(), // COMPLEMENTO RESPONSAVEL
+                                lista_socio.get(w).get(28).toString() + " - " + lista_socio.get(w).get(29).toString() + " " + lista_socio.get(w).get(30).toString(), // COMPLEMENTO FILIAL
+                                lista_socio.get(w).get(24).toString(), // CNPJ FILIAL
+                                lista_socio.get(w).get(25).toString(), // TELEFONE FILIAL
+                                lista_socio.get(w).get(21).toString(), // EMAIL FILIAL
+                                lista_socio.get(w).get(23).toString(), // SITE FILIAL
+                                file_promo_verso == null ? null : file_promo_verso.getAbsolutePath(), // LOGO BOLETO VERSO SOCIAL
+                                lista_socio.get(w).get(37).toString(), // LOCAL DE PAGAMENTO
+                                lista_socio.get(w).get(36).toString(), // INFORMATIVO
+                                pessoa.getTipoDocumento().getDescricao() + ": " + pessoa.getDocumento(),
+                                //String.valueOf(lista_socio.size()), // QUANTIDADE DE ITENS PARA MOSTRAR OS ATRASADOS TAMBEḾ
+                                String.valueOf(qntItens), // QUANTIDADE DE ITENS
+                                boleto.getContaCobranca().getContaBanco().getBanco().getNumero(),
+                                mensagemAtrasadas,
+                                boleto.getVencimento().substring(3), // VENCIMENTO SERVIÇO
+                                contabilidade // CONTABILIDADE DA PESSOA JURÍDICA
+                        ));
+                    }
                 }
 
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);

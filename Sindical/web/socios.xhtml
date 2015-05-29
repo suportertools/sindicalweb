@@ -128,18 +128,10 @@
 
                                 <p:column>
                                     <br />      
-                                    <p:selectOneMenu value="#{sociosBean.index_desconto}" style="width: 125px">
+                                    <p:selectOneMenu value="#{sociosBean.index_desconto}" style="padding-right: 20px">
                                         <p:ajax event="change" update="@this i_panel_servicos" global="false" listener="#{sociosBean.selecionarDesconto(null)}"/>
                                         <f:selectItems value="#{sociosBean.listaDescontoSocial}"/>
                                     </p:selectOneMenu>
-
-                                    <p:splitButton value="#{sociosBean.descontoSocial.descricao}" icon="ui-icon-star" update="@this" resetValues="true" partialSubmit="true" rendered="false">
-                                        <c:forEach items="#{sociosBean.listaDescontoSocial}" var="linha" rendered="false">
-                                            <p:menuitem value="#{linha.descricao}" actionListener="#{sociosBean.selecionarDesconto(linha)}" update="i_panel_servicos"/>
-                                        </c:forEach>
-                                        <p:separator /> 
-                                        <p:menuitem value="Novo Desconto" actionListener="#{sociosBean.clickSalvarDesconto()}" disabled="#{controleAcessoBean.botaoDescontoSocial}"/>
-                                    </p:splitButton>   
                                 </p:column>
 
                                 <p:column>
@@ -408,6 +400,9 @@
                                         </p:column>
                                         <p:column headerText="Nome">
                                             <h:outputLabel value="#{listDependentesInativos.fisica.pessoa.nome}" />
+                                        </p:column>
+                                        <p:column headerText="Parentesco">
+                                            <h:outputLabel value="#{listDependentesInativos.parentescoString}" />
                                         </p:column>
                                         <p:column headerText="Validade Dependente" style="text-align: center" width="150">
                                             <p:inputMask id="i_validade_dependente_inativo" value="#{listDependentesInativos.validadeDependente}" size="5" mask="99/9999"/>

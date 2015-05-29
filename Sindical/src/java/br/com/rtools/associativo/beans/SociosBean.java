@@ -414,32 +414,83 @@ public class SociosBean implements Serializable {
 
     public void calculoDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        servicoPessoa.setNrDescontoString(Moeda.percentualDoValor(valorx, valorServico));
+        String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
+        
+        if (Moeda.converteUS$(valorServico) == Moeda.converteUS$(valorx))
+            servicoPessoa.setNrDescontoString("0.0");
+        else{
+            float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valorServico));
+            valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+            servicoPessoa.setNrDescontoString(Moeda.converteR$Float(valorx_c));
+        }
     }
 
     public void calculoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        valorServico = Moeda.valorDoPercentual(valorx, servicoPessoa.getNrDescontoString());
+        String valorx;
+        if (servicoPessoa.getNrDesconto() == 0)
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        else{
+            float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
+            
+            float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(servicoPessoa.getNrDesconto(), valorx_c), 100);
+            valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+        }
+        
+        valorServico = Moeda.converteR$(valorx);
     }
 
     public void calculoNovoDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        novoDescontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, novoValorServico));
+        String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
+        
+        if (Moeda.converteUS$(novoValorServico) == Moeda.converteUS$(valorx))
+            novoDescontoSocial.setNrDescontoString("0.0");
+        else{
+            float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(novoValorServico));
+            valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+            novoDescontoSocial.setNrDescontoString(Moeda.converteR$Float(valorx_c));
+        }
     }
 
     public void calculoNovoValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        novoValorServico = Moeda.valorDoPercentual(valorx, novoDescontoSocial.getNrDescontoString());
+        String valorx;
+        if (novoDescontoSocial.getNrDesconto() == 0)
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        else{
+            float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
+            
+            float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(novoDescontoSocial.getNrDesconto(), valorx_c), 100);
+            valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+        }
+        
+        novoValorServico = Moeda.converteR$(valorx); 
     }
 
     public void calculoAlterarDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        descontoSocial.setNrDescontoString(Moeda.percentualDoValor(valorx, alteraValorServico));
+        String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
+        
+        if (Moeda.converteUS$(alteraValorServico) == Moeda.converteUS$(valorx))
+            descontoSocial.setNrDescontoString("0.0");
+        else{
+            float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(alteraValorServico));
+            valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+            descontoSocial.setNrDescontoString(Moeda.converteR$Float(valorx_c));
+        }
     }
 
     public void calculoAlterarValor() {
-        String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        alteraValorServico = Moeda.valorDoPercentual(valorx, descontoSocial.getNrDescontoString());
+        String valorx;
+        if (descontoSocial.getNrDesconto() == 0)
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
+        else{
+            float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
+            
+            float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(descontoSocial.getNrDesconto(), valorx_c), 100);
+            valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+        }
+        
+        alteraValorServico = Moeda.converteR$(valorx);
     }
 
     public void alterarDesconto() {
@@ -1418,6 +1469,8 @@ public class SociosBean implements Serializable {
             novoDependente.setDtFoto(null);
         }
 
+        novoDependente.getPessoa().setNome(novoDependente.getPessoa().getNome().trim());
+        
         if (novoDependente.getId() == -1) {
             novoDependente.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             dao.openTransaction();
@@ -1465,14 +1518,14 @@ public class SociosBean implements Serializable {
     public boolean validaSalvarDependente() {
         FisicaDB db = new FisicaDBToplink();
         if (novoDependente.getId() == -1) {
-            if (!db.pesquisaFisicaPorNomeNascRG(novoDependente.getPessoa().getNome(),
+            if (!db.pesquisaFisicaPorNomeNascRG(novoDependente.getPessoa().getNome().trim(),
                     novoDependente.getDtNascimento(),
                     novoDependente.getRg()).isEmpty()) {
                 GenericaMensagem.error("Erro", "Esta pessoa já esta Cadastrada!");
                 return false;
             }
 
-            if (novoDependente.getPessoa().getDocumento().equals("") || novoDependente.getPessoa().getDocumento().equals("0")) {
+            if (novoDependente.getPessoa().getDocumento().isEmpty() || novoDependente.getPessoa().getDocumento().equals("0")) {
                 novoDependente.getPessoa().setDocumento("0");
             } else {
                 List listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());

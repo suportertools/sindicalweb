@@ -24,6 +24,8 @@ public interface FunctionsDB {
      * @return float valor
      */
     public float valorServico(int idPessoa, int idServico, Date date, int tipo, Integer id_categoria);
+    
+    public float valorServicoCheio(int idPessoa, int idServico, Date date);
 
     /**
      * Retorna a idade da pessoa

@@ -12,10 +12,16 @@ import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.ServicoPessoa;
+import br.com.rtools.financeiro.dao.ServicoPessoaDao;
+import br.com.rtools.financeiro.db.MovimentoDB;
+import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
@@ -137,7 +143,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     private List<Vector> listaMovimento = new ArrayList();
     private String tipoStatusMovimento = "abertos";
-    private String tipoPesquisaMovimento = "responsavel";
+    private String tipoPesquisaMovimento = "beneficiario";
 
     @PostConstruct
     public void init() {
@@ -147,6 +153,68 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void destroy() {
 
     }
+    
+
+    public String refazerMovimentos() {
+        if (listaMovimento.isEmpty()) {
+            GenericaMensagem.warn("Atenção", "Não existem Movimentos para serem refeitos!");
+            return null;
+        }
+
+        MovimentoDB db = new MovimentoDBToplink();
+        int qnt = 0;
+
+        List<Movimento> lm = new ArrayList();
+        
+        for (Vector listaMovimento1 : listaMovimento) {
+            //if ((Boolean) listaMovimento1.getArgumento0()) {
+                qnt++;
+                lm.add( (Movimento) new Dao().find(new Movimento(), listaMovimento1.get(0)) );
+            //}
+        }
+
+        if (qnt == 0) {
+            GenericaMensagem.warn("Atenção", "Nenhum Movimentos selecionado!");
+            return null;
+        }
+
+        for(Movimento m : lm){
+            if (m.getBaixa() != null){
+                GenericaMensagem.warn("Atenção", "Boletos pagos não podem ser refeitos!");
+                return null;
+            }
+        }
+                
+        ServicoPessoaDao spd = new ServicoPessoaDao();
+        for(Movimento m : lm){
+            ServicoPessoa sp = spd.pesquisaServicoPessoa(m.getBeneficiario().getId(), m.getServicos().getId(), true);
+            
+            if(sp == null){
+                GenericaMensagem.warn("Atenção", "O SERVIÇO "+m.getServicos().getDescricao() + " para a PESSOA "+ m.getBeneficiario().getNome()+" não pode ser refeito!");
+                return null;
+            }
+        }
+        
+//      PERMISSÃO DE ACESSO
+//        ControleAcessoBean cab = new ControleAcessoBean();
+//        Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+//        if (mov.getBaixa().getUsuario().getId() != user.getId()) {
+//            if (cab.getBotaoEstornarMensalidadesOutrosUsuarios()) {
+//                GenericaMensagem.error("Atenção", "Você não tem permissão para estornar esse movimento!");
+//                return null;
+//            }
+//        }
+
+        if (!GerarMovimento.refazerMovimentos(lm)) {
+            GenericaMensagem.error("Erro", "Não foi possível refazer movimentos");
+            return null;
+        }
+
+        GenericaMensagem.info("Sucesso", "Boletos atualizados!");
+        loadListaMovimento();
+        return null;
+    }
+        
 
     public String telaMovimentosReceberSocial() {
         String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).movimentosReceberSocial();
@@ -351,10 +419,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void pessoaUpper() {
-        fisica.getPessoa().setNome(fisica.getPessoa().getNome().toUpperCase());
-        fisica.setRg(fisica.getRg().toUpperCase());
-        fisica.setPai(fisica.getPai().toUpperCase());
-        fisica.setMae(fisica.getMae().toUpperCase());
+        fisica.getPessoa().setNome(fisica.getPessoa().getNome().toUpperCase().trim());
+        fisica.setRg(fisica.getRg().toUpperCase().trim());
+        fisica.setPai(fisica.getPai().toUpperCase().trim());
+        fisica.setMae(fisica.getMae().toUpperCase().trim());
     }
 
     public void salvarPessoaProfissao() {
@@ -1406,6 +1474,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         } else if (tipoCadastro == 5) {
             reativar = socios.getServicoPessoa().isAtivo();
         }
+        
+        if (listaPessoaEndereco.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Cadastrar um Endereço!");
+            return "pessoaFisica";
+        }
+                
+        
         if (pessoaEmpresa.getId() != -1) {
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
         }

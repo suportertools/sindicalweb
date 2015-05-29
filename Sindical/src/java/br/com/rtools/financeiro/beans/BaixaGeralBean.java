@@ -221,6 +221,8 @@ public class BaixaGeralBean implements Serializable {
             } else if (url.equals("geracaoDebitosCartao")) {
                 GenericaSessao.put("lista_movimentos_baixados", listaMovimentos);
                 return "geracaoDebitosCartao";
+            }  else if (url.equals("matriculaEscola")) {
+                return "matriculaEscola";
             } else {
                 return null;
             }

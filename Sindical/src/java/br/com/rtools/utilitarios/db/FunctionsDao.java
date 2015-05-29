@@ -68,6 +68,23 @@ public class FunctionsDao extends DB implements FunctionsDB {
         }
         return 0;
     }
+    
+    public float valorServicoCheio(int idPessoa, int idServico, Date date) {
+        String dataString = DataHoje.converteData(date);
+        String queryString = "SELECT func_valor_servico_cheio(" + idPessoa + ", " + idServico + ", '" + dataString + "') ";
+        try {
+            Query qry = getEntityManager().createNativeQuery(queryString);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                list = (List) qry.getSingleResult();
+                float valor = Float.parseFloat(list.get(0).toString());
+                return valor;
+            }
+        } catch (Exception e) {
+            return 0;
+        }
+        return 0;
+    }
 
     /**
      * Retorna a idade da pessoa

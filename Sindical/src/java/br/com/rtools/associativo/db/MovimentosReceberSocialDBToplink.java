@@ -178,7 +178,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
     @Override
     public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa, boolean atrasados){
         String textqry
-            = " SELECT b.id, b.nr_ctr_boleto, b.nr_boleto, sum(m.nr_valor), b.dt_vencimento \n" +
+            = " SELECT b.id, b.nr_ctr_boleto, b.nr_boleto, sum(m.nr_valor), b.dt_vencimento, b.dt_vencimento_original \n" +
                 "  FROM fin_boleto b \n" +
                 " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
                 " WHERE m.id_pessoa = "+id_pessoa+" \n" +
@@ -187,7 +187,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                 "   AND (m.ds_documento IS NOT NULL AND m.ds_documento <> '') \n" +
                 "   AND (m.nr_ctr_boleto IS NOT NULL AND m.nr_ctr_boleto <> '') \n" +
                 "   AND b.dt_vencimento IS NOT NULL \n" +
-                " GROUP BY b.id, b.nr_ctr_boleto, b.nr_boleto, b.dt_vencimento \n" +
+                " GROUP BY b.id, b.nr_ctr_boleto, b.nr_boleto, b.dt_vencimento, b.dt_vencimento_original  \n" +
                 ((atrasados) ? " ORDER BY b.dt_vencimento DESC" : " ORDER BY b.dt_vencimento");
         
         Query qry = getEntityManager().createNativeQuery(textqry);

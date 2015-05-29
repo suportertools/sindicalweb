@@ -553,6 +553,7 @@ public class JuridicaBean implements Serializable {
 //        }
         //else
         //    juridica.setEmailEscritorio(false);
+        juridica.getPessoa().setNome(juridica.getPessoa().getNome().trim());
         dbSalvar.abrirTransacao();
         if (juridica.getId() == -1) {
             juridica.getPessoa().setTipoDocumento((TipoDocumento) dbSalvar.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()), "TipoDocumento"));
@@ -2205,7 +2206,7 @@ public class JuridicaBean implements Serializable {
                 somenteContribuintesAtivos = true;
                 break;
         }
-        listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa, somenteContabilidadesx, somenteContribuintesAtivos);
+        listaJuridica = db.pesquisaPessoa(descPesquisa.trim(), porPesquisa, comoPesquisa, somenteContabilidadesx, somenteContribuintesAtivos);
     }
 
     public List<Juridica> getListaJuridica() {

@@ -24,6 +24,7 @@ import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -469,8 +470,8 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
                     getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
                     getConverteNullString(result.get(i).get(78)), // CONTABILIDADE - EMAIL
-                    getConverteNullString(result.get(i).get(79)), // ADMISSAO EMPRESA DEMISSIONADA
-                    getConverteNullString(result.get(i).get(80)), // DEMISSAO EMPRESA DEMISSIONADA
+                    ((getConverteNullString(result.get(i).get(79)) != null) ? DataHoje.converteData( (Date) result.get(i).get(79) ) : ""), // ADMISSAO EMPRESA DEMISSIONADA
+                    ((getConverteNullString(result.get(i).get(80)) != null) ? DataHoje.converteData( (Date) result.get(i).get(80) ) : ""), // DEMISSAO EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(81)), // CNPJ EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(82)), // EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(83)) // IDADE

@@ -36,7 +36,7 @@
                                 <h:panelGrid columns="4">
                                     <h:column>
                                         <h:outputLabel value="Contribuição" /><br />
-                                        <p:selectOneMenu id="idServicos" value="#{servicoContaCobrancaBean.idServicos}" style="margin-right: 30px; padding-right: 20px">
+                                        <p:selectOneMenu id="idServicos" value="#{servicoContaCobrancaBean.idServicos}" style="margin-right: 30px; width: 350px">
                                             <p:ajax event="change" update="i_msg" />
                                             <f:selectItems value="#{servicoContaCobrancaBean.listaServico}"/>
                                         </p:selectOneMenu>
@@ -52,7 +52,7 @@
 
                                     <h:column>
                                         <h:outputLabel value="Conta Cobrança" /><br />
-                                        <p:selectOneMenu id="idContaCobranca" value="#{servicoContaCobrancaBean.idContaCobranca}" style="margin-right: 30px; width: 400px"> 
+                                        <p:selectOneMenu id="idContaCobranca" value="#{servicoContaCobrancaBean.idContaCobranca}" style="margin-right: 30px; width: 350px"> 
                                             <p:ajax event="change" update="i_msg" />
                                             <f:selectItems value="#{servicoContaCobrancaBean.listaContaCobranca}"/>
                                         </p:selectOneMenu>
