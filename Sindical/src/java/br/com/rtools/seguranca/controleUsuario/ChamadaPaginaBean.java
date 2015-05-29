@@ -14,7 +14,6 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
-import br.com.rtools.utilitarios.PhotoCam;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
