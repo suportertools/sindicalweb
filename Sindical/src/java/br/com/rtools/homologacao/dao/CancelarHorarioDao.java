@@ -10,7 +10,7 @@ import javax.persistence.Query;
 
 public class CancelarHorarioDao extends DB {
 
-    public List pesquisaTodos(int idFilial) {
+    public List pesquisaTodos(Integer idFilial) {
         try {
             Query qry = getEntityManager().createQuery("SELECT CH FROM CancelarHorario AS CH WHERE CH.filial.id = :filial ORDER BY CH.dtData DESC, CH.horarios.hora ASC");
             qry.setParameter("filial", idFilial);
@@ -20,15 +20,31 @@ public class CancelarHorarioDao extends DB {
         }
     }
 
-    public CancelarHorario pesquisaCancelamentoHorario(Date data, int idHorario, int idFilial) {
+    public CancelarHorario pesquisaCancelamentoHorario(Date data, Integer idHorario, Integer idFilial) {
+        return pesquisaCancelamentoHorarioSemana(data, idHorario, idFilial, null);
+    }
+
+    public CancelarHorario pesquisaCancelamentoHorarioSemana(Date data, Integer idHorario, Integer idFilial, Integer idSemana) {
         CancelarHorario cancelarHorario = new CancelarHorario();
         try {
-            Query qry = getEntityManager().createQuery("SELECT ch FROM CancelarHorario ch WHERE ch.dtData = :data AND ch.horarios.id = :idHorario AND ch.filial.id = :idFilial");
-            qry.setParameter("data", data);
-            qry.setParameter("idHorario", idHorario);
-            qry.setParameter("idFilial", idFilial);
-            if (!qry.getResultList().isEmpty()) {
-                cancelarHorario = (CancelarHorario) qry.getSingleResult();
+            Query query;
+            if (idSemana != null) {
+                if (data == null) {
+                    query = getEntityManager().createQuery("SELECT CH FROM CancelarHorario AS CH WHERE CH.horarios.id = :horario AND CH.filial.id = :filial AND CH.horarios.semana.id = :semana");
+                } else {
+                    query = getEntityManager().createQuery("SELECT CH FROM CancelarHorario AS CH WHERE  CH.dtData = :data AND CH.horarios.id = :horario AND CH.filial.id = :filial AND CH.horarios.semana.id = :semana");
+                    query.setParameter("data", data);
+                }
+                query.setParameter("semana", idSemana);
+                query.setMaxResults(1);
+            } else {
+                query = getEntityManager().createQuery("SELECT CH FROM CancelarHorario AS CH WHERE CH.dtData = :data AND CH.horarios.id = :horario AND CH.filial.id = :filial");
+                query.setParameter("data", data);
+            }
+            query.setParameter("horario", idHorario);
+            query.setParameter("filial", idFilial);
+            if (!query.getResultList().isEmpty()) {
+                cancelarHorario = (CancelarHorario) query.getSingleResult();
             }
         } catch (Exception e) {
             return cancelarHorario;
