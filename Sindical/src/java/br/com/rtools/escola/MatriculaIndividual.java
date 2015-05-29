@@ -54,7 +54,7 @@ public class MatriculaIndividual implements java.io.Serializable {
         id = -1;
         matriculaEscola = new MatriculaEscola();
         curso = new Servicos();
-        dataInicio = null;
+        dataInicio = DataHoje.dataHoje();
         dataTermino = null;
         inicio = "";
         termino = "";

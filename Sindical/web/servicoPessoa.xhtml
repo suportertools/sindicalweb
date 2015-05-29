@@ -33,21 +33,25 @@
 
                 <p:tab id="complemento" title="Cobrança" >
                     <h:panelGrid columns="2">
+                        <p:outputLabel value="Serviços: "  rendered="#{servicoPessoaBean.renderServicos}"/>
+                        <p:selectOneMenu id="idServico" value="#{servicoPessoaBean.idServico}" rendered="#{servicoPessoaBean.renderServicos}" style="width: 600px">
+                            <p:ajax event="change" update="@this idNrDesconto idValorServico" listener="#{servicoPessoaBean.refreshCalculos()}"/>
+                            <f:selectItems value="#{servicoPessoaBean.listaServicos}"/>
+                        </p:selectOneMenu>
                         <p:outputLabel value="Desconto: "/>
                         <h:column>
                             <p:inputText id="idNrDesconto" value="#{servicoPessoaBean.servicoPessoa.nrDescontoString}" size="5" converter="#{toPercent}">
-                                <p:ajax event="change" update="@this"/>
+                                <p:ajax event="blur" update="@this idValorServico" listener="#{servicoPessoaBean.calculoValor()}"/>
                             </p:inputText>
                             <p:outputLabel value=" %  " />
                             <p:selectBooleanCheckbox id="idChkDesFolha" value="#{servicoPessoaBean.servicoPessoa.descontoFolha}" itemLabel="Desconto em folha" styleClass="margin-left-max">
                                 <p:ajax event="change" update="@this"/>
                             </p:selectBooleanCheckbox>
                         </h:column>
-                        <p:outputLabel value="Serviços: "  rendered="#{servicoPessoaBean.renderServicos}"/>
-                        <p:selectOneMenu id="idServico" value="#{servicoPessoaBean.idServico}" rendered="#{servicoPessoaBean.renderServicos}" style="width: 600px">
-                            <p:ajax event="change" update="@this"/>
-                            <f:selectItems value="#{servicoPessoaBean.listaServicos}"/>
-                        </p:selectOneMenu>
+                        <p:outputLabel value=" Valor: " />
+                        <p:inputText id="idValorServico" value="#{servicoPessoaBean.valorServicoPessoa}" style="width: 80px; text-align: right">
+                            <p:ajax event="blur" update="@this idNrDesconto" listener="#{servicoPessoaBean.calculoDesconto()}"/>
+                        </p:inputText>
                         <p:outputLabel value="Ref. Vigoração: " />
                         <h:column>
                             <h:panelGrid columns="3">

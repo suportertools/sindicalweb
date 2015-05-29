@@ -22,63 +22,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class MatriculaEscolaDao extends DB {
-
-//    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
-//        try {
-//            List<MatriculaEscola> list;
-//            String complementoQuery = "";
-//            Query query;
-//            String queryString = "";
-//            if (tipoMatricula.equals("Individual")) {
-//                if (!descricaoCurso.equals("")) {
-//                    complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
-//                }
-//                if (filial != null) {
-//                    if (filial.getId() != -1) {
-//                        queryString = " mi.matriculaEscola.filial.id = " + filial.getId() + " AND ";
-//                    }
-//                }
-//                if (filtroStatus != 0 && filtroStatus != 5) {
-//                    queryString += " mi.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
-//                }
-//                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " + queryString + " UPPER(mi.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
-//            } else {
-//                if (!descricaoCurso.equals("")) {
-//                    complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
-//                }
-//                if (filial != null) {
-//                    if (filial.getId() != -1) {
-//                        queryString = " mt.matriculaEscola.filial.id = " + filial.getId() + " AND ";
-//                    }
-//                }
-//                if (filtroStatus != 0 && filtroStatus != 5) {
-//                    queryString += " mt.matriculaEscola.escStatus.id = " + filtroStatus + " AND ";
-//                }
-//                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " + queryString + " UPPER(mt.matriculaEscola." + porPesquisa + ".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
-//            }
-//            if (comoPesquisa.equals("Inicial")) {
-//                query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");
-//                if (!descricaoCurso.equals("")) {
-//                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
-//                }
-//                if (!descricaoCurso.equals("")) {
-//                    query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
-//                }
-//            } else if (comoPesquisa.equals("Parcial")) {
-//                query.setParameter("descricaoAluno", "%" + descricao.toUpperCase() + "%");
-//                if (!descricaoCurso.equals("")) {
-//                    query.setParameter("descricaoCurso", "%" + descricaoCurso.toUpperCase() + "%");
-//                }
-//            }
-//            list = query.getResultList();
-//            if (!list.isEmpty()) {
-//                return list;
-//            }
-//        } catch (Exception e) {
-//            e.getMessage();
-//        }
-//        return new ArrayList();
-//    }
     public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
         try {
             String text = "", inner = "", filter = "";
@@ -258,7 +201,7 @@ public class MatriculaEscolaDao extends DB {
 
     public boolean existeMatriculaTurma(MatriculaTurma mt) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.aluno.id = :idAluno");
+            Query query = getEntityManager().createQuery("SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.servicoPessoa.pessoa.id = :idAluno");
             query.setParameter("idTurma", mt.getTurma().getId());
             query.setParameter("idAluno", mt.getMatriculaEscola().getServicoPessoa().getPessoa().getId());
             List list = query.getResultList();
@@ -292,7 +235,7 @@ public class MatriculaEscolaDao extends DB {
 
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
+            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.servicoPessoa.pessoa.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
             query.setParameter("idCurso", mi.getCurso().getId());
             query.setParameter("idAluno", mi.getMatriculaEscola().getServicoPessoa().getId());
             query.setParameter("dataInicio", mi.getDataInicio());
@@ -344,6 +287,22 @@ public class MatriculaEscolaDao extends DB {
             }
         } catch (Exception e) {
 
+        }
+        return new ArrayList();
+    }
+    
+    public List<ServicoValor> listServicoValorPorServicoIdade(Integer id_servico, Integer idade) {
+        try {
+            Query query = getEntityManager().createNativeQuery(
+                    "SELECT sv.* \n " +
+                    "  FROM fin_servico_valor sv \n " +
+                    " WHERE sv.id_servico = "+id_servico+" \n " +
+                    "   AND "+idade+" >= sv.nr_idade_ini \n" +
+                    "   AND "+idade+" <= sv.nr_idade_fim", ServicoValor.class
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
         }
         return new ArrayList();
     }

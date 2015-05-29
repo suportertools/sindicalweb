@@ -1,6 +1,9 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.DescontoSocial;
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.Servicos;
@@ -15,7 +18,9 @@ import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.Serializable;
@@ -42,7 +47,9 @@ public class ServicoPessoaBean implements Serializable {
     protected Integer idServico;
     protected List<SelectItem> listaTipoDocumento;
     protected List<SelectItem> listaServicos;
+    protected String valorServicoPessoa = "0,00";
     //protected FisicaJSFBean fisicaJSFBean;
+    protected Socios socio;
 
     public ServicoPessoaBean() {
         indexTab = "socios";
@@ -53,11 +60,55 @@ public class ServicoPessoaBean implements Serializable {
         chkContaCobranca = false;
         renderServicos = true;
         idTipoDocumento = 0;
-        idServico = null;
+        idServico = 0;
         listaTipoDocumento = new ArrayList();
         listaServicos = new ArrayList();
+        
+        socio = new Socios();
+    }
+    
+    public void calculoValor(){
+        String valorx;
+        Servicos se = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServico).getDescription()));
+        if (servicoPessoa.getNrDesconto() == 0){
+            if (socio.getId() != -1)
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, socio.getMatriculaSocios().getCategoria().getId()));
+            else
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
+        }else{
+            float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje());
+            
+            float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(servicoPessoa.getNrDesconto(), valorx_c), 100);
+            valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+        }
+        
+        valorServicoPessoa = Moeda.converteR$(valorx);
+    }
+    
+    public void calculoDesconto(){
+        String valorx;
+        Servicos se = (Servicos) new Dao().find(new Servicos(), Integer.parseInt(getListaServicos().get(idServico).getDescription()));
+        if (socio.getId() != -1)
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, socio.getMatriculaSocios().getCategoria().getId()));
+        else
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
+        
+        String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje()));
+        
+        if (Moeda.converteUS$(valorServicoPessoa) == Moeda.converteUS$(valorx))
+            servicoPessoa.setNrDescontoString("0.0");
+        else{
+            float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valorServicoPessoa));
+            valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+            servicoPessoa.setNrDescontoString(Moeda.converteR$Float(valorx_c));
+        }
     }
 
+    public void refreshCalculos(){
+        calculoValor();
+        calculoDesconto();
+    }
+    
     public void pesquisaFisica() {
         Fisica fis = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
         if (fis != null) {
@@ -97,6 +148,12 @@ public class ServicoPessoaBean implements Serializable {
                 break;
             }
         }
+        SociosDB dbs = new SociosDBToplink();
+        socio = dbs.pesquisaSocioPorPessoaAtivo(titular.getPessoa().getId());
+        // A ORDEM INFLUENCIA NOS FATORES ----
+        calculoValor();
+        calculoDesconto();
+        // A ORDEM INFLUENCIA NOS FATORES ----
     }
 
     public String getStrEndereco() {
@@ -153,6 +210,11 @@ public class ServicoPessoaBean implements Serializable {
             List<Servicos> select = db.pesquisaTodos(idRotina);
             for (int i = 0; i < select.size(); i++) {
                 listaServicos.add(new SelectItem(i, (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+            }
+            
+            if (!listaServicos.isEmpty()){
+                idServico = 0;
+                refreshCalculos();
             }
         }
         return listaServicos;
@@ -356,5 +418,13 @@ public class ServicoPessoaBean implements Serializable {
 
     public void setIdServico(Integer idServico) {
         this.idServico = idServico;
+    }
+
+    public String getValorServicoPessoa() {
+        return valorServicoPessoa;
+    }
+
+    public void setValorServicoPessoa(String valorServicoPessoa) {
+        this.valorServicoPessoa = Moeda.converteR$(valorServicoPessoa);
     }
 }

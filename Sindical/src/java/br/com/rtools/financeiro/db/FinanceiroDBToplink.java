@@ -1212,10 +1212,10 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     public List<LoteBoleto> listaLoteBoleto(){
         String text = "SELECT lb.* \n" +
                       "  FROM soc_lote_boleto lb \n" +
-                      " INNER JOIN soc_boletos_vw b ON b.id_lote_boleto = lb.id \n" +
-                      " WHERE b.ativo = true \n" +
+                      " -- INNER JOIN soc_boletos_vw b ON b.id_lote_boleto = lb.id \n" +
+                      " -- WHERE b.ativo = true \n" +
                       " GROUP BY lb.id, lb.dt_processamento \n" +
-                      " ORDER BY lb.id";
+                      " ORDER BY lb.id DESC LIMIT 50";
         
         Query qry = getEntityManager().createNativeQuery(text, LoteBoleto.class);
         

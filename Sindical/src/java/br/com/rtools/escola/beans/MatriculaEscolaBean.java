@@ -11,6 +11,7 @@ import br.com.rtools.escola.dao.MatriculaContratoDao;
 import br.com.rtools.escola.dao.MatriculaEscolaDao;
 import br.com.rtools.escola.dao.TurmaDao;
 import br.com.rtools.escola.lista.ListaMatriculaEscola;
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.Evt;
 import br.com.rtools.financeiro.FStatus;
@@ -19,15 +20,15 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoPessoa;
+import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.db.LoteDB;
-import br.com.rtools.financeiro.db.LoteDBToplink;
+import br.com.rtools.financeiro.db.FinanceiroDB;
+import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
-import br.com.rtools.impressao.CarneEscola;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
@@ -52,6 +53,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.*;
@@ -111,8 +113,8 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaMesVencimento;
     private List<SelectItem> listaDiaParcela;
     private List<Turma> listaTurma;
-    private List<Movimento> listaMovimentos;
-    private List<Movimento> listaOutrosMovimentos;
+    //private List<Movimento> listaMovimentos;
+    //private List<Movimento> listaOutrosMovimentos;
     private List<EscolaAutorizados> listaEscolaAutorizadas;
     private List<ListaMatriculaEscola> listaMatriculaEscolas;
     private int diaVencimento;
@@ -147,13 +149,13 @@ public class MatriculaEscolaBean implements Serializable {
     private boolean limpar;
     private boolean ocultaBotaoSalvar;
     private boolean ocultaDescontoFolha;
-    private boolean taxa;
+    //private boolean taxa;
     private boolean visibility;
     private String comoPesquisa;
     private String descricao;
     private String descricaoCurso;
     private String msgStatusFilial;
-    private String mensagem;
+    //private String mensagem;
     private String msgStatusDebito;
     private String msgStatusEmpresa;
     private String openModal;
@@ -165,7 +167,7 @@ public class MatriculaEscolaBean implements Serializable {
     private String valorParcelaVencimento;
     private String valorLiquido;
     private String valorTaxa;
-    
+
     private ServicoPessoa servicoPessoa;
     private int numeroParcelas;
     private String valorTotal;
@@ -207,8 +209,8 @@ public class MatriculaEscolaBean implements Serializable {
         listaMesVencimento = new ArrayList();
         listaDiaParcela = new ArrayList();
         listaTurma = new ArrayList();
-        listaMovimentos = new ArrayList();
-        listaOutrosMovimentos = new ArrayList();
+//        listaMovimentos = new ArrayList();
+//        listaOutrosMovimentos = new ArrayList();
         listaEscolaAutorizadas = new ArrayList();
         listaMatriculaEscolas = new ArrayList();
         diaVencimento = 0;
@@ -242,13 +244,13 @@ public class MatriculaEscolaBean implements Serializable {
         limpar = false;
         ocultaBotaoSalvar = false;
         ocultaDescontoFolha = true;
-        taxa = false;
+        //taxa = false;
         visibility = false;
         comoPesquisa = "";
         descricao = "";
         descricaoCurso = "";
         msgStatusFilial = "";
-        mensagem = "";
+        //mensagem = "";
         msgStatusDebito = "";
         msgStatusEmpresa = "";
         openModal = "";
@@ -259,8 +261,8 @@ public class MatriculaEscolaBean implements Serializable {
         valorParcela = "";
         valorParcelaVencimento = "";
         valorLiquido = "";
-        valorTaxa = "";
-        
+        valorTaxa = "0,00";
+
         servicoPessoa = new ServicoPessoa();
         numeroParcelas = 0;
         valorTotal = "0,00";
@@ -290,12 +292,200 @@ public class MatriculaEscolaBean implements Serializable {
         GenericaSessao.remove("matriculaEscolaBean");
         return null;
     }
+    
+    public String telaBaixa(String caixa_banco) {
+        if (macFilial == null) {
+            GenericaMensagem.warn("Erro", "Não existe filial na sessão!");
+            return null;
+        }
+
+        if (!macFilial.isCaixaOperador()) {
+            if (macFilial.getCaixa() == null) {
+                GenericaMensagem.warn("Erro", "Configurar Caixa nesta estação de trabalho!");
+                return null;
+            }
+        } else {
+            FinanceiroDB dbf = new FinanceiroDBToplink();
+            Caixa caixax = dbf.pesquisaCaixaUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
+
+            if (caixax == null) {
+                GenericaMensagem.warn("Erro", "Configurar Caixa para este Operador!");
+                return null;
+            }
+        }
+
+        List<Movimento> lm = new ArrayList();
+        movimento.setValorBaixa(movimento.getValor());
+        lm.add(movimento);
+        
+        if (!lm.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lm);
+            GenericaSessao.put("caixa_banco", caixa_banco);
+            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+        } else {
+            GenericaMensagem.warn("Atenção", "Lista de movimento vazia, tente novamente!");
+            //PF.update("formMovimentosReceber");
+        }
+        return null;
+    }
+
+    public String gerarEntrada() {
+        Plano5 plano5;
+        Servicos servicos;
+
+        if (tipoMatricula.equals("Turma")) {
+            plano5 = matriculaTurma.getTurma().getCursos().getPlano5();
+            servicos = matriculaTurma.getTurma().getCursos();
+        } else {
+            plano5 = matriculaIndividual.getCurso().getPlano5();
+            servicos = matriculaIndividual.getCurso();
+        }
+
+        FTipoDocumento fTipoDocumento = (FTipoDocumento) new Dao().find(new FTipoDocumento(), servicoPessoa.getTipoDocumento().getId());
+        setLote(
+                new Lote(
+                        -1,
+                        (Rotina) new Dao().find(new Rotina(), 151),
+                        "R",
+                        DataHoje.data(),
+                        servicoPessoa.getCobranca(),
+                        plano5,
+                        false,
+                        "",
+                        0, // matriculaEscola.getValorTotal(),
+                        matriculaEscola.getFilial(),
+                        null,
+                        null,
+                        "",
+                        fTipoDocumento,
+                        (CondicaoPagamento) new Dao().find(new CondicaoPagamento(), 1),
+                        (FStatus) new Dao().find(new FStatus(), 1),
+                        null,
+                        servicoPessoa.isDescontoFolha(), 0
+                )
+        );
+
+        String referencia = listaDataTaxa.get(idDataTaxa).getDescription();
+        referencia = referencia.substring(3, 10);
+
+        setMovimento(
+                new Movimento(
+                        -1,
+                        lote,
+                        plano5,
+                        servicoPessoa.getCobranca(),
+                        servicos,
+                        null,
+                        (TipoServico) new Dao().find(new TipoServico(), 1),
+                        null,
+                        Moeda.converteUS$(valorTaxa),
+                        referencia,
+                        listaDataTaxa.get(idDataTaxa).getDescription(),
+                        1,
+                        true,
+                        "E",
+                        false,
+                        servicoPessoa.getCobranca(), // TITULAR / RESPONSÁVEL
+                        servicoPessoa.getPessoa(), // BENEFICIÁRIO
+                        "",
+                        "",
+                        listaDataTaxa.get(idDataTaxa).getDescription(),
+                        0, //valorDescontoAteVencimento,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        fTipoDocumento,
+                        0,
+                        new MatriculaSocios()
+                )
+        );
+
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        
+        if (!dao.save(lote)){
+            GenericaMensagem.error("Erro", "Não foi possível salvar Lote!");
+            dao.rollback();
+            return null;
+        }
+        
+        if (!dao.save(movimento)){
+            GenericaMensagem.error("Erro", "Não foi possível salvar Movimento!");
+            dao.rollback();
+            return null;
+        }
+        
+        dao.commit();
+        
+        if (listaDataTaxa.get(idDataTaxa).getDescription().equals(DataHoje.data())) {
+            return telaBaixa("caixa");
+        } else {
+            GenericaMensagem.info("Sucesso", "Matrícula Concluída!");
+            return null;
+        }
+    }
+
+    public void calculoValor() {
+        String valorx;
+        Servicos se = (Servicos) new Dao().find(new Servicos(), idServico);
+        if (se != null) {
+            if (servicoPessoa.getNrDesconto() == 0) {
+                if (aluno.getPessoa().getSocios().getId() != -1) {
+                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+                } else {
+                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
+                }
+            } else {
+                float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje());
+
+                float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(servicoPessoa.getNrDesconto(), valorx_c), 100);
+                valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, Moeda.converteFloatR$Float(calculo)));
+            }
+
+            valor = Moeda.converteR$(valorx);
+            vTaxa = new FunctionsDao().valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null);
+        }
+    }
+
+    public void calculoDesconto() {
+        String valorx;
+        Servicos se = (Servicos) new Dao().find(new Servicos(), idServico);
+        if (se != null) {
+            if (aluno.getPessoa().getSocios().getId() != -1) {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+            } else {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
+            }
+
+            String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje()));
+
+            if (Moeda.converteUS$(valor) == Moeda.converteUS$(valorx)) {
+                servicoPessoa.setNrDescontoString("0.0");
+            } else {
+                float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valor));
+                valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+                servicoPessoa.setNrDescontoString(Moeda.converteR$Float(Moeda.converteFloatR$Float(valorx_c)));
+            }
+            
+            if (aluno.getPessoa().getId() != -1){
+                Integer idade = new DataHoje().calcularIdade(aluno.getDtNascimento());
+                List<ServicoValor> lsv = new MatriculaEscolaDao().listServicoValorPorServicoIdade(se.getId(), idade);
+                valorParcelaVencimento = (lsv.isEmpty()) ? valor : Moeda.converteR$Float(Moeda.converteUS$(Moeda.valorDoPercentual(valor, Moeda.converteR$Float(lsv.get(0).getDescontoAteVenc()))));
+            }else{
+                valorParcelaVencimento = valor;
+            }            
+        }
+    }
 
     public void gerarContrato() {
-        if (matriculaEscola.getEvt() == null) {
-            GenericaMensagem.warn("Sistema", "Necessário gerar movimento para imprimir esse contrato!");
-            return;
-        }
+//        if (matriculaEscola.getEvt() == null) {
+//            GenericaMensagem.warn("Sistema", "Necessário gerar movimento para imprimir esse contrato!");
+//            return;
+//        }
         if (matriculaEscola.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             Turma turmax = new Turma();
@@ -308,8 +498,7 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaContrato = mcd.pesquisaCodigoServico(matriculaTurma.getTurma().getCursos().getId());
             }
             if (matriculaContrato == null) {
-                mensagem = "Não é possível gerar um contrato para este serviço. Para gerar um contrato acesse: Menu Escola > Suporte > Modelo Contrato.";
-                GenericaMensagem.warn("Sistema", mensagem);
+                GenericaMensagem.error("Sistema", "Não é possível gerar um contrato para este serviço. Para gerar um contrato acesse: Menu Escola > Suporte > Modelo Contrato.");
                 return;
             }
             String horaInicial;
@@ -467,34 +656,34 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$descontoExtenso", Moeda.converteR$Float(servicoPessoa.getNrDesconto())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$desconto", Moeda.converteR$Float(servicoPessoa.getNrDesconto())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", (Integer.toString(numeroParcelas))));
-            // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaVencimento", (Integer.toString(matriculaEscola.getDiaVencimento()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaVencimento", (Integer.toString(servicoPessoa.getNrDiaVencimento()))));
-            // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorAteVencimento", (Moeda.converteR$Float((matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas()))));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorAteVencimento", getValorString()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaInicial", (horaInicial)));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaFinal", (horaFinal)));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataMatricula", DataHoje.dataExtenso(servicoPessoa.getEmissao(), 1)));
             float valorTotalComDesconto = 0;
-            
-            if (false==true) {
-                FunctionsDB functionsDB = new FunctionsDao();
-                String valorTotal = functionsDB.scriptSimples(" SUM(nr_valor) FROM fin_movimento WHERE id_tipo_servico = 1 AND id_lote = " + listaMovimentos.get(0).getLote().getId());
-                if (!valorTotal.isEmpty()) {
-                    valorTotalComDesconto = Moeda.converteUS$(valorTotal) - servicoPessoa.getNrDesconto();
-                }
-                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", Moeda.converteR$Float(valorTotalComDesconto)));
-                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float(Float.parseFloat(valorTotal))));
-                if (valorTotalComDesconto > 0) {
-                    // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
-                }
-            } else {
-                //valorTotalComDesconto = matriculaEscola.getValorTotal() - matriculaEscola.getDesconto();
-                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", (Moeda.converteR$Float((valorTotalComDesconto)))));
-                // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", (Moeda.converteR$Float((matriculaEscola.getValorTotal())))));
-                if (valorTotalComDesconto > 0) {
-                    // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
-                }
-            }
-            // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", (Moeda.converteR$Float(matriculaEscola.getValorTotal() / matriculaEscola.getNumeroParcelas()))));
+
+//            if (false == true) {
+//                String valorTotalx = new FunctionsDao().scriptSimples(" SUM(nr_valor) FROM fin_movimento WHERE id_tipo_servico = 1 AND id_lote = " + listaMovimentos.get(0).getLote().getId());
+//                if (!valorTotalx.isEmpty()) {
+//                    valorTotalComDesconto = Moeda.subtracaoValores(Moeda.converteUS$(valorTotalx), servicoPessoa.getNrDesconto());
+//                }
+//                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", Moeda.converteR$Float(valorTotalComDesconto)));
+//                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float(Float.parseFloat(valorTotal))));
+//                if (valorTotalComDesconto > 0) {
+//                    // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
+//                }
+//            } else {
+//                //valorTotalComDesconto = matriculaEscola.getValorTotal() - matriculaEscola.getDesconto();
+//                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", (Moeda.converteR$Float((valorTotalComDesconto)))));
+//                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", getValorString()));
+//                if (valorTotalComDesconto > 0) {
+//                    // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
+//                }
+//            }
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", valorTotal));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", getValorString()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", getValorString()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$matricula", (Integer.toString(matriculaEscola.getId()))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", (DataHoje.livre(DataHoje.dataHoje(), "yyyy"))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", (enderecoAlunoString)));
@@ -521,45 +710,47 @@ public class MatriculaEscolaBean implements Serializable {
             String listaValoresComData = "";
             int z = 1;
             int quantidadeDivisao = 0;
-            if (!listaMovimentos.isEmpty()) {
-                if (listaMovimentos.get(0).getTipoServico().getId() == 5) {
-                    if (listaMovimentos.size() > 1) {
-                        quantidadeDivisao = listaMovimentos.size() - 1;
-                    } else {
-                        quantidadeDivisao = listaMovimentos.size();
-                    }
-                } else {
-                    if (listaMovimentos.size() > 1) {
-                        quantidadeDivisao = listaMovimentos.size();
-                    }
-                }
-            }
+//            if (!listaMovimentos.isEmpty()) {
+//                if (listaMovimentos.get(0).getTipoServico().getId() == 5) {
+//                    if (listaMovimentos.size() > 1) {
+//                        quantidadeDivisao = listaMovimentos.size() - 1;
+//                    } else {
+//                        quantidadeDivisao = listaMovimentos.size();
+//                    }
+//                } else {
+//                    if (listaMovimentos.size() > 1) {
+//                        quantidadeDivisao = listaMovimentos.size();
+//                    }
+//                }
+//            }
             float valorDesc = servicoPessoa.getNrDesconto() / quantidadeDivisao;
-            for (Movimento listaMovimento : listaMovimentos) {
-                if (listaMovimento.getTipoServico().getId() == 5) {
-                    valorTaxaString = Moeda.converteR$Float(listaMovimento.getValor());
-                } else {
-                    if (z == 1) {
-                        if (valorDesc > 0) {
-                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
-                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
-                        } else {
-                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                        }
-                    } else {
-                        if (listaMovimento.getDesconto() > 0) {
-                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
-                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
-                        } else {
-                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
-                        }
-                    }
-                    matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$vencimentoParcela" + z, listaMovimento.getVencimento()));
-                    z++;
-                }
-            }
+//            for (Movimento listaMovimento : listaMovimentos) {
+//                if (listaMovimento.getTipoServico().getId() == 5) {
+//                    valorTaxaString = Moeda.converteR$Float(listaMovimento.getValor());
+//                } else {
+//                    if (z == 1) {
+//                        if (valorDesc > 0) {
+//                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+//                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+//                        } else {
+//                            listaValores = "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+//                            listaValoresComData = z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+//                        }
+//                    } else {
+//                        if (listaMovimento.getDesconto() > 0) {
+//                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+//                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor() - valorDesc);
+//                        } else {
+//                            listaValores += "; " + "Parcela nº" + z + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+//                            listaValoresComData += "; " + z + "º - " + listaMovimento.getVencimento() + " - Valor: R$ " + Moeda.converteR$Float(listaMovimento.getValor());
+//                        }
+//                    }
+//                    matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$vencimentoParcela" + z, listaMovimento.getVencimento()));
+//                    z++;
+//                }
+//            }
+//            
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$vencimentoParcela", ""));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$taxa", valorTaxaString));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValoresComData", listaValoresComData));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValores", listaValores));
@@ -620,48 +811,48 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void gerarCarne() throws Exception {
         if (matriculaEscola.getEvt() != null) {
-            if (listaMovimentos.size() > 0) {
-                PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
-                PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
-                List<CarneEscola> list = new ArrayList<>();
-                int j = 1;
-                for (Movimento listaMovimento : listaMovimentos) {
-                    if (listaMovimento.getTipoServico().getId() != 5) {
-                        list.add(new CarneEscola(
-                                matriculaEscola.getId(), 
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), 
-                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getNome()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getLogradouro().getDescricao()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getNumero()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getComplemento()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getBairro().getDescricao()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCep()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCidade().getCidade()), 
-                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCidade().getUf()), 
-                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getTelefone1()), 
-                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getEmail1()), 
-                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getSite()), 
-                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getDocumento()), 
-                                GenericaString.converterNullToString(servicoPessoa.getCobranca().getNome()), 
-                                GenericaString.converterNullToString(Integer.toString(servicoPessoa.getCobranca().getId())), 
-                                GenericaString.converterNullToString(servicoPessoa.getPessoa().getNome()), 
-                                GenericaString.converterNullToString(""), 
-                                GenericaString.converterNullToString(listaMovimento.getServicos().getDescricao()), 
-                                GenericaString.converterNullToString(DataHoje.converteData(listaMovimento.getDtVencimento())), 
-                                "", // GenericaString.converterNullToString(Float.toString(matriculaEscola.getValorTotal())),  VALOR TOTAL
-                                GenericaString.converterNullToString(Float.toString(listaMovimento.getValor())), 
-                                ((Usuario) (GenericaSessao.getObject("sessaoUsuario"))).getPessoa().getNome(), 
-                                j++, 
-                                "")
-                        );
-                    }
-                }
-                if (!list.isEmpty()) {
-                    Jasper.PATH = "downloads";
-                    Jasper.PART_NAME = "escola";
-                    Jasper.printReports("/Relatorios/CARNE.jasper", "carne", list);
-                }
-            }
+//            if (listaMovimentos.size() > 0) {
+//                PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+//                PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
+//                List<CarneEscola> list = new ArrayList<>();
+//                int j = 1;
+//                for (Movimento listaMovimento : listaMovimentos) {
+//                    if (listaMovimento.getTipoServico().getId() != 5) {
+//                        list.add(new CarneEscola(
+//                                matriculaEscola.getId(),
+//                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getNome()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getLogradouro().getDescricao()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getNumero()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getComplemento()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getBairro().getDescricao()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCep()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCidade().getCidade()),
+//                                GenericaString.converterNullToString(pessoaEndereco.getEndereco().getCidade().getUf()),
+//                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getTelefone1()),
+//                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getEmail1()),
+//                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getSite()),
+//                                GenericaString.converterNullToString(matriculaEscola.getFilial().getFilial().getPessoa().getDocumento()),
+//                                GenericaString.converterNullToString(servicoPessoa.getCobranca().getNome()),
+//                                GenericaString.converterNullToString(Integer.toString(servicoPessoa.getCobranca().getId())),
+//                                GenericaString.converterNullToString(servicoPessoa.getPessoa().getNome()),
+//                                GenericaString.converterNullToString(""),
+//                                GenericaString.converterNullToString(listaMovimento.getServicos().getDescricao()),
+//                                GenericaString.converterNullToString(DataHoje.converteData(listaMovimento.getDtVencimento())),
+//                                getValorString(), // GenericaString.converterNullToString(Float.toString(matriculaEscola.getValorTotal())),  VALOR TOTAL
+//                                GenericaString.converterNullToString(Float.toString(listaMovimento.getValor())),
+//                                ((Usuario) (GenericaSessao.getObject("sessaoUsuario"))).getPessoa().getNome(),
+//                                j++,
+//                                "")
+//                        );
+//                    }
+//                }
+//                if (!list.isEmpty()) {
+//                    Jasper.PATH = "downloads";
+//                    Jasper.PART_NAME = "escola";
+//                    Jasper.printReports("/Relatorios/CARNE.jasper", "carne", list);
+//                }
+//            }
         }
 
     }
@@ -675,60 +866,60 @@ public class MatriculaEscolaBean implements Serializable {
     public void salvar() {
         Filial fil = getMacFilial().getFilial();
         if (fil.getId() == -1) {
-            mensagem = "Para salvar este cadastro é necessário realizar acesso com MAC Filial!";
+            GenericaMensagem.warn("Atenção", "Para salvar este cadastro é necessário realizar acesso com MAC Filial!");
             return;
         }
         if (existeMovimento()) {
-            mensagem = "Não é possível atualizar essa matrícula, já possui movimentos baixados!";
+            GenericaMensagem.warn("Atenção", "Não é possível atualizar essa matrícula, já possui movimentos baixados!");
             return;
         }
         int idPessoa = servicoPessoa.getCobranca().getId();
         if (servicoPessoa.getPessoa().getId() == -1) {
-            mensagem = "Informar nome do aluno!";
+            GenericaMensagem.warn("Atenção", "Informar nome do aluno!");
             return;
         }
         if (servicoPessoa.getCobranca().getId() == -1) {
-            mensagem = "Informar nome do responsável!";
+            GenericaMensagem.warn("Atenção", "Informar nome do responsável!");
             return;
         }
         if (verificaSeContribuinteInativo(servicoPessoa.getCobranca())) {
-            mensagem = "Empresa inátiva!";
+            GenericaMensagem.warn("Atenção", "Empresa inativa!");
             return;
         }
         SpcDB spcDB = new SpcDBToplink();
         if (spcDB.existeRegistroPessoaSPC(servicoPessoa.getCobranca())) {
-            mensagem = "Responsável possui cadastro SERASA/SPC!";
+            GenericaMensagem.warn("Atenção", "Responsável possui cadastro SERASA/SPC!");
             return;
         }
         if (matriculaEscola.getFilial().getId() == -1) {
-            mensagem = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
+            GenericaMensagem.warn("Atenção", "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.");
             return;
         }
         if (listaStatus.isEmpty()) {
-            mensagem = "Informar a situação/status do aluno!";
+            GenericaMensagem.warn("Atenção", "Informar a situação/status do aluno!");
             return;
         }
         if (listaVendedor.isEmpty()) {
-            mensagem = "Informar o nome do vendedor!";
+            GenericaMensagem.warn("Atenção", "Informar o nome do vendedor!");
             return;
         }
         if (listaMidia.isEmpty()) {
-            mensagem = "Informar o tipo de mídia!";
+            GenericaMensagem.warn("Atenção", "Informar o tipo de mídia!");
             return;
         }
         if (listaMidia.isEmpty()) {
-            mensagem = "Informar o tipo de mídia!";
+            GenericaMensagem.warn("Atenção", "Informar o tipo de mídia!");
             return;
         }
-        
+
         if (tipoMatricula.equals("Individual")) {
             if (matriculaEscola.getId() == -1) {
                 if (matriculaIndividual.getDataInicio() == null) {
-                    mensagem = "Informar a data inicial!";
+                    GenericaMensagem.warn("Atenção", "Informar a data inicial!");
                     return;
                 }
                 if (matriculaIndividual.getDataTermino() == null) {
-                    mensagem = "Informar a data de término!";
+                    GenericaMensagem.warn("Atenção", "Informar a data de término!");
                     return;
                 }
 
@@ -737,46 +928,46 @@ public class MatriculaEscolaBean implements Serializable {
                 int dataHojeInteger = DataHoje.converteDataParaInteger(servicoPessoa.getEmissao());
 
                 if (dataInicioInteger < dataHojeInteger) {
-                    mensagem = "A data inicial do curso deve ser maior ou igual a data de emissão!";
+                    GenericaMensagem.warn("Atenção", "A data inicial do curso deve ser maior ou igual a data de emissão!");
                     return;
                 }
                 if (dataFinalInteger < dataHojeInteger) {
-                    mensagem = "A data final do curso deve ser maior ou igual a data de emissão!";
+                    GenericaMensagem.warn("Atenção", "A data final do curso deve ser maior ou igual a data de emissão!");
                     return;
                 }
                 if (dataFinalInteger < dataInicioInteger) {
-                    mensagem = "A data final deve ser maior ou igual a data inicial!";
+                    GenericaMensagem.warn("Atenção", "A data final deve ser maior ou igual a data inicial!");
                     return;
                 }
                 if (DataHoje.validaHora(matriculaIndividual.getInicio()).isEmpty()) {
-                    mensagem = "Hora inicial invalida!";
+                    GenericaMensagem.warn("Atenção", "Hora inicial invalida!");
                     return;
                 }
                 if (DataHoje.validaHora(matriculaIndividual.getTermino()).isEmpty()) {
-                    mensagem = "Hora final invalida!";
+                    GenericaMensagem.warn("Atenção", "Hora final invalida!");
                     return;
                 }
             }
             if (listaIndividual.isEmpty()) {
-                mensagem = "Informar curso!";
+                GenericaMensagem.warn("Atenção", "Informar curso!");
                 return;
             }
             if (listaProfessor.isEmpty()) {
-                mensagem = "Informar o nome do professor! Caso não exista cadastre um professor.";
+                GenericaMensagem.warn("Atenção", "Informar o nome do professor! Caso não exista cadastre um professor.");
                 return;
             }
 
             if (!matriculaIndividual.isDomingo() && !matriculaIndividual.isSegunda() && !matriculaIndividual.isTerca() && !matriculaIndividual.isQuarta() && !matriculaIndividual.isQuinta() && !matriculaIndividual.isSexta() && !matriculaIndividual.isSabado()) {
-                mensagem = "Selecione ao menos um Dia da Semana!";
+                GenericaMensagem.warn("Atenção", "Selecione ao menos um Dia da Semana!");
                 return;
             }
         } else {
             if (listaTurma.isEmpty()) {
-                mensagem = "Informar a turma!";
+                GenericaMensagem.warn("Atenção", "Informar a turma!");
                 return;
             }
             if (turma.getId() == -1) {
-                mensagem = "Informar a turma!";
+                GenericaMensagem.warn("Atenção", "Informar a turma!");
                 return;
             }
         }
@@ -800,7 +991,7 @@ public class MatriculaEscolaBean implements Serializable {
             } else {
                 matriculaIndividual.setProfessor(null);
             }
-            
+
             servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataInicioString()));
             servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataTerminoString()));
         } else if (tipoMatricula.equals("Turma")) {
@@ -809,13 +1000,14 @@ public class MatriculaEscolaBean implements Serializable {
             servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(turma.getDataInicio()));
             servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(turma.getDataTermino()));
         }
-        
+
         servicoPessoa.setNrDiaVencimento(idDiaParcela);
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
-            servicoPessoa.setDescontoSocial( (DescontoSocial) new Dao().find(new DescontoSocial(), 1) );
-            if (!sv.inserirObjeto(servicoPessoa)){
-                mensagem = "Erro ao Salvar Serviço Pessoa!";
+            servicoPessoa.setDescontoSocial((DescontoSocial) new Dao().find(new DescontoSocial(), 1));
+            if (!sv.inserirObjeto(servicoPessoa)) {
+                GenericaMensagem.error("Atenção", "Erro ao Salvar Serviço Pessoa!");
+
                 sv.desfazerTransacao();
                 return;
             }
@@ -829,7 +1021,7 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaTurma.setId(-1);
                 matriculaIndividual.setId(-1);
                 sv.desfazerTransacao();
-                mensagem = "Não existem mais vagas disponíveis para esta turma!";
+                GenericaMensagem.warn("Atenção", "Não existem mais vagas disponíveis para esta turma!");
                 return;
             }
             pessoaComplemento = med.pesquisaDataRefPessoaComplemto(idPessoa);
@@ -844,7 +1036,7 @@ public class MatriculaEscolaBean implements Serializable {
                 pessoaComplemento.setPessoa((Pessoa) sv.find(new Pessoa(), idPessoa));
                 if (!sv.inserirObjeto(pessoaComplemento)) {
                     sv.desfazerTransacao();
-                    mensagem = "Falha ao inserir pessoa complemento!";
+                    GenericaMensagem.error("Atenção", "Falha ao inserir pessoa complemento!");
                     return;
                 }
             }
@@ -859,7 +1051,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (tipoMatricula.equals("Turma")) {
                     if (med.existeVagasDisponivel(matriculaTurma)) {
                         sv.desfazerTransacao();
-                        mensagem = "Não existem mais vagas disponíveis para essa turma!";
+                        GenericaMensagem.warn("Atenção", "Não existem mais vagas disponíveis para essa turma!");
                         return;
                     }
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
@@ -868,7 +1060,7 @@ public class MatriculaEscolaBean implements Serializable {
                         matriculaEscola.setId(-1);
                         matriculaTurma.setId(-1);
                         matriculaIndividual.setId(-1);
-                        mensagem = "Aluno já cadastrado para essa turma!";
+                        GenericaMensagem.warn("Atenção", "Aluno já cadastrado para essa turma!");
                         return;
                     }
                     setDesabilitaIndividual(true);
@@ -877,7 +1069,7 @@ public class MatriculaEscolaBean implements Serializable {
                         matriculaTurma.setId(-1);
                         matriculaIndividual.setId(-1);
                         sv.desfazerTransacao();
-                        mensagem = "Falha ao adicionar a matricula turma!";
+                        GenericaMensagem.error("Atenção", "Falha ao adicionar a matricula turma!");
                         return;
                     }
                     tipoMatriculaLog = ""
@@ -890,7 +1082,7 @@ public class MatriculaEscolaBean implements Serializable {
                         matriculaEscola.setId(-1);
                         matriculaTurma.setId(-1);
                         matriculaIndividual.setId(-1);
-                        mensagem = "Aluno já cadastrado para essa mátricula!";
+                        GenericaMensagem.warn("Atenção", "Aluno já cadastrado para essa matricula!");
                         return;
                     }
                     if (!sv.inserirObjeto(matriculaIndividual)) {
@@ -898,7 +1090,7 @@ public class MatriculaEscolaBean implements Serializable {
                         matriculaTurma.setId(-1);
                         matriculaIndividual.setId(-1);
                         sv.desfazerTransacao();
-                        mensagem = "Falha ao adicionar esta matricula individual!";
+                        GenericaMensagem.error("Atenção", "Falha ao adicionar esta matricula individual!");
                         return;
                     }
                     tipoMatriculaLog = " - Curso: " + matriculaIndividual.getCurso().getId() + " - " + matriculaIndividual.getCurso().getDescricao()
@@ -910,7 +1102,7 @@ public class MatriculaEscolaBean implements Serializable {
                 pessoaAlunoMemoria = servicoPessoa.getPessoa();
                 sv.comitarTransacao();
                 desabilitaCampo = true;
-                mensagem = "Matrícula efetuada com sucesso.";
+
                 novoLog.save("Matricula Escola "
                         + tipoMatricula + ": ID " + matriculaEscola.getId()
                         + " - Aluno: " + servicoPessoa.getPessoa().getId() + " - " + servicoPessoa.getPessoa().getNome()
@@ -925,6 +1117,10 @@ public class MatriculaEscolaBean implements Serializable {
 
                 target = "_blank";
                 sv.fecharTransacao();
+
+                GenericaMensagem.info("Sucesso", "Matrícula efetuada com sucesso!");
+                carregaEntrada();
+                PF.openDialog("dlg_entrada");
             } else {
                 sv.desfazerTransacao();
                 matriculaEscola.setId(-1);
@@ -933,27 +1129,27 @@ public class MatriculaEscolaBean implements Serializable {
             }
         } else {
             if (fil.getId() != matriculaEscola.getFilial().getId()) {
-                mensagem = "Registro não pode ser atualizado por esta filial!";
+                GenericaMensagem.warn("Atençao", "Registro não pode ser atualizado por esta filial!");
                 return;
             }
             if (matriculaEscola.getEscStatus().getId() == 3) {
-                mensagem = "Não é possível atualizar/salvar quando o status esta como desistente!";
+                GenericaMensagem.warn("Atençao", "Não é possível atualizar/salvar quando o status esta como desistente!");
                 return;
             }
-            
-            if (!sv.alterarObjeto(servicoPessoa)){
-                mensagem = "Erro ao Alterar Serviço Pessoa!";
+
+            if (!sv.alterarObjeto(servicoPessoa)) {
+                GenericaMensagem.error("Atençao", "Erro ao Alterar Serviço Pessoa!");
                 sv.desfazerTransacao();
                 return;
             }
-            
+
             if (sv.alterarObjeto(matriculaEscola)) {
                 if (tipoMatricula.equals("Turma")) {
                     setDesabilitaIndividual(true);
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (!sv.alterarObjeto(matriculaTurma)) {
                         sv.desfazerTransacao();
-                        mensagem = "Falha ao atualizar a matricula turma!";
+                        GenericaMensagem.error("Atençao", "Falha ao atualizar a matricula turma!");
                         return;
                     }
                 } else {
@@ -961,19 +1157,32 @@ public class MatriculaEscolaBean implements Serializable {
                     matriculaIndividual.setMatriculaEscola(matriculaEscola);
                     if (!sv.alterarObjeto(matriculaIndividual)) {
                         sv.desfazerTransacao();
-                        mensagem = "Falha ao atualizar a matricula individual!";
+                        GenericaMensagem.error("Atençao", "Falha ao atualizar a matricula individual!");
                         return;
                     }
                 }
                 sv.comitarTransacao();
                 pessoaResponsavelMemoria = servicoPessoa.getCobranca();
                 pessoaAlunoMemoria = servicoPessoa.getPessoa();
-                mensagem = "Matrícula atualizada com sucesso.";
+                GenericaMensagem.info("Sucesso", "Matrícula atualizada com sucesso!");
+
                 target = "_blank";
                 sv.fecharTransacao();
             } else {
                 sv.desfazerTransacao();
             }
+        }
+    }
+
+    public void carregaEntrada() {
+        listaDataTaxa.clear();
+        listaMesVencimento.clear();
+        getListaDataTaxa();
+        getListaMesVencimento();
+        if (aluno.getPessoa().getSocios().getId() != -1) {
+            valorTaxa = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+        } else {
+            valorTaxa = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
         }
     }
 
@@ -1057,7 +1266,7 @@ public class MatriculaEscolaBean implements Serializable {
             verificaSocio();
         }
         pegarIdServico();
-        atualizaValor();
+        //atualizaValor();
         calculaValorLiquido();
 
         listaMesVencimento.clear();
@@ -1084,37 +1293,37 @@ public class MatriculaEscolaBean implements Serializable {
     public void excluir() {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEscStatus().getId() == 2 || matriculaEscola.getEscStatus().getId() == 3 || matriculaEscola.getEscStatus().getId() == 4) {
-                mensagem = "Não é excluir a matrícula quando o status esta como desistente!";
+                GenericaMensagem.warn("Atençao", "Não é excluir a matrícula quando o status esta como desistente!");
                 return;
             }
             SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
             if (existeMovimento()) {
-                mensagem = "Não é possível excluir essa matrícula, já possui movimentos baixados!";
+                GenericaMensagem.warn("Atençao", "Não é possível excluir essa matrícula, já possui movimentos baixados!");
                 servicoPessoa.setAtivo(false);
                 return;
             }
             MatriculaEscolaDao med = new MatriculaEscolaDao();
             if (med.desfazerMovimento(matriculaEscola)) {
-                listaMovimentos.clear();
+//                listaMovimentos.clear();
                 desabilitaCamposMovimento = false;
                 db.abrirTransacao();
                 if (tipoMatricula.equals("Individual")) {
                     if (!db.deletarObjeto((MatriculaIndividual) db.find(matriculaIndividual))) {
                         db.desfazerTransacao();
-                        mensagem = "Falha ao excluir essa matrícula!";
+                        GenericaMensagem.warn("Atençao", "Falha ao excluir essa matrícula!");
                         return;
                     }
                 } else {
                     if (!db.deletarObjeto((MatriculaTurma) db.find(matriculaTurma))) {
                         db.desfazerTransacao();
-                        mensagem = "Falha ao excluir essa matrícula!";
+                        GenericaMensagem.warn("Atençao", "Falha ao excluir essa matrícula!");
                         return;
                     }
                 }
                 if (!getListaEscolaAutorizadas().isEmpty()) {
                     for (EscolaAutorizados ea : listaEscolaAutorizadas) {
                         if (!db.deletarObjeto((EscolaAutorizados) db.find(ea))) {
-                            mensagem = "Falha ao as pessoas autorizadas!";
+                            GenericaMensagem.warn("Atençao", "Falha ao as pessoas autorizadas!");
                             return;
                         }
                     }
@@ -1124,10 +1333,10 @@ public class MatriculaEscolaBean implements Serializable {
                 if (db.deletarObjeto(matriculaEscola) && db.deletarObjeto(servicoPessoa)) {
                     db.comitarTransacao();
                     novo();
-                    mensagem = "Matricula excluída com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Matricula excluída com sucesso!");
                 } else {
                     db.desfazerTransacao();
-                    mensagem = "Falha ao excluir essa matrícula!";
+                    GenericaMensagem.warn("Atençao", "Falha ao excluir essa matrícula!");
                 }
             } else {
                 db.abrirTransacao();
@@ -1138,7 +1347,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (tipoMatricula.equals("Individual")) {
                     if (!db.deletarObjeto((MatriculaIndividual) db.find(matriculaIndividual))) {
                         db.desfazerTransacao();
-                        mensagem = "Falha ao excluir essa matrícula!";
+                        GenericaMensagem.warn("Atençao", "Falha ao excluir essa matrícula!");
                         return;
                     }
                     stringLogMatricula += "ID M. Individual: " + matriculaIndividual.getId()
@@ -1147,7 +1356,7 @@ public class MatriculaEscolaBean implements Serializable {
                 } else {
                     if (!db.deletarObjeto((MatriculaTurma) db.find(matriculaTurma))) {
                         db.desfazerTransacao();
-                        mensagem = "Falha ao excluir essa matrícula!";
+                        GenericaMensagem.warn("Atençao", "Falha ao excluir essa matrícula!");
                         return;
                     }
                     stringLogMatricula += "  ID  M. Turma: " + matriculaTurma.getId()
@@ -1163,100 +1372,121 @@ public class MatriculaEscolaBean implements Serializable {
                         novoLog.delete("Excluir Matrícula Turma" + stringLogMatricula);
                     }
                     novo();
-                    mensagem = "";
-                    mensagem = "Matricula excluída com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Matricula excluída com sucesso!");
                 } else {
                     db.desfazerTransacao();
-                    mensagem = "Falha ao excluir essa matrícula!";
+                    GenericaMensagem.error("Atençao", "Falha ao excluir essa matrícula!");
                 }
             }
         } else {
-            mensagem = "Pesquisar registro a ser excluído!";
+            GenericaMensagem.warn("Atençao", "Pesquisar registro a ser excluído!");
         }
     }
 
     public void calculaValorLiquido() {
-        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
-        valor = Moeda.substituiVirgula(valor);
-        valorLiquido = "0";
-        valorParcela = "0";
-        valorParcelaVencimento = "0";
-        int periodoMeses = 0;
-        int periodoMesesRestantes = 0;
-        float desconto = 0;
-        if (!valor.isEmpty()) {
-            if (!desabilitaTurma) {
-                if (matriculaTurma.getTurma().getId() == -1) {
-                    periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino()) + 1;
-                    periodoMesesRestantes = DataHoje.quantidadeMeses(DataHoje.dataHoje(), turma.getDtTermino()) + 1;
-                } else {
-                    periodoMeses = DataHoje.quantidadeMeses(matriculaTurma.getTurma().getDtInicio(), matriculaTurma.getTurma().getDtTermino()) + 1;
-                    periodoMesesRestantes = DataHoje.quantidadeMeses(DataHoje.dataHoje(), matriculaTurma.getTurma().getDtTermino()) + 1;
-                }
-            } else {
-                periodoMeses = DataHoje.quantidadeMeses(DataHoje.dataHoje(), matriculaTurma.getTurma().getDtTermino()) + 1;
-            }
-            // Desconto proporcional = (valor integral do curso/numero de meses da turma) * numero de meses não frequentado a partir do inicio do curso
-            
-//            if ((Float.parseFloat(valor) - matriculaEscola.getDesconto() - matriculaEscola.getDescontoAteVencimento()) > 0) {
-//                valorLiquido = Moeda.converteR$Float(Float.parseFloat(valor) - matriculaEscola.getDesconto() - desconto - matriculaEscola.getDescontoAteVencimento());
-//                valorParcela = Moeda.converteR$Float((Float.parseFloat(valor) - desconto - matriculaEscola.getDesconto()) / matriculaEscola.getNumeroParcelas());
-//                valorParcelaVencimento = Moeda.converteR$Float((Float.parseFloat(valor) - desconto - matriculaEscola.getDesconto() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas());
+        calculoValor();
+        calculoDesconto();
+//        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
+//        valor = Moeda.substituiVirgula(valor);
+//        valorLiquido = "0";
+//        valorParcela = "0";
+//        valorParcelaVencimento = "0";
+//        int periodoMeses = 0;
+//        int periodoMesesRestantes = 0;
+//        float desconto = 0;
+//        if (!valor.isEmpty()) {
+//            if (!desabilitaTurma) {
+//                if (matriculaTurma.getTurma().getId() == -1) {
+//                    periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino()) + 1;
+//                    periodoMesesRestantes = DataHoje.quantidadeMeses(DataHoje.dataHoje(), turma.getDtTermino()) + 1;
+//                } else {
+//                    periodoMeses = DataHoje.quantidadeMeses(matriculaTurma.getTurma().getDtInicio(), matriculaTurma.getTurma().getDtTermino()) + 1;
+//                    periodoMesesRestantes = DataHoje.quantidadeMeses(DataHoje.dataHoje(), matriculaTurma.getTurma().getDtTermino()) + 1;
+//                }
+//            } else {
+//                periodoMeses = DataHoje.quantidadeMeses(DataHoje.dataHoje(), matriculaTurma.getTurma().getDtTermino()) + 1;
 //            }
-        }
-        valor = Moeda.converteR$(valor);
+//            // Desconto proporcional = (valor integral do curso/numero de meses da turma) * numero de meses não frequentado a partir do inicio do curso
+//            
+////            if ((Float.parseFloat(valor) - matriculaEscola.getDesconto() - matriculaEscola.getDescontoAteVencimento()) > 0) {
+////                valorLiquido = Moeda.converteR$Float(Float.parseFloat(valor) - matriculaEscola.getDesconto() - desconto - matriculaEscola.getDescontoAteVencimento());
+////                valorParcela = Moeda.converteR$Float((Float.parseFloat(valor) - desconto - matriculaEscola.getDesconto()) / matriculaEscola.getNumeroParcelas());
+////                valorParcelaVencimento = Moeda.converteR$Float((Float.parseFloat(valor) - desconto - matriculaEscola.getDesconto() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas());
+////            }
+//        }
+//        valor = Moeda.converteR$(valor);
         //}
     }
 
     public void atualizaValor() {
-        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
-        FunctionsDB functionsDB = new FunctionsDao();
-        if (aluno.getPessoa().getSocios().getId() != -1) {
-            valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
-        } else {
-            valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
-        }
-        //matriculaEscola.setDescontoAteVencimento(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1, null));
-        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null);
+//        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
+//        FunctionsDB functionsDB = new FunctionsDao();
+//        if (aluno.getPessoa().getSocios().getId() != -1) {
+//            valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+//        } else {
+//            valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0, null));
+//        }
+//        //matriculaEscola.setDescontoAteVencimento(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1, null));
+//        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null);
         //}
     }
-    
-    public String valorServico(MatriculaEscola me){
-        FunctionsDB functionsDB = new FunctionsDao();
-        if (me.getServicoPessoa().getPessoa().getSocios().getId() != -1) {
-            return Moeda.converteR$(Float.toString(functionsDB.valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, me.getServicoPessoa().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId())));
-        } else {
-            return Moeda.converteR$(Float.toString(functionsDB.valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null)));
+
+    public String valorServico(MatriculaEscola me) {
+        
+        String valorx;
+        if (me.getServicoPessoa().getServicos() != null) {
+            if (me.getServicoPessoa().getNrDesconto() == 0) {
+                if (me.getServicoPessoa().getPessoa().getSocios().getId() != -1) {
+                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, me.getServicoPessoa().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+                } else {
+                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null));
+                }
+            } else {
+                float valorx_c = new FunctionsDao().valorServicoCheio(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje());
+
+                float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(me.getServicoPessoa().getNrDesconto(), valorx_c), 100);
+                valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+            }
+
+            return Moeda.converteR$(valorx);
         }
+        
+        return "0,00";
+//        FunctionsDB functionsDB = new FunctionsDao();
+//        if (me.getServicoP essoa().getPessoa().getSocios().getId() != -1) {
+//            return Moeda.converteR$(Float.toString(functionsDB.valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, me.getServicoPessoa().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId())));
+//        } else {
+//            return Moeda.converteR$(Float.toString(functionsDB.valorServico(me.getServicoPessoa().getPessoa().getId(), me.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null)));
+//        }
     }
 
     public void updateGrid() {
         pegarIdServico();
-        atualizaValor();
-        calculaValorLiquido();
+        //atualizaValor();
+        calculoValor();
+        calculoDesconto();
+
+        //calculaValorLiquido();
     }
 
     public void gerarMovimento() {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEscStatus().getId() == 3) {
-                mensagem = "Não é possível gerar movimentos quando o status esta como desistente!";
+                GenericaMensagem.warn("Atençao", "Não é possível gerar movimentos quando o status esta como desistente!");
                 return;
             }
             if (matriculaEscola.getEvt() == null) {
                 if (servicoPessoa.getPessoa().getId() != pessoaAlunoMemoria.getId()) {
-                    mensagem = "Salvar o novo aluno / responsável para gerar movimentos!";
-                    GenericaMensagem.warn("Sistema", mensagem);
+                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
                     return;
                 }
                 if (servicoPessoa.getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
-                    mensagem = "Salvar o novo aluno / responsável para gerar movimentos!";
-                    GenericaMensagem.warn("Sistema", mensagem);
+                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
                     return;
                 }
                 Filial fil = getMacFilial().getFilial();
                 if (fil.getId() != matriculaEscola.getFilial().getId()) {
-                    mensagem = "Registro não pode ser atualizado por esta filial!";
-                    GenericaMensagem.warn("Sistema", mensagem);
+                    GenericaMensagem.warn("Sistema", "Registro não pode ser atualizado por esta filial!");
                     return;
                 }
                 String vencimento;
@@ -1342,14 +1572,13 @@ public class MatriculaEscolaBean implements Serializable {
                         vencimento = diaSwap + "/" + mes + "/" + ano;
                     }
                     boolean insereTaxa = false;
-                    if (getTaxa() == true) {
-                        insereTaxa = true;
-                    }
+//                    if (getTaxa() == true) {
+//                        insereTaxa = true;
+//                    }
                     Evt evt = new Evt();
                     if (!salvarAcumuladoDB.inserirObjeto(evt)) {
                         salvarAcumuladoDB.desfazerTransacao();
-                        mensagem = "Não foi possível gerar esse movimento!";
-                        GenericaMensagem.warn("Sistema", mensagem);
+                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
                         return;
                     }
                     lote.setEvt(evt);
@@ -1472,14 +1701,12 @@ public class MatriculaEscolaBean implements Serializable {
                                         new MatriculaSocios()));
                             } else {
                                 salvarAcumuladoDB.desfazerTransacao();
-                                mensagem = "Não foi possível gerar esse movimento!";
-                                GenericaMensagem.warn("Sistema", mensagem);
+                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
                                 return;
                             }
                             if (!salvarAcumuladoDB.inserirObjeto(movimento)) {
                                 salvarAcumuladoDB.desfazerTransacao();
-                                mensagem = "Não foi possível gerar esse movimento!";
-                                GenericaMensagem.warn("Sistema", mensagem);
+                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
                                 return;
                             }
                         }
@@ -1490,31 +1717,26 @@ public class MatriculaEscolaBean implements Serializable {
 //                        }
                         if (!salvarAcumuladoDB.alterarObjeto(matriculaEscola)) {
                             salvarAcumuladoDB.desfazerTransacao();
-                            mensagem = "Não foi possível gerar esse movimento!";
-                            GenericaMensagem.warn("Sistema", mensagem);
+                            GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
                             return;
                         }
                         salvarAcumuladoDB.comitarTransacao();
-                        mensagem = "Movimentos gerados com sucesso";
-                        GenericaMensagem.info("Sucesso", mensagem);
+                        GenericaMensagem.info("Sucesso", "Movimentos gerados com sucesso");
                         target = "_blank";
                         desabilitaCamposMovimento = true;
                         desabilitaDiaVencimento = true;
                     } else {
                         salvarAcumuladoDB.desfazerTransacao();
-                        mensagem = "Não foi possível gerar esse movimento!";
-                        GenericaMensagem.warn("Sistema", mensagem);
+                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
                     }
                 } catch (NumberFormatException e) {
                     salvarAcumuladoDB.desfazerTransacao();
                 }
             } else {
-                mensagem = "Esse movimento já foi gerado!";
-                GenericaMensagem.warn("Sistema", mensagem);
+                GenericaMensagem.warn("Sistema", "Esse movimento já foi gerado!");
             }
         } else {
-            mensagem = "Pesquisar aluno!";
-            GenericaMensagem.warn("Sistema", mensagem);
+            GenericaMensagem.warn("Sistema", "Pesquisar aluno!");
         }
     }
 
@@ -1522,20 +1744,17 @@ public class MatriculaEscolaBean implements Serializable {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEvt() != null) {
                 if (existeMovimento()) {
-                    mensagem = "Movimento já possui baixa, não pode ser cancelado!";
-                    GenericaMensagem.warn("Sistema", mensagem);
+                    GenericaMensagem.warn("Sistema", "Movimento já possui baixa, não pode ser cancelado!");
                     return;
                 }
                 MatriculaEscolaDao med = new MatriculaEscolaDao();
                 if (med.desfazerMovimento(matriculaEscola)) {
-                    listaMovimentos.clear();
+//                    listaMovimentos.clear();
                     desabilitaCamposMovimento = false;
                     bloqueiaComboDiaVencimento();
-                    mensagem = "Transação desfeita com sucesso";
-                    GenericaMensagem.info("Sucesso", mensagem);
+                    GenericaMensagem.info("Sucesso", "Transação desfeita com sucesso");
                 } else {
-                    mensagem = "Falha ao desfazer essa transação!";
-                    GenericaMensagem.warn("Erro", mensagem);
+                    GenericaMensagem.warn("Erro", "Falha ao desfazer essa transação!");
                 }
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 matriculaEscola = (MatriculaEscola) salvarAcumuladoDB.find(matriculaEscola);
@@ -1567,7 +1786,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (tipoFisica.equals("aluno")) {
                     GenericaSessao.remove("pesquisaFisicaTipo");
                     valorTaxa = "";
-                    taxa = false;
+                    //taxa = false;
                     aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
                     if (servicoPessoa.getPessoa().getId() == -1) {
                         pessoaAlunoMemoria = aluno.getPessoa();
@@ -1605,7 +1824,7 @@ public class MatriculaEscolaBean implements Serializable {
                     servicoPessoa.setCobranca(responsavel);
                     atualizaPessoaComplemento(0);
                     pegarIdServico();
-                    atualizaValor();
+                    //atualizaValor();
                     calculaValorLiquido();
                 } else if (tipoFisica.equals("responsavel")) {
                     GenericaSessao.remove("pesquisaFisicaTipo");
@@ -1765,14 +1984,6 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setListaDataVencimento(List<SelectItem> listaDataVencimento) {
         this.listaDataVencimento = listaDataVencimento;
-    }
-
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
     }
 
     public int getIdTurma() {
@@ -2088,14 +2299,14 @@ public class MatriculaEscolaBean implements Serializable {
     public void setOpenModal(String openModal) {
         this.openModal = openModal;
     }
-
-    public boolean getTaxa() {
-        return taxa;
-    }
-
-    public void setTaxa(boolean taxa) {
-        this.taxa = taxa;
-    }
+//
+//    public boolean getTaxa() {
+//        return taxa;
+//    }
+//
+//    public void setTaxa(boolean taxa) {
+//        this.taxa = taxa;
+//    }
 
     public void pegarIdServico() {
         if (tipoMatricula.equals("Individual")) {
@@ -2182,22 +2393,22 @@ public class MatriculaEscolaBean implements Serializable {
         GenericaSessao.put("pesquisaFisicaTipo", tipo);
     }
 
-    public void cobrarTaxa() {
-        if (taxa == true) {
-            this.taxa = true;
-            this.valorTaxa = Moeda.converteR$Float(vTaxa);
-        } else {
-            this.taxa = false;
-            this.valorTaxa = "";
-        }
-        idDataTaxa = 0;
-        idMesVencimento = 0;
-        listaDataTaxa.clear();
-        listaMesVencimento.clear();
-        getListaDataTaxa();
-        getListaMesVencimento();
-    }
-
+//    public void cobrarTaxa() {
+//        if (taxa == true) {
+//            this.taxa = true;
+//            this.valorTaxa = Moeda.converteR$Float(vTaxa);
+//            //this.valorTaxa = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2, null));
+//        } else {
+//            this.taxa = false;
+//            this.valorTaxa = "";
+//        }
+//        idDataTaxa = 0;
+//        idMesVencimento = 0;
+//        listaDataTaxa.clear();
+//        listaMesVencimento.clear();
+//        getListaDataTaxa();
+//        getListaMesVencimento();
+//    }
     public String getValorTaxa() {
         return valorTaxa;
     }
@@ -2207,11 +2418,11 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public String getValorTaxaString() {
-        return Moeda.substituiVirgula(valorTaxa);
+        return Moeda.converteR$(valorTaxa);
     }
 
     public void setValorTaxaString(String valorTaxa) {
-        this.valorTaxa = Moeda.substituiVirgula(valorTaxa);
+        this.valorTaxa = Moeda.converteR$(valorTaxa);
     }
 
     public Lote getLote() {
@@ -2229,53 +2440,53 @@ public class MatriculaEscolaBean implements Serializable {
     public void setMovimento(Movimento movimento) {
         this.movimento = movimento;
     }
+//
+//    public List<Movimento> getListaMovimentos() {
+//        if (listaMovimentos.isEmpty()) {
+//            if (matriculaEscola.getId() != -1) {
+//                int count = 0;
+//                if (matriculaEscola.getEvt() != null) {
+//                    MovimentoDB movimentoDB = new MovimentoDBToplink();
+//                    LoteDB loteDB = new LoteDBToplink();
+//                    // lote = (Lote) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
+//                    List<Lote> lotes = (List<Lote>) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
+//                    List<Movimento> ms = new ArrayList<Movimento>();
+//                    for (Lote lote1 : lotes) {
+//                        ms.addAll(movimentoDB.listaMovimentosDoLote(lote1.getId()));
+//                    }
+//                    //listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
+//                    for (Movimento listaMovimento : ms) {
+//                        if (listaMovimento.getTipoServico().getId() == 5) {
+//                            //setTaxa(true);
+//                            valorTaxa = Moeda.converteR$Float(listaMovimento.getValor());
+//                            listaMovimento.setQuantidade(0);
+//                        } else {
+//                            count++;
+//                            listaMovimento.setQuantidade(count);
+//                        }
+////                        if (listaMovimento.isAtivo()) {
+//                        if (listaMovimento.getTipoServico().getId() == 1 || listaMovimento.getTipoServico().getId() == 5) {
+//                            listaMovimentos.add(listaMovimento);
+//                        } else if (listaMovimento.getTipoServico().getId() == 6) {
+//                            listaOutrosMovimentos.add(listaMovimento);
+////                            }
+//                        }
+//                    }
+//                    lote = new Lote();
+//                }
+//            }
+//        }
+//        return listaMovimentos;
+//    }
+//
+//    public void setListaMovimentos(List<Movimento> listaMovimentos) {
+//        this.listaMovimentos = listaMovimentos;
+//    }
 
-    public List<Movimento> getListaMovimentos() {
-        if (listaMovimentos.isEmpty()) {
-            if (matriculaEscola.getId() != -1) {
-                int count = 0;
-                if (matriculaEscola.getEvt() != null) {
-                    MovimentoDB movimentoDB = new MovimentoDBToplink();
-                    LoteDB loteDB = new LoteDBToplink();
-                    // lote = (Lote) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
-                    List<Lote> lotes = (List<Lote>) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
-                    List<Movimento> ms = new ArrayList<Movimento>();
-                    for (Lote lote1 : lotes) {
-                        ms.addAll(movimentoDB.listaMovimentosDoLote(lote1.getId()));
-                    }
-                    //listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
-                    for (Movimento listaMovimento : ms) {
-                        if (listaMovimento.getTipoServico().getId() == 5) {
-                            setTaxa(true);
-                            valorTaxa = Moeda.converteR$Float(listaMovimento.getValor());
-                            listaMovimento.setQuantidade(0);
-                        } else {
-                            count++;
-                            listaMovimento.setQuantidade(count);
-                        }
-//                        if (listaMovimento.isAtivo()) {
-                        if (listaMovimento.getTipoServico().getId() == 1 || listaMovimento.getTipoServico().getId() == 5) {
-                            listaMovimentos.add(listaMovimento);
-                        } else if (listaMovimento.getTipoServico().getId() == 6) {
-                            listaOutrosMovimentos.add(listaMovimento);
-//                            }
-                        }
-                    }
-                    lote = new Lote();
-                }
-            }
-        }
-        return listaMovimentos;
-    }
-
-    public void setListaMovimentos(List<Movimento> listaMovimentos) {
-        this.listaMovimentos = listaMovimentos;
-    }
-
-    public boolean isHabilitaGerarParcelas() {
-        habilitaGerarParcelas = listaMovimentos.isEmpty();
-        return habilitaGerarParcelas;
-    }
+//    public boolean isHabilitaGerarParcelas() {
+//        habilitaGerarParcelas = listaMovimentos.isEmpty();
+//        return habilitaGerarParcelas;
+//    }
 
     public void setHabilitaGerarParcelas(boolean habilitaGerarParcelas) {
         this.habilitaGerarParcelas = habilitaGerarParcelas;
@@ -2399,7 +2610,7 @@ public class MatriculaEscolaBean implements Serializable {
                 setOcultaDescontoFolha(false);
                 desabilitaDescontoFolha = false;
                 pegarIdServico();
-                atualizaValor();
+                //atualizaValor();
                 calculaValorLiquido();
             }
             juridica = new Juridica();
@@ -2580,7 +2791,7 @@ public class MatriculaEscolaBean implements Serializable {
     public void selecionaTurma(Turma t) {
         turma = t;
         pegarIdServico();
-        atualizaValor();
+        //atualizaValor();
         calculaValorLiquido();
     }
 
@@ -2783,21 +2994,21 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public List<SelectItem> getListaDataTaxa() {
-        if (taxa) {
-            if (listaDataTaxa.isEmpty()) {
-                idDataTaxa = 0;
-                DataHoje dh = new DataHoje();
-                String dataTaxa;
-                for (int i = 0; i < 20; i++) {
-                    //dataTaxa = dh.incrementarDias(i, matriculaEscola.getDataMatriculaString());
-                    dataTaxa = dh.incrementarDias(i, servicoPessoa.getEmissao());
-                    listaDataTaxa.add(new SelectItem(i, dataTaxa, dataTaxa));
-                    if (dataTaxa.equals(DataHoje.data())) {
-                        idDataTaxa = i;
-                    }
+        //if (taxa) {
+        if (listaDataTaxa.isEmpty()) {
+            idDataTaxa = 0;
+            DataHoje dh = new DataHoje();
+            String dataTaxa;
+            for (int i = 0; i < 20; i++) {
+                //dataTaxa = dh.incrementarDias(i, matriculaEscola.getDataMatriculaString());
+                dataTaxa = dh.incrementarDias(i, servicoPessoa.getEmissao());
+                listaDataTaxa.add(new SelectItem(i, dataTaxa, dataTaxa));
+                if (dataTaxa.equals(DataHoje.data())) {
+                    idDataTaxa = i;
                 }
             }
         }
+        //}
         return listaDataTaxa;
     }
 
@@ -2822,17 +3033,17 @@ public class MatriculaEscolaBean implements Serializable {
                     //iDtMr = DataHoje.converteDataParaInteger(matriculaEscola.getDataMatriculaString());
                     iDtMr = DataHoje.converteDataParaInteger(servicoPessoa.getEmissao());
                     iDtVct = DataHoje.converteDataParaInteger(data);
-                    if (taxa) {
-                        if (iDtVct > iDtMr) {
-                            idMesVencimento = i;
-                            isTaxa = true;
-                        } else {
-                            idMesVencimento = 0;
-                        }
-                    } else {
+//                    if (taxa) {
+                    if (iDtVct > iDtMr) {
+                        idMesVencimento = i;
                         isTaxa = true;
+                    } else {
                         idMesVencimento = 0;
                     }
+//                    } else {
+//                        isTaxa = true;
+//                        idMesVencimento = 0;
+//                    }
                 }
                 mesAno = data.substring(3, 5) + "/" + data.substring(6, 10);
                 listaMesVencimento.add(new SelectItem(i, mesAno, mesAno));
@@ -2845,13 +3056,13 @@ public class MatriculaEscolaBean implements Serializable {
         this.listaMesVencimento = listaMesVencimento;
     }
 
-    public List<Movimento> getListaOutrosMovimentos() {
-        return listaOutrosMovimentos;
-    }
-
-    public void setListaOutrosMovimentos(List<Movimento> listaOutrosMovimentos) {
-        this.listaOutrosMovimentos = listaOutrosMovimentos;
-    }
+//    public List<Movimento> getListaOutrosMovimentos() {
+//        return listaOutrosMovimentos;
+//    }
+//
+//    public void setListaOutrosMovimentos(List<Movimento> listaOutrosMovimentos) {
+//        this.listaOutrosMovimentos = listaOutrosMovimentos;
+//    }
 
     public int getIdStatusFiltro() {
         return idStatusFiltro;
@@ -2905,19 +3116,19 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public int getNumeroParcelas() {
-        if (tipoMatricula.equals("Turma")){
-            if (!turma.getDataInicio().isEmpty() && !turma.getDataTermino().isEmpty() && DataHoje.menorData(turma.getDataInicio(), turma.getDataTermino())){
+        if (tipoMatricula.equals("Turma")) {
+            if (!turma.getDataInicio().isEmpty() && !turma.getDataTermino().isEmpty() && DataHoje.menorData(turma.getDataInicio(), turma.getDataTermino())) {
                 numeroParcelas = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino());
                 valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
-            }else{
+            } else {
                 numeroParcelas = 0;
                 valorTotal = getValorString();
             }
-        }else if (tipoMatricula.equals("Individual")){
-            if (!matriculaIndividual.getDataInicioString().isEmpty() && !matriculaIndividual.getDataTerminoString().isEmpty() && DataHoje.menorData(matriculaIndividual.getDataInicioString(), matriculaIndividual.getDataTerminoString())){
+        } else if (tipoMatricula.equals("Individual")) {
+            if (!matriculaIndividual.getDataInicioString().isEmpty() && !matriculaIndividual.getDataTerminoString().isEmpty() && DataHoje.menorData(matriculaIndividual.getDataInicioString(), matriculaIndividual.getDataTerminoString())) {
                 numeroParcelas = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino());
                 valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
-            }else{
+            } else {
                 numeroParcelas = 0;
                 valorTotal = getValorString();
             }

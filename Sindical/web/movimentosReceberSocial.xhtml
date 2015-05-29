@@ -444,6 +444,10 @@
                                             <p:outputLabel value="#{movimentosReceberSocialBean.converteData(linha.argumento0[4])}" rendered="#{movimentosReceberSocialBean.cab.verificarPermissao('alterarVencimentoBoletoSocial', 3)}" style="font-size: 11pt!important"/>
                                         </p:column>
                                         
+                                        <p:column headerText="Vencimento Original" style="width: 100px; text-align: center">
+                                            <p:outputLabel value="#{movimentosReceberSocialBean.converteData(linha.argumento0[5])}" />
+                                        </p:column>
+                                        
                                         <p:rowExpansion>
                                             <h:outputLabel value="Movimentos do Boleto #{linha.argumento0[2]}" style="font-weight: bold" rendered="false" />
                                             <p:dataTable value="#{linha.argumento2}" var="linha_movimento">
@@ -461,6 +465,10 @@
                                                 
                                                 <p:column headerText="Serviços">
                                                     <h:outputLabel value="#{linha_movimento.servicos.descricao}" />
+                                                </p:column>
+                                                
+                                                <p:column headerText="Vencimento Original" style="text-align: center; width: 100px">
+                                                    <h:outputLabel value="R$ #{linha_movimento.vencimentoOriginal}" />
                                                 </p:column>
                                                 
                                                 <p:column headerText="Valor" style="text-align: right; width: 80px">

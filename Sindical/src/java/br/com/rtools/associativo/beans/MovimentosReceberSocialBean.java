@@ -934,7 +934,6 @@ public class MovimentosReceberSocialBean implements Serializable {
                 return null;
             }
         }
-        
 //      PERMISSÃO DE ACESSO
 //        ControleAcessoBean cab = new ControleAcessoBean();
 //        Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
@@ -944,7 +943,6 @@ public class MovimentosReceberSocialBean implements Serializable {
 //                return null;
 //            }
 //        }
-
         if (!GerarMovimento.refazerMovimentos(lm)) {
             msgConfirma = "Não foi possível refazer movimentos";
             GenericaMensagem.error("Erro", msgConfirma);

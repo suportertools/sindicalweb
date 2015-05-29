@@ -1098,9 +1098,19 @@ public class MatriculaAcademiaBean implements Serializable {
                 desconto = 0;
             }
             if (Float.parseFloat(valor) - desconto >= 0) {
+                float valor_cheio = new FunctionsDao().valorServicoCheio(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje());
                 valorLiquido = valor;
                 valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - desconto);
-                float valorDesconto = Moeda.converteFloatR$Float(desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor)));
+                
+                if (aluno.getPessoa().getId() != -1){
+                    Integer idade = new DataHoje().calcularIdade(aluno.getDtNascimento());
+                    List<ServicoValor> lsv = new MatriculaEscolaDao().listServicoValorPorServicoIdade(idServico, idade);
+                    valorLiquido = (lsv.isEmpty()) ? valor : Moeda.converteR$Float(Moeda.converteUS$(Moeda.valorDoPercentual(valor, Moeda.converteR$Float(lsv.get(0).getDescontoAteVenc()))));
+                }   
+                
+                //float valorDesconto = Moeda.converteFloatR$Float(desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor)));
+                float valorDesconto = Moeda.subtracaoValores(valor_cheio, Moeda.converteUS$(valorLiquido));
+                valorDesconto = Moeda.multiplicarValores(Moeda.divisaoValores(valorDesconto, valor_cheio), 100);
                 matriculaAcademia.getServicoPessoa().setNrDesconto(valorDesconto);
             }
         }
