@@ -235,10 +235,16 @@ public final class Moeda {
         return result;
     }
 
+//    public static String percentualDoValor(String valorFixo, String valorCalculo) {
+//        float v1 = Moeda.subtracaoValores(Moeda.converteUS$(valorFixo), Moeda.converteUS$(valorCalculo));
+//        float v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, Moeda.converteUS$(valorFixo)), 100);
+//        return Moeda.converteR$Float(v2);
+//    }
+    
     public static String percentualDoValor(String valorFixo, String valorCalculo) {
-        float v1 = Moeda.subtracaoValores(Moeda.converteUS$(valorFixo), Moeda.converteUS$(valorCalculo));
-        float v2 = Moeda.multiplicarValores(Moeda.divisaoValores(v1, Moeda.converteUS$(valorFixo)), 100);
-        return Moeda.converteR$Float(v2);
+        double v1 = Moeda.converteUS$(valorFixo);
+        double v2 = Moeda.converteUS$(valorCalculo);
+        return Double.toString((v2 / v1) * 100);
     }
 
     public static String valorDoPercentual(String valorFixo, String percentual) {
@@ -246,4 +252,11 @@ public final class Moeda {
         float v = Moeda.converteUS$(valorFixo) - (Moeda.converteUS$(percentual) / 100) * Moeda.converteUS$(valorFixo);
         return Moeda.converteR$Float(v);
     }
+    
+//
+//    public static String valorDoPercentual(String valorFixo, String percentual) {
+//        //float v = Moeda.converteUS$(valorFixo) - (Moeda.converteUS$(percentual) / 100) * Moeda.converteUS$(valorFixo);
+//        float v = Moeda.subtracaoValores(Moeda.converteUS$(valorFixo), Moeda.multiplicarValores((Moeda.divisaoValores(Moeda.converteUS$(percentual), 100)), Moeda.converteUS$(valorFixo)));
+//        return Moeda.converteR$Float(v);
+//    }
 }

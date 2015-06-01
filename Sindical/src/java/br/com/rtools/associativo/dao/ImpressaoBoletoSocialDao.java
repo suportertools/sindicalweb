@@ -1,7 +1,6 @@
 package br.com.rtools.associativo.dao;
 
 import br.com.rtools.associativo.MensalidadesAtrasadas;
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.principal.DB;
 import javax.persistence.Query;
 
