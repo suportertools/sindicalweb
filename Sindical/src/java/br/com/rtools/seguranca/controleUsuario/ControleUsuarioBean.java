@@ -89,20 +89,29 @@ public class ControleUsuarioBean implements Serializable {
             ps = dBExternal.getConnection().prepareStatement(
                     "   SELECT *                    "
                     + "   FROM sis_configuracao     "
-                    + "  WHERE ds_identifica = ?    "
+                    + "  WHERE ds_identifica =     '" +nomeCliente+"'" 
                     + "  LIMIT 1                    "
             );
-            ps.setString(1, nomeCliente);
+            //ps.setString(1, nomeCliente);
             rs = ps.executeQuery();
+            
             if(!rs.next()) {
                 return true;
             }
-            while (rs.next()) {
-                Boolean ativo = Boolean.parseBoolean(rs.getString("is_ativo"));
-                if (ativo) {
-                    return true;
-                }
+            
+            Boolean ativo = rs.getBoolean("is_ativo");
+            
+            if (ativo){
+                return true;
             }
+            
+//            while (rs.next()) {
+//                
+//                Boolean ativo = Boolean.parseBoolean(rs.getString("is_ativo"));
+//                if (ativo) {
+//                    return true;
+//                }
+//            }
         } catch (Exception e) {
             e.getMessage();
             return true;
