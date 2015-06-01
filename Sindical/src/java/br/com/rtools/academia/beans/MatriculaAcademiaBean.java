@@ -1123,6 +1123,7 @@ public class MatriculaAcademiaBean implements Serializable {
         pegarIdServico();
         atualizaValor();
         //calculaValorLiquido();
+        listaPeriodosGrade.clear();
         getListaPeriodosGrade();
         if (matriculaAcademia.getId() == -1) {
             Dao dao = new Dao();
