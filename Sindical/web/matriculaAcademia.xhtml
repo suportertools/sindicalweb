@@ -145,7 +145,7 @@
                                             </h:column>
                                             <p:outputLabel value="Modalidade:" />
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 690px">
-                                                <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade i_panel_dia_vencimento" listener="#{matriculaAcademiaBean.recalcular1()}"/>
+                                                <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade i_panel_dia_vencimento" listener="#{matriculaAcademiaBean.recalcular1()}"/>
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaModalidades}"/>
                                             </p:selectOneMenu>
                                         </h:panelGrid>
