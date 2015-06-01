@@ -9,7 +9,7 @@ import java.util.Properties;
 public class DBExternal {
 
     private Statement statment;
-    private String url = "localhost"; // 192.168.1.102 -- INICIALMENTE não funcionou na máquina local com o IP - testado como exemplo o SinpaaeRP ...
+    private String url = "192.168.1.102";
     private String port = "5432";
     private String database = "Rtools";
     private String user = "postgres";
