@@ -468,7 +468,7 @@ public class MatriculaEscolaBean implements Serializable {
             } else {
                 float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valor));
                 valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
-                servicoPessoa.setNrDescontoString(Moeda.converteR$Float(Moeda.converteFloatR$Float(valorx_c)));
+                servicoPessoa.setNrDescontoString(Float.toString(valorx_c));
             }
             
             if (aluno.getPessoa().getId() != -1){

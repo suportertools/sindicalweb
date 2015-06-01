@@ -197,7 +197,7 @@
                                             <p:inputText value="#{matriculaAcademiaBean.valor}" readonly="true" size="8"/>
                                             <p:outputLabel value="Desconto (R$):" styleClass="margin-left-max"/>
                                             <p:inputText value="#{matriculaAcademiaBean.descontoString}" size="8" readonly="#{matriculaAcademiaBean.listaMovimentos.size() > 0}" converter="#{toCurrency}">
-                                                <p:ajax event="blur" listener="#{matriculaAcademiaBean.calculaValorLiquido}" update="@this, id_valor_liquido" />
+                                                <p:ajax event="blur" listener="#{matriculaAcademiaBean.calculoDesconto()}" update="@this, id_panel_grid_calcula" />
                                             </p:inputText>                                            
                                             <p:outputLabel value="Valor líquido (R$):" styleClass="margin-left-max"/>
                                             <p:inputText value="#{matriculaAcademiaBean.valorLiquido}" readonly="true" size="8" id="id_valor_liquido"/>

@@ -665,9 +665,9 @@ public class GerarMovimento extends DB {
     
     public static boolean estornarMovimento(Movimento movimento) {
         MovimentoDB db = new MovimentoDBToplink();
-        Baixa baixa = new Baixa();
-        List<FormaPagamento> formaPagamento = new ArrayList();
-        List<Movimento> lista = new ArrayList();
+        Baixa baixa;
+        List<FormaPagamento> formaPagamento;
+        List<Movimento> lista;
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         try {
             if (movimento == null || movimento.getBaixa() == null || (!movimento.isAtivo() && movimento.getLote().getRotina().getId() != 132)) {

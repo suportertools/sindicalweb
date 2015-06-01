@@ -444,7 +444,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         switch (faixa_data) {
             case "recebimento":
                 if (!data_inicial.isEmpty() && data_final.isEmpty()) {
-                    qry_data = " and ba.dt_baixa >= '" + data_inicial;
+                    qry_data = " and ba.dt_baixa >= '" + data_inicial + "'";
                 } else if (!data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = " and ba.dt_baixa >= '" + data_inicial + "' and ba.dt_baixa <= '" + data_final + "'";
                 } else if (data_inicial.isEmpty() && !data_final.isEmpty()) {
@@ -453,7 +453,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 break;
             case "importacao":
                 if (!data_inicial.isEmpty() && data_final.isEmpty()) {
-                    qry_data = " and ba.dt_importacao >= '" + data_inicial;
+                    qry_data = " and ba.dt_importacao >= '" + data_inicial + "'";
                 } else if (!data_inicial.isEmpty() && !data_final.isEmpty()) {
                     qry_data = " and ba.dt_importacao >= '" + data_inicial + "' and ba.dt_importacao <= '" + data_final + "'";
                 } else if (data_inicial.isEmpty() && !data_final.isEmpty()) {

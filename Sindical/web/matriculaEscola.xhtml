@@ -242,7 +242,7 @@
                                         <p:column>
                                             <p:outputLabel value="Valor das Parcelas" style="font-weight: bold; text-align: center;"/>
                                         </p:column>
-                                        <p:column rendered="true">
+                                        <p:column rendered="false">
                                             <p:outputLabel value="Desconto (%)" style="font-weight: bold; text-align: center;"/>
                                         </p:column>
                                         <p:column>
@@ -259,8 +259,8 @@
                                             <p:ajax event="blur" listener="#{matriculaEscolaBean.calculoDesconto()}" update="@this panel_calculo" />
                                         </p:inputText>
                                     </p:column>
-                                    <p:column rendered="true">
-                                        <p:inputText id="idDesconto" style="text-align: right; width: 80px" maxlength="10" value="#{matriculaEscolaBean.servicoPessoa.nrDescontoString}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"  converter="#{toCurrency}" onclick="selectInputText(this);" >
+                                    <p:column rendered="false">
+                                        <p:inputText id="idDesconto" style="text-align: right; width: 80px" maxlength="10" value="#{matriculaEscolaBean.servicoPessoa.nrDesconto}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
                                             <f:ajax event="blur" listener="#{matriculaEscolaBean.calculoValor()}" render="@this panel_calculo" />
                                         </p:inputText>
                                     </p:column>
