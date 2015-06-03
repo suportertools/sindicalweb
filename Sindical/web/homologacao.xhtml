@@ -389,8 +389,8 @@
 
                     <br />
                     <!-- <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="# {polling.habilita}" /> -->
-                    <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="tbl" global="false" listener="#{homologacaoBean.loadListaHomologacao()}" rendered="true"/>
-                    <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="tbl_at" global="false" listener="#{homologacaoBean.loadListaAtendimentoSimples()}" rendered="true"/>
+                    <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="tbl" global="false" listener="#{homologacaoBean.loadListaHomologacao()}" rendered="true" delay="10" stop="#{homologacaoBean.visibleModal}" ignoreAutoUpdate="true" />
+                    <p:poll interval="#{configuracaoHomologacaoBean.configuracaoHomologacao.tempoRefreshHomologacao}" update="tbl_at" global="false" listener="#{homologacaoBean.loadListaAtendimentoSimples()}" rendered="true" delay="10" stop="#{homologacaoBean.visibleModal}" ignoreAutoUpdate="true" />
 
                     <h:panelGrid columns="1" id="tbl" style="margin: 0 auto; width: 1015px">
                         <p:outputLabel value="HOMOLOGAÇÕES" style="font-size: 11pt!important"/>
