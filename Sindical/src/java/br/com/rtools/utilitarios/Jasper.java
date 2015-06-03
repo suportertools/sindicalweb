@@ -5,7 +5,7 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import com.sun.xml.internal.ws.util.StringUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -289,12 +289,14 @@ public class Jasper {
                     for (int z = 0; z < fields.length; z++) {
                         Method metodo;
                         if (fieldsShow != null && fieldsShow.length > 0) {
+                            String name = "";
                             for (int m = 0; m < fieldsShow.length; m++) {
                                 if (fieldsShow[m].equals(fields[z].getName())) {
+                                    name = fields[z].getName().substring(0, 1).toUpperCase() + fields[z].getName().substring(1);
                                     if (fields[z].getType().getName().equals("boolean")) {
-                                        metodo = classx.getMethod("is" + StringUtils.capitalize(fields[z].getName()), new Class[]{});
+                                        metodo = classx.getMethod("is" + name, new Class[]{});
                                     } else {
-                                        metodo = classx.getMethod("get" + StringUtils.capitalize(fields[z].getName()), new Class[]{});
+                                        metodo = classx.getMethod("get" + name, new Class[]{});
                                     }
                                     try {
                                         live = (Object) metodo.invoke(o, (Object[]) null);
@@ -308,10 +310,11 @@ public class Jasper {
                                 }
                             }
                         } else {
+                            String name = fields[z].getName().substring(0, 1).toUpperCase() + fields[z].getName().substring(1);
                             if (fields[z].getType().getName().equals("boolean")) {
-                                metodo = classx.getMethod("is" + StringUtils.capitalize(fields[z].getName()), new Class[]{});
+                                metodo = classx.getMethod("is" + name, new Class[]{});
                             } else {
-                                metodo = classx.getMethod("get" + StringUtils.capitalize(fields[z].getName()), new Class[]{});
+                                metodo = classx.getMethod("get" + name, new Class[]{});
                             }
                             try {
                                 live = (Object) metodo.invoke(o, (Object[]) null);
