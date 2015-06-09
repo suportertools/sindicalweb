@@ -258,10 +258,10 @@
 
                                             <p:column>
                                                 <p:panel header="Foto do Perfil" id="i_panel_imagens" style="width: 100%; height: 428px; text-align: center">
-                                                    <h:column rendered="#{fisicaBean.fotoTempPerfil.equals('')}">
+                                                    <h:column rendered="#{fisicaBean.fotoTempPerfil eq ''}">
                                                         <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(fisicaBean.fisica.pessoa)}" cache="false" style="max-width: 300px; max-height: 395px"/>
                                                     </h:column>
-                                                    <h:column rendered="#{!fisicaBean.fotoTempPerfil.equals('')}">
+                                                    <h:column rendered="#{!fisicaBean.fotoTempPerfil eq ''}">
                                                         <p:graphicImage value="#{fisicaBean.fotoTempPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>
                                                         <div class="clear"></div>
                                                     </h:column>
@@ -865,9 +865,16 @@
                     </p:panel>
                     <h:form id="form_aplicativos">
                         <p:dialog widgetVar="dlg_waiting_biometria" modal="true" resizable="false" header="Aguarde..." closable="false" visible="#{biometriaBean.disabled}">
-                            <h:outputLabel value="Não feche essa janela durante a operação. Caso apresente erros contate o administrador do sisteme ou reinicie o aplicativo da leitura." />
+                            <p:ajax event="close" update=":form_aplicativos:" />
+                            <h:outputLabel value="Não feche essa janela durante a operação. Caso apresente erros contate o administrador do sistema ou reinicie o aplicativo da leitura." />
                         </p:dialog>
-                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5"/>
+                        <p:dialog widgetVar="dlg_waiting_biometria_info" modal="true" resizable="false" header="Erro" closable="true">
+                            <h:outputLabel value="Dispostivo de leitura esta desconectado. Caso apresente erros contate o administrador do sistema ou reinicie o aplicativo da leitura." styleClass="font-color-red bold"/>
+                            <f:facet name="footer">
+                                <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_waiting_biometria_info').hide();" update="i_app_leitor"/>
+                            </f:facet>
+                        </p:dialog>
+                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5" />
                     </h:form>                    
                 </f:view>
 
