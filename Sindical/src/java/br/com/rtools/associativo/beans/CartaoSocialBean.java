@@ -17,6 +17,7 @@ import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -61,8 +62,10 @@ public class CartaoSocialBean implements Serializable {
     private Boolean toggle = false;
     private Integer firstIndex = 0;
     private Integer lastIndex = 0;
+    private Boolean disabled;
 
     public CartaoSocialBean() {
+        disabled = false;
         getListFilial();
         this.naoImpressoTodos();
     }
@@ -683,18 +686,25 @@ public class CartaoSocialBean implements Serializable {
 
     public List<SelectItem> getListFilial() {
         if (listFilial.isEmpty()) {
-            idFilial = MacFilial.getAcessoFilial().getFilial().getId();
+            MacFilial mf = MacFilial.getAcessoFilial();
+            idFilial = mf.getFilial().getId();
             if (idFilial == -1) {
                 idFilial = 0;
             }
             List<Filial> list = new Dao().list(new Filial(), true);
-            int i = 0;
-            listFilial.add(new SelectItem(i, "TODAS", null));
-            for (i = 1; i < list.size(); i++) {
-                if (idFilial == list.get(i).getFilial().getId()) {
-                    idFilial = i;
+            int j = 0;
+            listFilial.add(new SelectItem(j, "TODAS", null));
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getId() == idFilial) {
+                    // idFilial = i;
+                    if (list.get(i).getFilial().getId() == new Registro().getRegistroEmpresarial().getFilial().getId()) {
+                        disabled = false;
+                    } else {
+                        disabled = true;                        
+                    }
                 }
-                listFilial.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                listFilial.add(new SelectItem(j, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                j++;
             }
         }
         return listFilial;
@@ -837,5 +847,13 @@ public class CartaoSocialBean implements Serializable {
             }
         }
         return null;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
     }
 }
