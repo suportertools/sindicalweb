@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.pessoa.Biometria;
+import br.com.rtools.pessoa.BiometriaAtualizaCatraca;
 import br.com.rtools.pessoa.BiometriaCaptura;
 import br.com.rtools.pessoa.BiometriaServidor;
 import br.com.rtools.pessoa.Pessoa;
@@ -19,10 +20,10 @@ import javax.faces.bean.ViewScoped;
 @ManagedBean
 @ViewScoped
 public class BiometriaBean implements Serializable {
-    
+
     private Biometria biometria = null;
     private Boolean disabled = false;
-    
+
     public boolean isOpenBiometria() {
         if (GenericaSessao.exists("acessoFilial")) {
             Registro registro = (Registro) new Dao().find(new Registro(), 1);
@@ -30,7 +31,7 @@ public class BiometriaBean implements Serializable {
         }
         return false;
     }
-    
+
     public boolean isStatus() {
         if (GenericaSessao.exists("acessoFilial")) {
             BiometriaDao biometriaDao = new BiometriaDao();
@@ -42,9 +43,9 @@ public class BiometriaBean implements Serializable {
         }
         return false;
     }
-    
+
     public boolean complete(Pessoa p) {
-        if(p == null) {
+        if (p == null) {
             return false;
         }
         if (biometria == null) {
@@ -60,16 +61,21 @@ public class BiometriaBean implements Serializable {
                 }
             }
         } else {
-            if(biometria.getBiometria() != null && !biometria.getBiometria().isEmpty() && biometria.isAtivo()) {
+            if (biometria.getBiometria() != null && !biometria.getBiometria().isEmpty() && biometria.isAtivo()) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public void gravar(Pessoa p) {
-        BiometriaDao biometriaDao = new BiometriaDao();
+        BiometriaAtualizaCatraca bac = (BiometriaAtualizaCatraca) new Dao().find(new BiometriaAtualizaCatraca(), 1);
         Dao dao = new Dao();
+        if (bac == null) {
+            bac = new BiometriaAtualizaCatraca();
+            dao.save(bac, true);
+        }
+        BiometriaDao biometriaDao = new BiometriaDao();
         if (GenericaSessao.exists("acessoFilial")) {
             disabled = true;
             List list = biometriaDao.pesquisaBiometriaCapturaPorPessoa(p.getId());
@@ -84,31 +90,48 @@ public class BiometriaBean implements Serializable {
             dao.save(biometriaCaptura, true);
             biometria = null;
             for (int i = 0; i < 10; i++) {
-                biometria = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
-                if (biometria != null) {
-                    biometria = (Biometria) dao.rebind(biometria);
-                    if(!biometria.isAtivo() && biometria.getBiometria() != null && !biometria.getBiometria().isEmpty()) {
-                        biometria.setBiometria("");
-                        dao.update(biometria, true);
+                if(isStatus()) {
+                    biometria = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
+                    if (biometria != null) {
+                        biometria = (Biometria) dao.rebind(biometria);
+                        if (!biometria.isAtivo() && biometria.getBiometria() != null && !biometria.getBiometria().isEmpty()) {
+                            biometria.setBiometria("");
+                            dao.update(biometria, true);
+                            bac.setAparelho1(true);
+                            bac.setAparelho2(true);
+                            bac.setAparelho3(true);
+                            bac.setAparelho4(true);
+                            dao.update(bac, true);
+                        }
+                        if (biometria.getBiometria() != null && !biometria.getBiometria().isEmpty()) {
+                            PF.closeDialog("dlg_waiting_biometria");
+                            disabled = false;
+                            break;
+                        }
                     }
-                    if (biometria.getBiometria() != null && !biometria.getBiometria().isEmpty()) {
-                        PF.closeDialog("dlg_waiting_biometria");
-                        disabled = false;
-                        break;
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
                     }
+                    i--;                    
+                } else {
+                    PF.closeDialog("dlg_waiting_biometria");
+                    disabled = false;
+                    PF.openDialog("dlg_waiting_biometria_info");
+                    break;
                 }
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException ex) {
-                }
-                i--;
             }
         }
     }
-    
+
     public void delete(Pessoa p) {
-        BiometriaDao biometriaDao = new BiometriaDao();
+        BiometriaAtualizaCatraca bac = (BiometriaAtualizaCatraca) new Dao().find(new BiometriaAtualizaCatraca(), 1);
         Dao dao = new Dao();
+        if (bac == null) {
+            bac = new BiometriaAtualizaCatraca();
+            dao.save(bac, true);
+        }
+        BiometriaDao biometriaDao = new BiometriaDao();
         if (GenericaSessao.exists("acessoFilial")) {
             Biometria b = biometriaDao.pesquisaBiometriaPorPessoa(p.getId());
             if (b != null) {
@@ -119,6 +142,11 @@ public class BiometriaBean implements Serializable {
                     for (Object list1 : list) {
                         dao.delete(list1, true);
                     }
+                    bac.setAparelho1(true);
+                    bac.setAparelho2(true);
+                    bac.setAparelho3(true);
+                    bac.setAparelho4(true);
+                    dao.update(bac, true);
                     biometria = null;
                     GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
                 } else {
@@ -127,26 +155,26 @@ public class BiometriaBean implements Serializable {
             }
         }
     }
-    
+
     public Biometria getBiometria() {
         return biometria;
     }
-    
+
     public void setBiometria(Biometria biometria) {
         this.biometria = biometria;
     }
-    
+
     public Boolean getDisabled() {
         return disabled;
     }
-    
+
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
-    
+
     public boolean isDisabledSave() {
-        if(biometria != null) {
-            if(biometria.isAtivo()) {
+        if (biometria != null) {
+            if (biometria.isAtivo()) {
                 return true;
             } else {
                 return false;
@@ -154,5 +182,5 @@ public class BiometriaBean implements Serializable {
         }
         return false;
     }
-    
+
 }
