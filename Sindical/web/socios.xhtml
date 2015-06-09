@@ -655,8 +655,8 @@
                                         <p:messages id="i_msg2" showDetail="true" closable="true" />   
                                         <h:panelGrid id="i_panel_pesquisa" columns="1" style="width: 400px">
                                             <h:outputLabel value="Pesquisar" />
-                                            <p:autoComplete value="#{sociosBean.fisicaPesquisa}" completeMethod="#{sociosBean.listaPesquisaDependente}" size="100"
-                                                            var="fisica" itemLabel="#{fisica.pessoa.nome}" itemValue="#{fisica}" converter="fisicaConverter" forceSelection="true">
+                                            <p:autoComplete value="#{sociosBean.fisicaPesquisa}" completeMethod="#{sociosBean.listaPesquisaDependente}" size="100" scrollHeight="300" disabled="#{sociosBean.novoDependente.id != -1}"
+                                                            var="fisica" itemLabel="#{fisica.detalhes}" itemValue="#{fisica}" converter="fisicaConverter" forceSelection="true" queryDelay="1000" maxlength="100" minQueryLength="1">
                                                 <p:ajax event="itemSelect" listener="#{sociosBean.selectDependente()}" update="i_panel_pesquisa i_panel_dados"/>
                                             </p:autoComplete>
 
