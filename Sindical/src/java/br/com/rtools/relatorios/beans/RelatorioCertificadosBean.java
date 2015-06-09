@@ -112,6 +112,7 @@ public class RelatorioCertificadosBean implements Serializable {
         tipoRelatorio = "Avançado";
         indexAccordion = "Avançado";
         order = "";
+        relatorios = new Relatorios();
     }
 
     @PreDestroy
@@ -846,14 +847,16 @@ public class RelatorioCertificadosBean implements Serializable {
     }
 
     public Relatorios getRelatorios() {
-        try {
-            if (relatorios.getId() != index[0]) {
+        if(index[0] != null) {
+            try {
+                if (relatorios.getId() != Integer.parseInt(getListaTipoRelatorios().get(index[0]).getDescription())) {
+                    Jasper.EXPORT_TO_EXCEL = false;
+                }
+                relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(getListaTipoRelatorios().get(index[0]).getDescription()));
+            } catch (Exception e) {
+                relatorios = new Relatorios();
                 Jasper.EXPORT_TO_EXCEL = false;
-            }
-            relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(getListaTipoRelatorios().get(index[0]).getDescription()));
-        } catch (Exception e) {
-            relatorios = new Relatorios();
-            Jasper.EXPORT_TO_EXCEL = false;
+            }            
         }
         return relatorios;
     }
