@@ -114,9 +114,7 @@ public class SociosBean implements Serializable {
     private List<ListaDependentes> listDependentes;
     private List<ListaDependentes> listDependentesAtivos;
     private List<ListaDependentes> listDependentesInativos;
-    
-    
-    
+
     public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
@@ -415,10 +413,10 @@ public class SociosBean implements Serializable {
     public void calculoDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
-        
-        if (Moeda.converteUS$(valorServico) == Moeda.converteUS$(valorx))
+
+        if (Moeda.converteUS$(valorServico) == Moeda.converteUS$(valorx)) {
             servicoPessoa.setNrDescontoString("0.0");
-        else{
+        } else {
             float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valorServico));
             valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
             servicoPessoa.setNrDescontoString(Moeda.converteR$Float(valorx_c));
@@ -427,25 +425,25 @@ public class SociosBean implements Serializable {
 
     public void calculoValor() {
         String valorx;
-        if (servicoPessoa.getNrDesconto() == 0)
+        if (servicoPessoa.getNrDesconto() == 0) {
             valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        else{
+        } else {
             float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
-            
+
             float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(servicoPessoa.getNrDesconto(), valorx_c), 100);
             valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
         }
-        
+
         valorServico = Moeda.converteR$(valorx);
     }
 
     public void calculoNovoDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
-        
-        if (Moeda.converteUS$(novoValorServico) == Moeda.converteUS$(valorx))
+
+        if (Moeda.converteUS$(novoValorServico) == Moeda.converteUS$(valorx)) {
             novoDescontoSocial.setNrDescontoString("0.0");
-        else{
+        } else {
             float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(novoValorServico));
             valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
             novoDescontoSocial.setNrDescontoString(Moeda.converteR$Float(valorx_c));
@@ -454,25 +452,25 @@ public class SociosBean implements Serializable {
 
     public void calculoNovoValor() {
         String valorx;
-        if (novoDescontoSocial.getNrDesconto() == 0)
+        if (novoDescontoSocial.getNrDesconto() == 0) {
             valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        else{
+        } else {
             float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
-            
+
             float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(novoDescontoSocial.getNrDesconto(), valorx_c), 100);
             valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
         }
-        
-        novoValorServico = Moeda.converteR$(valorx); 
+
+        novoValorServico = Moeda.converteR$(valorx);
     }
 
     public void calculoAlterarDesconto() {
         String valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
         String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje()));
-        
-        if (Moeda.converteUS$(alteraValorServico) == Moeda.converteUS$(valorx))
+
+        if (Moeda.converteUS$(alteraValorServico) == Moeda.converteUS$(valorx)) {
             descontoSocial.setNrDescontoString("0.0");
-        else{
+        } else {
             float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(alteraValorServico));
             valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
             descontoSocial.setNrDescontoString(Moeda.converteR$Float(valorx_c));
@@ -481,15 +479,15 @@ public class SociosBean implements Serializable {
 
     public void calculoAlterarValor() {
         String valorx;
-        if (descontoSocial.getNrDesconto() == 0)
+        if (descontoSocial.getNrDesconto() == 0) {
             valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje(), 0, servicoCategoria.getCategoria().getId()));
-        else{
+        } else {
             float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), servicoCategoria.getServicos().getId(), DataHoje.dataHoje());
-            
+
             float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(descontoSocial.getNrDesconto(), valorx_c), 100);
             valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
         }
-        
+
         alteraValorServico = Moeda.converteR$(valorx);
     }
 
@@ -808,8 +806,38 @@ public class SociosBean implements Serializable {
     }
 
     public List<Fisica> listaPesquisaDependente(String query) {
-        FisicaDB db = new FisicaDBToplink();
-        listaFisica = db.pesquisaFisicaPorNome(query.toUpperCase());
+        if (query.isEmpty()) {
+            listaFisica.clear();
+            return null;
+        }
+        query = query.trim();
+        FisicaDBToplink db = new FisicaDBToplink();
+        String como = "P";
+        if (query.length() <= 2) {
+            como = "I";
+        }
+        String in = "" + matriculaSocios.getTitular().getId();
+        for (int i = 0; i < listDependentes.size(); i++) {
+            in += "," + listDependentes.get(i).getFisica().getPessoa().getId();
+        }
+        for (int i = 0; i < listDependentesInativos.size(); i++) {
+            in += "," + listDependentesInativos.get(i).getFisica().getPessoa().getId();
+        }
+        db.setNot_in(in);
+        listaFisica = db.pesquisaPessoa(query, "nome", como);
+        if (listaFisica.isEmpty()) {
+            if (ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(query))) {
+                db.setLimit(1);
+                listaFisica = db.pesquisaPessoa(query, "cpf", "");
+            } else if (DataHoje.isDataValida(query)) {
+                db.setLimit(100);
+                listaFisica = db.pesquisaPessoa(query, "nascimento", "");
+            }
+            if (listaFisica.isEmpty()) {
+                db.setLimit(2);
+                listaFisica = db.pesquisaPessoa(query, "rg", "");
+            }
+        }
         return listaFisica;
     }
 
@@ -818,7 +846,7 @@ public class SociosBean implements Serializable {
         } else {
             novoDependente = fisicaPesquisa;
         }
-        
+
         loadNaturalidadeDependente();
     }
 
@@ -1317,7 +1345,7 @@ public class SociosBean implements Serializable {
             }
             for (int i = 0; i < listDependentesInativos.size(); i++) {
                 Socios socioDependenteInativo = sociosDao.pesquisaDependenteInativoPorMatricula(listDependentesInativos.get(i).getFisica().getPessoa().getId(), socios.getMatriculaSocios().getId());
-                if(socioDependenteInativo != null) {
+                if (socioDependenteInativo != null) {
                     if (socioDependenteInativo.getServicoPessoa().isAtivo() != socios.getServicoPessoa().isDescontoFolha()) {
                         socioDependenteInativo.getServicoPessoa().setDescontoFolha(socios.getServicoPessoa().isDescontoFolha());
                         if (!dao.update(socioDependenteInativo)) {
@@ -1325,7 +1353,7 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             break;
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -1470,7 +1498,7 @@ public class SociosBean implements Serializable {
         }
 
         novoDependente.getPessoa().setNome(novoDependente.getPessoa().getNome().trim());
-        
+
         if (novoDependente.getId() == -1) {
             novoDependente.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             dao.openTransaction();
@@ -2031,18 +2059,18 @@ public class SociosBean implements Serializable {
         if (f.exists()) {
             f.delete();
         }
-        
+
         loadNaturalidadeDependente();
     }
-    
-    public void loadNaturalidadeDependente(){
+
+    public void loadNaturalidadeDependente() {
         if (GenericaSessao.exists("cidadePesquisa")) {
             Cidade cidade = (Cidade) GenericaSessao.getObject("cidadePesquisa", true);
-            novoDependente.setNaturalidade( cidade.getCidade() +" - "+ cidade.getUf() );
+            novoDependente.setNaturalidade(cidade.getCidade() + " - " + cidade.getUf());
             return;
         }
-        
-        if (novoDependente.getId() == -1 || novoDependente.getNaturalidade().isEmpty()){
+
+        if (novoDependente.getId() == -1 || novoDependente.getNaturalidade().isEmpty()) {
             PessoaEnderecoDB dbPes = new PessoaEnderecoDBToplink();
             Dao dao = new Dao();
             Filial fili = (Filial) dao.find(new Filial(), 1);
@@ -2050,12 +2078,12 @@ public class SociosBean implements Serializable {
                 Pessoa pes = fili.getMatriz().getPessoa();
                 if (pes.getId() != -1) {
                     Cidade cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();
-                    novoDependente.setNaturalidade( cidade.getCidade() +" - "+ cidade.getUf() );
+                    novoDependente.setNaturalidade(cidade.getCidade() + " - " + cidade.getUf());
                 }
             }
         }
     }
-    
+
     public void fechaModal() {
         Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
@@ -2484,10 +2512,10 @@ public class SociosBean implements Serializable {
 
     public String imprimirFichaSocial() {
         String foto = getFotoSocio();
-        
+
         String path = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper";
         String pathVerso = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTROVERSO.jasper";
-        
+
         Diretorio.criar("Arquivos/downloads/fichas");
         //String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
         ImpressaoParaSocios.comDependente(
@@ -2942,7 +2970,7 @@ public class SociosBean implements Serializable {
     }
 
     public Fisica getNovoDependente() {
-        if (GenericaSessao.exists("cidadePesquisa")){
+        if (GenericaSessao.exists("cidadePesquisa")) {
             loadNaturalidadeDependente();
         }
         return novoDependente;
