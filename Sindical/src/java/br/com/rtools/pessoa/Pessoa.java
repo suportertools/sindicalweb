@@ -1,7 +1,6 @@
 package br.com.rtools.pessoa;
 
 import br.com.rtools.associativo.Socios;
-import br.com.rtools.associativo.dao.SociosDao;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.pessoa.db.FisicaDB;

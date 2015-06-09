@@ -1,6 +1,5 @@
 package br.com.rtools.pessoa.db;
 
-import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.principal.DB;
@@ -12,6 +11,9 @@ import java.util.Vector;
 import javax.persistence.Query;
 
 public class FisicaDBToplink extends DB implements FisicaDB {
+
+    private Integer limit = 0;
+    private String not_in = "";
 
     @Override
     public boolean insert(Fisica fisica) {
@@ -80,7 +82,14 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             String textQuery = "";
 
             desc = AnaliseString.normalizeLower(desc);
-            desc = (como.equals("I") ? desc + "%" : "%" + desc + "%");
+            switch (como) {
+                case "I":
+                    desc = desc + "%";
+                    break;
+                case "P":
+                    desc = "%" + desc + "%";
+                    break;
+            }
 
             String field = "";
 
@@ -99,14 +108,21 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             if (por.equals("cpf")) {
                 field = "p.ds_documento";
             }
+            if (por.equals("nascimento")) {
+                field = "f.dt_nascimento";
+            }
 
             int maxResults = 1000;
-            if (desc.length() == 1) {
-                maxResults = 50;
-            } else if (desc.length() == 2) {
-                maxResults = 150;
-            } else if (desc.length() == 3) {
-                maxResults = 500;
+            if (limit == 0) {
+                if (desc.length() == 1) {
+                    maxResults = 50;
+                } else if (desc.length() == 2) {
+                    maxResults = 150;
+                } else if (desc.length() == 3) {
+                    maxResults = 500;
+                }
+            } else {
+                maxResults = limit;
             }
 
             if (por.equals("endereco")) {
@@ -161,12 +177,25 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery += " ) "
                         + "  ORDER BY P.ds_nome LIMIT " + maxResults;
             } else {
-
-                textQuery = "    SELECT F.*                                             "
-                        + "        FROM pes_fisica AS F                                 "
-                        + "  INNER JOIN pes_pessoa AS P ON P.id = F.id_pessoa           "
-                        + "       WHERE LOWER(FUNC_TRANSLATE(" + field + ")) LIKE '" + desc + "'"
-                        + "       ORDER BY P.ds_nome LIMIT " + maxResults;
+                if (por.equals("nascimento")) {
+                    textQuery = "    SELECT F.*                                             "
+                            + "        FROM pes_fisica AS F                                 "
+                            + "  INNER JOIN pes_pessoa AS P ON P.id = F.id_pessoa           "
+                            + "       WHERE " + field + " = '" + desc + "'";
+                    if (!not_in.isEmpty()) {
+                        textQuery += " AND P.id NOT IN (" + not_in + ")";
+                    }
+                    textQuery += "       ORDER BY P.ds_nome LIMIT " + maxResults;
+                } else {
+                    textQuery = "    SELECT F.*                                             "
+                            + "        FROM pes_fisica AS F                                 "
+                            + "  INNER JOIN pes_pessoa AS P ON P.id = F.id_pessoa           "
+                            + "       WHERE LOWER(FUNC_TRANSLATE(" + field + ")) LIKE '" + desc + "'";
+                    if (!not_in.isEmpty()) {
+                        textQuery += " AND P.id NOT IN (" + not_in + ")";
+                    }
+                    textQuery += "       ORDER BY P.ds_nome LIMIT " + maxResults;
+                }
             }
 
             Query query = getEntityManager().createNativeQuery(textQuery, Fisica.class);
@@ -792,5 +821,21 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             e.getMessage();
         }
         return new ArrayList();
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public String getNot_in() {
+        return not_in;
+    }
+
+    public void setNot_in(String not_in) {
+        this.not_in = not_in;
     }
 }
