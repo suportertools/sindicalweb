@@ -338,4 +338,18 @@ public class Fisica implements java.io.Serializable {
     public void setTituloZona(String tituloZona) {
         this.tituloZona = tituloZona;
     }
+
+    public String getDetalhes() {
+        String s = "";
+        if (!this.pessoa.getNome().isEmpty()) {
+            s += this.pessoa.getNome();
+        }
+        if (!this.pessoa.getDocumento().isEmpty()) {
+            s += " - Documento: " + this.pessoa.getDocumento();
+        }
+        if (!this.getNascimento().isEmpty()) {
+            s += " - Nascimento: " + this.getNascimento();
+        }
+        return s;
+    }
 }

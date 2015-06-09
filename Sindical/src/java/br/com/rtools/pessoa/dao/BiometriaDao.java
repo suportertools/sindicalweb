@@ -1,7 +1,6 @@
 package br.com.rtools.pessoa.dao;
 
 import br.com.rtools.pessoa.Biometria;
-import br.com.rtools.pessoa.BiometriaDepartamento;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,4 +81,59 @@ public class BiometriaDao extends DB {
         return new ArrayList();
     }
 
+    public Biometria pesquisaBiometriaPorString(String biometria) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT B FROM Biometria AS B WHERE B.biometria LIKE :biometria");
+            query.setParameter("biometria", biometria);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Biometria) list.get(0);
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public List listBiometriaArray() {
+        try {
+            getEntityManager().clear();
+            Query query = getEntityManager().createQuery("SELECT BC.biometria FROM Biometria AS BC ORDER BY BC.id");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    public List listBiometria() {
+        try {
+            getEntityManager().clear();
+            Query query = getEntityManager().createNativeQuery("SELECT b.* FROM pes_biometria AS b WHERE b.is_ativo = true AND (b.ds_biometria IS NOT NULL AND B.ds_biometria <> '') ORDER BY b.id", Biometria.class);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    public Integer total() {
+        try {
+            getEntityManager().clear();
+            Query query = getEntityManager().createNativeQuery("SELECT COUNT(*) FROM pes_biometria AS b WHERE b.is_ativo = true AND (b.ds_biometria IS NOT NULL AND B.ds_biometria <> '') ");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return Integer.parseInt(((List) list.get(0)).get(0).toString());
+            }
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+        return 0;
+    }
 }
