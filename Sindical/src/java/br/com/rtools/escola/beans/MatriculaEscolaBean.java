@@ -681,6 +681,7 @@ public class MatriculaEscolaBean implements Serializable {
 //                    // AQUI matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", (Moeda.converteR$Float(valorTotalComDesconto / matriculaEscola.getNumeroParcelas()))));
 //                }
 //            }
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", valorTotal));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotalComDesconto", valorTotal));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcelaComDesconto", getValorString()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", getValorString()));
@@ -1238,6 +1239,7 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                 }
             }
+            getListaIndividual();
             for (int i = 0; i < listaIndividual.size(); i++) {
                 if (matriculaIndividual.getCurso().getId() == Integer.parseInt(listaIndividual.get(i).getDescription())) {
                     idIndividual = i;
@@ -2719,7 +2721,7 @@ public class MatriculaEscolaBean implements Serializable {
                 desabilitaDescontoFolha = true;
                 ocultaDescontoFolha = true;
             }
-            verificaDebitosResponsavel(servicoPessoa.getCobranca());
+            //verificaDebitosResponsavel(servicoPessoa.getCobranca());
         } else {
             pessoaResponsavelMemoria = responsavel;
         }
@@ -3116,9 +3118,16 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public int getNumeroParcelas() {
+        String dt = null;
         if (tipoMatricula.equals("Turma")) {
             if (!turma.getDataInicio().isEmpty() && !turma.getDataTermino().isEmpty() && DataHoje.menorData(turma.getDataInicio(), turma.getDataTermino())) {
-                numeroParcelas = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino());
+                if ( DataHoje.menorData(servicoPessoa.getEmissao(), turma.getDataInicio()) ){
+                    dt = turma.getDataInicio();
+                }else{
+                    dt = servicoPessoa.getEmissao();
+                }
+                
+                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), turma.getDtTermino());
                 valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
             } else {
                 numeroParcelas = 0;
@@ -3126,7 +3135,13 @@ public class MatriculaEscolaBean implements Serializable {
             }
         } else if (tipoMatricula.equals("Individual")) {
             if (!matriculaIndividual.getDataInicioString().isEmpty() && !matriculaIndividual.getDataTerminoString().isEmpty() && DataHoje.menorData(matriculaIndividual.getDataInicioString(), matriculaIndividual.getDataTerminoString())) {
-                numeroParcelas = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino());
+                if ( DataHoje.menorData(servicoPessoa.getEmissao(), matriculaIndividual.getDataInicioString()) ){
+                    dt = matriculaIndividual.getDataInicioString();
+                }else{
+                    dt = servicoPessoa.getEmissao();
+                }
+                
+                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), matriculaIndividual.getDataTermino());
                 valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
             } else {
                 numeroParcelas = 0;

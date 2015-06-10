@@ -144,7 +144,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private List<Vector> listaMovimento = new ArrayList();
     private String tipoStatusMovimento = "abertos";
     private String tipoPesquisaMovimento = "beneficiario";
-    
+
+    private String inativoDesde = "";
+
     @PostConstruct
     public void init() {
     }
@@ -215,10 +217,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     
     public String telaMovimentosReceberSocial() {
         String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).movimentosReceberSocial();
-        
         GenericaSessao.put("movimentosReceberSocialBean", new MovimentosReceberSocialBean());
         GenericaSessao.put("pessoaPesquisa", fisica.getPessoa());
-        
         return retorno;
     }
     
@@ -754,10 +754,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         SociosDB db = new SociosDBToplink();
         socios = db.pesquisaSocioPorPessoaAtivo(fisica.getPessoa().getId());
         if (socios.getId() == -1) {
-            socios = new SociosDBToplink().pesquisaSocioTitularInativoPorPessoa(fisica.getPessoa().getId());
-            if (socios == null) {
+            //socios = new SociosDBToplink().pesquisaSocioTitularInativoPorPessoa(fisica.getPessoa().getId());
+            List<Socios> ls = new SociosDBToplink().pesquisaSocioPorPessoaInativo(fisica.getPessoa().getId());
+            if (!ls.isEmpty())
+                socios = ls.get(0);
+            else 
                 socios = new Socios();
-            }
         }
         listaSocioInativo.clear();
     }
@@ -1474,7 +1476,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         
         if (listaPessoaEndereco.isEmpty()) {
             GenericaMensagem.warn("Atenção", "Cadastrar um Endereço!");
-            return "pessoaFisica";
+            return null;
         }
         
         if (pessoaEmpresa.getId() != -1) {
@@ -2236,23 +2238,39 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (fisica.getId() == -1) {
             // CADASTRO NOVO
             tipoCadastro = -1;
+            return tipoCadastro;
         } else if (socios.getId() == -1) {
             // CADASTRO PARA ALTERAR
             tipoCadastro = 1;
-        } else if (socios.getServicoPessoa().isAtivo()) {
-            if (fisica.getPessoa().getId() == socios.getMatriculaSocios().getTitular().getId()) {
+            return tipoCadastro;
+        } 
+        
+        if (fisica.getPessoa().getId() == socios.getMatriculaSocios().getTitular().getId()) {
+            if (socios.getServicoPessoa().isAtivo()) {
                 // SÓCIO TITULAR
                 tipoCadastro = 2;
-            } else {
+            }else{
+                if (listaSocioInativo.isEmpty()) {
+                    // SÓCIO INATIVO
+                    tipoCadastro = 4;
+                } else if (!listaSocioInativo.isEmpty()) {
+                    // SÓCIO INATIVO
+                    tipoCadastro = 5;
+                }    
+            }
+        } else {
+            if (socios.getServicoPessoa().isAtivo() && ( (socios.getServicoPessoa().getReferenciaValidade() != null && socios.getServicoPessoa().getReferenciaValidade().isEmpty()) || DataHoje.maiorData("01/"+socios.getServicoPessoa().getReferenciaValidade(), DataHoje.data()))) {
                 // SÓCIO DEPENDENTE
                 tipoCadastro = 3;
+            }else{
+                if (listaSocioInativo.isEmpty()) {
+                    // SÓCIO INATIVO
+                    tipoCadastro = 4;
+                } else if (!listaSocioInativo.isEmpty()) {
+                    // SÓCIO INATIVO
+                    tipoCadastro = 5;
+                }    
             }
-        } else if (!socios.getServicoPessoa().isAtivo() && listaSocioInativo.isEmpty()) {
-            // SÓCIO INÁTIVO
-            tipoCadastro = 4;
-        } else if (!socios.getServicoPessoa().isAtivo() && !listaSocioInativo.isEmpty()) {
-            // SÓCIO INÁTIVO
-            tipoCadastro = 5;
         }
         return tipoCadastro;
     }
@@ -2368,10 +2386,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         // DÉBITOS
         switch (validacao) {
             case "convenioMedico":
-            case "matriculaEscola":
+            //case "matriculaEscola":
             case "matriculaAcademia":
             case "emissaoGuias":
-            case "lancamentoIndividual":
+            //case "lancamentoIndividual":
             case "geracaoDebitosCartao":
                 FunctionsDao functionsDao = new FunctionsDao();
                 if (functionsDao.inadimplente(p.getId())) {
@@ -2471,4 +2489,22 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.tipoPesquisaMovimento = tipoPesquisaMovimento;
     }
     
+    public String getInativoDesde() {
+        if (socios.getId() == -1) {
+            //lblSocio = "ASSOCIAR";
+            inativoDesde = "";
+        } else if (socios.getId() != -1 && (socios.getMatriculaSocios().getDtInativo() != null || !socios.getServicoPessoa().isAtivo())) {
+           // lblSocio = "ASSOCIAR";
+            inativoDesde = (!socios.getMatriculaSocios().getInativo().isEmpty()) ? socios.getMatriculaSocios().getInativo() : socios.getServicoPessoa().getReferenciaValidade();
+        } else {
+         //   lblSocio = "VER CADASTRO";
+            inativoDesde = "";
+        }        
+        return inativoDesde;
+    }
+
+    public void setInativoDesde(String inativoDesde) {
+        this.inativoDesde = inativoDesde;
+    }
+
 }

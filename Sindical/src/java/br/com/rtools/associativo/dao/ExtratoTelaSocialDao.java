@@ -29,7 +29,12 @@ public class ExtratoTelaSocialDao extends DB{
                 + "        m.nr_valor_baixa, \n " // 12
                 + "        m.nr_taxa, \n " // 13
                 + "        m.id_baixa, \n " // 14
-                + "        bo.id \n " // 15
+                + "        bo.id, \n " // 15
+                + "        pt.ds_documento, \n " // 16
+                + "        pb.ds_documento, \n " // 17
+                + "        bo.dt_vencimento, \n " // 18
+                + "        bo.dt_vencimento_original, \n " // 19
+                + "        b.dt_importacao \n " // 20
                 + "   FROM fin_movimento m \n "
                 + "  INNER JOIN pes_pessoa pr ON pr.id = m.id_pessoa -- RESPONSAVEL \n "
                 + "  INNER JOIN pes_pessoa pt ON pt.id = m.id_titular -- TITULAR \n "
@@ -43,7 +48,7 @@ public class ExtratoTelaSocialDao extends DB{
 //                + "   LEFT JOIN seg_usuario u ON u.id = mi.id_usuario \n "
 //                + "   LEFT JOIN pes_pessoa pu ON pu.id = u.id_pessoa \n "
                 // PEGAR MOVIMENTOS QUE FORAM EXCLUIDOS ----------------------------------
-                + "  WHERE m.is_ativo = true \n ";
+                + "  WHERE m.is_ativo = true AND s.id NOT IN (SELECT sr.id_servicos FROM fin_servico_rotina sr WHERE sr.id_rotina = 4) \n ";
         
         String and = "", order = "";
         
@@ -67,7 +72,7 @@ public class ExtratoTelaSocialDao extends DB{
         if (id_pessoa != null && id_pessoa != -1){
             switch(tipoPessoa){
                 case "nenhum":
-                    and += " AND m.id_pessoa = "+id_pessoa;
+                    //and += " AND m.id_pessoa = "+id_pessoa;
                     break;
 
                 case "responsavel":
@@ -161,12 +166,16 @@ public class ExtratoTelaSocialDao extends DB{
             case "importacao":
                 order += " ORDER BY b.dt_importacao DESC \n";
                 break;
+                
+            case "boleto":
+                order += " ORDER BY bo.ds_boleto DESC \n";
+                break;
         }
         
         
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    text + and + order
+                    text + and + order + " LIMIT 15000 "
             );
             return qry.getResultList();
         }catch(Exception e){
@@ -178,7 +187,7 @@ public class ExtratoTelaSocialDao extends DB{
     public List<Servicos> listaServicosAssociativo(){
         try {
             Query qry = getEntityManager().createQuery(
-                    "SELECT sr.servicos FROM ServicoRotina sr where sr.rotina.id <> 4 ORDER BY sr.servicos.descricao"
+                    "SELECT s FROM Servicos s where s.id NOT IN (SELECT sr.servicos.id FROM ServicoRotina sr WHERE sr.rotina.id = 4) ORDER BY s.descricao"
             );
             return qry.getResultList();
         }catch(Exception e){

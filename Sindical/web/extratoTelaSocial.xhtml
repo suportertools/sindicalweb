@@ -151,7 +151,7 @@
                                                     <p:outputLabel value="Tipo de Pessoa" style="font-weight: bold"/><br />
                                                     <p:selectOneMenu value="#{extratoTelaSocialBean.tipoPessoa}" style="width: 100px">
                                                         <p:ajax event="change" update="@this formExtratoTelaSocial" listener="#{extratoTelaSocialBean.loadLista()}" />
-                                                        <f:selectItem itemValue="nenhum"  itemLabel="-- Selecione o tipo de Pessoa --" rendered="false"/>
+                                                        <f:selectItem itemValue="nenhum"  itemLabel="-- Selecione o tipo de Pessoa --" />
                                                         <f:selectItem itemValue="responsavel"  itemLabel="Responsável"/>
                                                         <f:selectItem itemValue="titular"      itemLabel="Titular"/>
                                                         <f:selectItem itemValue="beneficiario" itemLabel="Beneficiário"/>
@@ -162,10 +162,10 @@
                                             <h:panelGrid columns="3">
                                                 <h:column>
                                                     <p:outputLabel value="Pessoa" style="font-weight: bold"/><br />
-                                                    <p:inputText value="#{extratoTelaSocialBean.pessoa.documento}" disabled="true" style="width: 130px; font-weight: bold"/>
-                                                    <p:inputText value="#{extratoTelaSocialBean.pessoa.nome}" disabled="true" style="width: #{(configuracaoBean.resolucao.tipoResolucao.tamanho == '1200' || configuracaoBean.resolucao.tipoResolucao.tamanho == '') ? '445px' : '260px'}; font-weight: bold"/>
-                                                    <p:commandButton icon="ui-icon-search" alt="Pesquisar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" />
-                                                    <p:commandButton icon="ui-icon-close" alt="Excluir Pessoa" action="#{extratoTelaSocialBean.removerPessoa()}" update="i_fieldset_pessoa" />
+                                                    <p:inputText value="#{extratoTelaSocialBean.pessoa.documento}" disabled="true" style="width: 130px; font-weight: bold; opacity: .5"/>
+                                                    <p:inputText value="#{extratoTelaSocialBean.pessoa.nome}" disabled="true" style="width: #{(configuracaoBean.resolucao.tipoResolucao.tamanho == '1200' || configuracaoBean.resolucao.tipoResolucao.tamanho == '') ? '445px' : '260px'}; font-weight: bold; opacity: .5"/>
+                                                    <p:commandButton icon="ui-icon-search" alt="Pesquisar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa}" disabled="#{extratoTelaSocialBean.tipoPessoa eq 'nenhum'}"/>
+                                                    <p:commandButton icon="ui-icon-close" alt="Excluir Pessoa" action="#{extratoTelaSocialBean.removerPessoa()}" update="i_fieldset_pessoa" disabled="#{extratoTelaSocialBean.tipoPessoa eq 'nenhum'}"/>
                                                 </h:column>
                                             </h:panelGrid>
                                         </p:fieldset>
@@ -185,10 +185,6 @@
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}">
                                         <p:ajax event="change" update="@this" global="false"/>
                                     </p:selectBooleanCheckbox>
-                                </p:column>
-
-                                <p:column headerText="Documento" style="width: 110px; text-align: center">
-                                    <p:outputLabel value="#{linha.argumento1[1]}" />
                                 </p:column>
                                 
                                 <p:column headerText="Responsável" style="width:200px" rendered="#{(extratoTelaSocialBean.tipoPessoa eq 'nenhum') ? true : (extratoTelaSocialBean.tipoPessoa ne 'responsavel')}">
@@ -240,8 +236,36 @@
                                 </p:column>
                                 
                                 <p:rowExpansion>
-                                    <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
+                                    <h:panelGrid columns="6" style="height: 40px" styleClass="sbb">
+                                        <p:column>
+                                            <p:outputLabel value="Documento do Responsável" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento1[1]}" />
+                                        </p:column>
                                         
+                                        <p:column>
+                                            <p:outputLabel value="Documento do Titular" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento1[16]}" />
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Documento do Beneficiário" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{linha.argumento1[17]}" />
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Vencimento do Boleto" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{extratoTelaSocialBean.converteData(linha.argumento1[18])}" />
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Vencimento Original do Boleto" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{extratoTelaSocialBean.converteData(linha.argumento1[19])}" />
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <p:outputLabel value="Data de Importação" style="font-weight: bold"/><br />
+                                            <p:outputLabel value="#{extratoTelaSocialBean.converteData(linha.argumento1[20])}" />
+                                        </p:column>
                                     </h:panelGrid>
                                 </p:rowExpansion>                                
                             </p:dataTable>
@@ -294,11 +318,11 @@
                                     </h:column>
                                     
                                     <h:column>
-                                        <p:commandButton icon="ui-icon-close" value="Excluir" title="Excluir Boletos Selecionados" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_excluir').show()" style="margin-right: 20px"/>
+                                        <p:commandButton icon="ui-icon-close" value="Excluir" title="Excluir Boletos Selecionados" disabled="#{extratoTelaSocialBean.cab.verificarPermissao('excluirBoletoExtratoSocial', 2)}" onclick="PF('dlg_excluir').show()" style="margin-right: 20px"/>
                                     </h:column>
                                 
                                     <h:column>
-                                        <p:commandButton icon="ui-icon-arrowreturnthick-1-w" value="Estornar" title="Estornar Boletos Selecionados (Apenas Pagos)" onclick="PF('dlg_estornar').show()" style="margin-right: 20px"/>
+                                        <p:commandButton icon="ui-icon-arrowreturnthick-1-w" value="Estornar" title="Estornar Boletos Selecionados (Apenas Pagos)" disabled="#{extratoTelaSocialBean.cab.verificarPermissao('estornarBoletoExtratoSocial', 3)}" onclick="PF('dlg_estornar').show()" style="margin-right: 20px"/>
                                     </h:column>
                                     
                                     <h:column>

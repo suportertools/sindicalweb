@@ -72,6 +72,8 @@ public class Servicos implements java.io.Serializable {
     private boolean validadeGuias;
     @Column(name = "is_curso_renovacao", nullable = false, columnDefinition = "boolean default false")
     private boolean cursoRenovacao;
+    @Column(name = "is_boleto", nullable = true, columnDefinition = "boolean default false")
+    private boolean boleto;
 
     public Servicos() {
         this.id = -1;
@@ -99,6 +101,7 @@ public class Servicos implements java.io.Serializable {
         this.administradora = null;
         this.validadeGuias = false;
         this.cursoRenovacao = false;
+        this.boleto = false;
     }
 
     public Servicos(int id,
@@ -125,7 +128,8 @@ public class Servicos implements java.io.Serializable {
             boolean validadeGuiasVigente,
             Administradora administradora,
             boolean validadeGuias,
-            boolean cursoRenovacao) {
+            boolean cursoRenovacao,
+            boolean boleto) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -151,6 +155,7 @@ public class Servicos implements java.io.Serializable {
         this.administradora = administradora;
         this.validadeGuias = validadeGuias;
         this.cursoRenovacao = cursoRenovacao;
+        this.boleto = boleto;
     }
 
     public int getId() {
@@ -356,5 +361,13 @@ public class Servicos implements java.io.Serializable {
 
     public void setCursoRenovacao(boolean cursoRenovacao) {
         this.cursoRenovacao = cursoRenovacao;
+    }
+
+    public boolean isBoleto() {
+        return boleto;
+    }
+
+    public void setBoleto(boolean boleto) {
+        this.boleto = boleto;
     }
 }

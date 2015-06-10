@@ -246,7 +246,8 @@ public class MatriculaAcademiaBean implements Serializable {
             }
 
             String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje()));
-            float valor_do_percentual = Moeda.converteUS$(Moeda.percentualDoValor(valorx_cheio, Moeda.converteR$Float(desconto)));
+            float calculo = Moeda.converteUS$(valorx_cheio) - (Moeda.converteUS$(valorx) - desconto);
+            float valor_do_percentual = Moeda.converteUS$(Moeda.percentualDoValor(valorx_cheio, Moeda.converteR$Float(calculo)));
             
             if (desconto == Moeda.converteUS$(valorx)) {
                 matriculaAcademia.getServicoPessoa().setNrDescontoString("0.0");
@@ -589,8 +590,16 @@ public class MatriculaAcademiaBean implements Serializable {
             verificaSocio();
         }
         
+        String valorx;
+        if (aluno.getPessoa().getSocios().getId() != -1) {
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+        } else {
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null));
+        }
         String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(aluno.getPessoa().getId(), matriculaAcademia.getAcademiaServicoValor().getServicos().getId(), DataHoje.dataHoje()));
-        desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto())))) ;
+        
+        //desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto())))) ;
+        desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto())))) ;
 //(Float.parseFloat(Moeda.substituiVirgula(valor)) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100);
         
         pegarIdServico();
