@@ -84,7 +84,7 @@
                                     <h:column>
                                         <h:panelGrid columns="3">
                                             <p:commandLink id="idResp" value="#{matriculaEscolaBean.servicoPessoa.cobranca.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.servicoPessoa.cobranca.id)}" title="Ver detalhes"/>
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
+                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}"/>
                                             <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
                                     </h:column>
@@ -295,6 +295,10 @@
                                 <p:column>
                                     <p:outputLabel value="#{matriculaEscolaBean.valorTotal}" style="font-weight: bold; font-size: 11pt!important"/>
                                 </p:column>
+                            </h:panelGrid> 
+                            
+                            <h:panelGrid columns="1" style="width: 100%">
+                                <p:inputTextarea value="#{matriculaEscolaBean.matriculaEscola.obs}" placeholder="OBSERVAÇÃO DA MATRÍCULA" style="width: 100%"/>
                             </h:panelGrid>                            
                         </p:panel>
                         <h:panelGrid columns="15" id="idPainelMenus" styleClass="margin-top-max">
@@ -348,8 +352,8 @@
                         
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
+                                <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
+                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
                             </h:panelGrid>
                         </p:dialog>                        
                         <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">

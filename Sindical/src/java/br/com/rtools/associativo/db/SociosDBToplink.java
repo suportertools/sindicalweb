@@ -259,8 +259,14 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public List<Socios> pesquisaSocioPorPessoaInativo(int idPessoa) {
         try {
-            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false ORDER BY S.matriculaSocios.id DESC");
-            query.setParameter("pessoa", idPessoa);
+            Query query = getEntityManager().createNativeQuery(
+                    " SELECT s.* \n " +
+                    "  FROM soc_socios s \n " +
+                    " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa \n " +
+                    " WHERE sp.id_pessoa = " + idPessoa + " \n " +
+                    "   AND sp.is_ativo = false \n " +
+                    " ORDER BY s.id_matricula_socios DESC ", Socios.class
+            );
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;

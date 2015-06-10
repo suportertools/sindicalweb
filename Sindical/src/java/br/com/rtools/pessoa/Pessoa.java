@@ -10,6 +10,7 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
@@ -371,6 +372,20 @@ public class Pessoa implements Serializable {
     @Override
     public String toString() {
         return "Pessoa{" + "id=" + id + ", nome=" + nome + ", tipoDocumento=" + tipoDocumento + ", obs=" + obs + ", site=" + site + ", telefone1=" + telefone1 + ", telefone2=" + telefone2 + ", telefone3=" + telefone3 + ", email1=" + email1 + ", email2=" + email2 + ", email3=" + email3 + ", documento=" + documento + ", login=" + login + ", senha=" + senha + ", dtCriacao=" + dtCriacao + '}';
+    }
+    
+    public Integer getDiaVencimentoOriginal() {
+        if (this.id != -1) {
+            PessoaDB db = new PessoaDBToplink();
+            PessoaComplemento pc = db.pesquisaPessoaComplementoPorPessoa(this.id);
+            if (pc.getId() == -1) {
+                Registro registro = (Registro) new Dao().find(new Registro(), 1);
+                return registro.getFinDiaVencimentoCobranca();
+            } else {
+                return pc.getNrDiaVencimento();
+            }
+        }
+        return null;
     }
 
 }

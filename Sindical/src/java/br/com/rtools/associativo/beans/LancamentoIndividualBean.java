@@ -546,7 +546,8 @@ public class LancamentoIndividualBean {
                 List listam = dbl.pesquisaMovimentoFisica(responsavel.getId());
                 if (!listam.isEmpty()){
                     GenericaMensagem.warn("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
-                    return responsavel = new Pessoa();
+                    // 817 NÃO BLOQUEAR PESSOAS DEVEDORAS
+                    //return responsavel = new Pessoa();
                 }
                 
                 
@@ -597,7 +598,8 @@ public class LancamentoIndividualBean {
                 List listam = dbl.pesquisaMovimentoFisica(fisica.getPessoa().getId());
                 if (!listam.isEmpty()){
                     GenericaMensagem.warn("Atenção", "Esta pessoa possui débitos com o Sindicato, não poderá ser responsável!");
-                    return responsavel = new Pessoa();
+                    // 817 NÃO BLOQUEAR PESSOAS DEVEDORAS
+                    //return responsavel = new Pessoa();
                 }
                 
 

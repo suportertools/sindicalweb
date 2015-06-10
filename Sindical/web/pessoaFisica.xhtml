@@ -287,7 +287,7 @@
                                                     </p:column>
 
                                                     <p:column rendered="#{fisicaBean.tipoCadastro == 4 or fisicaBean.tipoCadastro == 5}">
-                                                        <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} INATIVO ) DESDE #{fisicaBean.socios.matriculaSocios.inativo}" style="font-weight: bold; font-size: 12pt!important; color: #ff9900"/>
+                                                        <p:outputLabel value="SÓCIO ( #{fisicaBean.tipoSocio} INATIVO ) DESDE #{fisicaBean.inativoDesde}" style="font-weight: bold; font-size: 12pt!important; color: #ff9900"/>
                                                     </p:column>
 
                                                     <p:column rendered="#{fisicaBean.tipoCadastro == -1 or fisicaBean.tipoCadastro == 1}">
@@ -761,7 +761,7 @@
                                     <p:commandButton value="Novo" action="#{fisicaBean.novo}" />
                                     <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_painel_excluir').show();" rendered="#{fisicaBean.fisica.id != -1}" />
                                     <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" />
-                                    <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" action="#{fisicaBean.telaMovimentosReceberSocial}"/>
+                                    <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" action="#{fisicaBean.telaMovimentosReceberSocial}" ajax="false"/>
                                     <h:column>
                                         <h:panelGrid id="i_app_message" rendered="#{biometriaBean.openBiometria and fisicaBean.fisica.id != -1}" columns="3">
                                             <h:column>
@@ -869,13 +869,13 @@
                             <p:ajax event="close" update=":form_aplicativos:" />
                             <h:outputLabel value="Não feche essa janela durante a operação. Caso apresente erros contate o administrador do sistema ou reinicie o aplicativo da leitura." />
                         </p:dialog>
+                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5" ignoreAutoUpdate="true"/>
                         <p:dialog widgetVar="dlg_waiting_biometria_info" modal="true" resizable="false" header="Erro" closable="true">
                             <h:outputLabel value="Dispostivo de leitura esta desconectado. Caso apresente erros contate o administrador do sistema ou reinicie o aplicativo da leitura." styleClass="font-color-red bold"/>
                             <f:facet name="footer">
                                 <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_waiting_biometria_info').hide();" update="i_app_leitor"/>
                             </f:facet>
                         </p:dialog>
-                        <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5" />
                     </h:form>                    
                 </f:view>
 

@@ -105,7 +105,7 @@
                             <h:panelGrid columns="4" rendered="#{movimentosReceberSocialBean.socios.id != -1}" style="width: 40%">
                                 <h:column>
                                     <p:outputLabel value="Matrícula: " style="font-size: 9pt!important; font-weight: bold" />
-                                    <p:outputLabel value="#{movimentosReceberSocialBean.socios.matriculaSocios.id}" style="font-size: 9pt!important" />
+                                    <p:outputLabel value="#{movimentosReceberSocialBean.socios.matriculaSocios.nrMatricula}" style="font-size: 9pt!important" />
                                 </h:column>
 
                                 <h:column>
@@ -190,7 +190,7 @@
                             <h:panelGrid id="panelAnexar" columns="2" rendered="#{movimentosReceberSocialBean.listaMovimento.size() > 0 or movimentosReceberSocialBean.pessoa.id != -1}" style="width: 100%">
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Anexar Boletos" action="#{movimentosReceberSocialBean.clickAnexarMovimentos}" title="Anexar Boletos" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}"  onclick="PF('dlg_anexar_boletos').show()" update="panel_anexar_boletos" disabled="#{movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 3) or movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 1)}"/>
+                                    <p:commandButton value="Anexar Boletos" action="#{movimentosReceberSocialBean.clickAnexarMovimentos}" title="Anexar Boletos" rendered="#{movimentosReceberSocialBean.porPesquisa != 'quitados'}"  onclick="PF('dlg_anexar_boletos').show()" update="panel_anexar_boletos panel_criar_boleto" disabled="#{movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 3) or movimentosReceberSocialBean.cab.verificarPermissao('anexarBoletos', 1)}"/>
                                 </p:column>
                                 
                                 <p:column>
@@ -203,10 +203,13 @@
                                 <p:messages id="i_msg" showDetail="true" closable="true" />  
                             </h:panelGrid>
 
-                            <p:dataTable value="#{movimentosReceberSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!" rowStyleClass="#{linha.argumento28}">
+                            <p:dataTable value="#{movimentosReceberSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="10" emptyMessage="Nenhuma pendência foi encontrada!" rowStyleClass="#{linha.argumento28}" scrollable="true" scrollWidth="100%">
                                 <f:facet name="header">
                                     <p:commandButton id="toggler" type="button" value="Colunas" style="float: right" icon="ui-icon-calculator" />
                                     <p:columnToggler datasource="tbl" trigger="toggler" />
+                                    <p:selectBooleanCheckbox value="#{movimentosReceberSocialBean.chkSeleciona}" style="float: left" itemLabel="SELECIONAR TODOS">
+                                        <p:ajax event="change" update="@this tbl :formMovimentosReceber:i_panel" listener="#{movimentosReceberSocialBean.marcarTodos()}"/>
+                                    </p:selectBooleanCheckbox>
                                 </f:facet>
                                 
                                 <p:column style="width:15px">  
@@ -215,32 +218,34 @@
 
                                 <p:column style="text-align: center; width: 15px">
                                     <f:facet name="header">
-                                        <p:selectBooleanCheckbox value="#{movimentosReceberSocialBean.chkSeleciona}">
-                                            <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosReceberSocialBean.marcarTodos()}" />
-                                        </p:selectBooleanCheckbox>
+
                                     </f:facet>
                                     <p:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <p:ajax event="change" update="tbl :formMovimentosReceber:i_panel" listener="#{movimentosReceberSocialBean.calculoDesconto()}" />
                                     </p:selectBooleanCheckbox>
                                 </p:column>
 
-                                <p:column headerText="Beneficiário" rendered="#{movimentosReceberSocialBean.listaPessoa.size() eq 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}">
+                                <p:column headerText="Beneficiário" rendered="#{movimentosReceberSocialBean.listaPessoa.size() eq 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}" style="width: 200px">
                                     <p:commandLink value="#{linha.argumento14}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
 
-                                <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() gt 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista}">
+                                <p:column headerText="Titular" rendered="#{(movimentosReceberSocialBean.listaPessoa.size() gt 1 and !movimentosReceberSocialBean.pessoaJuridicaNaLista and movimentosReceberSocialBean.porPesquisa ne 'quitados')}"  style="width: 200px">
                                     <p:commandLink value="#{linha.argumento13}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
                                 
-                                <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.listaPessoa.size() ge 1 and movimentosReceberSocialBean.pessoaJuridicaNaLista}">
+                                <p:column headerText="Titular" rendered="#{(movimentosReceberSocialBean.listaPessoa.size() ge 1 and movimentosReceberSocialBean.pessoaJuridicaNaLista and movimentosReceberSocialBean.porPesquisa ne 'quitados')}"  style="width: 200px">
                                     <p:commandLink value="#{linha.argumento30}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
                                 </p:column>
-
-                                <p:column headerText="Serviços">
+                                
+                                <p:column headerText="Titular" rendered="#{movimentosReceberSocialBean.porPesquisa eq 'quitados'}"  style="width: 200px">
+                                    <p:commandLink value="#{linha.argumento30}" action="#{movimentosReceberSocialBean.cadastroPessoa(linha, null)}" ajax="false" style="font-size: 8pt!important"/>
+                                </p:column>
+                                
+                                <p:column headerText="Serviços"  style="width: 200px">
                                     <p:commandLink value="#{linha.argumento2}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
 
-                                <p:column headerText="Tipo" style="text-align: center">
+                                <p:column headerText="Tipo" style="text-align: center; width: 80px" >
                                     <p:commandLink value="#{linha.argumento3}" action="#{movimentosReceberSocialBean.complementoPessoa(linha)}" onclick="PF('i_dlg_dados').show()" update=":formMovimentosReceber:i_dados" style="font-size: 8pt!important"/>
                                 </p:column>
 
@@ -281,7 +286,7 @@
                                     <h:outputText value="#{linha.argumento12}" style="font-size: 8pt!important"/>
                                 </p:column>
 
-                                <p:column style="text-align: center; width: 50px" headerText="Mais">
+                                <p:column style="text-align: center; width: 50px" headerText="" >
                                     <p:commandLink ajax="false" value="Alterar" action="#{movimentosReceberSocialBean.telaMovimento(linha.argumento1)}" disabled="#{controleAcessoBean.botaoAlterarMovimento}"/>
                                 </p:column>
 
@@ -295,6 +300,13 @@
                                     <h:commandLink target="_blank" action="#{movimentosReceberSocialBean.encaminhamento(linha.argumento27)}" rendered="#{movimentosReceberSocialBean.pesquisaGuia(linha.argumento27).encaminhamento == true}" title="Imprimir este Encaminhamento">
                                         <p:commandButton icon="ui-icon-print"  title="Imprimir este Encaminhamento"/>
                                     </h:commandLink>
+                                </p:column>
+                                
+                                <p:column headerText="Opções" style="width: 120px; text-align: center" rendered="false">
+                                    <p:splitButton value="Alterar" title="Alterar este Movimento" action="#{movimentosReceberSocialBean.telaMovimento(linha.argumento1)}" icon="ui-icon-arrowrefresh-1-w">
+                                        <p:menuitem value="Imprimir Recibo" action="#{movimentosReceberSocialBean.recibo(linha.argumento1)}" rendered="#{movimentosReceberSocialBean.porPesquisa != 'abertos' and !empty(linha.argumento10)}" ajax="false" target="_blank" icon="ui-icon-print"/>
+                                        <p:menuitem value="Imprimir Encaminhamento" action="#{movimentosReceberSocialBean.encaminhamento(linha.argumento27)}" rendered="#{movimentosReceberSocialBean.pesquisaGuia(linha.argumento27).encaminhamento == true}" ajax="false" target="_blank" icon="ui-icon-print"/>
+                                    </p:splitButton>
                                 </p:column>
                                 
                                 <p:column style="width: 40px; text-align: center">
@@ -563,13 +575,15 @@
                             </p:dialog>
                             
                             <p:dialog widgetVar="dlg_confirma_criar_novo_boleto" header="Novo Boleto" resizable="false" width="400" modal="true">
-                                <h:panelGrid>
-                                    <p:outputLabel value="Deseja realmente CRIAR UM NOVO BOLETO com esses movimentos?" style="font-size: 11pt!important"/>
-                                </h:panelGrid>
-                                
-                                <h:panelGrid columns="1">
-                                    <h:outputLabel value="Digite um Vencimento para esse Boleto" style="color: red"/>
-                                    <p:inputMask value="#{movimentosReceberSocialBean.vencimentoNovoBoleto}" mask="99/99/9999" style="width: 80px; text-align: center"/>
+                                <h:panelGrid id="panel_criar_boleto" columns="1">
+                                    <h:panelGrid>
+                                        <p:outputLabel value="Deseja realmente CRIAR UM NOVO BOLETO com esses movimentos?" style="font-size: 11pt!important"/>
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="1">
+                                        <h:outputLabel value="Digite um Vencimento para esse Boleto" style="color: red"/>
+                                        <p:inputMask value="#{movimentosReceberSocialBean.vencimentoNovoBoleto}" mask="99/99/9999" style="width: 80px; text-align: center"/>
+                                    </h:panelGrid>
                                 </h:panelGrid>
                                 
                                 <h:panelGrid columns="2">

@@ -2,7 +2,8 @@ package br.com.rtools.movimento;
 
 import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.Convencao;
-import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
+import br.com.rtools.arrecadacao.ConvencaoServico;
+import br.com.rtools.arrecadacao.dao.ConvencaoServicoDao;
 import br.com.rtools.arrecadacao.db.AcordoDB;
 import br.com.rtools.arrecadacao.db.AcordoDBToplink;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
@@ -48,17 +49,12 @@ import br.com.rtools.sistema.Links;
 import br.com.rtools.utilitarios.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -390,6 +386,7 @@ public class ImprimirBoleto {
                     //valor = new BigDecimal(0.0);
                 }
 
+                ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
                 if (lista.get(i).getTipoServico().getId() != 4) {
                     mensagemCobranca = movDB.pesquisaMensagemCobranca(lista.get(i).getId());
                     mensagem = mensagemCobranca.getMensagemConvencao().getMensagemContribuinte();//mensagem
@@ -404,7 +401,6 @@ public class ImprimirBoleto {
                     } else {
                         mensagem = historico.getHistorico();
                     }
-                    ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
 
                     swap[25] = movDB.pesquisaDescMensagem(lista.get(i).getTipoServico().getId(), lista.get(i).getServicos().getId(), conv.getId(), dbCon.pesquisaGrupoCidadeJuridica(conv.getId(), id_cidade_endereco).getId());
                 }
@@ -421,21 +417,31 @@ public class ImprimirBoleto {
                 // CAIXA EXIGE QUE SE COLOQUE O AGENCIA/COD SINDICAL NA FICHA DE COMPENSACAO NO LUGAR DO AG/COD CEDENDE,
                 // POREM CONCATENANDO COM O DIGITO VERIFICADOR DO COD CEDENTE EX.
                 // 0242/004.136.02507-5 >>>>> FICARA : 0242/S02507-5
+                
+                String referencia = "Ref:. "+lista.get(i).getReferencia(), descricaoServico = "Contribuição:. " + lista.get(i).getServicos().getDescricao();
                 if (boletox.getContaCobranca().getLayout().getId() == 2) {
                     //codc = swap[44] + "-" + codc.substring(codc.length() - 1, codc.length()); 17/03/2014 -- HOMOLOGAÇÃO DE ARCERBURGO EXIRGIU A RETIRADA DESDE DV
                     codc = swap[44];
+                }else{
+                    // SE NÃO FOR SINDICAL E FOR ACORDO NÃO MOSTRAR REFERÊNCIA 
+                    if (lista.get(i).getServicos().getId() != 1 && lista.get(i).getTipoServico().getId() == 4) {
+                        referencia = "";
+                    }
+                    
+                    if (!lista.get(i).getServicos().isBoleto()){
+                        descricaoServico = "";
+                    }
+                    
+                    ConvencaoServico cservico = new ConvencaoServicoDao().pesquisaConvencaoServico(conv.getId(), dbCon.pesquisaGrupoCidadeJuridica(conv.getId(), id_cidade_endereco).getId());
+                    if (cservico != null)
+                        descricaoServico = cservico.getClausula() + " - " + descricaoServico;
                 }
-
-                // SE NÃO SINDICAL E FOR ACORDO NÃO MOSTRAR REFERÊNCIA 
-                String referencia = "Ref: " + lista.get(i).getReferencia();
-                if (lista.get(i).getServicos().getId() != 1 && lista.get(i).getTipoServico().getId() == 4) {
-                    referencia = "";
-                }
+                
                 vetor.add(new ParametroBoleto(
                         referencia, // ref (referencia)
                         imprimeVerso, // imprimeVerso
                         swap[0], //escritorio
-                        lista.get(i).getServicos().getDescricao(), //  contribuicao (servico)
+                        descricaoServico, //  contribuicao (servico)
                         lista.get(i).getTipoServico().getDescricao(), // tipo
                         swap[1], //  grupo (convencao)
                         lista.get(i).getPessoa().getDocumento(), // cgc (cnpj)
@@ -494,7 +500,9 @@ public class ImprimirBoleto {
                         swap[43], //usoBanco
                         swap[42], //textoTitulo
                         ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/BOLETO_VERSO.jasper"),//caminhoVerso
-                        boletox.getContaCobranca().getContaBanco().getFilial().getFilial().getPessoa().getNome()));
+                        boletox.getContaCobranca().getContaBanco().getFilial().getFilial().getPessoa().getNome(),
+                        descricaoServico
+                ));
                 i++;
             }
 

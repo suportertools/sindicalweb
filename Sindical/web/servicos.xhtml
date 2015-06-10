@@ -82,6 +82,11 @@
                                                         <f:selectItems value="#{servicosBean.listAdministradora}"/>
                                                     </p:selectOneMenu>
                                                 </p:column>
+                                                
+                                                <p:column>
+                                                    <br />
+                                                    <p:selectBooleanCheckbox value="#{servicosBean.servicos.boleto}" itemLabel="Sair Descrição no Boleto"/>
+                                                </p:column>
                                             </h:panelGrid>
 
                                             <p:panelGrid columns="9" styleClass="sbb">

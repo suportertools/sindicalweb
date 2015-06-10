@@ -65,6 +65,7 @@ public class ParametroBoleto {
     private String textoTitulo;
     private String caminhoVerso;
     private String entidade;
+    private String descricaoServico;
 
     public ParametroBoleto(
             String ref,
@@ -127,7 +128,8 @@ public class ParametroBoleto {
             String usoBanco,
             String textoTitulo,
             String caminhoVerso,
-            String entidade) {
+            String entidade,
+            String descricaoServico) {
         this.ref = ref;
         this.imprimeVerso = imprimeVerso;
         this.escritorio = escritorio;
@@ -189,6 +191,7 @@ public class ParametroBoleto {
         this.textoTitulo = textoTitulo;
         this.caminhoVerso = caminhoVerso;
         this.entidade = entidade;
+        this.descricaoServico = descricaoServico;
     }
 
     public String getRef() {
@@ -677,5 +680,13 @@ public class ParametroBoleto {
 
     public void setEntidade(String entidade) {
         this.entidade = entidade;
+    }
+
+    public String getDescricaoServico() {
+        return descricaoServico;
+    }
+
+    public void setDescricaoServico(String descricaoServico) {
+        this.descricaoServico = descricaoServico;
     }
 }
