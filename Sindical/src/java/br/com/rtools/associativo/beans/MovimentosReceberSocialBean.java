@@ -864,7 +864,7 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public boolean baixado() {
         for (int i = 0; i < listaMovimento.size(); i++) {
-            if (((Boolean) listaMovimento.get(i).getArgumento0()) && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) > 0.0) {
+            if (((Boolean) listaMovimento.get(i).getArgumento0()) && listaMovimento.get(i).getArgumento26() != null) {
                 return true;
             }
         }
