@@ -106,10 +106,12 @@ public class ExtratoTelaBean implements Serializable {
         PessoaEndereco pe;
         if (pessoa.getId() != -1) {
             Juridica j = db.pesquisaJuridicaPorPessoa(pessoa.getId());
-            List lista_x = db.listaContabilidadePertencente(j.getId());
-            for (Object lista_x1 : lista_x) {
-                // pe = dbPe.pesquisaEndPorPessoaTipo(((Juridica) (listaX.get(i))).getPessoa().getId(), 2); // endereco da empresa pertencente
-                listaEmpresasPertencentes.add((Juridica) lista_x1);
+            if (j != null && j.getId() != -1){
+                List lista_x = db.listaContabilidadePertencente(j.getId());
+                for (Object lista_x1 : lista_x) {
+                    // pe = dbPe.pesquisaEndPorPessoaTipo(((Juridica) (listaX.get(i))).getPessoa().getId(), 2); // endereco da empresa pertencente
+                    listaEmpresasPertencentes.add((Juridica) lista_x1);
+                }
             }
         }
 
