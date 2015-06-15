@@ -216,7 +216,7 @@
 
                                                     <p:column>
                                                         <br />
-                                                        <p:commandButton icon="ui-icon-refresh" title="clique para data de hoje" action="#{fisicaBean.hojeRecadastro}" update="i_recadastro"/>
+                                                        <p:commandButton icon="ui-icon-refresh" title="clique para data de hoje" onclick="PF('dlg_recadastro').show()" update=":form_pessoa_fisica:i_dlg_recadastro"/>
                                                     </p:column>
                                                 </h:panelGrid>
 
@@ -586,14 +586,14 @@
                                                     <f:selectItem itemValue="excluidos" itemLabel="Excluídos"/>
                                                 </p:selectOneMenu>
                                             </p:column>
-                                            
+
                                             <p:column>
                                                 <p:commandButton value="Refazer Movimentos" title="Refazer movimentos selecionados" onclick="PF('dlg_refazer').show()" style="margin-left: 500px" rendered="#{fisicaBean.listaMovimento.size() > 0}"/>
                                             </p:column>
                                         </h:panelGrid>
 
                                         <p:messages id="msg_movimento" autoUpdate="false" closable="true" showDetail="true" />
-                                        
+
                                         <p:dataTable id="tbl_movimento" value="#{fisicaBean.listaMovimento}" var="linha" emptyMessage="Nenhum Movimento Encontrado" scrollable="true" scrollHeight="400">
                                             <p:column style="width:15px" rendered="#{fisicaBean.tipoStatusMovimento.equals('excluidos')}">  
                                                 <p:rowToggler />  
@@ -634,12 +634,12 @@
                                                         <p:outputLabel value="Data" style="font-weight: bold"/><br />
                                                         <p:outputLabel value="#{fisicaBean.converteData(linha[13])}"/>
                                                     </p:column>
-                                                    
+
                                                     <p:column>
                                                         <p:outputLabel value="Usuário" style="font-weight: bold"/><br />
                                                         <p:outputLabel value="#{linha[11]}"/>
                                                     </p:column>
-                                                    
+
                                                     <p:column>
                                                         <p:outputLabel value="Motivo" style="font-weight: bold"/><br />
                                                         <p:outputLabel value="#{linha[12]}"/>
@@ -647,7 +647,7 @@
                                                 </h:panelGrid>
                                             </p:rowExpansion>
                                         </p:dataTable>
-                                        
+
                                         <p:dialog widgetVar="dlg_refazer" header="Refazer Movimentos" resizable="false" width="400" modal="true">
                                             <h:panelGrid>
                                                 <p:outputLabel value="Deseja realmente REFAZER esses movimentos?" style="font-size: 11pt!important"/>
@@ -862,12 +862,24 @@
                                     <ui:include src="templates/templatePesquisaEndereco.xhtml" />    
                                 </p:panel>
                             </p:dialog>
+                            <p:dialog widgetVar="dlg_recadastro" modal="true" resizable="false" height="250" width="250" header="Data de Recadastro">
+                                <h:panelGrid id="i_dlg_recadastro">
+                                    <p:calendar value="#{fisicaBean.fisica.dtRecadastro}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR">
+                                        <p:ajax event="dateSelect" update=":form_pessoa_fisica:i_tabview_fisica:i_recadastro"/>
+                                    </p:calendar>
+                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Confirmar" title="Confirmar" onclick="PF('dlg_recadastro').hide();" update=":form_pessoa_fisica:"/>
+                                    <p:commandButton value="Cancelar" title="Cancelar" onclick="PF('dlg_recadastro').hide();" />
+                                </f:facet>
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                     <h:form id="form_aplicativos">
-                        <p:dialog widgetVar="dlg_waiting_biometria" modal="true" resizable="false" header="Aguarde..." closable="false" visible="#{biometriaBean.disabled}">
-                            <p:ajax event="close" update=":form_aplicativos:" />
+                        <p:dialog widgetVar="dlg_waiting_biometria" modal="true" resizable="false" header="Aguarde..." visible="#{biometriaBean.disabled}" closable="false">
                             <h:outputLabel value="Não feche essa janela durante a operação. Caso apresente erros contate o administrador do sistema ou reinicie o aplicativo da leitura." />
+                            <br /><br />
+                            <p:commandButton value="Cancelar" title="Cancelar" update=":form_aplicativos:i_message_err_x" onclick="PF('dlg_waiting_biometria_erro').show();" action="#{biometriaBean.abort(fisicaBean.fisica.pessoa)}" ajax="false"/>
                         </p:dialog>
                         <p:poll id="i_app_leitor" interval="5" update="i_app_leitor :form_pessoa_fisica:i_app_message" stop="#{biometriaBean.disabled}" autoStart="true" delay="5" ignoreAutoUpdate="true"/>
                         <p:dialog widgetVar="dlg_waiting_biometria_info" modal="true" resizable="false" header="Erro" closable="true">
@@ -875,6 +887,15 @@
                             <f:facet name="footer">
                                 <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_waiting_biometria_info').hide();" update="i_app_leitor"/>
                             </f:facet>
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_waiting_biometria_erro" modal="true" resizable="false" header="Mensagem Sistema" closable="true" visible="#{biometriaBean.open_modal_cancel}">
+                            <p:ajax event="close" update=":form_aplicativos:" listener="#{biometriaBean.closeModalApp()}"/>
+                            <h:panelGrid id="i_message_err_x">
+                                <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
+                            </h:panelGrid>
+                            <f:facet name="footer">
+                                <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_waiting_biometria_erro').hide();" update="i_app_leitor" action="#{biometriaBean.closeModalApp()}"/>
+                            </f:facet>                                
                         </p:dialog>
                     </h:form>                    
                 </f:view>
