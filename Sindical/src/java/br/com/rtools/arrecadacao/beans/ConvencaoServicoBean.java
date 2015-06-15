@@ -5,6 +5,7 @@ import br.com.rtools.arrecadacao.ConvencaoServico;
 import br.com.rtools.arrecadacao.dao.ConvencaoServicoDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -31,7 +32,7 @@ public class ConvencaoServicoBean {
     
     @PreDestroy
     public void destroy(){
-        
+        GenericaSessao.remove("convencaoServicoBean");
     }
     
     public void loadListaConvencaoServico(){

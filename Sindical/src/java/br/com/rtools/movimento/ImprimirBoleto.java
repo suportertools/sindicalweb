@@ -1862,7 +1862,8 @@ public class ImprimirBoleto {
                                 boleto.getContaCobranca().getContaBanco().getBanco().getNumero(),
                                 mensagemAtrasadas,
                                 boleto.getVencimento().substring(3), // VENCIMENTO SERVIÇO
-                                contabilidade // CONTABILIDADE DA PESSOA JURÍDICA
+                                contabilidade, // CONTABILIDADE DA PESSOA JURÍDICA
+                                boleto.getMensagem() // MENSAGEM QUE FICA ACIMA DE "Mensalidades Atrasadas"
                         ));
                     }
                 }

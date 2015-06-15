@@ -41,12 +41,15 @@ public class ParametroRecibo {
     private String lblVencimento;
     private String mensagem;
     private String documento;
+    private String totalDinheiroTroco;
+    private String troco;
     
 
     public ParametroRecibo(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, 
                            String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String responsavel, String idResponsavel, String idBaixa, String beneficiario, String servico, String vencimento, 
                            BigDecimal valorBaixa, String usuario, String dataPagamento, String horaPagamento, String formaPagamento1, String formaPagamento2, String formaPagamento3, String formaPagamento4, String formaPagamento5,
-                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String lblVencimento, String mensagem, String documento) {
+                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada, String lblVencimento, String mensagem, String documento,
+                           String totalDinheiroTroco, String troco) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -85,6 +88,8 @@ public class ParametroRecibo {
         this.lblVencimento = lblVencimento;
         this.mensagem = mensagem;
         this.documento = documento;
+        this.totalDinheiroTroco = totalDinheiroTroco;
+        this.troco = troco;
     }
 
     public String getSinLogo() {
@@ -389,6 +394,22 @@ public class ParametroRecibo {
 
     public void setDocumento(String documento) {
         this.documento = documento;
+    }
+
+    public String getTotalDinheiroTroco() {
+        return totalDinheiroTroco;
+    }
+
+    public void setTotalDinheiroTroco(String totalDinheiroTroco) {
+        this.totalDinheiroTroco = totalDinheiroTroco;
+    }
+
+    public String getTroco() {
+        return troco;
+    }
+
+    public void setTroco(String troco) {
+        this.troco = troco;
     }
 
 

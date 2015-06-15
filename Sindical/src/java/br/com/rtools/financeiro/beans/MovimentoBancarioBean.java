@@ -189,7 +189,8 @@ public class MovimentoBancarioBean implements Serializable{
                 "", 
                 null, 
                 null,
-                null
+                null,
+                0
         );
     }    
     

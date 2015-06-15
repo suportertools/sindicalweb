@@ -518,7 +518,8 @@ public final class FechamentoCaixaBean implements Serializable {
             Caixa cx = null;
             Usuario usuario = ((Usuario) GenericaSessao.getObject("sessaoUsuario"));
             
-            if (usuario.getId() != 1){
+            // TRUE é igual NÃO ter permissão
+            if (usuario.getId() != 1 && permissao){
                 if (!cfb.getConfiguracaoFinanceiro().isCaixaOperador()){
                     MacFilial mac = MacFilial.getAcessoFilial();
                     if (mac.getId() == -1 || mac.getCaixa() == null || mac.getCaixa().getId() == -1){

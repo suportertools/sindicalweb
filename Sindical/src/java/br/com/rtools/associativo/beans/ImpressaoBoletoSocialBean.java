@@ -1,16 +1,12 @@
 package br.com.rtools.associativo.beans;
 
-import br.com.rtools.arrecadacao.beans.GerarBoletoBean;
-import br.com.rtools.cobranca.Cobranca;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.impressao.Etiquetas;
-import br.com.rtools.impressao.ParametroBoletoSocial;
 import br.com.rtools.movimento.ImprimirBoleto;
-import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -34,34 +30,24 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.Upload;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -183,15 +169,15 @@ public class ImpressaoBoletoSocialBean {
                     // TODAS
                     listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
                     contador++;
-                } else if (qntFolhas == 1 && lista_socio.size() <= 25) { // 25 quantidade de linhas que cabe em um boleto sem que estore
+                } else if (qntFolhas == 1 && lista_socio.size() <= 21) { // 21 quantidade de linhas que cabe em um boleto sem que estore
                     // APENAS COM 1 PÁGINA    
                     listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
                     contador++;
-                } else if (qntFolhas == 2 && (lista_socio.size() >= 26 && lista_socio.size() <= 125)) {
+                } else if (qntFolhas == 2 && (lista_socio.size() >= 22 && lista_socio.size() <= 121)) {
                     // DE 2 A 5 PAGINAS    
                     listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
                     contador++;
-                } else if (qntFolhas == 3 && lista_socio.size() > 126) {
+                } else if (qntFolhas == 3 && lista_socio.size() > 122) {
                     // ACIMA DE 5 PAGINAS    
                     listaGrid.add(new DataObject(contador, true, lista_agrupado.get(i), Moeda.converteR$(lista_agrupado.get(i).get(6).toString()), calculoDePaginas(lista_socio.size()), null));
                     contador++;
