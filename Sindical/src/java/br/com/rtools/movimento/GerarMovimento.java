@@ -834,7 +834,7 @@ public class GerarMovimento extends DB {
         return true;
     }
     
-    public static boolean baixarMovimentoManual(List<Movimento> movimento, Usuario usuario, List<FormaPagamento> fp, float valorTotal, String pagamento, Caixa caixa) {
+    public static boolean baixarMovimentoManual(List<Movimento> movimento, Usuario usuario, List<FormaPagamento> fp, float valorTotal, String pagamento, Caixa caixa, float valorTroco) {
         // 15
         // 000003652580001
         // 8
@@ -862,6 +862,7 @@ public class GerarMovimento extends DB {
             baixa.setBaixa(pagamento);
             baixa.setDocumentoBaixa(numeroComposto);
             baixa.setCaixa(caixa);
+            baixa.setTroco(valorTroco);
             
             if (GenericaSessao.getObject("usuarioAutenticado") != null){
                 baixa.setUsuarioDesconto((Usuario)GenericaSessao.getObject("usuarioAutenticado"));

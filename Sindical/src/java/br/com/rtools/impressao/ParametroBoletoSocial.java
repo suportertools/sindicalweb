@@ -43,8 +43,9 @@ public class ParametroBoletoSocial {
     private String referenciaMensalidadesAtrasadas;
     private String vencimentoServico;
     private String contabilidade;
+    private String mensagemBoleto;
 
-    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens, String banco, String referenciaMensalidadesAtrasadas, String vencimentoServico, String contabilidade) {
+    public ParametroBoletoSocial(String sindicatoLogo, String sindicatoNome, String codigo, String responsavel, String vencimento, String matricula, String categoria, String grupo, String codigoBeneficiario, String beneficiario, String servico, String valor, String valorTotal, String valorAtrasada, String valorVencimento, String logoPromocao, String logoBanco, String mensagem, String agencia, String representacao, String codigoCedente, String nossoNumero, String processamento, String codigoBarras, String serrilha, String enderecoResponsavel, String enderecoFilial, String complementoResponsavel, String complementoFilial, String cnpjFilial, String telefoneFilial, String emailFilial, String siteFilial, String logoVerso, String localPagamento, String informativo, String documentoResponsavel, String quantidadeItens, String banco, String referenciaMensalidadesAtrasadas, String vencimentoServico, String contabilidade, String mensagemBoleto) {
         this.sindicatoLogo = sindicatoLogo;
         this.sindicatoNome = sindicatoNome;
         this.codigo = codigo;
@@ -87,6 +88,7 @@ public class ParametroBoletoSocial {
         this.referenciaMensalidadesAtrasadas = referenciaMensalidadesAtrasadas;  
         this.vencimentoServico = vencimentoServico;
         this.contabilidade = contabilidade;
+        this.mensagemBoleto = mensagemBoleto;
     }
    
     public String getSindicatoLogo() {
@@ -423,6 +425,14 @@ public class ParametroBoletoSocial {
 
     public void setContabilidade(String contabilidade) {
         this.contabilidade = contabilidade;
+    }
+
+    public String getMensagemBoleto() {
+        return mensagemBoleto;
+    }
+
+    public void setMensagemBoleto(String mensagemBoleto) {
+        this.mensagemBoleto = mensagemBoleto;
     }
     
     

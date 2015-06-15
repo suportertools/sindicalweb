@@ -59,7 +59,7 @@ public class ImprimirRecibo {
 
             // PESQUISA FORMA DE PAGAMENTO
             List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
-
+            float soma_dinheiro = 0;
             for (int i = 0; i < fp.size(); i++) {
                 // 4 - CHEQUE    
                 if (fp.get(i).getTipoPagamento().getId() == 4) {
@@ -70,6 +70,8 @@ public class ImprimirRecibo {
                     // QUALQUER OUTRO    
                 } else {
                     formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
+                    if (fp.get(i).getTipoPagamento().getId() == 3)
+                        soma_dinheiro = soma_dinheiro + fp.get(i).getValor();
                 }
             }
             String lblVencimento = "";
@@ -84,40 +86,7 @@ public class ImprimirRecibo {
                     if (gu.getPessoa() != null) {
                         conveniada = gu.getPessoa().getNome();
                     }
-//                    
-//                    if (gu.getSubGrupoConvenio() != null){
-//                        mensagemConvenio = gu.getSubGrupoConvenio().getObservacao();
-//                    }
                 }
-                
-                
-                // ANTIGA EMPRESA CONVENIADA qry com id_sub_grupo_convenio
-//                if (lista.get(i).getLote().getRotina().getId() == 132) {
-//                    Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
-//                    if (gu.getId() != -1 && gu.getSubGrupoConvenio() != null) {
-//                        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-//                        List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
-//                        if (!list.isEmpty()) {
-//                            conveniada = list.get(0).getFantasia();
-//                        }
-//                    }
-//                }
-//                if (!lista.get(i).getServicos().isValidadeGuias()) {
-//                    lblVencimento = "VENCTO";
-//                    vencimento = lista.get(i).getVencimento();
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    lblVencimento = "VALID";
-//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                    
-//                    lblVencimento = "VALID";
-//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                }
                 
                 if (lista.get(i).getLote().getRotina().getId() == 132) {
                     if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
@@ -137,43 +106,6 @@ public class ImprimirRecibo {
                     lblVencimento = "Vencimento";
                     vencimento = lista.get(i).getVencimento();                    
                 }
-                
-//                
-//                if (lista.get(i).getLote().getRotina().getId() != 132) {
-//                    lblVencimento = "Vencimento";
-//                    vencimento = lista.get(i).getVencimento();
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    lblVencimento = "Validade";
-//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                    
-//                    lblVencimento = "Validade";
-//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                }else {
-//                    lblVencimento = "Validade";
-//                    vencimento = "";
-//                }
-//                if (!lista.get(i).getServicos().isValidadeGuias()) {
-//                    lblVencimento = "VENCTO";
-//                    vencimento = lista.get(i).getVencimento();
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    lblVencimento = "VALID";
-//                    vencimento = dataHoje.incrementarDias(lista.get(i).getServicos().getValidade(), lista.get(i).getLote().getEmissao());
-//                    
-//                    
-//                } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
-//                    //validade_servico = "\n" + "VALIDADE: " + DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                    
-//                    lblVencimento = "VALID";
-//                    vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-//                }
 
                 vetor.add(
                     new ParametroRecibo(
@@ -214,7 +146,9 @@ public class ImprimirRecibo {
                         (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
                         lblVencimento,
                         mensagemConvenio,
-                        lista.get(i).getPessoa().getDocumento()
+                        lista.get(i).getPessoa().getDocumento(),
+                        Moeda.converteR$Float(soma_dinheiro + lista.get(i).getBaixa().getTroco()),
+                        Moeda.converteR$Float(lista.get(i).getBaixa().getTroco())
                     )
                 );
             }

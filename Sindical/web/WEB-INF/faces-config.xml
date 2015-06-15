@@ -1692,6 +1692,12 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>pesquisaBoletosSocial</from-outcome>
+            <to-view-id>/pesquisaBoletosSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

@@ -840,7 +840,7 @@ public class EmissaoGuiasBean implements Serializable {
 
             di.commit();
             Caixa caixa = MacFilial.getAcessoFilial().getCaixa();
-            if (!GerarMovimento.baixarMovimentoManual(listaMovimentoAuxiliar, new SegurancaUtilitariosBean().getSessaoUsuario(), new ArrayList(), valor_soma, DataHoje.data(), caixa)) {
+            if (!GerarMovimento.baixarMovimentoManual(listaMovimentoAuxiliar, new SegurancaUtilitariosBean().getSessaoUsuario(), new ArrayList(), valor_soma, DataHoje.data(), caixa, 0)) {
                 message = "Erro ao baixar Guias";
                 return null;
             }

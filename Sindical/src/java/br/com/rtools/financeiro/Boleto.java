@@ -30,6 +30,8 @@ public class Boleto implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_vencimento_original")
     private Date dtVencimentoOriginal;
+    @Column(name = "ds_mensagem", length = 500)
+    private String mensagem;
 
     public Boleto() {
         this.id = -1;
@@ -40,9 +42,11 @@ public class Boleto implements java.io.Serializable {
         this.ativo = true;
         this.dtVencimento = null;
         this.dtVencimentoOriginal = null;
+        this.mensagem = "";
+        
     }
 
-    public Boleto(int id, ContaCobranca contaCobranca, int nrBoleto, String boletoComposto, String nrCtrBoleto, boolean ativo, String vencimento, String vencimentoOriginal) {
+    public Boleto(int id, ContaCobranca contaCobranca, int nrBoleto, String boletoComposto, String nrCtrBoleto, boolean ativo, String vencimento, String vencimentoOriginal, String mensagem) {
         this.id = id;
         this.contaCobranca = contaCobranca;
         this.nrBoleto = nrBoleto;
@@ -51,6 +55,7 @@ public class Boleto implements java.io.Serializable {
         this.ativo = ativo;
         this.dtVencimento = DataHoje.converte(vencimento);
         this.dtVencimentoOriginal = DataHoje.converte(vencimentoOriginal);
+        this.mensagem = mensagem;
     }
 
     public int getId() {
@@ -73,10 +78,10 @@ public class Boleto implements java.io.Serializable {
         return nrBoleto;
     }
 
-    public void setNrBoleto(int nrBoleto) {
+    public void setNrBoleto(long nrBoleto) {
         this.nrBoleto = nrBoleto;
     }
-
+    
     public String getBoletoComposto() {
         return boletoComposto;
     }
@@ -131,5 +136,13 @@ public class Boleto implements java.io.Serializable {
 
     public void setVencimentoOriginal(String vencimentoOriginal) {
         this.dtVencimentoOriginal = DataHoje.converte(vencimentoOriginal);
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 }

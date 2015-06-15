@@ -526,7 +526,7 @@ public class BaixaGeralBean implements Serializable {
             listaMovimentos.get(i).setTaxa(Moeda.converteUS$(taxa));
         }
 
-        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao, caixa)) {
+        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao, caixa, Moeda.converteUS$(valorTroco))) {
             mensagem = "Erro ao atualizar boleto!";
             return null;
         } else {
