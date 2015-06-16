@@ -78,7 +78,7 @@ public class RelatorioConvenioMedicoBean implements Serializable {
 
     @PreDestroy
     public void destroy() {
-        GenericaSessao.remove("RelatorioBean");
+        GenericaSessao.remove("relatorioConvenioMedicoBean");
     }
 
     public void visualizar() {
