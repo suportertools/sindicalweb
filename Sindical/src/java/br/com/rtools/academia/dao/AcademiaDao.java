@@ -349,15 +349,15 @@ public class AcademiaDao extends DB {
             listWhere.add("PA.sexo LIKE '" + inSexo + "'");
         }
         if (nao_socio != null && nao_socio) {
-            if (convenio_empresa == null) {
-                listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
-            } else {
-                if (convenio_empresa) {
-                    listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW ) ");
-                }
-            }
+            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
         } else if (convenio_empresa != null && convenio_empresa) {
-            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW ) ");
+            String convenioEmpresa;
+            convenioEmpresa = " SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW )                 "
+                    + " AND PA.id_juridica IN (                                                                         "
+                    + "     SELECT SC.id_juridica                                                                       "
+                    + "       FROM soc_convenio AS SC                                                                   "
+                    + " INNER JOIN soc_convenio_servico AS SCS ON SCS.id_convenio_sub_grupo = SC.id_convenio_sub_grupo) ";
+            listWhere.add(convenioEmpresa);
         } else {
             if ((in_grupo_categoria != null && !in_grupo_categoria.isEmpty()) || (in_categoria != null && !in_categoria.isEmpty())) {
                 if (in_categoria != null && !in_categoria.isEmpty()) {
