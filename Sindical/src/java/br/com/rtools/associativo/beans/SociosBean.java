@@ -183,6 +183,14 @@ public class SociosBean implements Serializable {
         Diretorio.remover("temp/foto/" + getUsuario().getId() + "/");
         listDependentes = new ArrayList();
         listDependentesInativos = new ArrayList();
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f.exists()) {
+            f.delete();
+        }
+        String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
+        if (new File(url_temp).exists()) {
+            new File(url_temp).delete();
+        }
     }
 
     @PreDestroy
@@ -193,6 +201,10 @@ public class SociosBean implements Serializable {
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
         if (f.exists()) {
             f.delete();
+        }
+        String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
+        if (new File(url_temp).exists()) {
+            new File(url_temp).delete();
         }
     }
 
@@ -212,6 +224,14 @@ public class SociosBean implements Serializable {
     }
 
     public void loadSocio(Pessoa p, boolean reativar, Integer tcase) {
+        String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
+        if (new File(url_temp).exists()) {
+            new File(url_temp).delete();
+        }
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + -1 + ".png"));
+        if (f.exists()) {
+            f.delete();
+        }
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
@@ -664,12 +684,35 @@ public class SociosBean implements Serializable {
                 }
             }
         } else {
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId() + "/perfil.png"));
+            if (f.exists()) {
+                f.delete();
+            }
+            f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId() + "/perfil.jpg"));
+            if (f.exists()) {
+                f.delete();
+            }
             if (novoDependente.getId() != -1) {
-                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png"));
-                sucesso = f.delete();
-                if (!sucesso) {
-                    f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".jpg"));
-                    sucesso = f.delete();
+                String file_delete = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId());
+                if (new File((file_delete + ".png")).exists()) {
+                    if (new File((file_delete + ".png")).delete()) {
+                        sucesso = true;
+                    }
+                }
+                if (new File((file_delete + ".jpg")).exists()) {
+                    if (new File((file_delete + ".jpg")).delete()) {
+                        sucesso = true;
+                    }
+                }
+                if (new File((file_delete + ".jpeg")).exists()) {
+                    if (new File((file_delete + ".jpeg")).delete()) {
+                        sucesso = true;
+                    }
+                }
+                if (new File((file_delete + ".gif")).exists()) {
+                    if (new File((file_delete + ".gif")).delete()) {
+                        sucesso = true;
+                    }
                 }
             }
         }
@@ -2059,7 +2102,13 @@ public class SociosBean implements Serializable {
         if (f.exists()) {
             f.delete();
         }
-
+        String url_foto = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId());
+        if (new File(url_foto + ".gif").exists() || new File(url_foto + ".png").exists() || new File(url_foto + ".jpg").exists() || new File(url_foto + ".jpeg").exists()) {
+            if (fisica.getDtFoto() == null) {
+                fisica.setDataFoto(DataHoje.data());
+                new Dao().update(fisica, true);
+            }
+        }
         loadNaturalidadeDependente();
     }
 
