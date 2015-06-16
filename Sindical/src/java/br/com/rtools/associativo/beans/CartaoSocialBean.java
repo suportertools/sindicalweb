@@ -694,13 +694,14 @@ public class CartaoSocialBean implements Serializable {
             List<Filial> list = new Dao().list(new Filial(), true);
             int j = 0;
             listFilial.add(new SelectItem(j, "TODAS", null));
+            j = 1;
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).getId() == idFilial) {
                     // idFilial = i;
                     if (list.get(i).getFilial().getId() == new Registro().getRegistroEmpresarial().getFilial().getId()) {
                         disabled = false;
                     } else {
-                        disabled = true;                        
+                        disabled = true;
                     }
                 }
                 listFilial.add(new SelectItem(j, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
