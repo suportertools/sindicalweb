@@ -313,6 +313,7 @@ public class Upload implements Serializable {
                 case "pessoaFisica":
                 case "matriculaAcademia":
                 case "usuario":
+                case "socios":
                     try {
                         FisicaDB fisicaDB = new FisicaDBToplink();
                         f = fisicaDB.pesquisaFisicaPorPessoa(Integer.parseInt(PATH_FILE.replace(".png", "")));
