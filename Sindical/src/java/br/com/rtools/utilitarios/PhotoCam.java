@@ -38,6 +38,8 @@ public class PhotoCam implements Serializable {
     private static String UPDATE;
     private static Boolean SHOW_MESSAGE;
     private static Boolean SUCCESS;
+    private static String DEFAULT_EXTENSION;
+
     private Boolean load;
     private String rotinaNome;
     private Boolean visible;
@@ -63,6 +65,7 @@ public class PhotoCam implements Serializable {
         visible = false;
         stop = 0;
         FILE_MEMORY = "";
+        DEFAULT_EXTENSION = "";
 //        deleteMemoryFile();
     }
 
@@ -456,6 +459,14 @@ public class PhotoCam implements Serializable {
 
     public void setStreamedContent(StreamedContent streamedContent) {
         this.streamedContent = streamedContent;
+    }
+
+    public static String getDEFAULT_EXTENSION() {
+        return DEFAULT_EXTENSION;
+    }
+
+    public static void setDEFAULT_EXTENSION(String aDEFAULT_EXTENSION) {
+        DEFAULT_EXTENSION = aDEFAULT_EXTENSION;
     }
 
 }
