@@ -2,6 +2,9 @@ package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.dao.AcademiaDao;
+import br.com.rtools.associativo.Categoria;
+import br.com.rtools.associativo.GrupoCategoria;
+import br.com.rtools.associativo.db.CategoriaDao;
 import br.com.rtools.impressao.ParametroAcademiaCadastral;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -49,16 +53,22 @@ public class RelatorioAcademiaBean implements Serializable {
     private Date dataInicial;
     private Date dataFinal;
     private Integer[] index;
+    private Integer[] idade;
     private String tipoRelatorio;
     private String tipo;
     private String indexAccordion;
     private String order;
     private String sexo;
     private Relatorios relatorios;
+    private List selectedGrupoCategoria;
+    private List selectedCategoria;
+    private List selectedConvenioEmpresa;
+    private Map<String, Integer> listCategoria;
+    private Map<String, Integer> listGrupoCategoria;
 
     @PostConstruct
     public void init() {
-        filtro = new Boolean[8];
+        filtro = new Boolean[12];
         filtro[0] = false; // MODALIDADE
         filtro[1] = false; // PERÍODO EMISSÃO / INATIVAÇÃO
         filtro[2] = false; // RESPONSÁVEL
@@ -67,6 +77,10 @@ public class RelatorioAcademiaBean implements Serializable {
         filtro[5] = false; // ORDER
         filtro[6] = false; // PERIODO
         filtro[7] = false; // PERIODO INATIVAÇÃO
+        filtro[8] = false; // IDADE
+        filtro[9] = false; // GRUPO CATEGORIA
+        filtro[10] = false; // NÃO SÓCIO
+        filtro[11] = false; // CONVÊNIO EMPRESA
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<>();
         listSelectItem[1] = new ArrayList<>();
@@ -75,6 +89,9 @@ public class RelatorioAcademiaBean implements Serializable {
         index = new Integer[2];
         index[0] = 0;
         index[1] = 0;
+        idade = new Integer[2];
+        idade[0] = 0;
+        idade[1] = 0;
         tipoRelatorio = "Simples";
         indexAccordion = "Simples";
         order = "PA.nome";
@@ -83,6 +100,11 @@ public class RelatorioAcademiaBean implements Serializable {
         sexo = "";
         tipo = "todos";
         Jasper.EXPORT_TO_EXCEL = false;
+        selectedGrupoCategoria = null;
+        selectedCategoria = null;
+        selectedConvenioEmpresa = null;
+        listCategoria = null;
+        listGrupoCategoria = null;
     }
 
     @PreDestroy
@@ -129,6 +151,10 @@ public class RelatorioAcademiaBean implements Serializable {
                 listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
             }
         }
+        if (!filtro[8]) {
+            idade[0] = 0;
+            idade[0] = 0;
+        }
         if (filtro[4]) {
             switch (sexo) {
                 case "M":
@@ -158,7 +184,23 @@ public class RelatorioAcademiaBean implements Serializable {
         if (order == null) {
             order = "";
         }
-        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, filtro[7], order);
+        String in_grupo_categoria = inIdGrupoCategoria();
+        String in_categoria = inIdCategoria();
+        Boolean nao_socio = true;
+        Boolean convenio_empresa = true;
+        if (filtro[9]) {
+            if (!filtro[10]) {
+                nao_socio = null;
+            }
+            if (!filtro[11]) {
+                convenio_empresa = null;
+            }
+            if (in_categoria.isEmpty()) {
+                in_categoria = null;
+            }
+
+        }
+        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, filtro[7], idade, in_grupo_categoria, in_categoria, nao_socio, convenio_empresa, order);
         if (list.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
@@ -220,7 +262,7 @@ public class RelatorioAcademiaBean implements Serializable {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(275);
             for (int i = 0; i < list.size(); i++) {
-                if(i == 0) {
+                if (i == 0) {
                     index[0] = list.get(i).getId();
                 }
                 listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
@@ -283,6 +325,22 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[6]) {
             selectedPeriodos = null;
         }
+        if (!filtro[7]) {
+            selectedPeriodos = null;
+        }
+        if (!filtro[8]) {
+            idade[0] = 0;
+            idade[1] = 0;
+        }
+        if (!filtro[9]) {
+            selectedGrupoCategoria = null;
+            selectedCategoria = null;
+            selectedConvenioEmpresa = null;
+            filtro[10] = false;
+            filtro[11] = false;
+            listGrupoCategoria = null;
+            listCategoria = null;
+        }
     }
 
     public void close(String close) {
@@ -318,6 +376,21 @@ public class RelatorioAcademiaBean implements Serializable {
                 filtro[6] = false;
                 selectedPeriodos = null;
                 listPeriodos = null;
+                break;
+            case "idade":
+                filtro[8] = false;
+                idade[0] = 0;
+                idade[1] = 0;
+                break;
+            case "grupo_categoria":
+                filtro[9] = false;
+                filtro[10] = false;
+                filtro[11] = false;
+                listGrupoCategoria = null;
+                listCategoria = null;
+                selectedGrupoCategoria = null;
+                selectedCategoria = null;
+                selectedConvenioEmpresa = null;
                 break;
         }
         PF.update("form_relatorio:id_panel");
@@ -382,11 +455,23 @@ public class RelatorioAcademiaBean implements Serializable {
      * <li>[4] SEXO</li>
      * <li>[5] ORDENAÇÃO </li>
      * <li>[6] PERIODOS </li>
+     * <li>[7] PERIODO INATIVAÇÃO </li>
+     * <li>[8] IDADE </li>
+     * <li>[9] GRUPO / CATEGORIA </li>
+     * <li>[10] NÃO SÓCIO </li>
+     * <li>[11] CONVÊNIO EMPRESA </li>
      * </ul>
      *
      * @return boolean
      */
     public Boolean[] getFiltro() {
+        if (filtro[10] || filtro[11]) {
+            listGrupoCategoria = null;
+            listCategoria = null;
+            selectedGrupoCategoria = null;
+            selectedCategoria = null;
+            selectedConvenioEmpresa = null;
+        }
         return filtro;
     }
 
@@ -528,8 +613,8 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public Relatorios getRelatorios() {
         try {
-            if(relatorios.getId() != index[0]) {
-                Jasper.EXPORT_TO_EXCEL = false;                
+            if (relatorios.getId() != index[0]) {
+                Jasper.EXPORT_TO_EXCEL = false;
             }
             relatorios = (Relatorios) new Dao().find(new Relatorios(), index[0]);
         } catch (Exception e) {
@@ -538,4 +623,157 @@ public class RelatorioAcademiaBean implements Serializable {
         }
         return relatorios;
     }
+
+    public Integer[] getIdade() {
+        return idade;
+    }
+
+    public void setIdade(Integer[] idade) {
+        this.idade = idade;
+    }
+
+    public String getIdadeInicial() {
+        return Integer.toString(idade[0]);
+    }
+
+    public void setIdadeInicial(String idadeInicial) {
+        Integer idadeInteger = 0;
+        try {
+            if (Integer.parseInt(idadeInicial) < 0) {
+                idadeInteger = 0;
+            }
+            if (idade[1] < 0 && idade[1] <= Integer.parseInt(idadeInicial)) {
+                idadeInteger = Integer.parseInt(idadeInicial) + 1;
+            } else {
+                idadeInteger = Integer.parseInt(idadeInicial);
+            }
+        } catch (NumberFormatException e) {
+            idadeInteger = 0;
+        }
+        idade[0] = idadeInteger;
+        if (idade[0] > 0) {
+            if (idade[1] == 0) {
+            } else if (idade[1] < idade[0]) {
+                idade[1] = idade[0];
+            }
+
+        }
+    }
+
+    public String getIdadeFinal() {
+        return Integer.toString(idade[1]);
+    }
+
+    public void setIdadeFinal(String idadeFinal) {
+        if (idadeFinal.isEmpty()) {
+            idade[1] = 0;
+            return;
+        }
+        Integer idadeInteger = 0;
+        try {
+            if (idade[0] < 0) {
+                idade[0] = 0;
+            }
+            if (Integer.parseInt(idadeFinal) < 0 && Integer.parseInt(idadeFinal) < idade[0]) {
+                idadeInteger = idade[0] + 1;
+            } else {
+                idadeInteger = Integer.parseInt(idadeFinal);
+            }
+        } catch (NumberFormatException e) {
+            idadeInteger = idade[0];
+        }
+        idade[1] = idadeInteger;
+        if (idade[1] > 150) {
+            idadeInteger = 150;
+        }
+        if (idade[1] < idade[0] && idade[1] != 0) {
+            idade[1] = idade[0];
+        }
+    }
+
+    public List getSelectedGrupoCategoria() {
+        return selectedGrupoCategoria;
+    }
+
+    public void setSelectedGrupoCategoria(List selectedGrupoCategoria) {
+        this.selectedGrupoCategoria = selectedGrupoCategoria;
+    }
+
+    public List getSelectedCategoria() {
+        return selectedCategoria;
+    }
+
+    public void setSelectedCategoria(List selectedCategoria) {
+        this.selectedCategoria = selectedCategoria;
+    }
+
+    public List getSelectedConvenioEmpresa() {
+        return selectedConvenioEmpresa;
+    }
+
+    public void setSelectedConvenioEmpresa(List selectedConvenioEmpresa) {
+        this.selectedConvenioEmpresa = selectedConvenioEmpresa;
+    }
+
+    public Map<String, Integer> getListCategoria() {
+        listCategoria = null;
+        if (listCategoria == null) {
+            selectedCategoria = null;
+            listCategoria = new LinkedHashMap<>();
+            String ids = inIdGrupoCategoria();
+            List<Categoria> list = (List<Categoria>) new CategoriaDao().findCategoriaByGrupoCategoria(ids);
+            for (int i = 0; i < list.size(); i++) {
+                listCategoria.put(list.get(i).getCategoria(), list.get(i).getId());
+            }
+        }
+        return listCategoria;
+    }
+
+    public void setListCategoria(Map<String, Integer> listCategoria) {
+        this.listCategoria = listCategoria;
+    }
+
+    public Map<String, Integer> getListGrupoCategoria() {
+        if (listGrupoCategoria == null) {
+            listGrupoCategoria = new LinkedHashMap<>();
+            List<GrupoCategoria> list = new Dao().list(new GrupoCategoria(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listGrupoCategoria.put(list.get(i).getGrupoCategoria(), list.get(i).getId());
+            }
+        }
+        return listGrupoCategoria;
+    }
+
+    public void setListGrupoCategoria(Map<String, Integer> listGrupoCategoria) {
+        this.listGrupoCategoria = listGrupoCategoria;
+    }
+
+    public String inIdCategoria() {
+        String ids = "";
+        if (selectedCategoria != null) {
+            for (int i = 0; i < selectedCategoria.size(); i++) {
+                if (ids.isEmpty()) {
+                    ids = "" + selectedCategoria.get(i);
+                } else {
+                    ids += "," + selectedCategoria.get(i);
+                }
+            }
+        }
+        return ids;
+    }
+
+    public String inIdGrupoCategoria() {
+        String ids = "";
+        if (selectedGrupoCategoria != null) {
+            for (int i = 0; i < selectedGrupoCategoria.size(); i++) {
+                if (ids.isEmpty()) {
+                    ids = "" + selectedGrupoCategoria.get(i);
+                } else {
+                    ids += "," + selectedGrupoCategoria.get(i);
+                }
+            }
+        }
+        return ids;
+    }
+
 }
