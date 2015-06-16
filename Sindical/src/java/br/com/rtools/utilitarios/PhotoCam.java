@@ -16,6 +16,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.servlet.ServletContext;
 import org.primefaces.event.CaptureEvent;
@@ -165,10 +166,6 @@ public class PhotoCam implements Serializable {
         } else {
             file_path_local = "/Cliente/" + getCliente() + "/" + caminho + "/" + photo + ".png";
         }
-        String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(file_path_local);
-        File f = new File(newFileName);
-        boolean success = false;
-        FileImageOutputStream imageOutput;
 //        if (FILE_MEMORY.isEmpty()) {
 //            if (f.exists()) {
 //                Diretorio.criar("/temp/foto/" + getUsuarioId() + "/memory/");
@@ -189,8 +186,16 @@ public class PhotoCam implements Serializable {
 //                }
 //            }
 //        }
+        String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(file_path_local);
+        File f = new File(newFileName);
+        boolean success = false;        
+        FileImageOutputStream imageOutput;
         try {
-            imageOutput = new FileImageOutputStream(new File(newFileName));
+            if(f.exists()) {
+                f.delete();
+            }
+            f.createNewFile();
+            imageOutput = new FileImageOutputStream(f);
             imageOutput.write(data, 0, data.length);
             imageOutput.close();
             FILE_TEMP = newFileName;
@@ -221,6 +226,8 @@ public class PhotoCam implements Serializable {
                     }
                     i++;
                 }
+            } else {
+                // Thread.sleep(2000);
             }
         }
         return null;
