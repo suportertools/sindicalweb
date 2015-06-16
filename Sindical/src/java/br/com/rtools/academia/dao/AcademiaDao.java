@@ -277,10 +277,16 @@ public class AcademiaDao extends DB {
      * @param inModalidade
      * @param inIdPeriodos
      * @param inSexo
+     * @param ativos
      * @param order
+     * @param in_grupo_categoria
+     * @param in_categoria
+     * @param nao_socio
+     * @param convenio_empresa
+     * @param idade
      * @return
      */
-    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, Boolean ativos, String order) {
+    public List filtroRelatorio(Relatorios r, String emissaoInicial, String emissaoFinal, Integer idResponsavel, Integer idAluno, String inModalidade, String inIdPeriodos, String inSexo, Boolean ativos, Integer[] idade, String in_grupo_categoria, String in_categoria, Boolean nao_socio, Boolean convenio_empresa, String order) {
         List listWhere = new ArrayList();
         String queryString = ""
                 + "     SELECT PA.nome,                                                       " // 0 - NOME
@@ -293,12 +299,13 @@ public class AcademiaDao extends DB {
                 + "            P.ds_descricao                              AS periodo,        " // 7 - PERÍODO
                 + "            SP.dt_emissao                               AS emissao         " // 8 - EMISSÃO
                 + "       FROM matr_academia AS A                                             "
-                + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id     = A.id_servico_pessoa "
-                + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id    = A.id_servico_valor  "
-                + " INNER JOIN fin_servicos         AS S   ON S.id      = ASV.id_servico      "
-                + " INNER JOIN sis_periodo          AS P   ON P.id      = ASV.id_periodo      "
-                + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo = SP.id_pessoa        "
-                + " INNER JOIN pes_pessoa           AS PR  ON PR.id     = SP.id_cobranca      ";
+                + " INNER JOIN fin_servico_pessoa   AS SP  ON SP.id         = A.id_servico_pessoa   "
+                + " INNER JOIN aca_servico_valor    AS ASV ON ASV.id        = A.id_servico_valor    "
+                + " INNER JOIN fin_servicos         AS S   ON S.id          = ASV.id_servico        "
+                + " INNER JOIN sis_periodo          AS P   ON P.id          = ASV.id_periodo        "
+                + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo     = SP.id_pessoa          "
+                + " INNER JOIN pes_pessoa           AS PR  ON PR.id         = SP.id_cobranca        "
+                + "  LEFT JOIN soc_socios_vw        AS SOC ON SOC.titular   = SP.id_pessoa          ";
         String emissaoInativacaoString;
         if (!ativos) {
             emissaoInativacaoString = " SP.dt_emissao ";
@@ -317,25 +324,48 @@ public class AcademiaDao extends DB {
                 listWhere.add(emissaoInativacaoString + " IS NOT NULL ");
             }
         }
-        if (idResponsavel
-                != null) {
+        if (idade[0] != 0 || idade[1] != 0) {
+            if (idade[0].equals(idade[1])) {
+                listWhere.add(" func_idade(PA.dt_nascimento, current_date) = " + idade[0]);
+            } else if (idade[0] >= 0 && idade[1] == 0) {
+                listWhere.add(" func_idade(PA.dt_nascimento, current_date) >= " + idade[0]);
+            } else {
+                listWhere.add(" func_idade(PA.dt_nascimento, current_date) BETWEEN " + idade[0] + " AND " + idade[1]);
+            }
+        }
+        if (idResponsavel != null) {
             listWhere.add("SP.id_cobranca = " + idResponsavel);
         }
-        if (idAluno
-                != null) {
+        if (idAluno != null) {
             listWhere.add("SP.id_pessoa = " + idAluno);
         }
-        if (inModalidade
-                != null) {
+        if (inModalidade != null) {
             listWhere.add("SP.id_servico IN(" + inModalidade + ")");
         }
-        if (inIdPeriodos
-                != null) {
+        if (inIdPeriodos != null) {
             listWhere.add("ASV.id_periodo IN(" + inIdPeriodos + ")");
         }
-        if (inSexo
-                != null && !inSexo.isEmpty()) {
+        if (inSexo != null && !inSexo.isEmpty()) {
             listWhere.add("PA.sexo LIKE '" + inSexo + "'");
+        }
+        if (nao_socio != null && nao_socio) {
+            if (convenio_empresa == null) {
+                listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
+            } else {
+                if (convenio_empresa) {
+                    listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW ) ");
+                }
+            }
+        } else if (convenio_empresa != null && convenio_empresa) {
+            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW ) ");
+        } else {
+            if ((in_grupo_categoria != null && !in_grupo_categoria.isEmpty()) || (in_categoria != null && !in_categoria.isEmpty())) {
+                if (in_categoria != null && !in_categoria.isEmpty()) {
+                    listWhere.add("SOC.id_categoria IN (" + in_categoria + ")");
+                } else if (in_grupo_categoria != null && !in_grupo_categoria.isEmpty()) {
+                    listWhere.add("SOC.id_grupo_categoria IN (" + in_grupo_categoria + ")");
+                }
+            }
         }
 
         if (!listWhere.isEmpty()) {
