@@ -46,6 +46,7 @@ public class Upload implements Serializable {
     private static String CANCEL_LABEL;
     private static String MODE;
     private static String MESSAGE_WAITING;
+    private static String DEFAULT_EXTENSION;
 
     @PostConstruct
     public void init() {
@@ -70,6 +71,7 @@ public class Upload implements Serializable {
         UPLOAD_LABEL = "Anexar";
         MODE = "advanced";
         MESSAGE_WAITING = "Carregando e Processando Imagem";
+        DEFAULT_EXTENSION = "";
     }
 
     @PreDestroy
@@ -491,6 +493,14 @@ public class Upload implements Serializable {
 
     public void setMESSAGE_WAITING(String aMESSAGE_WAITING) {
         MESSAGE_WAITING = aMESSAGE_WAITING;
+    }
+
+    public static String getDEFAULT_EXTENSION() {
+        return DEFAULT_EXTENSION;
+    }
+
+    public static void setDEFAULT_EXTENSION(String aDEFAULT_EXTENSION) {
+        DEFAULT_EXTENSION = aDEFAULT_EXTENSION;
     }
 
 }
