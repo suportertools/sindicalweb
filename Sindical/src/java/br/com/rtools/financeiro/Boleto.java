@@ -30,7 +30,7 @@ public class Boleto implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_vencimento_original")
     private Date dtVencimentoOriginal;
-    @Column(name = "ds_mensagem", length = 500)
+    @Column(name = "ds_mensagem", length = 1000)
     private String mensagem;
 
     public Boleto() {
