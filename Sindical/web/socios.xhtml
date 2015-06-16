@@ -329,7 +329,7 @@
 
                                     <p:column headerText="Nome" width="200">
                                         <p:commandLink rendered="#{listDependentes.fisica.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
-                                        <p:commandLink rendered="#{listDependentes.fisica.id != -1}" value="#{listDependentes.fisica.pessoa.documento} - #{listDependentes.fisica.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                        <p:commandLink rendered="#{listDependentes.fisica.id != -1}" value="#{listDependentes.fisica.pessoa.documento} - #{listDependentes.fisica.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" title="#{listDependentes.fisica.pessoa.id}" />
                                     </p:column>
 
                                     <p:column headerText="Parentesco" >
@@ -530,11 +530,11 @@
                                 <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_imprimir_carteirinha').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
-                            <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="800" visible="#{sociosBean.modelVisible}">
+                            <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="820" visible="#{sociosBean.modelVisible}">
                                 <p:ajax event="close" listener="#{sociosBean.fechaModal()}" update="formSocios"/>  
                                 <p:tabView id="tab_view">
                                     <p:tab id="tab_cadastro" title="Cadastro de Dependente">
-                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px" columnClasses="verticalAlignTop verticalAlignTop" >
+                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px" columnClasses="verticalAlignTop, verticalAlignTop" >
                                             <p:column>
 
                                                 <p:messages id="i_msg" showDetail="true" closable="true" />   
