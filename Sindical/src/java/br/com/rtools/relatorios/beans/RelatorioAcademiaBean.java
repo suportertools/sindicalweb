@@ -343,6 +343,14 @@ public class RelatorioAcademiaBean implements Serializable {
         }
     }
 
+    public void clear(Integer tcase) {
+        switch (tcase) {
+            case 0:
+                listCategoria = null;
+                break;
+        }
+    }
+
     public void close(String close) {
         switch (close) {
             case "modalidade":
@@ -716,7 +724,6 @@ public class RelatorioAcademiaBean implements Serializable {
     }
 
     public Map<String, Integer> getListCategoria() {
-        listCategoria = null;
         if (listCategoria == null) {
             selectedCategoria = null;
             listCategoria = new LinkedHashMap<>();
