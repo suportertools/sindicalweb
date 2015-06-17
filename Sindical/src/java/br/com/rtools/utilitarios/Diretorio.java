@@ -13,7 +13,15 @@ public class Diretorio {
     private final static String cliente = "";
 
     public static boolean criar(String diretorio) {
-        diretorio = "/Cliente/" + getCliente() + "/" + diretorio;
+        return criar(diretorio, false);
+    }
+
+    public static boolean criar(String diretorio, boolean ignore) {
+        if (!ignore) {
+            diretorio = "/Cliente/" + getCliente() + "/" + diretorio;
+        } else {
+            diretorio = "/resources/cliente/" + getCliente().toUpperCase() + "/" + diretorio.toUpperCase();
+        }
         try {
             String s[] = diretorio.split("/");
             boolean err = false;
@@ -48,7 +56,7 @@ public class Diretorio {
         }
     }
 
-    public static boolean criar(String diretorio, boolean externo) {
+    public static boolean criarExterno(String diretorio, boolean externo) {
         diretorio = "D:/Cliente/" + getCliente() + "/" + diretorio;
         try {
             diretorio = diretorio.replaceAll("[\\\\]", "/");
