@@ -306,13 +306,17 @@ public class AcademiaDao extends DB {
                 + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo     = SP.id_pessoa          "
                 + " INNER JOIN pes_pessoa           AS PR  ON PR.id         = SP.id_cobranca        "
                 + "  LEFT JOIN soc_socios_vw        AS SOC ON SOC.titular   = SP.id_pessoa          ";
+        if (convenio_empresa != null && convenio_empresa) {
+            queryString += " INNER JOIN fin_desconto_servico_empresa AS FDSE ON FDSE.id_juridica = PA.id_juridica AND FDSE.id_servico = SP.id_servico ";
+            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
+        }
         String emissaoInativacaoString;
         if (!ativos) {
             emissaoInativacaoString = " SP.dt_emissao ";
         } else {
             emissaoInativacaoString = " A.dt_inativo ";
         }
-
+        
         if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
             listWhere.add(emissaoInativacaoString + "BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "'");
         } else if (!emissaoFinal.isEmpty()) {
@@ -350,14 +354,6 @@ public class AcademiaDao extends DB {
         }
         if (nao_socio != null && nao_socio) {
             listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
-        } else if (convenio_empresa != null && convenio_empresa) {
-            String convenioEmpresa;
-            convenioEmpresa = " SP.id_pessoa NOT IN (SELECT SOCVW.titular FROM soc_socios_vw AS SOCVW )                 "
-                    + " AND PA.id_juridica IN (                                                                         "
-                    + "     SELECT SC.id_juridica                                                                       "
-                    + "       FROM soc_convenio AS SC                                                                   "
-                    + " INNER JOIN soc_convenio_servico AS SCS ON SCS.id_convenio_sub_grupo = SC.id_convenio_sub_grupo) ";
-            listWhere.add(convenioEmpresa);
         } else {
             if ((in_grupo_categoria != null && !in_grupo_categoria.isEmpty()) || (in_categoria != null && !in_categoria.isEmpty())) {
                 if (in_categoria != null && !in_categoria.isEmpty()) {
