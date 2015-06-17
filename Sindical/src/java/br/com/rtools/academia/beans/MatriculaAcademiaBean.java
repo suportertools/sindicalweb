@@ -249,7 +249,7 @@ public class MatriculaAcademiaBean implements Serializable {
             float calculo = Moeda.converteUS$(valorx_cheio) - (Moeda.converteUS$(valorx) - desconto);
             float valor_do_percentual = Moeda.converteUS$(Moeda.percentualDoValor(valorx_cheio, Moeda.converteR$Float(calculo)));
             
-            if (desconto == Moeda.converteUS$(valorx)) {
+            if (desconto == 0) {
                 matriculaAcademia.getServicoPessoa().setNrDescontoString("0.0");
             } else {
                 //float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(valor));

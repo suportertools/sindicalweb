@@ -329,10 +329,13 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         }
 
         if (booAniversario) {
-            filtro += " AND substring(text(p.dt_nascimento),6,2) IN('" + meses_aniversario + "')"+" \n ";
+            filtro += " AND p.codigo IN (SELECT id_pessoa FROM pes_fisica WHERE ";
+            filtro += "     substring(text(p.dt_nascimento),6,2) IN('" + meses_aniversario + "')"+" \n ";
 
             filtro += " AND substring(text(p.dt_nascimento),9,2) >= '" + dia_inicial + "'"+" \n "
                     + " AND substring(text(p.dt_nascimento),9,2) <= '" + dia_final + "'"+" \n ";
+            
+            filtro += " ) ";
         }
 
         if (booData) {
