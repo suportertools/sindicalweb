@@ -735,42 +735,42 @@ public class SociosBean implements Serializable {
         if (!Diretorio.criar("Imagens/Fotos/")) {
             return;
         }
-        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
-        boolean error = false;
-        if (!fotoTempPerfil.equals("")) {
-            File des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
-            if (des.exists()) {
-                des.delete();
-            }
-            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".jpg");
-            if (des.exists()) {
-                des.delete();
-            }
-            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
-            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
-            boolean rename = src.renameTo(des);
-            //fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png";
-            File del = new File(fotoTempPerfil);
-            if (del.exists()) {
-                del.delete();
-            }
-            fotoTempPerfil = "";
-
-            if (!rename) {
-                error = true;
-            } else {
-                Dao dao = new Dao();
-                novoDependente.setDtFoto(DataHoje.dataHoje());
-                dao.update(novoDependente, true);
-            }
-        }
-        if (!error) {
-            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
-            boolean delete = f.delete();
-
-        }
+//        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
+//        boolean error = false;
+//        if (!fotoTempPerfil.equals("")) {
+//            File des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
+//            if (des.exists()) {
+//                des.delete();
+//            }
+//            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".jpg");
+//            if (des.exists()) {
+//                des.delete();
+//            }
+//            des = new File(arquivo + "/" + novoDependente.getPessoa().getId() + ".png");
+//            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
+//            boolean rename = src.renameTo(des);
+//            //fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + novoDependente.getPessoa().getId() + ".png";
+//            File del = new File(fotoTempPerfil);
+//            if (del.exists()) {
+//                del.delete();
+//            }
+//            fotoTempPerfil = "";
+//
+//            if (!rename) {
+//                error = true;
+//            } else {
+//                Dao dao = new Dao();
+//                novoDependente.setDtFoto(DataHoje.dataHoje());
+//                dao.update(novoDependente, true);
+//            }
+//        }
+//        if (!error) {
+//            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
+//            boolean delete = f.delete();
+//
+//        }
         ((PhotoCam) GenericaSessao.getObject("photoCamBean")).setFILE_PERMANENT("/Imagens/user_undefined.png");
-        GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
+        // GenericaMensagem.info("Sistema", "Foto atualizada com sucesso!");
     }
 
 //    public String getFotoPerfilDependente() {
