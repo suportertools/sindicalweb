@@ -269,9 +269,9 @@
                                                 </p:panel>
 
                                                 <h:panelGrid columns="3">
-                                                    <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, true, (fisicaBean.fisica.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam"/>
-                                                    <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" />
-                                                    <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" update="i_panel_imagens"/>
+                                                    <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, true, (fisicaBean.fisica.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam" disabled="#{fisicaBean.fisica.id == -1}"/>
+                                                    <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" disabled="#{fisicaBean.fisica.id == -1}"/>
+                                                    <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" update="i_panel_imagens" disabled="#{fisicaBean.fisica.id == -1}"/>
 
                                                 </h:panelGrid>
 
