@@ -28,6 +28,7 @@ import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.FunctionsDao;
@@ -241,6 +242,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String novo() {
+        String urlTemp = "/Cliente/" + getCliente() + "/temp/" + "foto/" + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId() + "/perfil.png";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(urlTemp);
+        while (new File(arquivo).exists()) {
+            boolean d = new File(arquivo).delete();
+            if(d) {
+                break;
+            }
+        }
+        GenericaSessao.put("photoCamBean", new PhotoCam());
         GenericaSessao.put("fisicaBean", new FisicaBean());
         GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
         GenericaSessao.put("pesquisaEnderecoBean", new PesquisaEnderecoBean());
