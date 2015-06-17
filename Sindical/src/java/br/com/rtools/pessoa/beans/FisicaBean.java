@@ -1289,41 +1289,41 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void salvarImagem() {
-        if (!Diretorio.criar("Imagens/Fotos/")) {
-            return;
-        }
-        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
-        boolean error = false;
-        if (!fotoTempPerfil.equals("")) {
-            File des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
-            if (des.exists()) {
-                des.delete();
-            }
-            des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".jpg");
-            if (des.exists()) {
-                des.delete();
-            }
-            des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
-            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
-            boolean rename = false;
-            try {
-                rename = src.renameTo(des);
-            } catch (Exception e) {
-                rename = false;
-            }
-            fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
-            fotoTempPerfil = "";
-
-            if (!rename) {
-                error = true;
-            }
-        }
-        if (!error) {
-            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
-            if (f.exists()) {
-                boolean delete = f.delete();
-            }
-        }
+//        if (!Diretorio.criar("Imagens/Fotos/")) {
+//            return;
+//        }
+//        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
+//        boolean error = false;
+//        if (!fotoTempPerfil.equals("")) {
+//            File des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
+//            if (des.exists()) {
+//                des.delete();
+//            }
+//            des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".jpg");
+//            if (des.exists()) {
+//                des.delete();
+//            }
+//            des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
+//            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
+//            boolean rename = false;
+//            try {
+//                rename = src.renameTo(des);
+//            } catch (Exception e) {
+//                rename = false;
+//            }
+//            fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
+//            fotoTempPerfil = "";
+//
+//            if (!rename) {
+//                error = true;
+//            }
+//        }
+//        if (!error) {
+//            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
+//            if (f.exists()) {
+//                boolean delete = f.delete();
+//            }
+//        }
         if (fisica.getId() != -1) {
             Dao dao = new Dao();
             fisica.setDtFoto(DataHoje.dataHoje());
