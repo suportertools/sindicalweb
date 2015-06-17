@@ -15,7 +15,7 @@
                     <h:panelGrid columns="2" columnClasses="verticalAlignTop verticalAlignTop" style="overflow: hidden">
                         <h:column>
                             <p:panel header="Câmera" style="width: 350px; height: 300px" styleClass="text-center" >
-                                <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}"  update="@form" rendered="#{photoCamBean.visible}" />
+                                <p:photoCam widgetVar="pc_photocam" listener="#{photoCamBean.capture}" update=":form_photocam_files:i_photocam_preview" rendered="#{photoCamBean.visible}" />
                             </p:panel>
                         </h:column>
                         <h:column>
@@ -26,8 +26,8 @@
                                         <h:panelGrid id="i_photocam_preview_image">
                                             <h:column>
                                                 <div style="position: relative; height: 220px">
-                                                    <p:graphicImage value="#{photoCamBean.FILE_PERMANENT}" cache="false" rendered="#{!cropperBean.cut}" style="position: absolute; border: 0; z-index: 5;" />
-                                                    <p:graphicImage value="/Imagens/preloader.gif" rendered="#{!cropperBean.cut}" style="position: relative; border: 0; z-index: 3; margin-left: 90px; margin-top: 40px" />
+                                                    <p:graphicImage value="#{photoCamBean.streamedContent}" cache="false" rendered="#{!cropperBean.cut}" />
+                                                    <!-- <p:graphicImage value="/Imagens/preloader.gif" rendered="#{!cropperBean.cut}" style="position: relative; border: 0; z-index: 3; margin-left: 90px; margin-top: 40px" width="40" height="40"/> -->
                                                 </div>
                                             </h:column>
                                         </h:panelGrid>
@@ -41,7 +41,7 @@
                             <h:column>
                                 <h:panelGrid columns="6">
                                     <p:commandButton value="Capturar Foto" onclick="PF('pc_photocam').capture();
-                                            PF('dlg_loading_photo').show();" action="#{photoCamBean.waiting(0)}" global="false" disabled="#{cropperBean.cut}" actionListener="#{photoCamBean.waiting}" update="@form"/>
+                                            PF('dlg_loading_photo').show();" action="#{photoCamBean.waiting(0)}" global="false" disabled="#{cropperBean.cut}" actionListener="#{photoCamBean.waiting(3000)}" />
                                     <p:commandButton value="Atualizar" update="i_photocam_preview_image" global="false" disabled="#{cropperBean.cut}"/>
                                     <p:commandButton value="Concluir" action="#{photoCamBean.closeRefresh(0)}" disabled="#{cropperBean.cut}"/>
                                     <p:commandButton value="Desfazer" action="#{photoCamBean.closeRefresh(1)}" rendered="false" disabled="#{cropperBean.cut}"/>
