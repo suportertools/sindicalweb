@@ -5,18 +5,21 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.seguranca.Usuario;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.servlet.ServletContext;
 import org.primefaces.event.CaptureEvent;
@@ -99,7 +102,7 @@ public class PhotoCam implements Serializable {
         REPLACE_FILES = replace_file;
     }
 
-    public void listener(String aPATH, String aFILENAME, Boolean replace_file, Boolean autosave) {
+    public void listener(String aPATH, String aFILENAME, Boolean replace_file, Boolean autosave) throws FileNotFoundException {
         listener(aPATH, aFILENAME, replace_file, autosave, "");
 
     }
@@ -111,7 +114,7 @@ public class PhotoCam implements Serializable {
      * @param autosave
      * @param update
      */
-    public void listener(String aPATH, String aFILENAME, Boolean replace_file, Boolean autosave, String update) {
+    public void listener(String aPATH, String aFILENAME, Boolean replace_file, Boolean autosave, String update) throws FileNotFoundException {
         String[] split = null;
         if (!update.isEmpty()) {
             split = update.split(",");
@@ -129,6 +132,8 @@ public class PhotoCam implements Serializable {
         SHOW_MESSAGE = true;
         visible = true;
         stop = 4;
+        InputStream stream = new FileInputStream(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/user_undefined.png")));
+        streamedContent = new DefaultStreamedContent(stream, "image/png");
         // FILE_MEMORY = "";
         // deleteMemoryFile();
 
@@ -188,10 +193,10 @@ public class PhotoCam implements Serializable {
 //        }
         String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(file_path_local);
         File f = new File(newFileName);
-        boolean success = false;        
+        boolean success = false;
         FileImageOutputStream imageOutput;
         try {
-            if(f.exists()) {
+            if (f.exists()) {
                 f.delete();
             }
             f.createNewFile();
@@ -208,26 +213,26 @@ public class PhotoCam implements Serializable {
         }
     }
 
-    public synchronized String capture(CaptureEvent captureEvent) throws InterruptedException {
+    public synchronized String capture(CaptureEvent captureEvent) throws InterruptedException, FileNotFoundException {
         if (PhotoCam.oncapture(captureEvent, PATH_FILE, "", true)) {
             load = true;
             complete();
             File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE));
             int i = 0;
             FILE_PERMANENT = "/Cliente/" + getCliente() + "/" + PATH + "/" + PATH_FILE;
+            InputStream stream = new FileInputStream(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT)));
+            streamedContent = new DefaultStreamedContent(stream, "image/png");
             if (!f.exists()) {
-                InputStream stream = this.getClass().getResourceAsStream(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT));
-                streamedContent = new DefaultStreamedContent(stream, "image/png");
                 while (!f.exists()) {
                     Thread.sleep(1000);
                     if (i == 10) {
+                        stream = new FileInputStream(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/user_undefined.png")));
+                        streamedContent = new DefaultStreamedContent(stream, "image/png");
                         FILE_PERMANENT = "/Imagens/user_undefined.png";
                         break;
                     }
                     i++;
                 }
-            } else {
-                // Thread.sleep(2000);
             }
         }
         return null;
@@ -360,6 +365,7 @@ public class PhotoCam implements Serializable {
     }
 
     public synchronized void close(Integer tCase) {
+        streamedContent = null;
         GenericaSessao.remove("cropperBean");
         SUCCESS = false;
         PATH = "temp/foto/" + getUsuario().getId();
@@ -453,14 +459,13 @@ public class PhotoCam implements Serializable {
         this.load = load;
     }
 
-    public StreamedContent FileDocumentacaoController() {
-        InputStream stream = this.getClass().getResourceAsStream("C:/teste/CeWolf.pdf");
-        streamedContent = new DefaultStreamedContent(stream, "image/png");
-
-        return streamedContent;
-    }
-
     public StreamedContent getStreamedContent() {
+        try {
+            InputStream stream = new FileInputStream(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(FILE_PERMANENT)));
+            streamedContent = new DefaultStreamedContent(stream, "image/png");
+        } catch (Exception ex) {
+            Logger.getLogger(PhotoCam.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return streamedContent;
     }
 
