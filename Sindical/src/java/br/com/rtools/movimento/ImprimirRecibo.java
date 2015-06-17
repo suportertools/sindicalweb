@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.rtools.movimento;
 
 import br.com.rtools.financeiro.Baixa;
@@ -19,6 +14,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
@@ -39,10 +35,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-/**
- *
- * @author rtools
- */
 public class ImprimirRecibo {
 
     public String recibo(int id_movimento) {
@@ -70,8 +62,9 @@ public class ImprimirRecibo {
                     // QUALQUER OUTRO    
                 } else {
                     formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
-                    if (fp.get(i).getTipoPagamento().getId() == 3)
+                    if (fp.get(i).getTipoPagamento().getId() == 3) {
                         soma_dinheiro = soma_dinheiro + fp.get(i).getValor();
+                    }
                 }
             }
             String lblVencimento = "";
@@ -87,7 +80,7 @@ public class ImprimirRecibo {
                         conveniada = gu.getPessoa().getNome();
                     }
                 }
-                
+
                 if (lista.get(i).getLote().getRotina().getId() == 132) {
                     if (lista.get(i).getServicos().isValidadeGuias() && !lista.get(i).getServicos().isValidadeGuiasVigente()) {
                         lblVencimento = "Validade";
@@ -95,61 +88,61 @@ public class ImprimirRecibo {
                     } else if (lista.get(i).getServicos().isValidadeGuias() && lista.get(i).getServicos().isValidadeGuiasVigente()) {
                         lblVencimento = "Validade";
                         vencimento = DataHoje.converteData(DataHoje.lastDayOfMonth(DataHoje.dataHoje()));
-                    }else {
+                    } else {
                         lblVencimento = "Validade";
                         vencimento = "";
                     }
-                    
+
                     // MOSTRANDO MENSAGEM APENAS SE VIER DA PAGINA EMISSÃO DE GUIAS --- by rogerinho 17/03/2015 -- chamado 579
                     mensagemConvenio = lista.get(i).getLote().getHistorico();
-                }else{
+                } else {
                     lblVencimento = "Vencimento";
-                    vencimento = lista.get(i).getVencimento();                    
+                    vencimento = lista.get(i).getVencimento();
                 }
 
                 vetor.add(
-                    new ParametroRecibo(
-                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                        sindicato.getPessoa().getNome(),
-                        pe.getEndereco().getDescricaoEndereco().getDescricao(),
-                        pe.getEndereco().getLogradouro().getDescricao(),
-                        pe.getNumero(),
-                        pe.getComplemento(),
-                        pe.getEndereco().getBairro().getDescricao(),
-                        pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
-                        pe.getEndereco().getCidade().getCidade(),
-                        pe.getEndereco().getCidade().getUf(),
-                        sindicato.getPessoa().getTelefone1(),
-                        sindicato.getPessoa().getEmail1(),
-                        sindicato.getPessoa().getSite(),
-                        sindicato.getPessoa().getDocumento(),
-                        lista.get(i).getPessoa().getNome(), // RESPONSÁVEL
-                        String.valueOf(lista.get(i).getPessoa().getId()), // ID_RESPONSAVEL
-                        String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
-                        lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
-                        lista.get(i).getServicos().getDescricao(), // SERVICO
-                        vencimento, // VENCIMENTO
-                        new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
-                        lista.get(i).getBaixa().getUsuario().getLogin(),
-                        lista.get(i).getBaixa().getBaixa(),
-                        DataHoje.horaMinuto(),
-                        formas[0],
-                        formas[1],
-                        formas[2],
-                        formas[3],
-                        formas[4],
-                        formas[5],
-                        formas[6],
-                        formas[7],
-                        formas[8],
-                        formas[9],
-                        (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
-                        lblVencimento,
-                        mensagemConvenio,
-                        lista.get(i).getPessoa().getDocumento(),
-                        Moeda.converteR$Float(soma_dinheiro + lista.get(i).getBaixa().getTroco()),
-                        Moeda.converteR$Float(lista.get(i).getBaixa().getTroco())
-                    )
+                        new ParametroRecibo(
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                sindicato.getPessoa().getNome(),
+                                pe.getEndereco().getDescricaoEndereco().getDescricao(),
+                                pe.getEndereco().getLogradouro().getDescricao(),
+                                pe.getNumero(),
+                                pe.getComplemento(),
+                                pe.getEndereco().getBairro().getDescricao(),
+                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
+                                pe.getEndereco().getCidade().getCidade(),
+                                pe.getEndereco().getCidade().getUf(),
+                                sindicato.getPessoa().getTelefone1(),
+                                sindicato.getPessoa().getEmail1(),
+                                sindicato.getPessoa().getSite(),
+                                sindicato.getPessoa().getDocumento(),
+                                lista.get(i).getPessoa().getNome(), // RESPONSÁVEL
+                                String.valueOf(lista.get(i).getPessoa().getId()), // ID_RESPONSAVEL
+                                String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
+                                lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
+                                lista.get(i).getServicos().getDescricao(), // SERVICO
+                                vencimento, // VENCIMENTO
+                                new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
+                                lista.get(i).getBaixa().getUsuario().getLogin(),
+                                lista.get(i).getBaixa().getBaixa(),
+                                DataHoje.horaMinuto(),
+                                formas[0],
+                                formas[1],
+                                formas[2],
+                                formas[3],
+                                formas[4],
+                                formas[5],
+                                formas[6],
+                                formas[7],
+                                formas[8],
+                                formas[9],
+                                (conveniada.isEmpty()) ? "" : "Empresa Conveniada: " + conveniada,
+                                lblVencimento,
+                                mensagemConvenio,
+                                lista.get(i).getPessoa().getDocumento(),
+                                Moeda.converteR$Float(soma_dinheiro + lista.get(i).getBaixa().getTroco()),
+                                Moeda.converteR$Float(lista.get(i).getBaixa().getTroco())
+                        )
                 );
             }
 
@@ -158,17 +151,63 @@ public class ImprimirRecibo {
 
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+            
+            boolean printPdf = true;
+            
+            if (printPdf) {
+                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                salvarRecibo(arquivo, lista.get(0).getBaixa());
+                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                res.setContentType("application/pdf");
+                res.setHeader("Content-disposition", "inline; filename=\"" + "recibo" + ".pdf\"");
+                res.getOutputStream().write(arquivo);
+                res.getCharacterEncoding();
 
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            salvarRecibo(arquivo, lista.get(0).getBaixa());
+                FacesContext.getCurrentInstance().responseComplete();
+            }else{
+                // CASO QUEIRA IMPRIMIR EM HTML HTMLPRINT PRINTHTML IMPRIMIRRECIBOHTML TOHTML
+                if (lista.get(0).getBaixa().getCaixa() == null) {
+                    return null;
+                }
+                
+                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/" + "Arquivos/recibo/" + lista.get(0).getBaixa().getCaixa().getCaixa() + "/" + DataHoje.converteData(lista.get(0).getBaixa().getDtBaixa()).replace("/", "-"));
+                Diretorio.criar("Arquivos/recibo/" + lista.get(0).getBaixa().getCaixa().getCaixa() + "/" + DataHoje.converteData(lista.get(0).getBaixa().getDtBaixa()).replace("/", "-"));
 
-            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            res.setContentType("application/pdf");
-            res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
-            res.getOutputStream().write(arquivo);
-            res.getCharacterEncoding();
+                String path_arquivo = caminho + String.valueOf(lista.get(0).getBaixa().getUsuario().getId()) + "_" + String.valueOf(lista.get(0).getBaixa().getId()) + ".html";
+                File file_arquivo = new File(path_arquivo);
 
-            FacesContext.getCurrentInstance().responseComplete();
+                String n = String.valueOf(lista.get(0).getBaixa().getUsuario().getId()) + "_" + String.valueOf(lista.get(0).getBaixa().getId()) + ".html";
+                if (file_arquivo.exists()) {
+                    path_arquivo = caminho + String.valueOf(lista.get(0).getBaixa().getUsuario().getId()) + "_" + String.valueOf(lista.get(0).getBaixa().getId()) + "_(2).html";
+                    n = String.valueOf(lista.get(0).getBaixa().getUsuario().getId()) + "_" + String.valueOf(lista.get(0).getBaixa().getId()) + "_(2).html";
+                }
+                JasperExportManager.exportReportToHtmlFile(print, path_arquivo);
+                
+                Download download = new Download(n, caminho, "text/html", FacesContext.getCurrentInstance());
+                download.baixar();
+                
+//                String reportPath =JasperRunManager.runReportToHtmlFile(fl.getPath(), null, dtSource);
+//                File reportHtmlFile = new File(reportPath);
+//                FileInputStream fis = new FileInputStream(reportHtmlFile);
+//                byte[] arquivo =  new byte[(int)reportHtmlFile.length()];
+//                fis.read(arquivo);
+//                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//                res.setHeader("Content-Disposition","inline; filename=myReport.html");
+//                res.setContentType("text/html");
+//                res.setContentLength(arquivo.length);
+//                res.getOutputStream().write(arquivo);
+//                res.getCharacterEncoding();
+//                
+//                FacesContext.getCurrentInstance().responseComplete();
+                
+                                
+//                FacesContext.getCurrentInstance().responseComplete();
+//                HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//                response.sendRedirect("http://localhost:8080/Sindical/Cliente/Sindical/Arquivos/recibo/0/16-06-2015/1_683382.html");
+                //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/baixaGeral.jsf");
+
+            }
+
         } catch (JRException | IOException ex) {
             ex.getMessage();
         }

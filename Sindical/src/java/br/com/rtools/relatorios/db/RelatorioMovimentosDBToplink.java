@@ -75,7 +75,7 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                 + " INNER JOIN fin_tipo_servico        AS ts               ON ts.id                = mov.id_tipo_servico                        \n "
                 + "  LEFT JOIN pes_juridica            AS jur              ON jur.id_pessoa        = pes.id                                     \n "
                 + "  LEFT JOIN arr_contribuintes_vw    AS C                ON C.id_juridica        = jur.id                                     \n ";
-        if (condicao.equals("inativos")) {
+        if (condicao.equals("inativos") || condicao.equals("naoContribuintes")) {
             textQuery += " LEFT JOIN arr_contribuintes_inativos_agrupados_vw AS CI ON CI.id_juridica = C.id_juridica \n ";
         }
         textQuery += " "
@@ -116,6 +116,8 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                 // + "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw C WHERE dt_inativacao IS NULL) "
                 //+ "   AND jur.id IN (SELECT ci.id_juridica FROM arr_contribuintes_inativos ci GROUP BY ci.id_juridica) "
                 // + " AND C.dt_inativacao IS NOT NULL ";
+            case "naoContribuintes":
+                textQuery += " WHERE mov.is_ativo = true AND CI.id_juridica IS NULL AND C.id_juridica IS NULL \n ";
                 break;
         }
 

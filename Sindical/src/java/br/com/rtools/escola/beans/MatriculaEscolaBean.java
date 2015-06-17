@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,6 +110,7 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaNumeros;
     private List<SelectItem> listaDataVencimento;
     private List<SelectItem> listaIndividual;
+    // APAGAR DEPOIS DE 16/07/2015
     private List<SelectItem> listaDataTaxa;
     private List<SelectItem> listaMesVencimento;
     private List<SelectItem> listaDiaParcela;
@@ -171,6 +173,8 @@ public class MatriculaEscolaBean implements Serializable {
     private ServicoPessoa servicoPessoa;
     private int numeroParcelas;
     private String valorTotal;
+    
+    private Date dataEntrada = DataHoje.dataHoje();
 
     @PostConstruct
     public void init() {
@@ -293,6 +297,18 @@ public class MatriculaEscolaBean implements Serializable {
         return null;
     }
     
+    public boolean validaDataVigoracaoValidadeBoolean(){
+        if (!DataHoje.validaReferencias(servicoPessoa.getReferenciaVigoracao(), servicoPessoa.getReferenciaValidade())){
+            GenericaMensagem.warn("Atenção", "Data de INICIAL não pode ser menor que FINAL para as Parcelas!");
+            return false;
+        }
+        return true;
+    }
+    
+    public void validaDataVigoracaoValidade(){
+        validaDataVigoracaoValidadeBoolean();
+    }
+    
     public String telaBaixa(String caixa_banco) {
         if (macFilial == null) {
             GenericaMensagem.warn("Erro", "Não existe filial na sessão!");
@@ -332,7 +348,19 @@ public class MatriculaEscolaBean implements Serializable {
     public String gerarEntrada() {
         Plano5 plano5;
         Servicos servicos;
-
+        
+        DataHoje dh = new DataHoje();
+        if (DataHoje.maiorData(DataHoje.converteData(dataEntrada), dh.incrementarAnos(1, DataHoje.data()))){
+            GenericaMensagem.warn("Atenção", "Data de entrada não pode ser maior que 1 Ano!");
+            PF.openDialog("dlg_entrada");
+            return null;
+        }
+        
+        if(Moeda.converteUS$(valorTaxa) <= 0){
+            GenericaMensagem.warn("Atenção", "Digite um valor para a entrada!");
+            return null;
+        }
+        
         if (tipoMatricula.equals("Turma")) {
             plano5 = matriculaTurma.getTurma().getCursos().getPlano5();
             servicos = matriculaTurma.getTurma().getCursos();
@@ -365,7 +393,8 @@ public class MatriculaEscolaBean implements Serializable {
                 )
         );
 
-        String referencia = listaDataTaxa.get(idDataTaxa).getDescription();
+        //String referencia = listaDataTaxa.get(idDataTaxa).getDescription();
+        String referencia = DataHoje.converteData(dataEntrada);
         referencia = referencia.substring(3, 10);
 
         setMovimento(
@@ -380,7 +409,8 @@ public class MatriculaEscolaBean implements Serializable {
                         null,
                         Moeda.converteUS$(valorTaxa),
                         referencia,
-                        listaDataTaxa.get(idDataTaxa).getDescription(),
+                        //listaDataTaxa.get(idDataTaxa).getDescription(),
+                        DataHoje.converteData(dataEntrada),
                         1,
                         true,
                         "E",
@@ -389,7 +419,7 @@ public class MatriculaEscolaBean implements Serializable {
                         servicoPessoa.getPessoa(), // BENEFICIÁRIO
                         "",
                         "",
-                        listaDataTaxa.get(idDataTaxa).getDescription(),
+                        DataHoje.converteData(dataEntrada),
                         0, //valorDescontoAteVencimento,
                         0,
                         0,
@@ -421,10 +451,11 @@ public class MatriculaEscolaBean implements Serializable {
         
         dao.commit();
         
-        if (listaDataTaxa.get(idDataTaxa).getDescription().equals(DataHoje.data())) {
+        if (DataHoje.converteData(dataEntrada).equals(DataHoje.data())) {
             return telaBaixa("caixa");
         } else {
             GenericaMensagem.info("Sucesso", "Matrícula Concluída!");
+            PF.closeDialog("dlg_entrada");
             return null;
         }
     }
@@ -870,10 +901,11 @@ public class MatriculaEscolaBean implements Serializable {
             GenericaMensagem.warn("Atenção", "Para salvar este cadastro é necessário realizar acesso com MAC Filial!");
             return;
         }
-        if (existeMovimento()) {
-            GenericaMensagem.warn("Atenção", "Não é possível atualizar essa matrícula, já possui movimentos baixados!");
+        
+        if (!validaDataVigoracaoValidadeBoolean()){
             return;
         }
+        
         int idPessoa = servicoPessoa.getCobranca().getId();
         if (servicoPessoa.getPessoa().getId() == -1) {
             GenericaMensagem.warn("Atenção", "Informar nome do aluno!");
@@ -993,13 +1025,13 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaIndividual.setProfessor(null);
             }
 
-            servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataInicioString()));
-            servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataTerminoString()));
+            //servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataInicioString()));
+            //servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataTerminoString()));
         } else if (tipoMatricula.equals("Turma")) {
             matriculaTurma.setTurma(turma);
             servicoPessoa.setServicos(turma.getCursos());
-            servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(turma.getDataInicio()));
-            servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(turma.getDataTermino()));
+            //servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(turma.getDataInicio()));
+            //servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(turma.getDataTermino()));
         }
 
         servicoPessoa.setNrDiaVencimento(idDiaParcela);
@@ -1114,13 +1146,15 @@ public class MatriculaEscolaBean implements Serializable {
                         + " - Número de Parcelas: " //+ matriculaEscola.getEscStatus().getDescricao()
                         + " - Filial: " + matriculaEscola.getFilial().getFilial().getPessoa().getId()
                         + " - Midia: " + matriculaEscola.getMidia().getDescricao()
-                        + tipoMatriculaLog);
+                        + tipoMatriculaLog
+                );
 
                 target = "_blank";
                 sv.fecharTransacao();
 
                 GenericaMensagem.info("Sucesso", "Matrícula efetuada com sucesso!");
                 carregaEntrada();
+                PF.update("form_matricula_escola:panel_entrada");
                 PF.openDialog("dlg_entrada");
             } else {
                 sv.desfazerTransacao();
@@ -1178,6 +1212,7 @@ public class MatriculaEscolaBean implements Serializable {
     public void carregaEntrada() {
         listaDataTaxa.clear();
         listaMesVencimento.clear();
+        dataEntrada = DataHoje.dataHoje();
         getListaDataTaxa();
         getListaMesVencimento();
         if (aluno.getPessoa().getSocios().getId() != -1) {
@@ -1299,11 +1334,7 @@ public class MatriculaEscolaBean implements Serializable {
                 return;
             }
             SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
-            if (existeMovimento()) {
-                GenericaMensagem.warn("Atençao", "Não é possível excluir essa matrícula, já possui movimentos baixados!");
-                servicoPessoa.setAtivo(false);
-                return;
-            }
+
             MatriculaEscolaDao med = new MatriculaEscolaDao();
             if (med.desfazerMovimento(matriculaEscola)) {
 //                listaMovimentos.clear();
@@ -1464,13 +1495,34 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void updateGrid() {
         pegarIdServico();
-        //atualizaValor();
         calculoValor();
         calculoDesconto();
-
-        //calculaValorLiquido();
+        updateData();
     }
-
+    
+    public void updateData(){
+        if (matriculaEscola.getId() == -1){
+            switch (tipoMatricula) {
+                case "Individual":
+                    if ( DataHoje.menorData(servicoPessoa.getEmissao(), matriculaIndividual.getDataInicioString()) ){
+                        servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataInicioString()));
+                    }else{
+                        servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(servicoPessoa.getEmissao()));
+                    }
+                    servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(matriculaIndividual.getDataTerminoString()));
+                    break;
+                case "Turma":
+                    if ( DataHoje.menorData(servicoPessoa.getEmissao(), turma.getDataInicio()) ){
+                        servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(turma.getDataInicio()));
+                    }else{
+                        servicoPessoa.setReferenciaVigoracao(DataHoje.converteDataParaReferencia(servicoPessoa.getEmissao()));
+                    }
+                    servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(turma.getDataTermino()));
+                    break;
+            }
+        }
+    }
+    
     public void gerarMovimento() {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEscStatus().getId() == 3) {
@@ -1634,7 +1686,8 @@ public class MatriculaEscolaBean implements Serializable {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.find(new TipoServico(), 5);
                                 valorParcelaF = vTaxa;
                                 valorDescontoAteVencimento = 0;
-                                vecimentoString = listaDataTaxa.get(idDataTaxa).getDescription();
+                                //vecimentoString = listaDataTaxa.get(idDataTaxa).getDescription();
+                                vecimentoString = DataHoje.converteData(dataEntrada);
                                 isTx = insereTaxa;
                                 insereTaxa = false;
                             } else {
@@ -1745,10 +1798,7 @@ public class MatriculaEscolaBean implements Serializable {
     public void desfazerMovimento() {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEvt() != null) {
-                if (existeMovimento()) {
-                    GenericaMensagem.warn("Sistema", "Movimento já possui baixa, não pode ser cancelado!");
-                    return;
-                }
+
                 MatriculaEscolaDao med = new MatriculaEscolaDao();
                 if (med.desfazerMovimento(matriculaEscola)) {
 //                    listaMovimentos.clear();
@@ -2518,15 +2568,15 @@ public class MatriculaEscolaBean implements Serializable {
         this.desabilitaGeracaoContrato = desabilitaGeracaoContrato;
     }
 
-    public boolean existeMovimento() {
-        if (matriculaEscola.getEvt() != null) {
-            MovimentoDB movimentoDB = new MovimentoDBToplink();
-            if (!((List) movimentoDB.movimentosBaixadosPorEvt(matriculaEscola.getEvt().getId())).isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean existeMovimento() {
+//        if (matriculaEscola.getEvt() != null) {
+//            MovimentoDB movimentoDB = new MovimentoDBToplink();
+//            if (!((List) movimentoDB.movimentosBaixadosPorEvt(matriculaEscola.getEvt().getId())).isEmpty()) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public String getTipoMatricula() {
         return tipoMatricula;
@@ -2792,9 +2842,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void selecionaTurma(Turma t) {
         turma = t;
-        pegarIdServico();
-        //atualizaValor();
-        calculaValorLiquido();
+        updateGrid();
     }
 
 //    public static String UTF8toISO(String str) {
@@ -3119,35 +3167,52 @@ public class MatriculaEscolaBean implements Serializable {
 
     public int getNumeroParcelas() {
         String dt = null;
-        if (tipoMatricula.equals("Turma")) {
-            if (!turma.getDataInicio().isEmpty() && !turma.getDataTermino().isEmpty() && DataHoje.menorData(turma.getDataInicio(), turma.getDataTermino())) {
-                if ( DataHoje.menorData(servicoPessoa.getEmissao(), turma.getDataInicio()) ){
-                    dt = turma.getDataInicio();
-                }else{
-                    dt = servicoPessoa.getEmissao();
-                }
-                
-                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), turma.getDtTermino());
-                valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
-            } else {
-                numeroParcelas = 0;
-                valorTotal = getValorString();
+        String dia_string = (idDiaParcela < 10) ? "0"+idDiaParcela  : ""+idDiaParcela;
+        
+        if ((servicoPessoa.getReferenciaVigoracao() != null && servicoPessoa.getReferenciaValidade() != null) && (!servicoPessoa.getReferenciaVigoracao().isEmpty() && !servicoPessoa.getReferenciaValidade().isEmpty()) 
+                && DataHoje.menorData(dia_string +"/"+ servicoPessoa.getReferenciaVigoracao(), dia_string +"/"+ servicoPessoa.getReferenciaValidade())) {
+            if ( DataHoje.menorData(servicoPessoa.getEmissao(), dia_string +"/"+ servicoPessoa.getReferenciaVigoracao()) ){
+                dt = dia_string +"/"+ servicoPessoa.getReferenciaVigoracao();
+            }else{
+                dt = servicoPessoa.getEmissao();
             }
-        } else if (tipoMatricula.equals("Individual")) {
-            if (!matriculaIndividual.getDataInicioString().isEmpty() && !matriculaIndividual.getDataTerminoString().isEmpty() && DataHoje.menorData(matriculaIndividual.getDataInicioString(), matriculaIndividual.getDataTerminoString())) {
-                if ( DataHoje.menorData(servicoPessoa.getEmissao(), matriculaIndividual.getDataInicioString()) ){
-                    dt = matriculaIndividual.getDataInicioString();
-                }else{
-                    dt = servicoPessoa.getEmissao();
-                }
-                
-                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), matriculaIndividual.getDataTermino());
-                valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
-            } else {
-                numeroParcelas = 0;
-                valorTotal = getValorString();
-            }
-        }
+
+            numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), DataHoje.converte(dia_string+"/"+servicoPessoa.getReferenciaValidade()));
+            valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
+        } else {
+            numeroParcelas = 0;
+            valorTotal = getValorString();
+        }        
+        
+//        if (tipoMatricula.equals("Turma")) {
+//            if (!turma.getDataInicio().isEmpty() && !turma.getDataTermino().isEmpty() && DataHoje.menorData(turma.getDataInicio(), turma.getDataTermino())) {
+//                if ( DataHoje.menorData(servicoPessoa.getEmissao(), turma.getDataInicio()) ){
+//                    dt = turma.getDataInicio();
+//                }else{
+//                    dt = servicoPessoa.getEmissao();
+//                }
+//                
+//                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), turma.getDtTermino());
+//                valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
+//            } else {
+//                numeroParcelas = 0;
+//                valorTotal = getValorString();
+//            }
+//        } else if (tipoMatricula.equals("Individual")) {
+//            if (!matriculaIndividual.getDataInicioString().isEmpty() && !matriculaIndividual.getDataTerminoString().isEmpty() && DataHoje.menorData(matriculaIndividual.getDataInicioString(), matriculaIndividual.getDataTerminoString())) {
+//                if ( DataHoje.menorData(servicoPessoa.getEmissao(), matriculaIndividual.getDataInicioString()) ){
+//                    dt = matriculaIndividual.getDataInicioString();
+//                }else{
+//                    dt = servicoPessoa.getEmissao();
+//                }
+//                
+//                numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), matriculaIndividual.getDataTermino());
+//                valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
+//            } else {
+//                numeroParcelas = 0;
+//                valorTotal = getValorString();
+//            }
+//        }
         return numeroParcelas;
     }
 
@@ -3161,5 +3226,13 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setValorTotal(String valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Date getDataEntrada() {
+        return dataEntrada;
+    }
+
+    public void setDataEntrada(Date dataEntrada) {
+        this.dataEntrada = dataEntrada;
     }
 }

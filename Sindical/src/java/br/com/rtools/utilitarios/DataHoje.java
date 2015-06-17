@@ -739,7 +739,7 @@ public class DataHoje {
     }
 
     public static String validaHora(String hora) {
-        if (hora.isEmpty()) {
+        if (hora.isEmpty() || hora.equals("__:__")) {
             return "";
         }
         int n1;

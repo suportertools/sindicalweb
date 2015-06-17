@@ -560,12 +560,20 @@ public class BaixaGeralBean implements Serializable {
         return null;
     }
 
-    public String imprimirRecibo() {
+//    public String imprimirRecibo() {
+//        if (!listaMovimentos.isEmpty()) {
+//            ImprimirRecibo ir = new ImprimirRecibo();
+//            ir.recibo(listaMovimentos.get(0).getId());
+//        }
+//        return retorno();
+//    }
+//    
+
+    public void imprimirRecibo() {
         if (!listaMovimentos.isEmpty()) {
             ImprimirRecibo ir = new ImprimirRecibo();
             ir.recibo(listaMovimentos.get(0).getId());
         }
-        return retorno();
     }
 
     public String getQuitacao() {
