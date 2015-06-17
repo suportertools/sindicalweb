@@ -58,7 +58,7 @@
                                             <p:selectBooleanButton value="#{relatorioAcademiaBean.filtro[1]}" onLabel="Emissão / Inativação" offLabel="Emissão / Inativação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
                                                 <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio :form_relatorio:id_panel_relatorio" listener="#{relatorioAcademiaBean.clear}" />
                                             </p:selectBooleanButton>
-                                            <p:selectBooleanButton value="#{relatorioAcademiaBean.filtro[9]}" onLabel="Grupo / Categoria" offLabel="Grupo / Categoria" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" disabled="#{relatorioAcademiaBean.filtro[2]}">
+                                            <p:selectBooleanButton value="#{relatorioAcademiaBean.filtro[9]}" onLabel="Grupo / Categoria" offLabel="Grupo / Categoria" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
                                                 <p:ajax event="change" update="@this :form_relatorio:id_tipo_relatorio :form_relatorio:id_panel_relatorio :form_relatorio:i_panel_accordion:i_panel_avancado" listener="#{relatorioAcademiaBean.clear}" />
                                             </p:selectBooleanButton>
                                             <p:selectBooleanButton value="#{relatorioAcademiaBean.filtro[0]}" onLabel="Modalidade - Editar" offLabel="Modalidade - Edição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
@@ -88,22 +88,24 @@
                         </h:column>
                         <h:column>
                             <p:panel header="Filtro" id="id_panel_relatorio" style="width: 760px;" >
-                                <p:column rendered="#{relatorioAcademiaBean.filtro[8]}">
-                                    <h:column>
-                                        <h:panelGrid columns="6" styleClass="margin-top" id="i_idade">
-                                            <p:outputLabel value="Idade - " />
-                                            <p:outputLabel value="Inicial:" />
-                                            <p:inputText value="#{relatorioAcademiaBean.idadeInicial}" converter="#{thisNumber}" size="2" maxlength="2">
-                                                <p:ajax event="change" update="@this i_idade" />
-                                            </p:inputText>
-                                            <p:outputLabel value="Final:" styleClass="margin-left-max" />
-                                            <p:inputText value="#{relatorioAcademiaBean.idadeFinal}" converter="#{thisNumber}" size="2" maxlength="3">
-                                                <p:ajax event="change" update="@this i_idade" />
-                                            </p:inputText>
-                                            <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('idade')}" title="Remover filtro" />
-                                        </h:panelGrid>
-                                    </h:column>
-                                </p:column>
+                                <p:panel header="Aluno" rendered="#{relatorioAcademiaBean.filtro[8]}">
+                                    <p:column rendered="#{relatorioAcademiaBean.filtro[8]}">
+                                        <h:column>
+                                            <h:panelGrid columns="6" styleClass="margin-top" id="i_idade">
+                                                <p:outputLabel value="Idade - " />
+                                                <p:outputLabel value="Inicial:" />
+                                                <p:inputText value="#{relatorioAcademiaBean.idadeInicial}" converter="#{thisNumber}" size="2" maxlength="2">
+                                                    <p:ajax event="change" update="@this i_idade" />
+                                                </p:inputText>
+                                                <p:outputLabel value="Final:" styleClass="margin-left-max" />
+                                                <p:inputText value="#{relatorioAcademiaBean.idadeFinal}" converter="#{thisNumber}" size="2" maxlength="3">
+                                                    <p:ajax event="change" update="@this i_idade" />
+                                                </p:inputText>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('idade')}" title="Remover filtro" />
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </p:column>
+                                </p:panel>
                                 <p:column rendered="#{relatorioAcademiaBean.filtro[3]}">
                                     <h:panelGrid columns="2" styleClass="margin-top">
                                         <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}"  icon="ui-icon-search" value="Pesquisar Pessoa" />
@@ -193,17 +195,17 @@
                                     <p:panel header="Grupo Categoria / Categoria"  styleClass="margin-top" id="i_p_g_c_t">
                                         <h:panelGrid columns="7">
                                             <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[10]}" itemLabel="Não Sócio" disabled="#{relatorioAcademiaBean.filtro[11]}">
-                                                <p:ajax event="change" update="@this i_p_g_c_t"  />
+                                                <p:ajax event="change" update="@this i_p_g_c_t" listener="#{relatorioAcademiaBean.clear(0)}" />
                                             </p:selectBooleanCheckbox>
                                             <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[11]}" itemLabel="Convênio Empresa" disabled="#{relatorioAcademiaBean.filtro[10]}">
-                                                <p:ajax event="change" update="@this i_p_g_c_t"  />
+                                                <p:ajax event="change" update="@this i_p_g_c_t" listener="#{relatorioAcademiaBean.clear(0)}" />
                                             </p:selectBooleanCheckbox>                                        
                                         </h:panelGrid>
                                         <h:panelGrid columns="7" styleClass="margin-top" id="i_p_g_c">
                                             <p:outputLabel value="Grupo categoria:" rendered="#{(relatorioAcademiaBean.filtro[10] == relatorioAcademiaBean.filtro[11])}"/>
                                             <p:selectCheckboxMenu label="Grupo Categoria:" value="#{relatorioAcademiaBean.selectedGrupoCategoria}" rendered="#{(relatorioAcademiaBean.filtro[10] == relatorioAcademiaBean.filtro[11])}">
-                                                <p:ajax event="toggleSelect" update="i_p_g_c" />
-                                                <p:ajax event="change" update="i_p_g_c" />
+                                                <p:ajax event="toggleSelect" update="i_p_g_c" listener="#{relatorioAcademiaBean.clear(0)}"/>
+                                                <p:ajax event="change" update="i_p_g_c" listener="#{relatorioAcademiaBean.clear(0)}" />
                                                 <f:selectItems value="#{relatorioAcademiaBean.listGrupoCategoria}" />
                                             </p:selectCheckboxMenu>
                                             <p:outputLabel value="Categoria: " styleClass="margin-left-max" rendered="#{(relatorioAcademiaBean.filtro[10] == relatorioAcademiaBean.filtro[11])}" />
