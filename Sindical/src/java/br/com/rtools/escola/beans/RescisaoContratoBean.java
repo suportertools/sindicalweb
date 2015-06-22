@@ -6,7 +6,9 @@ import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
 import br.com.rtools.escola.dao.MatriculaEscolaDao;
+import br.com.rtools.escola.dao.RescisaoContratoDao;
 import br.com.rtools.financeiro.CondicaoPagamento;
+import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
@@ -21,10 +23,14 @@ import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
+import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +54,6 @@ public class RescisaoContratoBean implements Serializable {
     private List<Movimento> movimentosRescisao;
     private List<SelectItem> listaMesVencimento;
     private String descricaoServico;
-    private String mensagem;
     private String tipoRescisaoContrato;
     private String valorMulta;
     private String valorTotal;
@@ -59,7 +64,7 @@ public class RescisaoContratoBean implements Serializable {
     private int idMesVencimento;
     private int diaVencimento;
     private int numeroParcelas;
-    private boolean rescindido;
+    private Integer parcelasRestantes;
 
     @PostConstruct
     public void init() {
@@ -73,7 +78,6 @@ public class RescisaoContratoBean implements Serializable {
         movimentosRescisao = new ArrayList<>();
         listaMesVencimento = new ArrayList<>();
         descricaoServico = "";
-        mensagem = "";
         tipoRescisaoContrato = "";
         valorMulta = "";
         valorTotal = "";
@@ -83,8 +87,8 @@ public class RescisaoContratoBean implements Serializable {
         idEvt = -1;
         idMesVencimento = 0;
         diaVencimento = 0;
-        numeroParcelas = 0;
-        rescindido = false;
+        numeroParcelas = 1;
+        parcelasRestantes = 0;
     }
 
     @PreDestroy
@@ -103,23 +107,47 @@ public class RescisaoContratoBean implements Serializable {
         GenericaSessao.remove("rescisaoContratoBean");
     }
 
+    public void clickRescindirContrato() {
+        if (idEvt == -1) {
+            GenericaMensagem.warn("Atenção", "Não existem Movimentos gerados!");
+            PF.update("form_rescisao");
+            return;
+        }
+
+        if (matriculaEscola.getEscStatus().getId() != 1) {
+            GenericaMensagem.warn("Atenção", "Matricula não pode ser rescindida, aluno não é frequente!");
+            PF.update("form_rescisao");
+            return;
+        }
+
+        for (Movimento movimento : movimentos) {
+            if (DataHoje.menorData(movimento.getDtVencimento(), DataHoje.dataHoje())) {
+                GenericaMensagem.warn("Atenção", "Existem movimentos atrasados, rescisão não permitida!");
+                PF.update("form_rescisao");
+                return;
+            }
+        }
+        PF.openDialog("dlg_salvar");
+    }
+
     public MatriculaEscola getMatriculaEscola() {
         if (GenericaSessao.exists("matriculaEscolaPesquisa")) {
             matriculaEscola = (MatriculaEscola) GenericaSessao.getObject("matriculaEscolaPesquisa", true);
-            if (matriculaEscola.getEvt() != null) {
-                this.idEvt = matriculaEscola.getEvt().getId();
+            movimentos.clear();
+            if (matriculaEscola.getServicoPessoa().getEvt() != null) {
+                this.idEvt = matriculaEscola.getServicoPessoa().getEvt().getId();
                 titular = matriculaEscola.getServicoPessoa().getCobranca();
                 beneficiario = matriculaEscola.getServicoPessoa().getPessoa();
-                pesquisaMovimentosPorEvt(idEvt);
+                pesquisaMovimentosPorMatricula();
                 MatriculaEscolaDao matriculaEscolaDao = new MatriculaEscolaDao();
                 MatriculaIndividual mi = matriculaEscolaDao.pesquisaCodigoMIndividual(matriculaEscola.getId());
                 MatriculaTurma mt = matriculaEscolaDao.pesquisaCodigoMTurma(matriculaEscola.getId());
                 if (mi.getId() != -1) {
                     servicos = mi.getCurso();
-                    descricaoServico = "Mátricula nº" + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao();
+                    descricaoServico = "Matricula nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao();
                 } else if (mt.getId() != -1) {
                     servicos = mt.getTurma().getCursos();
-                    descricaoServico = "Mátricula nº" + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao() + " - Descrição: " + mt.getTurma().getDescricao();
+                    descricaoServico = "Matricula nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao() + " - Descrição: " + mt.getTurma().getDescricao();
                 }
                 PessoaDB pessoaDB = new PessoaDBToplink();
                 PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getServicoPessoa().getCobranca().getId());
@@ -151,69 +179,50 @@ public class RescisaoContratoBean implements Serializable {
         this.servicos = servicos;
     }
 
-    public List<Movimento> pesquisaMovimentosPorEvt(int idEvt) {
+    public List<Movimento> pesquisaMovimentosPorMatricula() {
         if (movimentos.isEmpty()) {
             dataGeracao = "";
-            LoteDB dB = new LoteDBToplink();
-            Lote lote = dB.pesquisaLotePorEvt(idEvt);
-            int dataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
-            int data = 0;
-            int i = 0;
-            if (lote != null) {
-                float soma = 0;
-                MovimentoDB mvDB = new MovimentoDBToplink();
-                if (matriculaEscola.getEscStatus().getId() != 3) {
-                    List<Movimento> list = (List<Movimento>) mvDB.listaMovimentosDoLote(lote.getId());
-                    if (!list.isEmpty()) {
+            RescisaoContratoDao dao = new RescisaoContratoDao();
+            List<Lote> lista_lote = dao.listaLoteEVT(idEvt);
+            if (!lista_lote.isEmpty()) {
+                List<Movimento> list = dao.listaMovimentoEVT(idEvt);
+                if (!list.isEmpty()) {
+                    dataGeracao = list.get(0).getLote().getEmissao();
+                    if (matriculaEscola.getEscStatus().getId() != 3) {
                         for (Movimento list1 : list) {
-                            if (list1.isAtivo()) {
-                                if (list1.getBaixa() == null) {
-                                    data = DataHoje.converteDataParaInteger(list1.getVencimento());
-                                    if (i == 0) {
-                                        dataGeracao = list1.getLote().getEmissao();
-                                    }
-                                    if (data >= dataHoje) {
-                                        soma += list1.getValor();
-                                        movimentos.add(list1);
-                                    }
-                                }
-                            }
-                            i++;
+                            movimentos.add(list1);
                         }
-                    }
-                } else {
-                    LoteDB loteDB = new LoteDBToplink();
-                    List<Lote> lotes = loteDB.pesquisaLotesPorEvt(lote.getEvt().getId());
-                    if (!lotes.isEmpty()) {
-                        List<Movimento> ms = new ArrayList<>();
-                        for (Lote l : lotes) {
-                            ms.addAll(mvDB.listaMovimentosDoLote(l.getId()));
-                        }
-                        if (!ms.isEmpty()) {
-                            rescindido = true;
-                            for (Movimento list1 : ms) {
-                                if (list1.isAtivo()) {
-                                    if (list1.getBaixa() == null) {
-                                        if (i == 0) {
-                                            dataGeracao = list1.getLote().getEmissao();
-                                        }
-                                        data = DataHoje.converteDataParaInteger(list1.getVencimento());
-                                        //if (data >= dataHoje) {
-                                        if (list1.getTipoServico().getId() == 6) {
-                                            soma += list1.getValor();
-                                            movimentos.add(list1);
-                                        }
-                                        //}
-                                    }
-                                }
+                    } else {
+                        for (Movimento list1 : list) {
+                            if (list1.getTipoServico().getId() == 6) {
+                                movimentos.add(list1);
                             }
                         }
-                    }
-                    if (soma != 0) {
-                        valor = Moeda.converteR$Float(soma);
                     }
                 }
             }
+
+            // PARCELAS RESTANTES
+            parcelasRestantes = DataHoje.quantidadeMeses("01/" + DataHoje.data().substring(3), "01/" + matriculaEscola.getServicoPessoa().getReferenciaValidade()) + 1;
+            List<Movimento> l = new RescisaoContratoDao().listaMovimentoPagos(idEvt);
+            Integer parcelas_pagas = l.size();
+            parcelasRestantes = parcelasRestantes - parcelas_pagas;
+                // ------------------
+
+            // VALOR RESTANTE
+            float valor_parcela = 0;
+            if (matriculaEscola.getServicoPessoa().getNrDesconto() == 0) {
+                if (matriculaEscola.getServicoPessoa().getPessoa().getSocios().getId() != -1) {
+                    valor_parcela = new FunctionsDao().valorServico(matriculaEscola.getServicoPessoa().getPessoa().getId(), matriculaEscola.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, matriculaEscola.getServicoPessoa().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId());
+                } else {
+                    valor_parcela = new FunctionsDao().valorServico(matriculaEscola.getServicoPessoa().getPessoa().getId(), matriculaEscola.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null);
+                }
+            } else {
+                valor_parcela = new FunctionsDao().valorServicoCheio(matriculaEscola.getServicoPessoa().getPessoa().getId(), matriculaEscola.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje());
+                valor_parcela = valor_parcela - (matriculaEscola.getServicoPessoa().getNrDesconto() * valor_parcela) / 100;
+            }
+
+            valor = Moeda.converteR$Float(parcelasRestantes * valor_parcela);
         }
         return movimentos;
     }
@@ -228,28 +237,33 @@ public class RescisaoContratoBean implements Serializable {
 
     public void rescindirMatriculaEscola() {
         if (idEvt == -1) {
-            // GenericaMensagem.warn("Validação", "Não existem movimentos gerados!");
-            mensagem = "Não existem movimentos gerados!";
+            GenericaMensagem.warn("Atenção", "Não existem Movimentos gerados!");
             return;
         }
-        if (matriculaEscola.getEscStatus().getId() == 2) {
-            mensagem = "Não é possível rescindir uma matrícula concluinte!";
+
+        if (matriculaEscola.getEscStatus().getId() != 1) {
+            GenericaMensagem.warn("Atenção", "Matricula não pode ser rescindida, aluno não é frequente!");
             return;
         }
-        Lote lote = null;
-        Pessoa r = null;
+
+        for (Movimento movimento : movimentos) {
+            if (DataHoje.menorData(movimento.getDtVencimento(), DataHoje.dataHoje())) {
+                GenericaMensagem.warn("Atenção", "Existem movimentos atrasados, rescisão não permitida!");
+                return;
+            }
+        }
+
         Dao dao = new Dao();
         dao.openTransaction();
         if (!movimentos.isEmpty()) {
-            for (int i = 0; i < movimentos.size(); i++) {
-                movimentos.get(i).setAtivo(false);
-                lote = movimentos.get(i).getLote();
-                r = movimentos.get(i).getPessoa();
-                if (!dao.update(movimentos.get(i))) {
-                    dao.rollback();
-                    //GenericaMensagem.warn("Erro", "Ao inativar movimentos!");
-                    mensagem = "Erro ao inativar movimentos!";
-                    return;
+            for (Movimento movimento : movimentos) {
+                if (movimento.getBaixa() == null && movimento.isAtivo()) {
+                    movimento.setAtivo(false);
+                    if (!dao.update(movimento)) {
+                        dao.rollback();
+                        GenericaMensagem.error("Erro", "Não foi possível inativar movimentos!");
+                        return;
+                    }
                 }
             }
         }
@@ -258,49 +272,53 @@ public class RescisaoContratoBean implements Serializable {
         //matriculaEscola.setHabilitado(false);
         if (!dao.update(matriculaEscola)) {
             dao.rollback();
-            //GenericaMensagem.warn("Erro", "Ao inativar matrícula!");
-            mensagem = "Erro ao inativar matrícula!";
+            GenericaMensagem.error("Erro", "Não foi possível inativar matrícula!");
             return;
         }
-        if (gerarMovimentoMulta(dao, lote, servicos, r)) {
-            movimentos.clear();
-            // GenericaMensagem.info("Sucesso", "Matrícula rescindida com sucesso");
-            mensagem = "Matrícula rescindida com sucesso";
+
+        if (Moeda.converteUS$(valorMulta) <= 0) {
+            GenericaMensagem.info("Sucesso", "Matrícula rescindida!");
             dao.commit();
+            pesquisaMovimentosPorMatricula();
+            return;
+        }
+
+        if (gerarMovimentoMulta(dao, servicos, matriculaEscola.getServicoPessoa().getPessoa())) {
+            movimentos.clear();
+            GenericaMensagem.info("Sucesso", "Matrícula rescindida!");
+            dao.commit();
+            pesquisaMovimentosPorMatricula();
         } else {
-            //GenericaMensagem.warn("Erro", "Ao inativar matrícula!");
-            mensagem = "Erro ao inativar matrícula!";
+            GenericaMensagem.error("Erro", "Não foi possível inativar matrícula!");
             dao.rollback();
         }
     }
 
-    public boolean gerarMovimentoMulta(Dao dao, Lote lote, Servicos s, Pessoa p) {
-        if (lote == null) {
-            return false;
-        }
+    public boolean gerarMovimentoMulta(Dao dao, Servicos s, Pessoa p) {
         try {
             String mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
             String mes = mesPrimeiraParcela.substring(0, 2);
             String ano = mesPrimeiraParcela.substring(3, 7);
             String referencia = mes + "/" + ano;
-            String vencimento;
+            String vencimento = DataHoje.DataToArray(DataHoje.data())[0] + "/" + referencia;
             Movimento m = null;
-            if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= diaVencimento) {
-                if (diaVencimento < 10) {
-                    vencimento = "0" + diaVencimento + "/" + mes + "/" + ano;
-                } else {
-                    vencimento = diaVencimento + "/" + mes + "/" + ano;
-                }
-            } else {
-                String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
-                if (diaSwap.length() < 2) {
-                    diaSwap = "0" + diaSwap;
-                }
-                vencimento = diaSwap + "/" + mes + "/" + ano;
-            }
+//            if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= diaVencimento) {
+//                if (diaVencimento < 10) {
+//                    vencimento = "0" + diaVencimento + "/" + mes + "/" + ano;
+//                } else {
+//                    vencimento = diaVencimento + "/" + mes + "/" + ano;
+//                }
+//            } else {
+//                String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+//                if (diaSwap.length() < 2) {
+//                    diaSwap = "0" + diaSwap;
+//                }
+//                vencimento = diaSwap + "/" + mes + "/" + ano;
+//            }
+
             float valorParcelaF;
             String nrCtrBoletoResp = "";
-            String vecimentoString = "";
+            String vencimentoString = "";
             TipoServico tipoServico = (TipoServico) dao.find(new TipoServico(), 6);
             FTipoDocumento fTipoDocumento = (FTipoDocumento) dao.find(new FTipoDocumento(), 2);
             for (int x = 0; x < (Integer.toString(matriculaEscola.getServicoPessoa().getCobranca().getId())).length(); x++) {
@@ -325,24 +343,25 @@ public class RescisaoContratoBean implements Serializable {
 
             Lote l = new Lote(
                     -1,
-                    lote.getRotina(),
+                    (Rotina) new Dao().find(new Rotina(), 151),
                     "R",
                     DataHoje.data(),
-                    titular,
-                    lote.getPlano5(),
+                    matriculaEscola.getServicoPessoa().getCobranca(),
+                    matriculaEscola.getServicoPessoa().getServicos().getPlano5(),
                     false,
                     "",
                     Moeda.substituiVirgulaFloat(valorMulta),
-                    lote.getFilial(),
+                    matriculaEscola.getServicoPessoa().getServicos().getFilial(),
                     null,
-                    lote.getEvt(),
+                    matriculaEscola.getServicoPessoa().getEvt(),
                     "",
                     fTipoDocumento,
                     (CondicaoPagamento) dao.find(new CondicaoPagamento(), idCondicaoPagto),
-                    lote.getStatus(),
+                    (FStatus) new Dao().find(new FStatus(), 1),
                     null,
-                    lote.isDescontoFolha(),
-                    0);
+                    false,
+                    0
+            );
 
             if (!dao.save(l)) {
                 dao.rollback();
@@ -352,11 +371,11 @@ public class RescisaoContratoBean implements Serializable {
             for (int i = 0; i < nr; i++) {
                 if (i > 0) {
                     referencia = mes + "/" + ano;
-                    vecimentoString = (new DataHoje()).incrementarMeses(i, vencimento);
-                    mes = vecimentoString.substring(3, 5);
-                    ano = vecimentoString.substring(6, 10);
+                    vencimentoString = (new DataHoje()).incrementarMeses(i, vencimento);
+                    mes = vencimentoString.substring(3, 5);
+                    ano = vencimentoString.substring(6, 10);
                 } else {
-                    vecimentoString = vencimento;
+                    vencimentoString = vencimento;
                 }
                 String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
                 m = new Movimento(
@@ -370,7 +389,7 @@ public class RescisaoContratoBean implements Serializable {
                         null,
                         valorParcelaF,
                         referencia,
-                        vecimentoString,
+                        vencimentoString,
                         1,
                         true,
                         "E",
@@ -543,8 +562,8 @@ public class RescisaoContratoBean implements Serializable {
     public String getValorTotal() {
         float valorT = 0;
         if (numeroParcelas > 0) {
-            if (Moeda.substituiVirgulaFloat(valorMulta) > 0) {
-                valorT = Moeda.substituiVirgulaFloat(valorMulta) / numeroParcelas;
+            if (Moeda.converteUS$(valorMulta) > 0) {
+                valorT = Moeda.converteUS$(valorMulta) / numeroParcelas;
             }
         }
         if (numeroParcelas < 2) {
@@ -559,27 +578,19 @@ public class RescisaoContratoBean implements Serializable {
         this.valorTotal = valorTotal;
     }
 
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
-    public boolean isRescindido() {
-        return rescindido;
-    }
-
-    public void setRescindido(boolean rescindido) {
-        this.rescindido = rescindido;
-    }
-
     public String getDataGeracao() {
         return dataGeracao;
     }
 
     public void setDataGeracao(String dataGeracao) {
         this.dataGeracao = dataGeracao;
+    }
+
+    public Integer getParcelasRestantes() {
+        return parcelasRestantes;
+    }
+
+    public void setParcelasRestantes(Integer parcelasRestantes) {
+        this.parcelasRestantes = parcelasRestantes;
     }
 }

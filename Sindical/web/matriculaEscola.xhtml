@@ -282,13 +282,13 @@
                                     </p:column>
                                     
                                     <p:column>
-                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaVigoracao}" mask="99/9999" style="text-align: right">
+                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaVigoracao}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
                                             <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
                                         </p:inputMask>
                                     </p:column>
                                     
                                     <p:column>
-                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaValidade}" mask="99/9999" style="text-align: right">
+                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaValidade}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
                                             <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
                                         </p:inputMask>
                                     </p:column>
@@ -343,19 +343,31 @@
                             </h:panelGrid>
                         </h:panelGrid>
                         
-                        <p:dialog widgetVar="dlg_entrada" modal="true" width="400" header="Pagamento de Entrada">
-                            <h:panelGrid columns="2" id="panel_entrada">
-                                <p:column>
-                                    <h:outputLabel value="Data da Entrada"/><br />
-                                    <p:calendar id="mask" value="#{matriculaEscolaBean.dataEntrada}" pattern="dd/MM/yyyy" mask="true" locale="pt" size="10" showOn="button" readonly="true"/>
-                                </p:column>
+                        <p:dialog widgetVar="dlg_entrada" modal="true" width="330" header="Pagamento de Entrada">
+                            <h:panelGrid columns="1" id="panel_entrada">
                                 
-                                <p:column>
-                                    <h:outputLabel value="Valor" /><br />
-                                    <p:inputText value="#{matriculaEscolaBean.valorTaxaString}" style="text-align: right; width: 100px">
-                                        <p:ajax event="change" update="@this" global="false"/>
-                                    </p:inputText>
-                                </p:column>
+                                <h:panelGrid>
+                                    <p:column>
+                                        <h:outputLabel value="Data da Entrada"/><br />
+                                        <p:calendar id="mask" value="#{matriculaEscolaBean.dataEntrada}" pattern="dd/MM/yyyy" mask="true" locale="pt" size="10" mode="inline">
+                                            <p:ajax event="dateSelect" update="panel_entrada" global="false"/>
+                                        </p:calendar>
+                                    </p:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:column>
+                                        <h:outputLabel value="Data da Entrada" /><br />
+                                        <p:inputText value="#{matriculaEscolaBean.converteData(matriculaEscolaBean.dataEntrada)}" style="text-align: right; width: 100px" readonly="TRUE"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Valor" /><br />
+                                        <p:inputText value="#{matriculaEscolaBean.valorTaxaString}" style="text-align: right; width: 100px">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </p:column>
+                                </h:panelGrid>
                             </h:panelGrid>
                             <p:messages autoUpdate="true" closable="true" showDetail="true"/>
                             <h:panelGrid columns="2" styleClass="margin-top-max">
@@ -442,7 +454,7 @@
                         <p:dialog widgetVar="dgl_panel_desfazer_movimento" id="id_panel_desfazer_movimento" modal="true"  header="Deseja desfazer esse movimento?" width="400">
                             <center>
                                 <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.desfazerMovimento}" update="i_panel_matricula_escola, growl" rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}" oncomplete="PF('dgl_panel_desfazer_movimento').hide();"  />
+                                    <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.desfazerMovimento}" update="i_panel_matricula_escola, growl" rendered="false" oncomplete="PF('dgl_panel_desfazer_movimento').hide();"  />
                                     <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_desfazer_movimento').hide();"/>
                                 </h:panelGrid>
                             </center>

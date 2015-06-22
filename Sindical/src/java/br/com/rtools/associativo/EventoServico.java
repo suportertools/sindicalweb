@@ -1,6 +1,5 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.financeiro.Evt;
 import br.com.rtools.financeiro.Servicos;
 import javax.persistence.Column;
 import javax.persistence.Entity;

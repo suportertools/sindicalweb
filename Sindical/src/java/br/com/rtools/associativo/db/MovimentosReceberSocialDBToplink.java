@@ -178,7 +178,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
     @Override
     public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa, boolean atrasados){
         String textqry
-            = " SELECT b.id, b.nr_ctr_boleto, b.nr_boleto, sum(m.nr_valor), b.dt_vencimento, b.dt_vencimento_original \n" +
+            = " SELECT b.id, b.nr_ctr_boleto, b.ds_boleto, sum(m.nr_valor), b.dt_vencimento, b.dt_vencimento_original \n" +
                 "  FROM fin_boleto b \n" +
                 " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
                 " WHERE m.id_pessoa = "+id_pessoa+" \n" +
@@ -187,7 +187,8 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                 "   AND (m.ds_documento IS NOT NULL AND m.ds_documento <> '') \n" +
                 "   AND (m.nr_ctr_boleto IS NOT NULL AND m.nr_ctr_boleto <> '') \n" +
                 "   AND b.dt_vencimento IS NOT NULL \n" +
-                " GROUP BY b.id, b.nr_ctr_boleto, b.nr_boleto, b.dt_vencimento, b.dt_vencimento_original  \n" +
+                "   AND m.id_servicos NOT IN (SELECT id_servicos FROM fin_servico_rotina WHERE id_rotina = 4) \n" +
+                " GROUP BY b.id, b.nr_ctr_boleto, b.ds_boleto, b.dt_vencimento, b.dt_vencimento_original  \n" +
                 ((atrasados) ? " ORDER BY b.dt_vencimento DESC" : " ORDER BY b.dt_vencimento");
         
         Query qry = getEntityManager().createNativeQuery(textqry);
@@ -214,6 +215,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                 "   -- AND b.dt_vencimento >= CURRENT_DATE QUANDO ATUALIZAR OS CAMPOS NULOS \n" +
                 //"   AND m.dt_vencimento >= CURRENT_DATE -- ATÉ ATUALIZAR OS CAMPOS NULOS \n" +
                 "   AND m.id_baixa IS NULL \n" +
+                "   AND m.id_servicos NOT IN (SELECT id_servicos FROM fin_servico_rotina WHERE id_rotina = 4) \n" +
                 " ORDER BY m.dt_vencimento DESC, pt.ds_nome, pb.ds_nome";
         
         Query qry = getEntityManager().createNativeQuery(textqry, Movimento.class);

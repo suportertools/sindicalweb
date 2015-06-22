@@ -87,9 +87,9 @@
 
                                     <p:column>
                                         <h:outputLabel value="Horário" style="margin-left: 30px"/><br />
-                                        <p:inputMask value="#{baileBean.eventoBaile.horaInicio}" size="3" title="Hora Inicial" mask="99:99" style="margin-left: 30px"/>
+                                        <p:inputMask value="#{baileBean.eventoBaile.horaInicio}" size="4" title="Hora Inicial" mask="99:99" style="margin-left: 30px"/>
                                         <h:outputLabel value=" à " />
-                                        <p:inputMask value="#{baileBean.eventoBaile.horaFim}" size="3" title="Hora Final" mask="99:99"/>
+                                        <p:inputMask value="#{baileBean.eventoBaile.horaFim}" size="4" title="Hora Final" mask="99:99"/>
                                     </p:column>
 
                                     <p:column>
@@ -133,11 +133,11 @@
                                 <p:outputLabel value="Serviço Valor" style="font-size: 13pt!important" />
                                 <hr />
 
-                                <h:panelGrid id="i_panel_tipo" columns="8" style="width: 100%">
+                                <h:panelGrid id="i_panel_i_m" columns="2">
                                     <h:column>
                                         <h:outputLabel value="Tipo"/>
                                         <p:selectOneRadio value="#{baileBean.eventoServico.mesa}">
-                                            <p:ajax event="change" update="i_panel_tipo" />
+                                            <p:ajax event="change" update="i_panel_i_m i_panel_tipo" />
                                             <f:selectItem itemValue="true" itemLabel="Convite" />
                                             <f:selectItem itemValue="false" itemLabel="Mesa"/>
                                         </p:selectOneRadio>
@@ -151,17 +151,19 @@
                                             <f:selectItem itemValue="A" itemLabel="Ambos"/>
                                         </p:selectOneRadio>                                
                                     </h:column>
+                                </h:panelGrid>
 
+                                <h:panelGrid id="i_panel_tipo" columns="8">
                                     <h:column>
-                                        <h:outputLabel value="Serviços"  style="margin-left: 20px"/><br />
-                                        <p:selectOneMenu value="#{baileBean.idServicos}" style="margin-left: 20px; padding-right: 20px">
+                                        <h:outputLabel value="Serviços" /><br />
+                                        <p:selectOneMenu value="#{baileBean.idServicos}" style="padding-right: 20px">
                                             <f:selectItems value="#{baileBean.listaComboServicos}" />
                                         </p:selectOneMenu>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Valor" style="margin-left: 20px"/><br />
-                                        <p:inputText id="i_valor" value="#{baileBean.eventoServicoValor.valorString}" maxlength="15" size="6" title="Valor" style="margin-left: 20px">
+                                        <p:inputText id="i_valor" value="#{baileBean.eventoServicoValor.valorString}" maxlength="15" size="6" title="Valor do Serviço" style="margin-left: 20px">
                                             <p:ajax event="change" update="i_valor" />
                                         </p:inputText>
                                     </h:column>
@@ -176,7 +178,7 @@
                                     <h:column>
                                         <br />
                                         <p:selectBooleanCheckbox value="#{baileBean.eventoServico.socio}" itemLabel="Sócio">
-                                            <p:ajax event="change" update="i_panel_tipo" />
+                                            <p:ajax event="change" update="@this i_panel_tipo" />
                                         </p:selectBooleanCheckbox>
                                     </h:column>
                                     
@@ -189,7 +191,7 @@
 
                                     <h:column>
                                         <br />
-                                        <p:commandButton value="Adicionar" action="#{baileBean.adicionarServico}" style="float: right; margin-left: 30px" update="tbl_s"/>
+                                        <p:commandButton value="Adicionar" action="#{baileBean.adicionarServico}" style="float: right; margin-left: 30px" update="i_panel_tipo tbl_s"/>
                                     </h:column>
                                 </h:panelGrid>
 
@@ -199,12 +201,16 @@
                                         <h:outputLabel value="#{linha.eventoServico.servicos.descricao}" />
                                     </p:column>
 
-                                    <p:column headerText="Valor">
-                                        <h:outputLabel value="#{linha.valor}"/>
+                                    <p:column headerText="Valor" style="width: 80px">
+                                        <h:outputLabel value="#{linha.valorString}"/>
                                     </p:column>
 
                                     <p:column headerText="Faixa Etária" style="text-align: center">
                                         <h:outputLabel value="#{linha.idadeInicial} à #{linha.idadeFinal}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Categora" style="text-align: center">
+                                        <h:outputLabel value="#{linha.eventoServico.categoria.categoria}" />
                                     </p:column>
 
                                     <p:column headerText="Convite / Mesa" style="text-align: center">
@@ -213,7 +219,7 @@
                                     </p:column>
 
                                     <p:column style="text-align: center">
-                                        <p:commandButton action="#{baileBean.removerEventoServico(linha)}" icon="ui-icon-trash" update="tbl_s"/>
+                                        <p:commandButton action="#{baileBean.removerEventoServico(linha)}" icon="ui-icon-trash" update=":formBaile:i_panel_tipo tbl_s"/>
                                     </p:column>                                    
                                 </p:dataTable>
 
