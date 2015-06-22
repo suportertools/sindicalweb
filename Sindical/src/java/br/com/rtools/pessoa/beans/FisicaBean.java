@@ -1497,18 +1497,23 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             reativar = socios.getServicoPessoa().isAtivo();
         }
 
-        if (listaPessoaEndereco.isEmpty()) {
-            GenericaMensagem.warn("Atenção", "Cadastrar um Endereço!");
-            return null;
+        
+        if ( socios.getId() == -1 || (socios.getId() != -1 && (socios.getMatriculaSocios().getDtInativo() != null || !socios.getServicoPessoa().isAtivo()))) {
+            if (listaPessoaEndereco.isEmpty()) {
+                GenericaMensagem.warn("Atenção", "Cadastrar um Endereço!");
+                return null;
+            }
         }
-
+        
         if (pessoaEmpresa.getId() != -1) {
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
         }
+        
         String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).socios();
         if (socios.getId() == -1) {
             reativar = false;
         }
+        
         GenericaSessao.put("sociosBean", new SociosBean());
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
         clear(0);

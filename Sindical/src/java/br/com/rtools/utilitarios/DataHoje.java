@@ -737,6 +737,10 @@ public class DataHoje {
         }
         return numeroDeMeses;
     }
+    
+    public static int quantidadeMeses(String dataInicial, String dataFinal) {
+        return quantidadeMeses(converte(dataInicial), converte(dataFinal));
+    }
 
     public static String validaHora(String hora) {
         if (hora.isEmpty() || hora.equals("__:__")) {

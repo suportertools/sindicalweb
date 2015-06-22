@@ -60,7 +60,7 @@ public final class Moeda {
 
     //Converte Campo Real para campo Dolar
     public static float converteUS$(String $dolar) {
-        if ($dolar.equals(null)) {
+        if ($dolar == null || $dolar.isEmpty()) {
             $dolar = "0,00";
         }
         if ($dolar.length() >= 3) {
@@ -75,7 +75,7 @@ public final class Moeda {
 
     public static String converteR$(String $dolar) {
         //$dolar = $dolar.replaceAll("[^0-9]", "");
-        if ($dolar.equals(null) || $dolar.trim().equals("")) {
+        if ($dolar == null || $dolar.isEmpty()) {
             return "0,00";
         }
         $dolar = Moeda.substituiVirgula($dolar);
@@ -92,7 +92,7 @@ public final class Moeda {
 
     public static String converteR$Float(float valor) {
         String $dolar = Float.toString(valor);
-        if (($dolar.equals(null)) || ($dolar.trim().equals(""))) {
+        if ($dolar == null || $dolar.isEmpty()) {
             return "0,00";
         }
         $dolar = Moeda.substituiVirgula($dolar);
@@ -109,7 +109,7 @@ public final class Moeda {
 
     public static Float converteFloatR$Float(float valor) {
         String $dolar = Float.toString(valor);
-        if (($dolar.equals(null)) || ($dolar.trim().equals(""))) {
+        if ($dolar == null || $dolar.isEmpty()) {
             return (float) 0.0;
         }
         $dolar = Moeda.substituiVirgula($dolar);

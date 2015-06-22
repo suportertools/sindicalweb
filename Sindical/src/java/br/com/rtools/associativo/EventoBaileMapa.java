@@ -25,7 +25,7 @@ public class EventoBaileMapa implements Serializable {
     private EventoBaile eventoBaile;
     @Column(name = "nr_mesa")
     private int mesa;
-    @Column(name = "ds_oposicao")
+    @Column(name = "ds_posicao")
     private String posicao;
 
     public EventoBaileMapa() {

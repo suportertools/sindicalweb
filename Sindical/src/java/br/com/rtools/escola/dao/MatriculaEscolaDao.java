@@ -15,6 +15,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -155,53 +156,78 @@ public class MatriculaEscolaDao extends DB {
         }
     }
 
-    public boolean desfazerMovimento(MatriculaEscola me) {
+    public String desfazerMovimento(MatriculaEscola me) {
         LoteDB loteDB = new LoteDBToplink();
-        Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getEvt());
+        Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getServicoPessoa().getEvt());
+        
         if (lote == null) {
-            return false;
+            return null;
         }
+        
         if (lote.getId() == -1) {
-            return false;
+            return null;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        
+        //SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         try {
-            Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getEvt().getId());
+            Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getServicoPessoa().getEvt().getId() + " AND M.baixa IS NOT NULL AND M.ativo = TRUE");
             List<Movimento> listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
-            salvarAcumuladoDB.abrirTransacao();
+            
+            if (!listMovimentos.isEmpty()){
+                return "Movimentos Baixados não podem ser Excluídos!";
+            }
+            
+            queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getServicoPessoa().getEvt().getId() + " AND M.baixa IS NULL AND M.ativo = TRUE");
+            listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
+            
+            dao.openTransaction();
             for (Movimento listMovimento : listMovimentos) {
-                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimento.getId(), "Movimento"))) {
-                    salvarAcumuladoDB.desfazerTransacao();
-                    return false;
+                if (!dao.delete(listMovimento)) {
+                    dao.rollback();
+                    return "Não foi possível excluir Movimento!";
                 }
             }
             if (lote.getId() != -1) {
-                if (!salvarAcumuladoDB.deletarObjeto((Lote) salvarAcumuladoDB.pesquisaCodigo(lote.getId(), "Lote"))) {
-                    salvarAcumuladoDB.desfazerTransacao();
-                    return false;
+                if (!dao.delete(lote)) {
+                    dao.rollback();
+                    return "Não foi possível excluir lote!";
                 }
             }
-            int idEvt = me.getEvt().getId();
-            me.setEvt(null);
-            if (!salvarAcumuladoDB.alterarObjeto(me)) {
-                salvarAcumuladoDB.desfazerTransacao();
-                return false;
+            Evt evt = (Evt) dao.find(new Evt(), me.getServicoPessoa().getEvt().getId());
+            me.getServicoPessoa().setEvt(null);
+            if (!dao.update(me.getServicoPessoa())) {
+                dao.rollback();
+                return "Não foi possível excluir Matrícula";
             }
-            if (!salvarAcumuladoDB.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt"))) {
-                salvarAcumuladoDB.desfazerTransacao();
-                return false;
+            
+            if (!dao.delete(evt)) {
+                dao.rollback();
+                return "Não foi possível excluir EVT";
             }
-            salvarAcumuladoDB.comitarTransacao();
-            return true;
+            
+            dao.commit();
+            
+//            
+            
+            //Dao dao = new Dao();
+//            db.abrirTransacao();
+//            if (!db.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt"))) {
+//                db.desfazerTransacao();
+//                return "Não foi possível excluir EVT";
+//            }
+//            db.comitarTransacao();
+            
+            return null;
         } catch (Exception e) {
-            salvarAcumuladoDB.desfazerTransacao();
-            return false;
+            dao.rollback();
+            return "No contexto da exclusão!";
         }
     }
 
     public boolean existeMatriculaTurma(MatriculaTurma mt) {
         try {
-            Query query = getEntityManager().createQuery("SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.servicoPessoa.pessoa.id = :idAluno");
+            Query query = getEntityManager().createQuery("SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.servicoPessoa.pessoa.id = :idAluno AND MT.matriculaEscola.escStatus.id <> 3 AND MT.matriculaEscola.servicoPessoa.ativo = TRUE");
             query.setParameter("idTurma", mt.getTurma().getId());
             query.setParameter("idAluno", mt.getMatriculaEscola().getServicoPessoa().getPessoa().getId());
             List list = query.getResultList();
@@ -235,7 +261,7 @@ public class MatriculaEscolaDao extends DB {
 
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.servicoPessoa.pessoa.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
+            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.servicoPessoa.pessoa.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino AND Mi.matriculaEscola.escStatus.id <> 3 AND MI.matriculaEscola.servicoPessoa.ativo = TRUE");
             query.setParameter("idCurso", mi.getCurso().getId());
             query.setParameter("idAluno", mi.getMatriculaEscola().getServicoPessoa().getId());
             query.setParameter("dataInicio", mi.getDataInicio());

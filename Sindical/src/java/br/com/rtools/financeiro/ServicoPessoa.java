@@ -53,6 +53,9 @@ public class ServicoPessoa implements java.io.Serializable {
     @JoinColumn(name = "id_cobranca_movimento", referencedColumnName = "id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa cobrancaMovimento;
+    @JoinColumn(name = "id_evt", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Evt evt;
     
     public ServicoPessoa() {
         this.id = -1;
@@ -71,10 +74,11 @@ public class ServicoPessoa implements java.io.Serializable {
         this.nrValorFixo = 0;
         this.descontoSocial = null;
         this.cobrancaMovimento = null;
+        this.evt = null;
     }
 
     public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,
-            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, float nrValorFixo, DescontoSocial descontoSocial, Pessoa cobrancaMovimento) {
+            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, float nrValorFixo, DescontoSocial descontoSocial, Pessoa cobrancaMovimento, Evt evt) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -91,6 +95,7 @@ public class ServicoPessoa implements java.io.Serializable {
         this.nrValorFixo = nrValorFixo;
         this.descontoSocial = descontoSocial;
         this.cobrancaMovimento = cobrancaMovimento;
+        this.evt = evt;
     }
 
     public int getId() {
@@ -245,5 +250,13 @@ public class ServicoPessoa implements java.io.Serializable {
 
     public void setCobrancaMovimento(Pessoa cobrancaMovimento) {
         this.cobrancaMovimento = cobrancaMovimento;
+    }
+
+    public Evt getEvt() {
+        return evt;
+    }
+
+    public void setEvt(Evt evt) {
+        this.evt = evt;
     }
 }

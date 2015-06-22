@@ -28,9 +28,6 @@ public class MatriculaEscola implements java.io.Serializable {
     @JoinColumn(name = "id_midia", referencedColumnName = "id")
     @ManyToOne
     private Midia midia;
-    @JoinColumn(name = "id_evt", referencedColumnName = "id")
-    @ManyToOne
-    private Evt evt;
     @Column(name = "ds_obs", length = 200)
     private String obs;
     @Temporal(TemporalType.DATE)
@@ -48,19 +45,17 @@ public class MatriculaEscola implements java.io.Serializable {
         escStatus = new EscStatus();
         vendedor = new Vendedor();
         midia = new Midia();
-        evt = null;
         obs = "";
         status = new Date();
         filial = new Filial();
         servicoPessoa = new ServicoPessoa();
     }
 
-    public MatriculaEscola(int id, EscStatus escStatus, Vendedor vendedor, Midia midia, Evt evt, String obs, Date status, Filial filial, ServicoPessoa servicoPessoa) {
+    public MatriculaEscola(int id, EscStatus escStatus, Vendedor vendedor, Midia midia, String obs, Date status, Filial filial, ServicoPessoa servicoPessoa) {
         this.id = id;
         this.escStatus = escStatus;
         this.vendedor = vendedor;
         this.midia = midia;
-        this.evt = evt;
         this.obs = obs;
         this.status = status;
         this.filial = filial;
@@ -97,14 +92,6 @@ public class MatriculaEscola implements java.io.Serializable {
 
     public void setMidia(Midia midia) {
         this.midia = midia;
-    }
-
-    public Evt getEvt() {
-        return evt;
-    }
-
-    public void setEvt(Evt evt) {
-        this.evt = evt;
     }
 
     public String getObs() {
