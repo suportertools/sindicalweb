@@ -17,11 +17,12 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "conf_social")
 public class ConfiguracaoSocial implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;    
-    
+    private int id;
+
     @Column(name = "nr_dias_inativa_demissionado")
     private int diasInativaDemissionado;
     @Column(name = "dt_inativa_demissionado")
@@ -31,9 +32,31 @@ public class ConfiguracaoSocial implements Serializable {
     @ManyToOne
     private GrupoCategoria grupoCategoriaInativaDemissionado;
     @Column(name = "is_inativa_demissionado", columnDefinition = "boolean default false")
-    private boolean inativaDemissionado;    
+    private boolean inativaDemissionado;
     @Column(name = "is_recebe_atrasado", columnDefinition = "boolean default false")
-    private boolean recebeAtrasado;    
+    private boolean recebeAtrasado;
+    @Column(name = "is_controla_cartao_filial", columnDefinition = "boolean default false")
+    private boolean controlaCartaoFilial;
+
+    public ConfiguracaoSocial() {
+        this.id = -1;
+        this.diasInativaDemissionado = 0;
+        this.dataInativacaoDemissionado = null;
+        this.grupoCategoriaInativaDemissionado = null;
+        this.inativaDemissionado = false;
+        this.recebeAtrasado = false;
+        this.controlaCartaoFilial = false;
+    }
+
+    public ConfiguracaoSocial(int id, int diasInativaDemissionado, Date dataInativacaoDemissionado, GrupoCategoria grupoCategoriaInativaDemissionado, boolean inativaDemissionado, boolean recebeAtrasado, boolean controlaCartaoFilial) {
+        this.id = id;
+        this.diasInativaDemissionado = diasInativaDemissionado;
+        this.dataInativacaoDemissionado = dataInativacaoDemissionado;
+        this.grupoCategoriaInativaDemissionado = grupoCategoriaInativaDemissionado;
+        this.inativaDemissionado = inativaDemissionado;
+        this.recebeAtrasado = recebeAtrasado;
+        this.controlaCartaoFilial = controlaCartaoFilial;
+    }
 
     public int getId() {
         return id;
@@ -58,7 +81,7 @@ public class ConfiguracaoSocial implements Serializable {
     public void setDataInativacaoDemissionado(Date dataInativacaoDemissionado) {
         this.dataInativacaoDemissionado = dataInativacaoDemissionado;
     }
-    
+
     public String getDataInativacaoDemissionadoString() {
         return DataHoje.converteData(dataInativacaoDemissionado);
     }
@@ -89,5 +112,13 @@ public class ConfiguracaoSocial implements Serializable {
 
     public void setRecebeAtrasado(boolean recebeAtrasado) {
         this.recebeAtrasado = recebeAtrasado;
+    }
+
+    public boolean isControlaCartaoFilial() {
+        return controlaCartaoFilial;
+    }
+
+    public void setControlaCartaoFilial(boolean controlaCartaoFilial) {
+        this.controlaCartaoFilial = controlaCartaoFilial;
     }
 }

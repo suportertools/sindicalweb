@@ -1,6 +1,7 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.AutorizaImpressaoCartao;
+import br.com.rtools.associativo.ConfiguracaoSocial;
 import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.associativo.HistoricoCarteirinha;
 import br.com.rtools.associativo.ModeloCarteirinha;
@@ -17,7 +18,6 @@ import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.MacFilial;
-import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -65,7 +65,11 @@ public class CartaoSocialBean implements Serializable {
     private Boolean disabled;
 
     public CartaoSocialBean() {
+        ConfiguracaoSocial configuracaoSocial = (ConfiguracaoSocial) new Dao().find(new ConfiguracaoSocial(), 1);
         disabled = false;
+        if (configuracaoSocial.isControlaCartaoFilial()) {
+            disabled = true;
+        }
         getListFilial();
         this.naoImpressoTodos();
     }
@@ -687,21 +691,15 @@ public class CartaoSocialBean implements Serializable {
     public List<SelectItem> getListFilial() {
         if (listFilial.isEmpty()) {
             MacFilial mf = MacFilial.getAcessoFilial();
-            idFilial = mf.getFilial().getId();
-            if (idFilial == -1) {
-                idFilial = 0;
-            }
+            idFilial = 0;
             List<Filial> list = new Dao().list(new Filial(), true);
             int j = 0;
             listFilial.add(new SelectItem(j, "TODAS", null));
             j = 1;
             for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getId() == idFilial) {
-                    // idFilial = i;
-                    if (list.get(i).getFilial().getId() == new Registro().getRegistroEmpresarial().getFilial().getId()) {
-                        disabled = false;
-                    } else {
-                        disabled = true;
+                if (disabled) {
+                    if (list.get(i).getId() == mf.getFilial().getId()) {
+                        idFilial = j;
                     }
                 }
                 listFilial.add(new SelectItem(j, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
