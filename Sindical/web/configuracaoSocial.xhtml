@@ -37,7 +37,7 @@
                         <h:form id="formConfiguracaoSocial">
                             <c:set scope="request" var="object" value="${configuracaoSocialBean.configuracaoSocial}"/>
                             <div style="clear:both"></div>
-                            <p:messages id="id_messages" showDetail="true" closable="true" />
+                            <p:messages id="id_messages" showDetail="true" closable="true" autoUpdate="true"/>
                             <p:growl id="id_messages_growl" showDetail="true"  />
 
                             <p:panel styleClass="fundoCinza">
@@ -70,7 +70,7 @@
                                 </h:panelGrid>
                             </p:panel>
                             
-                            <p:panel>
+                            <p:panel styleClass="margin-top-max">
                                 <p:outputLabel value="Movimentos a Receber" style="font-weight: bold; font-size: 11pt!important"/>
                                 <h:panelGrid id="i_panel_movimentos_receber"  columns="4">
                                     <h:column>
@@ -81,8 +81,19 @@
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
+                            <p:panel styleClass="margin-top-max">
+                                <p:outputLabel value="Cartão Social" style="font-weight: bold; font-size: 11pt!important"/>
+                                <h:panelGrid columns="4">
+                                    <h:column>
+                                        <br />
+                                        <p:selectBooleanCheckbox value="#{configuracaoSocialBean.configuracaoSocial.controlaCartaoFilial}" itemLabel="Controle Cartão Filial" style="margin-right: 20px">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
                             
-                            <p:commandButton value="Atualizar" action="#{configuracaoSocialBean.update()}" update="formConfiguracaoSocial"/>
+                            <p:commandButton value="Atualizar" action="#{configuracaoSocialBean.update()}" update=":formConfiguracaoSocial:" styleClass="margin-top-max"/>
                         </h:form>
                     </p:panel>
                 </f:view>
