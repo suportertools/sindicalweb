@@ -462,7 +462,8 @@
                                         
                                         <p:rowExpansion>
                                             <h:outputLabel value="Movimentos do Boleto #{linha.argumento0[2]}" style="font-weight: bold" rendered="false" />
-                                            <p:dataTable value="#{linha.argumento2}" var="linha_movimento">
+                                            <p:dataTable value="#{linha.argumento2}" var="linha_movimento" selection="#{movimentosReceberSocialBean.listaMovimentoDoBoletoSelecionado}" rowKey="#{linha_movimento.id}">
+                                                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
                                                 <p:column headerText="ID" style="width: 80px; text-align: center" rendered="false">
                                                     <h:outputLabel value="#{linha_movimento.id}" />
                                                 </p:column>
@@ -492,6 +493,7 @@
                                                 </p:column>
                                             </p:dataTable>
                                             <p:commandButton value="Imprimir Boleto" action="#{movimentosReceberSocialBean.imprimirBoletos(linha.argumento0[0])}" ajax="false" onclick="this.form.target = '_blank'"/>
+                                            <p:commandButton value="Remover Movimentos Selecionados" actionListener="#{movimentosReceberSocialBean.clickRemoverMovimentos(null)}" oncomplete="PF('dlg_confirma_desanexar').show()"/>
                                         </p:rowExpansion>
                                     </p:dataTable>
                                     
@@ -565,7 +567,7 @@
                             
                             <p:dialog widgetVar="dlg_confirma_desanexar" header="Remover Movimento" resizable="false" width="400" modal="true" >
                                 <h:panelGrid>
-                                    <p:outputLabel value="Deseja realmente RETIRAR este movimento deste boleto?" style="font-size: 11pt!important"/>
+                                    <p:outputLabel value="Deseja realmente RETIRAR estes movimentos deste boleto?" style="font-size: 11pt!important"/>
                                 </h:panelGrid>
                                 
                                 <h:panelGrid columns="2">

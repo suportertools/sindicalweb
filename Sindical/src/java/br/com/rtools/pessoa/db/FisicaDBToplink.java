@@ -724,15 +724,21 @@ public class FisicaDBToplink extends DB implements FisicaDB {
 
     @Override
     public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa) {
-        String textQuery = "SELECT sp.dt_emissao AS emissao, \n"
+        String textQuery = 
+                "  SELECT sp.dt_emissao AS emissao, \n"
                 + "       p.ds_nome AS nome, \n"
                 + "       sp.desconto_folha AS desconto_folha, \n"
                 + "       sp.nr_desconto AS desconto, \n"
                 + "       sp.ds_ref_vigoracao AS referencia_vigoracao, \n"
                 + "       sp.ds_ref_validade AS referencia_validade, \n"
                 + "       s.ds_descricao AS descricao, \n"
-                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, " + id_categoria + ") AS valor \n"
-                + "  FROM fin_servico_pessoa sp \n"
+                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, " + id_categoria + ") AS valor, \n"
+                + "       CASE WHEN sp.nr_desconto = 0 THEN \n " 
+                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, 4) \n " 
+                + "       ELSE \n " 
+                + "       func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) - ( sp.nr_desconto * func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) / 100) \n " 
+                + "       END AS valor_cheio  \n "
+                + "  FROM fin_servico_pessoa sp \n "
                 + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n"
                 + " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n"
                 + // socios com vigoração ativa ** ?

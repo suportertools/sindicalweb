@@ -334,7 +334,7 @@
 
                                     <p:column headerText="Parentesco" >
                                         <p:selectOneMenu value="#{listDependentes.idParentesco}" style="width: 120px">
-                                            <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
+                                            <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl :formSocios:i_panel_dependente" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
                                             <!-- <f:selectItems value="# {sociosBean.listaParentesco}"/> -->
                                             <f:selectItems value="#{listDependentes.listParentesco}"/>
                                         </p:selectOneMenu>
@@ -352,44 +352,13 @@
                                         <p:inputMask id="i_validade_dependente" value="#{listDependentes.validadeDependente}" size="5" mask="99/9999"/>
                                     </p:column>
 
-                                    <p:column headerText="Desconto %" style="text-align: center">
-                                        <p:inputText value="#{listDependentes.nrDesconto}" size="5" style="text-align: center"/>
+                                    <p:column headerText="Valor" style="text-align: center">
+                                        <p:outputLabel value="R$ " />
+                                        <p:inputText value="#{listDependentes.valorString}" size="5" style="text-align: center" disabled="#{listDependentes.fisica.id == -1}">
+                                            <p:ajax event="blur" listener="#{sociosBean.calculoDescontoDependente(listDependentes)}" update="@this" />
+                                        </p:inputText>
                                     </p:column>
                                 </p:dataTable>
-                                <!-- <p:dataTable var="linha" id="tbl" value="# {sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
-                                    <p:column width="30">
-                                        <p:commandButton icon="ui-icon-close" action="# {sociosBean.excluirDependente(linha, index)}" update=":formSocios:i_panel_dependente" title="Excluir dependente"/>
-                                    </p:column>
-
-                                    <p:column headerText="Nome" width="200">
-                                        <p:commandLink rendered="# {linha.argumento0.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="# {sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
-                                        <p:commandLink rendered="# {linha.argumento0.pessoa.id != -1}" value="# {linha.argumento0.pessoa.documento} - # {linha.argumento0.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="# {sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
-                                    </p:column>
-
-                                    <p:column headerText="Parentesco" >
-                                        <p:selectOneMenu value="# {linha.argumento1}" style="width: 120px">
-                                            <p:ajax event="change" update="i_validade_dependente i_validade_dependente2 :formSocios:i_growl" listener="# {sociosBean.atualizaValidadeTela(index)}"/>
-                                            < ! - - <f:selectItems value="# {sociosBean.listaParentesco}"/> - - >
-                                            <f:selectItems value="# {linha.argumento6}"/>
-                                        </p:selectOneMenu>
-                                    </p:column>
-
-                                    <p:column headerText="Via Carteirinha" style="text-align: center">
-                                        <p:inputText value="# {linha.argumento2}" size="3"/>
-                                    </p:column>
-
-                                    <p:column headerText="Validade Carteirinha" style="text-align: center">
-                                        <p:inputMask value="# {linha.argumento3}" size="8" mask="99/99/9999" readonly="true" id="i_validade_dependente2"/>
-                                    </p:column>
-
-                                    <p:column headerText="Val. Dependente" style="text-align: center">
-                                        <p:inputMask id="i_validade_dependente" value="# {linha.argumento4}" size="5" mask="99/9999"/>
-                                    </p:column>
-
-                                    <p:column headerText="Desconto %" style="text-align: center">
-                                        <p:inputText value="# {linha.argumento5}" size="5" style="text-align: center"/>
-                                    </p:column>
-                                </p:dataTable> -->
                             </p:panel>
 
                             <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="600" modal="true" closeOnEscape="true">

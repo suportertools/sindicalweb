@@ -14,10 +14,6 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.db.LoteDB;
-import br.com.rtools.financeiro.db.LoteDBToplink;
-import br.com.rtools.financeiro.db.MovimentoDB;
-import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.db.PessoaDB;
@@ -144,10 +140,10 @@ public class RescisaoContratoBean implements Serializable {
                 MatriculaTurma mt = matriculaEscolaDao.pesquisaCodigoMTurma(matriculaEscola.getId());
                 if (mi.getId() != -1) {
                     servicos = mi.getCurso();
-                    descricaoServico = "Matricula nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao();
+                    descricaoServico = "Contrato nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao();
                 } else if (mt.getId() != -1) {
                     servicos = mt.getTurma().getCursos();
-                    descricaoServico = "Matricula nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao() + " - Descrição: " + mt.getTurma().getDescricao();
+                    descricaoServico = "Contrato nº " + matriculaEscola.getId() + " - Serviço: " + servicos.getDescricao() + " - Descrição: " + mt.getTurma().getDescricao();
                 }
                 PessoaDB pessoaDB = new PessoaDBToplink();
                 PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getServicoPessoa().getCobranca().getId());
@@ -210,7 +206,7 @@ public class RescisaoContratoBean implements Serializable {
                 // ------------------
 
             // VALOR RESTANTE
-            float valor_parcela = 0;
+            float valor_parcela;
             if (matriculaEscola.getServicoPessoa().getNrDesconto() == 0) {
                 if (matriculaEscola.getServicoPessoa().getPessoa().getSocios().getId() != -1) {
                     valor_parcela = new FunctionsDao().valorServico(matriculaEscola.getServicoPessoa().getPessoa().getId(), matriculaEscola.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, matriculaEscola.getServicoPessoa().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId());

@@ -146,6 +146,8 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     private String criterioReferencia = "";
     private String criterioLoteBaixa = "";
+    
+    private List<Movimento> listaMovimentoDoBoletoSelecionado = new ArrayList();
 
     @PostConstruct
     public void init() {
@@ -222,19 +224,33 @@ public class MovimentosReceberSocialBean implements Serializable {
         Dao dao = new Dao();
 
         dao.openTransaction();
-        movimentoRemover.setNrCtrBoleto("");
-        movimentoRemover.setDocumento("");
+        if (movimentoRemover == null){
+            for (Movimento m : listaMovimentoDoBoletoSelecionado){
+                m.setNrCtrBoleto("");
+                m.setDocumento("");
 
-        if (!dao.update(movimentoRemover)) {
-            GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
-            return;
+                if (!dao.update(m)) {
+                    GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
+                    dao.rollback();
+                    return;
+                }    
+            }
+        }else{
+            movimentoRemover.setNrCtrBoleto("");
+            movimentoRemover.setDocumento("");
+
+            if (!dao.update(movimentoRemover)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Movimento, tente novamente!");
+                dao.rollback();
+                return;
+            }
         }
-
         dao.commit();
 
         loadBoletosAbertos();
         loadMovimentosAnexo();
         movimentoRemover = null;
+        listaMovimentoDoBoletoSelecionado.clear();
     }
 
     public void loadBoletosAbertos() {
@@ -278,7 +294,13 @@ public class MovimentosReceberSocialBean implements Serializable {
     }
 
     public void clickRemoverMovimentos(Movimento movimento) {
-        movimentoRemover = (Movimento) new Dao().rebind(movimento);
+        if (movimento != null){
+            movimentoRemover = (Movimento) new Dao().rebind(movimento);
+        }else {
+            for (int i = 0; i < listaMovimentoDoBoletoSelecionado.size(); i++){
+                listaMovimentoDoBoletoSelecionado.set(i, (Movimento) new Dao().rebind(listaMovimentoDoBoletoSelecionado.get(i)));
+            }
+        }
     }
 
     public void clickAnexarMovimentos() {
@@ -1976,6 +1998,14 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public void setCriterioLoteBaixa(String criterioLoteBaixa) {
         this.criterioLoteBaixa = criterioLoteBaixa;
+    }
+
+    public List<Movimento> getListaMovimentoDoBoletoSelecionado() {
+        return listaMovimentoDoBoletoSelecionado;
+    }
+
+    public void setListaMovimentoDoBoletoSelecionado(List<Movimento> listaMovimentoDoBoletoSelecionado) {
+        this.listaMovimentoDoBoletoSelecionado = listaMovimentoDoBoletoSelecionado;
     }
 
 }

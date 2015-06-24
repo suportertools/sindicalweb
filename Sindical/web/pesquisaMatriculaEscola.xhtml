@@ -53,7 +53,7 @@
                 <h:form id="formGridPesquisaMatrícula">
                     <h:panelGrid id="i_panel_grid" style="width: 100%">
                         <p:dataTable value="#{matriculaEscolaBean.listaMatriculaEscolas}" var="listaMatriculaEscola" emptyMessage="Nenhum registro encontrado">
-                            <p:column headerText="Matr." style="width: 50px" styleClass="text-center">
+                            <p:column headerText="Contrato" style="width: 50px" styleClass="text-center">
                                 <p:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.id}" immediate="true"/>
                             </p:column>
                             <p:column headerText="Nome do Aluno">

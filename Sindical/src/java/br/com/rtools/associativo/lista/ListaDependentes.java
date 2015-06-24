@@ -1,6 +1,8 @@
 package br.com.rtools.associativo.lista;
 
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ public class ListaDependentes implements Serializable {
     private Float nrDesconto;
     private List<SelectItem> listParentesco;
     private Boolean ativo;
+    private Float valor;
+    private ServicoPessoa servicoPessoa;
 
     public ListaDependentes() {
         this.fisica = new Fisica();
@@ -26,9 +30,11 @@ public class ListaDependentes implements Serializable {
         this.nrDesconto = new Float(0);
         this.listParentesco = new ArrayList<>();
         this.ativo = false;
+        this.valor = new Float(0);
+        this.servicoPessoa = new ServicoPessoa();
     }
 
-    public ListaDependentes(Fisica fisica, Integer idParentesco, Integer viaCarteirinha, String validadeCarteirinha, String validadeDependente, Float nrDesconto, List listParentesco, Boolean ativo) {
+    public ListaDependentes(Fisica fisica, Integer idParentesco, Integer viaCarteirinha, String validadeCarteirinha, String validadeDependente, Float nrDesconto, List listParentesco, Boolean ativo, Float valor, ServicoPessoa servidoPessoa) {
         this.fisica = fisica;
         this.idParentesco = idParentesco;
         this.viaCarteirinha = viaCarteirinha;
@@ -37,6 +43,8 @@ public class ListaDependentes implements Serializable {
         this.nrDesconto = nrDesconto;
         this.listParentesco = listParentesco;
         this.ativo = ativo;
+        this.valor = valor;
+        this.servicoPessoa = servidoPessoa;
     }
 
     public Fisica getFisica() {
@@ -117,5 +125,29 @@ public class ListaDependentes implements Serializable {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Float getValor() {
+        return valor;
+    }
+
+    public void setValor(Float valor) {
+        this.valor = valor;
+    }
+    
+    public String getValorString() {
+        return Moeda.converteR$Float(valor);
+    }
+
+    public void setValorString(String valorString) {
+        this.valor = Moeda.converteUS$(valorString);
+    }    
+
+    public ServicoPessoa getServicoPessoa() {
+        return servicoPessoa;
+    }
+
+    public void setServicoPessoa(ServicoPessoa servicoPessoa) {
+        this.servicoPessoa = servicoPessoa;
     }
 }

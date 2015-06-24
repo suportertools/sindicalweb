@@ -207,6 +207,85 @@ public class SociosBean implements Serializable {
             new File(url_temp).delete();
         }
     }
+    
+    public void calculoDescontoDependente(ListaDependentes linha){
+        linha.setNrDesconto(
+            calculoDescontoGenerico(
+                    linha.getValor(), 
+                    linha.getFisica().getPessoa().getId(), 
+                    linha.getServicoPessoa().getServicos().getId(), 
+                    //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
+                     servicoCategoria.getCategoria().getId()
+            )
+        );
+    }
+    
+    public void calculoValorDependente(ListaDependentes linha){
+        if (linha != null){
+            linha.setValor(
+                calculoValorGenerico(
+                        linha.getServicoPessoa().getNrDesconto(), 
+                        linha.getFisica().getPessoa().getId(), 
+                        linha.getServicoPessoa().getServicos().getId(), 
+                        //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
+                         servicoCategoria.getCategoria().getId()
+                )
+            );
+        }else{
+            for(int i = 0; i < listDependentes.size(); i++){
+                listDependentes.get(i).setValor(
+                    calculoValorGenerico(
+                            listDependentes.get(i).getServicoPessoa().getNrDesconto(), 
+                            listDependentes.get(i).getFisica().getPessoa().getId(), 
+                            listDependentes.get(i).getServicoPessoa().getServicos().getId(), 
+                            //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
+                            servicoCategoria.getCategoria().getId()
+                    )
+                );
+            }
+        }
+    }
+
+    // METODO GENERICO, MUDAR CLASSE
+    // RETORNA O DESCONTO PASSANDO O VALOR DO SERVIÇO
+    public float calculoDescontoGenerico(float valor, int id_pessoa, int id_servico, Integer id_categoria) {
+        String valorx;
+        if (id_categoria != null) {
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(id_pessoa, id_servico, DataHoje.dataHoje(), 0, id_categoria));
+        } else {
+            valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(id_pessoa, id_servico, DataHoje.dataHoje(), 0, null));
+        }
+
+        String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(id_pessoa, id_servico, DataHoje.dataHoje()));
+
+        if (valor == Moeda.converteUS$(valorx)) {
+            return 0;
+        } else {
+            float valorx_c = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), valor);
+            valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
+            return valorx_c;
+        }
+    }
+
+    // METODO GENERICO, MUDAR CLASSE
+    // RETORNA O VALOR PASSANDO O DESCONTO PARA O SERVIÇO
+    public float calculoValorGenerico(float desconto, int id_pessoa, int id_servico, Integer id_categoria) {
+        String valorx;
+        if (desconto == 0) {
+            if (id_categoria != null) {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(id_pessoa, id_servico, DataHoje.dataHoje(), 0, id_categoria));
+            } else {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(id_pessoa, id_servico, DataHoje.dataHoje(), 0, null));
+            }
+        } else {
+            float valorx_c = new FunctionsDao().valorServicoCheio(id_pessoa, id_servico, DataHoje.dataHoje());
+
+            float calculo = Moeda.divisaoValores(Moeda.multiplicarValores(desconto, valorx_c), 100);
+            valorx = Moeda.converteR$Float(Moeda.subtracaoValores(valorx_c, calculo));
+        }
+
+        return Moeda.converteUS$(valorx);
+    }
 
     public void loadPessoaComplemento(Integer id_pessoa) {
         PessoaDB db = new PessoaDBToplink();
@@ -1578,8 +1657,10 @@ public class SociosBean implements Serializable {
 
         //((DataObject) listaDependentes.get(index_dependente)).setArgumento0(novoDependente);
         listDependentes.get(index_dependente).setFisica(novoDependente);
+                
         atualizaValidadeTela(index_dependente);
         salvarImagem();
+        calculoValorDependente(listDependentes.get(index_dependente));
         modelVisible = false;
         index_dependente = 0;
         novoDependente = new Fisica();
@@ -1730,6 +1811,8 @@ public class SociosBean implements Serializable {
 
         List<SelectItem> selectItems = new ArrayList<>();
         selectItems.add(new SelectItem(0, "Selecione um Dependente", "0"));
+        //ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
+        //ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(Integer.valueOf(selectItems.get(0).getDescription()), servicoCategoria.getCategoria().getId());
         if (listDependentes.isEmpty()) {
             listDependentes.add(
                     new ListaDependentes(
@@ -1740,43 +1823,14 @@ public class SociosBean implements Serializable {
                             null,
                             servicoPessoa.getNrDesconto(),
                             selectItems,
-                            true
+                            true,
+                            (float) 0, // calculoValorGenerico(servicoPessoa.getNrDesconto(), fisica.getPessoa().getId(), servicoCategoriaDep.getServicos().getId(), servicoCategoriaDep.getCategoria().getId())
+                            new ServicoPessoa()
                     )
             );
             fisica.getPessoa().setNome("");
-//            DataObject dtObj = new DataObject(
-//                    fisica, // NOME
-//                    0, // IDPARENTESCO
-//                    1, // VIA CARTEIRINHA
-//                    DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
-//                    null, // DATA VAL DEP
-//                    servicoPessoa.getNrDesconto(), // DESCONTO
-//                    new SelectItem(0, "Selecione um Dependente", "0"), // LISTA DE PARENTESCO
-//                    null,
-//                    null,
-//                    null
-//            );
-//            listaDependentes.add(dtObj);
         } else {
             for (int i = 0; i < listDependentes.size(); i++) {
-//                if (((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getId() != -1
-//                        && (i - (listaDependentes.size() - 1) == 0)) {
-//                    fisica.getPessoa().setNome("");
-//                    DataObject dtObj = new DataObject(
-//                            fisica, // NOME
-//                            0, // IDPARENTESCO
-//                            1, // VIA CARTEIRINHA
-//                            DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
-//                            null, // DATA VAL DEP
-//                            servicoPessoa.getNrDesconto(), // DESCONTO
-//                            new SelectItem(0, "Selecione um Dependente", "0"), // LISTA DE PARENTESCO
-//                            null,
-//                            null,
-//                            null
-//                    );
-//                    listaDependentes.add(dtObj);
-//                    break;
-//                }
                 if (listDependentes.get(i).getFisica().getId() != -1 && (i - (listDependentes.size() - 1) == 0)) {
                     fisica.getPessoa().setNome("");
                     listDependentes.add(
@@ -1785,24 +1839,14 @@ public class SociosBean implements Serializable {
                                     0,
                                     1,
                                     DataHoje.converteData(validadeCarteirinha),
-                                    null, servicoPessoa.getNrDesconto(),
+                                    null,
+                                    servicoPessoa.getNrDesconto(),
                                     selectItems,
-                                    true
+                                    true,
+                                    (float) 0, //calculoValorGenerico(servicoPessoa.getNrDesconto(), fisica.getPessoa().getId(), servicoCategoriaDep.getServicos().getId(), servicoCategoriaDep.getCategoria().getId()),
+                                    new ServicoPessoa()
                             )
                     );
-//                    DataObject dtObj = new DataObject(
-//                            fisica, // NOME
-//                            0, // IDPARENTESCO
-//                            1, // VIA CARTEIRINHA
-//                            DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
-//                            null, // DATA VAL DEP
-//                            servicoPessoa.getNrDesconto(), // DESCONTO
-//                            new SelectItem(0, "Selecione um Dependente", "0"), // LISTA DE PARENTESCO
-//                            null,
-//                            null,
-//                            null
-//                    );
-//                    listaDependentes.add(dtObj);
                     break;
                 }
             }
@@ -2270,6 +2314,13 @@ public class SociosBean implements Serializable {
                         listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsAtivo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());
                     }
 
+                    float valor_dependente = calculoValorGenerico(
+                            listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(), 
+                            fisica.getPessoa().getId(), 
+                            listaDepsAtivo.get(i).getServicoPessoa().getServicos().getId(), 
+                            socios.getMatriculaSocios().getCategoria().getId()
+                    );
+
                     listDependentes.add(
                             new ListaDependentes(
                                     fisica,
@@ -2279,24 +2330,11 @@ public class SociosBean implements Serializable {
                                     listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade(),
                                     listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(),
                                     lista_si,
-                                    true
+                                    true,
+                                    valor_dependente,
+                                    listaDepsAtivo.get(i).getServicoPessoa()
                             )
                     );
-
-//                    listaDependentes.add(
-//                            new DataObject(
-//                                    fisica,
-//                                    index,// PARENTESCO
-//                                    listaDepsAtivo.get(i).getNrViaCarteirinha(), // VIA CARTEIRINHA
-//                                    (listsc.isEmpty()) ? "" : listsc.get(0).getValidadeCarteirinha(), // DATA VALIDADE CARTEIRINHA
-//                                    listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade(), // DATA VAL DEP
-//                                    listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(), // DESCONTO
-//                                    lista_si, // LISTA DE PARENTESCO
-//                                    null,
-//                                    null,
-//                                    null
-//                            )
-//                    );
                 } else {
                     // AQUI INATIVA AUTOMATICAMENTE SE O DEPENDENTE ESTIVER COM A REF VALIDADE < QUE A DATA ATUAL
                     dao.openTransaction();
@@ -2307,14 +2345,6 @@ public class SociosBean implements Serializable {
                         dao.rollback();
                         return;
                     }
-
-//                    Socios soc2 = db.pesquisaSocioPorPessoa(sp2.getPessoa().getId());
-//                    soc2.getMatriculaSocios().setMotivoInativacao((SMotivoInativacao) dao.find(new SMotivoInativacao(), 5));
-//                    if (!dao.update(soc2)) {
-//                        GenericaMensagem.error("Erro", "Erro ao alterar Matrícula do Dependente!");
-//                        dao.rollback();
-//                        return;
-//                    }
                     sp2 = new ServicoPessoa();
                     dao.commit();
                 }
@@ -2353,21 +2383,14 @@ public class SociosBean implements Serializable {
                 if (modeloc != null) {
                     listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsInativo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());
                 }
-
-//                listaDependentesInativos.add(
-//                        new DataObject(
-//                                fisica,
-//                                index,// PARENTESCO
-//                                listaDepsInativo.get(i).getNrViaCarteirinha(), // VIA CARTEIRINHA
-//                                (listsc.isEmpty()) ? "" : listsc.get(0).getValidadeCarteirinha(), // DATA VALIDADE CARTEIRINHA
-//                                listaDepsInativo.get(i).getServicoPessoa().getReferenciaValidade(), // DATA VAL DEP
-//                                listaDepsInativo.get(i).getServicoPessoa().getNrDesconto(), // DESCONTO
-//                                lista_si, // LISTA DE PARENTESCO
-//                                null,
-//                                null,
-//                                null
-//                        )
-//                );
+                
+                float valor_dependente = calculoValorGenerico(
+                        listaDepsInativo.get(i).getServicoPessoa().getNrDesconto(), 
+                        fisica.getPessoa().getId(), 
+                        listaDepsInativo.get(i).getServicoPessoa().getServicos().getId(), 
+                        socios.getMatriculaSocios().getCategoria().getId()
+                );
+                    
                 listDependentesInativos.add(
                         new ListaDependentes(
                                 fisica,
@@ -2377,7 +2400,9 @@ public class SociosBean implements Serializable {
                                 listaDepsInativo.get(i).getServicoPessoa().getReferenciaValidade(),
                                 listaDepsInativo.get(i).getServicoPessoa().getNrDesconto(),
                                 lista_si,
-                                false
+                                false,
+                                valor_dependente,
+                                listaDepsInativo.get(i).getServicoPessoa()
                         )
                 );
             }
@@ -2442,6 +2467,13 @@ public class SociosBean implements Serializable {
 
         listDependentes.get(index).setValidadeCarteirinha(atualizaValidadeCarteirinha(par, fisica));
         listDependentes.get(index).setValidadeDependente(atualizaValidade(par, fisica));
+        
+        ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
+        
+        ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(par.getId(), servicoCategoria.getCategoria().getId());
+        listDependentes.get(index).getServicoPessoa().setServicos(servicoCategoriaDep.getServicos());
+        
+        calculoValorDependente(listDependentes.get(index));
     }
 
     public void confirmaImprimirCartao() {
@@ -2634,6 +2666,7 @@ public class SociosBean implements Serializable {
         servicoPessoa.setNrDesconto(descontoSocial.getNrDesconto());
 
         loadServicos();
+        calculoValorDependente(null);
     }
 
     public List<SelectItem> getListaGrupoCategoria() {

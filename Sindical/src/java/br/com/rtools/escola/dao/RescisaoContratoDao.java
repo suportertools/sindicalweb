@@ -3,7 +3,6 @@ package br.com.rtools.escola.dao;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.principal.DB;
-import br.com.rtools.utilitarios.DataHoje;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -13,7 +12,7 @@ public class RescisaoContratoDao extends DB{
     public List<Movimento> listaMovimentoMatricula(Integer idPessoa, Integer idServico) {
         try {
             Query qry = getEntityManager().createQuery(
-                    "SELECT m FROM Movimento m WHERE m.pessoa.id = " + idPessoa + " AND m.servicos.id = "+idServico);
+                    "SELECT m FROM Movimento m WHERE m.pessoa.id = " + idPessoa + " AND m.servicos.id = "+idServico+ " AND m.ativo = TRUE");
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
@@ -24,13 +23,13 @@ public class RescisaoContratoDao extends DB{
     public List<Movimento> listaMovimentoPagos(Integer evt) {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    "select m.* \n " +
-                    " from fin_lote as l \n " +
-                    "inner join fin_movimento as m on m.id_lote=l.id \n " +
-                    "where  \n " +
-                    "m.dt_vencimento-(cast(extract(day from m.dt_vencimento) as int)+1) >= \n " +
-                    "current_date-(cast(extract(day from current_date) as int)+1) \n " +
-                    "and l.id_evt="+evt+" and m.id_baixa is not null", Movimento.class
+                    " SELECT m.* \n " +
+                    "   FROM fin_lote \n " +
+                    "  INNER JOIN fin_movimento m ON m.id_lote = l.id \n " +
+                    "  WHERE m.dt_vencimento - (CAST(EXTRACT(day FROM m.dt_vencimento) AS int) + 1) >= CURRENT_DATE - (CAST(EXTRACT(day FROM CURRENT_DATE) AS int)+1) \n " +
+                    "    AND l.id_evt = "+ evt +
+                    "    AND m.id_baixa IS NOT NULL \n " +
+                    "    AND m.is_ativo = TRUE ", Movimento.class
             );
             
             return qry.getResultList();
