@@ -26,11 +26,11 @@
                     <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
                     <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                     <p:growl id="growl" showDetail="true"/> 
-                    <p:outputLabel value="Cadastro de Matrícula" styleClass="fonteHeader"/>
+                    <p:outputLabel value="Matrícula Escola" styleClass="fonteHeader"/>
                     <div class="clear"></div>
                     <p:panel id="i_panel_matricula_escola">
                         <p:messages id="message" autoUpdate="false" showDetail="true" closable="true" />
-                         
+                        
                         <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
                             <h:column>
                                 <h:panelGrid columns="2" width="800">
@@ -97,6 +97,10 @@
                                         <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
                                         <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
+                                    </h:column>
+                                    <p:outputLabel value="Contrato: " />
+                                    <h:column>
+                                        <p:outputLabel value="N° #{matriculaEscolaBean.matriculaEscola.id}" style="font-weight: bold" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}"/>
                                     </h:column>
                                     <p:outputLabel value="Vendedor:" />
                                     <h:column>

@@ -2212,7 +2212,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             somaValoresHistorico = "0,00";
             for (Vector linha : result) {
                 listaServicoPessoa.add(new DataObject(linha, null));
-                somaValoresHistorico = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(somaValoresHistorico), ((Double) linha.get(7)).floatValue()));
+                somaValoresHistorico = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(somaValoresHistorico), ((Double) linha.get(8)).floatValue()));
             }
         }
         return listaServicoPessoa;
@@ -2468,7 +2468,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 Logger.getLogger(FisicaBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (tCase == 1) {
-            fisica.setDtRecadastro(null);
+            fisica.setDtRecadastro(fisica.getPessoa().getDtCriacao());
         }
     }
 

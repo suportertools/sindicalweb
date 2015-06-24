@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Fechamento Repasse</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Fechamento de Repasse de Cursos" styleClass="fonteHeader" />
+                        <h:form id="formFechamentoRepasse">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="3">
+                                    <p:column>
+                                        <p:outputLabel value="Data de Fechamento" /><br />
+                                        <h:panelGrid columns="2">
+                                            <p:selectOneMenu value="#{fechamentoRepasseBean.idDataFechamento}">
+                                                <f:selectItems value="#{fechamentoRepasseBean.listaDataFechamento}"/>
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" onclick="PF('dlg_excluir').show()" rendered="#{fechamentoRepasseBean.listaDataFechamento.size() > 0}" style="padding-right: 20px; margin-right: 20px"/>
+                                        </h:panelGrid>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Serviços"/><br />
+                                        <p:selectOneMenu value="#{fechamentoRepasseBean.idServicos}" style="padding-right: 20px;">
+                                            <f:selectItems value="#{fechamentoRepasseBean.listaServicos}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-print" value="Imprimir Relatório" action="#{fechamentoRepasseBean.visualizar()}" onclick="this.form.target='_blank'" ajax="false"/>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:messages id="msg_fechamento" closable="true" showDetail="true"/>
+                            
+                            <h:panelGrid columns="1">
+                                <p:commandButton icon="ui-icon-document" value="Novo Fechamento" onclick="PF('dlg_fechamento').show()"/>
+                            </h:panelGrid>
+                            
+                            <p:dialog widgetVar="dlg_fechamento" header="Salvar Fechamento de Repasse" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente SALVAR esse Fechamento?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{fechamentoRepasseBean.salvar()}" title="Salvar Fechamento de Repasse de Cursos" update="formFechamentoRepasse"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Fechamento de Repasse de Cursos" onclick="PF('dlg_fechamento').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_excluir" header="Excluir data de Fechamento Repasse" resizable="false" modal="true" width="400">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente EXCLUIR esse Fechamento?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{fechamentoRepasseBean.excluir()}" title="Excluir Fechamento de Repasse de Cursos" update="formFechamentoRepasse"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Fechamento de Repasse de Cursos" onclick="PF('dlg_excluir').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                        </h:form>
+                        
+                        <h:form>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

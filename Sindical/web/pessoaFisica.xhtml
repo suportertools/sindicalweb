@@ -543,6 +543,10 @@
                                             <p:column headerText="Valor" style="width: 80px; text-align: right">
                                                 <p:outputLabel value="#{fisicaBean.converteMoeda(linha.argumento0[7])}" />
                                             </p:column>
+                                            
+                                            <p:column headerText="Vlr c/ Desconto" style="width: 80px; text-align: right">
+                                                <p:outputLabel value="#{fisicaBean.converteMoeda(linha.argumento0[8])}" />
+                                            </p:column>
                                         </p:dataTable>
                                         <br />
                                         <h:panelGrid id="i_panel_valor_historico" columns="2" style="float: right">

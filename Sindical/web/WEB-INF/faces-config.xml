@@ -1698,6 +1698,12 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>fechamentoRepasse</from-outcome>
+            <to-view-id>/fechamentoRepasse.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
