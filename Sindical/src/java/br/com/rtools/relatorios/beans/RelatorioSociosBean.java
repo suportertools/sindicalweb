@@ -330,7 +330,7 @@ public class RelatorioSociosBean implements Serializable {
                     if (meses.length() > 0 && i != listaMeses.size()) {
                         meses += ",";
                     }
-                    meses += listaMeses.get(i).getArgumento2();
+                    meses += Integer.valueOf(listaMeses.get(i).getArgumento2().toString());
                 }
             }
 
