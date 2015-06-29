@@ -33,7 +33,7 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                 + "       pes_logradouro.ds_descricao  AS logradouroPessoa,     \n "
                 + "       pes_pend.ds_numero           AS numeroPessoa,         \n "
                 + "       pes_pend.ds_complemento      AS complementoPessoa,    \n "
-                + "       pes_bairro                   AS bairroPessoa,         \n "
+                + "       pes_bairro.ds_descricao      AS bairroPessoa,         \n "
                 + "       pes_end.ds_cep               AS cepPessoa,            \n "
                 + "       pes_cidade.ds_cidade         AS cidadePessoa,         \n "
                 + "       pes_cidade.ds_uf             AS ufCidade,             \n "
