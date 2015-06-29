@@ -9,6 +9,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import static br.com.rtools.utilitarios.Diretorio.arquivo;
+import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,11 +31,13 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileObject;
 import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -83,7 +86,6 @@ public class JavaClassLoader implements Serializable {
                 }
                 conteudo = FileUtils.readFileToString(file);
                 conteudo = conteudo.toString();
-                file.delete();
             } catch (Exception e) {
             }
             String className = cu.getArquivo().replace(".java", "");
@@ -103,20 +105,41 @@ public class JavaClassLoader implements Serializable {
             String sourcez = "package test; public class Test { static { System.out.println(\"hello\"); } public Test() { System.out.println(\"world\"); } }";
 
 // Save source in .java file.
-            File rootz = new File("C:/java"); // On Windows running on C:\, this is C:\java.
-            File sourceFilex = new File(rootz, "test/AcademiaGrade.java");
-            sourceFilex.getParentFile().mkdirs();
-            new FileWriter(sourceFilex).append(conteudo).close();
+            // ARQUIVO A SER MOVIDO
+            // DESTINO
+            File file_move = new File(binPath);
+            File file_delete = new File(file_move + "/" + cu.getArquivo());
+            if (file_delete.exists()) {
+                file_delete.delete();
+            }
+            File file_compiler = new File(file_move + "/" + cu.getArquivo());
+            boolean ok = file.renameTo(new File(file_move, file.getName()));
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+            StandardJavaFileManager sjfm = compiler.getStandardFileManager(null, null, null);
+            Iterable<? extends JavaFileObject> jfos = sjfm.getJavaFileObjectsFromFiles(Arrays.asList(new File[]{file_compiler}));
+            FileOutputStream errorStream = new FileOutputStream(file_compiler);
+            int compilationResult = compiler.run(null, null, errorStream, file_compiler.getPath());
+            if (compilationResult == 0) {
+                System.out.println("Compilation is successful");
+            } else {
+                System.out.println("Compilation Failed");
+            }
+            boolean success = compiler.getTask(null, sjfm, null, null, null, jfos).call();
+            sjfm.close(); //            compiler.run(null, null, null, file_compiler.getPath());
+            file.delete();
 
-// Compile source file.
-            JavaCompiler compilerz = ToolProvider.getSystemJavaCompiler();
-            compilerz.run(null, null, null, sourceFilex.getPath());
-
-// Load and instantiate compiled class.
-            URLClassLoader classLoaderz = URLClassLoader.newInstance(new URL[]{rootz.toURI().toURL()});
-            Class<?> clsz = Class.forName("test.AcademiaGrade", true, classLoaderz); // Should print "hello".
+            // Load and instantiate compiled class.
+            URLClassLoader classLoaderz = URLClassLoader.newInstance(new URL[]{file_move.toURI().toURL()});
+            URL[] urls = null;
+            URL url = file_move.toURI().toURL();
+            urls = new URL[]{url};
+            URLClassLoader ucl = URLClassLoader.newInstance(urls);
+//
+            Class c = ucl.loadClass("br.com.rtools.teste.Testes");
+            Class<?> clsz = Class.forName("br.com.rtools.teste.Testes", true, classLoaderz); // Should print "hello".
             Object instancez = clsz.newInstance(); // Should print "world".
-            System.out.println(instancez); // Should print "test.Test@hashcode".            
+            System.out.println(instancez); // Should print "test.Test@hashcode";
 
 // Save source in .java file.
 //            File rootx = new File("C:\\java"); // On Windows running on C:\, this is C:\java.
