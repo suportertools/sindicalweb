@@ -37,7 +37,7 @@
                             <p:panel styleClass="fundoCinza margin-top-max">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Filial: "/>
-                                    <p:selectOneMenu value="#{cartaoSocialBean.idFilial}" disabled="#{cartaoSocialBean.disabled}">
+                                    <p:selectOneMenu value="#{cartaoSocialBean.idFilial}">
                                         <p:ajax event="change" update="@this formCartaoSocial" listener="#{cartaoSocialBean.pesquisar()}"/>
                                         <f:selectItems value="#{cartaoSocialBean.listFilial}"/>
                                     </p:selectOneMenu>                                
