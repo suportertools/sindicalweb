@@ -427,7 +427,9 @@ public class SocioCarteirinhaJSFBean {
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
                                 dados[31],
                                 "",
-                                dados[32])
+                                dados[32],
+                                fisica.getPis()
+                        )
                         );
 
                         //List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(fisica.getPessoa().getId());
@@ -506,7 +508,7 @@ public class SocioCarteirinhaJSFBean {
                                     "",
                                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/FICHACADASTRO.jasper"),
                                     "",
-                                    null, "", "", "", "", ""));
+                                    null, "", "", "", "", "", ""));
                         }
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -728,7 +730,9 @@ public class SocioCarteirinhaJSFBean {
                                 pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
                                 dados[31],
                                 "",
-                                dados[32]));
+                                dados[32],
+                                fisica.getPis()
+                        ));
 
                     } catch (Exception erro) {
                         System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
