@@ -488,7 +488,8 @@ public class ImpressaoParaSocios {
                         pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
                         dados[31],
                         assinatura,
-                        dados[32]
+                        dados[32],
+                        fisica.getPis()
                 ));
 
                 List<Socios> deps = dbSoc.pesquisaDependentesOrdenado(matriculaSocios.getId());
@@ -571,6 +572,7 @@ public class ImpressaoParaSocios {
                             "",
                             "",
                             assinatura,
+                            "",
                             "")
                     );
                 }
@@ -803,7 +805,8 @@ public class ImpressaoParaSocios {
                             pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
                             dados[31],
                             "",
-                            dados[32]
+                            dados[32],
+                            fisica.getPis()
                     ));
                 } catch (Exception erro) {
                     System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -931,7 +934,9 @@ public class ImpressaoParaSocios {
                         DataHoje.data(),
                         "",
                         pessoaEndereco.getEndereco().getLogradouro().getDescricao(),
-                        "", "",
+                        "",
+                        "",
+                        "",
                         ""
                 ));
             } catch (Exception erro) {
