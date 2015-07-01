@@ -81,6 +81,7 @@ public class FichaSocial {
     private String empresa_logradouro;
     private String assinatura;
     private String empresa_codigo;
+    private String pis;
 
     public FichaSocial() {
         this.ordem = 0;
@@ -162,9 +163,10 @@ public class FichaSocial {
         this.empresa_logradouro = "";
         this.assinatura = "";
         this.empresa_codigo = "";
+        this.pis = "";
     }
 
-    public FichaSocial(int ordem, int codigo_socio, int matricula, String data_cadastro, String recadastro, String grupo, String categoria, String nome, String sexo, String data_nascimento, String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String serie_ctps, String estado_civil, String pai, String mae, String telefone, String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, boolean imprime_verso, String dest_cnpj, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento, String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String empresa_nome, String empresa_telefone, String empresa_fax, String empresa_admissao, String empresa_cargo, String empresa_endereco, String empresa_numero, String empresa_complemento, String empresa_bairro, String empresa_cidade, String empresa_uf, String empresa_cep, String imagem, String obs, String grau, String entidade, String entidade_endereco, String entidade_numero, String entidade_complemento, String entidade_bairro, String entidade_cidade, String entidade_uf, String entidade_cep, String entidade_cnpj, String texto, String imagem2, String foto, String entidade_email, String entidade_site, String entidade_telefone, String caminho_verso, String cnpj, String data_recadastro, String fantasia, String entidade_logradouro, String empresa_logradouro, String assinatura, String empresa_codigo) {
+    public FichaSocial(int ordem, int codigo_socio, int matricula, String data_cadastro, String recadastro, String grupo, String categoria, String nome, String sexo, String data_nascimento, String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String serie_ctps, String estado_civil, String pai, String mae, String telefone, String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep, boolean imprime_verso, String dest_cnpj, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento, String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String empresa_nome, String empresa_telefone, String empresa_fax, String empresa_admissao, String empresa_cargo, String empresa_endereco, String empresa_numero, String empresa_complemento, String empresa_bairro, String empresa_cidade, String empresa_uf, String empresa_cep, String imagem, String obs, String grau, String entidade, String entidade_endereco, String entidade_numero, String entidade_complemento, String entidade_bairro, String entidade_cidade, String entidade_uf, String entidade_cep, String entidade_cnpj, String texto, String imagem2, String foto, String entidade_email, String entidade_site, String entidade_telefone, String caminho_verso, String cnpj, String data_recadastro, String fantasia, String entidade_logradouro, String empresa_logradouro, String assinatura, String empresa_codigo, String pis) {
         this.ordem = ordem;
         this.codigo_socio = codigo_socio;
         this.matricula = matricula;
@@ -244,6 +246,7 @@ public class FichaSocial {
         this.empresa_logradouro = empresa_logradouro;
         this.assinatura = assinatura;
         this.empresa_codigo = empresa_codigo;
+        this.pis = pis;
     }
 
     public int getOrdem() {
@@ -876,6 +879,14 @@ public class FichaSocial {
 
     public void setEntidade_email(String entidade_email) {
         this.entidade_email = entidade_email;
+    }
+
+    public String getPis() {
+        return pis;
+    }
+
+    public void setPis(String pis) {
+        this.pis = pis;
     }
 
 }
