@@ -393,19 +393,28 @@
                                     </h:panelGrid>
                                     <div class="clear"></div>
                                     <h:panelGrid id="i_panel_filtro6" columns="1">
-                                        <h:panelGrid columns="3" rendered="#{relatorioSociosBean.situacao}" style="margin: 10px">
+                                        <h:panelGrid columns="4" rendered="#{relatorioSociosBean.situacao}" style="margin: 10px">
                                             <h:column>
-                                                <p:outputLabel value="Carência de Débito em Dias:" /><br /><br />
-                                                <h:column>
+                                                <h:panelGrid columns="2">
+                                                    <p:outputLabel value="Situação:" />
+                                                    <p:selectOneMenu value="#{relatorioSociosBean.situacaoString}">
+                                                        <f:selectItem itemValue="adimplente" itemLabel="Adimplente" />
+                                                        <f:selectItem itemValue="inadimplente" itemLabel="Inadimplente" />
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column>
+                                                <h:panelGrid columns="4">
+                                                    <p:outputLabel value="Carência de Débito em Dias:" />
                                                     <p:selectOneButton value="#{relatorioSociosBean.tipoCarencia}">
                                                         <f:selectItem itemValue="eleicao" itemLabel="Eleição" />
                                                         <f:selectItem itemValue="clube" itemLabel="Clube" itemDisabled="true"/>
                                                         <f:selectItem itemValue="todos" itemLabel="Todos" itemDisabled="true"/>
                                                     </p:selectOneButton>                                                
-                                                </h:column>
-                                                <p:inputText value="#{relatorioSociosBean.carenciaDiasString}" maxlength="3" size="2" styleClass="margin-left-max" converter="#{thisNumber}">
-                                                    <p:ajax event="change" update="@this" />
-                                                </p:inputText>
+                                                    <p:inputText value="#{relatorioSociosBean.carenciaDiasString}" maxlength="3" size="2" styleClass="margin-left-max" converter="#{thisNumber}">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:inputText>
+                                                </h:panelGrid>
                                             </h:column>
                                         </h:panelGrid>
                                     </h:panelGrid>
