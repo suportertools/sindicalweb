@@ -125,6 +125,7 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booEstadoCivil = false;
     private boolean booEmpresa = false;
     private Boolean situacao = false;
+    private String situacaoString = null;
     private Boolean compactar = false;
     private Integer carenciaDias = null;
     private String tipoCarencia = "eleicao";
@@ -229,8 +230,10 @@ public class RelatorioSociosBean implements Serializable {
             situacao = !situacao;
             if (situacao) {
                 tipoCarencia = "eleicao";
+                situacaoString = "adimplente";
                 carenciaDias = 0;
             } else {
+                situacaoString = null;
                 tipoCarencia = "eleicao";
                 carenciaDias = null;
             }
@@ -387,7 +390,7 @@ public class RelatorioSociosBean implements Serializable {
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
-                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias);
+                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString);
 
         Collection lista = new ArrayList();
         for (int i = 0; i < result.size(); i++) {
@@ -470,8 +473,8 @@ public class RelatorioSociosBean implements Serializable {
                     getConverteNullString(result.get(i).get(76)), // CONTABILIDADE - NOME
                     getConverteNullString(result.get(i).get(77)), // CONTABILIDADE - CONTATO
                     getConverteNullString(result.get(i).get(78)), // CONTABILIDADE - EMAIL
-                    ((getConverteNullString(result.get(i).get(79)) != null) ? DataHoje.converteData( (Date) result.get(i).get(79) ) : ""), // ADMISSAO EMPRESA DEMISSIONADA
-                    ((getConverteNullString(result.get(i).get(80)) != null) ? DataHoje.converteData( (Date) result.get(i).get(80) ) : ""), // DEMISSAO EMPRESA DEMISSIONADA
+                    ((getConverteNullString(result.get(i).get(79)) != null) ? DataHoje.converteData((Date) result.get(i).get(79)) : ""), // ADMISSAO EMPRESA DEMISSIONADA
+                    ((getConverteNullString(result.get(i).get(80)) != null) ? DataHoje.converteData((Date) result.get(i).get(80)) : ""), // DEMISSAO EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(81)), // CNPJ EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(82)), // EMPRESA DEMISSIONADA
                     getConverteNullString(result.get(i).get(83)) // IDADE
@@ -480,12 +483,12 @@ public class RelatorioSociosBean implements Serializable {
 //                break;
 //            }
         }
-        
+
         if (lista.isEmpty()) {
             GenericaMensagem.warn("Sistema", "Nenhum registro encontrado!");
             return null;
         }
-        
+
         Jasper.PART_NAME = AnaliseString.removerAcentos(relatorios.getNome().toLowerCase());
         Jasper.PART_NAME = Jasper.PART_NAME.replace("/", "");
         Jasper.PATH = "downloads";
@@ -1394,6 +1397,14 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setCompactar(Boolean compactar) {
         this.compactar = compactar;
+    }
+
+    public String getSituacaoString() {
+        return situacaoString;
+    }
+
+    public void setSituacaoString(String situacaoString) {
+        this.situacaoString = situacaoString;
     }
 
 }
