@@ -149,22 +149,23 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booTipoPagamento, String ids_pagamento, boolean booCidadeSocio, String ids_cidade_socio, boolean booCidadeEmpresa, String ids_cidade_empresa,
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
-            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias) {
-        
-        String p_demissao="";
-        
-        if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()){
+            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias,
+            String situacao) {
+
+        String p_demissao = "";
+
+        if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
             p_demissao = " , pempresa.admissao_empresa_demissionada, \n" + // 79
-                         "   pempresa.demissao_empresa_demissionada, \n" + // 80
-                         "   pempresa.cnpj_empresa_demissionada, \n" + // 81
-                         "   pempresa.empresa_demissionada \n " ; // 82
-        }else{
+                    "   pempresa.demissao_empresa_demissionada, \n" + // 80
+                    "   pempresa.cnpj_empresa_demissionada, \n" + // 81
+                    "   pempresa.empresa_demissionada \n "; // 82
+        } else {
             p_demissao = " , null AS admissao_empresa_demissionada, \n" + // 79
-                         "   null AS demissao_empresa_demissionada, \n" + // 80
-                         "   null AS cnpj_empresa_demissionada, \n" + // 81
-                         "   null AS empresa_demissionada \n " ; // 82
+                    "   null AS demissao_empresa_demissionada, \n" + // 80
+                    "   null AS cnpj_empresa_demissionada, \n" + // 81
+                    "   null AS empresa_demissionada \n "; // 82
         }
-        
+
         String textQry = ""
                 + "SELECT "
                 + "           ''                  AS sindLogo,                  \n " // 0
@@ -246,7 +247,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                 + "           PC.ds_nome,                                       \n " // 76
                 + "           PJC.ds_contato,                                   \n " // 77
                 + "           PC.ds_telefone1                                   \n " // 78
-                + "           "+p_demissao+",                                   \n " 
+                + "           " + p_demissao + ",                                   \n "
                 + "           func_idade(p.dt_nascimento,CURRENT_DATE) AS idade \n " // 83
                 + "      FROM pes_pessoa_vw      AS p                           \n "
                 + "INNER JOIN soc_socios_vw      AS so   ON so.codsocio     = p.codigo              \n "
@@ -266,127 +267,127 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         }
         // MATRICULA --------------------
         if (booMatricula) {
-            filtro += " so.matricula >= " + matricula_inicial + " AND so.matricula <= " + matricula_final +" \n ";
+            filtro += " so.matricula >= " + matricula_inicial + " AND so.matricula <= " + matricula_final + " \n ";
         } else {
-            filtro += " so.matricula >= 0 AND so.matricula <= 9999999"+" \n ";
+            filtro += " so.matricula >= 0 AND so.matricula <= 9999999" + " \n ";
         }
 
         //filtro += relatorio.getQry(); 
         // IDADE ------------
         if (booIdade) {
-            filtro += " AND extract(year FROM age(p.dt_nascimento)) >= " + idade_inicial + " AND extract(year FROM age(p.dt_nascimento)) <= " + idade_final+" \n ";
+            filtro += " AND extract(year FROM age(p.dt_nascimento)) >= " + idade_inicial + " AND extract(year FROM age(p.dt_nascimento)) <= " + idade_final + " \n ";
         }
 
         // GRUPO CATEGORIA ----------------
         if (booGrupo) {
             if (!ids_gc.isEmpty()) {
-                filtro += " AND so.id_grupo_categoria IN(" + ids_gc + ")"+" \n ";
+                filtro += " AND so.id_grupo_categoria IN(" + ids_gc + ")" + " \n ";
             }
 
             if (!ids_gc.isEmpty()) {
-                filtro += " AND so.id_categoria IN(" + ids_c + ")"+" \n ";
+                filtro += " AND so.id_categoria IN(" + ids_c + ")" + " \n ";
             }
         }
 
         // SEXO --------------------
         if (booSexo) {
-            filtro += " AND p.sexo = '" + tipo_sexo + "'"+" \n ";
+            filtro += " AND p.sexo = '" + tipo_sexo + "'" + " \n ";
         }
 
         // PARENTESCO ------------------
         if (booGrau) {
             if (!ids_parentesco.isEmpty()) {
-                filtro += " AND so.id_parentesco IN(" + ids_parentesco + ")"+" \n ";
+                filtro += " AND so.id_parentesco IN(" + ids_parentesco + ")" + " \n ";
             }
         }
 
         if (booFoto) {
             if (tipo_foto.equals("com")) {
-                filtro += " AND p.dt_foto IS NOT NULL"+" \n ";
+                filtro += " AND p.dt_foto IS NOT NULL" + " \n ";
             } else if (tipo_foto.equals("sem")) {
-                filtro += " AND p.dt_foto IS NULL"+" \n ";
+                filtro += " AND p.dt_foto IS NULL" + " \n ";
             }
         }
 
         if (booCarteirinha) {
             if (tipo_carteirinha.equals("com")) {
-                filtro += " AND so.codsocio IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)"+" \n ";
+                filtro += " AND so.codsocio IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)" + " \n ";
             } else if (tipo_carteirinha.equals("sem")) {
-                filtro += " AND so.codsocio NOT IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)"+" \n ";
+                filtro += " AND so.codsocio NOT IN(SELECT sc.id_pessoa FROM soc_carteirinha AS sc GROUP BY sc.id_pessoa)" + " \n ";
             }
         }
 
         if (booTipoPagamento) {
-            filtro += " AND so.cod_tipo_cobranca IN(" + ids_pagamento + ")"+" \n ";
+            filtro += " AND so.cod_tipo_cobranca IN(" + ids_pagamento + ")" + " \n ";
         }
 
         if (booCidadeSocio) {
-            filtro += " AND p.id_cidade IN(" + ids_cidade_socio + ")"+" \n ";
+            filtro += " AND p.id_cidade IN(" + ids_cidade_socio + ")" + " \n ";
         }
 
         if (booCidadeEmpresa) {
-            filtro += " AND p.e_id_cidade IN(" + ids_cidade_empresa + ")"+" \n ";
+            filtro += " AND p.e_id_cidade IN(" + ids_cidade_empresa + ")" + " \n ";
         }
 
         if (booAniversario) {
             filtro += " AND p.codigo IN (SELECT id_pessoa FROM pes_fisica WHERE ";
-            filtro += "     extract(month from dt_nascimento) IN (" + meses_aniversario + ")"+" \n ";
+            filtro += "     extract(month from dt_nascimento) IN (" + meses_aniversario + ")" + " \n ";
 
             filtro += " AND extract(day from dt_nascimento) >= " + Integer.valueOf(dia_inicial) + " \n "
                     + " AND extract(day from dt_nascimento) <= " + Integer.valueOf(dia_final) + " \n ";
-            
+
             filtro += " ) ";
         }
 
         if (booData) {
             // DATA DE CADASTRO ---------------
             if (!dt_cadastro.isEmpty() && !dt_cadastro_fim.isEmpty()) {
-                filtro += " AND p.cadastro >= '" + dt_cadastro + "' AND p.cadastro <= '" + dt_cadastro_fim + "'"+" \n ";
+                filtro += " AND p.cadastro >= '" + dt_cadastro + "' AND p.cadastro <= '" + dt_cadastro_fim + "'" + " \n ";
             } else if (!dt_cadastro.isEmpty()) {
-                filtro += " AND p.cadastro = '" + dt_cadastro + "'"+" \n ";
+                filtro += " AND p.cadastro = '" + dt_cadastro + "'" + " \n ";
             }
 
             // DATA DE RECADASTRO -------------
             if (!dt_recadastro.isEmpty() && !dt_recadastro_fim.isEmpty()) {
-                filtro += " AND p.recadastro >= '" + dt_recadastro + "' AND p.recadastro <= '" + dt_recadastro_fim + "'"+" \n ";
+                filtro += " AND p.recadastro >= '" + dt_recadastro + "' AND p.recadastro <= '" + dt_recadastro_fim + "'" + " \n ";
             } else if (!dt_recadastro.isEmpty()) {
-                filtro += " AND p.recadastro = '" + dt_recadastro + "'"+" \n ";
+                filtro += " AND p.recadastro = '" + dt_recadastro + "'" + " \n ";
             }
 
             // DATA DE DEMISSAO ----------------
             if (!dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
                 innerjoin += " INNER JOIN (SELECT id_fisica, pe.dt_admissao AS admissao_empresa_demissionada, dt_demissao AS demissao_empresa_demissionada, p.ds_documento as cnpj_empresa_demissionada, p.ds_nome as empresa_demissionada \n"
-                           + "               FROM pes_pessoa_empresa pe \n "
-                           + "              INNER JOIN pes_juridica j ON j.id = pe.id_juridica \n "
-                           + "              INNER JOIN pes_pessoa p ON p.id = j.id_pessoa \n "
-                           + "              WHERE pe.dt_demissao >= '" + dt_demissao + "' \n "
-                           + "                AND pe.dt_demissao <= '" + dt_demissao_fim + "' \n "
-                           + " ) AS pempresa ON pempresa.id_fisica = p.id_fisica \n ";
+                        + "               FROM pes_pessoa_empresa pe \n "
+                        + "              INNER JOIN pes_juridica j ON j.id = pe.id_juridica \n "
+                        + "              INNER JOIN pes_pessoa p ON p.id = j.id_pessoa \n "
+                        + "              WHERE pe.dt_demissao >= '" + dt_demissao + "' \n "
+                        + "                AND pe.dt_demissao <= '" + dt_demissao_fim + "' \n "
+                        + " ) AS pempresa ON pempresa.id_fisica = p.id_fisica \n ";
             }
 
             // DATA DE FILIACAO DO SOCIO ----------------
             if (!dt_admissao_socio.isEmpty() && !dt_admissao_socio_fim.isEmpty()) {
-                filtro += " AND so.filiacao >= '" + dt_admissao_socio + "' AND so.filiacao <= '" + dt_admissao_socio_fim + "'"+" \n ";
+                filtro += " AND so.filiacao >= '" + dt_admissao_socio + "' AND so.filiacao <= '" + dt_admissao_socio_fim + "'" + " \n ";
             } else if (!dt_admissao_socio.isEmpty()) {
-                filtro += " AND so.filiacao = '" + dt_admissao_socio + "'"+" \n ";
+                filtro += " AND so.filiacao = '" + dt_admissao_socio + "'" + " \n ";
             }
 
             // DATA DE ADMISSAO EMPRESA
             if (!dt_admissao_empresa.isEmpty() && !dt_admissao_empresa_fim.isEmpty()) {
-                filtro += " AND p.admissao >= '" + dt_admissao_empresa + "' AND p.admissao <= '" + dt_admissao_empresa_fim + "'"+" \n ";
+                filtro += " AND p.admissao >= '" + dt_admissao_empresa + "' AND p.admissao <= '" + dt_admissao_empresa_fim + "'" + " \n ";
             } else if (!dt_admissao_empresa.isEmpty()) {
-                filtro += " AND p.admissao = '" + dt_admissao_empresa + "'"+" \n ";
+                filtro += " AND p.admissao = '" + dt_admissao_empresa + "'" + " \n ";
             }
 
             // DATA APOSENTADORIA
             if (!data_aposentadoria.isEmpty() && !data_aposentadoria_fim.isEmpty()) {
-                filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'"+" \n ";
+                filtro += " AND p.dt_aposentadoria >= '" + data_aposentadoria + "' AND p.dt_aposentadoria <= '" + data_aposentadoria_fim + "'" + " \n ";
             } else if (!data_aposentadoria.isEmpty()) {
-                filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'"+" \n ";
+                filtro += " AND p.dt_aposentadoria = '" + data_aposentadoria + "'" + " \n ";
             }
 
         } else {
-            filtro += " AND (p.principal = true OR p.principal IS NULL) "+" \n ";
+            filtro += " AND (p.principal = true OR p.principal IS NULL) " + " \n ";
             //filtro += " and p.demissao is null ";
         }
 
@@ -429,15 +430,19 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         }
 
         if (carenciaDias != null && carenciaDias >= 0) {
+            Boolean s = false;
+            if (situacao != null) {
+                s = !situacao.equals("adimplente");
+            }
             switch (tipoCarencia) {
                 case "todos":
-                    filtro += " AND func_inadimplente_todos(so.codsocio, " + carenciaDias + ") = false ";
+                    filtro += " AND func_inadimplente_todos(so.codsocio, " + carenciaDias + ") = " + s;
                     break;
                 case "eleicao":
-                    filtro += " AND func_inadimplente_eleicao(so.codsocio, " + carenciaDias + ") = false ";
+                    filtro += " AND func_inadimplente_eleicao(so.codsocio, " + carenciaDias + ") = " + s;
                     break;
                 case "clube":
-                    filtro += " AND func_inadimplente_clube(so.codsocio, " + carenciaDias + ") = false ";
+                    filtro += " AND func_inadimplente_clube(so.codsocio, " + carenciaDias + ") = " + s;
                     break;
             }
         }
@@ -465,7 +470,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             }
         }
         try {
-            String queryString = textQry +innerjoin+ filtro;
+            String queryString = textQry + innerjoin + filtro;
             Query qry = getEntityManager().createNativeQuery(queryString);
 //            String novaQuery = textQry + filtro;
             return qry.getResultList();
