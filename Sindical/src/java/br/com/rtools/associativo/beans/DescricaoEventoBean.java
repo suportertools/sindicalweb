@@ -53,7 +53,7 @@ public class DescricaoEventoBean implements Serializable {
                 GenericaMensagem.info("Sucesso", "Registro adicionado");
                 listaDescricaoEvento.clear();
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Adicionado", descricaoEvento.toString());
+                novoLog.save(descricaoEvento.toString());
                 descricaoEvento = new DescricaoEvento();
                 PF.update("formDescricaoEvento");
             } else {
@@ -83,7 +83,7 @@ public class DescricaoEventoBean implements Serializable {
             PF.update("formDescricaoEvento:i_msg");
         } else {
             NovoLog novoLog = new NovoLog();
-            novoLog.novo("Excluido", de.toString());
+            novoLog.delete(de.toString());
             sv.comitarTransacao();
             GenericaMensagem.info("Sucesso", "Registro excluído!");
             listaDescricaoEvento.clear();
