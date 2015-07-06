@@ -107,7 +107,7 @@ public class ContaCobrancaBean {
             } else {
                 atualizarSicas();
                 if (db.insert(contaCobranca)) {
-                    log.novo("Novo Registro", " ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
+                    log.save("ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                     msgConfirma = "Cadastro salvo com Sucesso!";
                     GenericaMensagem.info("Sucesso", msgConfirma);
                 } else {
@@ -118,10 +118,10 @@ public class ContaCobrancaBean {
         } else {
             ContaCobranca conta = new ContaCobranca();
             conta = (ContaCobranca) db.pesquisaCodigo(contaCobranca.getId());
-            String antes = conta.getId() + " Banco: " + conta.getContaBanco().getBanco().getBanco() + " - Agência: " + conta.getContaBanco().getAgencia() + " - Conta: " + conta.getContaBanco().getConta() + " - Cedente: " + conta.getCedente() + " - Código Cedente: " + conta.getCodCedente();
+            String antes = "ID: " + conta.getId() + " Banco: " + conta.getContaBanco().getBanco().getBanco() + " - Agência: " + conta.getContaBanco().getAgencia() + " - Conta: " + conta.getContaBanco().getConta() + " - Cedente: " + conta.getCedente() + " - Código Cedente: " + conta.getCodCedente();
             atualizarSicas();
             if (db.update(contaCobranca)) {
-                log.novo("Atualizado", antes + " - para ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
+                log.update(antes, "ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro atualizado com sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
@@ -176,7 +176,7 @@ public class ContaCobrancaBean {
             contaCobranca = (ContaCobranca) db.pesquisaCodigo(contaCobranca.getId(), "ContaCobranca");
             NovoLog log = new NovoLog();
             if (db.deletarObjeto(contaCobranca)) {
-                log.novo("Excluído", " ID: " + contaCobranca.getId() + " - Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
+                log.delete(" ID: " + contaCobranca.getId() + " - Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro Excluido com sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
                 limpar = true;
