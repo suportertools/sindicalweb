@@ -296,11 +296,11 @@ public class Upload implements Serializable {
             }
             return true;
         } catch (IOException e) {
-            NovoLog log = new NovoLog();
+            //NovoLog log = new NovoLog();
             if (mensagens) {
                 GenericaMensagem.warn("Erro", e.getMessage());
             }
-            log.novo("Upload de arquivos", e.getMessage());
+            //log.novo("Upload de arquivos", e.getMessage());
             System.out.println(e);
             return false;
         }
