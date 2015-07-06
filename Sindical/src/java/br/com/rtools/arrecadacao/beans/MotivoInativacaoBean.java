@@ -66,7 +66,7 @@ public class MotivoInativacaoBean implements Serializable {
                 if (db.idMotivoInativacao(motivoInativacao) == null) {
                     db.insert(motivoInativacao);
                     msgConfirma = "Motivo de Inativação salva com Sucesso!";
-                    log.novo("Novo registro", "Motivo inserido " + motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+                    log.save("Motivo inserido " + motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
                 } else {
                     msgConfirma = "Este Motivo de Inativação já existe no Sistema.";
                 }
@@ -79,7 +79,7 @@ public class MotivoInativacaoBean implements Serializable {
             if (db.update(motivoInativacao)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Motivo de Inativação atualizado com Sucesso!";
-                log.novo("Atualizado", antes + " - para: " + motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+                log.update(antes, motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
             } else {
                 db.getEntityManager().getTransaction().rollback();
             }
@@ -102,7 +102,7 @@ public class MotivoInativacaoBean implements Serializable {
             if (db.delete(motivoInativacao)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Motivo de Inativação Excluida com Sucesso!";
-                log.novo("Excluido", motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+                log.delete(motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
             } else {
                 db.getEntityManager().getTransaction().rollback();
                 msgConfirma = "Motivo de Inativação não pode ser excluido";
