@@ -55,7 +55,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             Method metodo = classe.getMethod("getId", new Class[]{});
             id = (Integer) metodo.invoke(objeto, (Object[]) null);
             if (id == -1) {
-                log.novo("Alterar " + objeto.getClass().getSimpleName(), "Objeto esta passando -1");
+                //log.novo("Alterar " + objeto.getClass().getSimpleName(), "Objeto esta passando -1");
                 return false;
             }
         } catch (IllegalAccessException e) {
