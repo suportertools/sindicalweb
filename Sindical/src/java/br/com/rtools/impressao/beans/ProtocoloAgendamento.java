@@ -158,7 +158,7 @@ public class ProtocoloAgendamento implements Serializable {
             }
         } catch (JRException e) {
             NovoLog log = new NovoLog();
-            log.novo("Erro de envio de protocolo por e-mail:", "Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
+            log.live("Erro de envio de protocolo por e-mail: Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
         }
     }
 
