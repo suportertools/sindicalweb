@@ -84,6 +84,7 @@ import org.apache.commons.io.FileUtils;
 @ManagedBean
 @SessionScoped
 public class MatriculaAcademiaBean implements Serializable {
+
     private MatriculaAcademia matriculaAcademia;
     private Fisica aluno;
     private Registro registro;
@@ -199,7 +200,7 @@ public class MatriculaAcademiaBean implements Serializable {
         matriculaAcademia.getServicoPessoa().setReferenciaVigoracao(DataHoje.livre(matriculaAcademia.getServicoPessoa().getDtEmissao(), "MM/yyyy"));
         getRegistro();
         disabled = false;
-        
+
         getListaModalidades();
         pegarIdServico();
         calculoValor();
@@ -212,17 +213,16 @@ public class MatriculaAcademiaBean implements Serializable {
         clear(2);
     }
 
-    
     public void calculoValor() {
         String valorx;
         Servicos se = (Servicos) new Dao().find(new Servicos(), idServico);
         if (se != null) {
 //            if (servicoPessoa.getNrDesconto() == 0) {
-                if (aluno.getPessoa().getSocios().getId() != -1) {
-                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
-                } else {
-                    valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
-                }
+            if (aluno.getPessoa().getSocios().getId() != -1) {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
+            } else {
+                valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje(), 0, null));
+            }
 //            } else {
 //                float valorx_c = new FunctionsDao().valorServicoCheio(servicoPessoa.getPessoa().getId(), se.getId(), DataHoje.dataHoje());
 //
@@ -248,7 +248,7 @@ public class MatriculaAcademiaBean implements Serializable {
             String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(aluno.getPessoa().getId(), se.getId(), DataHoje.dataHoje()));
             float calculo = Moeda.converteUS$(valorx_cheio) - (Moeda.converteUS$(valorx) - desconto);
             float valor_do_percentual = Moeda.converteUS$(Moeda.percentualDoValor(valorx_cheio, Moeda.converteR$Float(calculo)));
-            
+
             if (desconto == 0) {
                 matriculaAcademia.getServicoPessoa().setNrDescontoString("0.0");
             } else {
@@ -256,18 +256,18 @@ public class MatriculaAcademiaBean implements Serializable {
                 //valorx_c = Moeda.multiplicarValores(Moeda.divisaoValores(valorx_c, Moeda.converteUS$(valorx_cheio)), 100);
                 matriculaAcademia.getServicoPessoa().setNrDesconto(valor_do_percentual);
             }
-            
-            if (aluno.getPessoa().getId() != -1){
+
+            if (aluno.getPessoa().getId() != -1) {
                 Integer idade = new DataHoje().calcularIdade(aluno.getDtNascimento());
                 List<ServicoValor> lsv = new MatriculaEscolaDao().listServicoValorPorServicoIdade(se.getId(), idade);
                 valorLiquido = (lsv.isEmpty()) ? valor : Moeda.converteR$Float(Moeda.converteUS$(Moeda.valorDoPercentual(valor, Moeda.converteR$Float(lsv.get(0).getDescontoAteVenc()))));
                 valorLiquido = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(valorLiquido), desconto));
-            }else{
+            } else {
                 valorLiquido = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(valor), desconto));
-            }            
+            }
         }
     }
-    
+
     public void load() {
         if (GenericaSessao.exists("fisicaPesquisa")) {
             getAluno();
@@ -394,12 +394,14 @@ public class MatriculaAcademiaBean implements Serializable {
             }
             // CRIA CARTEIRINHA CASO NÃO EXISTA
             SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
+            Boolean insert = false;
             if (scx == null || scx.getId() == -1) {
                 socioCarteirinha.setDtEmissao(DataHoje.dataHoje());
-                socioCarteirinha.setCartao(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+                socioCarteirinha.setCartao(0);
                 socioCarteirinha.setValidadeCarteirinha(validadeCarteirinha);
                 socioCarteirinha.setPessoa(matriculaAcademia.getServicoPessoa().getPessoa());
                 socioCarteirinha.setModeloCarteirinha(modeloCarteirinha);
+                insert = true;
             } else {
                 socioCarteirinha = null;
             }
@@ -412,6 +414,14 @@ public class MatriculaAcademiaBean implements Serializable {
                     di.rollback();
                     message = "Erro ao adicionar sócio carteirinha!";
                     return null;
+                }
+                if (insert) {
+                    socioCarteirinha.setCartao(socioCarteirinha.getId());
+                    if (!di.update(socioCarteirinha)) {
+                        di.rollback();
+                        message = "Erro ao atualizar sócio carteirinha!";
+                        return null;
+                    }
                 }
             }
             // DESCONTO SOCIAL DEFAULT
@@ -454,7 +464,51 @@ public class MatriculaAcademiaBean implements Serializable {
             di.commit();
             return gerarMovimento();
         } else {
+            SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
+            SocioCarteirinhaDB scdb = new SocioCarteirinhaDBToplink();
+            // PESQUISA CARTEIRINHA SEM MODELO
+            String validadeCarteirinha = "";
+            DataHoje dh = new DataHoje();
+            if (socios.getId() != -1) {
+                // validadeCarteirinha = dh.incrementarMeses(socios.getMatriculaSocios().getCategoria().getGrupoCategoria().getNrValidadeMesCartao(), DataHoje.data());
+                // modeloCarteirinha = scdb.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 122);
+            } else {
+                validadeCarteirinha = dh.incrementarAnos(5, DataHoje.data());
+            }
+            ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinha(-1, 122);
+            if (modeloCarteirinha == null) {
+                message = "Informar modelo da carteirinha!";
+                return null;
+            }
+            // CRIA CARTEIRINHA CASO NÃO EXISTA
+            SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
+            Boolean insert = false;
+            if (scx == null || scx.getId() == -1) {
+                socioCarteirinha.setDtEmissao(DataHoje.dataHoje());
+                socioCarteirinha.setCartao(0);
+                socioCarteirinha.setValidadeCarteirinha(validadeCarteirinha);
+                socioCarteirinha.setPessoa(matriculaAcademia.getServicoPessoa().getPessoa());
+                socioCarteirinha.setModeloCarteirinha(modeloCarteirinha);
+                insert = true;
+            } else {
+                socioCarteirinha = null;
+            }
             di.openTransaction();
+            if (socioCarteirinha != null) {
+                if (!di.save(socioCarteirinha)) {
+                    di.rollback();
+                    message = "Erro ao adicionar sócio carteirinha!";
+                    return null;
+                }
+                if (insert) {
+                    socioCarteirinha.setCartao(socioCarteirinha.getId());
+                    if (!di.update(socioCarteirinha)) {
+                        di.rollback();
+                        message = "Erro ao atualizar sócio carteirinha!";
+                        return null;
+                    }
+                }
+            }
             if (!di.update(matriculaAcademia.getServicoPessoa())) {
                 di.rollback();
                 message = "Erro ao atualizar serviço pessoa!";
@@ -589,7 +643,7 @@ public class MatriculaAcademiaBean implements Serializable {
             }
             verificaSocio();
         }
-        
+
         String valorx;
         if (aluno.getPessoa().getSocios().getId() != -1) {
             valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, aluno.getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()));
@@ -597,11 +651,11 @@ public class MatriculaAcademiaBean implements Serializable {
             valorx = Moeda.converteR$Float(new FunctionsDao().valorServico(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().getServicos().getId(), DataHoje.dataHoje(), 0, null));
         }
         String valorx_cheio = Moeda.converteR$Float(new FunctionsDao().valorServicoCheio(aluno.getPessoa().getId(), matriculaAcademia.getAcademiaServicoValor().getServicos().getId(), DataHoje.dataHoje()));
-        
+
         //desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx_cheio), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto())))) ;
-        desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto())))) ;
+        desconto = Moeda.subtracaoValores(Moeda.converteUS$(valorx), Moeda.converteUS$(Moeda.valorDoPercentual(valorx_cheio, Float.toString(matriculaAcademia.getServicoPessoa().getNrDesconto()))));
 //(Float.parseFloat(Moeda.substituiVirgula(valor)) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100);
-        
+
         pegarIdServico();
         atualizaValor();
         //valorLiquido = "0,0";
@@ -1175,13 +1229,13 @@ public class MatriculaAcademiaBean implements Serializable {
                 float valor_desconto = Moeda.subtracaoValores(100, Moeda.converteUS$(Moeda.percentualDoValor(Moeda.converteR$Float(valor_cheio), Moeda.converteR$Float(desconto))));
                 valorLiquido = valor;
                 valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - desconto);
-                
-                if (aluno.getPessoa().getId() != -1){
+
+                if (aluno.getPessoa().getId() != -1) {
                     Integer idade = new DataHoje().calcularIdade(aluno.getDtNascimento());
                     List<ServicoValor> lsv = new MatriculaEscolaDao().listServicoValorPorServicoIdade(idServico, idade);
                     valorLiquido = (lsv.isEmpty()) ? valor : Moeda.converteR$Float(Moeda.converteUS$(Moeda.valorDoPercentual(valor, Moeda.converteR$Float(lsv.get(0).getDescontoAteVenc()))));
-                }   
-                
+                }
+
                 //float valorDesconto = Moeda.converteFloatR$Float(desconto * 100 / Float.parseFloat(Moeda.substituiVirgula(valor)));
                 float valorDesconto = 0;//Moeda.subtracaoValores(valor_cheio, Moeda.converteUS$(valorLiquido));
                 valorDesconto = Moeda.multiplicarValores(Moeda.divisaoValores(valor_desconto, valor_cheio), 100);
