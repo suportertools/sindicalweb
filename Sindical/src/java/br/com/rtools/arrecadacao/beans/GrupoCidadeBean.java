@@ -69,7 +69,7 @@ public class GrupoCidadeBean {
                     if (sadb.inserirObjeto(grupoCidade)) {
                         sadb.comitarTransacao();
                         msgConfirma = "Grupo salvo com Sucesso!";
-                        log.novo("Novo registro", "Grupo Cidade inserido " + grupoCidade.getId() + " - " + grupoCidade.getDescricao());
+                        log.save("Grupo Cidade inserido " + grupoCidade.getId() + " - " + grupoCidade.getDescricao());
                     } else {
                         sadb.desfazerTransacao();
                     }
@@ -84,7 +84,7 @@ public class GrupoCidadeBean {
             if (sadb.alterarObjeto(grupoCidade)) {
                 sadb.comitarTransacao();
                 msgConfirma = "Grupo atualizado com Sucesso!";
-                log.novo("Atualizado", antes + " - para: " + grupoCidade.getId() + " - " + grupoCidade.getDescricao());
+                log.update(antes, grupoCidade.getId() + " - " + grupoCidade.getDescricao());
             } else {
                 sadb.desfazerTransacao();
             }
@@ -108,7 +108,7 @@ public class GrupoCidadeBean {
             if (sadb.deletarObjeto(grupoCidade)) {
                 sadb.comitarTransacao();
                 msgConfirma = "Grupo Excluida com Sucesso!";
-                log.novo("Excluido", grupoCidade.getId() + " - " + grupoCidade.getDescricao());
+                log.delete(grupoCidade.getId() + " - " + grupoCidade.getDescricao());
             } else {
                 sadb.desfazerTransacao();
                 msgConfirma = "Grupo não pode ser Excluido!";
