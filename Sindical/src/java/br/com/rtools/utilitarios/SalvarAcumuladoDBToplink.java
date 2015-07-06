@@ -59,19 +59,19 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
                 return false;
             }
         } catch (IllegalAccessException e) {
-            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            //log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         } catch (IllegalArgumentException e) {
-            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            //log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         } catch (NoSuchMethodException e) {
-            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            //log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         } catch (SecurityException e) {
-            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            //log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         } catch (InvocationTargetException e) {
-            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            //log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         }
         try {
