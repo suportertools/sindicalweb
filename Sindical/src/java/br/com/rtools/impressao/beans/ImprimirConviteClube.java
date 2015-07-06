@@ -126,7 +126,7 @@ public class ImprimirConviteClube implements Serializable {
             }
         } catch (JRException e) {
             NovoLog log = new NovoLog();
-            log.novo("Erro de envio de protocolo por e-mail:", "Mensagem: " + e.getMessage());
+            log.live("Erro de envio de protocolo por e-mail: Mensagem: " + e.getMessage());
         }
     }
 
