@@ -95,7 +95,7 @@ public class RelatorioBean implements Serializable {
             if (dao.save(relatorio)) {
                 msgConfirma = "Relatório salvo com Sucesso!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-                log.novo("Novo registro", "Relatório inserido " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+                log.save("Relatório inserido " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
             } else {
                 msgConfirma = "Erro ao salvar Relatório!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
@@ -109,7 +109,7 @@ public class RelatorioBean implements Serializable {
             if (dao.update(relatorio)) {
                 msgConfirma = "Registro atualizado!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-                log.novo("Atualizado", antes + " - para: " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+                log.update(antes, relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
             } else {
                 msgConfirma = "Erro ao atualizar!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
@@ -145,7 +145,7 @@ public class RelatorioBean implements Serializable {
         if (dao.delete(relatorio)) {
             msgConfirma = "Relatório excluido com Sucesso!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-            log.novo("Excluido", relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+            log.delete(relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
         } else {
             msgConfirma = "Relatório não pode ser excluido";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
