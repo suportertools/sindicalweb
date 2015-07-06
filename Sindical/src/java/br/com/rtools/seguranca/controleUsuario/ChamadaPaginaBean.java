@@ -1695,8 +1695,8 @@ public class ChamadaPaginaBean implements Serializable {
                 }
             }
         } catch (Exception e) {
-            NovoLog novoLog = new NovoLog();
-            novoLog.novo("controleLinks", e.getMessage());
+            //NovoLog novoLog = new NovoLog();
+            //novoLog.novo("controleLinks", e.getMessage());
         }
 //        return;
     }
@@ -1926,8 +1926,8 @@ public class ChamadaPaginaBean implements Serializable {
             }
             return null;
         } catch (Exception e) {
-            NovoLog novoLog = new NovoLog();
-            novoLog.novo("controleLinks", e.getMessage());
+            //NovoLog novoLog = new NovoLog();
+            //novoLog.novo("controleLinks", e.getMessage());
             return null;
         }
 
