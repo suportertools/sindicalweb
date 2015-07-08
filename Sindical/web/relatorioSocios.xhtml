@@ -364,6 +364,16 @@
                                             </h:column>
                                         </h:panelGrid>
 
+                                        <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booBiometria}" style="float: left; margin: 10px">
+                                            <h:column>
+                                                <p:outputLabel value="Biometria" /><br />
+                                                <p:selectOneMenu value="#{relatorioSociosBean.tipoBiometria}">
+                                                    <f:selectItem itemValue="com" itemLabel="Com"/>
+                                                    <f:selectItem itemValue="sem" itemLabel="Sem"/>
+                                                </p:selectOneMenu>
+                                            </h:column>
+                                        </h:panelGrid>
+                                        
                                         <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booTelefone}" style="float: left; margin: 10px">
                                             <h:column>
                                                 <p:outputLabel value="Telefone" /><br />
