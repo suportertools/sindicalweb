@@ -149,11 +149,10 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booTipoPagamento, String ids_pagamento, boolean booCidadeSocio, String ids_cidade_socio, boolean booCidadeEmpresa, String ids_cidade_empresa,
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
-            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias,
-            String situacao) {
-
-        String p_demissao = "";
-
+            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias, String situacao,
+            boolean booBiometria, String tipoBiometria) {
+        
+        String p_demissao="";
         if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
             p_demissao = " , pempresa.admissao_empresa_demissionada, \n" + // 79
                     "   pempresa.demissao_empresa_demissionada, \n" + // 80
@@ -444,6 +443,14 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                 case "clube":
                     filtro += " AND func_inadimplente_clube(so.codsocio, " + carenciaDias + ") = " + s;
                     break;
+            }
+        }
+        
+        if (booBiometria){
+            if (tipoBiometria.equals("com")){
+                filtro += " AND p.codigo IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
+            }else{
+                filtro += " AND p.codigo NOT IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
             }
         }
 
