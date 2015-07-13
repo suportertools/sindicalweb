@@ -77,8 +77,7 @@ public class RelatorioBean implements Serializable {
     }
 
     public void defaultOrdem(RelatorioOrdem ro) {
-        ro.setPrincipal(true);
-        if(defaultRelatorioOrdem(ro)) {
+        if (defaultRelatorioOrdem(ro)) {
             listRelatorioOrdem.clear();
             getListRelatorioOrdem();
         }
@@ -265,7 +264,7 @@ public class RelatorioBean implements Serializable {
         if (listRelatorioOrdem.isEmpty()) {
             RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
             listRelatorioOrdem = relatorioOrdemDao.findAllByRelatorio(relatorio.getId());
-            for(int i = 0; i < listRelatorioOrdem.size(); i++) {
+            for (int i = 0; i < listRelatorioOrdem.size(); i++) {
                 listRelatorioOrdem.set(i, (RelatorioOrdem) new Dao().rebind(listRelatorioOrdem.get(i)));
             }
         }
