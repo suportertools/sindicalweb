@@ -444,6 +444,16 @@
                                                 <h:outputLabel value="#{relatorioSociosBean.empresa.pessoa.nome} - CNPJ: #{relatorioSociosBean.empresa.pessoa.documento}" rendered="#{relatorioSociosBean.empresa.id != -1}"/> 
                                                 <p:commandButton action="#{relatorioSociosBean.setEmpresa(null)}" icon="ui-icon-close" rendered="#{relatorioSociosBean.empresa.id != -1}" update="idEmpresas"/>
                                             </h:panelGrid>
+                                            <h:panelGrid columns="5">
+                                                <p:outputLabel value="Número de funcionários a partir de:" />                                                
+                                                <p:inputText value="#{relatorioSociosBean.minQtdeFuncionarioString}" size="3" >
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputText>
+                                                <p:outputLabel value=" até " />                                                
+                                                <p:inputText value="#{relatorioSociosBean.maxQtdeFuncionarioString}" size="3" >
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:inputText>
+                                            </h:panelGrid>
                                         </h:panelGrid>
                                     </h:panelGrid>
 

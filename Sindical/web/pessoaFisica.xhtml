@@ -216,7 +216,7 @@
 
                                                     <p:column>
                                                         <br />
-                                                        <p:commandButton icon="ui-icon-refresh" title="clique para data de hoje" onclick="PF('dlg_recadastro').show()" update=":form_pessoa_fisica:i_dlg_recadastro"/>
+                                                        <p:commandButton icon="ui-icon-refresh" title="clique para data de hoje" onclick="PF('dlg_recadastro').show()" update=":form_pessoa_fisica:i_dlg_recadastro" action="#{fisicaBean.loadDataRecadastro}"/>
                                                     </p:column>
                                                 </h:panelGrid>
 
@@ -867,14 +867,15 @@
                                 </p:panel>
                             </p:dialog>
                             <p:dialog widgetVar="dlg_recadastro" modal="true" resizable="false" height="250" width="250" header="Data de Recadastro">
+                                <p:ajax event="close" listener="#{fisicaBean.clear(2)}" />
                                 <h:panelGrid id="i_dlg_recadastro">
-                                    <p:calendar value="#{fisicaBean.fisica.dtRecadastro}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR">
+                                    <p:calendar value="#{fisicaBean.dtRecadastro}" pattern="dd/MM/yyyy" mask="99/99/9999" locale="pt_BR">
                                         <p:ajax event="dateSelect" update=":form_pessoa_fisica:i_tabview_fisica:i_recadastro"/>
                                     </p:calendar>
                                 </h:panelGrid>
                                 <f:facet name="footer">
-                                    <p:commandButton value="Confirmar" title="Confirmar" onclick="PF('dlg_recadastro').hide();" update=":form_pessoa_fisica:"/>
-                                    <p:commandButton value="Cancelar" title="Cancelar" onclick="PF('dlg_recadastro').hide();" />
+                                    <p:commandButton value="Confirmar" title="Confirmar" onclick="PF('dlg_recadastro').hide();" update=":form_pessoa_fisica:i_tabview_fisica" action="#{fisicaBean.updateDataRecadastro}"/>
+                                    <p:commandButton value="Cancelar" title="Cancelar" onclick="PF('dlg_recadastro').hide();" action="#{fisicaBean.clear(2)}" />
                                 </f:facet>
                             </p:dialog>
                         </h:form>

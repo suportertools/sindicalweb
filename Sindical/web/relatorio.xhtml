@@ -77,12 +77,15 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <p:panel rendered="#{relatorioBean.relatorio.id != -1}" styleClass="margin-top-max" header="Ordenações">
-                                <h:panelGrid columns="5">
+                            <p:panel rendered="#{relatorioBean.relatorio.id != -1}" styleClass="margin-top-max" header="Ordenações" id="i_panel_relatorio_ordem">
+                                <h:panelGrid columns="6">
                                     <p:outputLabel value="Descrição:" />
                                     <p:inputText value="#{relatorioBean.relatorioOrdem.nome}" size="40"/>
                                     <p:outputLabel value="Query:" styleClass="margin-left-max"/>
                                     <p:inputText value="#{relatorioBean.relatorioOrdem.query}" size="70"/>
+                                    <p:selectBooleanCheckbox value="#{relatorioBean.relatorioOrdem.principal}" itemLabel="Default">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:selectBooleanCheckbox>
                                     <p:commandButton value="Adicionar"  action="#{relatorioBean.addRelatorioOrdem()}" update=":formRelatorio:" styleClass="margin-left-max"/>
                                 </h:panelGrid>
                                 <p:dataTable value="#{relatorioBean.listRelatorioOrdem}" var="relatorioOrdem" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
@@ -90,6 +93,11 @@
                                         <p:commandButton icon="ui-icon-link" action="#{relatorioBean.editRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
                                     </p:column>
                                     <p:column headerText="Descrição">#{relatorioOrdem.nome}</p:column>
+                                    <p:column width="50" styleClass="text-center" headerText="Default">
+                                        <p:selectBooleanCheckbox value="#{relatorioOrdem.principal}">
+                                            <p:ajax event="change" update=":formRelatorio:i_panel_relatorio_ordem" listener="#{relatorioBean.defaultOrdem(relatorioOrdem)}" />
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>
                                     <p:column width="30" styleClass="text-center">
                                         <p:commandButton icon="ui-icon-trash" action="#{relatorioBean.deleteRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
                                     </p:column>
