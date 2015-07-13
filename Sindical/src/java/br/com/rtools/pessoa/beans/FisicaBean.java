@@ -28,7 +28,6 @@ import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.FunctionsDao;
@@ -147,6 +146,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String tipoPesquisaMovimento = "beneficiario";
 
     private String inativoDesde = "";
+    private Date dtRecadastro = DataHoje.dataHoje();
 
     @PostConstruct
     public void init() {
@@ -246,7 +246,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(urlTemp);
         while (new File(arquivo).exists()) {
             boolean d = new File(arquivo).delete();
-            if(d) {
+            if (d) {
                 break;
             }
         }
@@ -1497,23 +1497,22 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             reativar = socios.getServicoPessoa().isAtivo();
         }
 
-        
-        if ( socios.getId() == -1 || (socios.getId() != -1 && (socios.getMatriculaSocios().getDtInativo() != null || !socios.getServicoPessoa().isAtivo()))) {
+        if (socios.getId() == -1 || (socios.getId() != -1 && (socios.getMatriculaSocios().getDtInativo() != null || !socios.getServicoPessoa().isAtivo()))) {
             if (listaPessoaEndereco.isEmpty()) {
                 GenericaMensagem.warn("Atenção", "Cadastrar um Endereço!");
                 return null;
             }
         }
-        
+
         if (pessoaEmpresa.getId() != -1) {
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
         }
-        
+
         String retorno = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).socios();
         if (socios.getId() == -1) {
             reativar = false;
         }
-        
+
         GenericaSessao.put("sociosBean", new SociosBean());
         SociosBean sb = (SociosBean) GenericaSessao.getObject("sociosBean");
         clear(0);
@@ -2469,6 +2468,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         } else if (tCase == 1) {
             fisica.setDtRecadastro(fisica.getPessoa().getDtCriacao());
+        } else if (tCase == 2) {
+            dtRecadastro = DataHoje.dataHoje();
         }
     }
 
@@ -2548,6 +2549,30 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setInativoDesde(String inativoDesde) {
         this.inativoDesde = inativoDesde;
+    }
+
+    public String getRecadastro() {
+        return DataHoje.converteData(dtRecadastro);
+    }
+
+    public void setRecadastro(String recadastro) {
+        this.dtRecadastro = DataHoje.converte(recadastro);
+    }
+
+    public Date getDtRecadastro() {
+        return dtRecadastro;
+    }
+
+    public void setDtRecadastro(Date dtRecadastro) {
+        this.dtRecadastro = dtRecadastro;
+    }
+
+    public void loadDataRecadastro() {
+        dtRecadastro = DataHoje.dataHoje();
+    }
+
+    public void updateDataRecadastro() {
+        fisica.setDtRecadastro(dtRecadastro);
     }
 
 }

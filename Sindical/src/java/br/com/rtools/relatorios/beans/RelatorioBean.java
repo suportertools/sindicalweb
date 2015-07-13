@@ -37,23 +37,50 @@ public class RelatorioBean implements Serializable {
 
         }
         Dao dao = new Dao();
+        Boolean sucess = false;
+        String message = "";
         if (relatorioOrdem.getId() == null) {
             relatorioOrdem.setRelatorios(relatorio);
             if (dao.save(relatorioOrdem, true)) {
-                GenericaMensagem.info("Sucesso", "Registro inserido");
-                relatorioOrdem = new RelatorioOrdem();
-                listRelatorioOrdem.clear();
+                sucess = true;
+                message = "Registro inserido";
             } else {
-                GenericaMensagem.warn("Erro", "Ao inserir registro!");
+                message = "Ao inserir registro!";
             }
         } else {
             if (dao.update(relatorioOrdem, true)) {
-                GenericaMensagem.info("Sucesso", "Registro atualizado");
-                relatorioOrdem = new RelatorioOrdem();
-                listRelatorioOrdem.clear();
+                sucess = true;
+                message = "Registro atualizado";
             } else {
-                GenericaMensagem.warn("Erro", "Ao atualizado registro!");
+                message = "Ao atualizar registro!";
             }
+        }
+        if (!defaultRelatorioOrdem(relatorioOrdem)) {
+            sucess = false;
+            message = "Ao definir default!";
+        }
+        if (sucess) {
+            GenericaMensagem.info("Sucesso", message);
+            relatorioOrdem = new RelatorioOrdem();
+            listRelatorioOrdem.clear();
+        } else {
+            GenericaMensagem.warn("Erro", message);
+
+        }
+    }
+
+    public Boolean defaultRelatorioOrdem(RelatorioOrdem ro) {
+        if (new RelatorioOrdemDao().defineDefault(ro)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void defaultOrdem(RelatorioOrdem ro) {
+        ro.setPrincipal(true);
+        if(defaultRelatorioOrdem(ro)) {
+            listRelatorioOrdem.clear();
+            getListRelatorioOrdem();
         }
     }
 
@@ -238,6 +265,9 @@ public class RelatorioBean implements Serializable {
         if (listRelatorioOrdem.isEmpty()) {
             RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
             listRelatorioOrdem = relatorioOrdemDao.findAllByRelatorio(relatorio.getId());
+            for(int i = 0; i < listRelatorioOrdem.size(); i++) {
+                listRelatorioOrdem.set(i, (RelatorioOrdem) new Dao().rebind(listRelatorioOrdem.get(i)));
+            }
         }
         return listRelatorioOrdem;
     }

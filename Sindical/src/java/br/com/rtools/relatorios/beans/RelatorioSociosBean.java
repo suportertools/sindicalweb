@@ -134,6 +134,8 @@ public class RelatorioSociosBean implements Serializable {
     private Boolean enableFolha = false;
     private Boolean porFolha = false;
     private Juridica empresa = new Juridica();
+    private Integer minQtdeFuncionario = null;
+    private Integer maxQtdeFuncionario = null;
 
     public void limparFiltro() {
 //        listaMenuRSocial.clear();
@@ -227,6 +229,8 @@ public class RelatorioSociosBean implements Serializable {
         } else if (index == 16) {
             booEmpresa = !booEmpresa;
             if (!booEmpresa) {
+                minQtdeFuncionario = null;
+                maxQtdeFuncionario = null;
                 empresa = new Juridica();
             }
         } else if (index == 17) {
@@ -396,9 +400,9 @@ public class RelatorioSociosBean implements Serializable {
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
-                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString,
+                booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), minQtdeFuncionario, maxQtdeFuncionario, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString,
                 booBiometria, tipoBiometria);
-                
+
         Collection lista = new ArrayList();
         for (int i = 0; i < result.size(); i++) {
             lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
@@ -1428,5 +1432,64 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setSituacaoString(String situacaoString) {
         this.situacaoString = situacaoString;
+    }
+
+    public Integer getMinQtdeFuncionario() {
+        return minQtdeFuncionario;
+    }
+
+    public void setMinQtdeFuncionario(Integer minQtdeFuncionario) {
+        this.minQtdeFuncionario = minQtdeFuncionario;
+    }
+
+    public Integer getMaxQtdeFuncionario() {
+        return maxQtdeFuncionario;
+    }
+
+    public void setMaxQtdeFuncionario(Integer maxQtdeFuncionario) {
+        this.maxQtdeFuncionario = maxQtdeFuncionario;
+    }
+
+    public String getMinQtdeFuncionarioString() {
+        try {
+            return Integer.toString(minQtdeFuncionario);
+        } catch (Exception e) {
+            return "0";
+        }
+    }
+
+    public void setMinQtdeFuncionarioString(String minQtdeFuncionarioString) {
+        try {
+            Integer min = Integer.parseInt(minQtdeFuncionarioString);
+            Integer max = maxQtdeFuncionario;
+            if (max != null && min != null && min > max) {
+                maxQtdeFuncionario = min;
+            }
+            this.minQtdeFuncionario = Integer.parseInt(minQtdeFuncionarioString);
+        } catch (Exception e) {
+            this.minQtdeFuncionario = 0;
+
+        }
+    }
+
+    public String getMaxQtdeFuncionarioString() {
+        try {
+            return Integer.toString(maxQtdeFuncionario);
+        } catch (Exception e) {
+            return "0";
+        }
+    }
+
+    public void setMaxQtdeFuncionarioString(String maxQtdeFuncionarioString) {
+        try {
+            Integer min = minQtdeFuncionario;
+            Integer max = Integer.parseInt(maxQtdeFuncionarioString);
+            if (max != null && min != null && min > max) {
+                maxQtdeFuncionario = min;
+            }
+            this.maxQtdeFuncionario = Integer.parseInt(maxQtdeFuncionarioString);
+        } catch (Exception e) {
+            this.maxQtdeFuncionario = 0;
+        }
     }
 }
