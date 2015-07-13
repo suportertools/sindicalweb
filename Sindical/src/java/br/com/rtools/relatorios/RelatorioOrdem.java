@@ -18,19 +18,23 @@ public class RelatorioOrdem implements Serializable {
     private String nome;
     @Column(name = "ds_query", length = 250)
     private String query;
+    @Column(name = "is_default")
+    private Boolean principal;
 
     public RelatorioOrdem() {
         this.id = null;
         this.relatorios = null;
         this.nome = "";
         this.query = "";
+        this.principal = false;
     }
 
-    public RelatorioOrdem(Integer id, Relatorios relatorios, String nome, String query) {
+    public RelatorioOrdem(Integer id, Relatorios relatorios, String nome, String query, Boolean principal) {
         this.id = id;
         this.relatorios = relatorios;
         this.nome = nome;
         this.query = query;
+        this.principal = principal;
     }
 
     public Integer getId() {
@@ -71,6 +75,14 @@ public class RelatorioOrdem implements Serializable {
         return hash;
     }
 
+    public Boolean getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Boolean principal) {
+        this.principal = principal;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -85,7 +97,7 @@ public class RelatorioOrdem implements Serializable {
 
     @Override
     public String toString() {
-        return "RelatorioOrdem{" + "id=" + id + ", relatorios=" + relatorios + ", nome=" + nome + ", query=" + query + '}';
+        return "RelatorioOrdem{" + "id=" + id + ", relatorios=" + relatorios + ", nome=" + nome + ", query=" + query + ", principal=" + principal + '}';
     }
 
 }

@@ -94,9 +94,9 @@ public class Jasper {
      */
     public static String COMPRESS_EXTENSION = "zip";
     /**
-     * Uso interno
+     * Uso interno (2GB)
      */
-    private static final int MEGABYTE = (1024 * 1024);
+    private static final int MEGABYTE = (1024 * 2056);
     /**
      * Retorna o nome do arquivo gerado
      */

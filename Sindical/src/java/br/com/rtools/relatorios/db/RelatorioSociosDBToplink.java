@@ -149,10 +149,10 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booTipoPagamento, String ids_pagamento, boolean booCidadeSocio, String ids_cidade_socio, boolean booCidadeEmpresa, String ids_cidade_empresa,
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
-            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias, String situacao,
-            boolean booBiometria, String tipoBiometria) {
-        
-        String p_demissao="";
+            boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, Integer minQtdeFuncionario, Integer maxQtdeFuncionario,
+            String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias, String situacao, boolean booBiometria, String tipoBiometria) {
+
+        String p_demissao = "";
         if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
             p_demissao = " , pempresa.admissao_empresa_demissionada, \n" + // 79
                     "   pempresa.demissao_empresa_demissionada, \n" + // 80
@@ -421,10 +421,26 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         if (booEmpresas) {
             if (id_juridica != -1) {
                 filtro += " AND p.e_id = " + id_juridica;
-            } else if (tipo_empresa.equals("com")) {
+            } else if (tipo_empresa != null && tipo_empresa.equals("com")) {
                 filtro += " AND p.empresa <> '' ";
-            } else if (tipo_empresa.equals("sem")) {
+            } else if (tipo_empresa != null && tipo_empresa.equals("sem")) {
                 filtro += " AND p.empresa IS NULL ";
+            }
+            if (minQtdeFuncionario != null && maxQtdeFuncionario != null && (minQtdeFuncionario > 0 || maxQtdeFuncionario > 0)) {
+                filtro += " AND p.e_id IN (SELECT pempre.e_id "
+                        + "         FROM soc_socios_vw socp  "
+                        + " INNER JOIN pes_pessoa_vw pempre ON pempre.codigo = socp.codsocio    "
+                        + " WHERE pempre.e_id > 0  "
+                        + " GROUP BY pempre.e_id  ";
+                if (minQtdeFuncionario.equals(maxQtdeFuncionario)) {
+                    filtro += " HAVING COUNT(*) = " + minQtdeFuncionario + ") ";
+                } else if (minQtdeFuncionario > 0 && maxQtdeFuncionario == 0) {
+                    filtro += " HAVING COUNT(*) <= " + minQtdeFuncionario + ") ";
+                } else if (minQtdeFuncionario == 0 && maxQtdeFuncionario > 0) {
+                    filtro += " HAVING COUNT(*) >= " + maxQtdeFuncionario + ") ";
+                } else if (minQtdeFuncionario > 0 && maxQtdeFuncionario > 0) {
+                    filtro += " HAVING COUNT(*) >= " + minQtdeFuncionario + " AND COUNT(*) <= " + maxQtdeFuncionario + ") ";
+                }
             }
         }
 
@@ -445,11 +461,11 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                     break;
             }
         }
-        
-        if (booBiometria){
-            if (tipoBiometria.equals("com")){
+
+        if (booBiometria) {
+            if (tipoBiometria.equals("com")) {
                 filtro += " AND p.codigo IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
-            }else{
+            } else {
                 filtro += " AND p.codigo NOT IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
             }
         }
@@ -487,7 +503,8 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
     }
 
     @Override
-    public List<Vector> listaSociosInativos(boolean comDependentes, boolean chkInativacao, boolean chkFiliacao, String dt_inativacao_i, String dt_inativacao_f, String dt_filiacao_i, String dt_filiacao_f, int categoria, int grupoCategoria, String ordernarPor) {
+    public List<Vector> listaSociosInativos(boolean comDependentes, boolean chkInativacao, boolean chkFiliacao, String dt_inativacao_i, String dt_inativacao_f, String dt_filiacao_i, String dt_filiacao_f, int categoria, int grupoCategoria, String ordernarPor
+    ) {
 
         String select = "", innerjoin = "", textQry = "", and = "", orderby = "", ordem = "";
 

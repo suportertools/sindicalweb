@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @ManagedBean
 @SessionScoped
+@SuppressWarnings("unchecked")
 public class ControleAcessoBean implements Serializable {
 
     // static final long serialVersionUID = 7220145288109489651L;

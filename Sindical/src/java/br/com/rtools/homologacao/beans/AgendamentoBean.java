@@ -1016,20 +1016,30 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void pesquisarFuncionarioCPF() throws IOException {
         styleDestaque = "";
-        if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
-
-            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                GenericaMensagem.warn("Atenção", "Documento Inválido!");
-                return;
+        if ((!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__"))) {
+            if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
+                if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
+                    GenericaMensagem.warn("Atenção", "Documento Inválido!");
+                    return;
+                }
             }
 
             FisicaDB dbFis = new FisicaDBToplink();
             HomologacaoDB db = new HomologacaoDBToplink();
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-
+            List<Fisica> listFisica = new ArrayList();
             String documento = fisica.getPessoa().getDocumento();
-
-            List<Fisica> listFisica = dbFis.pesquisaFisicaPorDocSemLike(documento);
+            if ((!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__"))) {
+                listFisica = dbFis.pesquisaFisicaPorDocSemLike(documento);
+            }
+            if (listFisica.isEmpty()) {
+                if (!fisica.getPessoa().getNome().isEmpty() && !fisica.getNascimento().isEmpty()) {
+                    Fisica f = (Fisica) dbFis.pesquisaFisicaPorNomeNascimento(fisica.getPessoa().getNome().trim(), fisica.getDtNascimento());
+                    if (f != null) {
+                        listFisica.add(f);
+                    }
+                }
+            }
             List<Oposicao> listao = db.pesquisaFisicaOposicaoSemEmpresa(documento);
             PessoaEmpresa pem = db.pesquisaPessoaEmpresaPertencente(documento);
 
@@ -1072,6 +1082,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             } else if (!listFisica.isEmpty() && pem == null && listao.isEmpty()) {
                 //msgConfirma = "CPF verificado com sucesso";
                 fisica = listFisica.get(0);
+                fisica.getPessoa().setDocumento(documento);
                 pessoaEmpresa = new PessoaEmpresa();
                 juridica = new Juridica();
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
