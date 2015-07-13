@@ -206,14 +206,14 @@
                                 <h:column>
                                     <h:outputLabel value="Funcionário" style="color: red; font-weight: bold"/><br />
                                     <p:inputText value="#{agendamentoBean.fisica.pessoa.nome}" size="60" converter="#{toUpperCase}">
-                                        <p:ajax event="change" update="@this" global="false"/>
+                                        <p:ajax event="change" update="@this" global="false" listener="#{agendamentoBean.pesquisarFuncionarioCPF}"/>
                                     </p:inputText>
                                 </h:column>
 
                                 <h:column>
                                     <h:outputLabel value="Nascimento"  styleClass="#{agendamentoBean.configuracaoHomologacao.validaDataNascimento ? 'font-color-red' : ''}"/><br />
                                     <p:inputMask value="#{agendamentoBean.fisica.nascimento}" size="8" mask="99/99/9999">
-                                        <p:ajax event="change" update="@this" global="false"/>
+                                        <p:ajax event="change" update="@this" global="false" listener="#{agendamentoBean.pesquisarFuncionarioCPF}"/>
                                     </p:inputMask>
                                         
                                 </h:column>
