@@ -195,9 +195,14 @@
                             </p:tab>
                         </p:tabView>
                     </h:panelGrid>
-                    <h:panelGrid columns="3" styleClass="margin-top-max">
+                    <h:panelGrid columns="4" styleClass="margin-top-max">
                         <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioContribuintesBean.visualizar}" ajax="false" update="id_messages_growl"/>
-                        <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar"/>
+                        <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar">
+                            <p:ajax event="change" update="@this" />
+                        </p:selectBooleanCheckbox>
+                        <p:selectBooleanCheckbox itemLabel="Exportar Excel" styleClass="margin-top-max" value="#{jasperBean.EXPORT_TO_EXCEL}" disabled="#{!relatorioContribuintesBean.relatorios.excel}">
+                            <p:ajax event="change" update="@this" />
+                        </p:selectBooleanCheckbox>
                     </h:panelGrid>
                 </h:form>
             </p:panel>
