@@ -1536,32 +1536,7 @@ public class SociosBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Pesquise um Dependente para Salvar!");
                 return false;
             }
-
-//            List<SelectItem> lista_si = new ArrayList<SelectItem>();
-//            
-//            lista_si.addAll( (Collection<? extends SelectItem>) linha.getArgumento6());
-//            
-//            if ( Integer.valueOf( linha.getArgumento1().toString()  )  == 0){
-//                GenericaMensagem.warn("Erro", "Dependente não pode ser salvo sem Parentesco!");
-//                return false;
-//            }
         }
-//        for (DataObject linha : listaDependentes) {
-//            if (((Fisica) linha.getArgumento0()).getId() == -1) {
-//                GenericaMensagem.warn("Erro", "Pesquise um Dependente para Salvar!");
-//                return false;
-//            }
-//
-////            List<SelectItem> lista_si = new ArrayList<SelectItem>();
-////            
-////            lista_si.addAll( (Collection<? extends SelectItem>) linha.getArgumento6());
-////            
-////            if ( Integer.valueOf( linha.getArgumento1().toString()  )  == 0){
-////                GenericaMensagem.warn("Erro", "Dependente não pode ser salvo sem Parentesco!");
-////                return false;
-////            }
-//        }
-
         ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
         int idCat = Integer.parseInt(getListaCategoria().get(idCategoria).getDescription());
         servicoCategoria = dbSCat.pesquisaPorParECat(1, idCat);
@@ -1574,6 +1549,13 @@ public class SociosBean implements Serializable {
 
         // SE DESCONTO FOLHA = true NAO SALVAR EM cobranca ID EMPRESA -- alterado na data 12/01/2014 (ID da tarefa 388)
         servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+                    
+        if (servicoCategoria.getCategoria().isEmpresaObrigatoria()){
+            if (pessoaEmpresa == null || pessoaEmpresa.getId() == -1) {
+                GenericaMensagem.warn("Atenção", "Vincular uma empresa para esta Pessoa!");
+                return false;
+            }
+        }
 //        
 //        if (servicoPessoa.isDescontoFolha()) {
 //            if (pessoaEmpresa.getId() == -1) {

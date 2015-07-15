@@ -2,6 +2,8 @@ package br.com.rtools.financeiro.dao;
 
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Query;
 
 public class ServicoPessoaDao extends DB {
@@ -20,5 +22,21 @@ public class ServicoPessoaDao extends DB {
         } catch (Exception e) {
         }
         return null;
+    }
+    
+    public List<ServicoPessoa> listaTodosServicoPessoaPorTitular(int id_titular_matricula) {
+        try {
+            Query query = getEntityManager().createNativeQuery(
+                    "SELECT sp.* \n "+
+                    "  FROM fin_servico_pessoa sp \n " +
+                    " INNER JOIN soc_socios s ON s.id_servico_pessoa = sp.id \n " +
+                    " INNER JOIN matr_socios m ON m.id = s.id_matricula_socios \n " +
+                    " WHERE m.id_titular = "+id_titular_matricula, ServicoPessoa.class
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 }

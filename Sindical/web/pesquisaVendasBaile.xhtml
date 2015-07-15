@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Pesquisa Vendas Baile</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:outputText value="Pesquisa Vendas Baile" styleClass="fonteHeader" />
+                        <h:form id="formPesquisaVendasBaile">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="3" style="width: 500px">
+                                    <h:column>
+                                        <p:outputLabel value="Data" /><br />
+                                        <p:outputLabel value="#{vendaBaileBean.eventoBaile.dataString} - #{vendaBaileBean.eventoBaile.horaInicio} às #{vendaBaileBean.eventoBaile.horaFim}" style="font-weight: bold; font-size: 11pt!important"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:outputLabel value="Evento" /><br />
+                                        <p:outputLabel value="#{vendaBaileBean.eventoBaile.evento.descricaoEvento.descricao}" style="font-weight: bold; font-size: 11pt!important"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            <br />
+                            <h:panelGrid>
+                                <p:outputLabel value="LISTA DE MESAS" style="font-size: 11pt!important; font-weight: bold"/>
+                            </h:panelGrid>
+
+                            <p:dataTable value="#{vendaBaileBean.listaVendasMesa}" var="linha" emptyMessage="Nenhuma Venda de Mesa Encontrada" style="width: 100%" scrollable="true" scrollHeight="200">
+                                <p:column headerText="Pessoa">
+                                    <p:commandLink value="#{linha[4]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Emissão" style="width: 80px; text-align: center">
+                                    <p:commandLink value="#{vendaBaileBean.converteData(linha[1])}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Mesa" style="width: 50px; text-align: center">
+                                    <p:commandLink value="#{linha[2]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="STATUS" style="width: 90px; text-align: center">
+                                    <p:commandLink value="#{linha[3]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Valor R$" style="width: 80px; text-align: right">
+                                    <p:commandLink value="#{vendaBaileBean.converteMoeda(linha[6])}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Usuário">
+                                    <p:commandLink value="#{linha[5]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Observação">
+                                    <p:commandLink value="#{linha[7]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+                            </p:dataTable>
+
+                            <br />
+                            <h:panelGrid>
+                                <p:outputLabel value="LISTA DE CONVITES" style="font-size: 11pt!important; font-weight: bold"/>
+                            </h:panelGrid>
+
+                            <p:dataTable value="#{vendaBaileBean.listaVendasConvite}" var="linha" emptyMessage="Nenhuma Venda de Convite Encontrada" style="width: 100%" scrollable="true" scrollHeight="200">
+                                <p:column headerText="Pessoa">
+                                    <p:commandLink value="#{linha[4]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Emissão" style="width: 80px; text-align: center">
+                                    <p:commandLink value="#{vendaBaileBean.converteData(linha[1])}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Convite" style="width: 50px; text-align: center">
+                                    <p:commandLink value="#{linha[2]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="STATUS" style="width: 90px; text-align: center">
+                                    <p:commandLink value="#{linha[3]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Valor R$" style="width: 80px; text-align: right">
+                                    <p:commandLink value="#{vendaBaileBean.converteMoeda(linha[6])}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Usuário">
+                                    <p:commandLink value="#{linha[5]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+
+                                <p:column headerText="Observação">
+                                    <p:commandLink value="#{linha[7]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

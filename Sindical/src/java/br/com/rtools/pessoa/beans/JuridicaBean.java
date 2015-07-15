@@ -402,25 +402,56 @@ public class JuridicaBean implements Serializable {
 
     public void inativarContribuintes() {
         JuridicaDB db = new JuridicaDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+
+        Dao dao = new Dao();
+
         if (!listaMotivoInativacao.isEmpty()) {
             contribuintesInativos.setJuridica(juridica);
             contribuintesInativos.setDtAtivacao(null);
             contribuintesInativos.setMotivoInativacao(db.pesquisaCodigoMotivoInativacao(Integer.parseInt(((SelectItem) listaMotivoInativacao.get(idMotivoInativacao)).getDescription())));
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(contribuintesInativos)) {
-                salvarAcumuladoDB.comitarTransacao();
-                GenericaMensagem.info("Sucesso", "Contribuinte Inativado!");
-                contribuintesInativos = new ContribuintesInativos();
-                listaContribuintesInativos.clear();
-                getListaContribuintesInativos();
-                getContribuinte();
-            } else {
-                salvarAcumuladoDB.desfazerTransacao();
+
+            dao.openTransaction();
+
+            if (!dao.save(contribuintesInativos)) {
+                dao.rollback();
+                GenericaMensagem.error("Erro", "Não foi possível salvar Inativação!");
+                return;
             }
+
+            PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
+            List<PessoaEmpresa> result = dbp.listaPessoaEmpresaPorJuridica(juridica.getId());
+
+            if (!result.isEmpty()) {
+                for (PessoaEmpresa pe : result) {
+                    pe.setPrincipal(false);
+                    pe.setDemissao(DataHoje.data());
+
+                    if (!dao.update(pe)) {
+                        dao.rollback();
+                        GenericaMensagem.error("Erro", "Não foi possível demissionar sócios!");
+                        return;
+                    }
+                }
+            }
+            dao.commit();
+            
+            GenericaMensagem.info("Sucesso", "Contribuinte Inativado!");
+            contribuintesInativos = new ContribuintesInativos();
+            listaContribuintesInativos.clear();
+            getListaContribuintesInativos();
+            getContribuinte();
         } else {
             GenericaMensagem.error("Erro", "Não existe Motivo de Inativação!");
         }
+    }
+    
+    public List<PessoaEmpresa> getListaPessoaEmpresa(){
+        List<PessoaEmpresa> result = new ArrayList();
+        if (juridica.getId() != -1){
+            PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
+            result = dbp.listaPessoaEmpresaPorJuridica(juridica.getId());
+        }
+        return result;
     }
 
     public String getEnderecoCobranca() {

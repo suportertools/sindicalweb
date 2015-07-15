@@ -29,4 +29,6 @@ public interface PessoaEmpresaDB {
     public List listaPessoaEmpresaTodos(int id);
 
     public PessoaEmpresa pesquisaPessoaEmpresaPorPessoa(int idPessoa);
+    
+    public List<PessoaEmpresa> listaPessoaEmpresaPorJuridica(int id_juridica);
 }

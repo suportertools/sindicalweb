@@ -83,13 +83,14 @@ public class EventoServicoValorDBToplink extends DB implements EventoServicoValo
     }
 
     public List<EventoServicoValor> pesquisaServicoValorPorEvento(int idEvento) {
-        List<EventoServicoValor> lista = new ArrayList<EventoServicoValor>();
+        List<EventoServicoValor> lista = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select r from EventoServicoValor r where r.eventoServico.aEvento.id = " + idEvento);
+            Query qry = getEntityManager().createQuery(
+                    "select r from EventoServicoValor r where r.eventoServico.aEvento.id = " + idEvento + " order by r.eventoServico.servicos.descricao, r.eventoServico.categoria.categoria");
             lista = qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
-            lista = new ArrayList<EventoServicoValor>();
+            lista = new ArrayList();
         }
         return lista;
     }

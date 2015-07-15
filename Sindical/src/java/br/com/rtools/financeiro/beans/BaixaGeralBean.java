@@ -223,7 +223,10 @@ public class BaixaGeralBean implements Serializable {
                 return "geracaoDebitosCartao";
             }  else if (url.equals("matriculaEscola")) {
                 return "matriculaEscola";
-            } else {
+            } else if (url.equals("vendasBaile")) {
+                GenericaSessao.remove("vendaBaileBean");
+                return "vendasBaile";
+            }  else {
                 return null;
             }
         } else {

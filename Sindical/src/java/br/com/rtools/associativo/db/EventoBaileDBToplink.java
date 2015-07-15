@@ -1,6 +1,7 @@
 package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.AEndereco;
+import br.com.rtools.associativo.EventoBaileConvite;
 import br.com.rtools.associativo.EventoBaileMapa;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
 
     @Override
     public List listaBaileMapa(int id_baile) {
-        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = " + id_baile;
+        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = " + id_baile + " order by ebm.mesa";
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             return qry.getResultList();
@@ -92,14 +93,50 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
             return new ArrayList();
         }
     }
-    
+
     @Override
-    public List listaBaileMapaDisponiveis(int id_baile) {
-        String textQuery = "SELECT ebm FROM EventoBaileMapa ebm WHERE ebm.eventoBaile.id = " + id_baile + " AND ebm.id NOT IN(SELECT EM.eventoBaileMapa.id FROM EveMesa AS EM )" ;
+    public List listaBaileConvite(int id_baile) {
+        String textQuery = "select ebc from EventoBaileConvite ebc where ebc.eventoBaile.id = " + id_baile + " order by ebc.convite";
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             return qry.getResultList();
         } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+
+    @Override
+    public List<EventoBaileMapa> listaBaileMapaDisponiveis(int id_baile, Integer id_status, Integer id_pessoa, Integer id_venda) {
+        String textQuery = "SELECT ebm.* "
+                + "  FROM eve_evento_baile_mapa ebm "
+                + (id_pessoa != null ? " INNER JOIN eve_venda v ON v.id = ebm.id_venda " : "")
+                + " WHERE ebm.id_evento_baile = " + id_baile
+                + "   AND ebm.id_status = " + id_status
+                + (id_pessoa != null ? " AND v.id = " + id_venda + "  AND v.id_pessoa = " + id_pessoa : "")
+                + " ORDER BY ebm.nr_mesa";
+        try {
+            Query qry = getEntityManager().createNativeQuery(textQuery, EventoBaileMapa.class);
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList();
+        }
+    }
+
+    @Override
+    public List<EventoBaileConvite> listaBaileConviteDisponiveis(int id_baile, Integer id_status, Integer id_pessoa, Integer id_venda) {
+        String textQuery = "SELECT ebc.* "
+                + "  FROM eve_evento_baile_convite ebc "
+                + (id_pessoa != null ? " INNER JOIN eve_venda v ON v.id = ebc.id_venda " : "")
+                + " WHERE ebc.id_evento_baile = " + id_baile
+                + "   AND ebc.id_status = " + id_status
+                + (id_pessoa != null ? " AND v.id = " + id_venda + "  AND v.id_pessoa = " + id_pessoa : "")
+                + " ORDER BY ebc.nr_convite";
+        try {
+            Query qry = getEntityManager().createNativeQuery(textQuery, EventoBaileConvite.class);
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
             return new ArrayList();
         }
     }
@@ -116,17 +153,13 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
     }
 
     @Override
-    public List listaMesasEvento(int idEventoBaile) {
+    public EventoBaileConvite pesquisaConviteBaile(int id_baile, int convite) {
+        String textQuery = "SELECT EBC FROM EventoBaileConvite AS EBC WHERE EBC.eventoBaile.id = " + id_baile + " AND EBC.convite = " + convite;
         try {
-            Query query = getEntityManager().createQuery("SELECT M FROM Mesa AS M WHERE M.eventoBaileMapa.eventoBaile.id = :idEventoBaile");
-            query.setParameter("idEventoBaile", idEventoBaile);
-            List list = query.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
+            Query qry = getEntityManager().createQuery(textQuery);
+            return (EventoBaileConvite) qry.getSingleResult();
         } catch (Exception e) {
-
+            return new EventoBaileConvite();
         }
-        return new ArrayList();
     }
 }

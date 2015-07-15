@@ -146,6 +146,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String tipoPesquisaMovimento = "beneficiario";
 
     private String inativoDesde = "";
+    private boolean visibleMsgAviso = false;
+    private String mensagemAviso = "";
     private Date dtRecadastro = DataHoje.dataHoje();
 
     @PostConstruct
@@ -155,6 +157,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     @PreDestroy
     public void destroy() {
 
+    }
+    
+    public void closeMensagemAviso(){
+        visibleMsgAviso = false;
     }
 
     public String refazerMovimentos() {
@@ -1653,11 +1659,22 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public PessoaEmpresa getPessoaEmpresa() {
         if (GenericaSessao.exists("juridicaPesquisa")) {
-            pessoaEmpresa.setJuridica((Juridica) GenericaSessao.getObject("juridicaPesquisa"));
-            GenericaSessao.remove("juridicaPesquisa");
-            renderJuridicaPesquisa = true;
-        }
+            JuridicaDB db = new JuridicaDBToplink();
+            Juridica j = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
+            List listax = db.listaJuridicaContribuinte(j.getId());
 
+            for (int i = 0; i < listax.size(); i++) {
+                if (((List) listax.get(0)).get(11) != null) {
+                    // CONTRIBUINTE INATIVO
+                    mensagemAviso = "Empresa Inativa não pode ser vinculada!";
+                    visibleMsgAviso = true;
+                } else {
+                    pessoaEmpresa.setJuridica(j);
+                    renderJuridicaPesquisa = true;
+                }
+            }
+            GenericaSessao.remove("juridicaPesquisa");
+        }
         return pessoaEmpresa;
     }
 
@@ -2551,6 +2568,22 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.inativoDesde = inativoDesde;
     }
 
+    public boolean isVisibleMsgAviso() {
+        return visibleMsgAviso;
+    }
+
+    public void setVisibleMsgAviso(boolean visibleMsgAviso) {
+        this.visibleMsgAviso = visibleMsgAviso;
+    }
+
+    public String getMensagemAviso() {
+        return mensagemAviso;
+    }
+
+    public void setMensagemAviso(String mensagemAviso) {
+        this.mensagemAviso = mensagemAviso;
+    }
+
     public String getRecadastro() {
         return DataHoje.converteData(dtRecadastro);
     }
@@ -2574,5 +2607,4 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void updateDataRecadastro() {
         fisica.setDtRecadastro(dtRecadastro);
     }
-
 }

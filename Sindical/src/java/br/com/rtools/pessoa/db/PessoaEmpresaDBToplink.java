@@ -133,7 +133,8 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     "    SELECT PE                          "
                     + "    FROM PessoaEmpresa AS PE         "
                     + "   WHERE PE.fisica.id = " + id
-                    + "     AND (PE.principal = true OR PE.dtDemissao IS NULL)");
+                    + "     AND (PE.principal = true OR PE.dtDemissao IS NULL)"
+            );
             List<PessoaEmpresa> list = qry.getResultList();
             PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
             if (!list.isEmpty() && list.size() > 1) {
@@ -167,5 +168,21 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
         } catch (Exception e) {
         }
         return new PessoaEmpresa();
+    }
+    
+    public List<PessoaEmpresa> listaPessoaEmpresaPorJuridica(int id_juridica) {
+        try {
+            Query query = getEntityManager().createQuery(
+                    "  SELECT PE                                    "
+                    + "  FROM PessoaEmpresa AS PE                   "
+                    + " WHERE PE.juridica.id = " + id_juridica
+                    + "   AND (PE.principal = true OR PE.dtDemissao IS NULL)"
+            );
+            return query.getResultList();
+            
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 }

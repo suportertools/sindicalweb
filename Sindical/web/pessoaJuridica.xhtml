@@ -500,13 +500,17 @@
                             </p:dialog>
 
 
-                            <p:dialog widgetVar="i_dlg_inativar" header="Inativar Empresa" resizable="false" height="275" width="520" modal="true">
+                            <p:dialog widgetVar="i_dlg_inativar" header="Inativar Empresa" resizable="false" width="520" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputText value="Empresa: " />
                                     <h:outputText value="#{juridicaBean.juridica.pessoa.nome}" style="font-weight: bold"/>
                                 </h:panelGrid>
 
-                                <h:panelGrid columns="2">
+                                <p:panel styleClass="fundoCinza" rendered="#{juridicaBean.listaPessoaEmpresa.size() > 0}">
+                                    <p:outputLabel value="Atenção empresa com sócios vinculados, eles serão demissionados automaticamente!" style="color: red"/>
+                                </p:panel>
+                                
+                                <h:panelGrid columns="3">
                                     <p:column>
                                         <h:outputText value="Data de Ativação" /><br />
                                         <p:inputText value="#{juridicaBean.juridica.pessoa.criacao}" size="8" style="font-weight: bold; margin-right: 50px;" readonly="true"/>
@@ -514,22 +518,22 @@
 
                                     <p:column>
                                         <h:outputText value="Data de Inativação" /><br />
-                                        <p:inputMask value="#{juridicaBean.contribuintesInativos.inativacao}" size="8" mask="99/99/9999" style="font-weight: bold;" />
+                                        <p:inputMask value="#{juridicaBean.contribuintesInativos.inativacao}" size="8" mask="99/99/9999" style="font-weight: bold; margin-right: 50px;" />
                                     </p:column>
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="2">
-                                    <p:column>
-                                        <h:outputText value="Solicitante" styleClass="fontePadrao" /><br />
-                                        <p:inputText  value="#{juridicaBean.contribuintesInativos.solicitante}" size="52" />
-                                    </p:column>
-
+                                    
                                     <p:column>
                                         <h:outputText value="Motivo da Inativação"/><br />
                                         <p:selectOneMenu value="#{juridicaBean.idMotivoInativacao}">
                                             <p:ajax event="change" update="@this"/>
                                             <f:selectItems value="#{juridicaBean.listaMotivoInativacao}"/>
                                         </p:selectOneMenu>
+                                    </p:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <p:column>
+                                        <h:outputText value="Solicitante" styleClass="fontePadrao" /><br />
+                                        <p:inputText  value="#{juridicaBean.contribuintesInativos.solicitante}" size="52" />
                                     </p:column>
                                 </h:panelGrid>
 

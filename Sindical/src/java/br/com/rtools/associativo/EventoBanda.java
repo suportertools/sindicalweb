@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -23,7 +22,7 @@ public class EventoBanda implements java.io.Serializable {
     @ManyToOne
     private Banda banda;
     @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
-    @OneToOne
+    @ManyToOne
     private AEvento evento;
 
     public EventoBanda() {

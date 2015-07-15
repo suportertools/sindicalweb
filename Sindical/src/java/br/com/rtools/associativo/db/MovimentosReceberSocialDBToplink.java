@@ -178,7 +178,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
     @Override
     public List<Vector> listaBoletosAbertosAgrupado(int id_pessoa, boolean atrasados){
         String textqry
-            = " SELECT b.id, b.nr_ctr_boleto, b.ds_boleto, sum(m.nr_valor), b.dt_vencimento, b.dt_vencimento_original \n" +
+            =  " SELECT b.id, b.nr_ctr_boleto, b.ds_boleto, sum(m.nr_valor), b.dt_vencimento, b.dt_vencimento_original, b.ds_mensagem \n" +
                 "  FROM fin_boleto b \n" +
                 " INNER JOIN fin_movimento m ON m.nr_ctr_boleto = b.nr_ctr_boleto \n" +
                 " WHERE m.id_pessoa = "+id_pessoa+" \n" +

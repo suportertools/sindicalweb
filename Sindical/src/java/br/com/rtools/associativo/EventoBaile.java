@@ -1,5 +1,6 @@
 package br.com.rtools.associativo;
 
+import br.com.rtools.financeiro.Evt;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;
@@ -26,6 +27,9 @@ public class EventoBaile implements java.io.Serializable {
     private String horaInicio;
     @Column(name = "tm_fim", nullable = true)
     private String horaFim;
+    @JoinColumn(name = "id_evt", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Evt evt;
 
     public EventoBaile() {
         this.id = -1;
@@ -35,9 +39,10 @@ public class EventoBaile implements java.io.Serializable {
         this.horaInicio = "";
         this.horaFim = "";
         this.quantidadeConvites = 0;
+        this.evt = null;
     }
 
-    public EventoBaile(int id, AEvento evento, int quantidadeMesas, Date data, String horaInicio, String horaFim, int quantidadeConvites) {
+    public EventoBaile(int id, AEvento evento, int quantidadeMesas, Date data, String horaInicio, String horaFim, int quantidadeConvites, Evt evt) {
         this.id = id;
         this.evento = evento;
         this.quantidadeMesas = quantidadeMesas;
@@ -45,6 +50,7 @@ public class EventoBaile implements java.io.Serializable {
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
         this.quantidadeConvites = quantidadeConvites;
+        this.evt = evt;
     }
 
     public int getId() {
@@ -115,5 +121,13 @@ public class EventoBaile implements java.io.Serializable {
 
     public void setQuantidadeConvites(int quantidadeConvites) {
         this.quantidadeConvites = quantidadeConvites;
+    }
+
+    public Evt getEvt() {
+        return evt;
+    }
+
+    public void setEvt(Evt evt) {
+        this.evt = evt;
     }
 }

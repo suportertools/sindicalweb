@@ -340,7 +340,7 @@
                                     </p:tab>
 
                                     <p:tab title="Local de Trabalho" id="i_panel_profissao">
-                                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
+                                        <p:messages id="msg_local_trabalho" autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
                                         <h:panelGrid columns="2">
                                             <h:column>
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" id="i_pesquisar_empresa"/>
@@ -775,8 +775,18 @@
                                             <p:commandLink value="Biometria cadastrada" rendered="#{biometriaBean.complete(fisicaBean.fisica.pessoa)}" styleClass="font-color-green" onclick="PF('dlg_delete_biometria').show()" style="color: red"/>
                                         </h:panelGrid>                                        
                                     </h:column>
-                                </h:panelGrid>              
-
+                                </h:panelGrid>
+                                
+                                <p:dialog modal="true" width="400" widgetVar="dlg_mensagem_aviso" closable="false" header="Aviso" visible="#{fisicaBean.visibleMsgAviso}">
+                                    <h:panelGrid>
+                                        <h:outputLabel value="#{fisicaBean.mensagemAviso}" style="font-size: 12pt!important"/>
+                                    </h:panelGrid>
+                                    
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton icon="ui-icon-check" value="OK" title="Ok e Fechar" action="#{fisicaBean.closeMensagemAviso()}" update="form_pessoa_fisica" oncomplete="PF('dlg_mensagem_aviso').hide()" />
+                                    </h:panelGrid>
+                                </p:dialog>
+                                
                                 <!-- PESQUISAR PROFISSAO -->
                                 <p:dialog modal="true" width="650" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar Profissão">
                                     <h:panelGrid id="i_painel_profissao">

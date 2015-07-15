@@ -17,10 +17,14 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaEmpresa;
+import br.com.rtools.pessoa.db.PessoaEmpresaDB;
+import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.ImpressaoParaSocios;
 import br.com.rtools.utilitarios.Jasper;
@@ -248,6 +252,23 @@ public class CartaoSocialBean implements Serializable {
                 Pessoa pessoa = (Pessoa) dao.find(new Pessoa(), (Integer) ((List) list.get(i)).get(0));
                 SocioCarteirinha carteirinha = (SocioCarteirinha) dao.find(new SocioCarteirinha(), (Integer) ((List) list.get(i)).get(19));
 
+                boolean validacao = false;
+                if (pessoa.getSocios().getId() != -1){
+                    if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria()){
+                        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
+                        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
+                        if (pe.getId() == -1){
+                            GenericaMensagem.error("Atenção", "Empresa Não Vinculada a pessoa "+ pessoa.getNome());
+                            validacao = true;
+                        }
+                    }
+                }
+                
+                if (validacao){
+                    dao.rollback();
+                    return;
+                }
+                
                 //ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
                 //ModeloCarteirinha modeloc = (ModeloCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "ModeloCarteirinha");
                 //carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
