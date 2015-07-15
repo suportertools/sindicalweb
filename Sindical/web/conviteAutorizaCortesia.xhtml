@@ -8,49 +8,63 @@
     <h:head>
         <title>Convite Autoriza Cortesia</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>        
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_autoriza_cortesia">
                     <p:outputLabel value="Convite Autoriza Cortesia" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${conviteAutorizaCortesiaBean.conviteAutorizaCortesia}"/>
                     <div class="clear"></div>
-                    <p:panel id="id_autoriza_cortesia" styleClass="sbb margin-top-max">
-                        <p:panelGrid columns="4">
-                            <p:commandButton value="Pessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa}" title="Pesquisar pessoa" id="id_pessoa_autoriza"/>
-                            <p:column>
-                                <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id == -1}" for="id_autoriza_cortesia"/>
-                                <p:outputLabel id="idNome" value="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.nome}" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" for="id_autoriza_cortesia"/>
-                            </p:column>
-                            <p:commandButton value="Adicionar" action="#{conviteAutorizaCortesiaBean.save}" oncomplete="PF('dlg_message').show()" update="id_autoriza_cortesia, i_mensagem, tbl" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                        </p:panelGrid>
-                        <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
+                    <h:panelGrid id="id_autoriza_cortesia">
+                        <p:panel styleClass="fundoCinza">
+                            <h:panelGrid columns="3" style="width: 40%">
+                                <p:commandButton value="Pesquisar Pessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa}" title="Pesquisar pessoa" id="id_pessoa_autoriza"/>
+                                <p:column>
+                                    <p:outputLabel id="idNome" value="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.nome}" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" for="id_autoriza_cortesia"/>
+                                </p:column>
+                                <p:commandButton value="Adicionar" action="#{conviteAutorizaCortesiaBean.save}" oncomplete="PF('dlg_message').show()" update="id_autoriza_cortesia, i_mensagem, tbl" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            </h:panelGrid>
+                        </p:panel>
+                        
+                        <h:panelGrid columns="1" id="tbl">
                             <p:dataTable value="#{conviteAutorizaCortesiaBean.listPessoasAutorizadas}" var="conviteAutorizaCortesia" emptyMessage="Nenhum registro(s) encontrado(s)">
+                                <p:column style="width: 30px">
+                                    <p:commandButton icon="ui-icon-trash" action="#{conviteAutorizaCortesiaBean.delete(conviteAutorizaCortesia)}" oncomplete="PF('dlg_message').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                </p:column>
+                                
                                 <p:column>
                                     <f:facet name="header">
                                         <h:outputText value="Nome"/>
                                     </f:facet>
                                     <h:outputLabel value="#{conviteAutorizaCortesia.pessoa.nome}" styleClass="fontePadrao"/>
                                 </p:column>
-                                <p:column>
-                                    <p:commandButton icon="ui-icon-trash" action="#{conviteAutorizaCortesiaBean.delete(conviteAutorizaCortesia)}" oncomplete="PF('dlg_message').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
-                                </p:column>
                                 <f:facet name="header">
                                     Relação de pessoas
                                 </f:facet>
                             </p:dataTable>
-                        </p:panelGrid>                        
+                        </h:panelGrid>
+                        
                         <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
                             <h:outputLabel value="#{conviteAutorizaCortesiaBean.message}" id="i_mensagem"/>
                             <f:facet name="footer">
                                 <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                             </f:facet>
                         </p:dialog>
-                    </p:panel>
+                    </h:panelGrid>
                 </h:form>
             </p:panel>
         </f:view>

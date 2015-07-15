@@ -35,7 +35,7 @@
                  }                         */
 
                 function handleDrop(event, ui) {
-                    ui.draggable.fadeOut(function() {
+                    ui.draggable.fadeOut(function () {
                         $(this).fadeIn();
                     });
                     //$(this).droppable('disable');
@@ -94,17 +94,17 @@
 
                                     <p:column>
                                         <h:outputLabel value="Qnt de Mesas" style="margin-left: 30px"/><br />
-                                        <p:inputText value="#{baileBean.eventoBaile.quantidadeMesas}" size="6" maxlength="5" style="margin-left: 30px"/>
+                                        <p:inputText value="#{baileBean.eventoBaile.quantidadeMesas}" style="margin-left: 30px; width: 100px; text-align: right"/>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <h:outputLabel value="Qnt de Convites" style="margin-left: 30px"/><br />
-                                        <p:inputText value="#{baileBean.eventoBaile.quantidadeConvites}" size="6" maxlength="5" style="margin-left: 30px"/>
+                                        <p:inputText value="#{baileBean.eventoBaile.quantidadeConvites}" style="margin-left: 30px; margin-right: 60px; width: 100px; text-align: right"/>
                                     </p:column>
-                                    
+
                                     <p:column>
-                                        <h:outputLabel value="Evt " style="margin-left: 30px; font-size: 13pt!important"/>
-                                        <h:outputLabel value="NENHUM" style="margin-left: 10px; font-weight: bold"/>
+                                        <p:outputLabel value="EVT"/><br />
+                                        <p:outputLabel value="#{(baileBean.eventoBaile.evt == null) ? 'NENHUM' : baileBean.eventoBaile.evt.id}" style="font-weight: bold; font-size: 15pt!important" />
                                     </p:column>
                                 </h:panelGrid>
 
@@ -127,8 +127,34 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <!-- <p:panel rendered="# { baileBean.eventoBaile.id != -1}" style="border: 0px"> -->
                             <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" /> 
+
+                            <p:panel>
+                                <h:panelGrid columns="2">
+                                    <p:column>
+                                        <houtputLabel value="Bandas"/><br />
+                                        <p:selectOneMenu value="#{baileBean.idBanda}" title="Bandas" style="padding-right: 20px;">
+                                            <f:selectItems value="#{baileBean.listaComboBanda}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton icon="ui-icon-check" value="Adicionar Banda" title="Adicionar Banda" action="#{baileBean.adicionarBanda}" update="tblBanda i_msg"/>
+                                    </p:column>
+                                </h:panelGrid>
+
+                                <p:dataTable value="#{baileBean.listaEventoBanda}" var="linhaBanda" style="width:100%" id="tblBanda" emptyMessage="Nenhuma Banda para este Baile">
+                                    <p:column headerText="Nome da Banda">
+                                        <h:outputLabel value="#{linhaBanda.banda.descricao}" styleClass="fontePadrao"/>
+                                    </p:column>
+
+                                    <p:column headerText="Excluir" style="width: 50px; text-align: center">
+                                        <p:commandButton icon="ui-icon-close" action="#{baileBean.removerBanda(linhaBanda)}" update="tblBanda formBaile:i_msg"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+
                             <p:panel style="border: 0px; margin-top: 10px">
                                 <p:outputLabel value="Serviço Valor" style="font-size: 13pt!important" />
                                 <hr />
@@ -137,15 +163,16 @@
                                     <h:column>
                                         <h:outputLabel value="Tipo"/>
                                         <p:selectOneRadio value="#{baileBean.eventoServico.mesa}">
-                                            <p:ajax event="change" update="i_panel_i_m i_panel_tipo" />
-                                            <f:selectItem itemValue="true" itemLabel="Convite" />
-                                            <f:selectItem itemValue="false" itemLabel="Mesa"/>
+                                            <p:ajax event="change" update="formBaile" listener="#{baileBean.updateTela()}"/>
+                                            <f:selectItem itemValue="false" itemLabel="Convite" />
+                                            <f:selectItem itemValue="true" itemLabel="Mesa"/>
                                         </p:selectOneRadio>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Sexo" style="margin-left: 20px"/><br />
-                                        <p:selectOneRadio value="#{baileBean.eventoServicoValor.sexo}" disabled="#{!baileBean.eventoServico.mesa}" style="margin-left: 20px">
+                                        <p:selectOneRadio value="#{baileBean.eventoServicoValor.sexo}" disabled="#{baileBean.eventoServico.mesa or (baileBean.servicos.id eq 13 or baileBean.servicos.id eq 15)}" style="margin-left: 20px">
+                                            <p:ajax event="change" update="i_panel_tipo" listener="#{baileBean.loadCategoria()}" />
                                             <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                             <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                             <f:selectItem itemValue="A" itemLabel="Ambos"/>
@@ -157,31 +184,36 @@
                                     <h:column>
                                         <h:outputLabel value="Serviços" /><br />
                                         <p:selectOneMenu value="#{baileBean.idServicos}" style="padding-right: 20px">
+                                            <p:ajax event="change" update="formBaile" listener="#{baileBean.updateServicoCategoria()}"/>
                                             <f:selectItems value="#{baileBean.listaComboServicos}" />
                                         </p:selectOneMenu>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Valor" style="margin-left: 20px"/><br />
-                                        <p:inputText id="i_valor" value="#{baileBean.eventoServicoValor.valorString}" maxlength="15" size="6" title="Valor do Serviço" style="margin-left: 20px">
+                                        <p:inputText id="i_valor" value="#{baileBean.eventoServicoValor.valorString}" maxlength="15" size="6" title="Valor do Serviço" style="margin-left: 20px" disabled="#{baileBean.servicos.id eq 13 or baileBean.servicos.id eq 15}">
                                             <p:ajax event="change" update="i_valor" />
                                         </p:inputText>
                                     </h:column>
 
                                     <h:column>
                                         <h:outputLabel value="Faixa Etária" style="margin-left: 20px"/><br />
-                                        <p:inputText value="#{baileBean.eventoServicoValor.idadeInicial}" maxlength="3" size="1" style="margin-left: 20px"/>
+                                        <p:inputText value="#{baileBean.eventoServicoValor.idadeInicial}" maxlength="3" size="3" style="margin-left: 20px" disabled="#{baileBean.servicos.id eq 13 or baileBean.servicos.id eq 15}">
+                                            <p:ajax event="change" update="i_panel_tipo" listener="#{baileBean.loadCategoria()}" />
+                                        </p:inputText>
                                         <h:outputLabel value=" à " />
-                                        <p:inputText value="#{baileBean.eventoServicoValor.idadeFinal}" maxlength="3" size="1" />
+                                        <p:inputText value="#{baileBean.eventoServicoValor.idadeFinal}" maxlength="3" size="3" disabled="#{baileBean.servicos.id eq 13 or baileBean.servicos.id eq 15}">
+                                            <p:ajax event="change" update="i_panel_tipo" listener="#{baileBean.loadCategoria()}" />
+                                        </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <br />
-                                        <p:selectBooleanCheckbox value="#{baileBean.eventoServico.socio}" itemLabel="Sócio">
-                                            <p:ajax event="change" update="@this i_panel_tipo" />
+                                        <p:selectBooleanCheckbox value="#{baileBean.eventoServico.socio}" itemLabel="Sócio" disabled="#{baileBean.servicos.id eq 13 or baileBean.servicos.id eq 15}">
+                                            <p:ajax event="change" update="@this i_panel_tipo" listener="#{baileBean.loadCategoria()}"/>
                                         </p:selectBooleanCheckbox>
                                     </h:column>
-                                    
+
                                     <h:column rendered="#{baileBean.eventoServico.socio}">
                                         <h:outputLabel value="Categoria"  style="margin-left: 20px"/><br />
                                         <p:selectOneMenu value="#{baileBean.idCategoria}" style="margin-left: 20px; padding-right: 20px">
@@ -201,25 +233,29 @@
                                         <h:outputLabel value="#{linha.eventoServico.servicos.descricao}" />
                                     </p:column>
 
-                                    <p:column headerText="Valor" style="width: 80px">
+                                    <p:column headerText="Valor" style="width: 80px;  text-align: right">
                                         <h:outputLabel value="#{linha.valorString}"/>
                                     </p:column>
 
-                                    <p:column headerText="Faixa Etária" style="text-align: center">
+                                    <p:column headerText="Faixa Etária" style="text-align: center; width: 80px">
                                         <h:outputLabel value="#{linha.idadeInicial} à #{linha.idadeFinal}" />
                                     </p:column>
-                                    
-                                    <p:column headerText="Categora" style="text-align: center">
+
+                                    <p:column headerText="Sexo" style="text-align: center; width: 50px">
+                                        <h:outputLabel value="#{linha.sexo}" />
+                                    </p:column>
+
+                                    <p:column headerText="Categoria" style="width: 250px">
                                         <h:outputLabel value="#{linha.eventoServico.categoria.categoria}" />
                                     </p:column>
 
-                                    <p:column headerText="Convite / Mesa" style="text-align: center">
-                                        <h:graphicImage url="/Imagens/mesa.png" styleClass="fontePadrao" rendered="#{!linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Mesa" title="Mesa"/>
-                                        <h:graphicImage url="/Imagens/convite.png" styleClass="fontePadrao" rendered="#{linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Convite" title="Convite"/>
+                                    <p:column headerText="Convite / Mesa" style="text-align: center; width: 50px">
+                                        <h:graphicImage url="/Imagens/mesa.png" styleClass="fontePadrao" rendered="#{linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Mesa" title="Mesa"/>
+                                        <h:graphicImage url="/Imagens/convite.png" styleClass="fontePadrao" rendered="#{!linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Convite" title="Convite"/>
                                     </p:column>
 
-                                    <p:column style="text-align: center">
-                                        <p:commandButton action="#{baileBean.removerEventoServico(linha)}" icon="ui-icon-trash" update=":formBaile:i_panel_tipo tbl_s"/>
+                                    <p:column style="text-align: center; width: 40px">
+                                        <p:commandButton action="#{baileBean.removerEventoServico(linha)}" icon="ui-icon-trash" update="formBaile"/>
                                     </p:column>                                    
                                 </p:dataTable>
 
@@ -230,7 +266,7 @@
                                 <p:commandButton ajax="false" value="Novo" action="#{baileBean.novo()}" />
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()" title="Excluir"/>
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaBaile()}"/>
-                                <p:commandButton value="Criar Mapa" onclick="PF('i_dlg_mapa_x').show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
+                                <p:commandButton value="Adicionar Mesas e Convites" onclick="PF('i_dlg_mapa_x').show()" rendered="#{baileBean.eventoBaile.id != -1}" actionListener="#{baileBean.setVisibleMapa(true)}"/>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar este Baile" resizable="false" width="400" modal="true">
@@ -242,31 +278,74 @@
                                 <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <!-- BRUNO - TELA PROVISÓRIA -->
-                            <p:dialog widgetVar="i_dlg_mapa_x" header="Novo mapa do Baile" width="600" modal="true" height="800" closable="true">
-                                <p:panel id="i_mesas">
-                                    <h:panelGrid columns="4">
-                                        <p:outputLabel value="Número da mesa: " />
-                                        <p:selectOneMenu value="#{baileBean.idNrMesa}">
-                                            <f:selectItems value="#{baileBean.listaMesasDisponiveis}" />
-                                        </p:selectOneMenu>                                    
-                                        <p:commandButton value="Adicionar mesa" action="#{baileBean.salvarMesa(false)}" update="i_mesas" rendered="false"/>
-                                        <p:commandButton value="Adicionar todas" action="#{baileBean.salvarMesa(true)}" update="i_mesas"/>
+                            <p:dialog widgetVar="i_dlg_mapa_x" header="Adicionar Mesas e Convites" width="600" modal="true" height="600" closable="true" visible="#{baileBean.visibleMapa}">
+                                <p:ajax event="close" listener="#{baileBean.setVisibleMapa(false)}" />  
+                                <h:panelGrid id="i_mesas">
+                                    <p:messages closable="true" showDetail="true" />
+
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <p:outputLabel value="NÚMERO DA MESA" style="font-weight: bold" /><br />
+                                            <p:selectOneMenu value="#{baileBean.idNrMesa}" style="width: 120px">
+                                                <f:selectItems value="#{baileBean.listaMesasDisponiveis}" />
+                                            </p:selectOneMenu>                                    
+                                        </h:column>
+
+                                        <h:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar Mesa" action="#{baileBean.salvarMesa(false)}" update="i_mesas" rendered="false"/>
+                                            <p:commandButton value="Adicionar Todas" action="#{baileBean.salvarMesa(true)}" update="i_mesas"/>
+                                        </h:column>
                                     </h:panelGrid>                           
-                                    <p:dataTable value="#{baileBean.listaMesas}" scrollable="true" scrollHeight="300" var="eventoBaileMapa" emptyMessage="Nenhum registro encontrado!">
+
+                                    <p:dataTable value="#{baileBean.listaMesas}" scrollable="true" scrollHeight="200" var="eventoBaileMapa" emptyMessage="Nenhum registro encontrado!">
                                         <p:column headerText="ID" width="15">
                                             <p:outputLabel value="#{eventoBaileMapa.id}" />
                                         </p:column>
-                                        <p:column headerText="Mesa">
+                                        <p:column headerText="Mesa" style="text-align: center">
                                             <p:outputLabel value="#{eventoBaileMapa.mesa}" />
                                         </p:column>
+                                        <p:column headerText="" style="width: 80px">
+                                            <p:commandButton icon="ui-icon-close" value="Excluir" action="#{baileBean.excluirMesa(eventoBaileMapa)}" update="formBaile:i_mesas"/>
+                                        </p:column>
                                     </p:dataTable>
-                                </p:panel>
+                                </h:panelGrid>
+
+                                <h:panelGrid id="i_convites">
+                                    <p:messages closable="true" showDetail="true" />
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <p:outputLabel value="NÚMERO DOS CONVITES" style="font-weight: bold" /><br />
+                                            <p:selectOneMenu value="#{baileBean.idNrConvite}" style="width: 150px">
+                                                <f:selectItems value="#{baileBean.listaConvitesDisponiveis}" />
+                                            </p:selectOneMenu>                                    
+                                        </h:column>
+
+                                        <h:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar Convite" action="#{baileBean.salvarConvite(false)}" update="i_convites" rendered="false"/>
+                                            <p:commandButton value="Adicionar Todos" action="#{baileBean.salvarConvite(true)}" update="i_convites"/>
+                                        </h:column>
+                                    </h:panelGrid>                           
+
+                                    <p:dataTable value="#{baileBean.listaConvites}" scrollable="true" scrollHeight="200" var="eventoBaileConvite" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column headerText="ID" width="15">
+                                            <p:outputLabel value="#{eventoBaileConvite.id}" />
+                                        </p:column>
+                                        <p:column headerText="Convite" style="text-align: center">
+                                            <p:outputLabel value="#{eventoBaileConvite.convite}" />
+                                        </p:column>
+                                        <p:column headerText="" style="width: 80px">
+                                            <p:commandButton icon="ui-icon-close" value="Excluir" action="#{baileBean.excluirConvite(eventoBaileConvite)}" update="formBaile:i_convites"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGrid>                                
                             </p:dialog>
                         </h:form>
-                        
-                        
+
+
                         <!-- CLAUDEMIR -->
                         <!-- 
                         <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="900" modal="true" height="800">

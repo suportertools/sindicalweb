@@ -295,7 +295,7 @@ public class PessoaDBToplink extends DB implements PessoaDB {
     @Override
     public Pessoa pessoaDocumento(String valor) {
         List vetor;
-        Pessoa pessoa = new Pessoa();
+        Pessoa pessoa;
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         try {
             Query qry = getEntityManager().createNativeQuery(

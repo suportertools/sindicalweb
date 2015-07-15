@@ -9,14 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "eve_evento_baile_mapa")
-@NamedQuery(name = "EventoBaileMapa.pesquisaID", query = "select ebm from EventoBaileMapa ebm where ebm.id = :pid")
-public class EventoBaileMapa implements Serializable {
+@Table(name = "eve_evento_baile_convite")
+public class EventoBaileConvite implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,10 +22,8 @@ public class EventoBaileMapa implements Serializable {
     @JoinColumn(name = "id_evento_baile", referencedColumnName = "id")
     @ManyToOne
     private EventoBaile eventoBaile;
-    @Column(name = "nr_mesa")
-    private int mesa;
-    @Column(name = "ds_posicao")
-    private String posicao;
+    @Column(name = "nr_convite")
+    private Integer convite;
     @JoinColumn(name = "id_venda", referencedColumnName = "id")
     @ManyToOne
     private BVenda bVenda;
@@ -38,21 +34,19 @@ public class EventoBaileMapa implements Serializable {
     @ManyToOne
     private Movimento movimento;    
 
-    public EventoBaileMapa() {
+    public EventoBaileConvite() {
         this.id = -1;
         this.eventoBaile = new EventoBaile();
-        this.mesa = 0;
-        this.posicao = "";
+        this.convite = 0;
         this.bVenda = new BVenda();
         this.status = new AStatus();
         this.movimento = null;
     }
     
-    public EventoBaileMapa(int id, EventoBaile eventoBaile, int mesa, String posicao, BVenda bVenda, AStatus status, Movimento movimento) {
+    public EventoBaileConvite(int id, EventoBaile eventoBaile, int convite, BVenda bVenda, AStatus status, Movimento movimento) {
         this.id = id;
         this.eventoBaile = eventoBaile;
-        this.mesa = mesa;
-        this.posicao = posicao;
+        this.convite = convite;
         this.bVenda = bVenda;
         this.status = status;
         this.movimento = movimento;
@@ -74,21 +68,13 @@ public class EventoBaileMapa implements Serializable {
         this.eventoBaile = eventoBaile;
     }
 
-    public int getMesa() {
-        return mesa;
+    public int getConvite() {
+        return convite;
     }
 
-    public void setMesa(int mesa) {
-        this.mesa = mesa;
+    public void setConvite(Integer convite) {
+        this.convite = convite;
     }
-
-    public String getPosicao() {
-        return posicao;
-    }
-
-    public void setPosicao(String posicao) {
-        this.posicao = posicao;
-    }    
     
     public BVenda getbVenda() {
         return bVenda;

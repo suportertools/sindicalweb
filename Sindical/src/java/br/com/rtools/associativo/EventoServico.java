@@ -42,7 +42,7 @@ public class EventoServico implements java.io.Serializable {
         this.id = -1;
         this.aEvento = new AEvento();
         this.servicos = new Servicos();
-        this.mesa = false;
+        this.mesa = true;
         this.individual = true;
         this.descricao = "";
         this.categoria = null;

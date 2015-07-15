@@ -30,7 +30,6 @@
 
                 <f:view>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
-                        <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                         <h:form id="formCartaoSocial" >
                             <h:outputText value="Cartão Social" styleClass="fonteHeader" />
                             <div class="clear"></div>
@@ -42,7 +41,8 @@
                                         <f:selectItems value="#{cartaoSocialBean.listFilial}"/>
                                     </p:selectOneMenu>                                
                                 </h:panelGrid>
-                            </p:panel>                            
+                            </p:panel>
+                            <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                             <p:menu style="width:200px; float: left;" styleClass="margin-top-max">
                                 <p:submenu label="Não Impressos">  
                                     <p:menuitem value="Todos" action="#{cartaoSocialBean.naoImpressoTodos()}" update="i_panel i_panel_grid i_panel_botoes" actionListener="#{cartaoSocialBean.listaSelecionado.clear()}"/>  

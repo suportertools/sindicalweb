@@ -49,6 +49,7 @@ import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.PhotoCam;
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class ConviteMovimentoBean implements Serializable {
     private String tipoCaptura = "";
     private String descricaoPesquisa = "";
     private String comoPesquisa = "";
-    private String porPesquisa = "";
+    private String porPesquisa = "todos";
     private String valorString = "";
     private String cliente = "";
     private int idServico = 0;
@@ -105,7 +106,7 @@ public class ConviteMovimentoBean implements Serializable {
         tipoCaptura = "";
         descricaoPesquisa = "";
         comoPesquisa = "";
-        porPesquisa = "";
+        porPesquisa = "todos";
         conviteMovimentos.clear();
         fotoPerfil = "";
         fotoArquivo = "";
@@ -121,13 +122,13 @@ public class ConviteMovimentoBean implements Serializable {
 
     public void openDialog() {
         visibility = true;
+        PF.update("form_convite");
     }
 
     public void close() {
         novo();
         visibility = false;
-        RequestContext.getCurrentInstance().execute("PF('dgl_adicionar').hide()");
-        RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
+        PF.update("form_convite");
     }
 
     public String save() throws IOException {

@@ -224,7 +224,7 @@ public class MatriculaEscolaBean implements Serializable {
         idMidia = 0;
         idTurma = 0;
         idStatus = 0;
-        idStatusFiltro = 5;
+        idStatusFiltro = 0;
         idVendedor = 0;
         idProfessor = 0;
         idServico = 0;
@@ -3202,17 +3202,19 @@ public class MatriculaEscolaBean implements Serializable {
 
     public int getNumeroParcelas() {
         String dt = null;
-        String dia_string = (idDiaParcela < 10) ? "0" + idDiaParcela : "" + idDiaParcela;
+        //String dia_string = (idDiaParcela < 10) ? "0" + idDiaParcela : "" + idDiaParcela;
 
-        if ((servicoPessoa.getReferenciaVigoracao() != null && servicoPessoa.getReferenciaValidade() != null) && (!servicoPessoa.getReferenciaVigoracao().isEmpty() && !servicoPessoa.getReferenciaValidade().isEmpty())
-                && DataHoje.menorData(dia_string + "/" + servicoPessoa.getReferenciaVigoracao(), dia_string + "/" + servicoPessoa.getReferenciaValidade())) {
+        if ((servicoPessoa.getReferenciaVigoracao() != null && servicoPessoa.getReferenciaValidade() != null) 
+             && (!servicoPessoa.getReferenciaVigoracao().isEmpty() && !servicoPessoa.getReferenciaValidade().isEmpty())
+             && DataHoje.menorData("01/" + servicoPessoa.getReferenciaVigoracao(), "01/" + servicoPessoa.getReferenciaValidade()) || DataHoje.igualdadeData("01/" + servicoPessoa.getReferenciaVigoracao(), "01/" + servicoPessoa.getReferenciaValidade())
+            ) {
             //if (DataHoje.menorData(servicoPessoa.getEmissao(), dia_string + "/" + servicoPessoa.getReferenciaVigoracao())) {
-                dt = dia_string + "/" + servicoPessoa.getReferenciaVigoracao();
+                dt = "01/" + servicoPessoa.getReferenciaVigoracao();
             //} else {
             //    dt = servicoPessoa.getEmissao();
             //}
 
-            numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), DataHoje.converte(dia_string + "/" + servicoPessoa.getReferenciaValidade())) + 1;
+            numeroParcelas = DataHoje.quantidadeMeses(DataHoje.converte(dt), DataHoje.converte("01/" + servicoPessoa.getReferenciaValidade())) + 1;
             valorTotal = Moeda.converteR$Float(Moeda.multiplicarValores(Moeda.converteUS$(valor), numeroParcelas));
         } else {
             numeroParcelas = 0;

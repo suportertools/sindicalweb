@@ -146,7 +146,7 @@ public class FechamentoRepasseBean implements Serializable{
             //List<JasperPrint> jasperPrintList = new ArrayList();
             //jasperPrintList.add(JasperFillManager.fillReport(jasperReport, null, dtSource));
             HashMap param = new HashMap();
-            // MOEDA PARA BRASIL VALORES IREPORT PTBR
+            // MOEDA PARA BRASIL VALORES IREPORT PTBR CONVERTE VALOR JASPER
             param.put("REPORT_LOCALE", new Locale("pt", "BR"));
             JasperPrint print = JasperFillManager.fillReport(jasperReport, param, dtSource);
             

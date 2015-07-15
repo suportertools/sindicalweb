@@ -12,11 +12,11 @@
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
-            
+
             .column01{
                 width: 100%;
             }
-            
+
             .column02{
                 width: 0%;
             }
@@ -157,8 +157,41 @@
                             </p:dataTable>
 
                             <h:panelGrid>
-                                <p:commandButton value="Salvar Baixa" title="Baixar todos os valores da grid" action="#{baixaGeralBean.baixar}" oncomplete="PF('i_dlg_s').show()" update="i_mensagem"/>
+                                <p:commandButton value="Salvar Baixa" title="Baixar todos os valores da grid" onclick="PF('dlg_confirmar').show()" />
                             </h:panelGrid>
+
+                            <p:dialog widgetVar="dlg_confirmar" header="Confirmar Baixa!" resizable="false" width="600" modal="true">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja realmente CONCLUIR essa baixa?" style="font-weight: bold; font-size: 12pt!important"/>
+                                </h:panelGrid>
+                                <br />
+                                <p:panel styleClass="fundoCinza">
+                                    <h:outputLabel value="TIPOS DE PAGAMENTO" style="font-size: 12pt!important; font-weight: bold"/>
+                                </p:panel>
+                                
+                                <p:dataTable var="linha" id="tbl_confirmar" value="#{baixaGeralBean.listaValores}" emptyMessage="Nenhum valor adicionado.">
+                                    <p:column headerText="Pagamento">
+                                        <h:outputText value="#{linha.tipoPagamento.descricao}" style="font-size: 11pt!important; color: red; font-weight: bold"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Valor R$" style="text-align: right; width: 80px">
+                                        <h:outputText value="#{linha.valor}" style="font-size: 11pt!important"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Valor Digitado R$" style="text-align: right; width: 80px">
+                                        <h:outputText value="#{linha.valorDigitado}" style="font-size: 11pt!important"/>
+                                    </p:column>
+
+                                    <p:column headerText="Número do Documento" style="width: 150px">
+                                        <h:outputText value="#{linha.numeroCheque}" style="font-size: 11pt!important"/>
+                                    </p:column>
+                                </p:dataTable>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{baixaGeralBean.baixar}" title="Concluir Baixa" oncomplete="PF('i_dlg_s').show(); PF('dlg_confirmar').hide(); " update="i_mensagem"/>
+                                    <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Baixa" onclick="PF('dlg_confirmar').hide()" global="false"/>
+                                </h:panelGrid>
+                            </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true" closable="false" visible="#{baixaGeralBean.visibleModal}">
                                 <h:panelGrid id="i_mensagem" style="width: 100%">

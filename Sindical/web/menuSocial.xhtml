@@ -66,7 +66,7 @@
 
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" />
-                                        <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" />
+                                        <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" rendered="false"/>
                                         <p:menuitem value="Categoria do Sócio"   action="#{chamadaPaginaBean.categoria}" />
                                         <p:menuitem value="Grupo Categoria"      action="#{chamadaPaginaBean.pagina('grupoCategoria')}" />
                                         <p:menuitem value="Parentesco"           action="#{chamadaPaginaBean.parentesco}" />
@@ -101,8 +101,9 @@
                                     <p:menuitem value="Cartão Social"        action="#{chamadaPaginaBean.cartaoSocial}" />
                                     <p:menuitem value="Ficha Social Branco"  action="#{sociosBean.imprimirFichaSocialVazia()}" ajax="false"/>
                                     <p:menuitem value="Carnê Mensalidades"   action="#{chamadaPaginaBean.pagina('carneMensalidades')}" ajax="false"/>
-                                    <p:menuitem value="Convênio Médico"      action="#{chamadaPaginaBean.pagina('relatorioConvenioMedico')}" />
-                                    <p:menuitem value="Fechamento Guias"     action="#{chamadaPaginaBean.pagina('relatorioFechamentoGuias')}"/>
+                                    <p:menuitem value="Convênio Médico"      action="#{chamadaPaginaBean.pagina('relatorioConvenioMedico')}" ajax="false"/>
+                                    <p:menuitem value="Fechamento Guias"     action="#{chamadaPaginaBean.pagina('relatorioFechamentoGuias')}" ajax="false"/>
+                                    <p:menuitem value="Fechamento Baile"     action="#{chamadaPaginaBean.pagina('relatorioFechamentoBaile')}" ajax="false"/>
                                 </p:submenu>                            
                             </p:menubar> 
                         </p:panel>

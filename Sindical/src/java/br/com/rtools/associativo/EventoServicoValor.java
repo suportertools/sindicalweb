@@ -36,7 +36,7 @@ public class EventoServicoValor implements java.io.Serializable {
         this.eventoServico = new EventoServico();
         this.valor = 0;
         this.idadeInicial = 0;
-        this.idadeFinal = 0;
+        this.idadeFinal = 150;
         this.sexo = "A";
     }
 
