@@ -53,6 +53,7 @@ public class RelatorioContribuintesBean implements Serializable {
     private boolean carregaConvencao;
     private boolean carregaCnaeConvencao;
     private boolean carregaGrupo;
+    private Relatorios relatorios;
     private String idEmails;
     private int idCidades;
     private int idRelatorios;
@@ -809,5 +810,18 @@ public class RelatorioContribuintesBean implements Serializable {
     public void limparData() {
         this.dataCadastroInicial = "";
         this.dataCadastroFinal = "";
+    }
+
+    public Relatorios getRelatorios() {
+        try {
+            if (relatorios.getId() != Integer.parseInt(listaTipoRelatorios.get(idRelatorios).getDescription())) {
+                Jasper.EXPORT_TO_EXCEL = false;
+            }
+            relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(listaTipoRelatorios.get(idRelatorios).getDescription()));
+        } catch (Exception e) {
+            relatorios = new Relatorios();
+            Jasper.EXPORT_TO_EXCEL = false;
+        }
+        return relatorios;
     }
 }

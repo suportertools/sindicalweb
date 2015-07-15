@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -47,89 +50,118 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 @ManagedBean(name = "jasperBean")
 @ViewScoped
-public class Jasper {
+public class Jasper implements Serializable {
 
     /**
      * Diretório do arquivo
      */
-    public static String PATH = "downloads/relatorios";
+    public static String PATH;
     /**
      * Nome extra do arquivo
      */
-    public static String PART_NAME = "relatorio";
+    public static String PART_NAME;
     /**
      * Baixar arquivo (Default true);
      */
-    public static Boolean IS_DOWNLOAD = true;
+    public static Boolean IS_DOWNLOAD;
     /**
      * Remover arquivo após gerar (Default true);
      */
-    public static Boolean IS_REMOVE_FILE = true;
+    public static Boolean IS_REMOVE_FILE;
     /**
      * Uso interno
      */
-    public static byte[] BYTES = null;
+    public static byte[] BYTES;
     /**
      * Se o arquivo vai ter configuração com cabeçalho (SUBREPORT)
      */
-    public static Boolean IS_HEADER = false;
+    public static Boolean IS_HEADER;
     /**
      * Impressão por folha (configurar grupo)
      */
-    public static Boolean IS_BY_LEAF = false;
+    public static Boolean IS_BY_LEAF;
     /**
      * Nome do grupo
      */
-    public static String GROUP_NAME = "";
+    public static String GROUP_NAME;
     /**
      * Se o arquivo é comprimido
      */
-    public static Boolean COMPRESS_FILE = false;
+    public static Boolean COMPRESS_FILE;
     /**
      * Limite da compressão do arquivo
      */
-    public static Integer COMPRESS_LIMIT = 0;
+    public static Integer COMPRESS_LIMIT;
     /**
      * Define a extensão do arquivo compactado
      */
-    public static String COMPRESS_EXTENSION = "zip";
+    public static String COMPRESS_EXTENSION;
     /**
      * Uso interno (2GB)
      */
-    private static final int MEGABYTE = (1024 * 2056);
+    private static int MEGABYTE;
     /**
      * Retorna o nome do arquivo gerado
      */
-    public static String FILE_NAME_GENERATED = "";
+    public static String FILE_NAME_GENERATED;
     /**
      * Retorna o nome do arquivo gerado
      */
-    public static List LIST_FILE_GENERATED = new ArrayList();
+    public static List LIST_FILE_GENERATED;
     /**
      * set: retrato or paisagem
      */
-    public static String TYPE = "";
+    public static String TYPE;
     /**
      * Nome do arquivo subreport
      */
-    public static String SUBREPORT_NAME = "";
+    public static String SUBREPORT_NAME;
     /**
      * Impressão por folha (configurar grupo)
      */
-    public static Boolean IS_REPORT_CONNECTION = false;
+    public static Boolean IS_REPORT_CONNECTION;
     /**
      * Exporta para excel
      */
-    public static Boolean EXPORT_TO_EXCEL = false;
+    public static Boolean EXPORT_TO_EXCEL;
     /**
      * Campos Excel
      */
-    public static String EXCEL_FIELDS = "";
+    public static String EXCEL_FIELDS;
     /**
      * Não permite finalizar a compressão, para se obter a lista de arquivos
      * gerados
      */
-    public static Boolean NO_COMPACT = false;
+    public static Boolean NO_COMPACT;
+
+    @PostConstruct
+    public void init() {
+        PATH = "downloads/relatorios";
+        PART_NAME = "relatorio";
+        IS_DOWNLOAD = true;
+        IS_REMOVE_FILE = true;
+        BYTES = null;
+        IS_HEADER = false;
+        IS_BY_LEAF = false;
+        GROUP_NAME = "";
+        COMPRESS_FILE = false;
+        COMPRESS_LIMIT = 0;
+        COMPRESS_EXTENSION = "zip";
+        MEGABYTE = (1024 * 2056);
+        FILE_NAME_GENERATED = "";
+        LIST_FILE_GENERATED = new ArrayList();
+        TYPE = "";
+        SUBREPORT_NAME = "";
+        IS_REPORT_CONNECTION = false;
+        EXPORT_TO_EXCEL = false;
+        EXCEL_FIELDS = "";
+        NO_COMPACT = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+
+    }
 
     public static void printReports(String jasperName, String fileName, Collection c) {
         printReports(jasperName, fileName, c, null);
@@ -268,6 +300,7 @@ public class Jasper {
             for (int i = 0; i < fields.length; i++) {
                 if (fieldsShow != null && fieldsShow.length > 0) {
                     for (int m = 0; m < fieldsShow.length; m++) {
+                        fieldsShow[m] = fieldsShow[m].trim();
                         if (fieldsShow[m].equals(fields[i].getName())) {
                             row.createCell((short) cellPos).setCellValue(fields[i].getName());
                             cellPos++;
@@ -402,7 +435,7 @@ public class Jasper {
                     if (COMPRESS_FILE && COMPRESS_LIMIT > 0) {
                         if (!jasperListExport.isEmpty()) {
                             GenericaMensagem.info("Sistema", "Não é possível comprimir uma lista de Jasper!");
-                            destroy();
+                            clear();
                             return;
                         }
                         List listCollection = (List) c;
@@ -592,10 +625,10 @@ public class Jasper {
                 }
             }
         }
-        destroy();
+        clear();
     }
 
-    public static void destroy() {
+    public static void clear() {
         PATH = "downloads/relatorios";
         PART_NAME = "relatorio";
         IS_DOWNLOAD = true;

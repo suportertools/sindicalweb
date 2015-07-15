@@ -2,322 +2,138 @@ package br.com.rtools.impressao;
 
 public class ParametroEscritorios {
 
-    private String sinLogo;
-    private String sinNome;
-    private String sinEndereco;
-    private String sinLogradouro;
-    private String sinNumero;
-    private String sinComplemento;
-    private String sinBairro;
-    private String sinCep;
-    private String sinCidade;
-    private String sinUF;
-    private String sinTelefone;
-    private String sinEmail;
-    private String sinSite;
-    private String sinTipoDocumento;
-    private String sinDocumento;
-    private int escId;
-    private String escNome;
-    private String escEndereco;
-    private String escLogradouro;
-    private String escNumero;
-    private String escComplemento;
-    private String escBairro;
-    private String escCep;
-    private String escCidade;
-    private String escUF;
-    private String escTelefone;
-    private String escEmail;
-    private int escQuantidadeEmpresas;
+    private Integer escritorio_id;
+    private String escritorio_nome;
+    private String escritorio_endereco;
+    private String escritorio_logradouro;
+    private String escritorio_numero;
+    private String escritorio_complemento;
+    private String escritorio_bairro;
+    private String escritorio_cep;
+    private String escritorio_cidade;
+    private String escritorio_uf;
+    private String escritorio_telefone;
+    private String escritorio_email;
+    private Integer escritorio_quantidade_empresas;
 
-    public ParametroEscritorios(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero,
-            String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF,
-            String sinTelefone, String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento,
-            int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
-            String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail, int escQuantidadeEmpresas) {
-        this.sinLogo = sinLogo;
-        this.sinNome = sinNome;
-        this.sinEndereco = sinEndereco;
-        this.sinLogradouro = sinLogradouro;
-        this.sinNumero = sinNumero;
-        this.sinComplemento = sinComplemento;
-        this.sinBairro = sinBairro;
-        this.sinCep = sinCep;
-        this.sinCidade = sinCidade;
-        this.sinUF = sinUF;
-        this.sinTelefone = sinTelefone;
-        this.sinEmail = sinEmail;
-        this.sinSite = sinSite;
-        this.sinTipoDocumento = sinTipoDocumento;
-        this.sinDocumento = sinDocumento;
-        this.escId = escId;
-        this.escNome = escNome;
-        this.escEndereco = escEndereco;
-        this.escLogradouro = escLogradouro;
-        this.escNumero = escNumero;
-        this.escComplemento = escComplemento;
-        this.escBairro = escBairro;
-        this.escCep = escCep;
-        this.escCidade = escCidade;
-        this.escUF = escUF;
-        this.escTelefone = escTelefone;
-        this.escEmail = escEmail;
-        this.escQuantidadeEmpresas = escQuantidadeEmpresas;
+    public ParametroEscritorios(Integer escritorio_id, String escritorio_nome, String escritorio_endereco, String escritorio_logradouro, String escritorio_numero, String escritorio_complemento, String escritorio_bairro, String escritorio_cep, String escritorio_cidade, String escritorio_uf, String escritorio_telefone, String escritorio_email, Integer escritorio_quantidade_empresas) {
+        this.escritorio_id = escritorio_id;
+        this.escritorio_nome = escritorio_nome;
+        this.escritorio_endereco = escritorio_endereco;
+        this.escritorio_logradouro = escritorio_logradouro;
+        this.escritorio_numero = escritorio_numero;
+        this.escritorio_complemento = escritorio_complemento;
+        this.escritorio_bairro = escritorio_bairro;
+        this.escritorio_cep = escritorio_cep;
+        this.escritorio_cidade = escritorio_cidade;
+        this.escritorio_uf = escritorio_uf;
+        this.escritorio_telefone = escritorio_telefone;
+        this.escritorio_email = escritorio_email;
+        this.escritorio_quantidade_empresas = escritorio_quantidade_empresas;
     }
 
-    public ParametroEscritorios() {
-        this.sinLogo = "";
-        this.sinNome = "";
-        this.sinEndereco = "";
-        this.sinLogradouro = "";
-        this.sinNumero = "";
-        this.sinComplemento = "";
-        this.sinBairro = "";
-        this.sinCep = "";
-        this.sinCidade = "";
-        this.sinUF = "";
-        this.sinTelefone = "";
-        this.sinEmail = "";
-        this.sinSite = "";
-        this.sinTipoDocumento = "";
-        this.sinDocumento = "";
-        this.escId = 0;
-        this.escNome = "";
-        this.escEndereco = "";
-        this.escLogradouro = "";
-        this.escNumero = "";
-        this.escComplemento = "";
-        this.escBairro = "";
-        this.escCep = "";
-        this.escCidade = "";
-        this.escUF = "";
-        this.escTelefone = "";
-        this.escEmail = "";
-        this.escQuantidadeEmpresas = 0;
+    public Integer getEscritorio_id() {
+        return escritorio_id;
     }
 
-    public String getSinLogo() {
-        return sinLogo;
+    public void setEscritorio_id(Integer escritorio_id) {
+        this.escritorio_id = escritorio_id;
     }
 
-    public void setSinLogo(String sinLogo) {
-        this.sinLogo = sinLogo;
+    public String getEscritorio_nome() {
+        return escritorio_nome;
     }
 
-    public int getEscId() {
-        return escId;
+    public void setEscritorio_nome(String escritorio_nome) {
+        this.escritorio_nome = escritorio_nome;
     }
 
-    public void setEscId(int escId) {
-        this.escId = escId;
+    public String getEscritorio_endereco() {
+        return escritorio_endereco;
     }
 
-    public String getEscNome() {
-        return escNome;
+    public void setEscritorio_endereco(String escritorio_endereco) {
+        this.escritorio_endereco = escritorio_endereco;
     }
 
-    public void setEscNome(String escNome) {
-        this.escNome = escNome;
+    public String getEscritorio_logradouro() {
+        return escritorio_logradouro;
     }
 
-    public String getEscEndereco() {
-        return escEndereco;
+    public void setEscritorio_logradouro(String escritorio_logradouro) {
+        this.escritorio_logradouro = escritorio_logradouro;
     }
 
-    public void setEscEndereco(String escEndereco) {
-        this.escEndereco = escEndereco;
+    public String getEscritorio_numero() {
+        return escritorio_numero;
     }
 
-    public String getEscLogradouro() {
-        return escLogradouro;
+    public void setEscritorio_numero(String escritorio_numero) {
+        this.escritorio_numero = escritorio_numero;
     }
 
-    public void setEscLogradouro(String escLogradouro) {
-        this.escLogradouro = escLogradouro;
+    public String getEscritorio_complemento() {
+        return escritorio_complemento;
     }
 
-    public String getEscNumero() {
-        return escNumero;
+    public void setEscritorio_complemento(String escritorio_complemento) {
+        this.escritorio_complemento = escritorio_complemento;
     }
 
-    public void setEscNumero(String escNumero) {
-        this.escNumero = escNumero;
+    public String getEscritorio_bairro() {
+        return escritorio_bairro;
     }
 
-    public String getEscComplemento() {
-        return escComplemento;
+    public void setEscritorio_bairro(String escritorio_bairro) {
+        this.escritorio_bairro = escritorio_bairro;
     }
 
-    public void setEscComplemento(String escComplemento) {
-        this.escComplemento = escComplemento;
+    public String getEscritorio_cep() {
+        return escritorio_cep;
     }
 
-    public String getEscBairro() {
-        return escBairro;
+    public void setEscritorio_cep(String escritorio_cep) {
+        this.escritorio_cep = escritorio_cep;
     }
 
-    public void setEscBairro(String escBairro) {
-        this.escBairro = escBairro;
+    public String getEscritorio_cidade() {
+        return escritorio_cidade;
     }
 
-    public String getEscCep() {
-        return escCep;
+    public void setEscritorio_cidade(String escritorio_cidade) {
+        this.escritorio_cidade = escritorio_cidade;
     }
 
-    public void setEscCep(String escCep) {
-        this.escCep = escCep;
+    public String getEscritorio_uf() {
+        return escritorio_uf;
     }
 
-    public String getEscCidade() {
-        return escCidade;
+    public void setEscritorio_uf(String escritorio_uf) {
+        this.escritorio_uf = escritorio_uf;
     }
 
-    public void setEscCidade(String escCidade) {
-        this.escCidade = escCidade;
+    public String getEscritorio_telefone() {
+        return escritorio_telefone;
     }
 
-    public String getEscUF() {
-        return escUF;
+    public void setEscritorio_telefone(String escritorio_telefone) {
+        this.escritorio_telefone = escritorio_telefone;
     }
 
-    public void setEscUF(String escUF) {
-        this.escUF = escUF;
+    public String getEscritorio_email() {
+        return escritorio_email;
     }
 
-    public String getEscTelefone() {
-        return escTelefone;
+    public void setEscritorio_email(String escritorio_email) {
+        this.escritorio_email = escritorio_email;
     }
 
-    public void setEscTelefone(String escTelefone) {
-        this.escTelefone = escTelefone;
+    public Integer getEscritorio_quantidade_empresas() {
+        return escritorio_quantidade_empresas;
     }
 
-    public String getEscEmail() {
-        return escEmail;
+    public void setEscritorio_quantidade_empresas(Integer escritorio_quantidade_empresas) {
+        this.escritorio_quantidade_empresas = escritorio_quantidade_empresas;
     }
 
-    public void setEscEmail(String escEmail) {
-        this.escEmail = escEmail;
-    }
-
-    public String getSinNome() {
-        return sinNome;
-    }
-
-    public void setSinNome(String sinNome) {
-        this.sinNome = sinNome;
-    }
-
-    public String getSinEndereco() {
-        return sinEndereco;
-    }
-
-    public void setSinEndereco(String sinEndereco) {
-        this.sinEndereco = sinEndereco;
-    }
-
-    public String getSinLogradouro() {
-        return sinLogradouro;
-    }
-
-    public void setSinLogradouro(String sinLogradouro) {
-        this.sinLogradouro = sinLogradouro;
-    }
-
-    public String getSinNumero() {
-        return sinNumero;
-    }
-
-    public void setSinNumero(String sinNumero) {
-        this.sinNumero = sinNumero;
-    }
-
-    public String getSinComplemento() {
-        return sinComplemento;
-    }
-
-    public void setSinComplemento(String sinComplemento) {
-        this.sinComplemento = sinComplemento;
-    }
-
-    public String getSinBairro() {
-        return sinBairro;
-    }
-
-    public void setSinBairro(String sinBairro) {
-        this.sinBairro = sinBairro;
-    }
-
-    public String getSinCep() {
-        return sinCep;
-    }
-
-    public void setSinCep(String sinCep) {
-        this.sinCep = sinCep;
-    }
-
-    public String getSinCidade() {
-        return sinCidade;
-    }
-
-    public void setSinCidade(String sinCidade) {
-        this.sinCidade = sinCidade;
-    }
-
-    public String getSinUF() {
-        return sinUF;
-    }
-
-    public void setSinUF(String sinUF) {
-        this.sinUF = sinUF;
-    }
-
-    public String getSinTelefone() {
-        return sinTelefone;
-    }
-
-    public void setSinTelefone(String sinTelefone) {
-        this.sinTelefone = sinTelefone;
-    }
-
-    public String getSinEmail() {
-        return sinEmail;
-    }
-
-    public void setSinEmail(String sinEmail) {
-        this.sinEmail = sinEmail;
-    }
-
-    public String getSinSite() {
-        return sinSite;
-    }
-
-    public void setSinSite(String sinSite) {
-        this.sinSite = sinSite;
-    }
-
-    public String getSinTipoDocumento() {
-        return sinTipoDocumento;
-    }
-
-    public void setSinTipoDocumento(String sinTipoDocumento) {
-        this.sinTipoDocumento = sinTipoDocumento;
-    }
-
-    public String getSinDocumento() {
-        return sinDocumento;
-    }
-
-    public void setSinDocumento(String sinDocumento) {
-        this.sinDocumento = sinDocumento;
-    }
-
-    public int getEscQuantidadeEmpresas() {
-        return escQuantidadeEmpresas;
-    }
-
-    public void setEscQuantidadeEmpresas(int escQuantidadeEmpresas) {
-        this.escQuantidadeEmpresas = escQuantidadeEmpresas;
-    }
 }

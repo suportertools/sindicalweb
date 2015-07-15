@@ -87,6 +87,7 @@ public class RelatorioContabilidadesDBToplink extends DB implements RelatorioCon
                     + "        FROM arr_contribuintes_vw AS C                                "
                     + "  INNER JOIN pes_juridica         AS J ON J.id = C.id_contabilidade   "
                     + "  INNER JOIN pes_pessoa_endereco  AS PE ON PE.id_pessoa = J.id_pessoa "
+                    + "  INNER JOIN end_endereco         AS E ON E.id = PE.id_endereco "
                     + "  INNER JOIN endereco_vw          AS ENDE ON ENDE.id = PE.id_endereco "
                     + "  INNER JOIN pes_pessoa           AS P ON P.ID = J.id_pessoa          "
                     + "       WHERE C.dt_inativacao IS NULL AND C.id_contabilidade > 0       ";
@@ -98,9 +99,9 @@ public class RelatorioContabilidadesDBToplink extends DB implements RelatorioCon
             if (tipoPCidade.equals("todas")) {
                 textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco;
             } else if (tipoPCidade.equals("especificas")) {
-                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade = (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND E.id_cidade IN (" + Integer.parseInt(cidade)+")";
             } else if (tipoPCidade.equals("local")) {
-                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade = (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND E.id_cidade IN (" + Integer.parseInt(cidade)+")";
             } else if (tipoPCidade.equals("outras")) {
                 textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade <> (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
             }
