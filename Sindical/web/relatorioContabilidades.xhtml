@@ -14,70 +14,145 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="form_relatorio_contabilidades">
-                <p:panel styleClass="wrapper no-border" id="id_relatorio_contabilidades">
-                    <p:outputLabel value="Relatório de Empresas Contábeis" styleClass="fonteHeader"/>                
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:form id="form_relatorio">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Relatório Contabilidades" styleClass="fonteHeader"/>
                     <div class="clear"></div>
                     <p:panel styleClass="fundoCinza">
-                        <h:panelGrid columns="4">
+                        <h:panelGrid  cellpadding="8" columns="4">
                             <h:outputLabel value="Tipo de Relatório"/>
-                            <p:selectOneMenu id="idTipoRelatorio" value="#{relatorioContabilidadesBean.idRelatorios}">
-                                <f:selectItems value="#{relatorioContabilidadesBean.listaTipoRelatorios}"/>
+                            <p:selectOneMenu id="idTipoRelatorio" value="#{relatorioContabilidadesBean.index[0]}">
+                                <p:ajax event="change" update="@this i_acoes"/>
+                                <f:selectItems value="#{relatorioContabilidadesBean.listRelatorios}"/>
                             </p:selectOneMenu>
+                            <p:outputLabel value="Ordem: " styleClass="margin-left-max" rendered="#{not empty relatorioContabilidadesBean.listaRelatorioOrdem}"/>
+                            <p:selectOneMenu value="#{relatorioContabilidadesBean.index[5]}" rendered="#{not empty relatorioContabilidadesBean.listaRelatorioOrdem}">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{relatorioContabilidadesBean.listaRelatorioOrdem}"/>
+                            </p:selectOneMenu>                            
                             <h:outputLabel value="Tipo do Endereço:" styleClass="margin-left-max"/>
-                            <p:selectOneMenu id="idTipoEndereco" value="#{relatorioContabilidadesBean.idTipoEndereco}">
-                                <f:selectItems value="#{relatorioContabilidadesBean.listaTipoEndereco}"/>
+                            <p:selectOneMenu id="idTipoEndereco" value="#{relatorioContabilidadesBean.index[1]}">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{relatorioContabilidadesBean.listTipoEndereco}"/>
                             </p:selectOneMenu>
                         </h:panelGrid>
-                    </p:panel>
-                    <p:accordionPanel multiple="true" styleClass="margin-top-max">
-                        <p:tab title="Quantidade de Empresas">
-                            <p:selectOneRadio id="idRadioEmpresas" value="#{relatorioContabilidadesBean.radioEmpresas}">
-                                <p:ajax event="change" update="@this, id_panel_quantidade_empresas"/>
-                                <f:selectItem itemValue="todas"         itemLabel="Todas"/>
-                                <f:selectItem itemValue="comEmpresas"   itemLabel="Por faixa"/>
-                            </p:selectOneRadio>
-                            <p:panelGrid id="id_panel_quantidade_empresas" styleClass="sbb margin-top" columns="4">
-                                <p:outputLabel value="Quantidade de "  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}"/>
-                                <p:selectOneMenu id="idEmpInicial" value="#{relatorioContabilidadesBean.idQuantidadeInicio}"  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}">
-                                    <p:ajax event="change" update="@this, idEmpFinal"/>
-                                    <f:selectItems value="#{relatorioContabilidadesBean.listaQuantidadeInicio}"/>
-                                </p:selectOneMenu>                                
-                                <p:outputLabel value=" até "  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}"/>
-                                <p:selectOneMenu id="idEmpFinal" value="#{relatorioContabilidadesBean.idQuantidadeFim}"  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}">
-                                    <p:ajax event="change" update="@this, idEmpInicial"/>
-                                    <f:selectItems value="#{relatorioContabilidadesBean.listaQuantidadeFim}"/>
-                                </p:selectOneMenu>
-                            </p:panelGrid>   
-                        </p:tab>
-                        <p:tab title="Cidade">
-                            <p:selectOneRadio value="#{relatorioContabilidadesBean.radioCidades}" >
-                                <p:ajax event="change" update="@this, id_cidades"/>
-                                <f:selectItem itemValue="todas"         itemLabel="Todas"/>
-                                <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
-                                <f:selectItem itemValue="local"         itemLabel="Local"/>
-                                <f:selectItem itemValue="outras"        itemLabel="Outras"/>
-                            </p:selectOneRadio>                            
-                            <h:panelGrid styleClass="no-border margin-top-max" id="id_cidades" columns="2">
-                                <p:outputLabel value="Cidades:" rendered="#{relatorioContabilidadesBean.ocultaCidades}"/>
-                                <p:selectOneMenu value="#{relatorioContabilidadesBean.idCidades}" rendered="#{relatorioContabilidadesBean.ocultaCidades}">
-                                    <f:selectItems value="#{relatorioContabilidadesBean.listaCidades}"/>
-                                </p:selectOneMenu>                                
-                            </h:panelGrid>                            
-                        </p:tab>
-                        <p:tab title="Ordenar por">
-                            <p:selectOneRadio value="#{relatorioContabilidadesBean.radioOrdem}">
-                                <p:ajax event="change" update="@this"/>
-                                <f:selectItem itemValue="razao"         itemLabel="Razão" />
-                                <f:selectItem itemValue="endereco"      itemLabel="Endereço" />
-                                <f:selectItem itemValue="cep"           itemLabel="Cep" />
-                                <f:selectItem itemValue="qtde"          itemLabel="Quantidade" />
-                            </p:selectOneRadio>                            
-                        </p:tab>
-                    </p:accordionPanel>
-                    <p:commandButton id="ddd" value="Visualizar" action="#{relatorioContabilidadesBean.visualizar}" title="Visualizar" styleClass="margin-top" ajax="false" update="id_status_default" />
-                </p:panel>
-            </h:form>
+                    </p:panel>                  
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 220px;" dynamic="true" activeIndex="#{relatorioContabilidadesBean.indexAccordion}" id="i_panel_accordion">
+                                <p:ajax event="tabChange" listener="#{relatorioContabilidadesBean.tipoRelatorioChange}" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" /> 
+                                <p:tab title="Simples">
+                                    * Todos convites
+                                </p:tab>
+                                <p:tab title="Avançado">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <p:selectBooleanButton value="#{relatorioContabilidadesBean.filtro[0]}" onLabel="Qtde. de empresas" offLabel="Qtde. de empresas" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                            <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioContabilidadesBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioContabilidadesBean.filtro[1]}" onLabel="Cidade " offLabel="Cidade " offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                            <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioContabilidadesBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioContabilidadesBean.filtro[2]}" onLabel="Ordenação" offLabel="Ordenação " offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;" >
+                                            <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioContabilidadesBean.clear}" />
+                                        </p:selectBooleanButton>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>
+                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 760px;" >
+                                <p:column rendered="#{relatorioContabilidadesBean.filtro[0]}">
+                                    <h:column>
+                                        <h:panelGrid columns="2">
+                                            <p:selectOneRadio id="idRadioEmpresas" value="#{relatorioContabilidadesBean.radioEmpresas}">
+                                                <p:ajax event="change" update="@this, id_panel_quantidade_empresas"/>
+                                                <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                                <f:selectItem itemValue="comEmpresas"   itemLabel="Por faixa"/>
+                                            </p:selectOneRadio>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioContabilidadesBean.close('quantidade_empresas')}" title="Remover filtro" />
+                                        </h:panelGrid>
+                                        <h:panelGrid id="id_panel_quantidade_empresas" styleClass="sbb margin-top" columns="5">
+                                            <p:outputLabel value="Quantidade de "  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}"/>
+                                            <p:selectOneMenu id="idEmpInicial" value="#{relatorioContabilidadesBean.index[3]}"  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}">
+                                                <p:ajax event="change" update="@this, idEmpFinal"/>
+                                                <f:selectItems value="#{relatorioContabilidadesBean.listQuantidadeInicio}"/>
+                                            </p:selectOneMenu>                                
+                                            <p:outputLabel value=" até "  rendered="#{relatorioContabilidadesBean.ocultaEmpresas}"/>
+                                            <p:selectOneMenu id="idEmpFinal" value="#{relatorioContabilidadesBean.index[4]}" rendered="#{relatorioContabilidadesBean.ocultaEmpresas}">
+                                                <p:ajax event="change" update="@this, idEmpInicial"/>
+                                                <f:selectItems value="#{relatorioContabilidadesBean.listQuantidadeFim}"/>
+                                            </p:selectOneMenu>                                            
+                                        </h:panelGrid>                                     
+
+                                    </h:column>
+                                </p:column>
+                                <p:column rendered="#{relatorioContabilidadesBean.filtro[1]}">
+                                    <p:panel header="Cidades">
+                                        <h:column>                                        
+                                            <h:panelGrid columns="2">
+                                                <p:selectOneRadio value="#{relatorioContabilidadesBean.radioCidades}">
+                                                    <p:ajax event="change" update="@this, id_cidades"/>
+                                                    <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                                    <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
+                                                    <f:selectItem itemValue="local"         itemLabel="Local"/>
+                                                    <f:selectItem itemValue="outras"        itemLabel="Outras"/>
+                                                </p:selectOneRadio>                            
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioContabilidadesBean.close('cidades')}" title="Remover filtro" />
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="4">
+                                                <h:panelGrid styleClass="no-border margin-top-max" id="id_cidades" columns="2">
+                                                    <p:outputLabel value="Cidades:" rendered="#{relatorioContabilidadesBean.ocultaCidades}"/>
+                                                    <p:selectOneMenu value="#{relatorioContabilidadesBean.index[2]}" rendered="#{relatorioContabilidadesBean.ocultaCidades}" filter="true" filterMatchMode="startsWith">
+                                                        <p:ajax event="change" update="@this"/>
+                                                        <f:selectItems value="#{relatorioContabilidadesBean.listCidades}"/>
+                                                    </p:selectOneMenu>                                
+                                                </h:panelGrid>                                            
+                                            </h:panelGrid>
+                                        </h:column>
+                                    </p:panel>
+                                </p:column>
+                                <p:column rendered="#{relatorioContabilidadesBean.filtro[2]}">
+                                    <h:column>
+                                        <h:panelGrid columns="4">
+                                            <p:outputLabel value="Ordernar por: " />
+                                            <p:selectOneRadio value="#{relatorioContabilidadesBean.radioOrdem}">
+                                                <p:ajax event="change" update="@this"/>
+                                                <f:selectItem itemValue="razao"         itemLabel="Razão" />
+                                                <f:selectItem itemValue="endereco"      itemLabel="Endereço" />
+                                                <f:selectItem itemValue="cep"           itemLabel="Cep" />
+                                                <f:selectItem itemValue="qtde"          itemLabel="Quantidade" />
+                                            </p:selectOneRadio>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioContabilidadesBean.close('order')}" title="Remover filtro"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </p:column>                                
+                                <p:column rendered="#{relatorioContabilidadesBean.tipoRelatorio == 'Resumo'}">
+                                    * Resumido
+                                </p:column>
+                                <p:column rendered="#{relatorioContabilidadesBean.tipoRelatorio == 'Avançado'}">
+                                    <f:facet name="header">Filtro Avançado</f:facet>
+                                    <f:facet name="footer">Selecione os tipos de filtros disponíveis</f:facet>
+                                </p:column>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" styleClass="margin-top-max" id="i_acoes">
+                        <p:commandButton id="ddd" value="Visualizar" action="#{relatorioContabilidadesBean.print}" title="Visualizar"  ajax="false" update="id_status_default" />
+                        <p:selectBooleanCheckbox itemLabel="Exportar Excel" value="#{jasperBean.EXPORT_TO_EXCEL}" disabled="#{!relatorioContabilidadesBean.relatorios.excel}">
+                            <p:ajax event="change" update="@this" />
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+                    <h:panelGrid columns="5" styleClass="margin-top-max" id="i_acoes_2">
+                        <p:selectBooleanCheckbox itemLabel="Zip" value="#{jasperBean.COMPRESS_FILE}">
+                            <p:ajax update="@this" event="change" global="false"/>
+                        </p:selectBooleanCheckbox>
+                        <p:selectBooleanCheckbox itemLabel="Cabeçalho" value="#{jasperBean.IS_HEADER}">
+                            <p:ajax update="@this" event="change" global="false"/>
+                        </p:selectBooleanCheckbox>                    
+                    </h:panelGrid>
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
