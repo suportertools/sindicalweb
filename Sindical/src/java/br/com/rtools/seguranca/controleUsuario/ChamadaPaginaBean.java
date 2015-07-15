@@ -590,6 +590,7 @@ public class ChamadaPaginaBean implements Serializable {
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("jasperBean");
         return metodoGenerico(2, "socios");
     }
 
@@ -1444,11 +1445,13 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String relatorioSocios() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioSociosBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("jasperBean");
         return metodoGenerico(3, "relatorioSocios");
     }
 
     public synchronized String cartaoSocial() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cartaoSocialBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("jasperBean");
         return metodoGenerico(2, "cartaoSocial");
     }
 

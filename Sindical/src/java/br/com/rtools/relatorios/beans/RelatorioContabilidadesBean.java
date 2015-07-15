@@ -8,58 +8,96 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.relatorios.db.RelatorioContabilidadesDB;
 import br.com.rtools.relatorios.db.RelatorioContabilidadesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
+import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
+import org.primefaces.component.accordionpanel.AccordionPanel;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class RelatorioContabilidadesBean implements Serializable {
 
-    List<SelectItem> listaCidades = new ArrayList<SelectItem>();
-    List<SelectItem> listaTipoRelatorios = new ArrayList<SelectItem>();
-    List<SelectItem> listaTipoEndereco = new ArrayList<SelectItem>();
-    List<SelectItem> listaQuantidadeInicio = new ArrayList<SelectItem>();
-    List<SelectItem> listaQuantidadeFim = new ArrayList<SelectItem>();
-    private int idRelatorios = 0;
-    private int idQuantidadeInicio = 0;
-    private int idQuantidadeFim = 0;
-    private int idCidades = 0;
-    private int idTipoEndereco = 0;
-    private int quantidadeEmpresas = 0;
-    private String radioEmpresas = "todas";
-    private String radioCidades = "todas";
-    private String radioOrdem = "razao";
-    private boolean ocultaEmpresas = false;
-    private boolean ocultaCidades = false;
+    private Boolean[] filtro;
+    /**
+     * 0 - Cidades; 1 - Tipo Relatórios; 2 - Tipo Endereço; 3 - Quantidade
+     * Inicio 4 - Quantidade Fim; 5 - Relatório Ordem
+     */
+    private Integer[] index;
+    private String tipoRelatorio;
+    private String tipo;
+    private String indexAccordion;
+    private List<SelectItem> listCidades;
+    private List<SelectItem> listRelatorios;
+    private List<SelectItem> listTipoEndereco;
+    private List<SelectItem> listQuantidadeInicio;
+    private List<SelectItem> listQuantidadeFim;
+    private List<SelectItem> listRelatorioOrdem;
+    private Integer quantidadeEmpresas;
+    private String radioEmpresas;
+    private String radioCidades;
+    private String radioOrdem;
+    private boolean ocultaEmpresas;
+    private boolean ocultaCidades;
+    private Relatorios relatorios;
 
-    public void visualizar() {
+    @PostConstruct
+    public void init() {
+        filtro = new Boolean[3];
+        filtro[0] = true; // Quantidade Empresas
+        filtro[1] = false; // Cidade
+        filtro[2] = false; // Ordenação
+        index = new Integer[6];
+        index[0] = 0;
+        index[1] = 0;
+        index[2] = 0;
+        index[3] = 0;
+        index[4] = 0;
+        index[5] = 0;
+        listCidades = new ArrayList<>();
+        listRelatorios = new ArrayList<>();
+        listTipoEndereco = new ArrayList<>();
+        listQuantidadeInicio = new ArrayList<>();
+        listQuantidadeFim = new ArrayList<>();
+        listRelatorioOrdem = new ArrayList<>();
+        quantidadeEmpresas = 0;
+        radioEmpresas = "todas";
+        radioCidades = "todas";
+        radioOrdem = "razao";
+        ocultaEmpresas = false;
+        ocultaCidades = false;
+        relatorios = null;
+        tipoRelatorio = "Resumo";
+        indexAccordion = "Resumo";
+        tipo = "todos";
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("relatorioContabilidadesBean");
+        GenericaSessao.remove("jasperBean");
+    }
+
+    public void print() {
         String cidades = "";
         int inicio = 0;
         int fim = 0;
@@ -68,19 +106,20 @@ public class RelatorioContabilidadesBean implements Serializable {
         RelatorioContabilidadesDB dbConta = new RelatorioContabilidadesDBToplink();
         CidadeDB dbCidade = new CidadeDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        Juridica sindicato = new Juridica();
-        PessoaEndereco endSindicato = new PessoaEndereco();
         JuridicaDB dbJur = new JuridicaDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
 
         Cidade cidade;
-        Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorios).getDescription()));
-        TipoEndereco tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaTipoEndereco().get(idTipoEndereco).getDescription()), "TipoEndereco");
+        Dao dao = new Dao();
+        Relatorios r = db.pesquisaRelatorios(Integer.parseInt(getListRelatorios().get(index[0]).getDescription()));
+        if (!listRelatorioOrdem.isEmpty()) {
+            relatorios.setQryOrdem(((RelatorioOrdem) dao.find(new RelatorioOrdem(), Integer.parseInt(getListaRelatorioOrdem().get(index[5]).getDescription()))).getQuery());
+        }
+        TipoEndereco tipoEndereco = (TipoEndereco) dao.find(new TipoEndereco(), Integer.parseInt(getListTipoEndereco().get(index[1]).getDescription()));
 
         // CONTABILIDADES DO RELATORIO -----------------------------------------------------------
         if (radioEmpresas.equals("comEmpresas")) {
-            inicio = Integer.parseInt(listaQuantidadeInicio.get(idQuantidadeInicio).getDescription());
-            fim = Integer.parseInt(listaQuantidadeFim.get(idQuantidadeFim).getDescription());
+            inicio = Integer.parseInt(listQuantidadeInicio.get(index[3]).getDescription());
+            fim = Integer.parseInt(listQuantidadeFim.get(index[4]).getDescription());
             if (inicio > fim) {
                 inicio = fim;
             }
@@ -88,7 +127,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
         // CIDADE DO RELATORIO -----------------------------------------------------------
         if (radioCidades.equals("especificas")) {
-            cidade = dbCidade.pesquisaCodigo(Integer.parseInt(getListaCidades().get(idCidades).getDescription()));
+            cidade = dbCidade.pesquisaCodigo(Integer.parseInt(getListCidades().get(index[2]).getDescription()));
             cidades = Integer.toString(cidade.getId());
         } else if (radioCidades.equals("local")) {
             cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
@@ -97,24 +136,21 @@ public class RelatorioContabilidadesBean implements Serializable {
             cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
             cidades = Integer.toString(cidade.getId());
         }
-
-        sindicato = dbJur.pesquisaCodigo(1);
-        endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         List list = dbConta.listaRelatorioContabilidades(radioEmpresas, inicio, fim, radioCidades, cidades, radioOrdem, tipoEndereco.getId());
         if (list.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
-        }        
+        }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            Collection listaEscritorios = new ArrayList<ParametroEscritorios>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
+            Collection listaEscritorios = new ArrayList<>();
+
             try {
                 String dados[] = new String[8];
                 for (int i = 0; i < list.size(); i++) {
                     int quantidade = 0;
-                    Juridica juridica = (Juridica) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(((List) list.get(i)).get(0).toString()), "Juridica");
-                    PessoaEndereco pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(((List) list.get(i)).get(1).toString()), "PessoaEndereco");
+                    Juridica juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt(((List) list.get(i)).get(0).toString()));
+                    PessoaEndereco pessoaEndereco = (PessoaEndereco) dao.find(new PessoaEndereco(), Integer.parseInt(((List) list.get(i)).get(1).toString()));
                     quantidade = Integer.parseInt(((List) list.get(i)).get(2).toString());
                     try {
                         dados[0] = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
@@ -135,109 +171,92 @@ public class RelatorioContabilidadesBean implements Serializable {
                         dados[6] = "";
                         dados[7] = "";
                     }
-                    listaEscritorios.add(new ParametroEscritorios(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            sindicato.getPessoa().getNome(),
-                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                            endSindicato.getEndereco().getLogradouro().getDescricao(),
-                            endSindicato.getNumero(),
-                            endSindicato.getComplemento(),
-                            endSindicato.getEndereco().getBairro().getDescricao(),
-                            endSindicato.getEndereco().getCep(),
-                            endSindicato.getEndereco().getCidade().getCidade(),
-                            endSindicato.getEndereco().getCidade().getUf(),
-                            sindicato.getPessoa().getTelefone1(),
-                            sindicato.getPessoa().getEmail1(),
-                            sindicato.getPessoa().getSite(),
-                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                            sindicato.getPessoa().getDocumento(),
-                            juridica.getId(),
-                            juridica.getPessoa().getNome(),
-                            dados[0], // DESCRICAO ENDERECO CONTABIL
-                            dados[1], // LOGRADOURO CONTABIL
-                            dados[2], // NUMERO CONTABIL
-                            dados[3], // COMPLEMENTO CONTABIL
-                            dados[4], // BAIRRO CONTABIL
-                            dados[5], // CEP CONTABIL
-                            dados[6], // CIDADE CONTABIL
-                            dados[7], // UF CONTABIL
+                    listaEscritorios.add(new ParametroEscritorios(
+                            juridica.getId(), // ESCRITÓRIO - ID
+                            juridica.getPessoa().getNome(), // ESCRITÓRIO - NOME
+                            dados[0], // ESCRITÓRIO - DESCRICAO ENDERECO
+                            dados[1], // ESCRITÓRIO - LOGRADOURO
+                            dados[2], // ESCRITÓRIO - NUMERO
+                            dados[3], // ESCRITÓRIO - COMPLEMENTO
+                            dados[4], // ESCRITÓRIO - BAIRRO
+                            dados[5], // ESCRITÓRIO - CEP
+                            dados[6], // ESCRITÓRIO - CIDADE
+                            dados[7], // ESCRITÓRIO - UF
                             juridica.getPessoa().getTelefone1(),
                             juridica.getPessoa().getEmail1(),
                             quantidade));
                 }
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaEscritorios);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                String nomeDownload = "relatorio_escritorios_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-                SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-                salvaArquivos.salvaNaPasta(pathPasta);
-                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-                download.baixar();
-                download.remover();
-            } catch (JRException erro) {
+                Jasper.TYPE = "paisagem";
+                if (r.getExcel()) {
+                    Jasper.EXCEL_FIELDS = r.getCamposExcel();
+                } else {
+                    Jasper.EXCEL_FIELDS = "";
+                }
+                Jasper.printReports(relatorios.getJasper(), "escritorios", listaEscritorios);
+            } catch (Exception erro) {
                 GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
-        } catch (JRException erro) {
+        } catch (Exception erro) {
             GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
     }
 
-    public List<SelectItem> getListaTipoRelatorios() {
-        if (listaTipoRelatorios.isEmpty()) {
+    public List<SelectItem> getListRelatorios() {
+        if (listRelatorios.isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(6);
             for (int i = 0; i < list.size(); i++) {
-                listaTipoRelatorios.add(new SelectItem(new Integer(i), list.get(i).getNome(), Integer.toString(list.get(i).getId())));
+                listRelatorios.add(new SelectItem(i, list.get(i).getNome(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaTipoRelatorios;
+        return listRelatorios;
     }
 
-    public List<SelectItem> getListaCidades() {
-        if (listaCidades.isEmpty()) {
+    public List<SelectItem> getListCidades() {
+        if (listCidades.isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Cidade> list = (List<Cidade>) db.pesquisaCidadesRelatorio();
             for (int i = 0; i < list.size(); i++) {
-                listaCidades.add(new SelectItem(new Integer(i), list.get(i).getCidade(), Integer.toString(list.get(i).getId())));
+                listCidades.add(new SelectItem(i, list.get(i).getCidade(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaCidades;
+        return listCidades;
     }
 
-    public List<SelectItem> getListaQuantidadeInicio() {
+    public List<SelectItem> getListQuantidadeInicio() {
         quantidadeEmpresas();
-        if (listaQuantidadeInicio.isEmpty()) {
-            for (int i = 0; i < quantidadeEmpresas; i++ ) {
+        if (listQuantidadeInicio.isEmpty()) {
+            for (int i = 0; i < quantidadeEmpresas; i++) {
                 boolean itemSelecionado = false;
                 if (i == 0) {
                     itemSelecionado = true;
-                }                
-                listaQuantidadeInicio.add(new SelectItem(new Integer(i), Integer.toString(i+1), Integer.toString(i+1), false, false, itemSelecionado));
+                }
+                listQuantidadeInicio.add(new SelectItem(i, Integer.toString(i + 1), Integer.toString(i + 1), false, false, itemSelecionado));
             }
         }
-        return listaQuantidadeInicio;        
+        return listQuantidadeInicio;
     }
 
-    public List<SelectItem> getListaQuantidadeFim() {
+    public List<SelectItem> getListQuantidadeFim() {
         quantidadeEmpresas();
-        if (listaQuantidadeFim.isEmpty()) {
-            for (int i = 0; i < quantidadeEmpresas; i++ ) {
+        if (listQuantidadeFim.isEmpty()) {
+            for (int i = 0; i < quantidadeEmpresas; i++) {
                 boolean itemSelecionado = false;
-                if (i+1 == quantidadeEmpresas) {
-                    idQuantidadeFim = i;
-                }                
-                listaQuantidadeFim.add(new SelectItem(new Integer(i), Integer.toString(i+1), Integer.toString(i+1), false, false, itemSelecionado));
+                if (i + 1 == quantidadeEmpresas) {
+                    index[4] = i;
+                }
+                listQuantidadeFim.add(new SelectItem(i, Integer.toString(i + 1), Integer.toString(i + 1), false, false, itemSelecionado));
             }
         }
-        return listaQuantidadeFim;        
+        return listQuantidadeFim;
     }
 
     public void quantidadeEmpresas() {
-        if (quantidadeEmpresas <= 0 ) {
+        if (quantidadeEmpresas <= 0) {
             RelatorioContabilidadesDB db = new RelatorioContabilidadesDBToplink();
-            quantidadeEmpresas = db.quantidadeEmpresas();        
+            quantidadeEmpresas = db.quantidadeEmpresas();
         }
     }
 
@@ -285,15 +304,15 @@ public class RelatorioContabilidadesBean implements Serializable {
 //        }
 //        return qntEmpresas2;
 //    }
-    public List<SelectItem> getListaTipoEndereco() {
-        if (listaTipoEndereco.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<TipoEndereco> list = (List<TipoEndereco>) salvarAcumuladoDB.pesquisaObjeto(new int[]{2, 3, 4, 5}, "TipoEndereco");
+    public List<SelectItem> getListTipoEndereco() {
+        if (listTipoEndereco.isEmpty()) {
+            Dao dao = new Dao();
+            List<TipoEndereco> list = (List<TipoEndereco>) dao.find("TipoEndereco", new int[]{2, 3, 4, 5});
             for (int i = 0; i < list.size(); i++) {
-                listaTipoEndereco.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listTipoEndereco.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaTipoEndereco;
+        return listTipoEndereco;
     }
 
 //    public static void BubbleSort(List<SelectItem> dados) {
@@ -318,29 +337,12 @@ public class RelatorioContabilidadesBean implements Serializable {
 //            limite--;
 //        } while (trocou);
 //    }
-
-    public int getIdRelatorios() {
-        return idRelatorios;
-    }
-
-    public void setIdRelatorios(int idRelatorios) {
-        this.idRelatorios = idRelatorios;
-    }
-
     public String getRadioEmpresas() {
         return radioEmpresas;
     }
 
     public void setRadioEmpresas(String radioEmpresas) {
         this.radioEmpresas = radioEmpresas;
-    }
-
-    public int getIdCidades() {
-        return idCidades;
-    }
-
-    public void setIdCidades(int idCidades) {
-        this.idCidades = idCidades;
     }
 
     public String getRadioCidades() {
@@ -357,14 +359,6 @@ public class RelatorioContabilidadesBean implements Serializable {
 
     public void setRadioOrdem(String radioOrdem) {
         this.radioOrdem = radioOrdem;
-    }
-
-    public int getIdTipoEndereco() {
-        return idTipoEndereco;
-    }
-
-    public void setIdTipoEndereco(int idTipoEndereco) {
-        this.idTipoEndereco = idTipoEndereco;
     }
 
     public boolean isOcultaEmpresas() {
@@ -385,25 +379,130 @@ public class RelatorioContabilidadesBean implements Serializable {
         this.ocultaCidades = ocultaCidades;
     }
 
-    public int getIdQuantidadeInicio() {
-        if (idQuantidadeFim < idQuantidadeInicio) {
-            idQuantidadeInicio = idQuantidadeFim;
-        }        
-        return idQuantidadeInicio;
-    }
-
-    public void setIdQuantidadeInicio(int idQuantidadeInicio) {
-        this.idQuantidadeInicio = idQuantidadeInicio;
-    }
-
-    public int getIdQuantidadeFim() {
-        if (idQuantidadeFim < idQuantidadeInicio) {
-            idQuantidadeInicio = idQuantidadeFim;
+    public Relatorios getRelatorios() {
+        try {
+            if (relatorios != null && relatorios.getId() != Integer.parseInt(listRelatorios.get(index[0]).getDescription())) {
+                Jasper.EXPORT_TO_EXCEL = false;
+            }
+            relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(listRelatorios.get(index[0]).getDescription()));
+        } catch (Exception e) {
+            relatorios = new Relatorios();
+            Jasper.EXPORT_TO_EXCEL = false;
         }
-        return idQuantidadeFim;
+        return relatorios;
     }
 
-    public void setIdQuantidadeFim(int idQuantidadeFim) {
-        this.idQuantidadeFim = idQuantidadeFim;
+    /**
+     * 0 - Cidades; 1 - Tipo Relatórios; 2 - Tipo Endereço; 3 - Quantidade
+     * Inicio; 4 - Quantidade Fim; 5 -Relatório Ordem
+     *
+     * @return
+     */
+    public Integer[] getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer[] index) {
+        if (index[4] < index[3]) {
+            index[3] = index[4];
+        }
+        this.index = index;
+    }
+
+    public String getTipoRelatorio() {
+        return tipoRelatorio;
+    }
+
+    public void setTipoRelatorio(String tipoRelatorio) {
+        this.tipoRelatorio = tipoRelatorio;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getIndexAccordion() {
+        return indexAccordion;
+    }
+
+    public void setIndexAccordion(String indexAccordion) {
+        this.indexAccordion = indexAccordion;
+    }
+
+    /**
+     * 0 - Quantidade Empresas; 1 - Cidade; 2 - Ordenação;
+     *
+     * @return
+     */
+    public Boolean[] getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(Boolean[] filtro) {
+        this.filtro = filtro;
+    }
+
+    public void close(String close) {
+        switch (close) {
+            case "quantidade_empresas":
+                index[3] = 0;
+                index[4] = 0;
+                filtro[0] = false;
+                listQuantidadeInicio.clear();
+                listQuantidadeFim.clear();
+                break;
+            case "cidades":
+                filtro[1] = false;
+                index[2] = 0;
+                listCidades.clear();
+                break;
+            case "order":
+                filtro[2] = false;
+                radioOrdem = "razao";
+                break;
+        }
+        PF.update("form_relatorio:id_panel");
+    }
+
+    public void tipoRelatorioChange(TabChangeEvent event) {
+        tipoRelatorio = event.getTab().getTitle();
+        indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
+        if (tipoRelatorio.equals("Resumo")) {
+            clear();
+        }
+    }
+
+    public void clear() {
+        if (!filtro[0]) {
+            index[3] = 0;
+            index[4] = 0;
+            listQuantidadeInicio.clear();
+            listQuantidadeFim.clear();
+        }
+        if (!filtro[1]) {
+            filtro[1] = false;
+            index[2] = 0;
+            listCidades.clear();
+        }
+        if (!filtro[2]) {
+            filtro[2] = false;
+            radioOrdem = "razao";
+        }
+    }
+
+    public List<SelectItem> getListaRelatorioOrdem() {
+        listRelatorioOrdem.clear();
+        if (index[0] != null) {
+            RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
+            List<RelatorioOrdem> list = relatorioOrdemDao.findAllByRelatorio(Integer.parseInt(getListRelatorios().get(index[0]).getDescription()));
+            for (int i = 0; i < list.size(); i++) {
+                listRelatorioOrdem.add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
+            }
+        }
+        return listRelatorioOrdem;
     }
 }
