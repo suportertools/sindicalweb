@@ -7,7 +7,6 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -21,10 +20,9 @@ import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Download;
-import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import java.io.File;
@@ -51,24 +49,11 @@ public class ProtocoloAgendamento implements Serializable {
 
     public void imprimir(Agendamento a) {
         try {
-            Collection lista = parametroProtocolos(a);
-            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fl);
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-            String nomeDownload = "imp_protocolo_" + a.getId() + ".pdf";
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-            if (!new File(pathPasta).exists()) {
-                File file = new File(pathPasta);
-                file.mkdir();
-            }
-            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
-            salvaArquivos.salvaNaPasta(pathPasta);
-            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
-            download.baixar();
-            download.remover();
-        } catch (JRException e) {
+            Jasper.PART_NAME = "" + a.getId();
+            Jasper.PATH = "downloads";
+            Jasper.IGNORE_UUID = true;
+            Jasper.printReports("/Relatorios/PROTOCOLO.jasper", "protocolo", (Collection) parametroProtocolos(a));
+        } catch (Exception e) {
         }
     }
 
