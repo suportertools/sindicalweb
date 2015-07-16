@@ -134,8 +134,16 @@ public class Jasper implements Serializable {
      */
     public static Boolean NO_COMPACT;
 
+    static {
+        load();
+    }
+
     @PostConstruct
     public void init() {
+        load();
+    }
+
+    public static void load() {
         PATH = "downloads/relatorios";
         PART_NAME = "relatorio";
         IS_DOWNLOAD = true;
@@ -156,11 +164,6 @@ public class Jasper implements Serializable {
         EXPORT_TO_EXCEL = false;
         EXCEL_FIELDS = "";
         NO_COMPACT = false;
-    }
-
-    @PreDestroy
-    public void destroy() {
-
     }
 
     public static void printReports(String jasperName, String fileName, Collection c) {
