@@ -28,7 +28,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -133,6 +132,10 @@ public class Jasper implements Serializable {
      * gerados
      */
     public static Boolean NO_COMPACT;
+    /**
+     * Ignora uso de código único na String do nome do relaório
+     */
+    public static Boolean IGNORE_UUID;
 
     static {
         load();
@@ -282,7 +285,10 @@ public class Jasper implements Serializable {
             Jasper.PART_NAME = "_" + Jasper.PART_NAME;
         }
         UUID uuidX = UUID.randomUUID();
-        String uuid = uuidX.toString().replace("-", "_");
+        String uuid = "_" + uuidX.toString().replace("-", "_");
+        if (IGNORE_UUID) {
+            uuid = "";
+        }
         if (EXPORT_TO_EXCEL) {
             List<?> list = (List) c;
             Class classx = list.get(0).getClass();
@@ -371,7 +377,7 @@ public class Jasper implements Serializable {
                 cellPos = 0;
                 j++;
             }
-            downloadName = fileName + PART_NAME + "_" + uuid + ".xls";
+            downloadName = fileName + PART_NAME + uuid + ".xls";
             File f = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(realPath + downloadName));
             FileOutputStream stream;
             try {
@@ -511,10 +517,10 @@ public class Jasper implements Serializable {
                             LIST_FILE_GENERATED.add(dirPath + "/" + downloadName);
                         }
                         //downloadName = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
-                        downloadName = fileName + PART_NAME + "_" + idPessoa + "_" + uuid + "." + COMPRESS_EXTENSION;
+                        downloadName = fileName + PART_NAME + "_" + idPessoa + uuid + "." + COMPRESS_EXTENSION;
                         if (!NO_COMPACT) {
                             //Compact.OUT_FILE = fileName + PART_NAME + "_" + idUsuario + "_" + uuid + "." + COMPRESS_EXTENSION;
-                            Compact.OUT_FILE = fileName + PART_NAME + "_" + idPessoa + "_" + uuid + "." + COMPRESS_EXTENSION;
+                            Compact.OUT_FILE = fileName + PART_NAME + "_" + idPessoa + uuid + "." + COMPRESS_EXTENSION;
                             Compact.setListFiles(listFilesZip);
                             Compact.PATH_OUT_FILE = realPath;
                             try {
@@ -527,7 +533,7 @@ public class Jasper implements Serializable {
                         // Se o método por ventura passar apagar arquivos gerados, 
                         // acrescentar a linha abaixo, esta contém o id do usuário
                         // downloadName = fileName + PART_NAME + "_" + DataHoje.horaMinuto().replace(":", "") + "_" + idUsuario + ".pdf";                    
-                        downloadName = fileName + PART_NAME + "_" + uuid + ".pdf";
+                        downloadName = fileName + PART_NAME + uuid + ".pdf";
                         try {
                             File file = new File(dirPath + "/" + downloadName);
                             if (jasperListExport.isEmpty()) {
@@ -589,12 +595,12 @@ public class Jasper implements Serializable {
                             } else {
                                 mimeType = "application/x-rar-compressed, application/octet-stream";
                             }
-                            Compact.OUT_FILE = fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION;
+                            Compact.OUT_FILE = fileName + PART_NAME + uuid + "." + COMPRESS_EXTENSION;
                             Compact.PATH_OUT_FILE = realPath;
                             try {
                                 listFilesZip.add(dirPath + "/" + downloadName);
-                                Compact.toZip(fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION, dirPath + "/" + downloadName);
-                                downloadName = fileName + PART_NAME + "_" + uuid + "." + COMPRESS_EXTENSION;
+                                Compact.toZip(fileName + PART_NAME + uuid + "." + COMPRESS_EXTENSION, dirPath + "/" + downloadName);
+                                downloadName = fileName + PART_NAME + uuid + "." + COMPRESS_EXTENSION;
                             } catch (IOException e) {
 
                             }
@@ -648,6 +654,7 @@ public class Jasper implements Serializable {
         IS_REPORT_CONNECTION = false;
         NO_COMPACT = false;
         EXCEL_FIELDS = "";
+        IGNORE_UUID = false;
     }
 
     public String classAnnotationValue(Class classType, Class annotationType, String attributeName) {
