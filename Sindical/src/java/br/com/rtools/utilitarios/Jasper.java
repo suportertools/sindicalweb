@@ -167,6 +167,7 @@ public class Jasper implements Serializable {
         EXPORT_TO_EXCEL = false;
         EXCEL_FIELDS = "";
         NO_COMPACT = false;
+        IGNORE_UUID = false;
     }
 
     public static void printReports(String jasperName, String fileName, Collection c) {
