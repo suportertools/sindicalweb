@@ -16,8 +16,10 @@ import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
+import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEmpresaDB;
 import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
@@ -255,7 +257,8 @@ public class CartaoSocialBean implements Serializable {
 
                 boolean validacao = false;
                 if (pessoa.getSocios().getId() != -1){
-                    if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria()){
+                    Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(pessoa.getId());
+                    if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria() && f.getDtAposentadoria() == null){
                         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();                        
                         // ANTES DE 17/07/2015
                         // PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());

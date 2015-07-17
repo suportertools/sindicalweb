@@ -14,15 +14,16 @@
             .ui-button { padding: 3px!important; }
             .ui-selectonemenu {padding-right: 25px!important;}
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>        
     </h:head>
     <h:body>
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
             <ui:include src="templates/templateAcessoFilial.xhtml"/>
+            <ui:include src="templates/templateStatus.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
@@ -55,13 +56,13 @@
                                     </h:column>
                                 </h:panelGrid>
                             </h:column>
-                            
+
                             <h:column>
                                 <p:commandButton icon="ui-icon-circle-plus" value="Novo Convite" action="#{conviteMovimentoBean.openDialog}" style="float: right"/>
                             </h:column>
                         </h:panelGrid>
                     </p:panel>
-                    
+
                     <p:panel styleClass="margin-top-max" id="id_lista" header="Convidados">
                         <p:dataTable value="#{conviteMovimentoBean.conviteMovimentos}" var="conviteMovimento" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado" id="id_lista_tbl">
                             <f:facet name="footer">
@@ -93,9 +94,9 @@
                             </p:column>
                         </p:dataTable>
                     </p:panel>
-                    
+
                     <p:dialog id="i_adicionar" widgetVar="dlg_adicionar" modal="true" header="Cadastro de Convite" width="1024" visible="#{conviteMovimentoBean.visibility}">
-                        <p:ajax event="close" update="out_mensagem i_panel_adicionar id_lista" listener="#{conviteMovimentoBean.close}"/>  
+                        <p:ajax event="close" listener="#{conviteMovimentoBean.close}"/>  
                         <p:panel id="i_panel_adicionar" styleClass="no-border">
                             <h:outputScript name="tradutor_primefaces.js" library="js" />
                             <h:outputScript name="script_primefaces.js" library="js" />
@@ -115,21 +116,21 @@
                                         </h:column>
                                         <p:outputLabel value="Usuário:" />
                                         <p:outputLabel value="#{conviteMovimentoBean.usuario.pessoa.nome}" />
-                                        
+
                                         <p:selectBooleanCheckbox value="#{conviteMovimentoBean.conviteMovimento.cortesia}" itemLabel="Cortesia" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                             <p:ajax event="change" update="idDescricaoAutoriza idComboAutoriza, id_calcula_valor i_panel_convite" />
                                         </p:selectBooleanCheckbox>
-                                        
+
                                         <h:column>
                                             <p:inputText value="#{conviteMovimentoBean.conviteMovimento.controleCortesia}" rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}" placeholder="Digite um Controle Convite" size="50"/>
                                         </h:column>
-                                        
+
                                         <h:column>
                                             <h:panelGrid id="idDescricaoAutoriza">
                                                 <p:outputLabel value="Autorizada por: " rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}"/>
                                             </h:panelGrid>
                                         </h:column>
-                                        
+
                                         <h:column>
                                             <h:panelGrid id="idComboAutoriza">
                                                 <p:selectOneMenu value="#{conviteMovimentoBean.idPessoaAutoriza}" rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
@@ -139,13 +140,13 @@
                                         </h:column>
                                     </h:panelGrid>
                                 </p:panel>
-                                
+
                                 <p:panel header="Convidado" styleClass="margin-top-max" id="i_panel_convidado">
                                     <h:panelGrid columns="2">
                                         <p:outputLabel value="Data:" />
                                         <h:column>
                                             <h:panelGrid columns="5">
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.emissao}" readonly="true" size="10"/>
+                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.emissao}" readonly="true" style="width: 85px"/>
                                                 <p:outputLabel value="Convite: " rendered="#{conviteMovimentoBean.conviteMovimento.id != -1}"/>
                                                 <p:inputText value="#{conviteMovimentoBean.conviteMovimento.id}" readonly="true" size="5" rendered="#{conviteMovimentoBean.conviteMovimento.id != -1}"/>
                                                 <p:outputLabel value="Validade: " rendered="#{conviteMovimentoBean.conviteMovimento.id != -1}" style="color: red;"/>
@@ -155,24 +156,28 @@
                                         <p:outputLabel value="Serviço:" />
                                         <h:column>
                                             <h:panelGrid columns="3" id="id_calcula_valor">
-                                                <p:selectOneMenu value="#{conviteMovimentoBean.idServico}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
+                                                <p:selectOneMenu value="#{conviteMovimentoBean.idServico}" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="width: 465px">
                                                     <p:ajax event="change" update="id_valor_servico" />
                                                     <f:selectItems value="#{conviteMovimentoBean.conviteServicos}" />
                                                 </p:selectOneMenu>
-                                                <p:outputLabel value="Valor: " />
-                                                <p:outputLabel value="#{conviteMovimentoBean.valorString}" id="id_valor_servico"/>
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <p:outputLabel value="Valor: " />
+                                        <h:column>
+                                            <h:panelGrid columns="1">
+                                                <p:inputText value="#{conviteMovimentoBean.valorString}" id="id_valor_servico" readonly="true" style="text-align: right; width: 100px"/>
                                             </h:panelGrid>
                                         </h:column>
                                         <p:outputLabel value="CPF" />
                                         <h:column>
                                             <h:panelGrid columns="4">
-                                                <p:inputMask mask="999.999.999-99" value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.documento}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
-                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
+                                                <p:inputMask mask="999.999.999-99" value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.documento}" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="width: 120px; text-align: center">
+                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="@this i_panel_convidado"/>
                                                 </p:inputMask>
                                                 <p:outputLabel value="Nascimento:" />
-                                                <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCampos}">
+                                                <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="text-align: center" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{conviteMovimentoBean.conviteMovimento.sisPessoa.selecionaDataNascimento}" />
-                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
+                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.convidadoExiste}" update="i_panel_convidado"/>
                                                 </p:calendar>
                                                 <p:watermark value="99/99/9999" for="iData" />
                                             </h:panelGrid>
@@ -180,8 +185,8 @@
                                         <p:outputLabel value="Convidado:" />
                                         <h:column>
                                             <h:panelGrid columns="2">
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" size="70" disabled="#{conviteMovimentoBean.desabilitaCampos}">
-                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
+                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="width: 390px">
+                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="i_panel_convidado"/>
                                                 </p:inputText>
                                                 <h:column rendered="#{conviteMovimentoBean.idadeConvidado != 0}">
                                                     <p:outputLabel value="Idade: #{conviteMovimentoBean.idadeConvidado} ano (s)" />
@@ -202,16 +207,20 @@
                                         <p:outputLabel value="Telefone:" />
                                         <h:column>
                                             <h:panelGrid columns="3">
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.telefone}" styleClass="ddd_telefone" />
+                                                <p:inputMask value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.telefone}" mask="(99) 9999-9999" style="width: 110px; text-align: center"/>
                                                 <p:outputLabel value="Celular:" />
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.celular}" styleClass="ddd_telefone" />
+                                                <p:inputMask value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.celular}" mask="(99) 99999-9999" style="width: 115px; text-align: center"/>
                                             </h:panelGrid>
                                         </h:column>
                                         <p:outputLabel value="Obs:" />
-                                        <p:inputText value="#{conviteMovimentoBean.conviteMovimento.observacao}" size="80" />
+                                        <h:column>
+                                            <h:panelGrid columns="1">
+                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.observacao}" style="width: 490px"/>
+                                            </h:panelGrid>
+                                        </h:column>
                                     </h:panelGrid>
                                 </p:panel>
-                                
+
                                 <p:panel header="Endereço Convidado" styleClass="margin-top-max" id="i_panel_endereco_convidado">
                                     <h:panelGrid columns="2">
                                         <p:commandButton icon="ui-icon-search" title="Pesquisar Endereço" action="#{chamadaPaginaBean.pesquisaEndereco}" />
@@ -233,39 +242,29 @@
                                     </h:panelGrid>
                                 </p:panel>
                             </div>
+                            
                             <div style="float: left;">
-                                <p:commandButton value="Capturar" update="i_panel_adicionar" onclick="PF('dgl_captura').show();"/>
-                                <h:panelGrid columns="1" id="i_panel_imagens" styleClass="margin-top">
-                                    <p:panel header="Perfil" id="i_panel_perfil">
-                                        <h:column rendered="#{!conviteMovimentoBean.fotoTempPerfil.equals('')}" >
-                                            <p:graphicImage value="#{conviteMovimentoBean.fotoTempPerfil}" id="i_perfil_temp" width="250"/>
-                                            <div class="clear"></div>
-                                            <p:commandButton icon="ui-icon-trash" title="Remover imagem"  action="#{conviteMovimentoBean.apagarImagem('perfil')}" />
-                                        </h:column>
-                                        <h:column rendered="#{!conviteMovimentoBean.fotoPerfil.equals('')}" >
-                                            <p:graphicImage value="#{conviteMovimentoBean.fotoPerfil}" id="i_perfil" width="250"/>
-                                            <div class="clear"></div>
-                                            <p:commandButton icon="ui-icon-trash" title="Remover imagem" action="#{conviteMovimentoBean.apagarImagem('perfil')}" />
-                                        </h:column>                                        
+                                <p:commandButton value="Capturar" update="form_convite" action="#{conviteMovimentoBean.setRenderedPhotoCam(true)}" oncomplete="PF('dgl_captura').show();"/>
+                                <p:outputPanel id="panel_foto" styleClass="margin-top">
+                                    <p:panel header="Perfil">
+                                        <p:graphicImage value="#{conviteMovimentoBean.fotoPerfilStreamed}" width="310" rendered="#{conviteMovimentoBean.fotoPerfilStreamed != null}" cache="false"/>
+                                        <div class="clear"></div>
+                                        <p:commandButton icon="ui-icon-trash" title="Remover imagem"  action="#{conviteMovimentoBean.apagarImagem('perfil', null)}" rendered="#{conviteMovimentoBean.fotoPerfilStreamed != null}" update="panel_foto"/>
                                     </p:panel>
-                                    <p:panel header="Documento" styleClass="margin-top" id="i_panel_documento">
-                                        <h:column rendered="#{!conviteMovimentoBean.fotoTempArquivo.equals('')}" >
-                                            <p:graphicImage value="#{conviteMovimentoBean.fotoTempArquivo}" id="i_documento_temp" width="250"/>
-                                            <div class="clear"></div>
-                                            <p:commandButton icon="ui-icon-trash" title="Remover documento" action="#{conviteMovimentoBean.apagarImagem('documento')}" />
-                                        </h:column>
-                                        <h:column rendered="#{!conviteMovimentoBean.fotoArquivo.equals('')}" >
-                                            <p:graphicImage value="#{conviteMovimentoBean.fotoArquivo}" id="i_documento" width="250"/>
-                                            <div class="clear"></div>
-                                            <p:commandButton icon="ui-icon-trash" title="Remover documento" action="#{conviteMovimentoBean.apagarImagem('documento')}" />
-                                        </h:column>
+                                    
+                                    <p:panel header="Documento" styleClass="margin-top">
+                                        <p:graphicImage value="#{conviteMovimentoBean.fotoArquivoStreamed}" width="310" rendered="#{conviteMovimentoBean.fotoArquivoStreamed != null}" cache="false"/>
+                                        <div class="clear"></div>
+                                        <p:commandButton icon="ui-icon-trash" title="Remover documento" action="#{conviteMovimentoBean.apagarImagem('documento', null)}" rendered="#{conviteMovimentoBean.fotoArquivoStreamed != null}" update="panel_foto"/>
                                     </p:panel>
-                                </h:panelGrid>
+                                </p:outputPanel>
                             </div>
+                            
                             <div class="clear"></div>
+                            
                             <h:panelGrid columns="7">
                                 <p:commandButton value="Salvar" onclick="PF('dgl_panel_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                <p:commandButton value="Novo" action="#{conviteMovimentoBean.novo}" update="out_mensagem i_panel_adicionar id_lista"/>
+                                <p:commandButton value="Novo" action="#{conviteMovimentoBean.novo}" update="@form"/>
                                 <p:commandButton value="Excluir" onclick="PF('dgl_panel_excluir').show()"  disabled="#{controleAcessoBean.botaoExcluir}" />
                                 <h:column rendered="#{conviteMovimentoBean.movimento.id != -1}">
                                     <h:column rendered="#{conviteMovimentoBean.desabilitaBaixa}">
@@ -282,9 +281,10 @@
                             </h:panelGrid>
                         </p:panel>
                     </p:dialog>
-                    <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Cadastro de Convite" resizable="true"  maximizable="true" minimizable="true" rendered="false">
+                    <p:dialog id="i_captura" widgetVar="dgl_captura" header="Cadastro de Convite" rendered="#{conviteMovimentoBean.renderedPhotoCam}">
+                        <p:ajax event="close" listener="#{conviteMovimentoBean.setRenderedPhotoCam(false)}" update="@form"/>
                         <h:panelGrid id="i_panel_imagem" columns="1">
-                            <p:photoCam widgetVar="pc" listener="#{conviteMovimentoBean.capturar}" update="i_panel_imagens"/>
+                            <p:photoCam widgetVar="pc" listener="#{conviteMovimentoBean.capturar}" update="panel_foto" />
                             <h:column>
                                 <h:panelGrid columns="2">
                                     <p:commandButton type="button" value="Capturar Foto">
@@ -300,7 +300,7 @@
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Salvar" action="#{conviteMovimentoBean.save}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{conviteMovimentoBean.save}" update="@form" oncomplete="PF('dgl_panel_mensagem').show()"/>
                                 <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
                             </h:panelGrid>
                         </center>
@@ -308,7 +308,7 @@
                     <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Excluir" action="#{conviteMovimentoBean.delete}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Sim" title="Excluir" action="#{conviteMovimentoBean.delete}" update="@form" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
                                 <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
                             </h:panelGrid>
                         </center>

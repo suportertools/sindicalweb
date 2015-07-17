@@ -554,7 +554,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             qry.setParameter("Sdoc", doc);
             return (PessoaEmpresa) qry.getSingleResult();
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.getMessage();
         }
         return result;
     }

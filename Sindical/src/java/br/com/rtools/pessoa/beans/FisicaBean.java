@@ -1663,15 +1663,20 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             Juridica j = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
             List listax = db.listaJuridicaContribuinte(j.getId());
 
-            for (int i = 0; i < listax.size(); i++) {
-                if (((List) listax.get(0)).get(11) != null) {
-                    // CONTRIBUINTE INATIVO
-                    mensagemAviso = "Empresa Inativa não pode ser vinculada!";
-                    visibleMsgAviso = true;
-                } else {
-                    pessoaEmpresa.setJuridica(j);
-                    renderJuridicaPesquisa = true;
+            if (!listax.isEmpty()){
+                for (int i = 0; i < listax.size(); i++) {
+                    if (((List) listax.get(0)).get(11) != null) {
+                        // CONTRIBUINTE INATIVO
+                        mensagemAviso = "Empresa Inativa não pode ser vinculada!";
+                        visibleMsgAviso = true;
+                    } else {
+                        pessoaEmpresa.setJuridica(j);
+                        renderJuridicaPesquisa = true;
+                    }
                 }
+            }else{
+                pessoaEmpresa.setJuridica(j);
+                renderJuridicaPesquisa = true;
             }
             GenericaSessao.remove("juridicaPesquisa");
         }

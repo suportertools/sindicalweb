@@ -39,6 +39,7 @@ public class CartaoSocial {
     private String grupo_categoria;
     private String imagemExtra;
     private String imagemExtra2;
+    private String dataAposentadoria;
 
     public CartaoSocial() {
         this.matricula = "";
@@ -78,9 +79,10 @@ public class CartaoSocial {
         this.grupo_categoria = "";
         this.imagemExtra = "";
         this.imagemExtra2 = "";
+        this.dataAposentadoria = "";
     }
 
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia, String titular, String dependente, String fantasia_titular, String codigo_funcional_titular, Integer titular_id, String grupo_categoria, String imagemExtra, String imagemExtra2) {
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String empresa_cidade, String empresa_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa, String endereco, String cidade, String nacionalidade, String nascimento, String estado_civil, String carteira, String serie, String imagem_fundo, String codigo_funcional, String orgao_expeditor, String parentesco, String categoria, String fantasia, String titular, String dependente, String fantasia_titular, String codigo_funcional_titular, Integer titular_id, String grupo_categoria, String imagemExtra, String imagemExtra2, String dataAposentadoria) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -118,6 +120,7 @@ public class CartaoSocial {
         this.grupo_categoria = grupo_categoria;
         this.imagemExtra = imagemExtra;
         this.imagemExtra2 = imagemExtra2;
+        this.dataAposentadoria = dataAposentadoria;
     }
 
     public String getMatricula() {
@@ -414,5 +417,13 @@ public class CartaoSocial {
 
     public void setImagemExtra2(String imagemExtra2) {
         this.imagemExtra2 = imagemExtra2;
+    }
+
+    public String getDataAposentadoria() {
+        return dataAposentadoria;
+    }
+
+    public void setDataAposentadoria(String dataAposentadoria) {
+        this.dataAposentadoria = dataAposentadoria;
     }
 }
