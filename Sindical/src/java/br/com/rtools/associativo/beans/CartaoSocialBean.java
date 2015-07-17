@@ -249,14 +249,17 @@ public class CartaoSocialBean implements Serializable {
             dao.openTransaction();
             SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
             for (int i = 0; i < list.size(); i++) {
+                Integer titular_id = (Integer) ((List) list.get(i)).get(40);
                 Pessoa pessoa = (Pessoa) dao.find(new Pessoa(), (Integer) ((List) list.get(i)).get(0));
                 SocioCarteirinha carteirinha = (SocioCarteirinha) dao.find(new SocioCarteirinha(), (Integer) ((List) list.get(i)).get(19));
 
                 boolean validacao = false;
                 if (pessoa.getSocios().getId() != -1){
                     if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria()){
-                        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
-                        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
+                        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();                        
+                        // ANTES DE 17/07/2015
+                        // PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
+                        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(titular_id);
                         if (pe.getId() == -1){
                             GenericaMensagem.error("Atenção", "Empresa Não Vinculada a pessoa "+ pessoa.getNome());
                             validacao = true;
