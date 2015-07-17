@@ -55,6 +55,10 @@ public class SisPessoa implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_importacao")
     private Date dtImportacao;
+    @Column(name = "ds_foto_perfil", length = 300)
+    private String fotoPerfil;
+    @Column(name = "ds_foto_arquivo", length = 300)
+    private String fotoArquivo;    
 
     public SisPessoa() {
         this.id = -1;
@@ -74,9 +78,11 @@ public class SisPessoa implements Serializable {
         this.dtCriacao = DataHoje.dataHoje();
         this.dtNascimento = DataHoje.dataHoje();
         this.dtImportacao = DataHoje.dataHoje();
+        this.fotoPerfil = "";
+        this.fotoArquivo = "";        
     }
 
-    public SisPessoa(int id, String nome, String documento, String rg, String telefone, String celular, String email1, String email2, String observacao, String complemento, String numero, String sexo, TipoDocumento tipoDocumento, Endereco endereco, String criacao, String nascimento) {
+    public SisPessoa(int id, String nome, String documento, String rg, String telefone, String celular, String email1, String email2, String observacao, String complemento, String numero, String sexo, TipoDocumento tipoDocumento, Endereco endereco, String criacao, String nascimento, String fotoPerfil, String fotoArquivo) {
         this.id = id;
         this.nome = nome;
         this.documento = documento;
@@ -93,6 +99,8 @@ public class SisPessoa implements Serializable {
         this.endereco = endereco;
         this.dtCriacao = DataHoje.converte(criacao);
         this.dtNascimento = DataHoje.converte(nascimento);
+        this.fotoPerfil = fotoPerfil;
+        this.fotoArquivo = fotoArquivo;        
     }
 
     public int getId() {
@@ -256,5 +264,21 @@ public class SisPessoa implements Serializable {
     public void setDtImportacao(Date dtImportacao) {
         this.dtImportacao = dtImportacao;
     }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
+    public String getFotoArquivo() {
+        return fotoArquivo;
+    }
+
+    public void setFotoArquivo(String fotoArquivo) {
+        this.fotoArquivo = fotoArquivo;
+    }    
 
 }

@@ -111,16 +111,16 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaDataVencimento;
     private List<SelectItem> listaIndividual;
     private List<SelectItem> listaMesVencimento;
-    private List<SelectItem> listaDiaParcela;
+    //private List<SelectItem> listaDiaParcela;
     private List<Turma> listaTurma;
     //private List<Movimento> listaMovimentos;
     //private List<Movimento> listaOutrosMovimentos;
     private List<EscolaAutorizados> listaEscolaAutorizadas;
     private List<ListaMatriculaEscola> listaMatriculaEscolas;
-    private int diaVencimento;
+    //private int diaVencimento;
     private int idDiaVencimento;
-    private int idDiaVencimentoPessoa;
-    private int idDiaParcela;
+    //private int idDiaVencimentoPessoa;
+    //private int idDiaParcela;
     private int idDataTaxa;
     private int idMesVencimento;
     private int idFTipoDocumento;
@@ -208,15 +208,15 @@ public class MatriculaEscolaBean implements Serializable {
         listaIndividual = new ArrayList();
         listaDataVencimento = new ArrayList();
         listaMesVencimento = new ArrayList();
-        listaDiaParcela = new ArrayList();
+        //listaDiaParcela = new ArrayList();
         listaTurma = new ArrayList();
 //        listaMovimentos = new ArrayList();
 //        listaOutrosMovimentos = new ArrayList();
         listaEscolaAutorizadas = new ArrayList();
         listaMatriculaEscolas = new ArrayList();
-        diaVencimento = 0;
+//        diaVencimento = 0;
         idDiaVencimento = 0;
-        idDiaVencimentoPessoa = 0;
+        //idDiaVencimentoPessoa = 0;
         idDataTaxa = 0;
         idMesVencimento = 0;
         idFTipoDocumento = 0;
@@ -267,6 +267,7 @@ public class MatriculaEscolaBean implements Serializable {
         servicoPessoa = new ServicoPessoa();
         numeroParcelas = 0;
         valorTotal = "0,00";
+        loadDiaVencimento();
     }
 
     /* chamado quando outra view for chamada através do UIViewRoot.setViewId(String viewId) */
@@ -288,6 +289,23 @@ public class MatriculaEscolaBean implements Serializable {
 //        listaMesVencimento.clear();
 //        listaDiaParcela.clear();
 //    }
+    
+    public void loadDiaVencimento(){
+        getListaDataVencimento();
+        getRegistro();
+        Integer dia;
+        if (pessoaComplemento.getId() == -1){
+            dia = registro.getFinDiaVencimentoCobranca();
+        }else{
+            dia = pessoaComplemento.getNrDiaVencimento();
+        }
+        
+        for (int i = 1; i < listaDataVencimento.size(); i++){
+            if ( Integer.valueOf(listaDataVencimento.get(i).getValue().toString()) == dia){
+                idDiaVencimento = dia;
+            }
+        }
+    }
 
     public String novo() {
         GenericaSessao.remove("matriculaEscolaBean");
@@ -1033,7 +1051,8 @@ public class MatriculaEscolaBean implements Serializable {
             //servicoPessoa.setReferenciaValidade(DataHoje.converteDataParaReferencia(turma.getDataTermino()));
         }
 
-        servicoPessoa.setNrDiaVencimento(idDiaParcela);
+        //servicoPessoa.setNrDiaVencimento(idDiaParcela);
+        servicoPessoa.setNrDiaVencimento(idDiaVencimento);
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
             servicoPessoa.setDescontoSocial((DescontoSocial) new Dao().find(new DescontoSocial(), 1));
@@ -1242,7 +1261,8 @@ public class MatriculaEscolaBean implements Serializable {
         servicoPessoa = matriculaEscola.getServicoPessoa();
         MatriculaEscolaDao med = new MatriculaEscolaDao();
         desabilitaCampo = true;
-        idDiaVencimentoPessoa = 0;
+//        idDiaVencimentoPessoa = 0;
+
         if (matriculaEscola.getServicoPessoa().getEvt() != null) {
             desabilitaCamposMovimento = true;
             desabilitaDiaVencimento = true;
@@ -1321,7 +1341,7 @@ public class MatriculaEscolaBean implements Serializable {
         String urlRetorno = "matriculaEscola";
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
-            if (!GenericaSessao.getString("urlRetorno").equals("matriculaEscola")) {
+            if (!GenericaSessao.getString("urlRetorno").equals("matriculaEscola")) {    
                 urlRetorno = GenericaSessao.getString("urlRetorno");
                 GenericaSessao.put("matriculaEscolaPesquisa", matriculaEscola);
                 if (tipoMatricula.equals("Individual")) {
@@ -1673,11 +1693,12 @@ public class MatriculaEscolaBean implements Serializable {
 //                        }
 //                        vencimento = diaSwap + "/" + mes + "/" + ano;
 //                    }
-                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
-                        if (idDiaParcela < 10) {
-                            vencimento = "0" + idDiaParcela + "/" + mes + "/" + ano;
+                    //if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
+                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
+                        if (idDiaVencimento < 10) {
+                            vencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
                         } else {
-                            vencimento = idDiaParcela + "/" + mes + "/" + ano;
+                            vencimento = idDiaVencimento + "/" + mes + "/" + ano;
                         }
                     } else {
                         String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
@@ -1917,9 +1938,9 @@ public class MatriculaEscolaBean implements Serializable {
                     if (responsavel.getId() != -1) {
                         pessoaComplemento = new PessoaComplemento();
                         pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-                        if (pessoaComplemento != null) {
-                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-                        }
+//                        if (pessoaComplemento != null) {
+//                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+//                        }
                         //matriculaEscola.setResponsavel(responsavel);
                         servicoPessoa.setCobranca(responsavel);
                     } else {
@@ -2090,10 +2111,13 @@ public class MatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListaDataVencimento() {
         if (listaDataVencimento.isEmpty()) {
-            for (int i = 1; i <= 31; i++) {
-                listaDataVencimento.add(new SelectItem(Integer.toString(i)));
+            if (servicoPessoa.getPessoa().getId() == -1){
+                for (int i = 1; i <= 31; i++) {
+                    listaDataVencimento.add(new SelectItem(Integer.toString(i)));
+                }
             }
         }
+        
         return listaDataVencimento;
     }
 
@@ -2150,42 +2174,20 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public int getIdDiaVencimento() {
-        if (idDiaVencimentoPessoa == 0) {
-            if (matriculaEscola.getId() == -1) {
-                if (getRegistro() != null) {
-                    this.idDiaVencimento = registro.getFinDiaVencimentoCobranca();
-                } else {
-                    this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
-                }
-            } else {
-                this.idDiaVencimento = servicoPessoa.getNrDiaVencimento(); //matriculaEscola.getDiaVencimento();
-            }
-        } else {
-            this.idDiaVencimento = idDiaVencimentoPessoa;
-        }
         return idDiaVencimento;
     }
 
     public void setIdDiaVencimento(int idDiaVencimento) {
         this.idDiaVencimento = idDiaVencimento;
     }
-
-    public int getDiaVencimento() {
-        if (idDiaVencimentoPessoa == 0) {
-            if (matriculaEscola.getId() == -1) {
-                this.diaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
-            } else {
-                this.diaVencimento = servicoPessoa.getNrDiaVencimento();//matriculaEscola.getDiaVencimento();
-            }
-        } else {
-            this.diaVencimento = idDiaVencimentoPessoa;
-        }
-        return this.diaVencimento;
-    }
-
-    public void setDiaVencimento(int diaVencimento) {
-        this.diaVencimento = diaVencimento;
-    }
+//
+//    public int getDiaVencimento() {
+//        return this.diaVencimento;
+//    }
+//
+//    public void setDiaVencimento(int diaVencimento) {
+//        this.diaVencimento = diaVencimento;
+//    }
 
     public List<SelectItem> getListaIndividual() {
         if (listaIndividual.isEmpty()) {
@@ -2480,13 +2482,13 @@ public class MatriculaEscolaBean implements Serializable {
         this.pessoaComplemento = pessoaComplemento;
     }
 
-    public int getIdDiaVencimentoPessoa() {
-        return idDiaVencimentoPessoa;
-    }
-
-    public void setIdDiaVencimentoPessoa(int idDiaVencimentoPessoa) {
-        this.idDiaVencimentoPessoa = idDiaVencimentoPessoa;
-    }
+//    public int getIdDiaVencimentoPessoa() {
+//        return idDiaVencimentoPessoa;
+//    }
+//
+//    public void setIdDiaVencimentoPessoa(int idDiaVencimentoPessoa) {
+//        this.idDiaVencimentoPessoa = idDiaVencimentoPessoa;
+//    }
 
     public boolean isDesabilitaCampo() {
         return desabilitaCampo;
@@ -2712,9 +2714,9 @@ public class MatriculaEscolaBean implements Serializable {
                     atualizaPessoaComplemento(1);
                     pessoaComplemento = new PessoaComplemento();
                     pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-                    if (pessoaComplemento != null) {
-                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-                    }
+//                    if (pessoaComplemento != null) {
+//                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+//                    }
                     //matriculaEscola.setResponsavel(juridica.getPessoa());
                     servicoPessoa.setCobranca(juridica.getPessoa());
                 }
@@ -2749,6 +2751,7 @@ public class MatriculaEscolaBean implements Serializable {
             p = responsavel;
         }
         pc = pdb.pesquisaPessoaComplementoPorPessoa(p.getId());
+        pessoaComplemento = pc;
         if (pc.getId() == -1) {
             SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
             pc.setNrDiaVencimento(getRegistro().getFinDiaVencimentoCobranca());
@@ -2761,6 +2764,7 @@ public class MatriculaEscolaBean implements Serializable {
                 sadb.desfazerTransacao();
             }
         }
+        loadDiaVencimento();
     }
 
     public boolean isOcultaBotaoSalvar() {
@@ -3057,7 +3061,7 @@ public class MatriculaEscolaBean implements Serializable {
             PessoaDB pessoaDB = new PessoaDBToplink();
             PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(servicoPessoa.getCobranca().getId());
             SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            pc.setNrDiaVencimento(diaVencimento);
+            pc.setNrDiaVencimento(idDiaVencimento);
             sadb.abrirTransacao();
             if (sadb.alterarObjeto(pc)) {
                 //matriculaEscola.setDiaVencimento(pc.getNrDiaVencimento());
@@ -3165,32 +3169,32 @@ public class MatriculaEscolaBean implements Serializable {
         this.socios = socios;
     }
 
-    public int getIdDiaParcela() {
-        return idDiaParcela;
-    }
-
-    public void setIdDiaParcela(int idDiaParcela) {
-        this.idDiaParcela = idDiaParcela;
-    }
-
-    public List<SelectItem> getListaDiaParcela() {
-        if (listaDiaParcela.isEmpty()) {
-            //int dia = DataHoje.DataToArrayInt(matriculaEscola.getDataMatricula())[0];
-            int dia = DataHoje.DataToArrayInt(servicoPessoa.getEmissao())[0];
-            for (int i = 1; i <= 31; i++) {
-                listaDiaParcela.add(new SelectItem(Integer.toString(i)));
-                if (dia == i) {
-                    idDiaParcela = i;
-                }
-            }
-
-        }
-        return listaDiaParcela;
-    }
-
-    public void setListaDiaParcela(List<SelectItem> listaDiaParcela) {
-        this.listaDiaParcela = listaDiaParcela;
-    }
+//    public int getIdDiaParcela() {
+//        return idDiaParcela;
+//    }
+//
+//    public void setIdDiaParcela(int idDiaParcela) {
+//        this.idDiaParcela = idDiaParcela;
+//    }
+//
+//    public List<SelectItem> getListaDiaParcela() {
+//        if (listaDiaParcela.isEmpty()) {
+//            //int dia = DataHoje.DataToArrayInt(matriculaEscola.getDataMatricula())[0];
+//            int dia = DataHoje.DataToArrayInt(servicoPessoa.getEmissao())[0];
+//            for (int i = 1; i <= 31; i++) {
+//                listaDiaParcela.add(new SelectItem(Integer.toString(i)));
+//                if (dia == i) {
+//                    idDiaParcela = i;
+//                }
+//            }
+//
+//        }
+//        return listaDiaParcela;
+//    }
+//
+//    public void setListaDiaParcela(List<SelectItem> listaDiaParcela) {
+//        this.listaDiaParcela = listaDiaParcela;
+//    }
 
     public ServicoPessoa getServicoPessoa() {
         return servicoPessoa;

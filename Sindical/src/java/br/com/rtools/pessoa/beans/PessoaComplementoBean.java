@@ -85,18 +85,26 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
     }
 
     public String pessoaComplementoPesquisaPessoa(int idPessoa) {
-        if (pessoaComplemento.getId() == -1) {
-            PessoaDB pessoaDB = new PessoaDBToplink();
-            pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
-            if(pessoaComplemento.getId() == -1) {
-                diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
-            } else {
-                diaVencimento = pessoaComplemento.getNrDiaVencimento();
-            }
+//        if (pessoaComplemento.getId() == -1) {
+//            PessoaDB pessoaDB = new PessoaDBToplink();
+//            pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
+//            if(pessoaComplemento.getId() == -1) {
+//                diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
+//            } else {
+//                diaVencimento = pessoaComplemento.getNrDiaVencimento();
+//            }
+//        } else {
+//            diaVencimento = pessoaComplemento.getNrDiaVencimento();
+//        }
+        
+        PessoaDB pessoaDB = new PessoaDBToplink();
+        pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
+        if(pessoaComplemento.getId() == -1) {
+            diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
         } else {
             diaVencimento = pessoaComplemento.getNrDiaVencimento();
         }
-        return "";
+        return null;
     }
 
     public Pessoa getPessoa() {

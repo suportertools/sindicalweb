@@ -177,7 +177,7 @@ public class ImprimirConviteClube implements Serializable {
                 cm.getEmissao(),
                 "VÁLIDO ATÉ " + dh.incrementarMeses(1, cm.getValidade()),
                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoConvite.png"),
-                "00000000",
+                "00000000000000".substring(0, 14 - (""+cm.getId()).length()) + cm.getId(),
                 GenericaString.converterNullToString(cm.getSisPessoa().getObservacao()),
                 "NO(S) DIA(S): " + listSemana
         ));

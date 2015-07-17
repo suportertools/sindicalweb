@@ -226,6 +226,8 @@ public class BaixaGeralBean implements Serializable {
             } else if (url.equals("vendasBaile")) {
                 GenericaSessao.remove("vendaBaileBean");
                 return "vendasBaile";
+            }  else if (url.equals("conviteMovimento")) {
+                return "conviteMovimento";
             }  else {
                 return null;
             }

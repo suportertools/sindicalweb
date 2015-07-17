@@ -253,9 +253,6 @@
                                             <p:outputLabel value="Parcela até o Vencto" style="font-weight: bold; text-align: center;"/>                                    
                                         </p:column>
                                         <p:column>
-                                            <p:outputLabel value="Dia Parcela" style="font-weight: bold;"/>
-                                        </p:column>
-                                        <p:column>
                                             <p:outputLabel value="Início" style="font-weight: bold;"/>
                                         </p:column>
                                         <p:column>
@@ -278,12 +275,6 @@
                                         <p:inputText readonly="true" style="text-align: right; width: 100px" maxlength="10" value="#{matriculaEscolaBean.valorParcelaVencimentoString}">
                                             
                                         </p:inputText>      
-                                    </p:column>
-                                    <p:column style="text-align: center">
-                                        <p:selectOneMenu value="#{matriculaEscolaBean.idDiaParcela}" style="padding-right: 10px">
-                                            <p:ajax event="change" update="@this" global="false"/>
-                                            <f:selectItems value="#{matriculaEscolaBean.listaDiaParcela}" />
-                                        </p:selectOneMenu>
                                     </p:column>
                                     
                                     <p:column>
@@ -391,7 +382,7 @@
                         <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                             <h:panelGrid columns="2" id="i_alterar_dia_vencto">
                                 <h:outputLabel value="Selecione a nova data:" />
-                                <p:selectOneMenu id="cbDataVencimentoX" value="#{matriculaEscolaBean.diaVencimento}">
+                                <p:selectOneMenu id="cbDataVencimentoX" value="#{matriculaEscolaBean.idDiaVencimento}">
                                     <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
                                 </p:selectOneMenu>
                             </h:panelGrid>

@@ -137,7 +137,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "            pt.fantasia AS fantasia_titular,                         " // 38 FANTASIA EMPRESA - TITULAR
                     + "            pt.codigo_funcional AS codigo_funcional_titular,         " // 39 CÓDIGO FUNCIONAL - TITULAR
                     + "            s.titular AS titular_id,                                 " // 40 TITULAR ID
-                    + "            s.grupo_categoria                                        " // 41 GRUPO CATEGORIA
+                    + "            s.grupo_categoria,                                       " // 41 GRUPO CATEGORIA
+                    + "            f.dt_aposentadoria                                       " // 42 APOSENTADORIA
                     + "       FROM pes_fisica           AS f                                                                "
                     + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               "
                     + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 "
@@ -363,7 +364,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     + "          pt.fantasia,                                "
                     + "          pt.codigo_funcional,                        "
                     + "          s.titular,                                  "
-                    + "          s.grupo_categoria                           ";
+                    + "          s.grupo_categoria,                          "
+                    + "          f.dt_aposentadoria                          ";
 
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {

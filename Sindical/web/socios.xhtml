@@ -199,7 +199,7 @@
                                     <h:panelGrid columns="2">
                                         <h:outputLabel value="Dia do Vencimento: " />
                                         <h:selectOneMenu value="#{sociosBean.servicoPessoa.nrDiaVencimento}" >
-                                            <p:ajax event="change" update="@this i_panel_dia_vencimento" oncomplete="PF('dlg_dv').hide()" listener="#{sociosBean.salvarData}"/>
+                                            <p:ajax event="change" update="@this @form" oncomplete="PF('dlg_dv').hide()" listener="#{sociosBean.salvarData}"/>
                                             <f:selectItem itemValue="1" itemLabel="01"/>
                                             <f:selectItem itemValue="2" itemLabel="02"/>
                                             <f:selectItem itemValue="3" itemLabel="03"/>

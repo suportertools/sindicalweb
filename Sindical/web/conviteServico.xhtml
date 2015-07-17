@@ -8,20 +8,30 @@
     <h:head>
         <title>Convite Serviço</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>        
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_clube_servico_novo">
                     <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                     <p:growl id="growl" showDetail="true"/> 
                     <p:outputLabel value="Cadastro de Serviços para Convite" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${conviteServicoBean.conviteServico}"/>
                     <div class="clear"></div>
-                    <p:panel id="id_panel_clube_servico">
+                    <p:panel id="id_panel_clube_servico" styleClass="fundoCinza">
                         <h:panelGrid columns="2" cellpadding="5">
                             <p:column>
                                 <p:outputLabel value="Serviço: " />
@@ -44,16 +54,16 @@
                                 <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.quinta}" onLabel="Qui" offLabel="Qui" onIcon="ui-icon-check" styleClass="margin-left-max"/>
                                 <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.sexta}" onLabel="Sex" offLabel="Sex" onIcon="ui-icon-check" styleClass="margin-left-max"/>
                                 <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.sabado}" onLabel="Sáb" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
-                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.feriado}" onLabel="Feriado" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.feriado}" onLabel="Feriado" offLabel="Feriado" onIcon="ui-icon-check" styleClass="margin-left-max"/>
                             </p:column>
                         </h:panelGrid>                        
-                        <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
+                        <h:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
                             <p:column>
                                 <p:commandButton value="Salvar" title="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
                                 <p:commandButton value="Novo" title="Novo" action="#{conviteServicoBean.clear()}" update=":form_clube_servico_novo: :form_clube_servico:"/>
                                 <p:commandButton value="Excluir" title="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
                             </p:column>
-                        </p:panelGrid>
+                        </h:panelGrid>
                     </p:panel>
                     <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
@@ -78,7 +88,7 @@
                     </p:dialog>
                 </h:form>
                 <h:form id="form_clube_servico">
-                    <p:panelGrid id="i_panel_servicos" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
+                    <h:panelGrid id="i_panel_servicos" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
                         <p:dataTable value="#{conviteServicoBean.listConviteServicos}" var="conviteServico" scrollable="true" scrollHeight="250" emptyMessage="Nenhum registro(s) encontrado(s)" >
                             <f:facet name="header">Convite Serviços</f:facet>
                             <p:column width="50" headerText="Serviço" styleClass="text-center"><p:commandLink value="#{conviteServico.servicos.descricao}" action="#{conviteServicoBean.edit(conviteServico)}" update=":form_clube_servico_novo:id_panel_clube_servico" /></p:column>
@@ -125,7 +135,7 @@
                                 <p:commandButton icon="ui-icon-trash" action="#{conviteServicoBean.delete(conviteServico)}"  disabled="#{controleAcessoBean.botaoExcluir}"  update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" styleClass="ui-button-reset" immediate="true"/>
                             </p:column>                             
                         </p:dataTable>
-                    </p:panelGrid>
+                    </h:panelGrid>
                 </h:form>                
             </p:panel>
         </f:view>

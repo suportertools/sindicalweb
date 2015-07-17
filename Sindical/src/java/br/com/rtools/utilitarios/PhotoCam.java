@@ -153,7 +153,7 @@ public class PhotoCam implements Serializable {
             photo = date.toGMTString();
         }
         String caminho;
-        if (!PATH.isEmpty()) {
+        if (PATH != null && !PATH.isEmpty()) {
             caminho = PATH;
         } else {
             caminho = aPATH;
