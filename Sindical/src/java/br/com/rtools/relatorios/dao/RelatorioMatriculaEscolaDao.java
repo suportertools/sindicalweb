@@ -2,7 +2,6 @@ package br.com.rtools.relatorios.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.utilitarios.DataHoje;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -36,11 +35,11 @@ public class RelatorioMatriculaEscolaDao extends DB {
         List listQuery = new ArrayList();
         try {
             if (tipoMatricula) {
-                asString += " T.dt_inicio, ";
-                asString += " T.dt_termino, ";
-                joinString += " INNER JOIN esc_matr_turma AS MT ON MT.id_matr_escola = ME.id ";
-                joinString += " INNER JOIN esc_turma AS T ON T.id = MT.id_turma ";
-                joinString += " INNER JOIN fin_servicos AS S ON S.id = T.id_curso ";
+                asString += " T.dt_inicio, \n";
+                asString += " T.dt_termino, \n";
+                joinString += " INNER JOIN esc_matr_turma AS MT ON MT.id_matr_escola = ME.id \n";
+                joinString += " INNER JOIN esc_turma AS T ON T.id = MT.id_turma \n";
+                joinString += " INNER JOIN fin_servicos AS S ON S.id = T.id_curso \n";
                 if (idTurmaOuCurso == null) {
                     if (periodo[1].isEmpty()) {
                         if (!periodo[0].isEmpty()) {
@@ -62,9 +61,9 @@ public class RelatorioMatriculaEscolaDao extends DB {
             } else {
                 asString += " MI.dt_inicio, ";
                 asString += " MI.dt_termino, ";
-                joinString += " INNER JOIN esc_matr_individual AS MI ON MI.id_matr_escola = ME.id ";
-                joinString += " INNER JOIN fin_servicos AS S ON S.id = MI.id_curso ";
-                joinString += " LEFT JOIN esc_professor AS PROF ON PROF.id = MI.id_professor ";
+                joinString += " INNER JOIN esc_matr_individual AS MI ON MI.id_matr_escola = ME.id \n";
+                joinString += " INNER JOIN fin_servicos AS S ON S.id = MI.id_curso \n";
+                joinString += " LEFT JOIN esc_professor AS PROF ON PROF.id = MI.id_professor \n";
                 if (idTurmaOuCurso != null) {
                     listQuery.add("MI.id_curso = " + idTurmaOuCurso);
                 }
@@ -88,19 +87,20 @@ public class RelatorioMatriculaEscolaDao extends DB {
             }
             String queryString;
             queryString = ""
-                    + "      SELECT P.ds_nome,                                                                      " // 0  - NOME
-                    + "             F.dt_nascimento,                                                                " // 1  - NASCIMENTO
-                    + "             F.ds_sexo,                                                                      " // 2  - SEXO
-                    + "             ST.ds_descricao,                                                                " // 3  - MATRÍCULA STATUS
-                    + "             S.ds_descricao,                                                                 " // 4  - SERVIÇO
+                    + "      SELECT P.ds_nome,                                                                     \n" // 0  - NOME
+                    + "             F.dt_nascimento,                                                               \n" // 1  - NASCIMENTO
+                    + "             F.ds_sexo,                                                                     \n" // 2  - SEXO
+                    + "             ST.ds_descricao,                                                               \n" // 3  - MATRÍCULA STATUS
+                    + "             S.ds_descricao,                                                                \n" // 4  - SERVIÇO
                     + "         " + asString // 5 INICIO - 6 TÉRMINO
-                    + "             SVW.categoria                                                                   " // 7 - CATEGORIA DE SÓCIOS
-                    + "        FROM matr_escola AS ME                                                               "
-                    + "  INNER JOIN pes_fisica              AS F    ON F.id_pessoa   = ME.id_aluno                  "
-                    + "  INNER JOIN pes_pessoa              AS P    ON P.id          = F.id_pessoa                  "
-                    + "   LEFT JOIN soc_socios_vw           AS SVW  ON SVW.codsocio  = F.id_pessoa                  "
-                    + "   LEFT JOIN esc_status              AS ST   ON ST.id         = ME.id_status                 "
-                    + "  INNER JOIN esc_vendedor            AS V    ON V.id          = ME.id_vendedor               "
+                    + "             SVW.categoria                                                                  \n" // 7 - CATEGORIA DE SÓCIOS
+                    + "        FROM matr_escola AS ME                                                              \n"
+                    + "  INNER JOIN fin_servico_pessoa      AS SP   ON SP.id = ME.id_servico_pessoa                \n"
+                    + "  INNER JOIN pes_fisica              AS F    ON F.id_pessoa   = SP.id_pessoa                \n"
+                    + "  INNER JOIN pes_pessoa              AS P    ON P.id          = F.id_pessoa                 \n"
+                    + "   LEFT JOIN soc_socios_vw           AS SVW  ON SVW.codsocio  = F.id_pessoa                 \n"
+                    + "   LEFT JOIN esc_status              AS ST   ON ST.id         = ME.id_status                \n"
+                    + "  INNER JOIN esc_vendedor            AS V    ON V.id          = ME.id_vendedor              \n"
                     + "         " + joinString
                     + "";
             if (filial != null) {
@@ -133,10 +133,10 @@ public class RelatorioMatriculaEscolaDao extends DB {
                 listQuery.add("ME.id_midia = " + midia);
             }
             if (responsavel != null) {
-                listQuery.add("ME.id_responsavel = " + responsavel);
+                listQuery.add("SP.id_cobranca = " + responsavel);
             }
             if (aluno != null) {
-                listQuery.add("ME.id_aluno = " + aluno);
+                listQuery.add("SP.id_pessoa = " + aluno);
             }
             for (int i = 0; i < listQuery.size(); i++) {
                 if (i == 0) {
@@ -144,7 +144,7 @@ public class RelatorioMatriculaEscolaDao extends DB {
                 } else {
                     queryString += " AND ";
                 }
-                queryString += " " + listQuery.get(i).toString();
+                queryString += " " + listQuery.get(i).toString() + " \n";
             }
             if (!relatorios.getQryOrdem().isEmpty()) {
                 queryString += " ORDER BY " + relatorios.getQry();
