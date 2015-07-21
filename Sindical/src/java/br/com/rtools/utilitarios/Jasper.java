@@ -35,14 +35,18 @@ import javax.servlet.ServletContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JRDesignQuery;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -136,6 +140,18 @@ public class Jasper implements Serializable {
      * Ignora uso de código único na String do nome do relaório
      */
     public static Boolean IGNORE_UUID;
+    /**
+     * Database
+     */
+    private static DBExternal dbe;
+    /**
+     * Query
+     */
+    public static String QUERY_STRING;
+    /**
+     * Query Srint
+     */
+    public static Boolean IS_QUERY_STRING;
 
     static {
         load();
@@ -168,6 +184,9 @@ public class Jasper implements Serializable {
         EXCEL_FIELDS = "";
         NO_COMPACT = false;
         IGNORE_UUID = false;
+        dbe = null;
+        IS_QUERY_STRING = false;
+        QUERY_STRING = "";
     }
 
     public static void printReports(String jasperName, String fileName, Collection c) {
@@ -257,7 +276,7 @@ public class Jasper implements Serializable {
         List listFilesZip = new ArrayList();
         List listTemp = new ArrayList();
         String realPath = "";
-        JasperPrint print;
+        JasperPrint print = null;
         JRBeanCollectionDataSource dtSource;
 
         // DEU ERRO NO MOMENTO EM QUE FOI IMPRIMIR UM RELATÓRIO PELA WEB, ONDE NÃO SE TEM Usuario
@@ -290,6 +309,7 @@ public class Jasper implements Serializable {
         if (IGNORE_UUID) {
             uuid = "";
         }
+        DBExternal con = new DBExternal();
         if (EXPORT_TO_EXCEL) {
             List<?> list = (List) c;
             Class classx = list.get(0).getClass();
@@ -402,20 +422,30 @@ public class Jasper implements Serializable {
                         }
                     }
                     if (IS_REPORT_CONNECTION) {
-                        DBExternal con = new DBExternal();
-                        con.setDatabase(GenericaSessao.getString("sessaoCliente"));
+                        if (dbe != null) {
+                            con = dbe;
+                        } else {
+                            con.setDatabase(GenericaSessao.getString("sessaoCliente"));
+                        }
                         if (new File(subreport).exists()) {
                             parameters.put("REPORT_CONNECTION", con.getConnection());
                         }
                     }
                     JasperReport jasper = null;
+                    String jasper_path = "";
                     if (jasperListExport.isEmpty()) {
                         if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + jasperName)).exists()) {
-                            jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + jasperName)));
+                            jasper_path = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + jasperName);
+                            jasper = (JasperReport) JRLoader.loadObject(new File(jasper_path));
                         } else if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "" + jasperName)).exists()) {
-                            jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "" + jasperName)));
+                            jasper_path = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "" + jasperName);
+                            jasper = (JasperReport) JRLoader.loadObject(new File(jasper_path));
+                        } else if (new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/" + jasperName)).exists()) {
+                            jasper_path = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/" + jasperName);
+                            jasper = (JasperReport) JRLoader.loadObject(new File(jasper_path));
                         } else {
-                            jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(jasperName)));
+                            jasper_path = ((ServletContext) faces.getExternalContext().getContext()).getRealPath(jasperName);
+                            jasper = (JasperReport) JRLoader.loadObject(new File(jasper_path));
                         }
                         if (!GROUP_NAME.isEmpty()) {
                             JRGroup[] jRGroups = jasper.getGroups();
@@ -539,8 +569,25 @@ public class Jasper implements Serializable {
                             File file = new File(dirPath + "/" + downloadName);
                             if (jasperListExport.isEmpty()) {
                                 jasper.setProperty(fileName, PATH);
-                                dtSource = new JRBeanCollectionDataSource(c);
-                                print = JasperFillManager.fillReport(jasper, parameters, dtSource);
+                                if (IS_QUERY_STRING) {
+                                    if (!QUERY_STRING.isEmpty()) {
+                                        String jasper_jrxml = jasper_path.replace(".jasper", ".jrxml");
+                                        JRDesignQuery query = new JRDesignQuery();
+                                        JasperDesign jasperDesign = JRXmlLoader.load(jasper_jrxml);
+                                        // update the data query
+                                        JRDesignQuery jRDesignQuery = new JRDesignQuery();
+                                        jRDesignQuery.setText(QUERY_STRING);
+                                        jasperDesign.setQuery(jRDesignQuery);
+                                        jasper = JasperCompileManager.compileReport(jasperDesign);
+                                        if (con != null) {
+                                            parameters.put("REPORT_CONNECTION", con.getConnection());
+                                            print = JasperFillManager.fillReport(jasper, parameters);
+                                        }
+                                    }
+                                } else {
+                                    dtSource = new JRBeanCollectionDataSource(c);
+                                    print = JasperFillManager.fillReport(jasper, parameters, dtSource);
+                                }
                                 if (bytesComparer == BYTES) {
                                     b = JasperExportManager.exportReportToPdf(print);
                                 } else {
@@ -635,6 +682,7 @@ public class Jasper implements Serializable {
                 }
             }
         }
+        dbe = null;
         clear();
     }
 
@@ -656,6 +704,8 @@ public class Jasper implements Serializable {
         NO_COMPACT = false;
         EXCEL_FIELDS = "";
         IGNORE_UUID = false;
+        QUERY_STRING = "";
+        IS_QUERY_STRING = false;
     }
 
     public String classAnnotationValue(Class classType, Class annotationType, String attributeName) {
@@ -734,6 +784,14 @@ public class Jasper implements Serializable {
 
     public void setEXCEL_FIELDS(String aEXCEL_FIELDS) {
         EXCEL_FIELDS = aEXCEL_FIELDS;
+    }
+
+    public DBExternal getDbe() {
+        return dbe;
+    }
+
+    public void setDbe(DBExternal dbe) {
+        this.dbe = dbe;
     }
 
     // USAR - ADICIONAR AO JASPER NO XML
