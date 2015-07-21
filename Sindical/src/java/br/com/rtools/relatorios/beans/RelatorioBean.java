@@ -3,43 +3,57 @@ package br.com.rtools.relatorios.beans;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
 public class RelatorioBean implements Serializable {
 
-    private Relatorios relatorio = new Relatorios();
-    private RelatorioOrdem relatorioOrdem = new RelatorioOrdem();
-    private List<SelectItem> listaRotina = new ArrayList<>();
-    private List<Relatorios> listaRelatorio = new ArrayList();
-    private List<RelatorioOrdem> listRelatorioOrdem = new ArrayList<>();
-    private String msgConfirma = "";
-    private int index = 0;
+    private Relatorios relatorio;
+    private RelatorioOrdem relatorioOrdem;
+    private List<SelectItem> listRotina;
+    private List<Relatorios> listRelatorio;
+    private List<RelatorioOrdem> listRelatorioOrdem;
+    private Integer rotina_id;
+
+    @PostConstruct
+    public void init() {
+        relatorio = new Relatorios();
+        relatorioOrdem = new RelatorioOrdem();
+        listRotina = new ArrayList<>();
+        listRelatorio = new ArrayList<>();
+        listRelatorioOrdem = new ArrayList<>();
+        rotina_id = 0;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+        GenericaSessao.remove("rotinaBean");
+    }
 
     public void addRelatorioOrdem() {
         if (relatorioOrdem.getNome().isEmpty() || relatorioOrdem.getQuery().isEmpty()) {
-            GenericaMensagem.warn("Sucesso", "Informar descrição e query!");
+            GenericaMensagem.warn("Validação", "Informar descrição e query!");
             return;
-
         }
         Dao dao = new Dao();
         Boolean sucess = false;
-        String message = "";
-        if (relatorioOrdem.getId() == null) {
+        String message;
+        if (relatorioOrdem.getId() == -1) {
             relatorioOrdem.setRelatorios(relatorio);
             if (dao.save(relatorioOrdem, true)) {
                 sucess = true;
@@ -98,70 +112,70 @@ public class RelatorioBean implements Serializable {
         relatorioOrdem = ro;
     }
 
-    public String salvar() {
+    public void save() {
         if (relatorio.getNome().isEmpty()) {
-            msgConfirma = "Digite uma descrição!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return null;
+            GenericaMensagem.warn("Validação", "Digite uma descrição!");
+            return;
         }
 
         if (relatorio.getJasper().isEmpty()) {
-            msgConfirma = "Digite um caminho para o Jasper!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return null;
+            GenericaMensagem.warn("Validação", "Digite um caminho para o Jasper!");
+            return;
         }
 
         Dao dao = new Dao();
         NovoLog log = new NovoLog();
 
-        relatorio.setRotina((Rotina) dao.find(new Rotina(), Integer.parseInt(listaRotina.get(index).getDescription())));
+        relatorio.setRotina((Rotina) dao.find(new Rotina(), rotina_id));
 
         dao.openTransaction();
         if (relatorio.getId() == -1) {
             if (dao.save(relatorio)) {
-                msgConfirma = "Relatório salvo com Sucesso!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
+                GenericaMensagem.info("Sucesso!", "Registro inserido");
+                // new RotinaContadorDao().incrementar(RotinaBean.getRotinaAtual().getId(), relatorio.getRotina().getId(), ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
                 log.save("Relatório inserido " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
             } else {
-                msgConfirma = "Erro ao salvar Relatório!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                GenericaMensagem.warn("Erro", "Ao salvar registro!");
                 dao.rollback();
-                return null;
+                return;
             }
         } else {
             Relatorios rel = (Relatorios) dao.find(new Relatorios(), relatorio.getId());
             String antes = "De: " + rel.getNome() + " / " + relatorio.getNome() + " -  " + rel.getJasper() + " / " + relatorio.getJasper();
-
             if (dao.update(relatorio)) {
-                msgConfirma = "Registro atualizado!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
+                GenericaMensagem.info("Sucesso!", "Registro atualizado");
                 log.update(antes, relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+                //new RotinaContadorDao().incrementar(RotinaBean.getRotinaAtual().getId(), relatorio.getRotina().getId(), ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
             } else {
-                msgConfirma = "Erro ao atualizar!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 dao.rollback();
-                return null;
+                return;
             }
         }
-        listaRelatorio.clear();
+        listRelatorio.clear();
         dao.commit();
-        return null;
     }
 
-    public String novo() {
-        relatorio = new Relatorios();
-        listRelatorioOrdem.clear();
-        relatorioOrdem = new RelatorioOrdem();
-        index = 0;
-        msgConfirma = "";
-        return "relatorio";
+    public void clear() {
+        clear(0);
     }
 
-    public String excluir() {
+    public void clear(Integer tcase) {
+        if (tcase == 0) {
+            GenericaSessao.remove("relatorioBean");
+        } else if (tcase == 1) {
+            relatorio = new Relatorios();
+            listRelatorioOrdem.clear();
+            relatorioOrdem = new RelatorioOrdem();
+            listRelatorio.clear();
+            rotina_id = -1;
+        }
+    }
+
+    public void delete() {
         if (relatorio.getId() == -1) {
-            msgConfirma = "Pesquise um relatório para exclusão";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return "relatorio";
+            GenericaMensagem.warn("Validação", "Pesquise um relatório para exclusão!");
+            return;
         }
 
         Dao dao = new Dao();
@@ -169,32 +183,27 @@ public class RelatorioBean implements Serializable {
         dao.openTransaction();
 
         if (dao.delete(relatorio)) {
-            msgConfirma = "Relatório excluido com Sucesso!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
+            GenericaMensagem.info("Sucesso!", "Registro excluído");
             log.delete(relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
         } else {
-            msgConfirma = "Relatório não pode ser excluido";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", "Erro ao excluir registro!");
             dao.rollback();
-            return null;
         }
 
         dao.commit();
         relatorio = new Relatorios();
-        index = 0;
-        return null;
+        listRelatorio.clear();
+        rotina_id = 0;
     }
 
-    public String editar(Relatorios rela) {
-        this.relatorio = rela;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (!getListaRotina().isEmpty()) {
-            for (int o = 0; o < listaRotina.size(); o++) {
-                if (Integer.parseInt(listaRotina.get(o).getDescription()) == relatorio.getRotina().getId()) {
-                    index = o;
-                }
-            }
-        }
+    public String edit(Relatorios r) {
+        this.relatorio = r;
+        GenericaSessao.put("linkClicado", true);
+        listRotina.clear();
+        getListRotina();
+        listRelatorioOrdem.clear();
+        relatorioOrdem = new RelatorioOrdem();
+        rotina_id = relatorio.getRotina().getId();
         return "relatorio";
     }
 
@@ -206,50 +215,40 @@ public class RelatorioBean implements Serializable {
         this.relatorio = relatorio;
     }
 
-    public List<SelectItem> getListaRotina() {
-        if (listaRotina.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            List<Rotina> result = db.pesquisaRotina();
-            for (int i = 0; i < result.size(); i++) {
-                listaRotina.add(new SelectItem(i,
-                        result.get(i).getRotina(),
-                        String.valueOf(result.get(i).getId()))
-                );
+    public List<SelectItem> getListRotina() {
+        if (listRotina.isEmpty()) {
+            List<Rotina> list = new Dao().list(new Rotina(), true);
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    rotina_id = list.get(i).getId();
+                }
+                listRotina.add(new SelectItem(list.get(i).getId(), list.get(i).getRotina()));
             }
         }
-        return listaRotina;
+        return listRotina;
     }
 
-    public void setListaRotina(List<SelectItem> listaRotina) {
-        this.listaRotina = listaRotina;
+    public void setListRotina(List<SelectItem> listRotina) {
+        this.listRotina = listRotina;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public Integer getRotina_id() {
+        return rotina_id;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setRotina_id(Integer rotina_id) {
+        this.rotina_id = rotina_id;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public List<Relatorios> getListaRelatorio() {
-        if (listaRelatorio.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            listaRelatorio = db.pesquisaTodosRelatorios();
+    public List<Relatorios> getListRelatorio() {
+        if (listRelatorio.isEmpty()) {
+            listRelatorio = new Dao().list(new Relatorios(), true);
         }
-        return listaRelatorio;
+        return listRelatorio;
     }
 
-    public void setListaRelatorio(List<Relatorios> listaRelatorio) {
-        this.listaRelatorio = listaRelatorio;
+    public void setListRelatorio(List<Relatorios> listRelatorio) {
+        this.listRelatorio = listRelatorio;
     }
 
     public RelatorioOrdem getRelatorioOrdem() {
@@ -261,11 +260,13 @@ public class RelatorioBean implements Serializable {
     }
 
     public List<RelatorioOrdem> getListRelatorioOrdem() {
-        if (listRelatorioOrdem.isEmpty()) {
-            RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
-            listRelatorioOrdem = relatorioOrdemDao.findAllByRelatorio(relatorio.getId());
-            for (int i = 0; i < listRelatorioOrdem.size(); i++) {
-                listRelatorioOrdem.set(i, (RelatorioOrdem) new Dao().rebind(listRelatorioOrdem.get(i)));
+        if (relatorio.getId() != -1) {
+            if (listRelatorioOrdem == null || listRelatorioOrdem.isEmpty()) {
+                RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
+                listRelatorioOrdem = relatorioOrdemDao.findAllByRelatorio(relatorio.getId());
+                for (int i = 0; i < listRelatorioOrdem.size(); i++) {
+                    listRelatorioOrdem.set(i, (RelatorioOrdem) new Dao().rebind(listRelatorioOrdem.get(i)));
+                }
             }
         }
         return listRelatorioOrdem;
@@ -273,5 +274,50 @@ public class RelatorioBean implements Serializable {
 
     public void setListRelatorioOrdem(List<RelatorioOrdem> listRelatorioOrdem) {
         this.listRelatorioOrdem = listRelatorioOrdem;
+    }
+
+    /**
+     * 0 - Ultimas usadas 1 - Mais usadas
+     *
+     * @param tcase
+     */
+    public void loadRotinaCombo(Integer tcase) {
+        List<Rotina> list = new ArrayList();
+        //RotinaContadorDao rcd = new RotinaContadorDao();
+        if (tcase == 0) {
+            //rcd.orderData();
+            // list = rcd.findRotinasByRotinaTela(RotinaBean.getRotinaAtual().getId(), ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
+        } else if (tcase == 1) {
+            //rcd.orderContador();
+            // list = rcd.findRotinasByRotinaTela(RotinaBean.getRotinaAtual().getId(), ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
+        }
+        if (!list.isEmpty()) {
+            listRotina.clear();
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    rotina_id = list.get(i).getId();
+                }
+                listRotina.add(new SelectItem(list.get(i).getId(), list.get(i).getRotina()));
+            }
+        }
+    }
+
+    /**
+     * 1 - Update no relatório default para a rotina
+     *
+     * @param tcase
+     */
+    public void listener(Integer tcase) {
+        // 1 - Update no relatório default para a rotina
+        switch (tcase) {
+            case 1:
+                if (new RelatorioDao().defineDefault(relatorio)) {
+                    GenericaMensagem.info("Sucesso", "Definido como default desta rotina");
+                    relatorio = (Relatorios) new Dao().rebind(relatorio);
+                } else {
+                    GenericaMensagem.warn("Erro", "Ao definir como default!");
+                }
+                break;
+        }
     }
 }
