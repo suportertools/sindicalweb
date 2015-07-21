@@ -29,7 +29,7 @@ public class RelatorioOrdemDao extends DB {
                 getEntityManager().getTransaction().rollback();
                 return false;
             }
-            query = getEntityManager().createNativeQuery("UPDATE sis_relatorio_ordem SET is_default = true WHERE id = " + ro.getPrincipal());
+            query = getEntityManager().createNativeQuery("UPDATE sis_relatorio_ordem SET is_default = true WHERE id = " + ro.getId());
             if (query.executeUpdate() == 0) {
                 getEntityManager().getTransaction().rollback();
                 return false;
