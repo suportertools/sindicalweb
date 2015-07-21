@@ -1,17 +1,21 @@
 package br.com.rtools.relatorios;
 
 import br.com.rtools.seguranca.Rotina;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "sis_relatorios")
-@NamedQuery(name = "Relatorios.pesquisaID", query = "select rel from Relatorios rel where rel.id=:pid")
-public class Relatorios implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Relatorios.pesquisaID", query = "SELECT R FROM Relatorios R WHERE R.id = :pid"),
+    @NamedQuery(name = "Relatorios.findAll", query = "SELECT R FROM Relatorios AS R ORDER BY R.nome ASC")
+})
+public class Relatorios implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
     @JoinColumn(name = "id_rotina", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Rotina rotina;
@@ -23,14 +27,20 @@ public class Relatorios implements java.io.Serializable {
     private String qry;
     @Column(name = "ds_qry_ordem", length = 1000)
     private String qryOrdem;
-    @Column(name = "is_por_folha")
+    @Column(name = "is_por_folha", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean porFolha;
     @Column(name = "ds_nome_grupo", length = 100)
     private String nomeGrupo;
-    @Column(name = "is_excel")
+    @Column(name = "is_excel", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean excel;
     @Column(name = "ds_campos_excel", length = 255)
     private String camposExcel;
+    @Column(name = "is_monta_query_string", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean montaQuery;
+    @Column(name = "ds_query_string")
+    private String queryString;
+    @Column(name = "is_default", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean principal;
 
     public Relatorios() {
         this.id = -1;
@@ -43,26 +53,31 @@ public class Relatorios implements java.io.Serializable {
         this.nomeGrupo = "";
         this.excel = false;
         this.camposExcel = "";
+        this.montaQuery = false;
+        this.queryString = "";
+        this.principal = false;
     }
 
-    public Relatorios(int id, Rotina rotina, String nome, String jasper, String qry, String qryOrdem, Boolean porFolha, String nomeGrupo, Boolean excel, String camposExcel) {
-        this.id = -1;
+    public Relatorios(Integer id, Rotina rotina, String nome, String jasper, String qry, Boolean porFolha, String nomeGrupo, Boolean excel, String camposExcel, Boolean montaQuery, String queryString, Boolean principal) {
+        this.id = id;
         this.rotina = rotina;
         this.nome = nome;
         this.jasper = jasper;
         this.qry = qry;
-        this.qryOrdem = qryOrdem;
         this.porFolha = porFolha;
         this.nomeGrupo = nomeGrupo;
         this.excel = excel;
         this.camposExcel = camposExcel;
+        this.montaQuery = montaQuery;
+        this.queryString = queryString;
+        this.principal = principal;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -137,4 +152,52 @@ public class Relatorios implements java.io.Serializable {
     public void setCamposExcel(String camposExcel) {
         this.camposExcel = camposExcel;
     }
+
+    public Boolean getMontaQuery() {
+        return montaQuery;
+    }
+
+    public void setMontaQuery(Boolean montaQuery) {
+        this.montaQuery = montaQuery;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public Boolean getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Boolean principal) {
+        this.principal = principal;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Relatorios other = (Relatorios) obj;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Relatorios{" + "id=" + id + ", rotina=" + rotina + ", nome=" + nome + ", jasper=" + jasper + ", qry=" + qry + ", qryOrdem=" + qryOrdem + ", porFolha=" + porFolha + ", nomeGrupo=" + nomeGrupo + ", excel=" + excel + ", camposExcel=" + camposExcel + ", montaQuery=" + montaQuery + ", queryString=" + queryString + ", principal=" + principal + '}';
+    }
+
 }
