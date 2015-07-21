@@ -21,23 +21,26 @@
                     <ui:include src="templates/templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="pesquisaRelatorios">
-                            <p:dataTable value="#{relatorioBean.listaRelatorio}" var="linha" id="tbl">
-                                <p:column style="text-align: center">
-                                    <p:commandLink action="#{relatorioBean.editar(linha)}" value="#{linha.id}" />
+                            <c:set scope="request" var="object" value="${relatorioBean.relatorio}"/>
+                            <h:outputText value="Pesquisar relatório" styleClass="fonteHeader" />
+                            <div class="clear"></div>                            
+                            <p:dataTable value="#{relatorioBean.listRelatorio}" var="relatorios" id="tbl" emptyMessage="Nenhum registro encontrado!">
+                                <p:column styleClass="text-center" width="30">
+                                    <p:commandButton action="#{relatorioBean.edit(relatorios)}" icon="ui-icon-link"/>
                                 </p:column>
 
                                 <p:column headerText="Nome do relatório">
-                                    <p:commandLink action="#{relatorioBean.editar(linha)}" value="#{linha.nome}" />
+                                    <p:commandLink action="#{relatorioBean.edit(relatorios)}" value="#{relatorios.nome}" />
                                 </p:column>
 
                                 <p:column headerText="Caminho do Jasper">
-                                    <h:outputText value="#{linha.jasper}"/>
+                                    <h:outputText value="#{relatorios.jasper}"/>
                                 </p:column>
 
                                 <p:column headerText="Descrição Rotina">
-                                    <h:outputText value="#{linha.rotina.rotina}"/>
+                                    <h:outputText value="#{relatorios.rotina.rotina}"/>
                                 </p:column>
                             </p:dataTable>
                         </h:form>
