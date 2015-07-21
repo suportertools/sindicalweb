@@ -286,6 +286,9 @@ public class RelatorioSociosBean implements Serializable {
                 if (i == 0) {
                     idRelatorio = i;
                 }
+                if (list.get(i).getPrincipal()) {
+                    idRelatorio = i;
+                }
                 listaRelatorio.add(new SelectItem(i,
                         list.get(i).getNome(),
                         Integer.toString(list.get(i).getId())));
