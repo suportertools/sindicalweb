@@ -28,11 +28,12 @@
                 </f:subview>
                 <f:view>
                     <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
-                        <h:form id="formRelatorio">
+                        <h:form id="form_relatorio">
                             <c:set scope="request" var="object" value="${relatorioBean.relatorio}"/>
                             <h:outputText value="Relatórios" styleClass="fonteHeader" />
                             <div class="clear"></div>
-                            <p:panel id="i_panel" styleClass="fundoCinza" style="width: 100%;">
+                            <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />  
+                            <p:panel id="i_panel" styleClass="fundoCinza margin-top-med">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Nome:" />
                                     <h:column>
@@ -46,9 +47,20 @@
                                     </h:column>
                                     <h:outputLabel value="Rotina:" />
                                     <h:column>
-                                        <p:selectOneMenu value="#{relatorioBean.index}">
-                                            <f:selectItems value="#{relatorioBean.listaRotina}"/>
-                                        </p:selectOneMenu>
+                                        <h:panelGrid columns="5" id="i_panel_grid_rotinas">
+                                            <p:selectOneMenu value="#{relatorioBean.rotina_id}" filter="true" filterMatchMode="startsWith">
+                                                <f:selectItems value="#{relatorioBean.listRotina}" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton action="#{relatorioBean.loadRotinaCombo(0)}" value="Ultimas usadas" update="i_panel_grid_rotinas" rendered="#{relatorioBean.relatorio.id == -1}"/>
+                                            <p:commandButton action="#{relatorioBean.loadRotinaCombo(1)}" value="Mais usadas" update="i_panel_grid_rotinas" rendered="#{relatorioBean.relatorio.id == -1}"/>
+                                            <p:commandButton action="#{relatorioBean.listRotina.clear()}" value="Restaurar" update="i_panel_grid_rotinas" rendered="#{relatorioBean.relatorio.id == -1}"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <h:column />
+                                    <h:column>
+                                        <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.principal}" itemLabel="Default da rotina" disabled="#{relatorioBean.relatorio.id == -1}">
+                                            <p:ajax event="change" update="@this" listener="#{relatorioBean.listener(1)}"/>
+                                        </p:selectBooleanCheckbox>
                                     </h:column>
                                     <h:column />
                                     <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.porFolha}" itemLabel="Imprime relatório por folha">
@@ -65,15 +77,27 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />  
+                            <p:panel styleClass="margin-top-max" header="Complementar">
+                                <h:panelGrid style="width: 100%;" cellpadding="5">
+                                    <h:column>
+                                        <p:selectBooleanCheckbox value="#{relatorioBean.relatorio.montaQuery}" itemLabel="Monta query sem objeto">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>                                    
+                                    <h:outputLabel value="Query String:" />
+                                    <h:column>
+                                        <p:inputTextarea value="#{relatorioBean.relatorio.queryString}" rows="5" cols="100">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputTextarea>                                        
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
 
                             <p:panel styleClass="margin-top-max" header="Complementar Query">
                                 <h:panelGrid style="width: 100%;" >
                                     <h:outputLabel value=" Where: " styleClass="bold"/>
                                     <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qry}" style="width: 100%" />
                                     <h:column><br /></h:column>
-                                    <h:outputLabel value="Order By:" styleClass="bold"/>
-                                    <p:inputTextarea cols="50" rows="5" value="#{relatorioBean.relatorio.qryOrdem}" style="width: 100%"/>
                                 </h:panelGrid>
                             </p:panel>
 
@@ -86,38 +110,38 @@
                                     <p:selectBooleanCheckbox value="#{relatorioBean.relatorioOrdem.principal}" itemLabel="Default">
                                         <p:ajax event="change" update="@this" />
                                     </p:selectBooleanCheckbox>
-                                    <p:commandButton value="Adicionar"  action="#{relatorioBean.addRelatorioOrdem()}" update=":formRelatorio:" styleClass="margin-left-max"/>
+                                    <p:commandButton value="Adicionar"  action="#{relatorioBean.addRelatorioOrdem()}" update=":form_relatorio:" styleClass="margin-left-max"/>
                                 </h:panelGrid>
                                 <p:dataTable value="#{relatorioBean.listRelatorioOrdem}" var="relatorioOrdem" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
                                     <p:column width="30" styleClass="text-center">
-                                        <p:commandButton icon="ui-icon-link" action="#{relatorioBean.editRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
+                                        <p:commandButton icon="ui-icon-link" action="#{relatorioBean.editRelatorioOrdem(relatorioOrdem)}" update=":form_relatorio:" />
                                     </p:column>
                                     <p:column headerText="Descrição">#{relatorioOrdem.nome}</p:column>
                                     <p:column width="50" styleClass="text-center" headerText="Default">
                                         <p:selectBooleanCheckbox value="#{relatorioOrdem.principal}">
-                                            <p:ajax event="change" update=":formRelatorio:i_panel_relatorio_ordem" listener="#{relatorioBean.defaultOrdem(relatorioOrdem)}" />
+                                            <p:ajax event="change" update=":form_relatorio:i_panel_relatorio_ordem" listener="#{relatorioBean.defaultOrdem(relatorioOrdem)}" />
                                         </p:selectBooleanCheckbox>
                                     </p:column>
                                     <p:column width="30" styleClass="text-center">
-                                        <p:commandButton icon="ui-icon-trash" action="#{relatorioBean.deleteRelatorioOrdem(relatorioOrdem)}" update=":formRelatorio:" />
+                                        <p:commandButton icon="ui-icon-trash" action="#{relatorioBean.deleteRelatorioOrdem(relatorioOrdem)}" update=":form_relatorio:" />
                                     </p:column>
                                 </p:dataTable>
                             </p:panel>
 
                             <h:panelGrid columns="4" style="float: left" styleClass="margin-top-max">
-                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show()"/>
-                                <p:commandButton value="Novo" action="#{relatorioBean.novo()}"/>
+                                <p:commandButton value="Salvar" onclick="PF('i_dlg_s').show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                <p:commandButton value="Novo" action="#{relatorioBean.clear(0)}" update=":form_relatorio:"/>
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaRelatorios()}" />
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaRelatorios')}" />
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Salvar este Relatório" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioBean.salvar()}" onclick="PF('i_dlg_s').hide()" update="formRelatorio" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioBean.save()}" onclick="PF('i_dlg_s').hide()" update="form_relatorio" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Excluir este Relatório" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioBean.excluir()}" onclick="PF('i_dlg_e').hide()" update="formRelatorio" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{relatorioBean.delete()}" onclick="PF('i_dlg_e').hide()" update="form_relatorio" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>                        
                         </h:form>
