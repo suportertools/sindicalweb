@@ -115,7 +115,8 @@ public class VendaBaileDao extends DB {
                     + "       p.ds_nome AS nome, \n "
                     + "       pu.ds_nome AS usuario, \n "
                     + "       m.nr_valor AS valor, \n "
-                    + "       e.ds_obs \n "
+                    + "       e.ds_obs AS observacao,  \n "
+                    + "       es.id_servicos AS id_servico \n "
                     + "  FROM eve_venda e \n "
                     + "  LEFT JOIN eve_evento_baile_mapa ebm ON e.id = ebm.id_venda \n "
                     + " INNER JOIN eve_status sm ON sm.id = ebm.id_status \n "
@@ -123,6 +124,7 @@ public class VendaBaileDao extends DB {
                     + " INNER JOIN seg_usuario u ON u.id = e.id_usuario \n "
                     + " INNER JOIN pes_pessoa pu ON pu.id = u.id_pessoa \n "
                     + "  LEFT JOIN fin_movimento m ON m.id = ebm.id_movimento \n "
+                    + " INNER JOIN eve_evento_servico es ON e.id_evento_servico = es.id \n "
                     + " WHERE e.id_evento = " + id_evento
                     + " ORDER BY ebm.nr_mesa ";
 
@@ -144,7 +146,8 @@ public class VendaBaileDao extends DB {
                     + "       p.ds_nome AS nome, \n "
                     + "       pu.ds_nome AS usuario, \n "
                     + "       m.nr_valor AS valor, \n "
-                    + "       e.ds_obs \n "
+                    + "       e.ds_obs AS observacao,  \n "
+                    + "       es.id_servicos AS id_servico \n "
                     + "  FROM eve_venda e \n "
                     + "  LEFT JOIN eve_evento_baile_convite ebc ON e.id = ebc.id_venda \n "
                     + " INNER JOIN eve_status sc ON sc.id = ebc.id_status \n "
@@ -152,6 +155,7 @@ public class VendaBaileDao extends DB {
                     + " INNER JOIN seg_usuario u ON u.id = e.id_usuario \n "
                     + " INNER JOIN pes_pessoa pu ON pu.id = u.id_pessoa \n "
                     + "  LEFT JOIN fin_movimento m ON m.id = ebc.id_movimento \n "
+                    + " INNER JOIN eve_evento_servico es ON e.id_evento_servico = es.id \n "                                    
                     + " WHERE e.id_evento = " + id_evento
                     + " ORDER BY ebc.nr_convite";
 
@@ -182,4 +186,24 @@ public class VendaBaileDao extends DB {
         }
         return null;
     }
+    
+    public List listaMovimentosAtrasados(int id_pessoa) {
+        try {
+            String textqry = 
+                      " SELECT * \n "
+                    + "   FROM fin_movimento m \n "
+                    + "  WHERE m.dt_vencimento < CURRENT_DATE \n "
+                    + "    AND m.id_pessoa = " + id_pessoa + " "
+                    + "    AND m.id_baixa IS NULL \n "
+                    + "    AND m.is_ativo = true "
+                    + "    AND m.id_servicos NOT IN (SELECT sr.id_servicos FROM fin_servico_rotina sr WHERE id_rotina = 4)";
+            Query qry = getEntityManager().createNativeQuery(textqry);
+
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
 }

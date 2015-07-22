@@ -63,7 +63,6 @@ public class RelatorioSociosBean implements Serializable {
     private String tipoSexo = "M";
     private String tipoCarteirinha = "com";
     private String tipoSuspensos = "todos";
-    private String tipoDescontoFolha = "todos";
     private String tipoFotos = "com";
     private String tipoDescontoGeracao = "todos";
     private String tipoEmpresas = "todas";
@@ -72,6 +71,7 @@ public class RelatorioSociosBean implements Serializable {
     private String tipoTelefone = "todos";
     private String tipoEstadoCivil = "Solteiro(a)";
     private String tipoBiometria = "com";
+    private String tipoDescontoFolha = "com";
     private boolean chkGrupo = true;
     private boolean chkCategoria = true;
     private boolean chkGrau = false;
@@ -127,6 +127,7 @@ public class RelatorioSociosBean implements Serializable {
     private boolean booEmpresa = false;
     private Boolean situacao = false;
     private boolean booBiometria = false;
+    private boolean booDescontoFolha = false;
     private String situacaoString = null;
     private Boolean compactar = false;
     private Integer carenciaDias = null;
@@ -138,24 +139,6 @@ public class RelatorioSociosBean implements Serializable {
     private Integer maxQtdeFuncionario = null;
 
     public void limparFiltro() {
-//        listaMenuRSocial.clear();
-//        booMatricula = false;
-//        booIdade = false;
-//        booGrupoCategoria = false;
-//        booSexo = false;
-//        booGrau = false;
-//        booFotos = false;
-//        booCarteirinha = false;
-//        booTipoCobranca = false;
-//        booCidadeSocio = false;
-//        booCidadeEmpresa = false;
-//        booAniversario = false;
-//        booData = false;
-//        booVotante = false;
-//        booEmail = false;
-//        booTelefone = false;
-//        booEstadoCivil = false;
-//        booEmpresa = false;
         GenericaSessao.put("relatorioSociosBean", new RelatorioSociosBean());
     }
 
@@ -178,7 +161,8 @@ public class RelatorioSociosBean implements Serializable {
                 && !booEstadoCivil
                 && !booEmpresa
                 && !situacao
-                && !booBiometria) {
+                && !booBiometria
+                && !booDescontoFolha) {
             return false;
         }
         return true;
@@ -246,6 +230,8 @@ public class RelatorioSociosBean implements Serializable {
             }
         } else if (index == 18) {
             booBiometria = !booBiometria;
+        } else if (index == 19) {
+            booDescontoFolha = !booDescontoFolha;
         }
     }
 
@@ -270,6 +256,7 @@ public class RelatorioSociosBean implements Serializable {
             listaMenuRSocial.add(new DataObject("Empresas ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Situação ", "Editar", null, null, null, null));
             listaMenuRSocial.add(new DataObject("Biometria ", "Editar", null, null, null, null));
+            listaMenuRSocial.add(new DataObject("Desconto Folha ", "Editar", null, null, null, null));
         }
         return listaMenuRSocial;
     }
@@ -398,13 +385,15 @@ public class RelatorioSociosBean implements Serializable {
             }
         }
 
-        List<List> result = dbS.pesquisaSocios(relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
+        List<List> result = dbS.pesquisaSocios(
+                relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
                 booSexo, tipoSexo, booGrau, ids_parentesco, booFotos, tipoFotos, booCarteirinha, tipoCarteirinha,
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
                 booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), minQtdeFuncionario, maxQtdeFuncionario, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString,
-                booBiometria, tipoBiometria);
+                booBiometria, tipoBiometria, booDescontoFolha, tipoDescontoFolha
+        );
 
         Collection lista = new ArrayList();
         for (int i = 0; i < result.size(); i++) {
@@ -1494,5 +1483,13 @@ public class RelatorioSociosBean implements Serializable {
         } catch (Exception e) {
             this.maxQtdeFuncionario = 0;
         }
+    }
+
+    public boolean isBooDescontoFolha() {
+        return booDescontoFolha;
+    }
+
+    public void setBooDescontoFolha(boolean booDescontoFolha) {
+        this.booDescontoFolha = booDescontoFolha;
     }
 }

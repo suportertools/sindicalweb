@@ -51,7 +51,7 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class VendaBaileBean implements Serializable {
 
-    private final List<SelectItem> listaEventoBaile = new ArrayList();
+    private List<SelectItem> listaEventoBaile = new ArrayList();
     private List<EventoBaileMapa> listaMesasBaile = new ArrayList();
     private List<EventoBaileMapa> listaMesasBaileSelecionada = new ArrayList();
     private List<EventoBaileConvite> listaConviteBaile = new ArrayList();
@@ -88,7 +88,7 @@ public class VendaBaileBean implements Serializable {
     private EventoBaile eventoBaile = new EventoBaile();
 
     private List<Movimento> listaMovimento = new ArrayList();
-
+    
     @PostConstruct
     public void init() {
         loadListaEventoBaile();
@@ -97,6 +97,8 @@ public class VendaBaileBean implements Serializable {
         loadListaConvite();
         loadListaTipoVenda();
 
+        GenericaSessao.remove("fisicaPesquisa");
+        
         cab = (ControleAcessoBean) GenericaSessao.getObject("controleAcessoBean");
     }
 
@@ -273,7 +275,7 @@ public class VendaBaileBean implements Serializable {
                 )
                 );
             }
-            eventoBaile = result.get(0);
+            eventoBaile = (EventoBaile) new Dao().find(new EventoBaile(), Integer.valueOf(listaEventoBaile.get(indexEventoBaile).getDescription())); //result.get(0);
         }
         loadListaServicos();
     }
@@ -311,7 +313,7 @@ public class VendaBaileBean implements Serializable {
 
             for (EventoBaileMapa m : listaMesasBaileSelecionada) {
                 EventoBaileMapa ebm = new VendaBaileDao().pesquisaMesaDisponivel(m.getId());
-                if (ebm.getStatus().getId() != 1) {
+                if (ebm.getStatus().getId() == 3) {
                     GenericaMensagem.warn("Atenção", "Mesa " + ebm.getMesa() + " acabou de ser vendida, selecione outra!");
                     loadListaMesa();
                     PF.update("formVendasBaile");
@@ -327,7 +329,7 @@ public class VendaBaileBean implements Serializable {
 
             for (EventoBaileConvite c : listaConviteBaileSelecionado) {
                 EventoBaileConvite ebc = new VendaBaileDao().pesquisaConviteDisponivel(c.getId());
-                if (ebc.getStatus().getId() != 1) {
+                if (ebc.getStatus().getId() == 3) {
                     GenericaMensagem.warn("Atenção", "Convite " + ebc.getConvite() + " acabou de ser vendido, selecione outro!");
                     loadListaConvite();
                     PF.update("formVendasBaile");
@@ -358,6 +360,12 @@ public class VendaBaileBean implements Serializable {
             if (tipoPagamento.equals("debitar")) {
                 if (pessoa.getSocios() == null || pessoa.getSocios().getId() == -1) {
                     GenericaMensagem.warn("Atenção", "Para fazer um débito a pessoa precisa ser sócia!");
+                    PF.update("formVendasBaile");
+                    return;
+                }
+                
+                if (new FunctionsDao().inadimplente(pessoa.getId())){
+                    GenericaMensagem.warn("Atenção", "Pessoas com débitos pendentes!");
                     PF.update("formVendasBaile");
                     return;
                 }
@@ -504,6 +512,8 @@ public class VendaBaileBean implements Serializable {
             quantidade = lc.size();
             loadListaConvite();
         }
+        
+        chkCortesia = (venda.getEventoServico().getServicos().getId() == 13 || venda.getEventoServico().getServicos().getId() == 13);
 
         loadListaEventoBaile();
         for (int i = 0; i < listaEventoBaile.size(); i++) {
@@ -612,7 +622,43 @@ public class VendaBaileBean implements Serializable {
     }
 
     public String novo() {
-        GenericaSessao.remove("vendaBaileBean");
+        //GenericaSessao.remove("vendaBaileBean");
+        listaMesasBaile = new ArrayList();
+        listaMesasBaileSelecionada = new ArrayList();
+        listaConviteBaile = new ArrayList();
+        listaConviteBaileSelecionado = new ArrayList();
+        listaTipoVenda = new ArrayList();
+        
+        pessoa = new Pessoa();
+        venda = new BVenda();
+        todos = false;
+
+        mesaConvite = "mesa";
+        tipoVenda = "venda";
+
+        idServicos = 0;
+        listaServicos = new ArrayList();
+
+        valor = "0,00";
+        desconto = "0,00";
+        valorLiquido = "0,00";
+        total = "0,00";
+        quantidade = 0;
+
+        listaVendasMesa = new ArrayList();
+        listaVendasConvite = new ArrayList();
+        cab = new ControleAcessoBean();
+        novoDesconto = "0,00";
+        tipoPagamento = "avista";
+
+        responsavel = new Pessoa();
+        eventoServicoValor = new EventoServicoValor();
+        descricaoServico = "NENHUM SERVIÇO CORRESPONDENTE";
+        chkCortesia = false;
+
+        listaMovimento = new ArrayList(); 
+        
+        init();
         return "vendasBaile";
     }
 
@@ -641,28 +687,30 @@ public class VendaBaileBean implements Serializable {
             }
         }
 
-        if (!listaMovimento.isEmpty()) {
-            for (int i = 0; i < listaMovimento.size(); i++) {
-                movimento = (Movimento) listaMovimento.get(i);
+        if (!chkCortesia){
+            if (!listaMovimento.isEmpty()) {
+                for (int i = 0; i < listaMovimento.size(); i++) {
+                    movimento = (Movimento) listaMovimento.get(i);
 
-                movimento.setMulta(listaMovimento.get(i).getMulta());
-                movimento.setJuros(listaMovimento.get(i).getJuros());
-                movimento.setCorrecao(listaMovimento.get(i).getCorrecao());
-                movimento.setDesconto(listaMovimento.get(i).getDesconto());
+                    movimento.setMulta(listaMovimento.get(i).getMulta());
+                    movimento.setJuros(listaMovimento.get(i).getJuros());
+                    movimento.setCorrecao(listaMovimento.get(i).getCorrecao());
+                    movimento.setDesconto(listaMovimento.get(i).getDesconto());
 
-                movimento.setValor(listaMovimento.get(i).getValor());
-                movimento.setValorBaixa(listaMovimento.get(i).getValor());
+                    movimento.setValor(listaMovimento.get(i).getValor());
+                    movimento.setValorBaixa(listaMovimento.get(i).getValor());
 
-                lista.add(movimento);
+                    lista.add(movimento);
+                }
+
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
+
+                GenericaSessao.put("caixa_banco", "caixa");
+                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+
+            } else {
+                GenericaMensagem.warn("Atenção", "Lista de Movimentos Vazia!");
             }
-
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
-
-            GenericaSessao.put("caixa_banco", "caixa");
-            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
-
-        } else {
-            GenericaMensagem.warn("Atenção", "Lista de Movimentos Vazia!");
         }
         return null;
     }

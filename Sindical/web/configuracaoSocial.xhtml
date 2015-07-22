@@ -81,6 +81,7 @@
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
+                            
                             <p:panel styleClass="margin-top-max">
                                 <p:outputLabel value="Cartão Social" style="font-weight: bold; font-size: 11pt!important"/>
                                 <h:panelGrid columns="4">
@@ -89,6 +90,26 @@
                                         <p:selectBooleanCheckbox value="#{configuracaoSocialBean.configuracaoSocial.controlaCartaoFilial}" itemLabel="Controle Cartão Filial" style="margin-right: 20px">
                                             <p:ajax event="change" update="@this" />
                                         </p:selectBooleanCheckbox>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:panel styleClass="margin-top-max">
+                                <p:outputLabel value="Controle Catraca" style="font-weight: bold; font-size: 11pt!important"/>
+                                <h:panelGrid columns="3" style="width: 40%">
+                                    <h:column>
+                                        <p:outputLabel value="Cartão Dígitos" /><br />
+                                        <p:inputText value="#{configuracaoSocialBean.configuracaoSocial.cartaoDigitos}" style="width: 80px"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:outputLabel value="Cartão Posição Via" /><br />
+                                        <p:inputText value="#{configuracaoSocialBean.configuracaoSocial.cartaoPosicaoVia}" style="width: 110px"/>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <p:outputLabel value="Cartão Posição Código" /><br />
+                                        <p:inputText value="#{configuracaoSocialBean.configuracaoSocial.cartaoPosicaoCodigo}" style="width: 130px"/>
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>

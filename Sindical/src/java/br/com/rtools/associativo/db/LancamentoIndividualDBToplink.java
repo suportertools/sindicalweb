@@ -43,9 +43,14 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
     @Override
     public List pesquisaMovimentoFisica(int id_pessoa) {
         try {
-            String textqry = " select * from fin_movimento m where dt_vencimento < now() and m.id_pessoa = " + id_pessoa + " and m.id_baixa is null "
-                    + "   and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4)";
-
+            String textqry = 
+                      " SELECT * \n "
+                    + "   FROM fin_movimento m \n "
+                    + "  WHERE m.dt_vencimento < CURRENT_DATE \n "
+                    + "    AND m.id_pessoa = " + id_pessoa + " "
+                    + "    AND m.id_baixa IS NULL \n "
+                    + "    AND m.is_ativo = true "
+                    + "    AND m.id_servicos NOT IN (SELECT sr.id_servicos FROM fin_servico_rotina sr WHERE id_rotina = 4)";
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();

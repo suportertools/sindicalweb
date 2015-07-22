@@ -45,7 +45,7 @@
 
                                 <h:panelGrid columns="2">
                                     <p:column>
-                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa()}" title="Alterar Responsável"/>
+                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa()}" title="Alterar Responsável" disabled="#{lancamentoIndividualBean.fisica.pessoa.socios != null and lancamentoIndividualBean.fisica.pessoa.socios .id != -1}" />
                                     </p:column>
                                     
                                     <p:column>

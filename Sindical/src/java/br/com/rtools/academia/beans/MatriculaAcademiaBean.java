@@ -10,6 +10,8 @@ import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.LancamentoIndividualDB;
+import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.SocioCarteirinhaDB;
 import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
@@ -91,8 +93,8 @@ public class MatriculaAcademiaBean implements Serializable {
     private Pessoa responsavel;
     private Pessoa cobranca;
     private Juridica juridica;
-    private Pessoa pessoaAlunoMemoria;
-    private Pessoa pessoaResponsavelMemoria;
+    //private Pessoa pessoaAlunoMemoria;
+    //private Pessoa pessoaResponsavelMemoria;
     private PessoaComplemento pessoaComplemento;
     private Movimento movimento;
     private Socios socios;
@@ -150,8 +152,8 @@ public class MatriculaAcademiaBean implements Serializable {
         responsavel = new Pessoa();
         cobranca = null;
         juridica = new Juridica();
-        pessoaAlunoMemoria = new Pessoa();
-        pessoaResponsavelMemoria = new Pessoa();
+        //pessoaAlunoMemoria = new Pessoa();
+        //pessoaResponsavelMemoria = new Pessoa();
         pessoaComplemento = new PessoaComplemento();
         movimento = new Movimento();
         socios = new Socios();
@@ -450,8 +452,8 @@ public class MatriculaAcademiaBean implements Serializable {
                     return null;
                 }
             }
-            pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
-            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
+            //pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+            //pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             message = "Registro inserido com sucesso";
             novoLog.save(""
                     + "ID: " + matriculaAcademia.getId()
@@ -527,8 +529,8 @@ public class MatriculaAcademiaBean implements Serializable {
                 message = "Erro ao atualizar registro!";
                 return null;
             }
-            pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
-            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
+//            pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+//            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             message = "Registro atualizado com sucesso";
             novoLog.update(beforeUpdate,
                     "ID: " + matriculaAcademia.getId()
@@ -660,8 +662,8 @@ public class MatriculaAcademiaBean implements Serializable {
         atualizaValor();
         //valorLiquido = "0,0";
         //calculaValorLiquido();
-        pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
-        pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+//        pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
+//        pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
         alunoFoto = false;
         GenericaSessao.put("linkClicado", true);
         listaDiaParcela.clear();
@@ -920,101 +922,212 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setTaxa(boolean taxa) {
         this.taxa = taxa;
     }
-
-    public Fisica getAluno() {
-        if (GenericaSessao.exists("fisicaPesquisa")) {
-            clear(1);
-            disabled = false;
-            MatriculaEscolaDao med = new MatriculaEscolaDao();
-            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
-                socios = new Socios();
-                mensagemInadinplente = "";
-                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
-                switch (tipoFisica) {
-                    case "aluno":
-                        valorTaxa = "";
-                        taxa = false;
-                        aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
-                        if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
-                            pessoaAlunoMemoria = aluno.getPessoa();
-                        } else {
-                            if (aluno.getPessoa().getId() != matriculaAcademia.getServicoPessoa().getPessoa().getId()) {
-                                pessoaAlunoMemoria = aluno.getPessoa();
-                            }
-                        }
-                        if (aluno.getId() != -1) {
-                            getResponsavel();
-                            verificaSocio();
-                        }
-                        if (responsavel.getId() != -1) {
-                            pessoaComplemento = new PessoaComplemento();
-                            pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-                            if (pessoaComplemento != null && pessoaComplemento.getId() != -1) {
-                                this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-                                this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
-                            }
-                            matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-                        }
-                        matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
-                        matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-                        pegarIdServico();
-                        atualizaValor();
-                        //calculaValorLiquido();
-                        GenericaSessao.remove("juridicaPesquisa");
-                        if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                            if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
-                                responsavel = new Pessoa();
-                                matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-                                mensagemInadinplente = "Aluno em Débito!";
-                                GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
-                                disabled = true;
-                                return null;
-                            }
-                        }
-                        // verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
-                        break;
-                    case "responsavel":
-                        socios = new Socios();
-                        Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
-                        FunctionsDB functionsDB = new FunctionsDao();
-                        int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
-                        if (idade >= 18) {
-                            if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
-                                    mensagemInadinplente = "Aluno em Débito!";
-                                    GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
-                                    disabled = true;
-                                    return null;
-                                }
-                            }
-                            if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
-                                matriculaAcademia.getServicoPessoa().setCobranca(resp);
-                            }
-                        } else {
-                            GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
-                        }
-                        GenericaSessao.remove("juridicaPesquisa");
-                        //                    verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
-                        pessoaComplemento = new PessoaComplemento();
-                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
-                        if (pessoaComplemento != null) {
-                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-                            this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
-                        }
-                        break;
-                }
-            }
-            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
-                pessoaResponsavelMemoria = responsavel;
-            } else {
-                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
-                    pessoaResponsavelMemoria = responsavel;
-                }
-            }
+    
+    public Fisica getAluno(){
+        if (!GenericaSessao.exists("fisicaPesquisa") && !GenericaSessao.exists("pessoaPesquisa")) {
+            return aluno;
         }
-        getSocios();
+        
+        if (!GenericaSessao.exists("pesquisaFisicaTipo")) {
+            return aluno;
+        }
+        
+        String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
+        
+        clear(1);
+        disabled = false;
+        mensagemInadinplente = "";
+        socios = new Socios();
+        if (tipoFisica.equals("aluno")) {
+            aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
+            verificaSocio();
+            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+            if (!dbl.listaSerasa(aluno.getPessoa().getId()).isEmpty()){
+                GenericaMensagem.warn("PESSOA", aluno.getPessoa().getNome() + " contém o nome no Serasa!");
+            }
+            if (socios != null && socios.getId() != -1){
+                // PESSOA ASSOCIADA
+                matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
+            }else{
+                // PESSOA NÁO ASSOCIADA
+                matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
+            }
+            
+            matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
+        }else{
+            verificaSocio();
+            if (socios != null && socios.getId() != -1){
+                // PESSOA ASSOCIADA
+                matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
+            }else{
+                // PESSOA NÁO ASSOCIADA
+                matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
+            }
+            GenericaSessao.remove("pessoaPesquisa");
+        }
+        pegarIdServico();
+        //calculaValorLiquido();        
+        atualizaValor();
         return aluno;
     }
+    
+    public Pessoa retornaResponsavel(Integer id_pessoa, boolean associada){
+        if (associada){
+            responsavel = new FunctionsDao().titularDaPessoa(id_pessoa);
+        }else{
+            if (GenericaSessao.exists("pessoaPesquisa"))
+                responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
+            else
+                responsavel = (Pessoa) new Dao().find(new Pessoa(), id_pessoa);
+            
+            // RESPONSAVEL FISICA
+            FisicaDB dbf = new FisicaDBToplink();
+            Fisica fi = dbf.pesquisaFisicaPorPessoa(responsavel.getId());
+            if (fi != null){
+                DataHoje dh = new DataHoje();
+                int idade = dh.calcularIdade(fi.getNascimento());
+                if (idade < 18){
+                    GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não é maior de idade!");
+                    return responsavel = new Pessoa();
+                }
+            }
+            else
+            {
+            // RESPONSAVEL JURIDICA
+            // POR ENQUANTO NÃO FAZ NADA
+                GenericaMensagem.warn("RESPONSÁVEL", "Pessoa Juridica não disponível no momento!");
+                return responsavel = new Pessoa();
+            }
+        }
+        
+        Socios s = responsavel.getSocios();
+        if (s != null && s.getId() != -1){
+            if (responsavel.getId() != s.getMatriculaSocios().getTitular().getId()) {
+                GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " é um sócio dependente!");
+                return responsavel = new Pessoa();
+            }
+        }
+        
+        // MENSAGEM SE POSSUI DÉBITOS
+        if (new FunctionsDao().inadimplente(responsavel.getId())){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " possui débitos com o Sindicato!");
+        }
+        
+        // ENDEREÇO OBRIGATÓRIO
+        JuridicaDB dbj = new JuridicaDBToplink();
+        List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
+        if (lista_pe.isEmpty()){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não possui endereço cadastrado!");
+            return responsavel = new Pessoa();
+        }
+        
+        // CADASTRO NO SERASA
+        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+        if (!dbl.listaSerasa(responsavel.getId()).isEmpty()){
+            GenericaMensagem.warn("PESSOA", responsavel.getNome()+ " contém o nome no Serasa!");
+        }
+        
+        PessoaDB pdb = new PessoaDBToplink();
+        pessoaComplemento = new PessoaComplemento();
+        pessoaComplemento = pdb.pesquisaPessoaComplementoPorPessoa(responsavel.getId());
+        
+        return responsavel;
+    }    
+
+//    public Fisica getAlunoxxx() {
+//        if (GenericaSessao.exists("fisicaPesquisa")) {
+//            clear(1);
+//            disabled = false;
+//            MatriculaEscolaDao med = new MatriculaEscolaDao();
+//            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
+//                socios = new Socios();
+//                mensagemInadinplente = "";
+//                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
+//                switch (tipoFisica) {
+//                    case "aluno":
+//                        valorTaxa = "";
+//                        taxa = false;
+//                        aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
+//                        if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
+//                            pessoaAlunoMemoria = aluno.getPessoa();
+//                        } else {
+//                            if (aluno.getPessoa().getId() != matriculaAcademia.getServicoPessoa().getPessoa().getId()) {
+//                                pessoaAlunoMemoria = aluno.getPessoa();
+//                            }
+//                        }
+//                        if (aluno.getId() != -1) {
+//                            getResponsavel();
+//                            verificaSocio();
+//                        }
+//                        if (responsavel.getId() != -1) {
+//                            pessoaComplemento = new PessoaComplemento();
+//                            pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
+//                            if (pessoaComplemento != null && pessoaComplemento.getId() != -1) {
+//                                this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+//                                this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
+//                            }
+//                            matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
+//                        }
+//                        matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
+//                        matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
+//                        pegarIdServico();
+//                        atualizaValor();
+//                        //calculaValorLiquido();
+//                        GenericaSessao.remove("juridicaPesquisa");
+//                        if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
+//                            if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+//                                responsavel = new Pessoa();
+//                                matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
+//                                mensagemInadinplente = "Aluno em Débito!";
+//                                GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
+//                                disabled = true;
+//                                return null;
+//                            }
+//                        }
+//                        // verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
+//                        break;
+//                    case "responsavel":
+//                        socios = new Socios();
+//                        Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
+//                        FunctionsDB functionsDB = new FunctionsDao();
+//                        int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
+//                        if (idade >= 18) {
+//                            if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
+//                                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+//                                    mensagemInadinplente = "Aluno em Débito!";
+//                                    GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
+//                                    disabled = true;
+//                                    return null;
+//                                }
+//                            }
+//                            if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+//                                matriculaAcademia.getServicoPessoa().setCobranca(resp);
+//                            }
+//                        } else {
+//                            GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
+//                        }
+//                        GenericaSessao.remove("juridicaPesquisa");
+//                        //                    verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
+//                        pessoaComplemento = new PessoaComplemento();
+//                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+//                        if (pessoaComplemento != null) {
+//                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+//                            this.idDiaVencimento = pessoaComplemento.getNrDiaVencimento();
+//                        }
+//                        break;
+//                }
+//            }
+//            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
+//                pessoaResponsavelMemoria = responsavel;
+//            } else {
+//                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
+//                    pessoaResponsavelMemoria = responsavel;
+//                }
+//            }
+//        }
+//        getSocios();
+//        return aluno;
+//    }
 
     public void setAluno(Fisica aluno) {
         this.aluno = aluno;
@@ -1106,11 +1219,13 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public void verificaSocio() {
-        SociosDB dB = new SociosDBToplink();
-        Socios sociosx = dB.pesquisaSocioPorPessoa(aluno.getId());
-        if (sociosx != null) {
-            socio = sociosx.getId() != -1;
-        }
+        //SociosDB dB = new SociosDBToplink();
+//        Socios sociosx = dB.pesquisaSocioPorPessoa(aluno.getPessoa().getId());
+//        if (sociosx != null) {
+//            socio = sociosx.getId() != -1;
+//        }
+        socios = aluno.getPessoa().getSocios();
+        socio = socios != null && socios.getId() != -1;
     }
 
     public String getValor() {
@@ -1308,43 +1423,43 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public Juridica getJuridica() {
-        if (GenericaSessao.exists("juridicaPesquisa")) {
-            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
-            MatriculaEscolaDao med = new MatriculaEscolaDao();
-            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
-                responsavel = juridica.getPessoa();
-                if (responsavel.getId() != -1) {
-                    pessoaComplemento = new PessoaComplemento();
-                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-                    if (pessoaComplemento != null) {
-                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-                    }
-                    matriculaAcademia.getServicoPessoa().setCobranca(juridica.getPessoa());
-                }
-                pegarIdServico();
-                atualizaValor();
-                //calculaValorLiquido();
-            }
-            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
-                pessoaResponsavelMemoria = responsavel;
-            } else {
-                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
-                    pessoaResponsavelMemoria = responsavel;
-                }
-            }
-            juridica = new Juridica();
-            // verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
-            if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
-                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
-                    GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
-                    mensagemInadinplente = "Aluno em Débito!";
-                    responsavel = new Pessoa();
-                    matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-                    disabled = true;
-                    return null;
-                }
-            }
-        }
+//        if (GenericaSessao.exists("juridicaPesquisa")) {
+//            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+//            MatriculaEscolaDao med = new MatriculaEscolaDao();
+//            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
+//                responsavel = juridica.getPessoa();
+//                if (responsavel.getId() != -1) {
+//                    pessoaComplemento = new PessoaComplemento();
+//                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
+//                    if (pessoaComplemento != null) {
+//                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+//                    }
+//                    matriculaAcademia.getServicoPessoa().setCobranca(juridica.getPessoa());
+//                }
+//                pegarIdServico();
+//                atualizaValor();
+//                //calculaValorLiquido();
+//            }
+//            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
+//                pessoaResponsavelMemoria = responsavel;
+//            } else {
+//                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
+//                    pessoaResponsavelMemoria = responsavel;
+//                }
+//            }
+//            juridica = new Juridica();
+//            // verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
+//            if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1 || matriculaAcademia.getServicoPessoa().getCobranca().getId() != -1) {
+//                if (new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getCobranca().getId()) || new FunctionsDao().inadimplente(matriculaAcademia.getServicoPessoa().getPessoa().getId())) {
+//                    GenericaMensagem.fatal("Atenção", "Aluno em Débito!");
+//                    mensagemInadinplente = "Aluno em Débito!";
+//                    responsavel = new Pessoa();
+//                    matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
+//                    disabled = true;
+//                    return null;
+//                }
+//            }
+//        }
         return juridica;
     }
 
@@ -1386,14 +1501,14 @@ public class MatriculaAcademiaBean implements Serializable {
                         return null;
                     }
                 }
-                if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != pessoaAlunoMemoria.getId()) {
-                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return null;
-                }
-                if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
-                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return null;
-                }
+//                if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != pessoaAlunoMemoria.getId()) {
+//                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
+//                    return null;
+//                }
+//                if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
+//                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
+//                    return null;
+//                }
                 String vencimento;
                 String referencia;
                 Dao di = new Dao();
@@ -1412,6 +1527,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 } else {
                     idCondicaoPagto = 2;
                 }
+                
                 plano5 = matriculaAcademia.getServicoPessoa().getServicos().getPlano5();
                 servicos = matriculaAcademia.getServicoPessoa().getServicos();
                 FTipoDocumento fTipoDocumento = (FTipoDocumento) di.find(new FTipoDocumento(), matriculaAcademia.getServicoPessoa().getTipoDocumento().getId());
@@ -2251,12 +2367,12 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public Socios getSocios() {
-        if (aluno.getId() != -1) {
-            SociosDB sociosDB = new SociosDBToplink();
-            if (socios.getId() == -1) {
-                socios = sociosDB.pesquisaSocioPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
-            }
-        }
+//        if (aluno.getId() != -1) {
+//            SociosDB sociosDB = new SociosDBToplink();
+//            if (socios.getId() == -1) {
+//                socios = sociosDB.pesquisaSocioPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+//            }
+//        }
         return socios;
     }
 

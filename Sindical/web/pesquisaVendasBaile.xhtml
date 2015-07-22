@@ -63,7 +63,7 @@
                                 </p:column>
 
                                 <p:column headerText="STATUS" style="width: 90px; text-align: center">
-                                    <p:commandLink value="#{linha[3]}" action="#{vendaBaileBean.editar(linha)}"/>
+                                    <p:commandLink value="#{(linha[8] == 13 or linha[8] == 15) ? 'Cortesia' : linha[3]}" action="#{vendaBaileBean.editar(linha)}"/>
                                 </p:column>
 
                                 <p:column headerText="Valor R$" style="width: 80px; text-align: right">

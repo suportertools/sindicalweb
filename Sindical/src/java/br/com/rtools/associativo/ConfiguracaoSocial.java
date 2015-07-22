@@ -22,7 +22,6 @@ public class ConfiguracaoSocial implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-
     @Column(name = "nr_dias_inativa_demissionado")
     private int diasInativaDemissionado;
     @Column(name = "dt_inativa_demissionado")
@@ -37,6 +36,12 @@ public class ConfiguracaoSocial implements Serializable {
     private boolean recebeAtrasado;
     @Column(name = "is_controla_cartao_filial", columnDefinition = "boolean default false")
     private boolean controlaCartaoFilial;
+    @Column(name = "nr_cartao_digitos")
+    private int cartaoDigitos;    
+    @Column(name = "nr_cartao_posicao_via")
+    private int cartaoPosicaoVia;    
+    @Column(name = "nr_cartao_posicao_codigo")
+    private int cartaoPosicaoCodigo;    
 
     public ConfiguracaoSocial() {
         this.id = -1;
@@ -46,9 +51,12 @@ public class ConfiguracaoSocial implements Serializable {
         this.inativaDemissionado = false;
         this.recebeAtrasado = false;
         this.controlaCartaoFilial = false;
+        this.cartaoDigitos = 0;
+        this.cartaoPosicaoVia = 0;
+        this.cartaoPosicaoCodigo = 0;
     }
 
-    public ConfiguracaoSocial(int id, int diasInativaDemissionado, Date dataInativacaoDemissionado, GrupoCategoria grupoCategoriaInativaDemissionado, boolean inativaDemissionado, boolean recebeAtrasado, boolean controlaCartaoFilial) {
+    public ConfiguracaoSocial(int id, int diasInativaDemissionado, Date dataInativacaoDemissionado, GrupoCategoria grupoCategoriaInativaDemissionado, boolean inativaDemissionado, boolean recebeAtrasado, boolean controlaCartaoFilial, int cartaoDigitos, int cartaoPosicaoVia, int cartaoPosicaoCodigo) {
         this.id = id;
         this.diasInativaDemissionado = diasInativaDemissionado;
         this.dataInativacaoDemissionado = dataInativacaoDemissionado;
@@ -56,6 +64,9 @@ public class ConfiguracaoSocial implements Serializable {
         this.inativaDemissionado = inativaDemissionado;
         this.recebeAtrasado = recebeAtrasado;
         this.controlaCartaoFilial = controlaCartaoFilial;
+        this.cartaoDigitos = cartaoDigitos;
+        this.cartaoPosicaoVia = cartaoPosicaoVia;
+        this.cartaoPosicaoCodigo = cartaoPosicaoCodigo;
     }
 
     public int getId() {
@@ -120,5 +131,29 @@ public class ConfiguracaoSocial implements Serializable {
 
     public void setControlaCartaoFilial(boolean controlaCartaoFilial) {
         this.controlaCartaoFilial = controlaCartaoFilial;
+    }
+
+    public int getCartaoDigitos() {
+        return cartaoDigitos;
+    }
+
+    public void setCartaoDigitos(int cartaoDigitos) {
+        this.cartaoDigitos = cartaoDigitos;
+    }
+
+    public int getCartaoPosicaoVia() {
+        return cartaoPosicaoVia;
+    }
+
+    public void setCartaoPosicaoVia(int cartaoPosicaoVia) {
+        this.cartaoPosicaoVia = cartaoPosicaoVia;
+    }
+
+    public int getCartaoPosicaoCodigo() {
+        return cartaoPosicaoCodigo;
+    }
+
+    public void setCartaoPosicaoCodigo(int cartaoPosicaoCodigo) {
+        this.cartaoPosicaoCodigo = cartaoPosicaoCodigo;
     }
 }
