@@ -420,14 +420,15 @@ public class OposicaoBean implements Serializable {
         convencaoPeriodoConvencaoGrupoCidade();
         SociosDB db = new SociosDBToplink();
         
-        
-        socios = p.getSocios();//db.pesquisaSocioPorPessoa(pessoaEmpresa.getFisica().getPessoa().getId());
-
-        if (socios != null && socios.getId() != -1) {
-            if (socios.getServicoPessoa().isAtivo()) {
-                GenericaMensagem.error("Validação", "CPF cadastrado como sócio, ao salvar será inativado Automáticamente!");
+        if(p != null) {
+            socios = p.getSocios();//db.pesquisaSocioPorPessoa(pessoaEmpresa.getFisica().getPessoa().getId());            
+            if (socios != null && socios.getId() != -1) {
+                if (socios.getServicoPessoa().isAtivo()) {
+                    GenericaMensagem.error("Validação", "CPF cadastrado como sócio, ao salvar será inativado Automáticamente!");
+                }
             }
         }
+
         db.getEntityManager().close();
     }
 
