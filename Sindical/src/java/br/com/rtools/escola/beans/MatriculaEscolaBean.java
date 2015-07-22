@@ -4,6 +4,8 @@ import br.com.rtools.associativo.DescontoSocial;
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Midia;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.LancamentoIndividualDB;
+import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.escola.*;
@@ -90,8 +92,8 @@ public class MatriculaEscolaBean implements Serializable {
     private MatriculaContrato matriculaContrato;
     private MatriculaIndividual matriculaIndividual;
     private MatriculaTurma matriculaTurma;
-    private Pessoa pessoaAlunoMemoria;
-    private Pessoa pessoaResponsavelMemoria;
+    //private Pessoa pessoaAlunoMemoria;
+    //private Pessoa pessoaResponsavelMemoria;
     private EscolaAutorizados escolaAutorizados;
     private EscolaAutorizados escolaAutorizadosDetalhes;
     private MacFilial macFilial;
@@ -186,8 +188,8 @@ public class MatriculaEscolaBean implements Serializable {
         matriculaContrato = new MatriculaContrato();
         matriculaIndividual = new MatriculaIndividual();
         matriculaTurma = new MatriculaTurma();
-        pessoaAlunoMemoria = new Pessoa();
-        pessoaResponsavelMemoria = new Pessoa();
+        //pessoaAlunoMemoria = new Pessoa();
+        //pessoaResponsavelMemoria = new Pessoa();
         escolaAutorizados = new EscolaAutorizados();
         escolaAutorizadosDetalhes = new EscolaAutorizados();
         macFilial = new MacFilial();
@@ -1157,8 +1159,8 @@ public class MatriculaEscolaBean implements Serializable {
                             + " - Período: " + matriculaIndividual.getDataInicioString() + " até " + matriculaIndividual.getDataTerminoString();
                 }
 
-                pessoaResponsavelMemoria = servicoPessoa.getCobranca();
-                pessoaAlunoMemoria = servicoPessoa.getPessoa();
+                //pessoaResponsavelMemoria = servicoPessoa.getCobranca();
+                //pessoaAlunoMemoria = servicoPessoa.getPessoa();
                 sv.comitarTransacao();
                 desabilitaCampo = true;
 
@@ -1224,8 +1226,8 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                 }
                 sv.comitarTransacao();
-                pessoaResponsavelMemoria = servicoPessoa.getCobranca();
-                pessoaAlunoMemoria = servicoPessoa.getPessoa();
+                //pessoaResponsavelMemoria = servicoPessoa.getCobranca();
+                //pessoaAlunoMemoria = servicoPessoa.getPessoa();
                 GenericaMensagem.info("Sucesso", "Matrícula atualizada com sucesso!");
 
                 target = "_blank";
@@ -1335,9 +1337,9 @@ public class MatriculaEscolaBean implements Serializable {
 
         listaMesVencimento.clear();
 
-        pessoaResponsavelMemoria = servicoPessoa.getCobranca();
-        pessoaAlunoMemoria = servicoPessoa.getPessoa();
-        analisaResponsavel();
+        //pessoaResponsavelMemoria = servicoPessoa.getCobranca();
+        //pessoaAlunoMemoria = servicoPessoa.getPessoa();
+//        analisaResponsavel();
         String urlRetorno = "matriculaEscola";
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
@@ -1603,88 +1605,102 @@ public class MatriculaEscolaBean implements Serializable {
             }
         }
     }
-
-    public void gerarMovimento() {
-        if (matriculaEscola.getId() != -1) {
-            if (matriculaEscola.getEscStatus().getId() == 3) {
-                GenericaMensagem.warn("Atençao", "Não é possível gerar movimentos quando o status esta como desistente!");
-                return;
-            }
-            if (matriculaEscola.getServicoPessoa().getEvt() == null) {
-                if (servicoPessoa.getPessoa().getId() != pessoaAlunoMemoria.getId()) {
-                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return;
-                }
-                if (servicoPessoa.getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
-                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
-                    return;
-                }
-                Filial fil = getMacFilial().getFilial();
-                if (fil.getId() != matriculaEscola.getFilial().getId()) {
-                    GenericaMensagem.warn("Sistema", "Registro não pode ser atualizado por esta filial!");
-                    return;
-                }
-                String vencimento;
-                String referencia;
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                Plano5 plano5;
-                Servicos servicos;
-                int idCondicaoPagto;
-                if (numeroParcelas == 0 || numeroParcelas == 1) {
-                    idCondicaoPagto = 1;
-                } else {
-                    idCondicaoPagto = 2;
-                }
-                if (tipoMatricula.equals("Turma")) {
-                    plano5 = matriculaTurma.getTurma().getCursos().getPlano5();
-                    servicos = matriculaTurma.getTurma().getCursos();
-                } else {
-                    plano5 = matriculaIndividual.getCurso().getPlano5();
-                    servicos = matriculaIndividual.getCurso();
-                }
-                FTipoDocumento fTipoDocumento = (FTipoDocumento) salvarAcumuladoDB.find("FTipoDocumento", servicoPessoa.getTipoDocumento().getId());
-                setLote(
-                        new Lote(
-                                -1,
-                                (Rotina) salvarAcumuladoDB.find("Rotina", 151),
-                                "R",
-                                DataHoje.data(),
-                                servicoPessoa.getCobranca(),
-                                plano5,
-                                false,
-                                "",
-                                0, // matriculaEscola.getValorTotal(),
-                                matriculaEscola.getFilial(),
-                                null,
-                                null,
-                                "",
-                                fTipoDocumento,
-                                (CondicaoPagamento) salvarAcumuladoDB.find("CondicaoPagamento", idCondicaoPagto),
-                                (FStatus) salvarAcumuladoDB.find("FStatus", 1),
-                                null,
-                                servicoPessoa.isDescontoFolha(), 0));
-                salvarAcumuladoDB.abrirTransacao();
-                try {
-
-                    String nrCtrBoletoResp = "";
-
-                    for (int x = 0; x < (Integer.toString(servicoPessoa.getCobranca().getId())).length(); x++) {
-                        nrCtrBoletoResp += 0;
-                    }
-
-                    nrCtrBoletoResp += servicoPessoa.getCobranca().getId();
-                    String mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
-                    String mes = mesPrimeiraParcela.substring(0, 2);
-                    String ano = mesPrimeiraParcela.substring(3, 7);
-//                    String mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
-//                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
-                    referencia = mes + "/" + ano;
-
-//                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
-//                        if (matriculaEscola.getDiaVencimento() < 10) {
-//                            vencimento = "0" + matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+//
+//    public void gerarMovimento() {
+//        if (matriculaEscola.getId() != -1) {
+//            if (matriculaEscola.getEscStatus().getId() == 3) {
+//                GenericaMensagem.warn("Atençao", "Não é possível gerar movimentos quando o status esta como desistente!");
+//                return;
+//            }
+//            if (matriculaEscola.getServicoPessoa().getEvt() == null) {
+//                if (servicoPessoa.getPessoa().getId() != pessoaAlunoMemoria.getId()) {
+//                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
+//                    return;
+//                }
+//                if (servicoPessoa.getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
+//                    GenericaMensagem.warn("Sistema", "Salvar o novo aluno / responsável para gerar movimentos!");
+//                    return;
+//                }
+//                Filial fil = getMacFilial().getFilial();
+//                if (fil.getId() != matriculaEscola.getFilial().getId()) {
+//                    GenericaMensagem.warn("Sistema", "Registro não pode ser atualizado por esta filial!");
+//                    return;
+//                }
+//                String vencimento;
+//                String referencia;
+//                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//                Plano5 plano5;
+//                Servicos servicos;
+//                int idCondicaoPagto;
+//                if (numeroParcelas == 0 || numeroParcelas == 1) {
+//                    idCondicaoPagto = 1;
+//                } else {
+//                    idCondicaoPagto = 2;
+//                }
+//                if (tipoMatricula.equals("Turma")) {
+//                    plano5 = matriculaTurma.getTurma().getCursos().getPlano5();
+//                    servicos = matriculaTurma.getTurma().getCursos();
+//                } else {
+//                    plano5 = matriculaIndividual.getCurso().getPlano5();
+//                    servicos = matriculaIndividual.getCurso();
+//                }
+//                FTipoDocumento fTipoDocumento = (FTipoDocumento) salvarAcumuladoDB.find("FTipoDocumento", servicoPessoa.getTipoDocumento().getId());
+//                setLote(
+//                        new Lote(
+//                                -1,
+//                                (Rotina) salvarAcumuladoDB.find("Rotina", 151),
+//                                "R",
+//                                DataHoje.data(),
+//                                servicoPessoa.getCobranca(),
+//                                plano5,
+//                                false,
+//                                "",
+//                                0, // matriculaEscola.getValorTotal(),
+//                                matriculaEscola.getFilial(),
+//                                null,
+//                                null,
+//                                "",
+//                                fTipoDocumento,
+//                                (CondicaoPagamento) salvarAcumuladoDB.find("CondicaoPagamento", idCondicaoPagto),
+//                                (FStatus) salvarAcumuladoDB.find("FStatus", 1),
+//                                null,
+//                                servicoPessoa.isDescontoFolha(), 0));
+//                salvarAcumuladoDB.abrirTransacao();
+//                try {
+//
+//                    String nrCtrBoletoResp = "";
+//
+//                    for (int x = 0; x < (Integer.toString(servicoPessoa.getCobranca().getId())).length(); x++) {
+//                        nrCtrBoletoResp += 0;
+//                    }
+//
+//                    nrCtrBoletoResp += servicoPessoa.getCobranca().getId();
+//                    String mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
+//                    String mes = mesPrimeiraParcela.substring(0, 2);
+//                    String ano = mesPrimeiraParcela.substring(3, 7);
+////                    String mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
+////                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
+//                    referencia = mes + "/" + ano;
+//
+////                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
+////                        if (matriculaEscola.getDiaVencimento() < 10) {
+////                            vencimento = "0" + matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+////                        } else {
+////                            vencimento = matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+////                        }
+////                    } else {
+////                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+////                        if (diaSwap.length() < 2) {
+////                            diaSwap = "0" + diaSwap;
+////                        }
+////                        vencimento = diaSwap + "/" + mes + "/" + ano;
+////                    }
+//                    //if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
+//                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
+//                        if (idDiaVencimento < 10) {
+//                            vencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
 //                        } else {
-//                            vencimento = matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+//                            vencimento = idDiaVencimento + "/" + mes + "/" + ano;
 //                        }
 //                    } else {
 //                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
@@ -1693,210 +1709,196 @@ public class MatriculaEscolaBean implements Serializable {
 //                        }
 //                        vencimento = diaSwap + "/" + mes + "/" + ano;
 //                    }
-                    //if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
-                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
-                        if (idDiaVencimento < 10) {
-                            vencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
-                        } else {
-                            vencimento = idDiaVencimento + "/" + mes + "/" + ano;
-                        }
-                    } else {
-                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
-                        if (diaSwap.length() < 2) {
-                            diaSwap = "0" + diaSwap;
-                        }
-                        vencimento = diaSwap + "/" + mes + "/" + ano;
-                    }
-                    boolean insereTaxa = false;
-//                    if (getTaxa() == true) {
-//                        insereTaxa = true;
+//                    boolean insereTaxa = false;
+////                    if (getTaxa() == true) {
+////                        insereTaxa = true;
+////                    }
+//                    Evt evt = new Evt();
+//                    if (!salvarAcumuladoDB.inserirObjeto(evt)) {
+//                        salvarAcumuladoDB.desfazerTransacao();
+//                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+//                        return;
 //                    }
-                    Evt evt = new Evt();
-                    if (!salvarAcumuladoDB.inserirObjeto(evt)) {
-                        salvarAcumuladoDB.desfazerTransacao();
-                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                        return;
-                    }
-                    lote.setEvt(evt);
-                    if (salvarAcumuladoDB.inserirObjeto(lote)) {
-                        int loop = 1;
-                        if (insereTaxa == true) {
-                            loop = numeroParcelas + 1;
-                        } else {
-                            loop = numeroParcelas;
-                        }
-                        String vecimentoString = "";
-                        Pessoa pessoaAluno = servicoPessoa.getPessoa();
-                        Pessoa pessoaResponsavelTitular = servicoPessoa.getCobranca();
-                        Pessoa pessoaResponsavel;
-                        FunctionsDB functionsDB = new FunctionsDao();
-                        pessoaResponsavel = servicoPessoa.getCobranca();
-                        // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA) 03/09/2014 rogério pediu, que falou com a Élida do CAP
-//                        if (matriculaEscola.isDescontoFolha()) {
-//                            int idResponsavel = functionsDB.responsavel(pessoaAluno.getId(), matriculaEscola.isDescontoFolha());
-//                            if (idResponsavel != -1) {
-//                                pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavel);
-//                            } else {
-//                                pessoaResponsavel = servicoPessoa.getCobranca();
-//                            }
+//                    lote.setEvt(evt);
+//                    if (salvarAcumuladoDB.inserirObjeto(lote)) {
+//                        int loop = 1;
+//                        if (insereTaxa == true) {
+//                            loop = numeroParcelas + 1;
 //                        } else {
-//                            int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), false);
-//                            if (idResponsavelEmpresa != -1) {
-//                                JuridicaDB juridicaDB = new JuridicaDBToplink();
-//                                Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-//                                if (juridicaB != null && juridicaB.getId() != -1) {
-//                                    pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavelEmpresa);
-//                                } else {
-//                                    pessoaResponsavel = pessoaResponsavelTitular;
-//                                }
+//                            loop = numeroParcelas;
+//                        }
+//                        String vecimentoString = "";
+//                        Pessoa pessoaAluno = servicoPessoa.getPessoa();
+//                        Pessoa pessoaResponsavelTitular = servicoPessoa.getCobranca();
+//                        Pessoa pessoaResponsavel;
+//                        FunctionsDB functionsDB = new FunctionsDao();
+//                        pessoaResponsavel = servicoPessoa.getCobranca();
+//                        // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA) 03/09/2014 rogério pediu, que falou com a Élida do CAP
+////                        if (matriculaEscola.isDescontoFolha()) {
+////                            int idResponsavel = functionsDB.responsavel(pessoaAluno.getId(), matriculaEscola.isDescontoFolha());
+////                            if (idResponsavel != -1) {
+////                                pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavel);
+////                            } else {
+////                                pessoaResponsavel = servicoPessoa.getCobranca();
+////                            }
+////                        } else {
+////                            int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), false);
+////                            if (idResponsavelEmpresa != -1) {
+////                                JuridicaDB juridicaDB = new JuridicaDBToplink();
+////                                Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+////                                if (juridicaB != null && juridicaB.getId() != -1) {
+////                                    pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavelEmpresa);
+////                                } else {
+////                                    pessoaResponsavel = pessoaResponsavelTitular;
+////                                }
+////                            } else {
+////                                pessoaResponsavel = pessoaResponsavelTitular;
+////                            }
+////                        }
+//
+//                        if (pessoaResponsavel.getId() == -1) {
+//                            salvarAcumuladoDB.desfazerTransacao();
+//                            return;
+//                        }
+//                        int j = 0;
+//                        boolean isTx = false;
+//                        float valorParcelaF;
+//                        float valorDescontoAteVencimento;
+//                        for (int i = 0; i < loop; i++) {
+//                            TipoServico tipoServico;
+//                            if (insereTaxa == true) {
+//                                tipoServico = (TipoServico) salvarAcumuladoDB.find(new TipoServico(), 5);
+//                                valorParcelaF = vTaxa;
+//                                valorDescontoAteVencimento = 0;
+//                                vecimentoString = DataHoje.converteData(dataEntrada);
+//                                isTx = insereTaxa;
+//                                insereTaxa = false;
 //                            } else {
-//                                pessoaResponsavel = pessoaResponsavelTitular;
+//                                tipoServico = (TipoServico) salvarAcumuladoDB.find(new TipoServico(), 1);
+//                                // ALTERADO: MUDAR EM FEVEREIRO
+//                                if (j == 0) {
+////                                    ADICIONAR SOMENTE SE FOR DESCONTAR A TAXA DO VALOR DA PRIMEIRA MENSALIDADE
+////                                    if (isTx) {
+////                                        valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela()) - vTaxa;
+////                                        if (matriculaEscola.getDescontoAteVencimento() > 0) {
+////                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas()) - vTaxa;
+////                                        } else {
+////                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
+////                                        }
+////                                        isTx = false;
+////                                    } else {
+////                                    }
+//                                    valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
+//                                    //valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
+//                                } else {
+//                                    valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
+//                                    //valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
+//                                }
+//                                if (j > 0) {
+//                                    vecimentoString = (new DataHoje()).incrementarMeses(j, vencimento);
+//                                } else {
+//                                    vecimentoString = vencimento;
+//                                }
+//                                mes = vecimentoString.substring(3, 5);
+//                                ano = vecimentoString.substring(6, 10);
+//                                referencia = mes + "/" + ano;
+//                                j++;
+//                            }
+//                            String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
+//                            if (valorParcelaF > 0) {
+//                                setMovimento(new Movimento(
+//                                        -1,
+//                                        lote,
+//                                        plano5,
+//                                        pessoaResponsavel,
+//                                        servicos,
+//                                        null,
+//                                        tipoServico,
+//                                        null,
+//                                        valorParcelaF,
+//                                        referencia,
+//                                        vecimentoString,
+//                                        1,
+//                                        true,
+//                                        "E",
+//                                        false,
+//                                        pessoaResponsavelTitular, // TITULAR / RESPONSÁVEL
+//                                        pessoaAluno, // BENEFICIÁRIO
+//                                        "",
+//                                        nrCtrBoleto,
+//                                        vencimento,
+//                                        0, //valorDescontoAteVencimento,
+//                                        0,
+//                                        0,
+//                                        0,
+//                                        0,
+//                                        0,
+//                                        0,
+//                                        fTipoDocumento,
+//                                        0,
+//                                        new MatriculaSocios()));
+//                            } else {
+//                                salvarAcumuladoDB.desfazerTransacao();
+//                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+//                                return;
+//                            }
+//                            if (!salvarAcumuladoDB.inserirObjeto(movimento)) {
+//                                salvarAcumuladoDB.desfazerTransacao();
+//                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+//                                return;
 //                            }
 //                        }
-
-                        if (pessoaResponsavel.getId() == -1) {
-                            salvarAcumuladoDB.desfazerTransacao();
-                            return;
-                        }
-                        int j = 0;
-                        boolean isTx = false;
-                        float valorParcelaF;
-                        float valorDescontoAteVencimento;
-                        for (int i = 0; i < loop; i++) {
-                            TipoServico tipoServico;
-                            if (insereTaxa == true) {
-                                tipoServico = (TipoServico) salvarAcumuladoDB.find(new TipoServico(), 5);
-                                valorParcelaF = vTaxa;
-                                valorDescontoAteVencimento = 0;
-                                vecimentoString = DataHoje.converteData(dataEntrada);
-                                isTx = insereTaxa;
-                                insereTaxa = false;
-                            } else {
-                                tipoServico = (TipoServico) salvarAcumuladoDB.find(new TipoServico(), 1);
-                                // ALTERADO: MUDAR EM FEVEREIRO
-                                if (j == 0) {
-//                                    ADICIONAR SOMENTE SE FOR DESCONTAR A TAXA DO VALOR DA PRIMEIRA MENSALIDADE
-//                                    if (isTx) {
-//                                        valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela()) - vTaxa;
-//                                        if (matriculaEscola.getDescontoAteVencimento() > 0) {
-//                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas()) - vTaxa;
-//                                        } else {
-//                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
-//                                        }
-//                                        isTx = false;
-//                                    } else {
-//                                    }
-                                    valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
-                                    //valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
-                                } else {
-                                    valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
-                                    //valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
-                                }
-                                if (j > 0) {
-                                    vecimentoString = (new DataHoje()).incrementarMeses(j, vencimento);
-                                } else {
-                                    vecimentoString = vencimento;
-                                }
-                                mes = vecimentoString.substring(3, 5);
-                                ano = vecimentoString.substring(6, 10);
-                                referencia = mes + "/" + ano;
-                                j++;
-                            }
-                            String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
-                            if (valorParcelaF > 0) {
-                                setMovimento(new Movimento(
-                                        -1,
-                                        lote,
-                                        plano5,
-                                        pessoaResponsavel,
-                                        servicos,
-                                        null,
-                                        tipoServico,
-                                        null,
-                                        valorParcelaF,
-                                        referencia,
-                                        vecimentoString,
-                                        1,
-                                        true,
-                                        "E",
-                                        false,
-                                        pessoaResponsavelTitular, // TITULAR / RESPONSÁVEL
-                                        pessoaAluno, // BENEFICIÁRIO
-                                        "",
-                                        nrCtrBoleto,
-                                        vencimento,
-                                        0, //valorDescontoAteVencimento,
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        fTipoDocumento,
-                                        0,
-                                        new MatriculaSocios()));
-                            } else {
-                                salvarAcumuladoDB.desfazerTransacao();
-                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                                return;
-                            }
-                            if (!salvarAcumuladoDB.inserirObjeto(movimento)) {
-                                salvarAcumuladoDB.desfazerTransacao();
-                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                                return;
-                            }
-                        }
-                        matriculaEscola.getServicoPessoa().setEvt(evt);
-//                        matriculaEscola.setDescontoProporcional(descontoProporcional);
-//                        if (!descontoProporcional) {
-//                            matriculaEscola.setValorDescontoProporcional(0);
+//                        matriculaEscola.getServicoPessoa().setEvt(evt);
+////                        matriculaEscola.setDescontoProporcional(descontoProporcional);
+////                        if (!descontoProporcional) {
+////                            matriculaEscola.setValorDescontoProporcional(0);
+////                        }
+//                        if (!salvarAcumuladoDB.alterarObjeto(matriculaEscola)) {
+//                            salvarAcumuladoDB.desfazerTransacao();
+//                            GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+//                            return;
 //                        }
-                        if (!salvarAcumuladoDB.alterarObjeto(matriculaEscola)) {
-                            salvarAcumuladoDB.desfazerTransacao();
-                            GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                            return;
-                        }
-                        salvarAcumuladoDB.comitarTransacao();
-                        GenericaMensagem.info("Sucesso", "Movimentos gerados com sucesso");
-                        target = "_blank";
-                        desabilitaCamposMovimento = true;
-                        desabilitaDiaVencimento = true;
-                    } else {
-                        salvarAcumuladoDB.desfazerTransacao();
-                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
-                    }
-                } catch (NumberFormatException e) {
-                    salvarAcumuladoDB.desfazerTransacao();
-                }
-            } else {
-                GenericaMensagem.warn("Sistema", "Esse movimento já foi gerado!");
-            }
-        } else {
-            GenericaMensagem.warn("Sistema", "Pesquisar aluno!");
-        }
-    }
+//                        salvarAcumuladoDB.comitarTransacao();
+//                        GenericaMensagem.info("Sucesso", "Movimentos gerados com sucesso");
+//                        target = "_blank";
+//                        desabilitaCamposMovimento = true;
+//                        desabilitaDiaVencimento = true;
+//                    } else {
+//                        salvarAcumuladoDB.desfazerTransacao();
+//                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+//                    }
+//                } catch (NumberFormatException e) {
+//                    salvarAcumuladoDB.desfazerTransacao();
+//                }
+//            } else {
+//                GenericaMensagem.warn("Sistema", "Esse movimento já foi gerado!");
+//            }
+//        } else {
+//            GenericaMensagem.warn("Sistema", "Pesquisar aluno!");
+//        }
+//    }
 
-    public void desfazerMovimento() {
-        if (matriculaEscola.getId() != -1) {
-            if (matriculaEscola.getServicoPessoa().getEvt() != null) {
-
-                MatriculaEscolaDao med = new MatriculaEscolaDao();
-                String resultado = med.desfazerMovimento(matriculaEscola);
-
-                if (resultado != null) {
-                    GenericaMensagem.warn("Atenção", resultado);
-                    return;
-                }
-
-                desabilitaCamposMovimento = false;
-                bloqueiaComboDiaVencimento();
-                GenericaMensagem.info("Sucesso", "Transação desfeita com sucesso");
-
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                matriculaEscola = (MatriculaEscola) salvarAcumuladoDB.find(matriculaEscola);
-            }
-        }
-    }
+//    public void desfazerMovimento() {
+//        if (matriculaEscola.getId() != -1) {
+//            if (matriculaEscola.getServicoPessoa().getEvt() != null) {
+//
+//                MatriculaEscolaDao med = new MatriculaEscolaDao();
+//                String resultado = med.desfazerMovimento(matriculaEscola);
+//
+//                if (resultado != null) {
+//                    GenericaMensagem.warn("Atenção", resultado);
+//                    return;
+//                }
+//
+//                desabilitaCamposMovimento = false;
+//                bloqueiaComboDiaVencimento();
+//                GenericaMensagem.info("Sucesso", "Transação desfeita com sucesso");
+//
+//                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//                matriculaEscola = (MatriculaEscola) salvarAcumuladoDB.find(matriculaEscola);
+//            }
+//        }
+//    }
 
     public MatriculaIndividual getMatriculaIndividual() {
         return matriculaIndividual;
@@ -1913,93 +1915,199 @@ public class MatriculaEscolaBean implements Serializable {
     public void setMatriculaTurma(MatriculaTurma matriculaTurma) {
         this.matriculaTurma = matriculaTurma;
     }
-
+    
     public Fisica getAluno() {
-        if (GenericaSessao.exists("fisicaPesquisa")) {
-            MatriculaEscolaDao med = new MatriculaEscolaDao();
-            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
-                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo");
-                if (tipoFisica.equals("aluno")) {
-                    GenericaSessao.remove("pesquisaFisicaTipo");
-                    valorTaxa = "";
-                    //taxa = false;
-                    aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
-                    if (servicoPessoa.getPessoa().getId() == -1) {
-                        pessoaAlunoMemoria = aluno.getPessoa();
-                    } else {
-                        if (aluno.getPessoa().getId() != servicoPessoa.getPessoa().getId()) {
-                            pessoaAlunoMemoria = aluno.getPessoa();
-                        }
-                    }
-                    if (aluno.getId() != -1) {
-                        getResponsavel();
-                        verificaSocio();
-                    }
-                    if (responsavel.getId() != -1) {
-                        pessoaComplemento = new PessoaComplemento();
-                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-//                        if (pessoaComplemento != null) {
-//                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-//                        }
-                        //matriculaEscola.setResponsavel(responsavel);
-                        servicoPessoa.setCobranca(responsavel);
-                    } else {
-                        FunctionsDB functionsDB = new FunctionsDao();
-                        int idade = functionsDB.idade("dt_nascimento", "current_date", aluno.getPessoa().getId());
-                        if (idade < 18) {
-                            GenericaMensagem.warn("Validação", "Responsável deve ser MAIOR DE IDADE!");
-                        }
-                        if (!med.verificaPessoaEnderecoDocumento("fisica", aluno.getPessoa().getId())) {
-                            GenericaMensagem.warn("Validação", "Responsável deve conter um ENDEREÇO!");
-                        }
-                    }
-                    //matriculaEscola.setAluno(aluno.getPessoa());
-                    servicoPessoa.setPessoa(aluno.getPessoa());
-
-                    //matriculaEscola.setResponsavel(responsavel);
-                    servicoPessoa.setCobranca(responsavel);
-                    atualizaPessoaComplemento(0);
-                    pegarIdServico();
-                    //atualizaValor();
-                    calculaValorLiquido();
-                } else if (tipoFisica.equals("responsavel")) {
-                    GenericaSessao.remove("pesquisaFisicaTipo");
-                    Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
-                    FunctionsDB functionsDB = new FunctionsDao();
-                    int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
-                    if (idade >= 18) {
-                        if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
-                            //matriculaEscola.setResponsavel(resp);
-                            servicoPessoa.setCobranca(resp);
-                            atualizaPessoaComplemento(0);
-                        }
-                    } else {
-                        GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
-                    }
-                    GenericaSessao.remove("juridicaPesquisa");
-                }
-            }
-            analisaResponsavel();
+        if (!GenericaSessao.exists("fisicaPesquisa") && !GenericaSessao.exists("pessoaPesquisa")) {
+            return aluno;
         }
+        
+        if (!GenericaSessao.exists("pesquisaFisicaTipo")) {
+            return aluno;
+        }
+        
+        String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
+        if (tipoFisica.equals("aluno")) {
+            aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
+            verificaSocio();
+            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+            if (!dbl.listaSerasa(aluno.getPessoa().getId()).isEmpty()){
+                GenericaMensagem.warn("PESSOA", aluno.getPessoa().getNome() + " contém o nome no Serasa!");
+            }
+            if (socios != null && socios.getId() != -1){
+                // PESSOA ASSOCIADA
+                servicoPessoa.setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
+            }else{
+                // PESSOA NÁO ASSOCIADA
+                servicoPessoa.setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
+            }
+            
+            servicoPessoa.setPessoa(aluno.getPessoa());
+        }else{
+            verificaSocio();
+            if (socios != null && socios.getId() != -1){
+                // PESSOA ASSOCIADA
+                servicoPessoa.setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
+            }else{
+                // PESSOA NÁO ASSOCIADA
+                servicoPessoa.setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
+            }
+            GenericaSessao.remove("pessoaPesquisa");
+        }
+        pegarIdServico();
+        calculaValorLiquido();
         return aluno;
     }
+
+    public Pessoa retornaResponsavel(Integer id_pessoa, boolean associada){
+        if (associada){
+            responsavel = new FunctionsDao().titularDaPessoa(id_pessoa);
+        }else{
+            if (GenericaSessao.exists("pessoaPesquisa"))
+                responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
+            else
+                responsavel = (Pessoa) new Dao().find(new Pessoa(), id_pessoa);
+            
+            // RESPONSAVEL FISICA
+            FisicaDB dbf = new FisicaDBToplink();
+            Fisica fi = dbf.pesquisaFisicaPorPessoa(responsavel.getId());
+            if (fi != null){
+                DataHoje dh = new DataHoje();
+                int idade = dh.calcularIdade(fi.getNascimento());
+                if (idade < 18){
+                    GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não é maior de idade!");
+                    return responsavel = new Pessoa();
+                }
+            }
+            else
+            {
+            // RESPONSAVEL JURIDICA
+            // POR ENQUANTO NÃO FAZ NADA
+                GenericaMensagem.warn("RESPONSÁVEL", "Pessoa Juridica não disponível no momento!");
+                return responsavel = new Pessoa();
+            }
+        }
+        
+        Socios s = responsavel.getSocios();
+        if (s != null && s.getId() != -1){
+            if (responsavel.getId() != s.getMatriculaSocios().getTitular().getId()) {
+                GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " é um sócio dependente!");
+                return responsavel = new Pessoa();
+            }
+        }
+        
+        // MENSAGEM SE POSSUI DÉBITOS
+        if (new FunctionsDao().inadimplente(responsavel.getId())){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " possui débitos com o Sindicato!");
+        }
+        
+        // ENDEREÇO OBRIGATÓRIO
+        JuridicaDB dbj = new JuridicaDBToplink();
+        List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
+        if (lista_pe.isEmpty()){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não possui endereço cadastrado!");
+            return responsavel = new Pessoa();
+        }
+        
+        // CADASTRO NO SERASA
+        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+        if (!dbl.listaSerasa(responsavel.getId()).isEmpty()){
+            GenericaMensagem.warn("PESSOA", responsavel.getNome()+ " contém o nome no Serasa!");
+        }
+        
+        PessoaDB pdb = new PessoaDBToplink();
+        pessoaComplemento = new PessoaComplemento();
+        pessoaComplemento = pdb.pesquisaPessoaComplementoPorPessoa(responsavel.getId());
+        
+        return responsavel;
+    }
+    
+    
+//    public Fisica getAlunoxx() {
+//        if (GenericaSessao.exists("fisicaPesquisa")) {
+//            MatriculaEscolaDao med = new MatriculaEscolaDao();
+//            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
+//                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo");
+//                if (tipoFisica.equals("aluno")) {
+//                    GenericaSessao.remove("pesquisaFisicaTipo");
+//                    valorTaxa = "";
+//                    //taxa = false;
+//                    aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
+////                    if (servicoPessoa.getPessoa().getId() == -1) {
+////                        pessoaAlunoMemoria = aluno.getPessoa();
+////                    } else {
+////                        if (aluno.getPessoa().getId() != servicoPessoa.getPessoa().getId()) {
+////                            pessoaAlunoMemoria = aluno.getPessoa();
+////                        }
+////                    }
+//                    if (aluno.getId() != -1) {
+//                        getResponsavel();
+//                        verificaSocio();
+//                    }
+//                    if (responsavel.getId() != -1) {
+//                        pessoaComplemento = new PessoaComplemento();
+//                        pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
+////                        if (pessoaComplemento != null) {
+////                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+////                        }
+//                        //matriculaEscola.setResponsavel(responsavel);
+//                        servicoPessoa.setCobranca(responsavel);
+//                    } else {
+//                        FunctionsDB functionsDB = new FunctionsDao();
+//                        int idade = functionsDB.idade("dt_nascimento", "current_date", aluno.getPessoa().getId());
+//                        if (idade < 18) {
+//                            GenericaMensagem.warn("Validação", "Responsável deve ser MAIOR DE IDADE!");
+//                        }
+//                        if (!med.verificaPessoaEnderecoDocumento("fisica", aluno.getPessoa().getId())) {
+//                            GenericaMensagem.warn("Validação", "Responsável deve conter um ENDEREÇO!");
+//                        }
+//                    }
+//                    //matriculaEscola.setAluno(aluno.getPessoa());
+//                    servicoPessoa.setPessoa(aluno.getPessoa());
+//
+//                    //matriculaEscola.setResponsavel(responsavel);
+//                    servicoPessoa.setCobranca(responsavel);
+//                    atualizaPessoaComplemento(0);
+//                    pegarIdServico();
+//                    //atualizaValor();
+//                    calculaValorLiquido();
+//                } else if (tipoFisica.equals("responsavel")) {
+//                    GenericaSessao.remove("pesquisaFisicaTipo");
+//                    Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
+//                    FunctionsDB functionsDB = new FunctionsDao();
+//                    int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
+//                    if (idade >= 18) {
+//                        if (med.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+//                            //matriculaEscola.setResponsavel(resp);
+//                            servicoPessoa.setCobranca(resp);
+//                            atualizaPessoaComplemento(0);
+//                        }
+//                    } else {
+//                        GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
+//                    }
+//                    GenericaSessao.remove("juridicaPesquisa");
+//                }
+//            }
+////            analisaResponsavel();
+//        }
+//        return aluno;
+//    }
 
     public void setAluno(Fisica aluno) {
         this.aluno = aluno;
     }
 
     public Pessoa getResponsavel() {
-        if (aluno.getId() != -1) {
-            FunctionsDB functionsDB = new FunctionsDao();
-            int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), servicoPessoa.isDescontoFolha());
-            if (titularResponsavel > 0) {
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                responsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), titularResponsavel);
-                atualizaPessoaComplemento(1);
-            }
-        } else {
-            responsavel = new Pessoa();
-        }
+//        if (aluno.getId() != -1) {
+//            FunctionsDB functionsDB = new FunctionsDao();
+//            int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), servicoPessoa.isDescontoFolha());
+//            if (titularResponsavel > 0) {
+//                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//                responsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), titularResponsavel);
+//                atualizaPessoaComplemento(1);
+//            }
+//        } else {
+//            responsavel = new Pessoa();
+//        }
         return responsavel;
     }
 
@@ -2499,8 +2607,8 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public void verificaSocio() {
-        SociosDB dB = new SociosDBToplink();
-        socios = dB.pesquisaSocioPorPessoa(aluno.getPessoa().getId());
+        //SociosDB dB = new SociosDBToplink();
+        socios = aluno.getPessoa().getSocios(); // dB.pesquisaSocioPorPessoa(aluno.getPessoa().getId());
     }
 
     public void pesquisaFisica(String tipo) {
@@ -2705,30 +2813,30 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public Juridica getJuridica() {
-        if (GenericaSessao.exists("juridicaPesquisa")) {
-            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
-            MatriculaEscolaDao med = new MatriculaEscolaDao();
-            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
-                responsavel = juridica.getPessoa();
-                if (responsavel.getId() != -1) {
-                    atualizaPessoaComplemento(1);
-                    pessoaComplemento = new PessoaComplemento();
-                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
-//                    if (pessoaComplemento != null) {
-//                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
-//                    }
-                    //matriculaEscola.setResponsavel(juridica.getPessoa());
-                    servicoPessoa.setCobranca(juridica.getPessoa());
-                }
-                setOcultaDescontoFolha(false);
-                desabilitaDescontoFolha = false;
-                pegarIdServico();
-                //atualizaValor();
-                calculaValorLiquido();
-            }
-            juridica = new Juridica();
-            analisaResponsavel();
-        }
+//        if (GenericaSessao.exists("juridicaPesquisa")) {
+//            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+//            MatriculaEscolaDao med = new MatriculaEscolaDao();
+//            if (med.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
+//                responsavel = juridica.getPessoa();
+//                if (responsavel.getId() != -1) {
+//                    atualizaPessoaComplemento(1);
+//                    pessoaComplemento = new PessoaComplemento();
+//                    pessoaComplemento = med.pesquisaDataRefPessoaComplemto(responsavel.getId());
+////                    if (pessoaComplemento != null) {
+////                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+////                    }
+//                    //matriculaEscola.setResponsavel(juridica.getPessoa());
+//                    servicoPessoa.setCobranca(juridica.getPessoa());
+//                }
+//                setOcultaDescontoFolha(false);
+//                desabilitaDescontoFolha = false;
+//                pegarIdServico();
+//                //atualizaValor();
+//                calculaValorLiquido();
+//            }
+//            juridica = new Juridica();
+////            analisaResponsavel();
+//        }
         return juridica;
     }
 
@@ -2821,24 +2929,24 @@ public class MatriculaEscolaBean implements Serializable {
         this.vagasDisponiveis = vagasDisponiveis;
     }
 
-    public void analisaResponsavel() {
-        if (servicoPessoa.getCobranca().getId() != -1) {
-            if (responsavel.getId() != servicoPessoa.getCobranca().getId()) {
-                pessoaResponsavelMemoria = responsavel;
-            }
-            if (servicoPessoa.getCobranca().getTipoDocumento().getId() == 2) {
-                desabilitaDescontoFolha = false;
-                ocultaDescontoFolha = false;
-                verificaSeContribuinteInativo(servicoPessoa.getCobranca());
-            } else {
-                desabilitaDescontoFolha = true;
-                ocultaDescontoFolha = true;
-            }
-            //verificaDebitosResponsavel(servicoPessoa.getCobranca());
-        } else {
-            pessoaResponsavelMemoria = responsavel;
-        }
-    }
+//    public void analisaResponsavel() {
+//        if (servicoPessoa.getCobranca().getId() != -1) {
+//            if (responsavel.getId() != servicoPessoa.getCobranca().getId()) {
+//                pessoaResponsavelMemoria = responsavel;
+//            }
+//            if (servicoPessoa.getCobranca().getTipoDocumento().getId() == 2) {
+//                desabilitaDescontoFolha = false;
+//                ocultaDescontoFolha = false;
+//                verificaSeContribuinteInativo(servicoPessoa.getCobranca());
+//            } else {
+//                desabilitaDescontoFolha = true;
+//                ocultaDescontoFolha = true;
+//            }
+//            //verificaDebitosResponsavel(servicoPessoa.getCobranca());
+//        } else {
+//            pessoaResponsavelMemoria = responsavel;
+//        }
+//    }
 
     public Turma getTurma() {
         return turma;

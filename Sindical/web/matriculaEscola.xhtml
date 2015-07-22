@@ -84,7 +84,8 @@
                                     <h:column>
                                         <h:panelGrid columns="3">
                                             <p:commandLink id="idResp" value="#{matriculaEscolaBean.servicoPessoa.cobranca.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.servicoPessoa.cobranca.id)}" title="Ver detalhes"/>
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}"/>
+                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" type="button" icon="ui-icon-search" rendered="false"/>
+                                            <p:commandButton value="Pesquisar/Alterar Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}"/>
                                             <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
                                     </h:column>

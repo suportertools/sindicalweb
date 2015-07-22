@@ -4,6 +4,7 @@ import br.com.rtools.academia.beans.MatriculaAcademiaBean;
 import br.com.rtools.arrecadacao.beans.BaixaBoletoBean;
 import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
+import br.com.rtools.associativo.beans.VendaBaileBean;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.Cartao;
@@ -68,7 +69,6 @@ public class BaixaGeralBean implements Serializable {
     private String numero = "";
     private String numeroChequePag = "";
     private String total = "0,00";
-    //private List<DataObject> lista = new ArrayList();
     private List<ListValoresBaixaGeral> listaValores = new ArrayList();
     private List<Movimento> listaMovimentos = new ArrayList();
     private List<SelectItem> listaCartao = new ArrayList();
@@ -224,7 +224,7 @@ public class BaixaGeralBean implements Serializable {
             }  else if (url.equals("matriculaEscola")) {
                 return "matriculaEscola";
             } else if (url.equals("vendasBaile")) {
-                GenericaSessao.remove("vendaBaileBean");
+                ((VendaBaileBean) GenericaSessao.getObject("vendaBaileBean")).novo();
                 return "vendasBaile";
             }  else if (url.equals("conviteMovimento")) {
                 return "conviteMovimento";

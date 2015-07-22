@@ -1,5 +1,6 @@
 package br.com.rtools.impressao.beans;
 
+import br.com.rtools.associativo.ConfiguracaoSocial;
 import br.com.rtools.associativo.ConviteMovimento;
 import br.com.rtools.impressao.ConviteClube;
 import br.com.rtools.impressao.ParametroProtocolo;
@@ -14,6 +15,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
@@ -43,7 +45,12 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @ViewScoped
 public class ImprimirConviteClube implements Serializable {
-
+    private ConfiguracaoSocial cs = new ConfiguracaoSocial();
+    
+    public ImprimirConviteClube() {
+        cs = (ConfiguracaoSocial) new Dao().find(new ConfiguracaoSocial(), 1);
+    }
+    
     public void imprimir(ConviteMovimento cm) {
         try {
             Collection lista = parametroConvite(cm);
@@ -143,7 +150,7 @@ public class ImprimirConviteClube implements Serializable {
         if (cm.getId() == -1) {
             return new ArrayList();
         }
-        Collection lista = new ArrayList<ConviteClube>();
+        Collection lista = new ArrayList();
         DataHoje dh = new DataHoje();
 
         List listSemana = new ArrayList();
@@ -172,12 +179,21 @@ public class ImprimirConviteClube implements Serializable {
             listSemana.add("Feriado");
         }
 
+        String barras = "";
+        
+        for (int i = 0; i < cs.getCartaoDigitos(); i++){
+            barras += "0";
+        }
+        
+        barras = barras;
+        barras = barras.substring(0, 14 - (""+cm.getId()).length()) + cm.getId();
+        
         lista.add(new ConviteClube(
                 cm.getSisPessoa().getNome(),
                 cm.getEmissao(),
                 "VÁLIDO ATÉ " + dh.incrementarMeses(1, cm.getValidade()),
                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoConvite.png"),
-                "00000000000000".substring(0, 14 - (""+cm.getId()).length()) + cm.getId(),
+                barras,
                 GenericaString.converterNullToString(cm.getSisPessoa().getObservacao()),
                 "NO(S) DIA(S): " + listSemana
         ));

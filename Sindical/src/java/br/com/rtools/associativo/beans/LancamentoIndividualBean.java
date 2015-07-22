@@ -149,7 +149,7 @@ public class LancamentoIndividualBean {
                     -1, 
                     new Lote(), 
                     serv.getPlano5(), 
-                    fisica.getPessoa(),
+                    responsavel, //fisica.getPessoa(),
                     serv, 
                     null, // BAIXA
                     tipo_serv, // TIPO SERVICO
@@ -359,27 +359,30 @@ public class LancamentoIndividualBean {
     }
 
     public Fisica getFisica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null){
-            fisica = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+        if (GenericaSessao.exists("fisicaPesquisa")){
+            fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa");
+            
+            Socios s = fisica.getPessoa().getSocios();
+            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+            if (!dbl.listaSerasa(fisica.getPessoa().getId()).isEmpty()){
+                GenericaMensagem.warn("PESSOA", fisica.getPessoa().getNome() + " contém o nome no Serasa!");
+            }
+            if (s != null && s.getId() != -1){
+                // PESSOA ASSOCIADA
+                retornaResponsavel(fisica.getPessoa().getId(), true);
+            }else{
+                // PESSOA NÁO ASSOCIADA
+                retornaResponsavel(fisica.getPessoa().getId(), false);
+            }
+            
             PessoaDB db = new PessoaDBToplink();
             ServicoPessoaDB dbS = new ServicoPessoaDBToplink();
-            pessoaComplemento = db.pesquisaPessoaComplementoPorPessoa(fisica.getPessoa().getId());
             
             servicoPessoa = dbS.pesquisaServicoPessoaPorPessoa(fisica.getPessoa().getId());
             if (servicoPessoa == null){
                 servicoPessoa = new ServicoPessoa();
             }
-                    
-            
-            if (pessoaComplemento.getId() != -1){
-                if (pessoaComplemento.isCobrancaBancaria()){
-                    cobrancaBancaria = "sim";
-                }else
-                    cobrancaBancaria = "nao";
-                idDia = pessoaComplemento.getNrDiaVencimento();
-            }
-            responsavel = new Pessoa();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
+            GenericaSessao.remove("fisicaPesquisa");
         }
         return fisica;
     }
@@ -387,122 +390,84 @@ public class LancamentoIndividualBean {
     public void setFisica(Fisica fisica) {
         this.fisica = fisica;
     }
-
-    public int getIdServico() {
-        return idServico;
-    }
-
-    public void setIdServico(int idServico) {
-        this.idServico = idServico;
-    }
-
-    public List<DataObject> getListaMovimento() {
-        for (int i = 0; i < listaMovimento.size(); i++){
-            listaMovimento.get(i).setArgumento1( Moeda.converteR$(listaMovimento.get(i).getArgumento1().toString()) );
-            ((Movimento)listaMovimento.get(i).getArgumento0()).setValor(
-                    Moeda.converteUS$(Moeda.converteR$(listaMovimento.get(i).getArgumento1().toString()))
-            );
-        }
-        return listaMovimento;
-    }
-
-    public void setListaMovimento(List<DataObject> listaMovimento) {
-        this.listaMovimento = listaMovimento;
-    }
-
-    public List<SelectItem> getListaJuridica() {
-        if (listaJuridica.isEmpty() && !listaServicos.isEmpty()){
-            LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
-            List<Juridica> result = db.listaEmpresaConveniada(Integer.parseInt(listaServicos.get(idServico).getDescription()));
+    
+    public Pessoa retornaResponsavel(Integer id_pessoa, boolean associada){
+        if (associada){
+            responsavel = new FunctionsDao().titularDaPessoa(id_pessoa);
+        }else{
+            if (GenericaSessao.exists("pessoaPesquisa"))
+                responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
+            else
+                responsavel = (Pessoa) new Dao().find(new Pessoa(), id_pessoa);
             
-            if (listaServicos.isEmpty() || result.isEmpty()){
-                listaJuridica.add(new SelectItem(0, "Nenhuma Empresa Conveniada", "0"));
-                return listaJuridica;
-            }
-            
-            if(!result.isEmpty()){
-                for (int i = 0; i < result.size(); i++){
-                    listaJuridica.add(new SelectItem(i,
-                                      result.get(i).getPessoa().getNome(),
-                                      Integer.toString(result.get(i).getId())
-                            ));
+            // RESPONSAVEL FISICA
+            FisicaDB dbf = new FisicaDBToplink();
+            Fisica fi = dbf.pesquisaFisicaPorPessoa(responsavel.getId());
+            if (fi != null){
+                DataHoje dh = new DataHoje();
+                int idade = dh.calcularIdade(fi.getNascimento());
+                if (idade < 18){
+                    GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não é maior de idade!");
+                    return responsavel = new Pessoa();
                 }
             }
-        }
-        return listaJuridica;
-    }
-
-    public void setListaJuridica(List<SelectItem> listaJuridica) {
-        this.listaJuridica = listaJuridica;
-    }
-    
-    public List<SelectItem> getListaDiaVencimento() {
-        if (listaDiaVencimento.isEmpty()) {
-            for (int i = 1; i <= 31; i++) {
-                listaDiaVencimento.add(new SelectItem(Integer.toString(i)));
+            else
+            {
+            // RESPONSAVEL JURIDICA
+            // POR ENQUANTO NÃO FAZ NADA
+                GenericaMensagem.warn("RESPONSÁVEL", "Pessoa Juridica não disponível no momento!");
+                return responsavel = new Pessoa();
             }
         }
-        return listaDiaVencimento;
-    }
-
-    public void setListaDiaVencimento(List<SelectItem> listaDiaVencimento) {
-        this.listaDiaVencimento = listaDiaVencimento;
-    }    
-
-    public int getIdDia() {
-        return idDia;
-    }
-
-    public void setIdDia(int idDia) {
-        this.idDia = idDia;
-    }
-
-    public String getCobrancaBancaria() {
-        return cobrancaBancaria;
-    }
-
-    public void setCobrancaBancaria(String cobrancaBancaria) {
-        this.cobrancaBancaria = cobrancaBancaria;
-    }
-
-    public String getEntrada() {
-        return entrada;
-    }
-
-    public void setEntrada(String entrada) {
-        this.entrada = entrada;
-    }
-
-    public String getTotalPagar() {
-        if (fisica.getId() != -1 && !listaServicos.isEmpty()){
-            LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
-            
-            if (!listaServicos.get(idServico).getDescription().equals("0")){
-                Servicos se = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
-
-                List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), se.getId());
-                float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
-
-                if (!se.isAlterarValor())
-                    totalPagar = Moeda.converteR$Float(vl);
+        
+        Socios s = responsavel.getSocios();
+        if (s != null && s.getId() != -1){
+            if (responsavel.getId() != s.getMatriculaSocios().getTitular().getId()) {
+                GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " é um sócio dependente!");
+                return responsavel = new Pessoa();
             }
         }
-        return Moeda.converteR$(totalPagar);
-    }
-
-    public void setTotalPagar(String totalPagar) {
-        this.totalPagar = totalPagar;
-    }
-
-    public int getIdJuridica() {
-        return idJuridica;
-    }
-
-    public void setIdJuridica(int idJuridica) {
-        this.idJuridica = idJuridica;
+        
+        // MENSAGEM SE POSSUI DÉBITOS
+        if (new FunctionsDao().inadimplente(responsavel.getId())){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " possui débitos com o Sindicato!");
+        }
+        
+        // ENDEREÇO OBRIGATÓRIO
+        JuridicaDB dbj = new JuridicaDBToplink();
+        List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
+        if (lista_pe.isEmpty()){
+            GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não possui endereço cadastrado!");
+            return responsavel = new Pessoa();
+        }
+        
+        // CADASTRO NO SERASA
+        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+        if (!dbl.listaSerasa(responsavel.getId()).isEmpty()){
+            GenericaMensagem.warn("PESSOA", responsavel.getNome()+ " contém o nome no Serasa!");
+        }
+        
+        PessoaDB db = new PessoaDBToplink();
+        pessoaComplemento = db.pesquisaPessoaComplementoPorPessoa(responsavel.getId());
+        if (pessoaComplemento.getId() != -1){
+            if (pessoaComplemento.isCobrancaBancaria()){
+                cobrancaBancaria = "sim";
+            }else
+                cobrancaBancaria = "nao";
+            idDia = pessoaComplemento.getNrDiaVencimento();
+        }
+        
+        return responsavel;
     }
 
     public Pessoa getResponsavel() {
+        if (GenericaSessao.exists("pessoaPesquisa")){
+            Socios s = fisica.getPessoa().getSocios();
+            retornaResponsavel(fisica.getPessoa().getId(), (s != null && s.getId() != -1));
+            GenericaSessao.remove("pessoaPesquisa");
+        }
+        // NÃO APAGAR COMENTÁRIO
+        /*
         JuridicaDB dbj = new JuridicaDBToplink();
         FisicaDB dbf = new FisicaDBToplink();
         LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
@@ -641,11 +606,126 @@ public class LancamentoIndividualBean {
                 GenericaMensagem.fatal("Atenção", "Responsável não encontrado, erro na função!");
             }
         }
+        */
         return responsavel;
     }
 
     public void setResponsavel(Pessoa responsavel) {
         this.responsavel = responsavel;
+    }    
+    
+    public int getIdServico() {
+        return idServico;
+    }
+
+    public void setIdServico(int idServico) {
+        this.idServico = idServico;
+    }
+
+    public List<DataObject> getListaMovimento() {
+        for (int i = 0; i < listaMovimento.size(); i++){
+            listaMovimento.get(i).setArgumento1( Moeda.converteR$(listaMovimento.get(i).getArgumento1().toString()) );
+            ((Movimento)listaMovimento.get(i).getArgumento0()).setValor(
+                    Moeda.converteUS$(Moeda.converteR$(listaMovimento.get(i).getArgumento1().toString()))
+            );
+        }
+        return listaMovimento;
+    }
+
+    public void setListaMovimento(List<DataObject> listaMovimento) {
+        this.listaMovimento = listaMovimento;
+    }
+
+    public List<SelectItem> getListaJuridica() {
+        if (listaJuridica.isEmpty() && !listaServicos.isEmpty()){
+            LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
+            List<Juridica> result = db.listaEmpresaConveniada(Integer.parseInt(listaServicos.get(idServico).getDescription()));
+            
+            if (listaServicos.isEmpty() || result.isEmpty()){
+                listaJuridica.add(new SelectItem(0, "Nenhuma Empresa Conveniada", "0"));
+                return listaJuridica;
+            }
+            
+            if(!result.isEmpty()){
+                for (int i = 0; i < result.size(); i++){
+                    listaJuridica.add(new SelectItem(i,
+                                      result.get(i).getPessoa().getNome(),
+                                      Integer.toString(result.get(i).getId())
+                            ));
+                }
+            }
+        }
+        return listaJuridica;
+    }
+
+    public void setListaJuridica(List<SelectItem> listaJuridica) {
+        this.listaJuridica = listaJuridica;
+    }
+    
+    public List<SelectItem> getListaDiaVencimento() {
+        if (listaDiaVencimento.isEmpty()) {
+            for (int i = 1; i <= 31; i++) {
+                listaDiaVencimento.add(new SelectItem(Integer.toString(i)));
+            }
+        }
+        return listaDiaVencimento;
+    }
+
+    public void setListaDiaVencimento(List<SelectItem> listaDiaVencimento) {
+        this.listaDiaVencimento = listaDiaVencimento;
+    }    
+
+    public int getIdDia() {
+        return idDia;
+    }
+
+    public void setIdDia(int idDia) {
+        this.idDia = idDia;
+    }
+
+    public String getCobrancaBancaria() {
+        return cobrancaBancaria;
+    }
+
+    public void setCobrancaBancaria(String cobrancaBancaria) {
+        this.cobrancaBancaria = cobrancaBancaria;
+    }
+
+    public String getEntrada() {
+        return entrada;
+    }
+
+    public void setEntrada(String entrada) {
+        this.entrada = entrada;
+    }
+
+    public String getTotalPagar() {
+        if (fisica.getId() != -1 && !listaServicos.isEmpty()){
+            LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
+            
+            if (!listaServicos.get(idServico).getDescription().equals("0")){
+                Servicos se = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
+
+                List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), se.getId());
+                float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
+
+                if (!se.isAlterarValor())
+                    totalPagar = Moeda.converteR$Float(vl);
+            }
+        }
+        return Moeda.converteR$(totalPagar);
+    }
+
+    public void setTotalPagar(String totalPagar) {
+        this.totalPagar = totalPagar;
+    }
+
+    public int getIdJuridica() {
+        return idJuridica;
+    }
+
+    public void setIdJuridica(int idJuridica) {
+        this.idJuridica = idJuridica;
     }
 
     public String getDescontoFolha() {

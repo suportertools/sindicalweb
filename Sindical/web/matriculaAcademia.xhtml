@@ -49,6 +49,7 @@
                     <p:panel id="id_panel_cadastro">
                         <h:panelGrid>
                             <h:column>
+                                <p:messages closable="true" showDetail="true"/>
                                 <h:panelGrid columns="2" cellpadding="3" width="830" columnClasses="verticalAlignTop,verticalAlignTop">
                                     <h:column>
                                         <h:panelGrid columns="2" cellpadding="3" width="820">
@@ -136,7 +137,8 @@
                                             <h:column>
                                                 <h:panelGrid columns="3">
                                                     <p:commandLink id="idResp" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.nome}" onclick="PF('dlg_pessoa_card').show()" update="i_pessoa_card" action="#{pessoaCardBean.cardPessoa(matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.id)}" title="Ver detalhes" />
-                                                    <p:commandButton value="Pesquisar / Alterar Responsável" onclick="PF('dlg_painel_trocar_responsavel').show();" type="button" icon="ui-icon-search" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" styleClass="margin-left-max" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
+                                                    <p:commandButton value="Pesquisar / Alterar Responsável" onclick="PF('dlg_painel_trocar_responsavel').show();" type="button" icon="ui-icon-search" rendered="false" styleClass="margin-left-max" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" />
+                                                    <p:commandButton value="Pesquisar / Alterar Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" icon="ui-icon-search" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" styleClass="margin-left-max" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" actionListener="#{matriculaAcademiaBean.pesquisaFisica('responsavel')}"/>
                                                     <h:column rendered="#{matriculaAcademiaBean.sociosCobranca.id != -1}">
                                                         <!-- <p:selectBooleanCheckbox value="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" disabled="# {matriculaAcademiaBean.desabilitaCamposMovimento}" /> -->
                                                         <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.descontoFolha}" styleClass="margin-left-max" itemLabel="Desconto em folha" />
@@ -161,6 +163,7 @@
                                     </h:column>
                                 </h:panelGrid>
                                 <h:panelGrid width="990">
+                                    <p:messages closable="true" showDetail="true"/>
                                     <p:panel header="Período / Grade">
                                         <h:panelGrid columns="3" id="id_grid_periodo_grade">
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 940px;">

@@ -150,7 +150,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
             boolean booAniversario, String meses_aniversario, String dia_inicial, String dia_final, boolean booData, String dt_cadastro, String dt_cadastro_fim, String dt_recadastro,
             String dt_recadastro_fim, String dt_demissao, String dt_demissao_fim, String dt_admissao_socio, String dt_admissao_socio_fim, String dt_admissao_empresa, String dt_admissao_empresa_fim, boolean booVotante, String tipo_votante,
             boolean booEmail, String tipo_email, boolean booTelefone, String tipo_telefone, boolean booEstadoCivil, String tipo_estado_civil, boolean booEmpresas, String tipo_empresa, int id_juridica, Integer minQtdeFuncionario, Integer maxQtdeFuncionario,
-            String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias, String situacao, boolean booBiometria, String tipoBiometria) {
+            String data_aposentadoria, String data_aposentadoria_fim, String ordem, String tipoCarencia, Integer carenciaDias, String situacao, boolean booBiometria, String tipoBiometria, boolean booDescontoFolha, String tipoDescontoFolha) {
 
         String p_demissao = "";
         if (booData && !dt_demissao.isEmpty() && !dt_demissao_fim.isEmpty()) {
@@ -467,6 +467,14 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
                 filtro += " AND p.codigo IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
             } else {
                 filtro += " AND p.codigo NOT IN (SELECT id_pessoa FROM pes_biometria WHERE is_ativo = TRUE) ";
+            }
+        }
+        
+        if (booDescontoFolha) {
+            if (tipoDescontoFolha.equals("com")) {
+                filtro += " AND so.desconto_folha = true ";
+            } else {
+                filtro += " AND so.desconto_folha = false ";
             }
         }
 
