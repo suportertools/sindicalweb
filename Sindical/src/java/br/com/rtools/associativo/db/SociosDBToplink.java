@@ -171,22 +171,23 @@ public class SociosDBToplink extends DB implements SociosDB {
 //    }
     @Override
     public Socios pesquisaSocioPorPessoa(int idPessoa) {
-        Socios socio = new Socios();
-
+        Socios socios = new Socios();
         try {
+            Query query = getEntityManager().createNativeQuery(
+                    "  SELECT S.*                                                          \n"
+                    + "  FROM soc_socios              AS S                                 \n"
+                    + " INNER JOIN fin_servico_pessoa AS SP ON SP.id = S.id_servico_pessoa \n"
+                    + " INNER JOIN pes_pessoa         AS P  ON P.id  = SP.id_pessoa        \n"
+                    + "      WHERE SP.id_pessoa = " + idPessoa + "\n"
+                    + "   ORDER BY SP.id", Socios.class);
 
-            Query qry = getEntityManager().createNativeQuery(
-                    "SELECT s.id "
-                    + "  FROM soc_socios s "
-                    + " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa"
-                    + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa"
-                    + " WHERE sp.id_pessoa = " + idPessoa
-                    + " ORDER BY sp.id");
+            List<Socios> list = query.getResultList();
 
-            List<Vector> lista = qry.getResultList();
-
-            for (int i = 0; i < lista.size(); i++) {
-                socio = (Socios) (new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) lista.get(i).get(0), "Socios");
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getServicoPessoa().isAtivo()) {
+                    return list.get(i);
+                }
+                socios = list.get(i);
             }
 
 //            Query qry = getEntityManager().createQuery(""
@@ -200,7 +201,7 @@ public class SociosDBToplink extends DB implements SociosDB {
         } catch (EJBQLException e) {
             e.getMessage();
         }
-        return socio;
+        return socios;
     }
 
     @Override
@@ -260,12 +261,12 @@ public class SociosDBToplink extends DB implements SociosDB {
     public List<Socios> pesquisaSocioPorPessoaInativo(int idPessoa) {
         try {
             Query query = getEntityManager().createNativeQuery(
-                    " SELECT s.* \n " +
-                    "  FROM soc_socios s \n " +
-                    " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa \n " +
-                    " WHERE sp.id_pessoa = " + idPessoa + " \n " +
-                    "   AND sp.is_ativo = false \n " +
-                    " ORDER BY s.id_matricula_socios DESC ", Socios.class
+                    "       SELECT S.*                                                       \n "
+                    + "       FROM soc_socios AS S                                           \n "
+                    + " INNER JOIN fin_servico_pessoa sp ON SP.id = S.id_servico_pessoa      \n "
+                    + "      WHERE SP.id_pessoa = " + idPessoa + "                           \n "
+                    + "        AND SP.is_ativo = false                                       \n "
+                    + "   ORDER BY S.id_matricula_socios DESC ", Socios.class
             );
             List list = query.getResultList();
             if (!list.isEmpty()) {
@@ -279,7 +280,7 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public List<Socios> pesquisaSocioPorPessoaTitularInativo(int idPessoa) {
         try {
-            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false ORDER BY S.id DESC");
+            Query query = getEntityManager().createQuery("SELECT S FROM Socios AS S WHERE S.servicoPessoa.pessoa.id = :pessoa AND S.servicoPessoa.ativo = false AND S.parentesco.id = 1 ORDER BY S.id DESC");
             query.setParameter("pessoa", idPessoa);
             List list = query.getResultList();
             if (!list.isEmpty()) {
