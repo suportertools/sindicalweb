@@ -328,8 +328,8 @@
                                     </p:column>
 
                                     <p:column headerText="Nome" width="200">
-                                        <p:commandLink rendered="#{listDependentes.fisica.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
-                                        <p:commandLink rendered="#{listDependentes.fisica.id != -1}" value="#{listDependentes.fisica.pessoa.documento} - #{listDependentes.fisica.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" title="#{listDependentes.fisica.pessoa.id}" />
+                                        <p:commandLink rendered="#{listDependentes.fisica.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
+                                        <p:commandLink rendered="#{listDependentes.fisica.id != -1}" value="#{listDependentes.fisica.pessoa.documento} - #{listDependentes.fisica.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" title="#{listDependentes.fisica.pessoa.id}" />
                                     </p:column>
 
                                     <p:column headerText="Parentesco" >
@@ -501,162 +501,164 @@
 
                             <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="820" visible="#{sociosBean.modelVisible}">
                                 <p:ajax event="close" listener="#{sociosBean.fechaModal()}" update="formSocios"/>  
-                                <p:tabView id="tab_view">
-                                    <p:tab id="tab_cadastro" title="Cadastro de Dependente">
-                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px" columnClasses="verticalAlignTop, verticalAlignTop" >
-                                            <p:column>
+                                <h:panelGrid id="i_panel_dados">
+                                    <p:tabView id="tab_view">
+                                        <p:tab  title="Cadastro de Dependente">
+                                            <h:panelGrid columns="2" style="width: 400px" columnClasses="verticalAlignTop, verticalAlignTop" >
+                                                <p:column>
 
-                                                <p:messages id="i_msg" showDetail="true" closable="true" />   
+                                                    <p:messages id="i_msg" showDetail="true" closable="true" />   
 
-                                                <p:panel styleClass="fundoCinza">
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="4" style="width: 200px">
+                                                            <p:column>
+                                                                <h:outputLabel value="Cadastrado"/><br />
+                                                                <p:inputMask value="#{sociosBean.novoDependente.pessoa.criacao}" size="8" mask="99/99/9999"/>
+                                                            </p:column>
+
+                                                            <p:column>
+                                                                <h:outputLabel value="CPF" style="margin-left: 10px"/><br />
+                                                                <p:inputMask size="13" value="#{sociosBean.novoDependente.pessoa.documento}" mask="999.999.999-99" style="margin-left: 10px">
+                                                                    <p:ajax event="change" update=":formSocios:i_panel_dados" listener="#{sociosBean.pesquisaCPF()}"/>
+                                                                </p:inputMask>
+                                                            </p:column>
+
+                                                            <p:column>
+                                                                <h:outputLabel value="RG" style="margin-left: 10px"/><br />
+                                                                <p:inputText size="12" maxlength="10" value="#{sociosBean.novoDependente.rg}" style="margin-left: 10px">
+                                                                    <p:ajax event="change" update="@this" />
+                                                                </p:inputText>
+                                                            </p:column>
+
+                                                            <p:column>
+                                                                <h:outputLabel value="Nascimento" style="margin-left: 10px"/><br />
+                                                                <p:inputMask size="8" value="#{sociosBean.novoDependente.nascimento}" mask="99/99/9999" style="margin-left: 10px">
+                                                                    <p:ajax event="blur" update="@this" />
+                                                                </p:inputMask>
+                                                            </p:column>
+                                                        </h:panelGrid>
+
+                                                        <h:panelGrid columns="1" style="margin-top: 10px; width: 200px">
+                                                            <p:column>
+                                                                <h:outputLabel value="Nome do Dependente" /><br />
+                                                                <p:inputText value="#{sociosBean.novoDependente.pessoa.nome}" converter="#{toUpperCase}" style="width: 430px">
+                                                                    <p:ajax event="blur" update="@this"/>
+                                                                </p:inputText>
+                                                            </p:column>
+                                                        </h:panelGrid>
+                                                    </p:panel>
+                                                    <h:panelGrid columns="3" style="margin-top: 10px; width: 100%">
+                                                        <p:column>
+                                                            <h:outputLabel value="Sexo"/><br />
+                                                            <p:selectOneRadio value="#{sociosBean.novoDependente.sexo}">
+                                                                <p:ajax event="change" update="i_panel_foto" />
+                                                                <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                                                <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                                            </p:selectOneRadio>
+                                                        </p:column>
+
+                                                        <h:column>
+                                                            <h:outputLabel value="Estado Civil" style=""/><br />
+                                                            <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px;">
+                                                                <p:ajax event="change" update="@this" global="false" />
+                                                                <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                                                <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                                                <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                                                <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                                                <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                                                <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                                                <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                                <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                                            </p:selectOneMenu>
+                                                        </h:column>
+
+                                                        <h:column>
+                                                            <p:outputLabel value="Naturalidade" /><br />                                                
+                                                            <p:commandButton  icon="ui-icon-search" value="#{sociosBean.novoDependente.naturalidade}" action="#{chamadaPaginaBean.cidade}" title="Pesquisar outra Naturalidade" style="margin-right: 10px"/>
+                                                        </h:column>
+                                                    </h:panelGrid>
+
+                                                    <h:panelGrid columns="1">
+                                                        <h:outputLabel value="Nome do  Pai" />
+                                                        <p:inputText maxlength="100" value="#{sociosBean.novoDependente.pai}" converter="#{toUpperCase}" style="width: 460px">
+                                                            <f:ajax event="blur" render="@this" />
+                                                        </p:inputText>           
+
+                                                        <h:outputLabel value="Nome da Mãe" />
+                                                        <p:inputText maxlength="100" value="#{sociosBean.novoDependente.mae}" converter="#{toUpperCase}" style="width: 460px">
+                                                            <f:ajax event="blur" render="@this" />
+                                                        </p:inputText>                                
+                                                    </h:panelGrid>
+                                                </p:column>
+
+                                                <p:column>
+                                                    <p:panel header="Foto do Perfil" style="width: 265px; text-align: center" id="i_panel_foto">
+                                                        <h:column rendered="#{sociosBean.fotoTempPerfil.equals('')}">
+                                                            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(sociosBean.novoDependente.pessoa)}" cache="false" style="max-width: 250px; max-height: 395px" />
+                                                        </h:column>
+                                                        <h:column rendered="#{!sociosBean.fotoTempPerfil.equals('')}">
+                                                            <p:graphicImage value="#{sociosBean.fotoTempPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>
+                                                            <div class="clear"></div>
+                                                        </h:column>
+                                                    </p:panel>                                                
+                                                    <h:panelGrid columns="5">
+                                                        <h:column rendered="false">
+                                                            <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" />
+                                                            <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />                                                        
+                                                        </h:column>                                                    
+                                                        <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(sociosBean.path, sociosBean.novoDependente.pessoa.id == -1 ? 'perfil' : sociosBean.novoDependente.pessoa.id, true, (sociosBean.novoDependente.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam" disabled="#{sociosBean.novoDependente.id == -1}" />
+                                                        <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(sociosBean.path, sociosBean.novoDependente.pessoa.id == -1 ? 'perfil' : sociosBean.novoDependente.pessoa.id, 'image/png,image/jpeg', true, true)}"  global="false" update=":form_upload_files:i_panel_anexos"  disabled="#{sociosBean.novoDependente.id == -1}" />
+                                                        <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" rendered="#{empty sociosBean.fotoTempPerfil}" update=":formSocios:i_panel_dados"  disabled="#{sociosBean.novoDependente.id == -1}"/>
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid columns="3">
+                                                <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.saveFisicaDependente}" update=":formSocios:i_panel_dados :formSocios:i_panel_dependente i_panel_foto"/>
+                                                <p:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" update=":formSocios:i_panel_dados i_panel_pesquisa"/>
+                                                <p:commandButton value="Cancelar" onclick="PF('dlg_dependente').hide()"/>
+                                            </h:panelGrid>
+                                        </p:tab>
+
+
+                                        <p:tab id="tab_pesquisa" title="Pesquisa"  disabled="#{sociosBean.novoDependente.pessoa.id != -1}">
+                                            <p:messages id="i_msg2" showDetail="true" closable="true" />   
+                                            <h:panelGrid id="i_panel_pesquisa" columns="1" style="width: 400px">
+                                                <h:outputLabel value="Pesquisar" />
+                                                <p:autoComplete value="#{sociosBean.fisicaPesquisa}" completeMethod="#{sociosBean.listaPesquisaDependente}" size="100" scrollHeight="300" disabled="#{sociosBean.novoDependente.id != -1}"
+                                                                var="fisica" itemLabel="#{fisica.detalhes}" itemValue="#{fisica}" converter="fisicaConverter" forceSelection="true" queryDelay="1000" maxlength="100" minQueryLength="1">
+                                                    <p:ajax event="itemSelect" listener="#{sociosBean.selectDependente()}" update="i_panel_pesquisa :formSocios:i_panel_dados"/>
+                                                </p:autoComplete>
+
+                                                <p:panel styleClass="fundoCinza" rendered="#{sociosBean.fisicaPesquisa.id != -1}" style="margin-top: 20px">
                                                     <h:panelGrid columns="4" style="width: 200px">
                                                         <p:column>
                                                             <h:outputLabel value="Cadastrado"/><br />
-                                                            <p:inputMask value="#{sociosBean.novoDependente.pessoa.criacao}" size="8" mask="99/99/9999"/>
+                                                            <p:inputText value="#{sociosBean.fisicaPesquisa.pessoa.criacao}" readonly="true" size="8" />
                                                         </p:column>
 
                                                         <p:column>
                                                             <h:outputLabel value="CPF" style="margin-left: 10px"/><br />
-                                                            <p:inputMask size="13" value="#{sociosBean.novoDependente.pessoa.documento}" mask="999.999.999-99" style="margin-left: 10px">
-                                                                <p:ajax event="change" update="i_panel_dados" listener="#{sociosBean.pesquisaCPF()}"/>
-                                                            </p:inputMask>
+                                                            <p:inputText size="13" value="#{sociosBean.fisicaPesquisa.pessoa.documento}" readonly="true" style="margin-left: 10px"/>
                                                         </p:column>
 
                                                         <p:column>
                                                             <h:outputLabel value="RG" style="margin-left: 10px"/><br />
-                                                            <p:inputText size="12" maxlength="10" value="#{sociosBean.novoDependente.rg}" style="margin-left: 10px">
-                                                                <p:ajax event="change" update="@this" />
-                                                            </p:inputText>
+                                                            <p:inputText size="12" maxlength="10" value="#{sociosBean.fisicaPesquisa.rg}" readonly="true" style="margin-left: 10px"/>
                                                         </p:column>
 
                                                         <p:column>
                                                             <h:outputLabel value="Nascimento" style="margin-left: 10px"/><br />
-                                                            <p:inputMask size="8" value="#{sociosBean.novoDependente.nascimento}" mask="99/99/9999" style="margin-left: 10px">
-                                                                <p:ajax event="blur" update="@this" />
-                                                            </p:inputMask>
-                                                        </p:column>
-                                                    </h:panelGrid>
-
-                                                    <h:panelGrid columns="1" style="margin-top: 10px; width: 200px">
-                                                        <p:column>
-                                                            <h:outputLabel value="Nome do Dependente" /><br />
-                                                            <p:inputText value="#{sociosBean.novoDependente.pessoa.nome}" converter="#{toUpperCase}" style="width: 430px">
-                                                                <p:ajax event="blur" update="@this"/>
-                                                            </p:inputText>
+                                                            <p:inputText size="8" value="#{sociosBean.fisicaPesquisa.nascimento}" readonly="true" style="margin-left: 10px"/>
                                                         </p:column>
                                                     </h:panelGrid>
                                                 </p:panel>
-                                                <h:panelGrid columns="3" style="margin-top: 10px; width: 100%">
-                                                    <p:column>
-                                                        <h:outputLabel value="Sexo"/><br />
-                                                        <p:selectOneRadio value="#{sociosBean.novoDependente.sexo}">
-                                                            <p:ajax event="change" update="i_panel_foto" />
-                                                            <f:selectItem itemValue="F" itemLabel="Feminino"/>
-                                                            <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                                        </p:selectOneRadio>
-                                                    </p:column>
+                                                <p:commandButton value="Adicionar" action="#{sociosBean.saveFisicaDependente}" update=":formSocios:i_panel_dados :formSocios:i_panel_dependente i_msg2" rendered="#{sociosBean.fisicaPesquisa.id != -1}" />
+                                            </h:panelGrid>
 
-                                                    <h:column>
-                                                        <h:outputLabel value="Estado Civil" style=""/><br />
-                                                        <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px;">
-                                                            <p:ajax event="change" update="@this" global="false" />
-                                                            <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                            <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
-                                                            <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
-                                                            <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
-                                                            <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
-                                                            <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
-                                                            <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
-                                                            <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
-                                                        </p:selectOneMenu>
-                                                    </h:column>
-                                                    
-                                                    <h:column>
-                                                        <p:outputLabel value="Naturalidade" /><br />                                                
-                                                        <p:commandButton  icon="ui-icon-search" value="#{sociosBean.novoDependente.naturalidade}" action="#{chamadaPaginaBean.cidade}" title="Pesquisar outra Naturalidade" style="margin-right: 10px"/>
-                                                    </h:column>
-                                                </h:panelGrid>
-
-                                                <h:panelGrid columns="1">
-                                                    <h:outputLabel value="Nome do  Pai" />
-                                                    <p:inputText maxlength="100" value="#{sociosBean.novoDependente.pai}" converter="#{toUpperCase}" style="width: 460px">
-                                                        <f:ajax event="blur" render="@this" />
-                                                    </p:inputText>           
-
-                                                    <h:outputLabel value="Nome da Mãe" />
-                                                    <p:inputText maxlength="100" value="#{sociosBean.novoDependente.mae}" converter="#{toUpperCase}" style="width: 460px">
-                                                        <f:ajax event="blur" render="@this" />
-                                                    </p:inputText>                                
-                                                </h:panelGrid>
-                                            </p:column>
-
-                                            <p:column>
-                                                <p:panel header="Foto do Perfil" style="width: 265px; text-align: center" id="i_panel_foto">
-                                                    <h:column rendered="#{sociosBean.fotoTempPerfil.equals('')}">
-                                                        <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(sociosBean.novoDependente.pessoa)}" cache="false" style="max-width: 250px; max-height: 395px" />
-                                                    </h:column>
-                                                    <h:column rendered="#{!sociosBean.fotoTempPerfil.equals('')}">
-                                                        <p:graphicImage value="#{sociosBean.fotoTempPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>
-                                                        <div class="clear"></div>
-                                                    </h:column>
-                                                </p:panel>                                                
-                                                <h:panelGrid columns="5">
-                                                    <h:column rendered="false">
-                                                        <p:commandButton value="Upload Foto" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" />
-                                                        <p:commandButton value="Capturar" onclick="PF('dgl_captura').show();" />                                                        
-                                                    </h:column>                                                    
-                                                    <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(sociosBean.path, sociosBean.novoDependente.pessoa.id == -1 ? 'perfil' : sociosBean.novoDependente.pessoa.id, true, (sociosBean.novoDependente.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam" disabled="#{sociosBean.novoDependente.id == -1}" />
-                                                    <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(sociosBean.path, sociosBean.novoDependente.pessoa.id == -1 ? 'perfil' : sociosBean.novoDependente.pessoa.id, 'image/png,image/jpeg', true, true)}"  global="false" update=":form_upload_files:i_panel_anexos"  disabled="#{sociosBean.novoDependente.id == -1}" />
-                                                    <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" rendered="#{empty sociosBean.fotoTempPerfil}" update="i_panel_dados"  disabled="#{sociosBean.novoDependente.id == -1}"/>
-                                                </h:panelGrid>
-                                            </p:column>
-                                        </h:panelGrid>
-
-                                        <h:panelGrid columns="3">
-                                            <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente i_panel_foto"/>
-                                            <p:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" update="i_panel_dados i_panel_pesquisa"/>
-                                            <p:commandButton value="Cancelar" onclick="PF('dlg_dependente').hide()"/>
-                                        </h:panelGrid>
-                                    </p:tab>
-
-
-                                    <p:tab id="tab_pesquisa" title="Pesquisa">
-                                        <p:messages id="i_msg2" showDetail="true" closable="true" />   
-                                        <h:panelGrid id="i_panel_pesquisa" columns="1" style="width: 400px">
-                                            <h:outputLabel value="Pesquisar" />
-                                            <p:autoComplete value="#{sociosBean.fisicaPesquisa}" completeMethod="#{sociosBean.listaPesquisaDependente}" size="100" scrollHeight="300" disabled="#{sociosBean.novoDependente.id != -1}"
-                                                            var="fisica" itemLabel="#{fisica.detalhes}" itemValue="#{fisica}" converter="fisicaConverter" forceSelection="true" queryDelay="1000" maxlength="100" minQueryLength="1">
-                                                <p:ajax event="itemSelect" listener="#{sociosBean.selectDependente()}" update="i_panel_pesquisa i_panel_dados"/>
-                                            </p:autoComplete>
-
-                                            <p:panel styleClass="fundoCinza" rendered="#{sociosBean.fisicaPesquisa.id != -1}" style="margin-top: 20px">
-                                                <h:panelGrid columns="4" style="width: 200px">
-                                                    <p:column>
-                                                        <h:outputLabel value="Cadastrado"/><br />
-                                                        <p:inputText value="#{sociosBean.fisicaPesquisa.pessoa.criacao}" readonly="true" size="8" />
-                                                    </p:column>
-
-                                                    <p:column>
-                                                        <h:outputLabel value="CPF" style="margin-left: 10px"/><br />
-                                                        <p:inputText size="13" value="#{sociosBean.fisicaPesquisa.pessoa.documento}" readonly="true" style="margin-left: 10px"/>
-                                                    </p:column>
-
-                                                    <p:column>
-                                                        <h:outputLabel value="RG" style="margin-left: 10px"/><br />
-                                                        <p:inputText size="12" maxlength="10" value="#{sociosBean.fisicaPesquisa.rg}" readonly="true" style="margin-left: 10px"/>
-                                                    </p:column>
-
-                                                    <p:column>
-                                                        <h:outputLabel value="Nascimento" style="margin-left: 10px"/><br />
-                                                        <p:inputText size="8" value="#{sociosBean.fisicaPesquisa.nascimento}" readonly="true" style="margin-left: 10px"/>
-                                                    </p:column>
-                                                </h:panelGrid>
-                                            </p:panel>
-                                            <p:commandButton value="Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente i_msg2" rendered="#{sociosBean.fisicaPesquisa.id != -1}" />
-                                        </h:panelGrid>
-
-                                    </p:tab>
-                                </p:tabView>
+                                        </p:tab>
+                                    </p:tabView>
+                                </h:panelGrid>
                             </p:dialog>
 
                         </h:form>
@@ -733,7 +735,7 @@
                                           mode="advanced"                                          
                                           multiple="false"
                                           sizeLimit="204800"
-                                          update=":formSocios:tab_view:i_panel_dados"
+                                          update=":formSocios:i_panel_dados"
                                           fileUploadListener="#{sociosBean.upload}"
                                           oncomplete="PF('dgl_upload').hide()" />
                         </p:dialog>
