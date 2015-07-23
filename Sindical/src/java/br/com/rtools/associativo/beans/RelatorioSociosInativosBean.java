@@ -52,6 +52,7 @@ public class RelatorioSociosInativosBean implements Serializable {
     private List<SelectItem> listaGrupoCategoria;
     private int indexGrupoCategoria;
     private String ordernarPor = "nome";
+    private Relatorios relatorios;
 
     public RelatorioSociosInativosBean() {
         listaSocios = new ArrayList();
@@ -61,7 +62,6 @@ public class RelatorioSociosInativosBean implements Serializable {
         this.loadListaRelatorio();
         indexRelatorio = 0;
         comDependentes = false;
-
         chkDataInativacao = false;
         chkDataFiliacao = false;
         chkCategoria = false;
@@ -74,6 +74,7 @@ public class RelatorioSociosInativosBean implements Serializable {
         this.loadListaGrupoCategoria();
         indexCategoria = 0;
         indexGrupoCategoria = 0;
+        relatorios = new Relatorios();
     }
 
     public void imprimir() {
@@ -338,5 +339,24 @@ public class RelatorioSociosInativosBean implements Serializable {
 
     public void setOrdernarPor(String ordernarPor) {
         this.ordernarPor = ordernarPor;
+    }
+
+    public Relatorios getRelatorios() {
+        if (relatorios.getId() == -1) {
+            relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(listaTipoRelatorio.get(indexRelatorio).getDescription()));
+        }
+        return relatorios;
+    }
+
+    /**
+     * tcase
+     * <ul>
+     * <li>1 - Relatório == null </li>
+     * </ul>
+     *
+     * @param tcase
+     */
+    public void listener(Integer tcase) {
+        relatorios = new Relatorios();
     }
 }
