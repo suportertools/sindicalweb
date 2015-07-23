@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 @Table(name = "soc_carteirinha")
 @NamedQuery(name = "SocioCarteirinha.pesquisaID", query = "select sc from SocioCarteirinha sc where sc.id=:pid")
 public class SocioCarteirinha implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -33,7 +34,7 @@ public class SocioCarteirinha implements java.io.Serializable {
     @ManyToOne
     private ModeloCarteirinha modeloCarteirinha;
     @Column(name = "nr_cartao")
-    private int cartao;
+    private Integer cartao;
     @Column(name = "nr_via")
     private int via;
     @Temporal(TemporalType.DATE)
@@ -41,7 +42,7 @@ public class SocioCarteirinha implements java.io.Serializable {
     private Date dtValidadeCarteirinha;
     @Column(name = "is_ativo", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
-    
+
     public SocioCarteirinha() {
         this.id = -1;
         this.setEmissao(DataHoje.data());
@@ -50,10 +51,10 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.cartao = 0;
         this.via = 0;
         this.setValidadeCarteirinha("");
-         this.ativo = true;
+        this.ativo = true;
     }
 
-    public SocioCarteirinha(int id, String emissao, Pessoa pessoa, ModeloCarteirinha modeloCarteirinha, int cartao, int via, String validadeCarteirinha, boolean ativo) {
+    public SocioCarteirinha(int id, String emissao, Pessoa pessoa, ModeloCarteirinha modeloCarteirinha, Integer cartao, int via, String validadeCarteirinha, boolean ativo) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -63,10 +64,7 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.setValidadeCarteirinha(validadeCarteirinha);
         this.ativo = ativo;
     }
-    
-    
-    
-    
+
     public int getId() {
         return id;
     }
@@ -113,11 +111,11 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.modeloCarteirinha = modeloCarteirinha;
     }
 
-    public int getCartao() {
+    public Integer getCartao() {
         return cartao;
     }
 
-    public void setCartao(int cartao) {
+    public void setCartao(Integer cartao) {
         this.cartao = cartao;
     }
 
@@ -136,7 +134,7 @@ public class SocioCarteirinha implements java.io.Serializable {
     public void setDtValidadeCarteirinha(Date dtValidadeCarteirinha) {
         this.dtValidadeCarteirinha = dtValidadeCarteirinha;
     }
-    
+
     public String getValidadeCarteirinha() {
         if (dtValidadeCarteirinha != null) {
             return DataHoje.converteData(dtValidadeCarteirinha);
@@ -149,7 +147,7 @@ public class SocioCarteirinha implements java.io.Serializable {
         if (!validadeCarteirinha.isEmpty()) {
             this.dtValidadeCarteirinha = DataHoje.converte(validadeCarteirinha);
         }
-    }        
+    }
 
     public boolean isAtivo() {
         return ativo;
@@ -158,5 +156,5 @@ public class SocioCarteirinha implements java.io.Serializable {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
-    
+
 }
