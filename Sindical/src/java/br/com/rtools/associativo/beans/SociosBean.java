@@ -320,7 +320,6 @@ public class SociosBean implements Serializable {
 //        for (int i = 0; i < list.size(); i++) {
 //            if (list.get(i).getServicoPessoa().isAtivo()) {
 //                socio_pessoa = list.get(i);
-//                reativar = false;
 //                break;
 //            }
 //        }
@@ -352,19 +351,19 @@ public class SociosBean implements Serializable {
             if (socios.getServicoPessoa().isAtivo() || reativar) {
                 socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
             } else {
-                    socios.setMatriculaSocios(new MatriculaSocios());
-                    Pessoa ps = socios.getServicoPessoa().getPessoa();
-                    ServicoPessoa sp = new ServicoPessoa();
-                    sp.setPessoa(ps);
-                    socios.setId(-1);
-                    socios.setNrViaCarteirinha(1);
-                    socios.setParentesco((Parentesco) dao.find(new Parentesco(), 1));
-                    sp.setDescontoSocial((DescontoSocial) dao.find(new DescontoSocial(), 1));
-                    socios.setServicoPessoa(sp);
-                    servicoPessoa.setEmissao(DataHoje.data());
-                    socios.getMatriculaSocios().setEmissao(DataHoje.data());
-                }
+                socios.setMatriculaSocios(new MatriculaSocios());
+                Pessoa ps = socios.getServicoPessoa().getPessoa();
+                ServicoPessoa sp = new ServicoPessoa();
+                sp.setPessoa(ps);
+                socios.setId(-1);
+                socios.setNrViaCarteirinha(1);
+                socios.setParentesco((Parentesco) dao.find(new Parentesco(), 1));
+                sp.setDescontoSocial((DescontoSocial) dao.find(new DescontoSocial(), 1));
+                socios.setServicoPessoa(sp);
+                servicoPessoa.setEmissao(DataHoje.data());
+                socios.getMatriculaSocios().setEmissao(DataHoje.data());
             }
+        }
 
         servicoPessoa = socios.getServicoPessoa();
         descontoSocial = servicoPessoa.getDescontoSocial();
@@ -1492,7 +1491,7 @@ public class SociosBean implements Serializable {
                     }
                     sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                     if (sc == null) {
-                        sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, fisicaDependente.getPessoa().getId(), 1, validadeCarteirinha, true);
+                        sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, null, 1, validadeCarteirinha, true);
                         if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
                             sc.setAtivo(true);
                         } else {
@@ -1713,11 +1712,11 @@ public class SociosBean implements Serializable {
      * cadastro da pessoa física);
      */
     public void saveFisicaDependente(Integer tcase) {
-        if(matriculaSocios.getId() == -1) {
+        if (matriculaSocios.getId() == -1) {
             if (servicoPessoa.getPessoa().getId() == novoDependente.getPessoa().getId()) {
                 GenericaMensagem.warn("Validação", "O titular não pode ser dependente!");
                 return;
-            }            
+            }
         } else {
             if (matriculaSocios.getTitular().getId() == novoDependente.getPessoa().getId()) {
                 GenericaMensagem.warn("Validação", "O titular não pode ser dependente!");
