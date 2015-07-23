@@ -5,8 +5,7 @@ import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.OposicaoPessoa;
 import br.com.rtools.arrecadacao.db.ConvencaoPeriodoDB;
 import br.com.rtools.arrecadacao.db.ConvencaoPeriodoDBTopLink;
-import br.com.rtools.arrecadacao.db.OposicaoDB;
-import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
+import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.SMotivoInativacao;
 import br.com.rtools.associativo.Socios;
@@ -26,7 +25,6 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.ValidaDocumentos;
@@ -139,9 +137,9 @@ public class OposicaoBean implements Serializable {
 //                return;
 //            }
 //        }
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         String beforeUpdate = "";
-        Oposicao o = (Oposicao) di.find(oposicao);
+        Oposicao o = (Oposicao) dao.find(oposicao);
         if (oposicao.getId() != -1) {
             beforeUpdate = ""
                     + "ID: " + o.getId()
@@ -160,14 +158,14 @@ public class OposicaoBean implements Serializable {
         }
 
         NovoLog novoLog = new NovoLog();
-        di.openTransaction();
+        dao.openTransaction();
         if (oposicao.getId() == -1) {
-            OposicaoDB oposicaoDB = new OposicaoDBToplink();
-            if (oposicaoDB.validaOposicao(oposicao)) {
+            OposicaoDao oposicaoDao = new OposicaoDao();
+            if (oposicaoDao.validaOposicao(oposicao)) {
                 message = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
                 return;
             }
-            if (di.save(oposicao)) {
+            if (dao.save(oposicao)) {
                 novoLog.save(""
                         + "ID: " + oposicao.getId()
                         + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
@@ -179,23 +177,23 @@ public class OposicaoBean implements Serializable {
                         + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
                         + " ]"
                 );
-                
-                if (!inativarSocioOposicao(di)){
+
+                if (!inativarSocioOposicao(dao)) {
                     message = "Erro ao Inativar Sócio";
-                    di.rollback();
+                    dao.rollback();
                     return;
                 }
-                
-                di.commit();
+
+                dao.commit();
                 clear();
                 setMessage("Registro salvo com sucesso.");
             } else {
-                di.rollback();
+                dao.rollback();
                 clear();
                 message = "Falha ao salvar este registro!";
             }
         } else {
-            if (di.update(oposicao)) {
+            if (dao.update(oposicao)) {
                 novoLog.update(beforeUpdate, ""
                         + "ID: " + oposicao.getId()
                         + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
@@ -207,58 +205,64 @@ public class OposicaoBean implements Serializable {
                         + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
                         + " ]"
                 );
-                
-                if (!inativarSocioOposicao(di)){
+
+                if (!inativarSocioOposicao(dao)) {
                     message = "Erro ao Inativar Sócio";
-                    di.rollback();
+                    dao.rollback();
                     return;
                 }
-                
-                di.commit();
+
+                dao.commit();
                 clear();
                 setMessage("Registro atualizado com sucesso.");
             } else {
-                di.rollback();
+                dao.rollback();
                 clear();
                 message = "Falha ao excluir este registro!";
             }
         }
     }
-    
-    public boolean inativarSocioOposicao(DaoInterface dao){
-        PessoaDB db = new PessoaDBToplink();
-        
-        Pessoa p = db.pessoaDocumento(oposicao.getOposicaoPessoa().getCpf());
-        
-        ServicoPessoaDao sp_dao = new ServicoPessoaDao();
-        if (p.getSocios() != null && p.getSocios().getId() != -1){
-            List<ServicoPessoa> list_sp = sp_dao.listaTodosServicoPessoaPorTitular(p.getSocios().getMatriculaSocios().getTitular().getId());
-            
-            for (ServicoPessoa sp : list_sp){
-                sp.setAtivo(false);
-                if (!dao.update(sp)){
-                    GenericaMensagem.error("Error", "Não foi possível alterar Serviço Pessoa!");
+
+    public boolean inativarSocioOposicao(Dao dao) {
+        try {
+            PessoaDB db = new PessoaDBToplink();
+            Pessoa p = db.pessoaDocumento(oposicao.getOposicaoPessoa().getCpf());
+            if (p == null) {
+                return true;
+            }
+            ServicoPessoaDao sp_dao = new ServicoPessoaDao();
+            if (p.getSocios() != null && p.getSocios().getId() != -1) {
+                List<ServicoPessoa> list_sp = sp_dao.listaTodosServicoPessoaPorTitular(p.getSocios().getMatriculaSocios().getTitular().getId());
+
+                for (ServicoPessoa sp : list_sp) {
+                    sp.setAtivo(false);
+                    if (!dao.update(sp)) {
+                        GenericaMensagem.error("Error", "Não foi possível alterar Serviço Pessoa!");
+                        return false;
+                    }
+                }
+
+                MatriculaSocios ms = p.getSocios().getMatriculaSocios();
+
+                ms.setDtInativo(DataHoje.dataHoje());
+                ms.setMotivoInativacao((SMotivoInativacao) dao.find(new SMotivoInativacao(), 3));
+
+                if (!dao.update(ms)) {
+                    GenericaMensagem.error("Error", "Não foi possível alterar Matrícula Sócios!");
                     return false;
                 }
             }
-            
-            MatriculaSocios ms = p.getSocios().getMatriculaSocios();
-            
-            ms.setDtInativo(DataHoje.dataHoje());
-            ms.setMotivoInativacao((SMotivoInativacao)dao.find(new SMotivoInativacao(), 3));
-            
-            if (!dao.update(ms)){
-                GenericaMensagem.error("Error", "Não foi possível alterar Matrícula Sócios!");
-                return false;
-            }
+        } catch (Exception e) {
+            return false;
         }
+
         return true;
     }
 
     public String edit(Oposicao o) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         setDesabilitaPessoa(true);
-        oposicao = (Oposicao) di.rebind(o);
+        oposicao = (Oposicao) dao.rebind(o);
         sexo = oposicao.getOposicaoPessoa().getSexo();
         GenericaSessao.put("oposicaoPesquisa", oposicao);
         GenericaSessao.put("linkClicado", true);
@@ -280,18 +284,18 @@ public class OposicaoBean implements Serializable {
             return false;
         }
         oposicao.getOposicaoPessoa().setSexo(sexo);
-        DaoInterface di = new Dao();
-        di.openTransaction();
-        OposicaoDB oposicaoDB = new OposicaoDBToplink();
-        OposicaoPessoa op = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+        Dao dao = new Dao();
+        dao.openTransaction();
+        OposicaoDao oposicaoDao = new OposicaoDao();
+        OposicaoPessoa op = oposicaoDao.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
         if (op.getId() == -1) {
             if (oposicao.getOposicaoPessoa().getId() == -1) {
-                if (di.save(oposicao.getOposicaoPessoa())) {
+                if (dao.save(oposicao.getOposicaoPessoa())) {
                     listaConvencaoPeriodos.clear();
-                    di.commit();
+                    dao.commit();
                     return true;
                 } else {
-                    di.rollback();
+                    dao.rollback();
                     return false;
                 }
             }
@@ -301,11 +305,11 @@ public class OposicaoBean implements Serializable {
             } else {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
                     oposicao.getOposicaoPessoa().setId(op.getId());
-                    if (di.update(oposicao.getOposicaoPessoa())) {
-                        di.commit();
+                    if (dao.update(oposicao.getOposicaoPessoa())) {
+                        dao.commit();
                         return true;
                     } else {
-                        di.rollback();
+                        dao.rollback();
                         return false;
                     }
                 }
@@ -319,16 +323,16 @@ public class OposicaoBean implements Serializable {
     }
 
     public void delete(int id) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
         if (id > 0) {
-            oposicao = (Oposicao) di.find(new Oposicao(), id);
+            oposicao = (Oposicao) dao.find(new Oposicao(), id);
         } else {
-            oposicao = (Oposicao) di.find(oposicao);
+            oposicao = (Oposicao) dao.find(oposicao);
         }
         if (oposicao.getId() != -1) {
-            di.openTransaction();
-            if (di.delete(oposicao)) {
+            dao.openTransaction();
+            if (dao.delete(oposicao)) {
                 novoLog.delete(""
                         + "ID: " + oposicao.getId()
                         + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
@@ -340,11 +344,11 @@ public class OposicaoBean implements Serializable {
                         + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
                         + " ]"
                 );
-                di.commit();
+                dao.commit();
                 clear();
-                setMessage("Registro salvo com sucesso.");
+                setMessage("Registro excluído com sucesso");
             } else {
-                di.rollback();
+                dao.rollback();
                 clear();
                 message = "Falha na exclusão do registro!";
             }
@@ -370,8 +374,8 @@ public class OposicaoBean implements Serializable {
             GenericaMensagem.warn("Validação", "CPF inválido!");
             return;
         }
-        OposicaoDB oposicaoDB = new OposicaoDBToplink();
-        PessoaEmpresa pessoaEmpresa = oposicaoDB.pesquisaPessoaFisicaEmpresa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+        OposicaoDao oposicaoDao = new OposicaoDao();
+        PessoaEmpresa pessoaEmpresa = oposicaoDao.pesquisaPessoaFisicaEmpresa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
         PessoaDB dbp = new PessoaDBToplink();
         Pessoa p = dbp.pessoaDocumento(oposicao.getOposicaoPessoa().getCpf());
         if (pessoaEmpresa.getId() != -1) {
@@ -379,7 +383,7 @@ public class OposicaoBean implements Serializable {
                 oposicao.setJuridica(pessoaEmpresa.getJuridica());
             }
             setDesabilitaPessoa(true);
-            oposicaoPessoa = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+            oposicaoPessoa = oposicaoDao.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
             if (oposicaoPessoa.getId() != -1) {
                 oposicao.setOposicaoPessoa(oposicaoPessoa);
             } else {
@@ -390,8 +394,8 @@ public class OposicaoBean implements Serializable {
                 sexo = pessoaEmpresa.getFisica().getSexo();
             }
         } else {
-            if (p != null){
-                oposicaoPessoa = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+            if (p != null) {
+                oposicaoPessoa = oposicaoDao.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
                 if (oposicaoPessoa.getId() != -1) {
                     oposicao.setOposicaoPessoa(oposicaoPessoa);
                 } else {
@@ -404,8 +408,8 @@ public class OposicaoBean implements Serializable {
                         setDesabilitaPessoa(true);
                     }
                 }
-            }else{
-                oposicaoPessoa = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+            } else {
+                oposicaoPessoa = oposicaoDao.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
                 if (oposicaoPessoa.getId() != -1) {
                     oposicao.setOposicaoPessoa(oposicaoPessoa);
                 } else {
@@ -419,8 +423,8 @@ public class OposicaoBean implements Serializable {
         listaConvencaoPeriodos.clear();
         convencaoPeriodoConvencaoGrupoCidade();
         SociosDB db = new SociosDBToplink();
-        
-        if(p != null) {
+
+        if (p != null) {
             socios = p.getSocios();//db.pesquisaSocioPorPessoa(pessoaEmpresa.getFisica().getPessoa().getId());            
             if (socios != null && socios.getId() != -1) {
                 if (socios.getServicoPessoa().isAtivo()) {
@@ -435,8 +439,8 @@ public class OposicaoBean implements Serializable {
     public void convencaoPeriodoConvencaoGrupoCidade() {
         if (oposicao.getJuridica().getId() != -1) {
             if (oposicao.getConvencaoPeriodo().getId() == -1) {
-                OposicaoDB oposicaoDB = new OposicaoDBToplink();
-                List list = oposicaoDB.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
+                OposicaoDao oposicaoDao = new OposicaoDao();
+                List list = oposicaoDao.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
                 ConvencaoPeriodoDB di = new ConvencaoPeriodoDBTopLink();
                 if (!list.isEmpty()) {
                     convencaoPeriodo = di.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
@@ -533,14 +537,14 @@ public class OposicaoBean implements Serializable {
     }
 
     public List<Oposicao> getListaOposicaos() {
-        OposicaoDB oposicaoDB = new OposicaoDBToplink();
+        OposicaoDao oposicaoDao = new OposicaoDao();
         if (listaOposicaos.isEmpty()) {
             if (removeFiltro) {
                 if (porPesquisa.equals("todos")) {
                     return new ArrayList();
                 }
             }
-            listaOposicaos = oposicaoDB.pesquisaOposicao(descricaoPesquisa, porPesquisa, comoPesquisa);
+            listaOposicaos = oposicaoDao.pesquisaOposicao(descricaoPesquisa, porPesquisa, comoPesquisa);
         }
         return listaOposicaos;
     }
