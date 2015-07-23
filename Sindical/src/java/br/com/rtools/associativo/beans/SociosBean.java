@@ -207,40 +207,40 @@ public class SociosBean implements Serializable {
             new File(url_temp).delete();
         }
     }
-    
-    public void calculoDescontoDependente(ListaDependentes linha){
+
+    public void calculoDescontoDependente(ListaDependentes linha) {
         linha.setNrDesconto(
-            calculoDescontoGenerico(
-                    linha.getValor(), 
-                    linha.getFisica().getPessoa().getId(), 
-                    linha.getServicoPessoa().getServicos().getId(), 
-                    //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
-                     servicoCategoria.getCategoria().getId()
-            )
+                calculoDescontoGenerico(
+                        linha.getValor(),
+                        linha.getFisica().getPessoa().getId(),
+                        linha.getServicoPessoa().getServicos().getId(),
+                        //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
+                        servicoCategoria.getCategoria().getId()
+                )
         );
     }
-    
-    public void calculoValorDependente(ListaDependentes linha){
-        if (linha != null){
+
+    public void calculoValorDependente(ListaDependentes linha) {
+        if (linha != null) {
             linha.setValor(
-                calculoValorGenerico(
-                        linha.getServicoPessoa().getNrDesconto(), 
-                        linha.getFisica().getPessoa().getId(), 
-                        linha.getServicoPessoa().getServicos().getId(), 
-                        //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
-                         servicoCategoria.getCategoria().getId()
-                )
-            );
-        }else{
-            for(int i = 0; i < listDependentes.size(); i++){
-                listDependentes.get(i).setValor(
                     calculoValorGenerico(
-                            listDependentes.get(i).getServicoPessoa().getNrDesconto(), 
-                            listDependentes.get(i).getFisica().getPessoa().getId(), 
-                            listDependentes.get(i).getServicoPessoa().getServicos().getId(), 
+                            linha.getServicoPessoa().getNrDesconto(),
+                            linha.getFisica().getPessoa().getId(),
+                            linha.getServicoPessoa().getServicos().getId(),
                             //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
                             servicoCategoria.getCategoria().getId()
                     )
+            );
+        } else {
+            for (int i = 0; i < listDependentes.size(); i++) {
+                listDependentes.get(i).setValor(
+                        calculoValorGenerico(
+                                listDependentes.get(i).getServicoPessoa().getNrDesconto(),
+                                listDependentes.get(i).getFisica().getPessoa().getId(),
+                                listDependentes.get(i).getServicoPessoa().getServicos().getId(),
+                                //linha.getFisica().getPessoa().getSocios().getMatriculaSocios().getCategoria().getId()
+                                servicoCategoria.getCategoria().getId()
+                        )
                 );
             }
         }
@@ -314,6 +314,19 @@ public class SociosBean implements Serializable {
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
         Socios socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
+//        SociosDao sociosDao = new SociosDao();
+//        List<Socios> list = sociosDao.listaPorPessoa(p.getId(), true);
+//        Socios socio_pessoa = null;
+//        for (int i = 0; i < list.size(); i++) {
+//            if (list.get(i).getServicoPessoa().isAtivo()) {
+//                socio_pessoa = list.get(i);
+//                reativar = false;
+//                break;
+//            }
+//        }
+//        if (socio_pessoa == null) {
+//            socio_pessoa = db.pesquisaSocioPorPessoa(p.getId());
+//        }        
         Dao dao = new Dao();
         // SE REATIVAR == FALSE NÃO CARREGAR SOCIO
 
@@ -333,26 +346,25 @@ public class SociosBean implements Serializable {
             return;
         } else {
             socios = socio_pessoa;
-
         }
 
         if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
             if (socios.getServicoPessoa().isAtivo() || reativar) {
                 socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
             } else {
-                socios.setMatriculaSocios(new MatriculaSocios());
-                Pessoa ps = socios.getServicoPessoa().getPessoa();
-                ServicoPessoa sp = new ServicoPessoa();
-                sp.setPessoa(ps);
-                socios.setId(-1);
-                socios.setNrViaCarteirinha(1);
-                socios.setParentesco((Parentesco) dao.find(new Parentesco(), 1));
-                sp.setDescontoSocial((DescontoSocial) dao.find(new DescontoSocial(), 1));
-                socios.setServicoPessoa(sp);
-                servicoPessoa.setEmissao(DataHoje.data());
-                socios.getMatriculaSocios().setEmissao(DataHoje.data());
+                    socios.setMatriculaSocios(new MatriculaSocios());
+                    Pessoa ps = socios.getServicoPessoa().getPessoa();
+                    ServicoPessoa sp = new ServicoPessoa();
+                    sp.setPessoa(ps);
+                    socios.setId(-1);
+                    socios.setNrViaCarteirinha(1);
+                    socios.setParentesco((Parentesco) dao.find(new Parentesco(), 1));
+                    sp.setDescontoSocial((DescontoSocial) dao.find(new DescontoSocial(), 1));
+                    socios.setServicoPessoa(sp);
+                    servicoPessoa.setEmissao(DataHoje.data());
+                    socios.getMatriculaSocios().setEmissao(DataHoje.data());
+                }
             }
-        }
 
         servicoPessoa = socios.getServicoPessoa();
         descontoSocial = servicoPessoa.getDescontoSocial();
@@ -922,8 +934,8 @@ public class SociosBean implements Serializable {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível alterar dia de vencimento em Serviço Pessoa");
                 return;
-            } 
-            
+            }
+
             PessoaDB db = new PessoaDBToplink();
             PessoaComplemento pc = db.pesquisaPessoaComplementoPorPessoa(servicoPessoa.getPessoa().getId());
             pc = (PessoaComplemento) dao.find(pc);
@@ -932,8 +944,8 @@ public class SociosBean implements Serializable {
                 dao.rollback();
                 GenericaMensagem.error("Erro", "Não foi possível alterar dia de vencimento em Pessoa Complemento");
                 return;
-            } 
-            
+            }
+
             GenericaMensagem.info("Sucesso", "Dia de Vencimento alterada!");
             dao.commit();
         }
@@ -1281,7 +1293,19 @@ public class SociosBean implements Serializable {
 
         }
 
+        // 0 = Save / 1 - Update
+        Socios s;
+        NovoLog novoLog = new NovoLog();
+        novoLog.startList();
+        String beforeUpdate = "";
+        String saveString = "ID: " + socios.getId()
+                + " - Titular (ID: " + socios.getMatriculaSocios().getTitular().getId() + " - Nome: " + socios.getMatriculaSocios().getTitular() + ") "
+                + " - Matrícula: " + socios.getMatriculaSocios().getNrMatricula()
+                + " - Categoria: " + socios.getMatriculaSocios().getCategoria().getCategoria()
+                + " - Filiação: " + socios.getMatriculaSocios().getEmissao()
+                + " - Serviço Pessoa (Desconto em folha: " + socios.getServicoPessoa().isDescontoFolha() + " - Dia de Vencimento: " + socios.getServicoPessoa().getNrDiaVencimento() + ") ";
         if (socios.getId() == -1) {
+            novoLog.save(saveString);
             if (!dao.save(socios)) {
                 GenericaMensagem.error("Erro", "Erro ao Salvar Sócio!");
                 dao.rollback();
@@ -1294,7 +1318,15 @@ public class SociosBean implements Serializable {
                 dao.rollback();
                 return null;
             }
+            s = (Socios) new Dao().find(socios);
+            beforeUpdate = "ID: " + s.getId()
+                    + " - Titular (ID: " + s.getMatriculaSocios().getTitular().getId() + " - Nome: " + s.getMatriculaSocios().getTitular() + ") "
+                    + " - Matrícula: " + s.getMatriculaSocios().getNrMatricula()
+                    + " - Categoria: " + s.getMatriculaSocios().getCategoria().getCategoria()
+                    + " - Filiação: " + s.getMatriculaSocios().getEmissao()
+                    + " - Serviço Pessoa (Desconto em folha: " + s.getServicoPessoa().isDescontoFolha() + " - Dia de Vencimento: " + s.getServicoPessoa().getNrDiaVencimento() + ") ";
             GenericaMensagem.info("Sucesso", "Cadastro Atualizado!");
+            novoLog.update(beforeUpdate, saveString);
             ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
         }
 
@@ -1412,7 +1444,17 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             return null;
                         }
+                        saveString = "Sócio Dependente - ID: " + socioDependente.getId()
+                                + " - Titular (ID: " + socioDependente.getMatriculaSocios().getTitular().getId() + " - Nome: " + socioDependente.getMatriculaSocios().getTitular() + ") "
+                                + " - Parentesco : " + socioDependente.getParentesco().getParentesco()
+                                + " - Serviço Pessoa (Ativo: " + socioDependente.getServicoPessoa().isAtivo() + " - Validade: " + socioDependente.getServicoPessoa().getReferenciaValidade() + ") ";
+                        novoLog.save(saveString);
                     } else {
+                        Socios sd = (Socios) dao.find(socioDependente);
+                        beforeUpdate = "Sócio Dependente - ID: " + sd.getId()
+                                + " - Titular (ID: " + sd.getMatriculaSocios().getTitular().getId() + " - Nome: " + sd.getMatriculaSocios().getTitular() + ") "
+                                + " - Parentesco : " + sd.getParentesco().getParentesco()
+                                + " - Serviço Pessoa (Ativo: " + sd.getServicoPessoa().isAtivo() + " - Validade: " + sd.getServicoPessoa().getReferenciaValidade() + ") ";
                         //ServicoPessoa servicoPessoaDependente = dbSerP.pesquisaServicoPessoaPorPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
                         ServicoPessoa servicoPessoaDependente = (ServicoPessoa) dao.find(new ServicoPessoa(), socioDependente.getServicoPessoa().getId());
 
@@ -1442,6 +1484,11 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             return null;
                         }
+                        saveString = "Sócio Dependente - ID: " + socioDependente.getId()
+                                + " - Titular (ID: " + socioDependente.getMatriculaSocios().getTitular().getId() + " - Nome: " + socioDependente.getMatriculaSocios().getTitular() + ") "
+                                + " - Parentesco : " + socioDependente.getParentesco().getParentesco()
+                                + " - Serviço Pessoa (Ativo: " + socioDependente.getServicoPessoa().isAtivo() + " - Validade: " + socioDependente.getServicoPessoa().getReferenciaValidade() + ") ";
+                        novoLog.update(beforeUpdate, saveString);
                     }
                     sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                     if (sc == null) {
@@ -1463,18 +1510,40 @@ public class SociosBean implements Serializable {
                             dao.rollback();
                             return null;
                         }
+                        saveString = "Sócio Carteirinha: " + sc.getId()
+                                + " - Sócio: (ID: " + socios.getId() + ")"
+                                + " - Pessoa (ID: " + socios.getServicoPessoa().getId() + ")"
+                                + " - Modelo: (ID: " + sc.getModeloCarteirinha().getId() + ")"
+                                + " - Cartão: " + sc.getCartao()
+                                + " - Emissão: " + sc.getEmissao()
+                                + " - Validade: " + sc.getValidadeCarteirinha();
                     } else {
+                        saveString = "Sócio Carteirinha: " + sc.getId()
+                                + " - Sócio: (ID: " + socios.getId() + ")"
+                                + " - Pessoa (ID: " + socios.getServicoPessoa().getId() + ")"
+                                + " - Modelo: (ID: " + sc.getModeloCarteirinha().getId() + ")"
+                                + " - Cartão: " + sc.getCartao()
+                                + " - Emissão: " + sc.getEmissao()
+                                + " - Validade: " + sc.getValidadeCarteirinha();
                         if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
                             sc.setAtivo(true);
                         } else {
                             sc.setAtivo(false);
                             sc.setValidadeCarteirinha(validadeCarteirinha);
                         }
+                        beforeUpdate = "Sócio Carteirinha: " + sc.getId()
+                                + " - Sócio: (ID: " + socios.getId() + ")"
+                                + " - Pessoa (ID: " + socios.getServicoPessoa().getId() + ")"
+                                + " - Modelo: (ID: " + sc.getModeloCarteirinha().getId() + ")"
+                                + " - Cartão: " + sc.getCartao()
+                                + " - Emissão: " + sc.getEmissao()
+                                + " - Validade: " + sc.getValidadeCarteirinha();
                         if (!dao.update(sc)) {
                             GenericaMensagem.error("Erro", "Não foi possivel atualizar Sócio Carteirinha Dependente!");
                             dao.rollback();
                             return null;
                         }
+                        novoLog.update(beforeUpdate, saveString);
                     }
                 }
             }
@@ -1495,7 +1564,7 @@ public class SociosBean implements Serializable {
 
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
         dao.commit();
-
+        novoLog.saveList();
         atualizarListaDependenteAtivo();
         atualizarListaDependenteInativo();
         return null;
@@ -1561,9 +1630,9 @@ public class SociosBean implements Serializable {
 
         // SE DESCONTO FOLHA = true NAO SALVAR EM cobranca ID EMPRESA -- alterado na data 12/01/2014 (ID da tarefa 388)
         servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-                    
+
         Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(servicoPessoa.getPessoa().getId());
-        if (servicoCategoria.getCategoria().isEmpresaObrigatoria() && f.getDtAposentadoria() == null){
+        if (servicoCategoria.getCategoria().isEmpresaObrigatoria() && f.getDtAposentadoria() == null && servicoCategoria.getCategoria().isVotante()) {
             if (pessoaEmpresa == null || pessoaEmpresa.getId() == -1) {
                 GenericaMensagem.warn("Atenção", "Vincular uma empresa para esta Pessoa!");
                 return false;
@@ -1571,15 +1640,15 @@ public class SociosBean implements Serializable {
             JuridicaDB db = new JuridicaDBToplink();
             List listax = db.listaJuridicaContribuinte(pessoaEmpresa.getJuridica().getId());
 
-            if (!listax.isEmpty()){
+            if (!listax.isEmpty()) {
                 for (int i = 0; i < listax.size(); i++) {
-                    if (((List) listax.get(0)).get(11) != null) {
+                    if (((List) listax.get(0)).get(9) != null) {
                         // CONTRIBUINTE INATIVO
                         GenericaMensagem.warn("Atenção", "Sócio com EMPRESA INATIVA não pode ser salvo!");
                         return false;
-                    } 
+                    }
                 }
-            }else{
+            } else {
                 GenericaMensagem.warn("Atenção", "Sócio com EMPRESA NÃO CONTRIBUINTE não pode ser salvo!");
                 return false;
             }
@@ -1607,7 +1676,54 @@ public class SociosBean implements Serializable {
         return true;
     }
 
-    public void salvarFisicaDependente() {
+    /**
+     *
+     * @param f (Física)
+     * @param tcase (0 - Novo cadastro / 1 - Alterar cadasrtro);
+     * @return
+     */
+    public Boolean existDependente(Fisica f, Integer tcase) {
+        if (tcase == 0) {
+            for (ListaDependentes listDependente : listDependentes) {
+                if (listDependente.getFisica().getPessoa().getId() == f.getPessoa().getId()) {
+                    return true;
+                }
+            }
+        } else if (tcase == 1) {
+            Integer count = 0;
+            for (ListaDependentes listDependente : listDependentes) {
+                if (listDependente.getFisica().getPessoa().getId() == f.getPessoa().getId()) {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void saveFisicaDependente() {
+        saveFisicaDependente(0);
+    }
+
+    /**
+     *
+     * @param tcase (0 - Salva e adiciona como dependente / 1 - Apenas salvar o
+     * cadastro da pessoa física);
+     */
+    public void saveFisicaDependente(Integer tcase) {
+        if(matriculaSocios.getId() == -1) {
+            if (servicoPessoa.getPessoa().getId() == novoDependente.getPessoa().getId()) {
+                GenericaMensagem.warn("Validação", "O titular não pode ser dependente!");
+                return;
+            }            
+        } else {
+            if (matriculaSocios.getTitular().getId() == novoDependente.getPessoa().getId()) {
+                GenericaMensagem.warn("Validação", "O titular não pode ser dependente!");
+                return;
+            }
+        }
         if (!validaSalvarDependente()) {
             return;
         }
@@ -1635,6 +1751,17 @@ public class SociosBean implements Serializable {
                 return;
             }
             dao.commit();
+            NovoLog novoLog = new NovoLog();
+            String saveString = "ID: " + novoDependente.getId()
+                    + " - Pessoa (ID: " + novoDependente.getPessoa().getId() + " - Nome: " + novoDependente.getPessoa().getNome() + " - Documento: " + novoDependente.getPessoa().getDocumento() + ")"
+                    + " - RG: " + novoDependente.getRg()
+                    + " - Nascimento: " + novoDependente.getNascimento()
+                    + " - Estado Cívil: " + novoDependente.getEstadoCivil();
+            novoLog.save(saveString);
+            if (existDependente(novoDependente, 0)) {
+                GenericaMensagem.warn("Sucesso", "Dependente já cadastrado para esta matrícula!");
+                return;
+            }
             GenericaMensagem.info("Sucesso", "Dependente Salvo!");
         } else {
             dao.openTransaction();
@@ -1649,13 +1776,31 @@ public class SociosBean implements Serializable {
                 dao.rollback();
                 return;
             }
+            Fisica f = (Fisica) dao.find(novoDependente);
             dao.commit();
             GenericaMensagem.info("Sucesso", "Dependente Atualizado!");
+            NovoLog novoLog = new NovoLog();
+            String saveString = "ID: " + novoDependente.getId()
+                    + " - Pessoa (ID: " + novoDependente.getPessoa().getId() + " - Nome: " + novoDependente.getPessoa().getNome() + " - Documento: " + novoDependente.getPessoa().getDocumento() + ")"
+                    + " - RG: " + novoDependente.getRg()
+                    + " - Nascimento: " + novoDependente.getNascimento()
+                    + " - Estado Cívil: " + novoDependente.getEstadoCivil();
+            GenericaMensagem.info("Sucesso", "Dependente Atualizado!");
+            String beforeUpdate = "ID: " + f.getId()
+                    + " - Pessoa (ID: " + f.getPessoa().getId() + " - Nome: " + f.getPessoa().getNome() + " - Documento: " + f.getPessoa().getDocumento() + ")"
+                    + " - RG: " + f.getRg()
+                    + " - Nascimento: " + f.getNascimento()
+                    + " - Estado Cívil: " + f.getEstadoCivil();
+            novoLog.update(beforeUpdate, saveString);
+            if (existDependente(novoDependente, 1)) {
+                GenericaMensagem.warn("Sucesso", "Dependente já cadastrado para esta matrícula!");
+                return;
+            }
         }
 
         //((DataObject) listaDependentes.get(index_dependente)).setArgumento0(novoDependente);
         listDependentes.get(index_dependente).setFisica(novoDependente);
-                
+
         atualizaValidadeTela(index_dependente);
         salvarImagem();
         calculoValorDependente(listDependentes.get(index_dependente));
@@ -2313,9 +2458,9 @@ public class SociosBean implements Serializable {
                     }
 
                     float valor_dependente = calculoValorGenerico(
-                            listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(), 
-                            fisica.getPessoa().getId(), 
-                            listaDepsAtivo.get(i).getServicoPessoa().getServicos().getId(), 
+                            listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(),
+                            fisica.getPessoa().getId(),
+                            listaDepsAtivo.get(i).getServicoPessoa().getServicos().getId(),
                             socios.getMatriculaSocios().getCategoria().getId()
                     );
 
@@ -2381,14 +2526,14 @@ public class SociosBean implements Serializable {
                 if (modeloc != null) {
                     listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsInativo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());
                 }
-                
+
                 float valor_dependente = calculoValorGenerico(
-                        listaDepsInativo.get(i).getServicoPessoa().getNrDesconto(), 
-                        fisica.getPessoa().getId(), 
-                        listaDepsInativo.get(i).getServicoPessoa().getServicos().getId(), 
+                        listaDepsInativo.get(i).getServicoPessoa().getNrDesconto(),
+                        fisica.getPessoa().getId(),
+                        listaDepsInativo.get(i).getServicoPessoa().getServicos().getId(),
                         socios.getMatriculaSocios().getCategoria().getId()
                 );
-                    
+
                 listDependentesInativos.add(
                         new ListaDependentes(
                                 fisica,
@@ -2465,12 +2610,12 @@ public class SociosBean implements Serializable {
 
         listDependentes.get(index).setValidadeCarteirinha(atualizaValidadeCarteirinha(par, fisica));
         listDependentes.get(index).setValidadeDependente(atualizaValidade(par, fisica));
-        
+
         ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
-        
+
         ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(par.getId(), servicoCategoria.getCategoria().getId());
         listDependentes.get(index).getServicoPessoa().setServicos(servicoCategoriaDep.getServicos());
-        
+
         calculoValorDependente(listDependentes.get(index));
     }
 
