@@ -1,4 +1,4 @@
-package br.com.rtools.arrecadacao.db;
+package br.com.rtools.arrecadacao.dao;
 
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Oposicao;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 
-public class OposicaoDBToplink extends DB implements OposicaoDB {
+public class OposicaoDao extends DB  {
 
-    @Override
+    
     public ConvencaoPeriodo pesquisaConvencaoPeriodo(int id_convencao, int id_grupo) {
         ConvencaoPeriodo result = new ConvencaoPeriodo();
         try {
@@ -28,7 +28,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return result;
     }
 
-    @Override
+    
     public List<ConvencaoPeriodo> listaConvencaoPeriodo() {
         try {
             Query qry = getEntityManager().createQuery("select cp from ConvencaoPeriodo cp order by cp.convencao.descricao");
@@ -38,17 +38,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         }
     }
 
-    @Override
-    public List<Oposicao> listaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select o from Oposicao o order by o.fisica.pessoa.nome");
-            return qry.getResultList();
-        } catch (Exception e) {
-            return new ArrayList();
-        }
-    }
-
-    @Override
+    
     public Oposicao pesquisaOposicao(int id_fisica, int id_juridica) {
         Oposicao result = new Oposicao();
         try {
@@ -59,7 +49,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return result;
     }
 
-    @Override
+    
     public PessoaEmpresa pesquisaPessoaFisicaEmpresa(String cpf, String rg) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
@@ -95,7 +85,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return pessoaEmpresa;
     }
 
-    @Override
+    
     public OposicaoPessoa pesquisaOposicaoPessoa(String cpf, String rg) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         OposicaoPessoa oposicaoPessoa = new OposicaoPessoa();
@@ -124,7 +114,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return oposicaoPessoa;
     }
 
-    @Override
+    
     public List<Vector> pesquisaPessoaConvencaoGrupoCidade(int id) {
         List<Vector> vetor = new ArrayList();
         String queryString = " SELECT id_convencao, id_grupo_cidade from arr_contribuintes_vw where dt_inativacao is null and id_juridica = " + id;
@@ -137,7 +127,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return vetor;
     }
 
-    @Override
+    
     public List<Oposicao> pesquisaOposicao(String descricaoPesquisa, String tipoPesquisa, String comoPesquisa) {
         String filtroString = "";
         if (tipoPesquisa.equals("nome")) {
@@ -180,7 +170,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return new ArrayList();
     }
 
-    @Override
+    
     public boolean validaOposicao(Oposicao oposicao) {
         List result = null;
         try {
@@ -209,7 +199,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return false;
     }
 
-    @Override
+    
     public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes, String order) {
         try {
             List listQuery = new ArrayList();
@@ -306,7 +296,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return new ArrayList();
     }
 
-    @Override
+    
     public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao() {
         try {
             Query query = getEntityManager().createQuery(" SELECT O.convencaoPeriodo FROM Oposicao AS O GROUP BY O.convencaoPeriodo ORDER BY O.convencaoPeriodo.referenciaFinal DESC, O.convencaoPeriodo.referenciaFinal DESC");
@@ -320,7 +310,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return new ArrayList();
     }
 
-    @Override
+    
     public List<Cnae> listaCnaesPorOposicaoJuridica(String inIdsCnaeConvencao) {
         try {
             Query query = getEntityManager().createQuery(" SELECT CC.cnae FROM CnaeConvencao AS CC WHERE CC.convencao.id IN(" + inIdsCnaeConvencao + ") ORDER BY CC.cnae.cnae ASC, CC.cnae.numero ASC");
@@ -334,7 +324,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return new ArrayList();
     }
 
-    @Override
+    
     public boolean existPessoaDocumentoPeriodo(String cpf) {
         String dataReferencia = DataHoje.DataToArray(DataHoje.dataHoje())[2] + DataHoje.DataToArray(DataHoje.dataHoje())[1];
         String queryString = ""
