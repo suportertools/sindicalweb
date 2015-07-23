@@ -110,8 +110,10 @@ public class PessoaDBToplink extends DB implements PessoaDB {
     @Override
     public List pesquisarPessoa(String desc, String por, String como) {
         String field = por;
-        if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) field = "documento";
-        
+        if (por.equals("cpf") || por.equals("cnpj") || por.equals("cei")) {
+            field = "documento";
+        }
+
         int maxResults = 300;
         if (desc.length() == 1) {
             maxResults = 50;
@@ -120,28 +122,27 @@ public class PessoaDBToplink extends DB implements PessoaDB {
         } else if (desc.length() == 3) {
             maxResults = 200;
         }
-        
+
         desc = AnaliseString.normalizeLower(desc);
-        desc = (como.equals("I") ? desc+"%" : "%"+desc+"%");
-        
-        String text_qry = 
-                " SELECT p.* "
+        desc = (como.equals("I") ? desc + "%" : "%" + desc + "%");
+
+        String text_qry
+                = " SELECT p.* "
                 + " FROM pes_pessoa p "
-                + "WHERE LOWER(FUNC_TRANSLATE(p.ds_"+field+")) LIKE '"+desc+"' "
+                + "WHERE LOWER(FUNC_TRANSLATE(p.ds_" + field + ")) LIKE '" + desc + "' "
                 + "ORDER BY p.ds_nome";
-        try{
-        Query qry = getEntityManager().createNativeQuery(text_qry, Pessoa.class);
-        qry.setMaxResults(maxResults);
-        return qry.getResultList();
-        }catch(Exception e){
+        try {
+            Query qry = getEntityManager().createNativeQuery(text_qry, Pessoa.class);
+            qry.setMaxResults(maxResults);
+            return qry.getResultList();
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
 //        SelectTranslate st = new SelectTranslate();
 //        
 //        return st.select(new Pessoa()).where(field, desc).find();        
-        
-        
+
 //        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){
 //            por = "documento";
 //        }
@@ -292,29 +293,29 @@ public class PessoaDBToplink extends DB implements PessoaDB {
         return false;
     }
 
+    /**
+     * @param documento (Pode ser CPF OU RG))
+     * @return
+     */
     @Override
-    public Pessoa pessoaDocumento(String valor) {
-        List vetor;
-        Pessoa pessoa;
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+    public Pessoa pessoaDocumento(String documento) {
         try {
-            Query qry = getEntityManager().createNativeQuery(
-                    "        select pes.id                                   "
-                    + "          from pes_pessoa pes                           "
-                    + "    inner join pes_fisica fis on fis.id_pessoa = pes.id "
-                    + "         where pes.ds_documento = '" + valor + "' or        "
-                    + "         translate(upper(fis.ds_rg),'./-', '') = translate(upper('" + valor + "'),'./-','')");
-            qry.setFirstResult(0);
-            vetor = qry.getResultList();
-            if (!vetor.isEmpty()) {
-                pessoa = (Pessoa) dB.pesquisaObjeto((Integer) ((Vector) vetor.get(0)).get(0), "Pessoa");
-                return pessoa;
-            } else {
-                return null;
+            String queryString
+                    = "    SELECT P.*                                         \n"
+                    + "      FROM pes_pessoa AS P                             \n"
+                    + "INNER JOIN pes_fisica AS F ON F.id_pessoa = P.id       \n"
+                    + "     WHERE (P.ds_documento LIKE '" + documento + "'     \n"
+                    + "        OR UPPER(translate(F.ds_rg,'./-', '')) LIKE UPPER(translate('" + documento + "','./-',''))   \n"
+                    + ")";
+            Query query = getEntityManager().createNativeQuery(queryString, Fisica.class);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (Pessoa) list.get(0);
             }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
 
     @Override
@@ -342,16 +343,15 @@ public class PessoaDBToplink extends DB implements PessoaDB {
         }
         return new PessoaComplemento();
     }
-    
+
     @Override
     public PessoaSemCadastro pesquisaPessoaSemCadastro(String documento) {
         try {
-            Query query = getEntityManager().createQuery("SELECT PC FROM PessoaSemCadastro AS PC WHERE PC.documento = '"+documento+"'");
+            Query query = getEntityManager().createQuery("SELECT PC FROM PessoaSemCadastro AS PC WHERE PC.documento = '" + documento + "'");
             return (PessoaSemCadastro) query.getSingleResult();
         } catch (Exception e) {
             return new PessoaSemCadastro();
         }
     }
-    
-    
+
 }

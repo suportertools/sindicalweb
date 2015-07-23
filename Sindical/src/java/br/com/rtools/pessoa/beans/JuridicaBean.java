@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.arrecadacao.*;
 import br.com.rtools.arrecadacao.beans.OposicaoBean;
 import br.com.rtools.arrecadacao.db.*;
@@ -2420,7 +2421,7 @@ public class JuridicaBean implements Serializable {
 
     public void existeOposicaoEmpresa() {
         if (juridica.getId() != -1) {
-            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            OposicaoDao odbt = new OposicaoDao();
             listaOposicao = odbt.listaOposicaoEmpresaID(juridica.getId());
         } else {
             listaOposicao = new ArrayList();
