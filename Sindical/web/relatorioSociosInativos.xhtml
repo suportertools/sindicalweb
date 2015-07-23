@@ -36,6 +36,7 @@
                                     <p:column>
                                         <h:outputLabel value="Tipo de Relatório" /><br />
                                         <p:selectOneMenu value="#{relatorioSociosInativosBean.indexRelatorio}" style="width: 300px; margin-right: 15px">
+                                            <p:ajax event="change" update="@this i_actions" listener="#{relatorioSociosInativosBean.listener(1)}" />
                                             <f:selectItems value="#{relatorioSociosInativosBean.listaTipoRelatorio}"/>
                                         </p:selectOneMenu>
                                     </p:column>
@@ -122,9 +123,14 @@
 
                                     <p:column>
                                         <br />
-                                        <h:panelGrid columns="2">
+                                        <h:panelGrid columns="4" id="i_actions" cellspacing="5">
                                             <p:commandButton ajax="false" value="Imprimir" action="#{relatorioSociosInativosBean.imprimir()}"/>
-                                            <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar Arquivo (ZIP)" />
+                                            <p:selectBooleanCheckbox value="#{jasperBean.EXPORT_TO_EXCEL}" itemLabel="Excel" disabled="#{!relatorioSociosInativosBean.relatorios.excel}">
+                                                <p:ajax event="change" update="@this" />
+                                            </p:selectBooleanCheckbox>
+                                            <p:selectBooleanCheckbox value="#{jasperBean.COMPRESS_FILE}" itemLabel="Compactar Arquivo (ZIP)">
+                                                <p:ajax event="change" update="@this" />
+                                            </p:selectBooleanCheckbox>
                                         </h:panelGrid>
                                     </p:column>
 
