@@ -78,6 +78,7 @@ public class CartaoSocialBean implements Serializable {
         }
         getListFilial();
         this.naoImpressoTodos();
+        Jasper.load();
     }
 
     public void historicoCarteirinha() {
