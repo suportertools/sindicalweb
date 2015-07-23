@@ -1,6 +1,6 @@
 package br.com.rtools.pessoa.beans;
 
-import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
+import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
 import br.com.rtools.associativo.beans.SociosBean;
@@ -350,7 +350,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                             + " - Nome: " + fisica.getPessoa().getNome()
                             + " - Nascimento: " + fisica.getNascimento()
                             + " - CPF: " + fisica.getPessoa().getDocumento()
-                            + " - RG: " + fisica.getRg());
+                            + " - RG: " + fisica.getRg()
+                            + " - Recadastro : " + fisica.getRecadastro());
                     dao.commit();
                     sucesso = true;
                 } else {
@@ -365,10 +366,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             Fisica f = (Fisica) dao.find(new Fisica(), fisica.getId());
             String antes = " De: ID - " + fisica.getId()
-                    + " Nome: " + f.getPessoa().getNome() + " - "
-                    + " Nascimento: " + f.getNascimento() + " - "
-                    + " CPF: " + f.getPessoa().getDocumento() + " - "
-                    + " RG: " + f.getRg();
+                    + " - Nome: " + f.getPessoa().getNome()
+                    + " - Nascimento: " + f.getNascimento()
+                    + " - CPF: " + f.getPessoa().getDocumento()
+                    + " - RG: " + f.getRg()
+                    + " - Recadastro : " + fisica.getRecadastro();
             if (fisica.getPessoa().getDocumento().equals("") || fisica.getPessoa().getDocumento().equals("0")) {
                 fisica.getPessoa().setDocumento("0");
             } else {
@@ -403,10 +405,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
             if (dao.update(fisica.getPessoa())) {
                 logs.update(antes,
-                        " para: Nome: " + fisica.getPessoa().getNome() + " - "
-                        + " Nascimento: " + f.getNascimento() + " - "
-                        + " CPF: " + fisica.getPessoa().getDocumento() + " - "
-                        + " RG: " + fisica.getRg());
+                        " para: Nome: " + fisica.getPessoa().getNome()
+                        + " - Nascimento: " + f.getNascimento()
+                        + " - CPF: " + fisica.getPessoa().getDocumento()
+                        + " - RG: " + fisica.getRg()
+                        + " - Recadastro : " + fisica.getRecadastro());
             } else {
                 dao.rollback();
                 return;
@@ -2277,14 +2280,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void existePessoaOposicaoPorPessoa() {
         if (!fisica.getPessoa().getDocumento().isEmpty()) {
-            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            OposicaoDao odbt = new OposicaoDao();
             pessoaOposicao = odbt.existPessoaDocumentoPeriodo(fisica.getPessoa().getDocumento());
         }
     }
 
     public boolean existePessoaOposicaoPorDocumento(String documento) {
         if (!documento.isEmpty()) {
-            OposicaoDBToplink odbt = new OposicaoDBToplink();
+            OposicaoDao odbt = new OposicaoDao();
             return odbt.existPessoaDocumentoPeriodo(documento);
         }
         return false;
@@ -2436,7 +2439,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             case "matriculaAcademia":
             case "convenioMedico":
                 if (!p.getDocumento().isEmpty()) {
-                    OposicaoDBToplink odbt = new OposicaoDBToplink();
+                    OposicaoDao odbt = new OposicaoDao();
                     if (odbt.existPessoaDocumentoPeriodo(p.getDocumento())) {
                         count++;
                         pessoaOposicao = true;

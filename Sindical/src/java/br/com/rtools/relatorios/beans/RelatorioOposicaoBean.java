@@ -4,8 +4,7 @@ import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.Oposicao;
-import br.com.rtools.arrecadacao.db.OposicaoDB;
-import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
+import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.impressao.ParametroOposicao;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.db.EnviarArquivosDB;
@@ -71,18 +70,18 @@ public class RelatorioOposicaoBean implements Serializable {
         filtro[2] = false;
         filtro[3] = false;
         filtro[4] = false;
-        selectedConvencao = new ArrayList<Convencao>();
-        selectedGrupoCidades = new ArrayList<GrupoCidade>();
-        selectedCnae = new ArrayList<Cnae>();
-        oposicaos = new ArrayList<Oposicao>();
+        selectedConvencao = new ArrayList<>();
+        selectedGrupoCidades = new ArrayList<>();
+        selectedCnae = new ArrayList<>();
+        oposicaos = new ArrayList<>();
         listCnaes = null;
         listConvencoes = null;
         listGrupoCidades = null;
         listSelectItem = new ArrayList[2];
-        listSelectItem[0] = new ArrayList<SelectItem>();
-        listSelectItem[1] = new ArrayList<SelectItem>();
-        parametroOposicao = new ArrayList<ParametroOposicao>();
-        listConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
+        listSelectItem[0] = new ArrayList<>();
+        listSelectItem[1] = new ArrayList<>();
+        parametroOposicao = new ArrayList<>();
+        listConvencaoPeriodos = new ArrayList<>();
         dataInicial = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
         index = new Integer[2];
@@ -115,7 +114,7 @@ public class RelatorioOposicaoBean implements Serializable {
         }
         String detalheRelatorio = "";
         if (parametroOposicao.isEmpty()) {
-            OposicaoDB oposicaoDB = new OposicaoDBToplink();
+            OposicaoDao oposicaoDao = new OposicaoDao();
             int pPessoaOposicaoI = 0;
             int pEmpresaI = 0;
             String pIStringI = "";
@@ -171,7 +170,7 @@ public class RelatorioOposicaoBean implements Serializable {
                     listDetalhePesquisa.add(" Cnaes: " + cnaesList + "; ");
                 }
             }
-            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes, order);
+            List list = oposicaoDao.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes, order);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -184,7 +183,7 @@ public class RelatorioOposicaoBean implements Serializable {
                     }
                 }
             }
-            String dt = "";
+            String dt;
             for (Object list1 : list) {
                 dt = GenericaString.converterNullToString(((List) list1).get(0));
                 ParametroOposicao po
@@ -228,7 +227,7 @@ public class RelatorioOposicaoBean implements Serializable {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
             }
             if (listSelectItem[0].isEmpty()) {
-                listSelectItem[0] = new ArrayList<SelectItem>();
+                listSelectItem[0] = new ArrayList<>();
             }
         }
         return listSelectItem[0];
@@ -236,13 +235,13 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public List<SelectItem> getListaReferencias() {
         if (listSelectItem[1].isEmpty()) {
-            OposicaoDB oposicaoDB = new OposicaoDBToplink();
-            List<ConvencaoPeriodo> list = (List<ConvencaoPeriodo>) oposicaoDB.listaConvencaoPeriodoPorOposicao();
+            OposicaoDao oposicaoDao = new OposicaoDao();
+            List<ConvencaoPeriodo> list = (List<ConvencaoPeriodo>) oposicaoDao.listaConvencaoPeriodoPorOposicao();
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaInicial() + " - " + list.get(i).getReferenciaFinal() + " - Grupo Cidade: " + list.get(i).getGrupoCidade().getDescricao() + " - Convenção: " + list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
             }
             if (listSelectItem[1].isEmpty()) {
-                listSelectItem[1] = new ArrayList<SelectItem>();
+                listSelectItem[1] = new ArrayList<>();
             }
         }
         return listSelectItem[1];
@@ -424,15 +423,21 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public String getDescPorPesquisa() {
         String tp = porPesquisa;
-        if (porPesquisa.equals("todos")) {
-            descPorPesquisa = "NENHUM FILTO SELECIONADO.";
-        } else if (porPesquisa.equals("rgs") || porPesquisa.equals("cpf") || porPesquisa.equals("nome")) {
-            if (porPesquisa.equals("rgs")) {
-                tp = "RG";
-            }
-            descPorPesquisa = "PESQUISA FUNCIONÁRIO POR: " + tp.toUpperCase();
-        } else if (porPesquisa.equals("cnpj") || porPesquisa.equals("empresa")) {
-            descPorPesquisa = "PESQUISA EMPRESA POR: " + tp.toUpperCase();
+        switch (porPesquisa) {
+            case "todos":
+                descPorPesquisa = "NENHUM FILTO SELECIONADO.";
+                break;
+            case "rgs":
+            case "cpf":
+            case "nome":
+                if (porPesquisa.equals("rgs")) {
+                    tp = "RG";
+                }   descPorPesquisa = "PESQUISA FUNCIONÁRIO POR: " + tp.toUpperCase();
+                break;
+            case "cnpj":
+            case "empresa":
+                descPorPesquisa = "PESQUISA EMPRESA POR: " + tp.toUpperCase();
+                break;
         }
         return descPorPesquisa;
     }
@@ -498,7 +503,7 @@ public class RelatorioOposicaoBean implements Serializable {
             listCnaes = new HashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
-                OposicaoDB odb = new OposicaoDBToplink();
+                OposicaoDao odb = new OposicaoDao();
                 List<Cnae> list = (List<Cnae>) odb.listaCnaesPorOposicaoJuridica(ids);
                 for (int i = 0; i < list.size(); i++) {
                     listCnaes.put(list.get(i).getCnae() + " - " + list.get(i).getNumero(), list.get(i).getId());
@@ -533,7 +538,7 @@ public class RelatorioOposicaoBean implements Serializable {
     public Map<String, Integer> getListGrupoCidades() {
         listGrupoCidades = null;
         if (!selectedConvencao.isEmpty()) {
-            listGrupoCidades = new HashMap<String, Integer>();
+            listGrupoCidades = new HashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
                 EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();

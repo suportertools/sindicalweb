@@ -5,8 +5,7 @@ import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
-import br.com.rtools.arrecadacao.db.OposicaoDB;
-import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
+import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
@@ -466,7 +465,7 @@ public class RelatorioComparativoArrecadacaoBean implements Serializable {
             listCnaes = new LinkedHashMap<>();
             String ids = inIdConvencao();
             if (!ids.isEmpty()) {
-                OposicaoDB odb = new OposicaoDBToplink();
+                OposicaoDao odb = new OposicaoDao();
                 List<Cnae> list = (List<Cnae>) odb.listaCnaesPorOposicaoJuridica(ids);
                 for (int i = 0; i < list.size(); i++) {
                     listCnaes.put(list.get(i).getCnae() + " - " + list.get(i).getNumero(), list.get(i).getId());
