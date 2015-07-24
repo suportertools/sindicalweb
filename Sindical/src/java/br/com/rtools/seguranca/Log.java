@@ -31,6 +31,10 @@ public class Log implements Serializable {
     @JoinColumn(name = "id_evento", referencedColumnName = "id", nullable = true)
     @ManyToOne
     private Evento evento;
+    @Column(name = "ds_tabela", length = 150, nullable = true)
+    private String tabela;
+    @Column(name = "nr_codigo", nullable = true)
+    private Integer codigo;
 
     public Log() {
         this.id = -1;
@@ -41,9 +45,24 @@ public class Log implements Serializable {
         this.conteudoOriginal = "";
         this.conteudoAlterado = "";
         this.evento = new Evento();
+        this.tabela = null;
+        this.codigo = null;
     }
 
-    public Log(Integer id, Date dtData, String hora, Usuario usuario, Rotina rotina, String conteudoOriginal, String conteudoAlterado, Evento evento) {
+    /**
+     *
+     * @param id
+     * @param dtData
+     * @param hora
+     * @param usuario
+     * @param rotina
+     * @param conteudoOriginal
+     * @param conteudoAlterado
+     * @param evento
+     * @param tabela (Nome da tabela principal do log gerado
+     * @param codigo (Id da tabela citada)
+     */
+    public Log(Integer id, Date dtData, String hora, Usuario usuario, Rotina rotina, String conteudoOriginal, String conteudoAlterado, Evento evento, String tabela, Integer codigo) {
         this.id = id;
         this.dtData = dtData;
         this.hora = hora;
@@ -52,6 +71,8 @@ public class Log implements Serializable {
         this.conteudoOriginal = conteudoOriginal;
         this.conteudoAlterado = conteudoAlterado;
         this.evento = evento;
+        this.tabela = tabela;
+        this.codigo = codigo;
     }
 
     public Integer getId() {
@@ -130,5 +151,21 @@ public class Log implements Serializable {
 
     public void setEvento(Evento evento) {
         this.evento = evento;
+    }
+
+    public String getTabela() {
+        return tabela;
+    }
+
+    public void setTabela(String tabela) {
+        this.tabela = tabela;
+    }
+
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
     }
 }
