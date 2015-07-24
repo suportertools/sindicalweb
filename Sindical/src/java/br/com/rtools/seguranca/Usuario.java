@@ -24,7 +24,7 @@ public class Usuario implements Serializable {
     private String login;
     @Column(name = "ds_senha", length = 6, nullable = false)
     private String senha;
-    @Column(name = "is_ativo", columnDefinition = "boolean default false")
+    @Column(name = "is_ativo", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean ativo;
     @Column(name = "ds_email", length = 255)
     private String email;
