@@ -8,7 +8,6 @@ import br.com.rtools.seguranca.beans.SimplesBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
@@ -19,11 +18,21 @@ import javax.servlet.http.HttpServletRequest;
 
 public class NovoLog extends salvaLogs {
 
-    private boolean transaction = false;
-    private boolean cadastroSimples = false;
-    private final List<Log> listLogs = new ArrayList<Log>();
+    private boolean transaction;
+    private boolean cadastroSimples;
+    private final List<Log> listLogs;
+    private String tabela;
+    private Integer codigo;
 
-    // LOG ARQUIVOS    
+    public NovoLog() {
+        transaction = false;
+        cadastroSimples = false;
+        listLogs = new ArrayList<>();
+        tabela = null;
+        codigo = null;
+    }
+
+// LOG ARQUIVOS    
     public String novo(String acao, String obs) {
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         String iusuario = ": ";
@@ -99,10 +108,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void live(String infoLive) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null, null, null));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null);
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null, null, null);
             execute(log);
         }
     }
@@ -118,10 +128,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void save(String infoLive) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1)));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1), tabela, codigo));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1));
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1), tabela, codigo);
             execute(log);
         }
     }
@@ -139,10 +150,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void save(Object object, boolean isObject) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1)));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1), tabela, codigo));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1));
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1), tabela, codigo);
             execute(log);
         }
     }
@@ -160,11 +172,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void update(String beforeUpdate, String afterUpdate) {
+        validaTabela();
         if (!beforeUpdate.equals(afterUpdate)) {
             if (transaction) {
-                listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3)));
+                listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3), tabela, codigo));
             } else {
-                Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3));
+                Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3), tabela, codigo);
                 execute(log);
             }
         }
@@ -184,10 +197,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void update(Object beforeUpdate, Object afterUpdate, boolean isObject) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3)));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3), tabela, codigo));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3));
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3), tabela, codigo);
             execute(log);
         }
     }
@@ -204,10 +218,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void delete(String infoLive) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2)));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2), tabela, codigo));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2));
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2), tabela, codigo);
             execute(log);
         }
     }
@@ -225,10 +240,11 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void delete(Object object, boolean isObject) {
+        validaTabela();
         if (transaction) {
-            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2)));
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2), tabela, codigo));
         } else {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2));
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2), tabela, codigo);
             execute(log);
         }
     }
@@ -243,8 +259,10 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void execute(Log log) {
-        DaoInterface di = new Dao();
-        di.save(log, true);
+        tabela = null;
+        codigo = null;
+        Dao dao = new Dao();
+        dao.save(log, true);
     }
 
     public Usuario getUsuario() {
@@ -300,8 +318,8 @@ public class NovoLog extends salvaLogs {
      */
     public Evento getEvento(Integer idEvento) {
         try {
-            DaoInterface di = new Dao();
-            return (Evento) di.find(new Evento(), idEvento);
+            Dao dao = new Dao();
+            return (Evento) dao.find(new Evento(), idEvento);
         } catch (Exception e) {
         }
         return null;
@@ -313,5 +331,47 @@ public class NovoLog extends salvaLogs {
 
     public void setCadastroSimples(boolean cadastroSimples) {
         this.cadastroSimples = cadastroSimples;
+    }
+
+    /**
+     * Tabela principal do log gerado
+     *
+     * @return
+     */
+    public String getTabela() {
+        return tabela;
+    }
+
+    /**
+     *
+     * @param tabela (Tabela principal do log gerado)
+     */
+    public void setTabela(String tabela) {
+        this.tabela = tabela;
+    }
+
+    /**
+     * Código da tabela principal do log gerado
+     *
+     * @return
+     */
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    /**
+     *
+     * @param codigo Código da tabela principal do log gerado
+     */
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+
+    public void validaTabela() {
+        if (tabela != null && !tabela.isEmpty()) {
+            if (codigo == null) {
+                tabela = null;
+            }
+        }
     }
 }
