@@ -90,7 +90,7 @@
                                     <p:menuitem value="Fechamento de Caixa" action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
 
                                     <p:menuitem value="Ag. Cobrança Mensal"   action="#{chamadaPaginaBean.cobrancaMensal()}" />
-                                    
+
                                     <p:menuitem value="Pesquisa Boletos"   action="#{chamadaPaginaBean.pagina('pesquisaBoletosSocial')}" />
                                 </p:submenu>    
 
@@ -106,10 +106,17 @@
                                     <p:menuitem value="Fechamento Baile"     action="#{chamadaPaginaBean.pagina('relatorioFechamentoBaile')}" ajax="false"/>
                                 </p:submenu>                            
                             </p:menubar> 
+                            <p:panel styleClass="margin-top-max">
+                                <h:panelGrid>
+                                    <p:commandButton type="button" onclick="PF('i_dlg_socios_1').show()" rendered="#{socialBean.existPessoasMesmaMatricula}" update="i_panel_grid_socios_1" value="Constam a mesma pessoa mais de uma vez na mesma matrícula!" styleClass="font-color-red" />
+                                    <p:commandButton type="button" onclick="PF('i_dlg_socios_2').show()" rendered="#{socialBean.existatriculaAtivaAtivacaoDesordenada}" update="i_panel_grid_socios_1" value="Matrícula Ativa com id_servico_pessoa menor que último, favor entrar em contato com nosso suporte técnico." styleClass="font-color-red"/>                                
+                                </h:panelGrid>                                
+                            </p:panel>
                         </p:panel>
 
                         <!-- TERMINAR MÉTODO DE ENVIO DE IMAGEM DO BOLETO / E VERSO -->
                         <p:panel id="i_panel_lateral_esq" style="border: 0px; width: 1024px; height: 350px; margin: 0 auto" rendered="false">
+
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both;  margin-top: 10px">
                                 <center>
                                     <h:panelGrid>
@@ -129,6 +136,42 @@
                             </p:panel>
                         </p:panel>
                         <p:growl id="i_msg_t_g" showDetail="true" />  
+                        <p:dialog widgetVar="i_dlg_socios_1" header="Lista de pessoas" resizable="false" modal="true" >
+                            <h:panelGrid id="i_panel_grid_socios_1">
+                                <p:dataTable value="#{socialBean.listPessoasMesmaMatricula}" var="pessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="300" >
+                                    <p:column headerText="Nome">
+                                        #{pessoa.nome}
+                                    </p:column>
+                                    <p:column headerText="Documento">
+                                        #{pessoa.documento}
+                                    </p:column>
+                                    <p:column width="30">
+                                        <p:commandButton icon="ui-icon-contact" update=":formMenuSocial:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(pessoa.id)}" title="Ver detalhes" />
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGrid>
+                        </p:dialog>
+                        <p:dialog widgetVar="i_dlg_socios_2" header="Lista de pessoas" resizable="false" modal="true">
+                            <h:panelGrid id="i_panel_grid_socios_2">
+                                <p:dataTable value="#{socialBean.listatriculaAtivaAtivacaoDesordenada}" var="pessoa"  emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="300" >
+                                    <p:column headerText="Nome">
+                                        #{pessoa.nome}
+                                    </p:column>
+                                    <p:column headerText="Documento">
+                                        #{pessoa.documento}
+                                    </p:column>
+                                    <p:column width="30">
+                                        <p:commandButton icon="ui-icon-contact" update=":formMenuSocial:i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(pessoa.id)}" title="Ver detalhes" />
+                                    </p:column>                                    
+                                </p:dataTable>                                
+                            </h:panelGrid>
+                        </p:dialog>
+                        <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                            <p:panel id="i_pessoa_fisica_card">
+                                <ui:include src="templates/templatePessoaFisicaCard.xhtml" />
+                            </p:panel>
+                        </p:dialog>
                         <p:dialog widgetVar="i_dlg_t" header="Transferência entre Caixas" resizable="false" modal="true">
                             <p:messages id="i_msg_t" showDetail="true" closable="true" />  
                             <h:panelGrid style="clear: both; width: 100%; margin-top: 20px" columns="4">
@@ -167,7 +210,7 @@
                                     <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_t').hide()" style="float: left" icon="ui-icon-close"/>
                                 </p:column>
                             </h:panelGrid>
-                        </p:dialog>   
+                        </p:dialog>
                     </h:form>
 
                     <h:form id="imagem_boleto_social" enctype="multipart/form-data" acceptcharset="UTF-8">
