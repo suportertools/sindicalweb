@@ -158,8 +158,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void destroy() {
 
     }
-    
-    public void closeMensagemAviso(){
+
+    public void closeMensagemAviso() {
         visibleMsgAviso = false;
     }
 
@@ -345,6 +345,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
                     GenericaSessao.put("fisicaPesquisa", fisica);
                     mensagem = "Cadastro salvo com Sucesso!";
+                    logs.setTabela("pes_fisica");
+                    logs.setCodigo(fisica.getId());
                     logs.save("ID " + fisica.getId()
                             + " - Pessoa: " + fisica.getPessoa().getId()
                             + " - Nome: " + fisica.getPessoa().getNome()
@@ -363,6 +365,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 dao.rollback();
             }
         } else {
+            if (fisica.getPessoa().getDtAtualizacao() == null) {
+                fisica.getPessoa().setDtAtualizacao(new Date());
+            }
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             Fisica f = (Fisica) dao.find(new Fisica(), fisica.getId());
             String antes = " De: ID - " + fisica.getId()
@@ -404,6 +409,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
             fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
             if (dao.update(fisica.getPessoa())) {
+                logs.setTabela("pes_fisica");
+                logs.setCodigo(fisica.getId());
                 logs.update(antes,
                         " para: Nome: " + fisica.getPessoa().getNome()
                         + " - Nascimento: " + f.getNascimento()
@@ -1482,6 +1489,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String associarFisica() {
+        if (new SociosDao().existPessoasMesmaMatricula()) {
+            GenericaMensagem.warn("Sistema", "Constam a mesma pessoa mais de uma vez na mesma matrícula!");
+            return null;
+        }
+        if (new SociosDao().existMatriculaAtivaAtivacaoDesordenada()) {
+            GenericaMensagem.warn("Sistema", "Matrícula ativa com id_servico_pessoa menor que último, favor entrar em contato com nosso suporte técnico.");
+            return null;
+        }
         boolean reativar = false;
         Pessoa p = fisica.getPessoa();
         if (tipoCadastro == -1) {
@@ -1666,7 +1681,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             Juridica j = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
             List listax = db.listaJuridicaContribuinte(j.getId());
 
-            if (!listax.isEmpty()){
+            if (!listax.isEmpty()) {
                 for (int i = 0; i < listax.size(); i++) {
                     if (((List) listax.get(0)).get(11) != null) {
                         // CONTRIBUINTE INATIVO
@@ -1677,7 +1692,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                         renderJuridicaPesquisa = true;
                     }
                 }
-            }else{
+            } else {
                 pessoaEmpresa.setJuridica(j);
                 renderJuridicaPesquisa = true;
             }
