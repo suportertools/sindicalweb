@@ -435,7 +435,7 @@ public class JuridicaBean implements Serializable {
                 }
             }
             dao.commit();
-            
+
             GenericaMensagem.info("Sucesso", "Contribuinte Inativado!");
             contribuintesInativos = new ContribuintesInativos();
             listaContribuintesInativos.clear();
@@ -445,10 +445,10 @@ public class JuridicaBean implements Serializable {
             GenericaMensagem.error("Erro", "Não existe Motivo de Inativação!");
         }
     }
-    
-    public List<PessoaEmpresa> getListaPessoaEmpresa(){
+
+    public List<PessoaEmpresa> getListaPessoaEmpresa() {
         List<PessoaEmpresa> result = new ArrayList();
-        if (juridica.getId() != -1){
+        if (juridica.getId() != -1) {
             PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
             result = dbp.listaPessoaEmpresaPorJuridica(juridica.getId());
         }
@@ -633,6 +633,8 @@ public class JuridicaBean implements Serializable {
                     GenericaMensagem.info("Sucesso", "Cadastro salvo!");
                     dbSalvar.comitarTransacao();
                     NovoLog novoLog = new NovoLog();
+                    novoLog.setTabela("pes_juridica");
+                    novoLog.setCodigo(juridica.getId());
                     novoLog.save("ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
                 } else {
@@ -642,6 +644,9 @@ public class JuridicaBean implements Serializable {
                 }
             }
         } else {
+            if (juridica.getPessoa().getDtAtualizacao() == null) {
+                juridica.getPessoa().setDtAtualizacao(new Date());
+            }
             if (juridica.getPessoa().getNome().isEmpty()) {
                 GenericaMensagem.error("Erro", "O campo nome não pode ser nulo!");
                 return null;
@@ -684,6 +689,8 @@ public class JuridicaBean implements Serializable {
                 }
 
                 NovoLog novoLog = new NovoLog();
+                novoLog.setTabela("pes_juridica");
+                novoLog.setCodigo(juridica.getId());
                 novoLog.update(beforeUpdate, "ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
             } else {
