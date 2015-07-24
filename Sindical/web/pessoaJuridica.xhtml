@@ -210,6 +210,9 @@
                                                 <p:commandLink value="Bloqueio de Contribuição" action="#{juridicaBean.bloqueioContribuicao}" rendered="#{juridicaBean.juridica.id != -1}" style="float: right"/>
                                             </h:panelGrid>
                                         </h:panelGrid>
+                                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                                            <p:outputLabel value="Ultima atualização: #{juridicaBean.juridica.pessoa.atualizacao}" rendered="#{juridicaBean.juridica.pessoa.id != -1}" />
+                                        </h:panelGrid>                                        
                                     </p:tab>
 
                                     <p:tab title="Complemento">
@@ -509,7 +512,7 @@
                                 <p:panel styleClass="fundoCinza" rendered="#{juridicaBean.listaPessoaEmpresa.size() > 0}">
                                     <p:outputLabel value="Atenção empresa com sócios vinculados, eles serão demissionados automaticamente!" style="color: red"/>
                                 </p:panel>
-                                
+
                                 <h:panelGrid columns="3">
                                     <p:column>
                                         <h:outputText value="Data de Ativação" /><br />
@@ -520,7 +523,7 @@
                                         <h:outputText value="Data de Inativação" /><br />
                                         <p:inputMask value="#{juridicaBean.contribuintesInativos.inativacao}" size="8" mask="99/99/9999" style="font-weight: bold; margin-right: 50px;" />
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <h:outputText value="Motivo da Inativação"/><br />
                                         <p:selectOneMenu value="#{juridicaBean.idMotivoInativacao}">

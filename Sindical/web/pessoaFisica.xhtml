@@ -255,6 +255,9 @@
                                                         </p:selectOneMenu>
                                                     </p:column>
                                                 </h:panelGrid>
+                                                <h:panelGrid columns="2" styleClass="margin-top-max">
+                                                    <p:outputLabel value="Ultima atualização: #{fisicaBean.fisica.pessoa.atualizacao}" rendered="#{fisicaBean.fisica.pessoa.id != -1}" />
+                                                </h:panelGrid>
                                             </p:column>
 
                                             <p:column>
