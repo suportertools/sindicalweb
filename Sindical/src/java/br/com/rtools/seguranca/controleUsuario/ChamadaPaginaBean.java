@@ -1,11 +1,9 @@
 package br.com.rtools.seguranca.controleUsuario;
 
-import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
@@ -163,9 +161,9 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public void atualizaAcessos(String url) {
-        RotinaDB db = new RotinaDBToplink();
+        RotinaDao rotinaDao = new RotinaDao();
         AtalhoDB dba = new AtalhoDBToplink();
-        Rotina rotina = db.pesquisaAcesso(url);
+        Rotina rotina = rotinaDao.pesquisaAcesso(url);
         Usuario usuario = new Usuario();
         Dao dao = new Dao();
         if (GenericaSessao.exists("sessaoUsuario")) {
@@ -1497,8 +1495,8 @@ public class ChamadaPaginaBean implements Serializable {
                 return simplesString[1];
             }
         }
-        RotinaDB rotinaDB = new RotinaDBToplink();
-        Rotina r = rotinaDB.pesquisaRotinaPorPagina(strURLNome);
+        RotinaDao rotinaDao = new RotinaDao();
+        Rotina r = rotinaDao.pesquisaRotinaPorPagina(strURLNome);
         String nomePagina = " Menu ";
         if (r != null) {
             if (!r.getRotina().equals("")) {
@@ -2236,9 +2234,8 @@ public class ChamadaPaginaBean implements Serializable {
 //------------------------------------------------------------------------------
 
     public List<Rotina> getListaRotina() {
-        RotinaDB db = new RotinaDBToplink();
         if (listaRotina.isEmpty()) {
-            listaRotina = db.pesquisaTodosOrdenado();
+            listaRotina = new Dao().list(new Rotina(), true);
         }
         return listaRotina;
     }
