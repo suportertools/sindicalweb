@@ -5,8 +5,7 @@ import br.com.rtools.seguranca.Log;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.beans.SimplesBean;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -275,8 +274,8 @@ public class NovoLog extends salvaLogs {
     public Rotina getRotina() {
         if (cadastroSimples) {
             String classe = ((SimplesBean) GenericaSessao.getObject("simplesBean")).getSessoes()[0];
-            RotinaDB rotinaDB = new RotinaDBToplink();
-            Rotina rotina = rotinaDB.pesquisaRotinaPorClasse(classe);
+            RotinaDao rotinaDao = new RotinaDao();
+            Rotina rotina = rotinaDao.pesquisaRotinaPorClasse(classe);
             if (rotina == null) {
                 return null;
             }
@@ -286,8 +285,8 @@ public class NovoLog extends salvaLogs {
         } else {
             HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String nomePagina = this.converteURL(paginaRequerida.getRequestURI());
-            RotinaDB rotinaDB = new RotinaDBToplink();
-            Rotina rotina = rotinaDB.pesquisaRotinaPorPagina(nomePagina);
+            RotinaDao rotinaDao = new RotinaDao();
+            Rotina rotina = rotinaDao.pesquisaRotinaPorPagina(nomePagina);
             try {
                 if (rotina != null) {
                     return rotina;
