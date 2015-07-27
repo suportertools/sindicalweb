@@ -27,7 +27,7 @@ import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -72,7 +72,7 @@ public class WebContribuintesBean extends MovimentoValorBean {
     private Registro registro = new Registro();
 
     public WebContribuintesBean() {
-        FilialDB filDB = new FilialDBToplink();
+        FilialDB filDB = new FilialDao();
         registro = filDB.pesquisaRegistroPorFilial(1);
         pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb");
 
