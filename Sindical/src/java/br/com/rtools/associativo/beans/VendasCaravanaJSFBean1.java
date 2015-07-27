@@ -11,12 +11,11 @@ import br.com.rtools.financeiro.db.TipoServicoDBToplink;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.utilitarios.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class VendasCaravanaJSFBean1 {
+
     private Pessoa pessoa = new Pessoa();
     private Fisica fisica = new Fisica();
     private CVenda vendas = new CVenda();
@@ -53,43 +53,42 @@ public class VendasCaravanaJSFBean1 {
     private String dataEntrada = DataHoje.data();
     private boolean renderMovimento = true;
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         List<Movimento> movs = new ArrayList();
         Movimento movimento = new Movimento();
-        RotinaDB dbRot = new RotinaDBToplink();
         VendasCaravanaDB dbC = new VendasCaravanaDBToplink();
         Lote lot = new Lote();
         Evt evt = new Evt();
-        FilialDB dbF = new FilialDBToplink();
+        FilialDB dbF = new FilialDao();
         TipoServicoDB dbT = new TipoServicoDBToplink();
-        
-        if (pessoa.getId() == -1){
+
+        if (pessoa.getId() == -1) {
             msgConfirma = "Pesquise um responsável!";
             return null;
         }
 
-        if ( ((Reservas)listaReservas.get(0).getArgumento1()).getId() == -1 ){
+        if (((Reservas) listaReservas.get(0).getArgumento1()).getId() == -1) {
             msgConfirma = "Não existe nenhum passageiro para este responsável";
             return null;
         }
 
         atualizaParcelaGrid();
-        if (msgConfirma2.equals("Valor somado é MENOR que total!")){
+        if (msgConfirma2.equals("Valor somado é MENOR que total!")) {
             msgConfirma = "Valor somado é MENOR que total!";
             return null;
-        }else if (msgConfirma2.equals("Valor somado é MAIOR que total!")){
+        } else if (msgConfirma2.equals("Valor somado é MAIOR que total!")) {
             msgConfirma = "Valor somado é MAIOR que total!";
             return null;
         }
 
         sv.abrirTransacao();
-        if (!sv.alterarObjeto(vendas)){
+        if (!sv.alterarObjeto(vendas)) {
             msgConfirma = "Erro ao atualizar venda!";
             sv.desfazerTransacao();
             return null;
         }
- 
+
 //        if (vendas.getEvt() != null)
 //            movs = dbC.listaMovCaravana(vendas.getResponsavel().getId(), vendas.getEvt().getId());
 //
@@ -98,27 +97,26 @@ public class VendasCaravanaJSFBean1 {
 //            sv.comitarTransacao();
 //            return null;
 //        }
-
-        if (listaParcelas.size() == 1){
-                if ( listaParcelas.get(0).getArgumento3() == null ){
-                    //lot = new Lote(-1, dbRot.pesquisaCodigo(142), "", DataHoje.data());
-                    if (!sv.inserirObjeto(lot)){
-                        msgConfirma = "Erro ao Inserir Lote!";
-                        sv.desfazerTransacao();
-                        return null;
-                    }
-                    evt = new Evt();
-                    if (!sv.inserirObjeto(evt)){
-                        msgConfirma = "Erro ao Salvar EVT!";
-                        sv.desfazerTransacao();
-                        return null;
-                    }
-                    vendas.setEvt(evt);
-                    if (!sv.alterarObjeto(vendas)){
-                        msgConfirma = "Erro ao atualizar venda!";
-                        sv.desfazerTransacao();
-                        return null;
-                    }
+        if (listaParcelas.size() == 1) {
+            if (listaParcelas.get(0).getArgumento3() == null) {
+                //lot = new Lote(-1, dbRot.pesquisaCodigo(142), "", DataHoje.data());
+                if (!sv.inserirObjeto(lot)) {
+                    msgConfirma = "Erro ao Inserir Lote!";
+                    sv.desfazerTransacao();
+                    return null;
+                }
+                evt = new Evt();
+                if (!sv.inserirObjeto(evt)) {
+                    msgConfirma = "Erro ao Salvar EVT!";
+                    sv.desfazerTransacao();
+                    return null;
+                }
+                vendas.setEvt(evt);
+                if (!sv.alterarObjeto(vendas)) {
+                    msgConfirma = "Erro ao atualizar venda!";
+                    sv.desfazerTransacao();
+                    return null;
+                }
 //                    movimento = new Movimento(-1,
 //                                              lot,
 //                                              eventoServico.getaEvento().getDescricaoEvento().getServicoMovimento(),
@@ -136,58 +134,58 @@ public class VendasCaravanaJSFBean1 {
 //                                              evt,
 //                                              null,
 //                                              0);
-                    if (!sv.inserirObjeto(movimento)){
-                        msgConfirma = "Erro ao Salvar Parcela!";
-                        sv.desfazerTransacao();
-                        return null;
-                    }
+                if (!sv.inserirObjeto(movimento)) {
+                    msgConfirma = "Erro ao Salvar Parcela!";
+                    sv.desfazerTransacao();
+                    return null;
+                }
 
-                    if (!listaPagos.isEmpty()){
-                        List<Movimento> listDel = new ArrayList();
-                        for (int w = 0; w < listaPagos.size(); w++){
-                            //listDel = dbC.listaMovCaravanaBaixado(listaPagos.get(w).getLoteBaixa().getId());
-                            for (int x = 0; x < listDel.size(); x++){
-                                if (!sv.deletarObjeto( sv.pesquisaCodigo(listDel.get(x).getId(), "Movimento") )){
-                                    msgConfirma = "Erro Excluir Movimentos!";
-                                    sv.desfazerTransacao();
-                                    return null;
-                                }
+                if (!listaPagos.isEmpty()) {
+                    List<Movimento> listDel = new ArrayList();
+                    for (int w = 0; w < listaPagos.size(); w++) {
+                        //listDel = dbC.listaMovCaravanaBaixado(listaPagos.get(w).getLoteBaixa().getId());
+                        for (int x = 0; x < listDel.size(); x++) {
+                            if (!sv.deletarObjeto(sv.pesquisaCodigo(listDel.get(x).getId(), "Movimento"))) {
+                                msgConfirma = "Erro Excluir Movimentos!";
+                                sv.desfazerTransacao();
+                                return null;
                             }
                         }
                     }
-
-                    movs.add(movimento);
-                    sv.comitarTransacao();
-                    msgConfirma = "Reserva efetuada com sucesso!";
-                }else{
-                    // AQUI É SE EXISTIR O MOVIMENTO
-                    msgConfirma = "Venda atualizada!";
-                    sv.comitarTransacao();
-                    return null;
                 }
-        }else{
+
+                movs.add(movimento);
+                sv.comitarTransacao();
+                msgConfirma = "Reserva efetuada com sucesso!";
+            } else {
+                // AQUI É SE EXISTIR O MOVIMENTO
+                msgConfirma = "Venda atualizada!";
+                sv.comitarTransacao();
+                return null;
+            }
+        } else {
             //lot = new Lote(-1, dbRot.pesquisaCodigo(142), "", DataHoje.data());
-            if (!sv.inserirObjeto(lot)){
+            if (!sv.inserirObjeto(lot)) {
                 msgConfirma = "Erro ao Inserir Lote!";
                 sv.desfazerTransacao();
                 return null;
             }
 
             evt = new Evt();
-            if (!sv.inserirObjeto(evt)){
+            if (!sv.inserirObjeto(evt)) {
                 msgConfirma = "Erro ao Salvar EVT!";
                 sv.desfazerTransacao();
                 return null;
             }
             vendas.setEvt(evt);
-            if (!sv.alterarObjeto(vendas)){
+            if (!sv.alterarObjeto(vendas)) {
                 msgConfirma = "Erro ao atualizar venda!";
                 sv.desfazerTransacao();
                 return null;
             }
 
-            if ( listaParcelas.get(0).getArgumento3() == null ){
-                for (int i = 0; i < listaParcelas.size(); i++){
+            if (listaParcelas.get(0).getArgumento3() == null) {
+                for (int i = 0; i < listaParcelas.size(); i++) {
 //                    movimento = new Movimento(-1,
 //                                              lot,
 //                                              eventoServico.getaEvento().getDescricaoEvento().getServicoMovimento(),
@@ -205,20 +203,21 @@ public class VendasCaravanaJSFBean1 {
 //                                              evt,
 //                                              null,
 //                                              0);
-                    if (!sv.inserirObjeto(movimento)){
+                    if (!sv.inserirObjeto(movimento)) {
                         msgConfirma = "Erro ao Salvar parcelamento!";
                         sv.desfazerTransacao();
                         return null;
                     }
-                    if (i == 0)
+                    if (i == 0) {
                         movs.add(movimento);
+                    }
                 }
-                if (!listaPagos.isEmpty()){
+                if (!listaPagos.isEmpty()) {
                     List<Movimento> listDel = new ArrayList();
-                    for (int w = 0; w < listaPagos.size(); w++){
+                    for (int w = 0; w < listaPagos.size(); w++) {
                         //listDel = dbC.listaMovCaravanaBaixado(listaPagos.get(w).getLoteBaixa().getId());
-                        for (int x = 0; x < listDel.size(); x++){
-                            if (!sv.deletarObjeto( sv.pesquisaCodigo(listDel.get(x).getId(), "Movimento") )){
+                        for (int x = 0; x < listDel.size(); x++) {
+                            if (!sv.deletarObjeto(sv.pesquisaCodigo(listDel.get(x).getId(), "Movimento"))) {
                                 msgConfirma = "Erro Excluir Movimentos!";
                                 sv.desfazerTransacao();
                                 return null;
@@ -228,7 +227,7 @@ public class VendasCaravanaJSFBean1 {
                 }
                 sv.comitarTransacao();
                 msgConfirma = "Reserva efetuada com sucesso!";
-            }else{
+            } else {
                 // AQUI É SE EXISTIR O MOVIMENTO
                 msgConfirma = "Venda atualizada!";
                 sv.comitarTransacao();
@@ -236,24 +235,25 @@ public class VendasCaravanaJSFBean1 {
             }
         }
 
-        if ( dataEntrada.equals(DataHoje.data()) ){
+        if (dataEntrada.equals(DataHoje.data())) {
             // ENVIAR MOVIMENTOS PARA BAIXA
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("arrayBaixa", null);
             novoVoid();
             //return ((chamadaPaginaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
-        }else
+        } else {
             novoVoid();
-            return null;
+        }
+        return null;
     }
 
-    public String editar(){
+    public String editar() {
         List<Reservas> listR = new ArrayList();
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
         SociosDB dbS = new SociosDBToplink();
         FisicaDB dbF = new FisicaDBToplink();
         EventoServicoDB dbEs = new EventoServicoDBToplink();
         EventoServicoValorDB dbEv = new EventoServicoValorDBToplink();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 //        vendas = (CVenda)htmlTablePesquisa.getRowData();
         pessoa = vendas.getResponsavel();
 
@@ -262,48 +262,50 @@ public class VendasCaravanaJSFBean1 {
         listaPagos.clear();
         String valor = "";
         float somaGrid = 0;
-        for (int i = 0; i < listR.size(); i++){
+        for (int i = 0; i < listR.size(); i++) {
             //eventoServico = dbEs.pesquisaCodigo(listR.get(i).getEventoServico().getId());
-            valor = Moeda.converteR$Float(dbS.descontoSocioEve(listR.get(i).getPessoa().getId() , listR.get(i).getEventoServico().getServicos().getId()) );
-            if (Float.parseFloat(Moeda.substituiVirgula(valor)) == 0)
+            valor = Moeda.converteR$Float(dbS.descontoSocioEve(listR.get(i).getPessoa().getId(), listR.get(i).getEventoServico().getServicos().getId()));
+            if (Float.parseFloat(Moeda.substituiVirgula(valor)) == 0) {
                 valor = Moeda.converteR$Float(dbEv.pesquisaEventoServicoValor(listR.get(i).getEventoServico().getId()).getValor());
-                listaReservas.add(new DataObject(dbF.pesquisaFisicaPorPessoa(listR.get(i).getPessoa().getId()),
-                                                 listR.get(i),
-                                                 valor,
-                                                 valor,
-                                                 true,
-                                                 false,
-                                                 listR.get(i).getPoltrona(),
-                                                 false,
-                                                 listR.get(i).getEventoServico(),
-                                                 null)
-                                 );
-                somaGrid = Moeda.somaValores(somaGrid, Moeda.substituiVirgulaFloat(valor));
+            }
+            listaReservas.add(new DataObject(dbF.pesquisaFisicaPorPessoa(listR.get(i).getPessoa().getId()),
+                    listR.get(i),
+                    valor,
+                    valor,
+                    true,
+                    false,
+                    listR.get(i).getPoltrona(),
+                    false,
+                    listR.get(i).getEventoServico(),
+                    null)
+            );
+            somaGrid = Moeda.somaValores(somaGrid, Moeda.substituiVirgulaFloat(valor));
         }
 
         listaReservas.add(new DataObject(new Fisica(),
-                                         new Reservas(),
-                                         Moeda.converteR$Float(eventoServicoValor.getValor()),
-                                         Moeda.converteR$Float(eventoServicoValor.getValor()),
-                                         false,
-                                         true,
-                                         0,
-                                         true,
-                                         eventoServico,
-                                         null)
-                            );
+                new Reservas(),
+                Moeda.converteR$Float(eventoServicoValor.getValor()),
+                Moeda.converteR$Float(eventoServicoValor.getValor()),
+                false,
+                true,
+                0,
+                true,
+                eventoServico,
+                null)
+        );
         listaParcelas.clear();
         listaMovimento.clear();
-        if ( vendas.getEvt() != null)
+        if (vendas.getEvt() != null) {
             listaMovimento = db.listaMovCaravana(vendas.getResponsavel().getId(), vendas.getEvt().getId());
+        }
 
-        if (!listaMovimento.isEmpty()){
+        if (!listaMovimento.isEmpty()) {
             //float soma = 0;
-            for (int i = 0; i < listaMovimento.size(); i++){
-                if (listaMovimento.get(i).getLote() != null){
+            for (int i = 0; i < listaMovimento.size(); i++) {
+                if (listaMovimento.get(i).getLote() != null) {
                     listaPagos.add(listaMovimento.get(i));
                     listaParcelas.add(new DataObject(listaMovimento.get(i).getVencimento(), Moeda.converteR$Float(listaMovimento.get(i).getValor()), true, listaMovimento.get(i), null, null));
-                }else{
+                } else {
                     listaParcelas.add(new DataObject(listaMovimento.get(i).getVencimento(), Moeda.converteR$Float(listaMovimento.get(i).getValor()), false, listaMovimento.get(i), null, null));
                 }
                 //soma = Moeda.somaValores(soma, listaMovimento.get(i).getValor());
@@ -313,26 +315,26 @@ public class VendasCaravanaJSFBean1 {
             //else
             //    renderMovimento = true;
         }//else
-            //renderMovimento = true;
+        //renderMovimento = true;
         return "vendasCaravana";
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
         List<Reservas> listR = new ArrayList();
 
         sv.abrirTransacao();
-        if (vendas.getId() == -1){
+        if (vendas.getId() == -1) {
             sv.desfazerTransacao();
             msgConfirma = "Não existe venda para ser cancelada!";
             return null;
         }
 
         listR = db.listaReservasVenda(vendas.getId());
-        for (int i = 0; i < listR.size();i++){
-            reservas = (Reservas)sv.pesquisaCodigo(listR.get(i).getId(), "Reservas");
-            if (!sv.deletarObjeto(reservas)){
+        for (int i = 0; i < listR.size(); i++) {
+            reservas = (Reservas) sv.pesquisaCodigo(listR.get(i).getId(), "Reservas");
+            if (!sv.deletarObjeto(reservas)) {
                 msgConfirma = "Erro ao cancelar reservas!";
                 sv.desfazerTransacao();
                 novoVoid();
@@ -340,9 +342,9 @@ public class VendasCaravanaJSFBean1 {
             }
         }
 
-        if (!listaMovimento.isEmpty()){
-            for (int i = 0; i < listaMovimento.size(); i++){
-                if (listaMovimento.get(i).getLote() != null){
+        if (!listaMovimento.isEmpty()) {
+            for (int i = 0; i < listaMovimento.size(); i++) {
+                if (listaMovimento.get(i).getLote() != null) {
                     msgConfirma = "Reserva com parcela paga não pode ser excluída!";
                     sv.desfazerTransacao();
                     return null;
@@ -350,12 +352,12 @@ public class VendasCaravanaJSFBean1 {
             }
             Movimento mov = new Movimento();
             Lote lot = new Lote();
-            for (int i = 0; i < listaMovimento.size(); i++){
-                mov = (Movimento)sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento");
+            for (int i = 0; i < listaMovimento.size(); i++) {
+                mov = (Movimento) sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento");
 
-                if (lot != null){
-                    lot = (Lote)sv.pesquisaCodigo(mov.getLote().getId(), "Lote");
-                    if (!sv.deletarObjeto(lot)){
+                if (lot != null) {
+                    lot = (Lote) sv.pesquisaCodigo(mov.getLote().getId(), "Lote");
+                    if (!sv.deletarObjeto(lot)) {
                         msgConfirma = "Erro ao excluir Lote!";
                         sv.desfazerTransacao();
                         return null;
@@ -363,7 +365,7 @@ public class VendasCaravanaJSFBean1 {
                     lot = null;
                 }
 
-                if (!sv.deletarObjeto(mov)){
+                if (!sv.deletarObjeto(mov)) {
                     msgConfirma = "Erro ao excluir movimentos!";
                     sv.desfazerTransacao();
                     return null;
@@ -372,11 +374,11 @@ public class VendasCaravanaJSFBean1 {
             }
         }
 
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(vendas.getId(), "CVenda"))){
+        if (!sv.deletarObjeto(sv.pesquisaCodigo(vendas.getId(), "CVenda"))) {
             msgConfirma = "Erro ao cancelar Venda!";
             sv.desfazerTransacao();
             return null;
-        }else{
+        } else {
             msgConfirma = "Reserva cancelada com sucesso!";
             sv.comitarTransacao();
             novoVoid();
@@ -384,17 +386,18 @@ public class VendasCaravanaJSFBean1 {
         }
     }
 
-    public boolean salvarAdicionado(SalvarAcumuladoDB sv){
+    public boolean salvarAdicionado(SalvarAcumuladoDB sv) {
         vendas.setResponsavel(pessoa);
         vendas.setaEvento(caravana.getaEvento());
         vendas.setEvt(null);
-        if (sv.inserirObjeto(vendas))
+        if (sv.inserirObjeto(vendas)) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
-    public void novoVoid(){
+    public void novoVoid() {
         pessoa = new Pessoa();
         eventoServico = new EventoServico();
         eventoServicoValor = new EventoServicoValor();
@@ -418,32 +421,32 @@ public class VendasCaravanaJSFBean1 {
         valorPago = "0";
     }
 
-    public String novo(){
+    public String novo() {
         return "vendasCaravana";
     }
 
-    public String novaVenda(){
+    public String novaVenda() {
         novoVoid();
         return "vendasCaravana";
     }
 
-    public String excluirReserva(){
+    public String excluirReserva() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
 //        Reservas res = (Reservas)sv.pesquisaCodigo( ((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()).getId() , "Reservas");
         Reservas res = null; //(Reservas)sv.pesquisaCodigo( ((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()).getId() , "Reservas");
-        if (res != null){
+        if (res != null) {
             sv.abrirTransacao();
-            if (!sv.deletarObjeto(res)){
+            if (!sv.deletarObjeto(res)) {
                 msgConfirma2 = "Erro ao excluir Reserva!";
                 sv.desfazerTransacao();
                 return null;
             }
 
-            if ( !listaMovimento.isEmpty() ){
-                for (int i = 0; i < listaMovimento.size(); i++){
-                    if (listaMovimento.get(i).getLote() == null){
-                        if (!sv.deletarObjeto( (Movimento)sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento"))){
+            if (!listaMovimento.isEmpty()) {
+                for (int i = 0; i < listaMovimento.size(); i++) {
+                    if (listaMovimento.get(i).getLote() == null) {
+                        if (!sv.deletarObjeto((Movimento) sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento"))) {
                             msgConfirma2 = "Erro ao excluir Movimentos!";
                             sv.desfazerTransacao();
                             return null;
@@ -459,7 +462,7 @@ public class VendasCaravanaJSFBean1 {
             //renderMovimento = true;
             listaParcelas.clear();
             return null;
-        }else{
+        } else {
             //listaReservas.get(htmlTable.getRowIndex()).setArgumento0(new Fisica());
             //listaReservas.get(htmlTable.getRowIndex()).setArgumento6(0);
             msgConfirma2 = "Reserva excluída!";
@@ -468,12 +471,12 @@ public class VendasCaravanaJSFBean1 {
 
     }
 
-    public String adicionarParcela(){
+    public String adicionarParcela() {
         parcelamento();
         return null;
     }
 
-    public void parcelamento(){
+    public void parcelamento() {
         String vencs = dataEntrada;
         String vlEnt = valorEntrada;
         DataHoje dh = new DataHoje();
@@ -485,34 +488,34 @@ public class VendasCaravanaJSFBean1 {
 //            }
 //            vlEnt = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(vlEnt), soma));
 //        }
-        if (parcelas == 1){
+        if (parcelas == 1) {
             listaParcelas.add(new DataObject(vencs, Moeda.converteR$(vlEnt), false, null, null, null));
-        }else{
+        } else {
             listaParcelas.add(new DataObject(dataEntrada, Moeda.converteR$(valorEntrada), false, null, null, null));
             vlEnt = Moeda.converteR$Float(
-                         Moeda.divisaoValores(
-                                Moeda.subtracaoValores(
-                                         //Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
-                                         Moeda.substituiVirgulaFloat(valorAPagar), Moeda.substituiVirgulaFloat(vlEnt)
-                                ),
-                         parcelas - 1
-                   ));
-            for (int i = 1; i < parcelas; i++){
+                    Moeda.divisaoValores(
+                            Moeda.subtracaoValores(
+                                    //Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
+                                    Moeda.substituiVirgulaFloat(valorAPagar), Moeda.substituiVirgulaFloat(vlEnt)
+                            ),
+                            parcelas - 1
+                    ));
+            for (int i = 1; i < parcelas; i++) {
                 vencs = dh.incrementarMeses(1, vencs);
                 listaParcelas.add(new DataObject(vencs, Moeda.converteR$(vlEnt), false, null, null, null));
             }
         }
     }
 
-    public String adicionarReserva(){
+    public String adicionarReserva() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         atualizarValorServico();
-        if (pessoa.getId() == -1){
+        if (pessoa.getId() == -1) {
             msgConfirma2 = "Pesquise um responsável!";
             return null;
         }
 
-        if (caravana.getId() == -1){
+        if (caravana.getId() == -1) {
             msgConfirma2 = "Erro confirmar caravana!";
             return null;
         }
@@ -521,14 +524,14 @@ public class VendasCaravanaJSFBean1 {
 //            return null;
 //        }
 
-        if (listaPolt.isEmpty()){
+        if (listaPolt.isEmpty()) {
             msgConfirma2 = "Não existe mais poltronas disponíveis!";
             return null;
         }
 
         sv.abrirTransacao();
-        if (vendas.getId() == -1){
-            if (!salvarAdicionado(sv)){
+        if (vendas.getId() == -1) {
+            if (!salvarAdicionado(sv)) {
                 msgConfirma2 = "A venda ainda não foi salva!";
                 sv.desfazerTransacao();
                 return null;
@@ -536,17 +539,16 @@ public class VendasCaravanaJSFBean1 {
         }
 
         //if (( ((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()).getId() == -1 )){
-        if (true){
+        if (true) {
 
 //            reservas.setDesconto(0);
 //            reservas.setPessoa(((Fisica)listaReservas.get(htmlTable.getRowIndex()).getArgumento0()).getPessoa());
 //            reservas.setcVenda(vendas);
 //            reservas.setPoltrona(Integer.valueOf ((String)listaReservas.get(htmlTable.getRowIndex()).getArgumento6()));
 //            reservas.setEventoServico( (EventoServico)listaReservas.get(htmlTable.getRowIndex()).getArgumento8() );
-
             //if (sv.inserirObjeto(((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()))){
-            if (sv.inserirObjeto(reservas)){
-                if (!deletarMovimentosNaoPagos(sv)){
+            if (sv.inserirObjeto(reservas)) {
+                if (!deletarMovimentosNaoPagos(sv)) {
                     return null;
                 }
                 sv.comitarTransacao();
@@ -560,26 +562,26 @@ public class VendasCaravanaJSFBean1 {
                 listaPolt = new Vector<SelectItem>();
                 msgConfirma2 = "Passageiro salvo com Sucesso!";
                 listaReservas.add(new DataObject(fisica,
-                                                 reservas,
-                                                 Moeda.converteR$Float(eventoServicoValor.getValor()),
-                                                 Moeda.converteR$Float(eventoServicoValor.getValor()),
-                                                 false,
-                                                 true,
-                                                 0,
-                                                 true,
-                                                 eventoServico,
-                                                 null)
-                                );
-            }else{
+                        reservas,
+                        Moeda.converteR$Float(eventoServicoValor.getValor()),
+                        Moeda.converteR$Float(eventoServicoValor.getValor()),
+                        false,
+                        true,
+                        0,
+                        true,
+                        eventoServico,
+                        null)
+                );
+            } else {
                 msgConfirma2 = "Erro ao salvar venda!";
                 sv.desfazerTransacao();
             }
-        }else{
+        } else {
 //            ((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()).setDesconto(0);
 //            ((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()).setPessoa(((Fisica)listaReservas.get(htmlTable.getRowIndex()).getArgumento0()).getPessoa());
             //if (sv.alterarObjeto(((Reservas)listaReservas.get(htmlTable.getRowIndex()).getArgumento1()))){
-            if (true){
-                if (!deletarMovimentosNaoPagos(sv)){
+            if (true) {
+                if (!deletarMovimentosNaoPagos(sv)) {
                     return null;
                 }
 
@@ -590,7 +592,7 @@ public class VendasCaravanaJSFBean1 {
                 //fisica = new Fisica();
                 listaPolt = new Vector<SelectItem>();
                 msgConfirma2 = "Reserva atualizada com sucesso!";
-            }else{
+            } else {
                 msgConfirma2 = "Erro ao salvar venda!";
                 sv.desfazerTransacao();
             }
@@ -599,101 +601,102 @@ public class VendasCaravanaJSFBean1 {
         return "vendasCaravana";
     }
 
-    public boolean deletarMovimentosNaoPagos(SalvarAcumuladoDB sv){
-        if (!listaMovimento.isEmpty()){
+    public boolean deletarMovimentosNaoPagos(SalvarAcumuladoDB sv) {
+        if (!listaMovimento.isEmpty()) {
             float soma = 0;
             listaPagos.clear();
             listaParcelas.clear();
-            for (int i = 0; i < listaMovimento.size(); i ++){
+            for (int i = 0; i < listaMovimento.size(); i++) {
                 soma = soma + listaMovimento.get(i).getValor();
             }
-            if ( soma != Moeda.substituiVirgulaFloat(valorTotal)){
-                for (int i = 0; i < listaMovimento.size(); i ++){
-                    if (listaMovimento.get(i).getLote() == null){
-                        if (!sv.deletarObjeto( (Movimento)sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento"))){
+            if (soma != Moeda.substituiVirgulaFloat(valorTotal)) {
+                for (int i = 0; i < listaMovimento.size(); i++) {
+                    if (listaMovimento.get(i).getLote() == null) {
+                        if (!sv.deletarObjeto((Movimento) sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento"))) {
                             msgConfirma2 = "Erro ao excluir Movimentos!";
                             sv.desfazerTransacao();
                             return false;
                         }
-                    }else{
+                    } else {
                         listaPagos.add(listaMovimento.get(i));
                         //listaParcelas.add(new DataObject(listaMovimento.get(i).getVencimento(), Moeda.converteR$Float(listaMovimento.get(i).getValor()), true, null, null, null));
                     }
                 }
                 //renderMovimento = true;
                 return true;
-            }else{
+            } else {
                 return true;
             }
         }
         return true;
     }
 
-    public String atualizarReserva(){
+    public String atualizarReserva() {
 //        listaReservas.get(htmlTable.getRowIndex()).setArgumento4(false);
 //        listaReservas.get(htmlTable.getRowIndex()).setArgumento5(true);
         atualizarValorServico();
         return "vendasCaravana";
     }
 
-    public void atualizarValorServico(){
+    public void atualizarValorServico() {
         SociosDB db = new SociosDBToplink();
         float valor = 0;
-        for (int i = 0; i < listaReservas.size(); i++){
-            if ( !((Boolean)listaReservas.get(i).getArgumento4()) && ((Reservas)listaReservas.get(i).getArgumento1()).getId() == -1){
+        for (int i = 0; i < listaReservas.size(); i++) {
+            if (!((Boolean) listaReservas.get(i).getArgumento4()) && ((Reservas) listaReservas.get(i).getArgumento1()).getId() == -1) {
                 getFisica();
-                valor = db.descontoSocioEve(((Fisica)listaReservas.get(i).getArgumento0()).getPessoa().getId() , eventoServico.getServicos().getId() );
+                valor = db.descontoSocioEve(((Fisica) listaReservas.get(i).getArgumento0()).getPessoa().getId(), eventoServico.getServicos().getId());
                 listaReservas.get(i).setArgumento8(eventoServico);
-                if (valor == 0){
+                if (valor == 0) {
                     listaReservas.get(i).setArgumento2(Moeda.converteR$Float(eventoServicoValor.getValor()));
-                    listaReservas.get(i).setArgumento3(Moeda.converteR$Float( Moeda.subtracaoValores(eventoServicoValor.getValor(), 0)));// NA VERDADE SUBTRAI PELO DESCONTO
-                }else{
+                    listaReservas.get(i).setArgumento3(Moeda.converteR$Float(Moeda.subtracaoValores(eventoServicoValor.getValor(), 0)));// NA VERDADE SUBTRAI PELO DESCONTO
+                } else {
                     listaReservas.get(i).setArgumento2(Moeda.converteR$Float(valor));
-                    listaReservas.get(i).setArgumento3(Moeda.converteR$Float( Moeda.subtracaoValores(valor, 0)));// NA VERDADE SUBTRAI PELO DESCONTO
+                    listaReservas.get(i).setArgumento3(Moeda.converteR$Float(Moeda.subtracaoValores(valor, 0)));// NA VERDADE SUBTRAI PELO DESCONTO
                 }
             }
         }
     }
 
-    public List<DataObject> getListaReservas(){
-        if (listaReservas.isEmpty()){
+    public List<DataObject> getListaReservas() {
+        if (listaReservas.isEmpty()) {
             valorLiquido = Moeda.converteR$Float(Moeda.subtracaoValores(eventoServicoValor.getValor(), 0));// NA VERDADE SUBTRAI PELO DESCONTO
             listaReservas.add(new DataObject(fisica,
-                                             reservas,
-                                             Moeda.converteR$Float(eventoServicoValor.getValor()),
-                                             valorLiquido,
-                                             false,
-                                             true,
-                                             0,
-                                             true,
-                                             eventoServico,
-                                             null)
-                            );
+                    reservas,
+                    Moeda.converteR$Float(eventoServicoValor.getValor()),
+                    valorLiquido,
+                    false,
+                    true,
+                    0,
+                    true,
+                    eventoServico,
+                    null)
+            );
             atualizarValorServico();
         }
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null)
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null) {
             listaReservas.get(indice).setArgumento0(getFisica());
+        }
         return listaReservas;
     }
 
-    public List<SelectItem> getListaPoltronas(){
+    public List<SelectItem> getListaPoltronas() {
         List<Integer> select = new ArrayList();
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
-        if (caravana.getId() != -1){
-            if (listaPolt.isEmpty()){
+        if (caravana.getId() != -1) {
+            if (listaPolt.isEmpty()) {
                 select = db.listaPoltronasUsadas(caravana.getaEvento().getId());
                 boolean adc = true;
                 String pol = "";
-                for(int i = 1; i <= caravana.getQuantidadePoltronas(); i++){
-                    for (int w = 0; w < select.size(); w++){
-                        if (i == select.get(w)){
+                for (int i = 1; i <= caravana.getQuantidadePoltronas(); i++) {
+                    for (int w = 0; w < select.size(); w++) {
+                        if (i == select.get(w)) {
                             adc = false;
                             break;
                         }
                     }
-                    if (adc){
-                        pol = "000"+i;
-                        listaPolt.add(new SelectItem(new Integer(i),pol.substring(pol.length() - 2, pol.length()),Integer.toString(i)));
+                    if (adc) {
+                        pol = "000" + i;
+                        listaPolt.add(new SelectItem(new Integer(i), pol.substring(pol.length() - 2, pol.length()), Integer.toString(i)));
                     }
                     adc = true;
                 }
@@ -702,55 +705,56 @@ public class VendasCaravanaJSFBean1 {
         return listaPolt;
     }
 
-    public void refreshForm(){
+    public void refreshForm() {
 
     }
 
-    public String indice(){
+    public String indice() {
 //        indice = htmlTable.getRowIndex();
         return null;
     }
 
-    public String refreshFormVenda(){
+    public String refreshFormVenda() {
         return "vendasCaravana";
     }
 
-    public String refreshFormPesquisa(){
+    public String refreshFormPesquisa() {
         return "pesquisaVendasCaravana";
     }
 
-    public List<SelectItem> getListaCaravanas(){
+    public List<SelectItem> getListaCaravanas() {
         List<Caravana> select = new ArrayList();
         CaravanaDB db = new CaravanaDBToplink();
         listaPolt.clear();
         idPoltrona = 0;
-        if (resultLista.isEmpty()){
+        if (resultLista.isEmpty()) {
             select = db.pesquisaTodos();
-            for(int i = 0; i < select.size(); i++){
+            for (int i = 0; i < select.size(); i++) {
                 resultLista.add(new SelectItem(new Integer(i),
-                                select.get(i).getaEvento().getDescricaoEvento().getDescricao() + " - " +select.get(i).getDataSaida(),
-                                Integer.toString(select.get(i).getId())));
+                        select.get(i).getaEvento().getDescricaoEvento().getDescricao() + " - " + select.get(i).getDataSaida(),
+                        Integer.toString(select.get(i).getId())));
             }
         }
         return resultLista;
     }
 
-    public List<SelectItem> getListaTipos(){
+    public List<SelectItem> getListaTipos() {
         List<SelectItem> result = new Vector<SelectItem>();
         List<EventoServico> select = new ArrayList();
         EventoServicoDB db = new EventoServicoDBToplink();
         EventoServicoValorDB dbE = new EventoServicoValorDBToplink();
         EventoServicoDB dbEs = new EventoServicoDBToplink();
         getCaravana();
-        if(caravana.getId() != -1){
+        if (caravana.getId() != -1) {
             select = db.listaEventoServico(caravana.getaEvento().getId());
-            for(int i = 0; i < select.size(); i++){
+            for (int i = 0; i < select.size(); i++) {
                 result.add(new SelectItem(new Integer(i),
-                                          select.get(i).getServicos().getDescricao(),
-                                          Integer.toString(select.get(i).getId())));
+                        select.get(i).getServicos().getDescricao(),
+                        Integer.toString(select.get(i).getId())));
             }
-            if (idTipo >= select.size())
+            if (idTipo >= select.size()) {
                 idTipo = 0;
+            }
             eventoServico = dbEs.pesquisaCodigo(select.get(idTipo).getId());
             eventoServicoValor = dbE.pesquisaEventoServicoValor(eventoServico.getId());
             atualizarValorServico();
@@ -758,27 +762,29 @@ public class VendasCaravanaJSFBean1 {
         return result;
     }
 
-    public void atualizaParcelaGrid(){
+    public void atualizaParcelaGrid() {
         float soma = 0;
-        for (int i = 0; i < listaParcelas.size(); i++){
-            if(((String)listaParcelas.get(i).getArgumento1()).isEmpty())
+        for (int i = 0; i < listaParcelas.size(); i++) {
+            if (((String) listaParcelas.get(i).getArgumento1()).isEmpty()) {
                 listaParcelas.get(i).setArgumento1(Moeda.converteR$("0"));
-            soma = Moeda.somaValores(soma,Moeda.substituiVirgulaFloat((String)listaParcelas.get(i).getArgumento1()));
-            listaParcelas.get(i).setArgumento1(Moeda.converteR$((String)listaParcelas.get(i).getArgumento1()));
+            }
+            soma = Moeda.somaValores(soma, Moeda.substituiVirgulaFloat((String) listaParcelas.get(i).getArgumento1()));
+            listaParcelas.get(i).setArgumento1(Moeda.converteR$((String) listaParcelas.get(i).getArgumento1()));
         }
         //if (soma < Moeda.substituiVirgulaFloat(valorTotal)){
-        if (soma < Moeda.substituiVirgulaFloat(valorAPagar)){
+        if (soma < Moeda.substituiVirgulaFloat(valorAPagar)) {
             msgConfirma2 = "Valor somado é MENOR que total!";
-        //} else if (soma > Moeda.substituiVirgulaFloat(valorTotal)){
-        } else if (soma > Moeda.substituiVirgulaFloat(valorAPagar)){
+            //} else if (soma > Moeda.substituiVirgulaFloat(valorTotal)){
+        } else if (soma > Moeda.substituiVirgulaFloat(valorAPagar)) {
             msgConfirma2 = "Valor somado é MAIOR que total!";
-        }else
+        } else {
             msgConfirma2 = "";
+        }
     }
 
     public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null){
-            pessoa = (Pessoa)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         }
         return pessoa;
@@ -815,9 +821,9 @@ public class VendasCaravanaJSFBean1 {
     public Caravana getCaravana() {
         CaravanaDB db = new CaravanaDBToplink();
         VendasCaravanaDB dbV = new VendasCaravanaDBToplink();
-        if (!getListaCaravanas().isEmpty()){
+        if (!getListaCaravanas().isEmpty()) {
             int qnt = 0;
-            if (caravana.getId() != Integer.parseInt(getListaCaravanas().get(idCaravana).getDescription())){
+            if (caravana.getId() != Integer.parseInt(getListaCaravanas().get(idCaravana).getDescription())) {
                 caravana = db.pesquisaCodigo(Integer.parseInt(getListaCaravanas().get(idCaravana).getDescription()));
 //                qnt = dbV.qntReservas(caravana.getaEvento().getId(), caravana.getaEvento().getDescricaoEvento().getGrupoEvento().getId());
 //                if (qnt == -1)
@@ -851,17 +857,17 @@ public class VendasCaravanaJSFBean1 {
         this.reservas = reservas;
     }
 
-    public List getListaPesquisaVendas(){
+    public List getListaPesquisaVendas() {
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
         return db.pesquisaTodos();
     }
 
     public Fisica getFisica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null){
-            fisica = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null) {
+            fisica = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
-            for(int i = 0; i < listaReservas.size(); i++){
-                if ( ((Fisica)listaReservas.get(i).getArgumento0()).getId() == fisica.getId() ){
+            for (int i = 0; i < listaReservas.size(); i++) {
+                if (((Fisica) listaReservas.get(i).getArgumento0()).getId() == fisica.getId()) {
                     listaReservas.get(indice).setArgumento0(new Fisica());
                     msgConfirma2 = "Este passageiro já tem reserva!";
                     return new Fisica();
@@ -895,9 +901,9 @@ public class VendasCaravanaJSFBean1 {
 
     public String getValorTotal() {
         valorTotal = "0";
-        for (int i = 0;i < listaReservas.size(); i++){
-            if ( ((Fisica)listaReservas.get(i).getArgumento0()).getId() != -1){
-                valorTotal = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(valorTotal), Moeda.converteUS$( (String)listaReservas.get(i).getArgumento3())));
+        for (int i = 0; i < listaReservas.size(); i++) {
+            if (((Fisica) listaReservas.get(i).getArgumento0()).getId() != -1) {
+                valorTotal = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(valorTotal), Moeda.converteUS$((String) listaReservas.get(i).getArgumento3())));
             }
         }
         //valorTotal = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(valorPago)));
@@ -910,15 +916,17 @@ public class VendasCaravanaJSFBean1 {
 
     public String getValorAPagar() {
         valorAPagar = "0";
-        if (!listaParcelas.isEmpty()){
+        if (!listaParcelas.isEmpty()) {
             float soma = 0;
-            for (int i = 0; i < listaParcelas.size(); i++){
-                if (!(Boolean)listaParcelas.get(i).getArgumento2())
-                    soma = Moeda.somaValores(soma, Moeda.substituiVirgulaFloat(((String)listaParcelas.get(i).getArgumento1())));
+            for (int i = 0; i < listaParcelas.size(); i++) {
+                if (!(Boolean) listaParcelas.get(i).getArgumento2()) {
+                    soma = Moeda.somaValores(soma, Moeda.substituiVirgulaFloat(((String) listaParcelas.get(i).getArgumento1())));
+                }
             }
             valorAPagar = Moeda.converteR$Float(soma);
-        }else
+        } else {
             valorAPagar = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(valorPago)));
+        }
         return Moeda.converteR$(valorAPagar);
     }
 //    public String getValorAPagar() {
@@ -956,8 +964,9 @@ public class VendasCaravanaJSFBean1 {
     }
 
     public int getParcelas() {
-        if (parcelas < 1)
+        if (parcelas < 1) {
             parcelas = 1;
+        }
         //valorEntrada = Float.toString(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(valorTotal), parcelas));
         valorEntrada = Float.toString(Moeda.divisaoValores(Moeda.substituiVirgulaFloat(valorAPagar), parcelas));
         return parcelas;
@@ -968,11 +977,11 @@ public class VendasCaravanaJSFBean1 {
     }
 
     public String getDataEntrada() {
-        if (dataEntrada.length() == 10){
+        if (dataEntrada.length() == 10) {
             DataHoje dt = new DataHoje();
             String hoje = dt.incrementarDias(30, DataHoje.data());
             if ((DataHoje.converteDataParaInteger(dataEntrada) < DataHoje.converteDataParaInteger(DataHoje.data()))
-                    || DataHoje.converteDataParaInteger(dataEntrada) > DataHoje.converteDataParaInteger(hoje)){
+                    || DataHoje.converteDataParaInteger(dataEntrada) > DataHoje.converteDataParaInteger(hoje)) {
                 dataEntrada = DataHoje.data();
             }
         }
@@ -985,12 +994,12 @@ public class VendasCaravanaJSFBean1 {
 
     public String getValorEntrada() {
         //if ( (Float.parseFloat(Moeda.substituiVirgula(valorEntrada))) > (Float.parseFloat(Moeda.substituiVirgula(valorTotal)) )){
-        if ( (Float.parseFloat(Moeda.substituiVirgula(valorEntrada))) > (Float.parseFloat(Moeda.substituiVirgula(valorAPagar)) )){
+        if ((Float.parseFloat(Moeda.substituiVirgula(valorEntrada))) > (Float.parseFloat(Moeda.substituiVirgula(valorAPagar)))) {
             //valorEntrada = valorTotal;
             valorEntrada = valorAPagar;
             parcelas = 1;
         } else {
-            if (parcelas == 1){
+            if (parcelas == 1) {
                 //valorEntrada = valorTotal;
                 valorEntrada = valorAPagar;
             }
@@ -1018,9 +1027,8 @@ public class VendasCaravanaJSFBean1 {
 //        valorPago = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(valorAPagar)));
 //        return Moeda.converteR$(valorPago);
 //    }
-
     public String getValorPago() {
-        if (!listaPagos.isEmpty()){
+        if (!listaPagos.isEmpty()) {
 //            float calc = 0;
 //            for (int i = 0; i < listaPagos.size(); i++){
 //                calc = Moeda.somaValores(calc, listaPagos.get(i).getValor());
@@ -1041,19 +1049,20 @@ public class VendasCaravanaJSFBean1 {
 
     public boolean isRenderMovimento() {
         float soma = 0;
-        if (!listaMovimento.isEmpty()){
-            for (int i = 0; i < listaMovimento.size(); i++){
-                if (listaMovimento.get(i).getLote() == null){
+        if (!listaMovimento.isEmpty()) {
+            for (int i = 0; i < listaMovimento.size(); i++) {
+                if (listaMovimento.get(i).getLote() == null) {
                     soma = Moeda.somaValores(soma, listaMovimento.get(i).getValor());
                 }
             }
-            if (soma == Moeda.substituiVirgulaFloat(valorAPagar)){
+            if (soma == Moeda.substituiVirgulaFloat(valorAPagar)) {
                 renderMovimento = false;
-            }else{
+            } else {
                 renderMovimento = true;
             }
-        }else
+        } else {
             renderMovimento = true;
+        }
         return renderMovimento;
     }
 
