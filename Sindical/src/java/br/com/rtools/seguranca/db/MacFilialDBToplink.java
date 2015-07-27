@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MacFilialDBToplink extends DB implements MacFilialDB {
+public class MacFilialDBToplink extends DB {
 
-    @Override
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("SELECT MF FROM MacFilial MF ORDER BY MF.filial.filial.pessoa.nome ASC, MF.departamento.descricao ASC, MF.mesa ASC ");
@@ -22,12 +21,12 @@ public class MacFilialDBToplink extends DB implements MacFilialDB {
         return new ArrayList();
     }
 
-    @Override
     public MacFilial pesquisaMac(String mac) {
         try {
-            Query qry = getEntityManager().createQuery("select mf from MacFilial mf where mf.mac like '" + mac + "'");
-            if (!qry.getResultList().isEmpty()) {
-                return (MacFilial) qry.getSingleResult();
+            Query query = getEntityManager().createQuery("SELECT MF FROM MacFilial AS MF WHERE MF.mac = :mac");
+            query.setParameter("mac", mac);
+            if (!query.getResultList().isEmpty()) {
+                return (MacFilial) query.getSingleResult();
             }
         } catch (Exception e) {
             return null;
