@@ -1,4 +1,4 @@
-package br.com.rtools.sistema.db;
+package br.com.rtools.sistema.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.sistema.SisPessoa;
@@ -7,9 +7,8 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-public class SisPessoaDBToplink extends DB implements SisPessoaDB {
+public class SisPessoaDao extends DB {
 
-    @Override
     public List pesquisarSisPessoa(String desc, String por, String como) {
         if (por.equals("cnpj") || por.equals("cpf")) {
             por = "documento";
@@ -39,12 +38,10 @@ public class SisPessoaDBToplink extends DB implements SisPessoaDB {
         return lista;
     }
 
-    @Override
     public SisPessoa sisPessoaExiste(SisPessoa sp) {
         return sisPessoaExiste(sp, false);
     }
 
-    @Override
     public SisPessoa sisPessoaExiste(SisPessoa sp, boolean porDocumento) {
         Query qry;
         List list;
