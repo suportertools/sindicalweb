@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class FilialDBToplink extends DB implements FilialDB {
+public class FilialDao extends DB implements FilialDB {
 
     @Override
     public Registro pesquisaRegistroPorFilial(int id) {
