@@ -20,8 +20,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.SisPessoa;
-import br.com.rtools.sistema.db.SisPessoaDB;
-import br.com.rtools.sistema.db.SisPessoaDBToplink;
+import br.com.rtools.sistema.dao.SisPessoaDao;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -412,7 +411,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         } else {
             return null;
         }
-        SisPessoaDB spdb = new SisPessoaDBToplink();
+        SisPessoaDao spdb = new SisPessoaDao();
         SisPessoa sp = new SisPessoa();
         sp = rais.getSisPessoa();
         if (sp.getId() == -1) {
@@ -532,7 +531,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
             sp.setDocumento(f.getPessoa().getDocumento());
             sp.setNome(f.getPessoa().getNome());
             sp.setNascimento(f.getNascimento());
-            SisPessoaDB spdb = new SisPessoaDBToplink();
+            SisPessoaDao spdb = new SisPessoaDao();
             if (sp.getId() == -1) {
                 sp = spdb.sisPessoaExiste(sp, true);
                 if (sp == null || sp.getId() == -1) {
