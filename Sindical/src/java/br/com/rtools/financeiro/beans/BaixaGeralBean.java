@@ -39,8 +39,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
@@ -221,14 +220,14 @@ public class BaixaGeralBean implements Serializable {
             } else if (url.equals("geracaoDebitosCartao")) {
                 GenericaSessao.put("lista_movimentos_baixados", listaMovimentos);
                 return "geracaoDebitosCartao";
-            }  else if (url.equals("matriculaEscola")) {
+            } else if (url.equals("matriculaEscola")) {
                 return "matriculaEscola";
             } else if (url.equals("vendasBaile")) {
                 ((VendaBaileBean) GenericaSessao.getObject("vendaBaileBean")).novo();
                 return "vendasBaile";
-            }  else if (url.equals("conviteMovimento")) {
+            } else if (url.equals("conviteMovimento")) {
                 return "conviteMovimento";
-            }  else {
+            } else {
                 return null;
             }
         } else {
@@ -428,8 +427,7 @@ public class BaixaGeralBean implements Serializable {
         if (rotina == null) {
             HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String urlDestino = paginaRequerida.getRequestURI();
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            rotina = db.pesquisaRotinaPermissao(urlDestino);
+            rotina = new RotinaDao().pesquisaRotinaPermissao(urlDestino);
         }
         return rotina;
     }
@@ -573,7 +571,6 @@ public class BaixaGeralBean implements Serializable {
 //        return retorno();
 //    }
 //    
-
     public void imprimirRecibo() {
         if (!listaMovimentos.isEmpty()) {
             ImprimirRecibo ir = new ImprimirRecibo();
