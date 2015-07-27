@@ -4,7 +4,6 @@ import br.com.rtools.financeiro.db.ContaBancoDB;
 import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.*;
-import br.com.rtools.seguranca.db.PermissaoDB;
 import br.com.rtools.seguranca.dao.PermissaoDao;
 import br.com.rtools.seguranca.dao.PermissaoUsuarioDao;
 import br.com.rtools.seguranca.dao.RotinaDao;
