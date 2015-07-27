@@ -11,13 +11,25 @@ import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.PhotoCam;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.persistence.*;
+import javax.servlet.ServletContext;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 @Entity
 @Table(name = "pes_pessoa")
@@ -238,7 +250,7 @@ public class Pessoa implements Serializable {
     }
 
     public String getAtualizacao() {
-        if(dtAtualizacao != null) {
+        if (dtAtualizacao != null) {
             return DataHoje.livre(dtAtualizacao, "dd/MM/yyyy") + " às " + DataHoje.livre(dtAtualizacao, "HH:mm") + " hr(s)";
         }
         return null;
@@ -350,6 +362,39 @@ public class Pessoa implements Serializable {
     @Override
     public String toString() {
         return "Pessoa{" + "id=" + id + ", nome=" + nome + ", tipoDocumento=" + tipoDocumento + ", obs=" + obs + ", site=" + site + ", telefone1=" + telefone1 + ", telefone2=" + telefone2 + ", telefone3=" + telefone3 + ", email1=" + email1 + ", email2=" + email2 + ", email3=" + email3 + ", documento=" + documento + ", login=" + login + ", senha=" + senha + ", dtCriacao=" + dtCriacao + ", dtAtualizacao=" + dtAtualizacao + '}';
+    }
+
+    public String getFoto() {
+        return getFoto(0);
+    }
+
+    /**
+     * Retorna foto da pessoa
+     *
+     * @param waiting
+     * @return
+     */
+    public String getFoto(Integer waiting) {
+        if (waiting > 0) {
+            try {
+                Thread.sleep(waiting);
+            } catch (InterruptedException ex) {
+            }
+        }
+        String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".png";
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+        if (!f.exists()) {
+            foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".jpg";
+            f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
+            if (!f.exists()) {
+                if (getFisica().getSexo().equals("F")) {
+                    foto = "/Imagens/user_female.png";
+                } else {
+                    foto = "/Imagens/user_male.png";
+                }
+            }
+        }
+        return foto;
     }
 
 }
