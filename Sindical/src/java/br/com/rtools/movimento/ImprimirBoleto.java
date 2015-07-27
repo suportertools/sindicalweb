@@ -37,7 +37,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
@@ -366,7 +366,7 @@ public class ImprimirBoleto {
 //                            lista.get(i).getContaCobranca().getCodigoSindical().substring(3, 6) + "."
 //                            + lista.get(i).getContaCobranca().getCodigoSindical().substring(6, lista.get(i).getContaCobranca().getCodigoSindical().length()) + "-"
 //                            + cobranca.moduloOnze(lista.get(i).getContaCobranca().getCodigoSindical());
-                    FilialDB filialDB = new FilialDBToplink();
+                    FilialDB filialDB = new FilialDao();
                     String entidade = filialDB.pesquisaRegistroPorFilial(1).getTipoEntidade();
                     String sicas = boletox.getContaCobranca().getSicasSindical();
                     if (entidade.equals("S")) {
