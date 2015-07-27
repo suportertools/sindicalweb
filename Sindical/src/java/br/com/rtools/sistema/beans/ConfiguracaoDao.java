@@ -1,4 +1,4 @@
-package br.com.rtools.sistema.db;
+package br.com.rtools.sistema.beans;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.sistema.Configuracao;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
-    @Override
+public class ConfiguracaoDao extends DB {
+
     public boolean existeIdentificador(Configuracao configuracao) {
         try {
             Query query = getEntityManager().createQuery(" SELECT C FROM Configuracao AS C WHERE C.identifica = :identificador ");
@@ -22,7 +22,6 @@ public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
         return false;
     }
 
-    @Override
     public boolean existeIdentificadorPessoa(Configuracao configuracao) {
         try {
             Query query = getEntityManager().createQuery(" SELECT C FROM Configuracao AS C WHERE C.identifica = :identificador AND C.juridica.id = :idJuridica ");
@@ -37,7 +36,6 @@ public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
         return false;
     }
 
-    @Override
     public List listaConfiguracao(String descricaoPesquisa) {
         try {
             Query query = getEntityManager().createQuery(" SELECT C FROM Configuracao AS C WHERE C.juridica.fantasia LIKE '%" + descricaoPesquisa + "%' OR C.identifica LIKE '%" + descricaoPesquisa + "%' OR C.juridica.pessoa.nome LIKE '%" + descricaoPesquisa + "%' ");
@@ -49,14 +47,13 @@ public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
         }
         return new ArrayList();
     }
-    
-    @Override
-    public Resolucao pesquisaResolucaoUsuario(int id_usuario){
+
+    public Resolucao pesquisaResolucaoUsuario(int id_usuario) {
         try {
             Query query = getEntityManager().createQuery(" SELECT r FROM Resolucao r WHERE r.usuario.id  = :pid");
             query.setParameter("pid", id_usuario);
             Resolucao result = (Resolucao) query.getSingleResult();
-            
+
             return result;
         } catch (Exception e) {
             return new Resolucao();
