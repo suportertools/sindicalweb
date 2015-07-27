@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -40,14 +41,17 @@ public class TurmaBean implements Serializable {
     private MacFilial macFilial;
     private Filial filial;
     private String msgStatusFilial;
-    private List<SelectItem> listServicos;
     private List<Professor> listProfessores;
     private List<ComponenteCurricular> listComponenteCurricular;
+    private List<SelectItem> listServicos;
+    private List<SelectItem> listFiliais;
     private Date date;
     private Date horaInicio;
     private Date horaTermino;
     private Professor professor;
     private ComponenteCurricular componenteCurricular;
+    private Boolean liberaAcessaFilial;
+    private Integer filial_id;
 
     @PostConstruct
     public void init() {
@@ -57,7 +61,8 @@ public class TurmaBean implements Serializable {
         professor = new Professor();
         componenteCurricular = new ComponenteCurricular();
         listTurmaProfessor = new ArrayList<>();
-        listTurma = new ArrayList();
+        listTurma = new ArrayList<>();
+        listFiliais = new ArrayList<>();
         macFilial = new MacFilial();
         filial = new Filial();
         msgStatusFilial = "";
@@ -69,6 +74,8 @@ public class TurmaBean implements Serializable {
         turma.setDtTermino(DataHoje.dataHoje());
         horaInicio = new Date();
         horaTermino = new Date();
+        liberaAcessaFilial = false;
+        filial_id = 0;
 
     }
 
@@ -139,6 +146,7 @@ public class TurmaBean implements Serializable {
         }
         Dao dao = new Dao();
         turma.setCursos((Servicos) dao.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
+        turma.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(listFiliais.get(filial_id).getDescription())));
         NovoLog novoLog = new NovoLog();
         TurmaDao td = new TurmaDao();
         if (turma.getId() == -1) {
@@ -153,6 +161,8 @@ public class TurmaBean implements Serializable {
                 return;
             }
             dao.commit();
+            novoLog.setTabela("esc_turma");
+            novoLog.setCodigo(turma.getId());
             novoLog.save(
                     "ID: " + turma.getId()
                     + " - Curso: (" + turma.getCursos().getId() + ") " + turma.getCursos().getDescricao()
@@ -182,6 +192,8 @@ public class TurmaBean implements Serializable {
                 message = "Erro ao atualizar turma!";
                 return;
             }
+            novoLog.setTabela("esc_turma");
+            novoLog.setCodigo(turma.getId());
             novoLog.update(beforeUpdate,
                     "ID: " + turma.getId()
                     + " - Curso: (" + turma.getCursos().getId() + ") " + turma.getCursos().getDescricao()
@@ -239,6 +251,8 @@ public class TurmaBean implements Serializable {
                 return;
             }
             NovoLog novoLog = new NovoLog();
+            novoLog.setTabela("esc_turma");
+            novoLog.setCodigo(turma.getId());
             novoLog.delete(
                     "ID: " + turma.getId()
                     + " - Curso: (" + turma.getCursos().getId() + ") " + turma.getCursos().getDescricao()
@@ -261,12 +275,14 @@ public class TurmaBean implements Serializable {
     public void removeTurmaProfessor(TurmaProfessor tp) {
         Dao dao = new Dao();
         if (tp.getId() != -1) {
-            NovoLog novoLog = new NovoLog();
             dao.openTransaction();
             if (!dao.delete(tp)) {
                 dao.rollback();
                 GenericaMensagem.warn("Erro", "Ao remover este registro!");
             } else {
+                NovoLog novoLog = new NovoLog();
+                novoLog.setTabela("esc_professor");
+                novoLog.setCodigo(tp.getId());
                 dao.commit();
                 novoLog.delete("Turma Professor - ID: " + tp.getId() + " - Turma: (" + tp.getId() + ") - Professor: (" + tp.getProfessor().getId() + ") " + tp.getProfessor().getProfessor().getNome());
                 GenericaMensagem.info("Sucesso", "Professor e Componente Curricular removidos com sucesso");
@@ -296,11 +312,13 @@ public class TurmaBean implements Serializable {
             return;
         }
         dao.openTransaction();
-        NovoLog novoLog = new NovoLog();
         if (dao.save(turmaProfessor)) {
-            novoLog.save("Turma Professor - ID: " + turmaProfessor.getId() + " - Turma: (" + turmaProfessor.getId() + ") - Professor: (" + turmaProfessor.getProfessor().getId() + ") " + turmaProfessor.getProfessor().getProfessor().getNome());
             GenericaMensagem.info("Sucesso", "Professor e Componente curricular adaocionados");
             dao.commit();
+            NovoLog novoLog = new NovoLog();
+            novoLog.save("Turma Professor - ID: " + turmaProfessor.getId() + " - Turma: (" + turmaProfessor.getId() + ") - Professor: (" + turmaProfessor.getProfessor().getId() + ") " + turmaProfessor.getProfessor().getProfessor().getNome());
+            novoLog.setTabela("esc_professor");
+            novoLog.setCodigo(turmaProfessor.getId());
             listTurmaProfessor.clear();
             professor = new Professor();
             componenteCurricular = new ComponenteCurricular();
@@ -361,7 +379,6 @@ public class TurmaBean implements Serializable {
         }
         if (turma.getFilial().getId() == -1) {
             getMacFilial();
-            turma.setFilial(macFilial.getFilial());
         }
         return turma;
     }
@@ -402,8 +419,7 @@ public class TurmaBean implements Serializable {
 
     public List<Turma> getListTurma() {
         if (listTurma.isEmpty()) {
-            Dao dao = new Dao();
-            listTurma = dao.list("Turma", true);
+            listTurma = new Dao().list(new Turma(), true);
         }
         return listTurma;
     }
@@ -542,4 +558,55 @@ public class TurmaBean implements Serializable {
     public void setComponenteCurricular(ComponenteCurricular componenteCurricular) {
         this.componenteCurricular = componenteCurricular;
     }
+
+    public List<SelectItem> getListFiliais() {
+        if (listFiliais.isEmpty()) {
+            Filial f = MacFilial.getAcessoFilial().getFilial();
+            if (f.getId() != -1) {
+                if (liberaAcessaFilial) {
+                    List<Filial> list = new FilialDao().findByTabela("esc_turma");
+                    // ID DA FILIAL
+                    if (!list.isEmpty()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (i == 0) {
+                                filial_id = i;
+                            }
+                            if (f.getId() == list.get(i).getId()) {
+                                filial_id = i;
+                            }
+                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                        }
+                    } else {
+                        filial_id = 0;
+                        listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                    }
+                } else {
+                    filial_id = 0;
+                    listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                }
+            }
+        }
+        return listFiliais;
+    }
+
+    public void setListFiliais(List<SelectItem> listFiliais) {
+        this.listFiliais = listFiliais;
+    }
+
+    public Boolean getLiberaAcessaFilial() {
+        return liberaAcessaFilial;
+    }
+
+    public void setLiberaAcessaFilial(Boolean liberaAcessaFilial) {
+        this.liberaAcessaFilial = liberaAcessaFilial;
+    }
+
+    public Integer getFilial_id() {
+        return filial_id;
+    }
+
+    public void setFilial_id(Integer filial_id) {
+        this.filial_id = filial_id;
+    }
+
 }
