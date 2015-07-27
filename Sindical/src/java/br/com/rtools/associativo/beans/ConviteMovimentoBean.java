@@ -41,8 +41,7 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.sistema.SisPessoa;
-import br.com.rtools.sistema.db.SisPessoaDB;
-import br.com.rtools.sistema.db.SisPessoaDBToplink;
+import br.com.rtools.sistema.dao.SisPessoaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
@@ -463,7 +462,7 @@ public class ConviteMovimentoBean implements Serializable {
     public void convidadoExiste() {
         if (conviteMovimento.getSisPessoa().getId() == -1) {
             if (!conviteMovimento.getSisPessoa().getDocumento().equals("") || !conviteMovimento.getSisPessoa().getNome().equals("") || !conviteMovimento.getSisPessoa().getNascimento().equals("")) {
-                SisPessoaDB sisPessoaDB = new SisPessoaDBToplink();
+                SisPessoaDao sisPessoaDB = new SisPessoaDao();
                 SisPessoa sp = sisPessoaDB.sisPessoaExiste(conviteMovimento.getSisPessoa(), true);
                 if (sp == null) {
                     conviteMovimento.getSisPessoa().setNome(conviteMovimento.getSisPessoa().getNome().toUpperCase());
