@@ -23,7 +23,7 @@ import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -615,7 +615,7 @@ public class AcordoBean implements Serializable {
 
     public synchronized void adicionarParcela() {
         try {
-            FilialDB dbFil = new FilialDBToplink();
+            FilialDB dbFil = new FilialDao();
             TipoServicoDB dbTipoServico = new TipoServicoDBToplink();
             ContaCobrancaDB ctaCobraDB = new ContaCobrancaDBToplink();
             FTipoDocumentoDB dbft = new FTipoDocumentoDBToplink();

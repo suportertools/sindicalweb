@@ -1029,7 +1029,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorBean implement
 
     public List<SelectItem> getListaTipoServico() {
         List<SelectItem> tipoServico = new Vector<SelectItem>();
-        FilialDB filDB = new FilialDBToplink();
+        FilialDB filDB = new FilialDao();
         DataHoje data = new DataHoje();
         Registro registro = filDB.pesquisaRegistroPorFilial(1);
         Servicos servicos = (Servicos) new Dao().find(new Servicos(), Integer.valueOf(getListaServico().get(idServicos).getDescription()));
