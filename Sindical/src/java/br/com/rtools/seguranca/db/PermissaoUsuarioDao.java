@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class PermissaoUsuarioDBToplink extends DB {
+public class PermissaoUsuarioDao extends DB {
 
     public List pesquisaListaPermissaoPorUsuario(int idUsuario) {
         try {
