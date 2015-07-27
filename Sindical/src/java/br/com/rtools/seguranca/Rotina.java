@@ -1,6 +1,9 @@
 package br.com.rtools.seguranca;
 
+import br.com.rtools.seguranca.db.RotinaDao;
+import javax.faces.context.FacesContext;
 import javax.persistence.*;
+import javax.servlet.http.HttpServletRequest;
 
 @Entity
 @Table(name = "seg_rotina")
@@ -90,5 +93,18 @@ public class Rotina implements java.io.Serializable {
 
     public void setAcao(String acao) {
         this.acao = acao;
+    }
+
+    public Rotina get() {
+        try {
+            HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return new RotinaDao().pesquisaRotinaPorPagina(converteURL(paginaRequerida.getRequestURI()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String converteURL(String urlDest) {
+        return urlDest.substring(urlDest.lastIndexOf("/") + 1, urlDest.lastIndexOf("."));
     }
 }
