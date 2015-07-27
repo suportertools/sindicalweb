@@ -6,8 +6,6 @@ import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.Resolucao;
 import br.com.rtools.sistema.TipoResolucao;
-import br.com.rtools.sistema.db.ConfiguracaoDao;
-import br.com.rtools.sistema.db.ConfiguracaoDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
