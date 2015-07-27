@@ -10,519 +10,521 @@
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body>
-    <!-- INICIA DIV wrap e main -->
-    <div id="wrapx">
-        <div id="mainx">
-        <!-- INICIA DIV wrap e main -->  
-        <f:subview id="header">
-            <ui:include src="templates/templatePrime.xhtml"/>
-        </f:subview>
-        <f:view>
-            <ui:include src="templates/templateAcessoFilial.xhtml"/>
-            <ui:include src="templates/templateStatus.xhtml"/>
-            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
-                <h:form id="form_matricula_escola">
-                    <h:outputScript name="script_primefaces.js" library="js" />
-                    <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
-                    <h:outputScript name="tradutor_primefaces.js" library="js" /> 
-                    <p:growl id="growl" showDetail="true"/> 
-                    <p:outputLabel value="Matrícula Escola" styleClass="fonteHeader"/>
-                    <div class="clear"></div>
-                    <p:panel id="i_panel_matricula_escola">
-                        <p:messages id="message" autoUpdate="false" showDetail="true" closable="true" />
-                        
-                        <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
-                            <h:column>
-                                <h:panelGrid columns="2" width="800">
-                                    <p:outputLabel value="Filial: "  />
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <ui:include src="templates/templateAcessoFilial.xhtml"/>
+                    <ui:include src="templates/templateStatus.xhtml"/>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:form id="form_matricula_escola">
+                            <h:outputScript name="script_primefaces.js" library="js" />
+                            <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
+                            <h:outputScript name="tradutor_primefaces.js" library="js" /> 
+                            <p:growl id="growl" showDetail="true"/> 
+                            <p:outputLabel value="Matrícula Escola" styleClass="fonteHeader"/>
+                            <div class="clear"></div>
+                            <p:panel id="i_panel_matricula_escola">
+                                <p:messages id="message" autoUpdate="false" showDetail="true" closable="true" />
+
+                                <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
                                     <h:column>
-                                        <p:outputLabel  value="#{matriculaEscolaBean.matriculaEscola.filial.filial.pessoa.nome}" style="color: red;"/>
-                                        <p:outputLabel  value="#{matriculaEscolaBean.msgStatusFilial}" rendered="#{matriculaEscolaBean.matriculaEscola.filial.filial.pessoa.id  == -1}" style="color: red;"/>
-                                    </h:column>
-                                    <h:column>
-                                        <p:outputLabel value="Emissão: " for="idDataMatricula"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:panelGrid columns="8">
-                                            <p:inputMask id="idDataMatricula" value="#{matriculaEscolaBean.servicoPessoa.emissao}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" mask="99/99/9999">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:inputMask>
-                                            <p:outputLabel value=" Status: " />
-                                            <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" disabled="true">
-                                                <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
-                                            </p:selectOneMenu>
-                                            <p:outputLabel value=" Vencimento para Boleto Bancário: "/>
-                                            <p:selectOneMenu id="cbDataVencimento" value="#{matriculaEscolaBean.idDiaVencimento}" disabled="true">
-                                                <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
-                                            </p:selectOneMenu>
-                                            <h:column rendered="false">
-                                                <p:outputLabel value="Tipo Cobrança: "/>
-                                                <p:selectOneMenu id="cbTipoCobranca" value="#{matriculaEscolaBean.idFTipoDocumento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
-                                                    <p:ajax event="change" listener="#{matriculaEscolaBean.bloqueiaComboDiaVencimento}" update="cbDataVencimento" />
-                                                    <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
+                                        <h:panelGrid columns="2" width="800">
+                                            <p:outputLabel value="Filial: "  />
+                                            <h:column>
+                                                <p:selectOneMenu value="#{matriculaEscolaBean.filial_id}" disabled="#{!matriculaEscolaBean.liberaAcessaFilial}">
+                                                    <p:ajax event="change" update="@this" />
+                                                    <f:selectItems value="#{matriculaEscolaBean.listFiliais}" />
                                                 </p:selectOneMenu>
+                                            </h:column>
+                                            <h:column>
+                                                <p:outputLabel value="Emissão: " for="idDataMatricula"/>
+                                            </h:column>
+                                            <h:column>
+                                                <h:panelGrid columns="8">
+                                                    <p:inputMask id="idDataMatricula" value="#{matriculaEscolaBean.servicoPessoa.emissao}" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da Emissão" mask="99/99/9999">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:inputMask>
+                                                    <p:outputLabel value=" Status: " />
+                                                    <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" disabled="true">
+                                                        <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value=" Vencimento para Boleto Bancário: "/>
+                                                    <p:selectOneMenu id="cbDataVencimento" value="#{matriculaEscolaBean.idDiaVencimento}" disabled="true">
+                                                        <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
+                                                    </p:selectOneMenu>
+                                                    <h:column rendered="false">
+                                                        <p:outputLabel value="Tipo Cobrança: "/>
+                                                        <p:selectOneMenu id="cbTipoCobranca" value="#{matriculaEscolaBean.idFTipoDocumento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                                            <p:ajax event="change" listener="#{matriculaEscolaBean.bloqueiaComboDiaVencimento}" update="cbDataVencimento" />
+                                                            <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
+                                                        </p:selectOneMenu>
+                                                    </h:column>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:commandButton icon="ui-icon-search" value="Aluno" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" />
+                                            <h:column>
+                                                <h:panelGrid columns="8">
+                                                    <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id == -1}" for="idPesquisarAluno"/>
+                                                    <p:commandLink id="idAluno" value="#{matriculaEscolaBean.servicoPessoa.pessoa.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" update="i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(matriculaEscolaBean.servicoPessoa.pessoa.id)}" title="Ver detalhes"/>
+                                                    <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" styleClass="margin-left-max"/>
+                                                    <p:outputLabel  value=" - MATRÍCULA #{matriculaEscolaBean.socios.matriculaSocios.nrMatricula}"  rendered="#{matriculaEscolaBean.socios.id != -1}" style="font-weight: bold"/>
+                                                    <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
+                                                    <h:panelGrid columns="2" rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
+                                                        <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
+                                                        <p:selectBooleanCheckbox value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" disabled="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
+                                                            <p:ajax event="change" update="idEmpresaResponsavelA" />
+                                                        </p:selectBooleanCheckbox>
+                                                    </h:panelGrid>                                
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:outputLabel value="Responsável: "  style="margin-left: 8px" for="idPesquisarAluno" />
+                                            <h:column>
+                                                <h:panelGrid columns="3">
+                                                    <p:commandLink id="idResp" value="#{matriculaEscolaBean.servicoPessoa.cobranca.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.servicoPessoa.cobranca.id)}" title="Ver detalhes"/>
+                                                    <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" type="button" icon="ui-icon-search" rendered="false"/>
+                                                    <p:commandButton value="Pesquisar/Alterar Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}"/>
+                                                    <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column>
+                                                <h:panelGrid id="idEmpresaResponsavelA">
+                                                    <p:outputLabel  value="Empresa: " rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}"/>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column>
+                                                <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
+                                                <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
+                                                <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
+                                            </h:column>
+                                            <p:outputLabel value="Contrato: " />
+                                            <h:column>
+                                                <p:outputLabel value="N° #{matriculaEscolaBean.matriculaEscola.id}" style="font-weight: bold" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}"/>
+                                            </h:column>
+                                            <p:outputLabel value="Vendedor:" />
+                                            <h:column>
+                                                <h:panelGrid columns="4">
+                                                    <p:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}">
+                                                        <f:selectItems value="#{matriculaEscolaBean.listaVendedor}" />
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Mídia:" />
+                                                    <p:selectOneMenu id="cbMidia" value="#{matriculaEscolaBean.idMidia}" >
+                                                        <f:selectItems value="#{matriculaEscolaBean.listaMidia}" />
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
                                             </h:column>
                                         </h:panelGrid>
                                     </h:column>
-                                    <p:commandButton icon="ui-icon-search" value="Aluno" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" />
                                     <h:column>
-                                        <h:panelGrid columns="8">
-                                            <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id == -1}" for="idPesquisarAluno"/>
-                                            <p:commandLink id="idAluno" value="#{matriculaEscolaBean.servicoPessoa.pessoa.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" update="i_pessoa_fisica_card" onclick="PF('dlg_pessoa_fisica_card').show()" action="#{pessoaCardBean.cardFisica(matriculaEscolaBean.servicoPessoa.pessoa.id)}" title="Ver detalhes"/>
-                                            <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}" styleClass="margin-left-max"/>
-                                            <p:outputLabel  value=" - MATRÍCULA #{matriculaEscolaBean.socios.matriculaSocios.nrMatricula}"  rendered="#{matriculaEscolaBean.socios.id != -1}" style="font-weight: bold"/>
-                                            <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
-                                            <h:panelGrid columns="2" rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
-                                                <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
-                                                <p:selectBooleanCheckbox value="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" disabled="#{matriculaEscolaBean.servicoPessoa.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
-                                                    <p:ajax event="change" update="idEmpresaResponsavelA" />
-                                                </p:selectBooleanCheckbox>
+                                        <h:column rendered="#{matriculaEscolaBean.alunoFoto}">
+                                            <p:panel header="Foto Aluno">
+                                                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaEscolaBean.servicoPessoa.pessoa.id}.png" width="130" />
+                                            </p:panel>
+                                        </h:column>
+                                    </h:column>
+                                </h:panelGrid>
+                                <p:messages autoUpdate="true" closable="true" showDetail="true"/>
+                                <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}">
+                                    <p:ajax event="tabChange" listener="#{matriculaEscolaBean.tipoMatriculaPor}" update=":form_matricula_escola:panel_calculo"/> 
+                                    <p:tab title="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" > 
+                                        <p:commandButton value="Selecionar Turma" onclick="PF('dgl_painel_seleciona_turma').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search"/> 
+                                        <h:panelGrid id="idTurmaDeta">
+                                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
+                                                <p:outputLabel value="Curso:" />
+                                                <h:panelGrid columns="7">
+                                                    <p:outputLabel value="#{matriculaEscolaBean.turma.cursos.descricao}, #{matriculaEscolaBean.turma.descricao}" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
+                                                    <p:outputLabel value=" - Sala: " rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
+                                                    <p:outputLabel value="#{matriculaEscolaBean.turma.sala}" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
+                                                    <p:outputLabel value="- Faixa etária: " rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>                                        
+                                                    <p:outputLabel value="#{matriculaEscolaBean.turma.idadeInicial} até #{matriculaEscolaBean.turma.idadeFim} ano(s)" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
+                                                </h:panelGrid>
+                                                <p:outputLabel value="Data Inicío:"  />
+                                                <h:column>
+                                                    <h:panelGrid columns="3">
+                                                        <p:inputText value="#{matriculaEscolaBean.turma.dataInicio}"  disabled="true" size="8"/>
+                                                        <p:outputLabel value="Data Término:"/>
+                                                        <p:inputText value="#{matriculaEscolaBean.turma.dataTermino}" disabled="true" size="8"/>
+                                                    </h:panelGrid>
+                                                </h:column>
+                                                <p:outputLabel value="Horário:" />
+                                                <h:column>
+                                                    <h:panelGrid columns="4">
+                                                        <p:inputText value="#{matriculaEscolaBean.turma.horaInicio}"  disabled="true" size="4"/>
+                                                        <p:outputLabel value=" às " />
+                                                        <p:inputText value="#{matriculaEscolaBean.turma.horaTermino}" disabled="true" size="4"/>
+                                                        <p:outputLabel value=" horas " />
+                                                    </h:panelGrid>
+                                                </h:column>
+                                                <p:outputLabel value="Semana:" />
+                                                <h:column>
+                                                    <h:panelGrid columns="7">
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.domingo}" disabled="true" onLabel="Dom" offLabel="Dom" rendered="#{matriculaEscolaBean.turma.domingo}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.segunda}" disabled="true" onLabel="Seg" offLabel="Seg" rendered="#{matriculaEscolaBean.turma.segunda}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.terca}" disabled="true" onLabel="Ter" offLabel="Ter" rendered="#{matriculaEscolaBean.turma.terca}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quarta}" disabled="true" onLabel="Qua" offLabel="Qua" rendered="#{matriculaEscolaBean.turma.quarta}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quinta}" disabled="true" onLabel="Qui" offLabel="Qui" rendered="#{matriculaEscolaBean.turma.quinta}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sexta}" disabled="true" onLabel="Sex" offLabel="Sex" rendered="#{matriculaEscolaBean.turma.sexta}"/>
+                                                        <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sabado}" disabled="true" onLabel="Sab" offLabel="Sab" rendered="#{matriculaEscolaBean.turma.sabado}"/>
+                                                    </h:panelGrid>
+                                                </h:column>
                                             </h:panelGrid>                                
+                                        </h:panelGrid>                                
+                                        <br />
+                                        <h:panelGrid columns="2" id="idVagasD">
+                                            <p:outputLabel value="Vagas disponíveis:" />
+                                            <p:inputText value="#{matriculaEscolaBean.vagasDisponiveis}" disabled="true" size="5" style="text-align: center;"/>
                                         </h:panelGrid>
-                                    </h:column>
-                                    <p:outputLabel value="Responsável: "  style="margin-left: 8px" for="idPesquisarAluno" />
-                                    <h:column>
-                                        <h:panelGrid columns="3">
-                                            <p:commandLink id="idResp" value="#{matriculaEscolaBean.servicoPessoa.cobranca.nome}" update="i_pessoa_card" onclick="PF('dlg_pessoa_card').show()" action="#{pessoaCardBean.cardPessoa(matriculaEscolaBean.servicoPessoa.cobranca.id)}" title="Ver detalhes"/>
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" type="button" icon="ui-icon-search" rendered="false"/>
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" disabled="#{matriculaEscolaBean.aluno.pessoa.socios != null and matriculaEscolaBean.aluno.pessoa.socios.id != -1}" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}"/>
-                                            <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
-                                        </h:panelGrid>
-                                    </h:column>
-                                    <h:column>
-                                        <h:panelGrid id="idEmpresaResponsavelA">
-                                            <p:outputLabel  value="Empresa: " rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}"/>
-                                        </h:panelGrid>
-                                    </h:column>
-                                    <h:column>
-                                        <p:commandLink value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="NegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.servicoPessoa.cobranca.nome)}" update="i_pessoa_juridica_card" onclick="PF('dlg_pessoa_juridica_card').show()" action="#{pessoaCardBean.cardJuridica(matriculaEscolaBean.empresa.pessoa.id)}" title="Ver detalhes"/>
-                                        <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}"  rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
-                                        <p:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}"  rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
-                                    </h:column>
-                                    <p:outputLabel value="Contrato: " />
-                                    <h:column>
-                                        <p:outputLabel value="N° #{matriculaEscolaBean.matriculaEscola.id}" style="font-weight: bold" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}"/>
-                                    </h:column>
-                                    <p:outputLabel value="Vendedor:" />
-                                    <h:column>
-                                        <h:panelGrid columns="4">
-                                            <p:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}">
-                                                <f:selectItems value="#{matriculaEscolaBean.listaVendedor}" />
+                                    </p:tab>                                
+                                    <p:tab title="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Curso:" />
+                                            <p:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" disabled="#{matriculaEscolaBean.desabilitaCampo}">
+                                                <f:selectItems value="#{matriculaEscolaBean.listaIndividual}" />
+                                                <p:ajax event="change" listener="#{matriculaEscolaBean.updateGrid}" update=":form_matricula_escola:panel_calculo" />
                                             </p:selectOneMenu>
-                                            <p:outputLabel value="Mídia:" />
-                                            <p:selectOneMenu id="cbMidia" value="#{matriculaEscolaBean.idMidia}" >
-                                                <f:selectItems value="#{matriculaEscolaBean.listaMidia}" />
-                                            </p:selectOneMenu>
-                                        </h:panelGrid>
-                                    </h:column>
-                                </h:panelGrid>
-                            </h:column>
-                            <h:column>
-                                <h:column rendered="#{matriculaEscolaBean.alunoFoto}">
-                                    <p:panel header="Foto Aluno">
-                                        <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{matriculaEscolaBean.servicoPessoa.pessoa.id}.png" width="130" />
-                                    </p:panel>
-                                </h:column>
-                            </h:column>
-                        </h:panelGrid>
-                        <p:messages autoUpdate="true" closable="true" showDetail="true"/>
-                        <p:accordionPanel id="id_accordion_tipo" rendered="#{matriculaEscolaBean.servicoPessoa.pessoa.id != -1}">
-                            <p:ajax event="tabChange" listener="#{matriculaEscolaBean.tipoMatriculaPor}" update=":form_matricula_escola:panel_calculo"/> 
-                            <p:tab title="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" > 
-                                <p:commandButton value="Selecionar Turma" onclick="PF('dgl_painel_seleciona_turma').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search"/> 
-                                <h:panelGrid id="idTurmaDeta">
-                                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
-                                        <p:outputLabel value="Curso:" />
-                                        <h:panelGrid columns="7">
-                                            <p:outputLabel value="#{matriculaEscolaBean.turma.cursos.descricao}, #{matriculaEscolaBean.turma.descricao}" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
-                                            <p:outputLabel value=" - Sala: " rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
-                                            <p:outputLabel value="#{matriculaEscolaBean.turma.sala}" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
-                                            <p:outputLabel value="- Faixa etária: " rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>                                        
-                                            <p:outputLabel value="#{matriculaEscolaBean.turma.idadeInicial} até #{matriculaEscolaBean.turma.idadeFim} ano(s)" rendered="#{matriculaEscolaBean.turma.cursos.id != -1}"/>
-                                        </h:panelGrid>
-                                        <p:outputLabel value="Data Inicío:"  />
-                                        <h:column>
-                                            <h:panelGrid columns="3">
-                                                <p:inputText value="#{matriculaEscolaBean.turma.dataInicio}"  disabled="true" size="8"/>
-                                                <p:outputLabel value="Data Término:"/>
-                                                <p:inputText value="#{matriculaEscolaBean.turma.dataTermino}" disabled="true" size="8"/>
-                                            </h:panelGrid>
-                                        </h:column>
-                                        <p:outputLabel value="Horário:" />
-                                        <h:column>
-                                            <h:panelGrid columns="4">
-                                                <p:inputText value="#{matriculaEscolaBean.turma.horaInicio}"  disabled="true" size="4"/>
+                                            <p:outputLabel value="Data Inicío:"  for="idDataInicio"/>
+                                            <h:column>
+                                                <h:panelGrid columns="3">
+                                                    <p:inputMask id="idDataInicio" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataInicioString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
+                                                        <p:ajax event="change" listener="#{matriculaEscolaBean.updateData()}" update="@this :form_matricula_escola:" global="false"/>
+                                                    </p:inputMask>
+                                                    <p:outputLabel value="Data Término: "  for="idDataTermino"/>
+                                                    <p:inputMask id="idDataTermino" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataTerminoString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
+                                                        <p:ajax event="change" listener="#{matriculaEscolaBean.updateData()}" update="@this :form_matricula_escola:" global="false" />
+                                                    </p:inputMask>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:outputLabel value="Horário:" />
+                                            <h:column>
+                                                <p:inputMask mask="99:99" id="idHoraInicio"  value="#{matriculaEscolaBean.matriculaIndividual.inicio}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                    <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" global="false"/>
+                                                </p:inputMask>
                                                 <p:outputLabel value=" às " />
-                                                <p:inputText value="#{matriculaEscolaBean.turma.horaTermino}" disabled="true" size="4"/>
+                                                <p:inputMask mask="99:99" id="idHoraTermino"  value="#{matriculaEscolaBean.matriculaIndividual.termino}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                    <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" global="false"/>
+                                                </p:inputMask>
                                                 <p:outputLabel value=" horas " />
-                                            </h:panelGrid>
-                                        </h:column>
-                                        <p:outputLabel value="Semana:" />
-                                        <h:column>
-                                            <h:panelGrid columns="7">
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.domingo}" disabled="true" onLabel="Dom" offLabel="Dom" rendered="#{matriculaEscolaBean.turma.domingo}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.segunda}" disabled="true" onLabel="Seg" offLabel="Seg" rendered="#{matriculaEscolaBean.turma.segunda}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.terca}" disabled="true" onLabel="Ter" offLabel="Ter" rendered="#{matriculaEscolaBean.turma.terca}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quarta}" disabled="true" onLabel="Qua" offLabel="Qua" rendered="#{matriculaEscolaBean.turma.quarta}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quinta}" disabled="true" onLabel="Qui" offLabel="Qui" rendered="#{matriculaEscolaBean.turma.quinta}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sexta}" disabled="true" onLabel="Sex" offLabel="Sex" rendered="#{matriculaEscolaBean.turma.sexta}"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sabado}" disabled="true" onLabel="Sab" offLabel="Sab" rendered="#{matriculaEscolaBean.turma.sabado}"/>
-                                            </h:panelGrid>
-                                        </h:column>
-                                    </h:panelGrid>                                
-                                </h:panelGrid>                                
-                                <br />
-                                <h:panelGrid columns="2" id="idVagasD">
-                                    <p:outputLabel value="Vagas disponíveis:" />
-                                    <p:inputText value="#{matriculaEscolaBean.vagasDisponiveis}" disabled="true" size="5" style="text-align: center;"/>
+                                            </h:column>
+                                            <p:outputLabel value="Professor:" />
+                                            <p:selectOneMenu  id="cbProfessor" value="#{matriculaEscolaBean.idProfessor}" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                <f:selectItems value="#{matriculaEscolaBean.listaProfessor}" />
+                                            </p:selectOneMenu>
+                                            <p:outputLabel value="" />
+                                            <h:column>
+                                                <h:panelGrid columns="7">
+                                                    <p:selectBooleanButton onLabel="Dom" offLabel="Dom" value="#{matriculaEscolaBean.matriculaIndividual.domingo}" id="idDomingo" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Seg" offLabel="Seg" value="#{matriculaEscolaBean.matriculaIndividual.segunda}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSegunda">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Ter" offLabel="Ter" value="#{matriculaEscolaBean.matriculaIndividual.terca}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idTerca">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Qua" offLabel="Qua" value="#{matriculaEscolaBean.matriculaIndividual.quarta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idQuarta" >
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Qui" offLabel="Qui" value="#{matriculaEscolaBean.matriculaIndividual.quinta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}"  id="idQuinta">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Sex" offLabel="Sex" value="#{matriculaEscolaBean.matriculaIndividual.sexta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSexta">
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                    <p:selectBooleanButton onLabel="Sab" offLabel="Sab" value="#{matriculaEscolaBean.matriculaIndividual.sabado}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSabado" >
+                                                        <p:ajax event="change" update="@this" />
+                                                    </p:selectBooleanButton>
+                                                </h:panelGrid>
+                                            </h:column>
+                                        </h:panelGrid>              
+                                    </p:tab>
+                                </p:accordionPanel>
+                                <p:panel styleClass="margin-top-max" header="Financeiro" id="panel_calculo">
+                                    <p:panelGrid columnClasses="text-center" id="idTabela">
+                                        <f:facet name="header">
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Valor das Parcelas" style="font-weight: bold; text-align: center;"/>
+                                                </p:column>
+                                                <p:column rendered="false">
+                                                    <p:outputLabel value="Desconto (%)" style="font-weight: bold; text-align: center;"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:outputLabel value="Parcela até o Vencto" style="font-weight: bold; text-align: center;"/>                                    
+                                                </p:column>
+                                                <p:column>
+                                                    <p:outputLabel value="Início" style="font-weight: bold;"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:outputLabel value="Fim" style="font-weight: bold;"/>
+                                                </p:column>
+                                            </p:row>
+                                        </f:facet>
+                                        <p:row>
+                                            <p:column>
+                                                <p:inputText id="idValor" style="text-align: right; width: 100px" maxlength="10" value="#{matriculaEscolaBean.valorString}" styleClass="real" title="Valor">
+                                                    <p:ajax event="blur" listener="#{matriculaEscolaBean.calculoDesconto()}" update="@this panel_calculo" />
+                                                </p:inputText>
+                                            </p:column>
+                                            <p:column rendered="false">
+                                                <p:inputText id="idDesconto" style="text-align: right; width: 80px" maxlength="10" value="#{matriculaEscolaBean.servicoPessoa.nrDesconto}">
+                                                    <f:ajax event="blur" listener="#{matriculaEscolaBean.calculoValor()}" render="@this panel_calculo" />
+                                                </p:inputText>
+                                            </p:column>
+                                            <p:column style="text-align: center">
+                                                <p:inputText readonly="true" style="text-align: right; width: 100px" maxlength="10" value="#{matriculaEscolaBean.valorParcelaVencimentoString}">
+
+                                                </p:inputText>      
+                                            </p:column>
+
+                                            <p:column>
+                                                <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaVigoracao}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
+                                                    <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
+                                                </p:inputMask>
+                                            </p:column>
+
+                                            <p:column>
+                                                <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaValidade}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
+                                                    <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
+                                                </p:inputMask>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                    <br />
+                                    <h:panelGrid columns="6">
+                                        <p:column>
+                                            <p:outputLabel value="Número de meses do Curso: " style="font-size: 11pt!important"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <p:outputLabel value="#{matriculaEscolaBean.numeroParcelas}" style="font-weight: bold; font-size: 11pt!important;"/>
+                                        </p:column>
+
+                                        <p:column></p:column><p:column></p:column>
+
+                                        <p:column>
+                                            <p:outputLabel value="Valor total do Curso: " style="font-size: 11pt!important"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <p:outputLabel value="#{matriculaEscolaBean.valorTotal}" style="font-weight: bold; font-size: 11pt!important"/>
+                                        </p:column>
+                                    </h:panelGrid> 
+
+                                    <h:panelGrid columns="1" style="width: 100%">
+                                        <p:inputTextarea value="#{matriculaEscolaBean.matriculaEscola.obs}" placeholder="OBSERVAÇÃO DA MATRÍCULA" style="width: 100%"/>
+                                    </h:panelGrid>                            
+                                </p:panel>
+                                <h:panelGrid columns="15" id="idPainelMenus" styleClass="margin-top-max">
+                                    <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                        <p:commandButton  value="Gerar Parcelas" title="Gerar Parcelas" rendered="false" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                    </h:column>
+                                    <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                        <p:commandButton  value="Desfazer Movimento" title="Desfazer Movimento" rendered="false" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_desfazer_movimento').show();" />
+                                    </h:column>
+                                    <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
+                                    <p:commandButton  value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}" update="i_panel_matricula_escola"/>
+                                    <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_excluir').show();"/>
+                                    <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
+                                    <h:panelGrid columns="5" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                        <p:commandButton title="Gerar Contrato" value="Gerar Contrato"  action="#{matriculaEscolaBean.gerarContrato}" rendered="false" disabled="#{controleAcessoBean.botaoSalvar}" update="growl"/>
+                                        <h:commandLink title="Gerar Contrato" target="#{matriculaEscolaBean.target}" action="#{matriculaEscolaBean.gerarContrato}" disabled="#{controleAcessoBean.botaoSalvar}">
+                                            <p:button value="Gerar Contrato" />
+                                        </h:commandLink>
+                                        <p:commandButton value="Carnê" title="Carnê" action="#{matriculaEscolaBean.gerarCarne}" rendered="#{matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" update="growl"/>
+                                        <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
+                                            <p:printer target="i_panel_matricula_escola" />  
+                                        </p:commandButton>                                
+                                        <p:commandButton value="Autorizadas" id="id_click" update="i_panel_adicionar" action="#{matriculaEscolaBean.openDialog}" onclick="PF('dgl_adicionar').show();" title="Pessoas autorizadas a buscar o aluno" />
+                                    </h:panelGrid>
                                 </h:panelGrid>
-                            </p:tab>                                
-                            <p:tab title="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
-                                <h:panelGrid columns="2">
-                                    <p:outputLabel value="Curso:" />
-                                    <p:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" disabled="#{matriculaEscolaBean.desabilitaCampo}">
-                                        <f:selectItems value="#{matriculaEscolaBean.listaIndividual}" />
-                                        <p:ajax event="change" listener="#{matriculaEscolaBean.updateGrid}" update=":form_matricula_escola:panel_calculo" />
-                                    </p:selectOneMenu>
-                                    <p:outputLabel value="Data Inicío:"  for="idDataInicio"/>
-                                    <h:column>
+
+                                <p:dialog widgetVar="dlg_entrada" modal="true" width="330" header="Pagamento de Entrada">
+                                    <h:panelGrid columns="1" id="panel_entrada">
+
+                                        <h:panelGrid>
+                                            <p:column>
+                                                <h:outputLabel value="Data da Entrada"/><br />
+                                                <p:calendar id="mask" value="#{matriculaEscolaBean.dataEntrada}" pattern="dd/MM/yyyy" mask="true" locale="pt" size="10" mode="inline">
+                                                    <p:ajax event="dateSelect" update="panel_entrada" global="false"/>
+                                                </p:calendar>
+                                            </p:column>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="2">
+                                            <p:column>
+                                                <h:outputLabel value="Data da Entrada" /><br />
+                                                <p:inputText value="#{matriculaEscolaBean.converteData(matriculaEscolaBean.dataEntrada)}" style="text-align: right; width: 100px" readonly="TRUE"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputLabel value="Valor" /><br />
+                                                <p:inputText value="#{matriculaEscolaBean.valorTaxaString}" style="text-align: right; width: 100px">
+                                                    <p:ajax event="change" update="@this" global="false"/>
+                                                </p:inputText>
+                                            </p:column>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <p:messages autoUpdate="true" closable="true" showDetail="true"/>
+                                    <h:panelGrid columns="2" styleClass="margin-top-max">
+                                        <p:commandButton value="Salvar Entrada" icon="ui-icon-check" title="Salvar Entrada" action="#{matriculaEscolaBean.gerarEntrada()}" update="i_panel_matricula_escola, growl" />
+                                        <p:commandButton value="Não salvar Entrada" icon="ui-icon-close" title="Cancelar" onclick="PF('dlg_entrada').hide();" />
+                                    </h:panelGrid>
+
+                                </p:dialog>
+
+                                <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
+                                        <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
+                                    </h:panelGrid>
+                                </p:dialog>                        
+                                <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
+                                    <h:panelGrid columns="2" id="i_alterar_dia_vencto">
+                                        <h:outputLabel value="Selecione a nova data:" />
+                                        <p:selectOneMenu id="cbDataVencimentoX" value="#{matriculaEscolaBean.idDiaVencimento}">
+                                            <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <p:commandButton action="#{matriculaEscolaBean.updatePessoaComplemento}" update="growl, i_panel_matricula_escola" disabled="#{controleAcessoBean.botaoSalvar}" value="Alterar" oncomplete="PF('dgl_alterar_dia_vencto').hide()"/>
+                                </p:dialog>
+                                <p:dialog id="i_painel_seleciona_turma" widgetVar="dgl_painel_seleciona_turma" modal="true" resizable="true" width="650" height="400" header="Selecionar Turma">
+                                    <h:panelGrid columns="4">
+                                        <p:outputLabel value="Selecionar curso: "  for="cbCursoT"/>
+                                        <p:selectOneMenu id="cbCursoT" value="#{matriculaEscolaBean.idCursosDisponiveis}" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                            <f:selectItems value="#{matriculaEscolaBean.listaCursosDisponiveis}"/>
+                                            <p:ajax event="change" update="cbCursoT, i_tbl_lista_turma" listener="#{matriculaEscolaBean.listaTurma.clear()}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <p:panel id="i_tbl_lista_turma" styleClass="no-border">
+                                        <p:dataTable var="turma" value="#{matriculaEscolaBean.listaTurma}" styleClass="margin-top-max">
+                                            <p:column headerText="Descrição da Turma">
+                                                <p:commandLink value="#{turma.descricao}" action="#{matriculaEscolaBean.selecionaTurma(turma)}" update=":form_matricula_escola:panel_calculo :form_matricula_escola:id_accordion_tipo:idTurmaDeta :form_matricula_escola:id_accordion_tipo:idVagasD"  oncomplete="PF('dgl_painel_seleciona_turma').hide();" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Sala">
+                                                <p:commandLink value="#{turma.sala}" action="#{matriculaEscolaBean.selecionaTurma(turma)}" update=":form_matricula_escola:panel_calculo :form_matricula_escola:id_accordion_tipo:idTurmaDeta :form_matricula_escola:id_accordion_tipo:idVagasD"  oncomplete="PF('dgl_painel_seleciona_turma').hide();" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Data Inicio">
+                                                <p:outputLabel value="#{turma.dataInicio}" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Data Término">
+                                                <p:outputLabel value="#{turma.dataTermino}" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Horário">
+                                                <p:outputLabel value="#{turma.horaInicio} às #{turma.horaTermino} h(s)" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Vagas">
+                                                <p:outputLabel value="#{turma.quantidade}" />
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Faixa etária">
+                                                <p:outputLabel value="#{turma.idadeInicial} / #{turma.idadeFim}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:panel>
+                                </p:dialog>                        
+                                <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="400">
+                                    <center>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvar}" update="i_panel_matricula_escola" oncomplete="PF('dgl_panel_salvar').hide();"/>
+                                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
+                                        </h:panelGrid>
+                                    </center>
+                                </p:dialog>
+                                <p:dialog id="i_salvar_autorizada" widgetVar="dlg_salvar_autorizado" modal="true" header="Deseja salvar este registro?" width="400">
+                                    <center>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvarPessoaAutorizada}" update="i_panel_adicionar, messages_autorizado" oncomplete="PF('dlg_salvar_autorizado').hide();"/>
+                                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_salvar_autorizado').hide();"/>
+                                        </h:panelGrid>
+                                    </center>
+                                </p:dialog>
+                                <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="400">
+                                    <center>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Sim" title="Excluir" action="#{matriculaEscolaBean.excluir}" update="i_panel_matricula_escola" oncomplete="PF('dgl_panel_excluir').hide();"/>
+                                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
+                                        </h:panelGrid>
+                                    </center>
+                                </p:dialog>
+
+                                <p:dialog widgetVar="dgl_panel_desfazer_movimento" id="id_panel_desfazer_movimento" modal="true"  header="Deseja desfazer esse movimento?" width="400">
+                                    <center>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.desfazerMovimento}" update="i_panel_matricula_escola, growl" rendered="false" oncomplete="PF('dgl_panel_desfazer_movimento').hide();"  />
+                                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_desfazer_movimento').hide();"/>
+                                        </h:panelGrid>
+                                    </center>
+                                </p:dialog>
+
+                                <p:dialog id="i_adicionar" widgetVar="dgl_adicionar" modal="true" header="Cadastro Pessoas Autorizadas" width="1024" height="600" resizable="true"  maximizable="true" minimizable="true" onShow="true" visible="#{matriculaEscolaBean.visibility}">
+                                    <p:ajax event="close" update="form_matricula_escola" listener="#{matriculaEscolaBean.close}"/>  
+                                    <h:panelGrid id="i_panel_adicionar">
+                                        <p:messages id="messages_autorizado" showDetail="true" autoUpdate="true" />
+                                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                                            <p:commandButton value="Pessoa Física" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPAutorizada" actionListener="#{matriculaEscolaBean.pesquisaFisica('autorizada')}" />
+                                            <h:column>
+                                                <p:outputLabel value="PESQUISAR PESSOAS AUTORIZADA"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.escolaAutorizados.pessoa.id == -1}" for="idPesquisarPAutorizada"/>
+                                                <p:outputLabel  id="idPAutorizada" value="#{matriculaEscolaBean.escolaAutorizados.pessoa.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.escolaAutorizados.pessoa.id != -1}" />
+                                            </h:column>
+                                        </h:panelGrid>
+                                        <h:panelGrid id="i_tbl_pessoas_autorizadas" styleClass="margin-top-max">
+                                            <p:dataTable value="#{matriculaEscolaBean.listaEscolaAutorizadas}" scrollable="true" scrollHeight="350" var="escolaAutorizados" emptyMessage="Nenhum registro encontrado!" id="i_tbl_pessoas_autorizadas_x" style="width: 950px;">
+                                                <p:column width="25">
+                                                    <p:commandButton icon="ui-icon-contact" update=":form_matricula_escola:i_pessoa_fisica_card" action="#{pessoaCardBean.cardFisica(escolaAutorizados.pessoa.id)}" oncomplete="PF('dlg_pessoa_fisica_card').show()" title="Ver detalhes" />
+                                                </p:column>
+                                                <p:column width="100" >
+                                                    <p:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{escolaAutorizados.pessoa.id}.png" width="100" alt="Sem foto" />
+                                                </p:column>
+                                                <p:column headerText="Nome">
+                                                    #{escolaAutorizados.pessoa.nome}
+                                                </p:column>
+                                                <p:column headerText="Documento" width="150">
+                                                    #{escolaAutorizados.pessoa.documento}
+                                                </p:column>
+                                                <p:column width="25">
+                                                    <p:commandButton icon="ui-icon-trash" action="#{matriculaEscolaBean.excluirPessoaAutorizada(escolaAutorizados)}" update="i_tbl_pessoas_autorizadas_x" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </h:panelGrid>
                                         <h:panelGrid columns="3">
-                                            <p:inputMask id="idDataInicio" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataInicioString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
-                                                <p:ajax event="change" listener="#{matriculaEscolaBean.updateData()}" update="@this :form_matricula_escola:" global="false"/>
-                                            </p:inputMask>
-                                            <p:outputLabel value="Data Término: "  for="idDataTermino"/>
-                                            <p:inputMask id="idDataTermino" size="8" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataTerminoString}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" mask="99/99/9999">
-                                                <p:ajax event="change" listener="#{matriculaEscolaBean.updateData()}" update="@this :form_matricula_escola:" global="false" />
-                                            </p:inputMask>
+                                            <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar_autorizado').show()"  />
+                                            <p:commandButton  value="Nova" title="Novo" action="#{matriculaEscolaBean.novaPessoaAutorizada}" update="i_panel_adicionar"/>
+                                            <p:commandButton value="Sair" action="#{matriculaEscolaBean.close}" update="i_panel_adicionar"/>
                                         </h:panelGrid>
-                                    </h:column>
-                                    <p:outputLabel value="Horário:" />
-                                    <h:column>
-                                        <p:inputMask mask="99:99" id="idHoraInicio"  value="#{matriculaEscolaBean.matriculaIndividual.inicio}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
-                                            <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" global="false"/>
-                                        </p:inputMask>
-                                        <p:outputLabel value=" às " />
-                                        <p:inputMask mask="99:99" id="idHoraTermino"  value="#{matriculaEscolaBean.matriculaIndividual.termino}" size="4" maxlength="5" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
-                                            <p:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" update="@this" global="false"/>
-                                        </p:inputMask>
-                                        <p:outputLabel value=" horas " />
-                                    </h:column>
-                                    <p:outputLabel value="Professor:" />
-                                    <p:selectOneMenu  id="cbProfessor" value="#{matriculaEscolaBean.idProfessor}" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
-                                        <f:selectItems value="#{matriculaEscolaBean.listaProfessor}" />
-                                    </p:selectOneMenu>
-                                    <p:outputLabel value="" />
-                                    <h:column>
-                                        <h:panelGrid columns="7">
-                                            <p:selectBooleanButton onLabel="Dom" offLabel="Dom" value="#{matriculaEscolaBean.matriculaIndividual.domingo}" id="idDomingo" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Seg" offLabel="Seg" value="#{matriculaEscolaBean.matriculaIndividual.segunda}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSegunda">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Ter" offLabel="Ter" value="#{matriculaEscolaBean.matriculaIndividual.terca}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idTerca">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Qua" offLabel="Qua" value="#{matriculaEscolaBean.matriculaIndividual.quarta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idQuarta" >
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Qui" offLabel="Qui" value="#{matriculaEscolaBean.matriculaIndividual.quinta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}"  id="idQuinta">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Sex" offLabel="Sex" value="#{matriculaEscolaBean.matriculaIndividual.sexta}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSexta">
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                            <p:selectBooleanButton onLabel="Sab" offLabel="Sab" value="#{matriculaEscolaBean.matriculaIndividual.sabado}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSabado" >
-                                                <p:ajax event="change" update="@this" />
-                                            </p:selectBooleanButton>
-                                        </h:panelGrid>
-                                    </h:column>
-                                </h:panelGrid>              
-                            </p:tab>
-                        </p:accordionPanel>
-                        <p:panel styleClass="margin-top-max" header="Financeiro" id="panel_calculo">
-                            <p:panelGrid columnClasses="text-center" id="idTabela">
-                                <f:facet name="header">
-                                    <p:row>
-                                        <p:column>
-                                            <p:outputLabel value="Valor das Parcelas" style="font-weight: bold; text-align: center;"/>
-                                        </p:column>
-                                        <p:column rendered="false">
-                                            <p:outputLabel value="Desconto (%)" style="font-weight: bold; text-align: center;"/>
-                                        </p:column>
-                                        <p:column>
-                                            <p:outputLabel value="Parcela até o Vencto" style="font-weight: bold; text-align: center;"/>                                    
-                                        </p:column>
-                                        <p:column>
-                                            <p:outputLabel value="Início" style="font-weight: bold;"/>
-                                        </p:column>
-                                        <p:column>
-                                            <p:outputLabel value="Fim" style="font-weight: bold;"/>
-                                        </p:column>
-                                    </p:row>
-                                </f:facet>
-                                <p:row>
-                                    <p:column>
-                                        <p:inputText id="idValor" style="text-align: right; width: 100px" maxlength="10" value="#{matriculaEscolaBean.valorString}" styleClass="real" title="Valor">
-                                            <p:ajax event="blur" listener="#{matriculaEscolaBean.calculoDesconto()}" update="@this panel_calculo" />
-                                        </p:inputText>
-                                    </p:column>
-                                    <p:column rendered="false">
-                                        <p:inputText id="idDesconto" style="text-align: right; width: 80px" maxlength="10" value="#{matriculaEscolaBean.servicoPessoa.nrDesconto}">
-                                            <f:ajax event="blur" listener="#{matriculaEscolaBean.calculoValor()}" render="@this panel_calculo" />
-                                        </p:inputText>
-                                    </p:column>
-                                    <p:column style="text-align: center">
-                                        <p:inputText readonly="true" style="text-align: right; width: 100px" maxlength="10" value="#{matriculaEscolaBean.valorParcelaVencimentoString}">
-                                            
-                                        </p:inputText>      
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaVigoracao}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
-                                            <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
-                                        </p:inputMask>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <p:inputMask value="#{matriculaEscolaBean.servicoPessoa.referenciaValidade}" mask="99/9999" style="text-align: right; width: 80px; text-align: center">
-                                            <p:ajax event="blur" update="form_matricula_escola" listener="#{matriculaEscolaBean.validaDataVigoracaoValidade()}"/>
-                                        </p:inputMask>
-                                    </p:column>
-                                </p:row>
-                            </p:panelGrid>
-                            <br />
-                            <h:panelGrid columns="6">
-                                <p:column>
-                                    <p:outputLabel value="Número de meses do Curso: " style="font-size: 11pt!important"/>
-                                </p:column>
-                                
-                                <p:column>
-                                    <p:outputLabel value="#{matriculaEscolaBean.numeroParcelas}" style="font-weight: bold; font-size: 11pt!important;"/>
-                                </p:column>
-                                
-                                <p:column></p:column><p:column></p:column>
-                                
-                                <p:column>
-                                    <p:outputLabel value="Valor total do Curso: " style="font-size: 11pt!important"/>
-                                </p:column>
-                                
-                                <p:column>
-                                    <p:outputLabel value="#{matriculaEscolaBean.valorTotal}" style="font-weight: bold; font-size: 11pt!important"/>
-                                </p:column>
-                            </h:panelGrid> 
-                            
-                            <h:panelGrid columns="1" style="width: 100%">
-                                <p:inputTextarea value="#{matriculaEscolaBean.matriculaEscola.obs}" placeholder="OBSERVAÇÃO DA MATRÍCULA" style="width: 100%"/>
-                            </h:panelGrid>                            
-                        </p:panel>
-                        <h:panelGrid columns="15" id="idPainelMenus" styleClass="margin-top-max">
-                            <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
-                                <p:commandButton  value="Gerar Parcelas" title="Gerar Parcelas" rendered="false" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            </h:column>
-                            <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
-                                <p:commandButton  value="Desfazer Movimento" title="Desfazer Movimento" rendered="false" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_desfazer_movimento').show();" />
-                            </h:column>
-                            <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
-                            <p:commandButton  value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}" update="i_panel_matricula_escola"/>
-                            <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_excluir').show();"/>
-                            <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
-                            <h:panelGrid columns="5" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
-                                <p:commandButton title="Gerar Contrato" value="Gerar Contrato"  action="#{matriculaEscolaBean.gerarContrato}" rendered="false" disabled="#{controleAcessoBean.botaoSalvar}" update="growl"/>
-                                <h:commandLink title="Gerar Contrato" target="#{matriculaEscolaBean.target}" action="#{matriculaEscolaBean.gerarContrato}" disabled="#{controleAcessoBean.botaoSalvar}">
-                                    <p:button value="Gerar Contrato" />
-                                </h:commandLink>
-                                <p:commandButton value="Carnê" title="Carnê" action="#{matriculaEscolaBean.gerarCarne}" rendered="#{matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" update="growl"/>
-                                <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">
-                                    <p:printer target="i_panel_matricula_escola" />  
-                                </p:commandButton>                                
-                                <p:commandButton value="Autorizadas" id="id_click" update="i_panel_adicionar" action="#{matriculaEscolaBean.openDialog}" onclick="PF('dgl_adicionar').show();" title="Pessoas autorizadas a buscar o aluno" />
-                            </h:panelGrid>
-                        </h:panelGrid>
-                        
-                        <p:dialog widgetVar="dlg_entrada" modal="true" width="330" header="Pagamento de Entrada">
-                            <h:panelGrid columns="1" id="panel_entrada">
-                                
-                                <h:panelGrid>
-                                    <p:column>
-                                        <h:outputLabel value="Data da Entrada"/><br />
-                                        <p:calendar id="mask" value="#{matriculaEscolaBean.dataEntrada}" pattern="dd/MM/yyyy" mask="true" locale="pt" size="10" mode="inline">
-                                            <p:ajax event="dateSelect" update="panel_entrada" global="false"/>
-                                        </p:calendar>
-                                    </p:column>
-                                </h:panelGrid>
-                                
-                                <h:panelGrid columns="2">
-                                    <p:column>
-                                        <h:outputLabel value="Data da Entrada" /><br />
-                                        <p:inputText value="#{matriculaEscolaBean.converteData(matriculaEscolaBean.dataEntrada)}" style="text-align: right; width: 100px" readonly="TRUE"/>
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <h:outputLabel value="Valor" /><br />
-                                        <p:inputText value="#{matriculaEscolaBean.valorTaxaString}" style="text-align: right; width: 100px">
-                                            <p:ajax event="change" update="@this" global="false"/>
-                                        </p:inputText>
-                                    </p:column>
-                                </h:panelGrid>
-                            </h:panelGrid>
-                            <p:messages autoUpdate="true" closable="true" showDetail="true"/>
-                            <h:panelGrid columns="2" styleClass="margin-top-max">
-                                <p:commandButton value="Salvar Entrada" icon="ui-icon-check" title="Salvar Entrada" action="#{matriculaEscolaBean.gerarEntrada()}" update="i_panel_matricula_escola, growl" />
-                                <p:commandButton value="Não salvar Entrada" icon="ui-icon-close" title="Cancelar" onclick="PF('dlg_entrada').hide();" />
-                            </h:panelGrid>
-                            
-                        </p:dialog>
-                        
-                        <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
-                            <h:panelGrid columns="2">
-                                <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pagina('pesquisaPessoaJuridica')}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
-                            </h:panelGrid>
-                        </p:dialog>                        
-                        <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
-                            <h:panelGrid columns="2" id="i_alterar_dia_vencto">
-                                <h:outputLabel value="Selecione a nova data:" />
-                                <p:selectOneMenu id="cbDataVencimentoX" value="#{matriculaEscolaBean.idDiaVencimento}">
-                                    <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
-                                </p:selectOneMenu>
-                            </h:panelGrid>
-                            <p:commandButton action="#{matriculaEscolaBean.updatePessoaComplemento}" update="growl, i_panel_matricula_escola" disabled="#{controleAcessoBean.botaoSalvar}" value="Alterar" oncomplete="PF('dgl_alterar_dia_vencto').hide()"/>
-                        </p:dialog>
-                        <p:dialog id="i_painel_seleciona_turma" widgetVar="dgl_painel_seleciona_turma" modal="true" resizable="true" width="650" height="400" header="Selecionar Turma">
-                            <h:panelGrid columns="4">
-                                <p:outputLabel value="Selecionar curso: "  for="cbCursoT"/>
-                                <p:selectOneMenu id="cbCursoT" value="#{matriculaEscolaBean.idCursosDisponiveis}" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
-                                    <f:selectItems value="#{matriculaEscolaBean.listaCursosDisponiveis}"/>
-                                    <p:ajax event="change" update="cbCursoT, i_tbl_lista_turma" listener="#{matriculaEscolaBean.listaTurma.clear()}"/>
-                                </p:selectOneMenu>
-                            </h:panelGrid>
-                            <p:panel id="i_tbl_lista_turma" styleClass="no-border">
-                                <p:dataTable var="turma" value="#{matriculaEscolaBean.listaTurma}" styleClass="margin-top-max">
-                                    <p:column headerText="Descrição da Turma">
-                                        <p:commandLink value="#{turma.descricao}" action="#{matriculaEscolaBean.selecionaTurma(turma)}" update=":form_matricula_escola:panel_calculo :form_matricula_escola:id_accordion_tipo:idTurmaDeta :form_matricula_escola:id_accordion_tipo:idVagasD"  oncomplete="PF('dgl_painel_seleciona_turma').hide();" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Sala">
-                                        <p:commandLink value="#{turma.sala}" action="#{matriculaEscolaBean.selecionaTurma(turma)}" update=":form_matricula_escola:panel_calculo :form_matricula_escola:id_accordion_tipo:idTurmaDeta :form_matricula_escola:id_accordion_tipo:idVagasD"  oncomplete="PF('dgl_painel_seleciona_turma').hide();" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Data Inicio">
-                                        <p:outputLabel value="#{turma.dataInicio}" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Data Término">
-                                        <p:outputLabel value="#{turma.dataTermino}" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Horário">
-                                        <p:outputLabel value="#{turma.horaInicio} às #{turma.horaTermino} h(s)" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Vagas">
-                                        <p:outputLabel value="#{turma.quantidade}" />
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Faixa etária">
-                                        <p:outputLabel value="#{turma.idadeInicial} / #{turma.idadeFim}"/>
-                                    </p:column>
-                                </p:dataTable>
+                                    </h:panelGrid>
+                                </p:dialog>       
+                                <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                                    <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                    <p:panel id="i_pessoa_fisica_card">
+                                        <ui:include src="templates/templatePessoaFisicaCard.xhtml">
+                                            <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.pessoa.id}" />
+                                        </ui:include>      
+                                    </p:panel>
+                                </p:dialog>       
+                                <p:dialog widgetVar="dlg_pessoa_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                                    <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                    <p:panel id="i_pessoa_card">
+                                        <ui:include src="templates/templatePessoaCard.xhtml">
+                                            <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.cobranca.id}" />
+                                        </ui:include>      
+                                    </p:panel>
+                                </p:dialog>       
+                                <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
+                                    <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                    <p:panel id="i_pessoa_juridica_card">
+                                        <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
+                                            <ui:param name="idPessoa" value="#{matriculaEscolaBean.empresa.pessoa.id}" />
+                                        </ui:include>      
+                                    </p:panel>
+                                </p:dialog>       
                             </p:panel>
-                        </p:dialog>                        
-                        <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="400">
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvar}" update="i_panel_matricula_escola" oncomplete="PF('dgl_panel_salvar').hide();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
-                                </h:panelGrid>
-                            </center>
-                        </p:dialog>
-                        <p:dialog id="i_salvar_autorizada" widgetVar="dlg_salvar_autorizado" modal="true" header="Deseja salvar este registro?" width="400">
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvarPessoaAutorizada}" update="i_panel_adicionar, messages_autorizado" oncomplete="PF('dlg_salvar_autorizado').hide();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_salvar_autorizado').hide();"/>
-                                </h:panelGrid>
-                            </center>
-                        </p:dialog>
-                        <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="400">
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" title="Excluir" action="#{matriculaEscolaBean.excluir}" update="i_panel_matricula_escola" oncomplete="PF('dgl_panel_excluir').hide();"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
-                                </h:panelGrid>
-                            </center>
-                        </p:dialog>
-
-                        <p:dialog widgetVar="dgl_panel_desfazer_movimento" id="id_panel_desfazer_movimento" modal="true"  header="Deseja desfazer esse movimento?" width="400">
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.desfazerMovimento}" update="i_panel_matricula_escola, growl" rendered="false" oncomplete="PF('dgl_panel_desfazer_movimento').hide();"  />
-                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_desfazer_movimento').hide();"/>
-                                </h:panelGrid>
-                            </center>
-                        </p:dialog>
-
-                        <p:dialog id="i_adicionar" widgetVar="dgl_adicionar" modal="true" header="Cadastro Pessoas Autorizadas" width="1024" height="600" resizable="true"  maximizable="true" minimizable="true" onShow="true" visible="#{matriculaEscolaBean.visibility}">
-                            <p:ajax event="close" update="form_matricula_escola" listener="#{matriculaEscolaBean.close}"/>  
-                            <h:panelGrid id="i_panel_adicionar">
-                                <p:messages id="messages_autorizado" showDetail="true" autoUpdate="true" />
-                                <h:panelGrid columns="2" styleClass="margin-top-max">
-                                    <p:commandButton value="Pessoa Física" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPAutorizada" actionListener="#{matriculaEscolaBean.pesquisaFisica('autorizada')}" />
-                                    <h:column>
-                                        <p:outputLabel value="PESQUISAR PESSOAS AUTORIZADA"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.escolaAutorizados.pessoa.id == -1}" for="idPesquisarPAutorizada"/>
-                                        <p:outputLabel  id="idPAutorizada" value="#{matriculaEscolaBean.escolaAutorizados.pessoa.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.escolaAutorizados.pessoa.id != -1}" />
-                                    </h:column>
-                                </h:panelGrid>
-                                <h:panelGrid id="i_tbl_pessoas_autorizadas" styleClass="margin-top-max">
-                                    <p:dataTable value="#{matriculaEscolaBean.listaEscolaAutorizadas}" scrollable="true" scrollHeight="350" var="escolaAutorizados" emptyMessage="Nenhum registro encontrado!" id="i_tbl_pessoas_autorizadas_x" style="width: 950px;">
-                                        <p:column width="25">
-                                            <p:commandButton icon="ui-icon-contact" update=":form_matricula_escola:i_pessoa_fisica_card" action="#{pessoaCardBean.cardFisica(escolaAutorizados.pessoa.id)}" oncomplete="PF('dlg_pessoa_fisica_card').show()" title="Ver detalhes" />
-                                        </p:column>
-                                        <p:column width="100" >
-                                            <p:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Fotos/#{escolaAutorizados.pessoa.id}.png" width="100" alt="Sem foto" />
-                                        </p:column>
-                                        <p:column headerText="Nome">
-                                            #{escolaAutorizados.pessoa.nome}
-                                        </p:column>
-                                        <p:column headerText="Documento" width="150">
-                                            #{escolaAutorizados.pessoa.documento}
-                                        </p:column>
-                                        <p:column width="25">
-                                            <p:commandButton icon="ui-icon-trash" action="#{matriculaEscolaBean.excluirPessoaAutorizada(escolaAutorizados)}" update="i_tbl_pessoas_autorizadas_x" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                        </p:column>
-                                    </p:dataTable>
-                                </h:panelGrid>
-                                <h:panelGrid columns="3">
-                                    <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_salvar_autorizado').show()"  />
-                                    <p:commandButton  value="Nova" title="Novo" action="#{matriculaEscolaBean.novaPessoaAutorizada}" update="i_panel_adicionar"/>
-                                    <p:commandButton value="Sair" action="#{matriculaEscolaBean.close}" update="i_panel_adicionar"/>
-                                </h:panelGrid>
-                            </h:panelGrid>
-                        </p:dialog>       
-                        <p:dialog widgetVar="dlg_pessoa_fisica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
-                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
-                            <p:panel id="i_pessoa_fisica_card">
-                                <ui:include src="templates/templatePessoaFisicaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.pessoa.id}" />
-                                </ui:include>      
-                            </p:panel>
-                        </p:dialog>       
-                        <p:dialog widgetVar="dlg_pessoa_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
-                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
-                            <p:panel id="i_pessoa_card">
-                                <ui:include src="templates/templatePessoaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.servicoPessoa.cobranca.id}" />
-                                </ui:include>      
-                            </p:panel>
-                        </p:dialog>       
-                        <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="400" header="Detalhes">
-                            <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
-                            <p:panel id="i_pessoa_juridica_card">
-                                <ui:include src="templates/templatePessoaJuridicaCard.xhtml">
-                                    <ui:param name="idPessoa" value="#{matriculaEscolaBean.empresa.pessoa.id}" />
-                                </ui:include>      
-                            </p:panel>
-                        </p:dialog>       
+                        </h:form>
                     </p:panel>
-                </h:form>
-            </p:panel>
-        </f:view>
-        <!-- FINALIZA div wrap main -->
+                </f:view>
+                <!-- FINALIZA div wrap main -->
             </div>
         </div>
         <!-- FINALIZA div wrap main -->
