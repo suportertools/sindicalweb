@@ -19,8 +19,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.PermissaoUsuario;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
+import br.com.rtools.seguranca.db.PermissaoUsuarioDao;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
@@ -73,32 +72,33 @@ public class AtendimentoBean implements Serializable {
     private int idOperacao = 0;
     private List<SelectItem> listaAtendimentoOperacoes = new ArrayList<SelectItem>();
     private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
-    
+
     private String horaEmissaoString = "";
     private Juridica empresa = new Juridica();
     private Usuario usuario = new Usuario();
-    
+
     private SisPessoa sisPessoa = new SisPessoa();
     private SisPessoa sisPessoaAtualiza = new SisPessoa();
     private StreamedContent fileDownload = null;
     private boolean visibleModal = false;
     private String tipoTelefone = "telefone";
-    
+
     private List<SelectItem> listaUsuarios = new ArrayList<SelectItem>();
     private int index_usuario = 0;
     private boolean chkReserva = false;
-    
-    public AtendimentoBean(){
+
+    public AtendimentoBean() {
         usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
     }
-    
-    public void alterarTipoMascara(){
-        if (tipoTelefone.equals("telefone"))
+
+    public void alterarTipoMascara() {
+        if (tipoTelefone.equals("telefone")) {
             tipoTelefone = "celular";
-        else
+        } else {
             tipoTelefone = "telefone";
+        }
     }
-    
+
     public SisPessoa getSisPessoa() {
         return sisPessoa;
     }
@@ -106,33 +106,33 @@ public class AtendimentoBean implements Serializable {
     public void setSisPessoa(SisPessoa sisPessoa) {
         this.sisPessoa = sisPessoa;
     }
-    
+
     public void pesquisaCPFeOPOSICAO() {
-        if (sisPessoa.getDocumento().isEmpty()){
+        if (sisPessoa.getDocumento().isEmpty()) {
             return;
         }
-        
+
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(sisPessoa.getDocumento()))) {
             return;
         }
-        
+
         FisicaDB fisicaDB = new FisicaDBToplink();
         List<Fisica> listf = fisicaDB.pesquisaFisicaPorDoc(sisPessoa.getDocumento());
-        
+
         // SE NÃO ACHAR PESSOA FÍSICA, PESQUISAR EM SIS_PESSOA
-        if (listf.isEmpty()){
+        if (listf.isEmpty()) {
             AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
             SisPessoa spes = (SisPessoa) atendimentoDB.pessoaDocumento(sisPessoa.getDocumento());
-            
-            if (spes == null){
+
+            if (spes == null) {
                 return;
             }
             sisPessoa = spes;
             verificaPessoaOposicao();
             return;
         }
-        
-        Fisica fi = (Fisica) listf.get(0);     
+
+        Fisica fi = (Fisica) listf.get(0);
 
         sisPessoa.setNome(fi.getPessoa().getNome());
         sisPessoa.setDocumento(fi.getPessoa().getDocumento());
@@ -140,45 +140,46 @@ public class AtendimentoBean implements Serializable {
         sisPessoa.setRg(fi.getRg());
         verificaPessoaOposicao();
     }
-    
+
     public void pesquisaRG() {
-        if (sisPessoa.getRg().isEmpty()){
+        if (sisPessoa.getRg().isEmpty()) {
             return;
         }
-        
+
         FisicaDB fisicaDB = new FisicaDBToplink();
         List<Fisica> listf = fisicaDB.pesquisaFisicaPorDocRG(sisPessoa.getRg());
-        
+
         // SE NÃO ACHAR PESSOA FÍSICA, PESQUISAR EM SIS_PESSOA
-        if (listf.isEmpty()){
+        if (listf.isEmpty()) {
             AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
             SisPessoa spes = (SisPessoa) atendimentoDB.pessoaDocumento(sisPessoa.getRg());
-            
-            if (spes == null){
+
+            if (spes == null) {
                 return;
             }
             sisPessoa = spes;
             return;
         }
-        
-        Fisica fi = (Fisica) listf.get(0);     
+
+        Fisica fi = (Fisica) listf.get(0);
 
         sisPessoa.setNome(fi.getPessoa().getNome());
         sisPessoa.setDocumento(fi.getPessoa().getDocumento());
         sisPessoa.setTelefone(fi.getPessoa().getTelefone1());
         sisPessoa.setRg(fi.getRg());
     }
-    
-    public void editarSisPessoa(){
+
+    public void editarSisPessoa() {
         sisPessoaAtualiza = sisPessoa;
     }
-    public void atualizaSisPessoa(){
-        if (!sisPessoaAtualiza.getDocumento().isEmpty()){
+
+    public void atualizaSisPessoa() {
+        if (!sisPessoaAtualiza.getDocumento().isEmpty()) {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(sisPessoaAtualiza.getDocumento()))) {
                 GenericaMensagem.warn("Atenção", "Esse documento é Inválido!!");
                 return;
             }
-            
+
 //            FisicaDB fisicaDB = new FisicaDBToplink();
 //            List<Fisica> listf = fisicaDB.pesquisaFisicaPorDoc(sisPessoaAtualiza.getDocumento());
 //            
@@ -192,17 +193,17 @@ public class AtendimentoBean implements Serializable {
             AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
             SisPessoa spes = (SisPessoa) atendimentoDB.pessoaDocumento(sisPessoaAtualiza.getDocumento());
 
-            if (spes != null && spes.getId() != sisPessoaAtualiza.getId()){
+            if (spes != null && spes.getId() != sisPessoaAtualiza.getId()) {
                 GenericaMensagem.warn("Atenção", "Esse documento já existe para outra Pessoa!");
                 return;
             }
         }
-            
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
         sv.abrirTransacao();
 
-        if (!sv.alterarObjeto(sisPessoaAtualiza)){
+        if (!sv.alterarObjeto(sisPessoaAtualiza)) {
             sv.desfazerTransacao();
             GenericaMensagem.error("Erro", "Não foi possivel atualizar cadastro!");
             return;
@@ -211,34 +212,34 @@ public class AtendimentoBean implements Serializable {
         sisPessoa = sisPessoaAtualiza;
         sisPessoaAtualiza = new SisPessoa();
         sv.comitarTransacao();
-        
-        
+
     }
-    
-    public String verSenha(AteMovimento atendimento){
+
+    public String verSenha(AteMovimento atendimento) {
         AtendimentoDB db = new AtendimentoDBTopLink();
         Senha senha = db.pesquisaSenha(atendimento.getId());
-        if (senha != null){
-            if (senha.getSenha() < 10)
-                return "0"+ String.valueOf(senha.getSenha());
-            else
+        if (senha != null) {
+            if (senha.getSenha() < 10) {
+                return "0" + String.valueOf(senha.getSenha());
+            } else {
                 return String.valueOf(senha.getSenha());
+            }
         }
-        
+
         return "Sem Senha";
     }
-    
-    public String imprimirSenha(AteMovimento atendimento) throws JRException{
-        
+
+    public String imprimirSenha(AteMovimento atendimento) throws JRException {
+
         AtendimentoDB db = new AtendimentoDBTopLink();
-        
+
         Senha senha = db.pesquisaSenha(atendimento.getId());
-        
+
         Collection lista = new ArrayList<ParametroSenha>();
-        
+
         if (senha.getId() != -1) {
-            
-            if (senha.getAteMovimento().getJuridica() != null){
+
+            if (senha.getAteMovimento().getJuridica() != null) {
                 lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         senha.getFilial().getFilial().getPessoa().getNome(),
                         senha.getFilial().getFilial().getPessoa().getDocumento(),
@@ -250,7 +251,7 @@ public class AtendimentoBean implements Serializable {
                         senha.getData(),
                         senha.getHora(),
                         String.valueOf(senha.getSenha())));
-            }else{
+            } else {
                 lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         senha.getFilial().getFilial().getPessoa().getNome(),
                         senha.getFilial().getFilial().getPessoa().getDocumento(),
@@ -262,10 +263,10 @@ public class AtendimentoBean implements Serializable {
                         senha.getData(),
                         senha.getHora(),
                         String.valueOf(senha.getSenha())));
-                
+
             }
         }
-        
+
         JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
         JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
@@ -279,8 +280,8 @@ public class AtendimentoBean implements Serializable {
         }
         SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
         salvaArquivos.salvaNaPasta(pathPasta);
-        
-        InputStream stream = ((ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext()).getResourceAsStream("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas"+"/"+nomeDownload);
+
+        InputStream stream = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getResourceAsStream("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas" + "/" + nomeDownload);
         fileDownload = new DefaultStreamedContent(stream, "application/pdf", nomeDownload);
 
 //        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
@@ -288,74 +289,71 @@ public class AtendimentoBean implements Serializable {
 //        download.remover();
         return "atendimento";
     }
-    
+
     public String novo() {
         GenericaSessao.put("atendimentoBean", new AtendimentoBean());
         return "atendimento";
     }
 
-    public void fecharModal(){
+    public void fecharModal() {
         GenericaSessao.put("atendimentoBean", new AtendimentoBean());
     }
-    
-    public String salvarImprimir(){
+
+    public String salvarImprimir() {
         salvar(true);
         visibleModal = true;
         return null;
     }
-    
+
     public void salvar(boolean imprimir) {
 
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-        
+
         if (ateMovimento.getFilial().getId() == -1) {
             GenericaMensagem.error("Erro", "Informe qual a sua Filial!");
             return;
         }
-        
+
         if (!sisPessoa.getDocumento().isEmpty()) {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(sisPessoa.getDocumento()))) {
                 GenericaMensagem.warn("Atenção", "Informe um CPF válido!");
                 return;
             }
         }
-        
+
         if (sisPessoa.getNome().isEmpty()) {
             GenericaMensagem.warn("Atenção", "Digite o NOME da pessoa!");
             return;
         }
-        
-        
+
 //        if (empresa.getId() == -1){
 //            //msg = "Pesquise uma Empresa para Agendar.";
 //            GenericaMensagem.warn("Atenção", "Pesquise uma Empresa para concluir o Atendimento!");
 //            return;
 //        }
-        
 //        SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
 //        if (ap == null) {
 //            ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getRg());
 //        }
-        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
+
         sisPessoa.setTipoDocumento((TipoDocumento) sv.pesquisaObjeto(1, "TipoDocumento"));
         sisPessoa.setEndereco(null);
-        
+
         sv.abrirTransacao();
         if (sisPessoa.getId() == -1) {
             if (!sv.inserirObjeto(sisPessoa)) {
                 sv.desfazerTransacao();
                 return;
             }
-        }else{
+        } else {
             if (!sv.alterarObjeto(sisPessoa)) {
                 sv.desfazerTransacao();
                 return;
             }
         }
         sv.comitarTransacao();
-        
+
         ateMovimento.setHoraEmissao(getHoraEmissaoString());
         ateMovimento.setFilial(filial);
         ateMovimento.setOperacao((AteOperacao) sv.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
@@ -363,48 +361,51 @@ public class AtendimentoBean implements Serializable {
         ateMovimento.setJuridica((empresa == null || empresa.getId() == -1) ? null : empresa);
         ateMovimento.setPessoa(sisPessoa);
         ateMovimento.setAtendente(null);
-        
-        if (chkReserva && !listaUsuarios.isEmpty()){
-            PermissaoUsuario pu = (PermissaoUsuario) sv.pesquisaCodigo( Integer.valueOf(listaUsuarios.get(index_usuario).getDescription()), "PermissaoUsuario");
+
+        if (chkReserva && !listaUsuarios.isEmpty()) {
+            PermissaoUsuario pu = (PermissaoUsuario) sv.pesquisaCodigo(Integer.valueOf(listaUsuarios.get(index_usuario).getDescription()), "PermissaoUsuario");
             ateMovimento.setReserva(pu.getUsuario());
-        }else{
+        } else {
             ateMovimento.setReserva(null);
         }
-        
+
         sv.abrirTransacao();
         if (ateMovimento.getId() == -1) {
             ateMovimento.setHoraEmissao(getHoraEmissaoString());
-            
+
             // PERMITIR QUE CRIE UM ATENDIMENTO REPETIDO PARA MESMA PESSOA -- chamado 287 --
 //            if (atendimentoDB.existeAtendimento(ateMovimento)) {
 //                GenericaMensagem.error("Atenção", "Atendimento já cadastrado!");
 //                sv.desfazerTransacao();
 //                return;
 //            }
-            
             if (!sv.inserirObjeto(ateMovimento)) {
                 GenericaMensagem.error("Erro", "Não foi possivel salvar Atendimento!");
                 sv.desfazerTransacao();
                 return;
             }
-                        
+
             HomologacaoDB dbh = new HomologacaoDBToplink();
             int ultima_senha = dbh.pesquisaUltimaSenha(filial.getId()) + 1;
             Senha senha = new Senha(-1, null, DataHoje.horaMinuto(), "", 0, usuario, DataHoje.data(), ultima_senha, filial, ateMovimento);
-            
-            if (!sv.inserirObjeto(senha)){
+
+            if (!sv.inserirObjeto(senha)) {
                 GenericaMensagem.error("Erro", "Erro ao Salvar Senha!");
                 sv.desfazerTransacao();
                 return;
             }
-            
+
             sv.comitarTransacao();
-            
-            if (imprimir)
-                try { imprimirSenha(ateMovimento); } catch (JRException ex) { }
-            else
+
+            if (imprimir) {
+                try {
+                    imprimirSenha(ateMovimento);
+                } catch (JRException ex) {
+                }
+            } else {
                 GenericaSessao.put("atendimentoBean", new AtendimentoBean());
-            
+            }
+
             GenericaMensagem.info("Sucesso", "Atendimento Salvo!");
         } else {
             if (!sv.alterarObjeto(ateMovimento)) {
@@ -412,13 +413,13 @@ public class AtendimentoBean implements Serializable {
                 GenericaMensagem.error("Erro", "Não foi possivel atualizar o Atendimento");
                 return;
             }
-            
+
             sv.comitarTransacao();
-            
+
             GenericaSessao.put("atendimentoBean", new AtendimentoBean());
             GenericaMensagem.info("Sucesso", "Atendimento Atualizado!");
         }
-        
+
     }
 
     public String editar(AteMovimento am) {
@@ -435,20 +436,20 @@ public class AtendimentoBean implements Serializable {
             }
         }
         empresa = ateMovimento.getJuridica();
-                
+
         setHoraEmissaoString(ateMovimento.getHoraEmissao());
         verificaPessoaOposicao();
-        
+
         chkReserva = ateMovimento.getReserva() != null;
-        if (chkReserva){
-            for(int i = 0; i < getListaUsuarios().size(); i++){
+        if (chkReserva) {
+            for (int i = 0; i < getListaUsuarios().size(); i++) {
                 PermissaoUsuario pu = (PermissaoUsuario) new Dao().find(new PermissaoUsuario(), Integer.valueOf(listaUsuarios.get(i).getDescription()));
-                if ( pu.getUsuario().getId() == ateMovimento.getReserva().getId() ){
+                if (pu.getUsuario().getId() == ateMovimento.getReserva().getId()) {
                     index_usuario = i;
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -457,19 +458,19 @@ public class AtendimentoBean implements Serializable {
         if (ateMovimento.getId() > 0) {
             AteMovimento ateMov = (AteMovimento) salvarAcumuladoDB.pesquisaObjeto(ateMovimento.getId(), "AteMovimento");
             AtendimentoDB db = new AtendimentoDBTopLink();
-            
+
             Senha senha = db.pesquisaSenha(ateMovimento.getId());
-            
+
             salvarAcumuladoDB.abrirTransacao();
-            
-            if (senha != null){
-                if (!salvarAcumuladoDB.deletarObjeto( salvarAcumuladoDB.pesquisaObjeto(senha.getId(), "Senha"))){
+
+            if (senha != null) {
+                if (!salvarAcumuladoDB.deletarObjeto(salvarAcumuladoDB.pesquisaObjeto(senha.getId(), "Senha"))) {
                     salvarAcumuladoDB.desfazerTransacao();
                     GenericaMensagem.error("Erro", "Falha excluir Senha!");
                     return;
                 }
             }
-            
+
             if (salvarAcumuladoDB.deletarObjeto(ateMov)) {
                 salvarAcumuladoDB.comitarTransacao();
                 GenericaMensagem.info("Sucesso", "Atendimento Excluido!");
@@ -484,30 +485,30 @@ public class AtendimentoBean implements Serializable {
         getListaAteMovimento().clear();
     }
 
-    public void cancelar(){
+    public void cancelar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        
+
         //AteMovimento ateMov = (AteMovimento) sv.pesquisaObjeto(ateMovimento.getId(), "AteMovimento");
-          
         // status 3 Atendimento Cancelado
-        ateMovimento.setStatus((AteStatus)sv.pesquisaCodigo(3, "AteStatus"));
-        
-        if (!sv.alterarObjeto(ateMovimento)){
+        ateMovimento.setStatus((AteStatus) sv.pesquisaCodigo(3, "AteStatus"));
+
+        if (!sv.alterarObjeto(ateMovimento)) {
             sv.desfazerTransacao();
-        }else{
+        } else {
             sv.comitarTransacao();
         }
     }
-    
-    public String retornaOposicaoPessoa(String documento){
+
+    public String retornaOposicaoPessoa(String documento) {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         if (atendimentoDB.pessoaOposicao(documento)) {
             return "tblOposicaox";
-        }else
+        } else {
             return "";
+        }
     }
-    
+
     public void verificaPessoaOposicao() {
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         if (atendimentoDB.pessoaOposicao(sisPessoa.getDocumento())) {
@@ -589,7 +590,7 @@ public class AtendimentoBean implements Serializable {
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);           
+            List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < listaFilial.size(); i++) {
                 listaFiliais.add(new SelectItem(new Integer(i),
                         listaFilial.get(i).getFilial().getPessoa().getDocumento() + " / " + listaFilial.get(i).getFilial().getPessoa().getNome(),
@@ -634,7 +635,7 @@ public class AtendimentoBean implements Serializable {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(getMacFilial().getFilial().getId(), "Filial");
                 ateMovimento.setFilial(filial);
-            } 
+            }
         }
         return ateMovimento;
     }
@@ -717,7 +718,7 @@ public class AtendimentoBean implements Serializable {
     public void setPorPesquisa(String porPesquisa) {
         this.porPesquisa = porPesquisa;
     }
-    
+
     public String getHoraEmissaoString() {
         if (!this.horaEmissaoString.equals("")) {
             return this.horaEmissaoString;
@@ -746,10 +747,10 @@ public class AtendimentoBean implements Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-    
+
     public Juridica getEmpresa() {
-        if (GenericaSessao.getObject("juridicaPesquisa") != null){
-            empresa = (Juridica)GenericaSessao.getObject("juridicaPesquisa");
+        if (GenericaSessao.getObject("juridicaPesquisa") != null) {
+            empresa = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
             GenericaSessao.remove("juridicaPesquisa");
         }
         return empresa;
@@ -792,24 +793,24 @@ public class AtendimentoBean implements Serializable {
     }
 
     public List<SelectItem> getListaUsuarios() {
-        if (listaUsuarios.isEmpty()){
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+        if (listaUsuarios.isEmpty()) {
+            PermissaoUsuarioDao pud = new PermissaoUsuarioDao();
 //            Permissao permissao = db.pesquisaPermissao(4, 114, 4);
-            
+
 //            AtendimentoDB db = new AtendimentoDBTopLink();
             // DEPARTAMENTO 8 - HOMOLOGAÇÃO ---
-            List<PermissaoUsuario> result = db.listaPermissaoUsuarioDepartamento(8);
-            
-            if (result.isEmpty()){
-                listaUsuarios.add(new SelectItem(0, "Nenhum Usuário Encontrado", "0") );
+            List<PermissaoUsuario> result = pud.listaPermissaoUsuarioDepartamento(8);
+
+            if (result.isEmpty()) {
+                listaUsuarios.add(new SelectItem(0, "Nenhum Usuário Encontrado", "0"));
                 return listaUsuarios;
             }
-            
-            for (int i = 0; i < result.size(); i++){
+
+            for (int i = 0; i < result.size(); i++) {
                 listaUsuarios.add(new SelectItem(
-                        i, 
-                        result.get(i).getUsuario().getPessoa().getNome(), 
-                        Integer.toString(result.get(i).getId()) )
+                        i,
+                        result.get(i).getUsuario().getPessoa().getNome(),
+                        Integer.toString(result.get(i).getId()))
                 );
             }
         }
