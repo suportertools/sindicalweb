@@ -4,7 +4,7 @@ import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.DataHoje;
@@ -1518,7 +1518,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         List<Movimento> listMov = new ArrayList();
         String textQuery = "";
         Registro reg = new Registro();
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
         // PESQUISANDO PELA FILIAL... DEPOIS ADICIONAR UMA COMBO COM ELAS
         reg = db.pesquisaRegistroPorFilial(1);
         textQuery = "select m from Movimento m, Boleto b "
