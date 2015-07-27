@@ -174,7 +174,7 @@ public class Jasper implements Serializable {
         COMPRESS_FILE = false;
         COMPRESS_LIMIT = 0;
         COMPRESS_EXTENSION = "zip";
-        MEGABYTE = (1024 * 2056);
+        MEGABYTE = (1024 * 20560);
         FILE_NAME_GENERATED = "";
         LIST_FILE_GENERATED = new ArrayList();
         TYPE = "";
