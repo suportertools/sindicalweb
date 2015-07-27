@@ -6,8 +6,8 @@ import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.Resolucao;
 import br.com.rtools.sistema.TipoResolucao;
-import br.com.rtools.sistema.db.ConfiguracaoDB;
-import br.com.rtools.sistema.db.ConfiguracaoDBTopLink;
+import br.com.rtools.sistema.db.ConfiguracaoDao;
+import br.com.rtools.sistema.db.ConfiguracaoDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -117,7 +117,7 @@ public class ConfiguracaoBean implements Serializable {
         }
 
         if (getConfiguracao().getId() == -1) {
-            ConfiguracaoDB configuracaoDB = new ConfiguracaoDBTopLink();
+            ConfiguracaoDao configuracaoDB = new ConfiguracaoDao();
             if (configuracaoDB.existeIdentificador(configuracao)) {
                 setMensagem("Identificador já existe!");
                 return;
@@ -172,7 +172,7 @@ public class ConfiguracaoBean implements Serializable {
     public List<Configuracao> getListaConfiguracao() {
         if (listaConfiguracao.isEmpty()) {
             if (!descricaoPesquisa.equals("")) {
-                ConfiguracaoDB configuracaoDB = new ConfiguracaoDBTopLink();
+                ConfiguracaoDao configuracaoDB = new ConfiguracaoDao();
                 listaConfiguracao = (List<Configuracao>) configuracaoDB.listaConfiguracao(descricaoPesquisa);
             } else {
                 DaoInterface di = new Dao();
@@ -271,7 +271,7 @@ public class ConfiguracaoBean implements Serializable {
 
     public Resolucao getResolucao() {
         if (resolucao.getId() == -1){
-            ConfiguracaoDB db = new ConfiguracaoDBTopLink();
+            ConfiguracaoDao db = new ConfiguracaoDao();
             
             if(usuario != null)
                 resolucao = db.pesquisaResolucaoUsuario(usuario.getId());
