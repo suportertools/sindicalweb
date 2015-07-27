@@ -39,7 +39,7 @@ public class Dao extends DB implements DaoInterface {
      */
     @Override
     public void commit() {
-        if(activeSession()) {
+        if (activeSession()) {
             try {
                 getEntityManager().getTransaction().commit();
             } catch (Exception e) {
@@ -51,7 +51,7 @@ public class Dao extends DB implements DaoInterface {
                         PF.update("header:form_log");
                     }
                 }
-            }            
+            }
         } else {
             rollback();
         }
@@ -432,7 +432,7 @@ public class Dao extends DB implements DaoInterface {
         if (object == null) {
             return null;
         }
-        
+
         if (objectId == null) {
             int id;
             try {
@@ -855,5 +855,9 @@ public class Dao extends DB implements DaoInterface {
 
         }
         return null;
+    }
+
+    public void close() {
+        getEntityManager().close();
     }
 }

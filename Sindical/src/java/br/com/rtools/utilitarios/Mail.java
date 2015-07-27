@@ -47,6 +47,7 @@ public class Mail extends MailTemplate implements Serializable {
     private List<EmailArquivo> emailArquivos;
     private String html;
     private String personal;
+    private Boolean message_hidden;
 
     public Mail() {
         email = new Email();
@@ -58,6 +59,7 @@ public class Mail extends MailTemplate implements Serializable {
         emailArquivo = new EmailArquivo();
         emailArquivos = new ArrayList<EmailArquivo>();
         html = "";
+        message_hidden = false;
     }
 
     public Mail(Email email, Registro registro, List<Email> emails, List<EmailPessoa> emailPessoas, List<File> files, boolean saveFiles, EmailArquivo emailArquivo, List<EmailArquivo> emailArquivos, String html, String personal) {
@@ -220,6 +222,9 @@ public class Mail extends MailTemplate implements Serializable {
                             } else {
                                 email.setEmailPrioridade((EmailPrioridade) di.find(new EmailPrioridade(), email.getEmailPrioridade().getId()));
                             }
+                            if (message_hidden) {
+                                email.setMensagem("");
+                            }
                             if (di.save(email, true)) {
                                 emailPessoas.get(i).setEmail(email);
                                 emailPessoas.get(i).setHoraSaida(DataHoje.livre(new Date(), "HH:mm"));
@@ -347,5 +352,13 @@ public class Mail extends MailTemplate implements Serializable {
 
     public void setSaveFiles(boolean saveFiles) {
         this.saveFiles = saveFiles;
+    }
+
+    public Boolean getMessage_hidden() {
+        return message_hidden;
+    }
+
+    public void setMessage_hidden(Boolean message_hidden) {
+        this.message_hidden = message_hidden;
     }
 }

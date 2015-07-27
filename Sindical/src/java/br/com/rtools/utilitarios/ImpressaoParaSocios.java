@@ -262,6 +262,7 @@ public class ImpressaoParaSocios {
 //                }
 //
 //            }
+            Jasper.load();
             Jasper.PART_NAME = "";
             Jasper.PATH = "downloads";
             Jasper.printReports("cartao_social", ljasper);
@@ -582,6 +583,7 @@ public class ImpressaoParaSocios {
                 if (listaSocios.isEmpty()) {
                     return;
                 }
+                Jasper.load();
                 Jasper.PATH = "downloads";
                 Jasper.PART_NAME = "";
                 Jasper.printReports(path, "cartao_social", listaSocios);
@@ -819,6 +821,7 @@ public class ImpressaoParaSocios {
             if (listaSocios.isEmpty()) {
                 return;
             }
+            Jasper.load();
             Jasper.PATH = "downloads";
             Jasper.printReports(path, "cartao_social", listaSocios);
 //            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
@@ -945,6 +948,7 @@ public class ImpressaoParaSocios {
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
+            Jasper.load();
             Jasper.PART_NAME = "";
             Jasper.PATH = "ficha";
             //Jasper.printReports("/Relatorios/FICHACADASTROBRANCO.jasper", "ficha_branco", listaSocios);
