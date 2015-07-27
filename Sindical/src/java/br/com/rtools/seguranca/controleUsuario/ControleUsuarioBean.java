@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -89,22 +88,22 @@ public class ControleUsuarioBean implements Serializable {
             ps = dBExternal.getConnection().prepareStatement(
                     "   SELECT *                    "
                     + "   FROM sis_configuracao     "
-                    + "  WHERE ds_identifica =     '" +nomeCliente+"'" 
+                    + "  WHERE ds_identifica =     '" + nomeCliente + "'"
                     + "  LIMIT 1                    "
             );
             //ps.setString(1, nomeCliente);
             rs = ps.executeQuery();
-            
-            if(!rs.next()) {
+
+            if (!rs.next()) {
                 return true;
             }
-            
+
             Boolean ativo = rs.getBoolean("is_ativo");
-            
-            if (ativo){
+
+            if (ativo) {
                 return true;
             }
-            
+
 //            while (rs.next()) {
 //                
 //                Boolean ativo = Boolean.parseBoolean(rs.getString("is_ativo"));
@@ -339,8 +338,8 @@ public class ControleUsuarioBean implements Serializable {
         // filialDep = requestFilial.getQueryString();
         filialDep = request.getParameter("filial");
         if (filialDep != null) {
-            MacFilialDB db = new MacFilialDBToplink();
-            setMacFilial(db.pesquisaMac(filialDep));
+            MacFilialDao macFilialDao = new MacFilialDao();
+            setMacFilial(macFilialDao.pesquisaMac(filialDep));
 
             if (getMacFilial() != null) {
                 filialDep = getMacFilial().getFilial().getFilial().getPessoa().getNome();

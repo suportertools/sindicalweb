@@ -5,19 +5,17 @@ import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.PermissaoDB;
-import br.com.rtools.seguranca.db.PermissaoDBToplink;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.PermissaoDao;
+import br.com.rtools.seguranca.db.PermissaoUsuarioDao;
+import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.db.UsuarioAcessoDao;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -165,7 +163,8 @@ public class ControleAcessoBean implements Serializable {
 
     public boolean verificarPermissaoUsuario() {
         boolean retorno = false;
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+        PermissaoUsuarioDao db = new PermissaoUsuarioDao();
+        RotinaDao rotinaDao = new RotinaDao();
         if (!urlDestino.equals("/Sindical/menuPrincipal.jsf")
                 && ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() != 1) {
 
@@ -173,12 +172,12 @@ public class ControleAcessoBean implements Serializable {
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
                 idModulo = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
                 if (idModulo != 0) {
-                    modulo = db.pesquisaCodigoModulo(idModulo);
+                    modulo = (Modulo) new Dao().find(new Modulo(), idModulo);
                 }
             }
 
             //PESQUISA DE ROTINAS-------------------------------------------------------------------------------------------
-            rotina = db.pesquisaRotinaPermissao(urlDestino);
+            rotina = rotinaDao.pesquisaRotinaPermissao(urlDestino);
 
             if (rotina == null) {
                 rotina = new Rotina();
@@ -187,7 +186,7 @@ public class ControleAcessoBean implements Serializable {
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
                 String[] lista = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples");
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("chamadaPaginaSimples");
-                Rotina r = db.pesquisaRotinaPermissaoPorClasse(lista[0]);
+                Rotina r = rotinaDao.pesquisaRotinaPermissaoPorClasse(lista[0]);
                 if (r != null) {
                     AtalhoDB dba = new AtalhoDBToplink();
                     rotina = new Rotina();
@@ -201,20 +200,20 @@ public class ControleAcessoBean implements Serializable {
                     }
 
                     cont.setAcessos(cont.getAcessos() + 1);
-                    SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                    salvarAcumuladoDB.abrirTransacao();
+                    Dao dao = new Dao();
+                    dao.openTransaction();
 
                     if (cont.getId() == -1) {
-                        if (salvarAcumuladoDB.inserirObjeto(cont)) {
-                            salvarAcumuladoDB.comitarTransacao();
+                        if (dao.save(cont)) {
+                            dao.commit();
                         } else {
-                            salvarAcumuladoDB.desfazerTransacao();
+                            dao.rollback();
                         }
                     } else {
-                        if (salvarAcumuladoDB.alterarObjeto(cont)) {
-                            salvarAcumuladoDB.comitarTransacao();
+                        if (dao.update(cont)) {
+                            dao.commit();
                         } else {
-                            salvarAcumuladoDB.desfazerTransacao();
+                            dao.rollback();
                         }
                     }
                 }
@@ -226,7 +225,7 @@ public class ControleAcessoBean implements Serializable {
             }
 
             //PESQUISA DE EVENTOS-------------------------------------------------------------------------------------------
-            evento = db.pesquisaCodigoEvento(4);
+            evento = (Evento) new Dao().find(new Evento(), 4);
 
             if (evento == null) {
                 evento = new Evento();
@@ -254,7 +253,7 @@ public class ControleAcessoBean implements Serializable {
                         }
                     }
                     //if (retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                     if (usuarioAcesso.getId() != -1) {
                         if (usuarioAcesso.isPermite()) {
                             retorno = true;
@@ -293,13 +292,13 @@ public class ControleAcessoBean implements Serializable {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             //System.out.println(erro);
         }
-        
+
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         boolean retorno = true;
         if (user != null) {
             int idEvento;
             if (user.getId() != 1) {
-                PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+                PermissaoUsuarioDao db = new PermissaoUsuarioDao();
                 Permissao permissao;
                 idModulo = modulo.getId();
                 if (id == -1) {
@@ -332,7 +331,7 @@ public class ControleAcessoBean implements Serializable {
                         }
                     }
 //                    if (!retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                     if (usuarioAcesso.getId() != -1) {
                         if (usuarioAcesso.isPermite()) {
                             retorno = false;
@@ -374,13 +373,13 @@ public class ControleAcessoBean implements Serializable {
             //System.out.println(erro);
         }
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Modulo m = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
+        Dao dao = new Dao();
+        Modulo m = (Modulo) dao.find(new Modulo(), idMod);
         boolean retorno = false;
         if (user != null) {
             int idEvento;
             if (user.getId() != 1) {
-                PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+                PermissaoUsuarioDao db = new PermissaoUsuarioDao();
                 Permissao permissao;
                 idModulo = m.getId();
                 if (id == -1) {
@@ -412,7 +411,7 @@ public class ControleAcessoBean implements Serializable {
                             break;
                         }
                     }
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                     if (usuarioAcesso.getId() != -1) {
                         if (usuarioAcesso.isPermite()) {
                             retorno = false;
@@ -437,7 +436,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = true;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
             if (user.getId() == 1) {
@@ -462,7 +461,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (!retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -485,12 +484,12 @@ public class ControleAcessoBean implements Serializable {
         if (idMod == 0) {
             idMod = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo"));
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Modulo m = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
+        Dao dao = new Dao();
+        Modulo m = (Modulo) dao.find(new Modulo(), idMod);
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
             if (user.getId() == 1) {
@@ -514,7 +513,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -536,7 +535,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
             if (user.getId() == 1) {
@@ -561,7 +560,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (!retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -584,7 +583,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -608,7 +607,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (!retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -631,7 +630,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return true;
@@ -654,7 +653,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = true;
@@ -677,7 +676,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return true;
@@ -700,7 +699,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = true;
@@ -723,7 +722,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -746,7 +745,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (!retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -769,7 +768,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -792,7 +791,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -815,7 +814,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -838,7 +837,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -861,7 +860,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -884,7 +883,7 @@ public class ControleAcessoBean implements Serializable {
                     }
                 }
 //                if (retorno) {
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -907,7 +906,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -926,7 +925,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -948,7 +947,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -967,7 +966,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -989,7 +988,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -1012,7 +1011,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -1034,7 +1033,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -1057,7 +1056,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -1079,7 +1078,7 @@ public class ControleAcessoBean implements Serializable {
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            PermissaoUsuarioDao db = new PermissaoUsuarioDao();
             Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
             if (user.getId() == 1) {
                 return false;
@@ -1102,7 +1101,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
@@ -1199,11 +1198,11 @@ public class ControleAcessoBean implements Serializable {
      * @return
      */
     public boolean verificarPermissao(Usuario usuario, String pageName, Integer idEvento) {
-        RotinaDB rotinaDB = new RotinaDBToplink();
+        RotinaDao rotinaDao = new RotinaDao();
         String pagina = pageName;
-        Rotina r = rotinaDB.pesquisaRotinaPorPagina(pagina);
+        Rotina r = rotinaDao.pesquisaRotinaPorPagina(pagina);
         if (r == null) {
-            r = rotinaDB.pesquisaRotinaPorAcao(pagina);
+            r = rotinaDao.pesquisaRotinaPorAcao(pagina);
         }
         if (r == null) {
             return false;
@@ -1218,16 +1217,27 @@ public class ControleAcessoBean implements Serializable {
      * @param idEvento
      * @return
      */
+    public Boolean permissaoValida(String pageName, Integer idEvento) {
+        return verificaPermissao(pageName, idEvento);
+    }
+
+    /**
+     * 1 - Inclusão; 2 - Exclusão; 3 - Alteração; 4 - Consulta
+     *
+     * @param pageName
+     * @param idEvento
+     * @return
+     */
     public boolean verificaPermissao(String pageName, Integer idEvento) {
         Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         if (user.getId() == 1) {
             return false;
         }
-        RotinaDB rotinaDB = new RotinaDBToplink();
+        RotinaDao rotinaDao = new RotinaDao();
         String pagina = pageName;
-        Rotina r = rotinaDB.pesquisaRotinaPorPagina(pagina);
+        Rotina r = rotinaDao.pesquisaRotinaPorPagina(pagina);
         if (r == null) {
-            r = rotinaDB.pesquisaRotinaPorAcao(pagina);
+            r = rotinaDao.pesquisaRotinaPorAcao(pagina);
         }
         if (r == null) {
             return false;
@@ -1270,12 +1280,12 @@ public class ControleAcessoBean implements Serializable {
                 if (idRotina == 0 || idRotina == -1) {
                     idRotina = rotina.getId();
                 }
-                PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
-                PermissaoDB permissaoDB = new PermissaoDBToplink();
+                PermissaoUsuarioDao permissaoUsuarioDB = new PermissaoUsuarioDao();
+                PermissaoDao permissaoDao = new PermissaoDao();
                 if (idModulo != -1) {
-                    permissao = permissaoDB.pesquisaPermissaoModuloRotinaEvento(idModulo, idRotina, idEvento);
+                    permissao = permissaoDao.pesquisaPermissaoModuloRotinaEvento(idModulo, idRotina, idEvento);
                 } else {
-                    permissao = permissaoDB.pesquisaPermissaoModuloRotinaEvento(2, idRotina, idEvento);
+                    permissao = permissaoDao.pesquisaPermissaoModuloRotinaEvento(2, idRotina, idEvento);
                 }
                 if (permissao != null) {
                     List<PermissaoUsuario> permissaoUsuarios = permissaoUsuarioDB.listaPermissaoUsuario(user.getId());
@@ -1288,7 +1298,7 @@ public class ControleAcessoBean implements Serializable {
                             break;
                         }
                     }
-                    UsuarioAcesso usuarioAcesso = permissaoUsuarioDB.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(user.getId(), permissao.getId());
                     if (usuarioAcesso.getId() != -1) {
                         if (usuarioAcesso.isPermite()) {
                             retorno = false;
@@ -1314,12 +1324,12 @@ public class ControleAcessoBean implements Serializable {
                 idRotina = rotina.getId();
             }
 
-            PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
-            PermissaoDB permissaoDB = new PermissaoDBToplink();
+            PermissaoUsuarioDao permissaoUsuarioDB = new PermissaoUsuarioDao();
+            PermissaoDao permissaoDao = new PermissaoDao();
             if (idModulo != -1) {
-                permissao = permissaoDB.pesquisaPermissaoModuloRotinaEvento(idModulo, idRotina, idEvento);
+                permissao = permissaoDao.pesquisaPermissaoModuloRotinaEvento(idModulo, idRotina, idEvento);
             } else {
-                permissao = permissaoDB.pesquisaPermissaoModuloRotinaEvento(2, idRotina, idEvento);
+                permissao = permissaoDao.pesquisaPermissaoModuloRotinaEvento(2, idRotina, idEvento);
             }
             if (permissao != null) {
                 List<PermissaoUsuario> permissaoUsuarios = permissaoUsuarioDB.listaPermissaoUsuario(usuario.getId());
@@ -1332,7 +1342,7 @@ public class ControleAcessoBean implements Serializable {
                         break;
                     }
                 }
-                UsuarioAcesso usuarioAcesso = permissaoUsuarioDB.pesquisaUsuarioAcesso(usuario.getId(), permissao.getId());
+                UsuarioAcesso usuarioAcesso = new UsuarioAcessoDao().pesquisaUsuarioAcesso(usuario.getId(), permissao.getId());
                 if (usuarioAcesso.getId() != -1) {
                     if (usuarioAcesso.isPermite()) {
                         retorno = false;
