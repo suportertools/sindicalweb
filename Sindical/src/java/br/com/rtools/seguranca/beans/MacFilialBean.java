@@ -8,12 +8,8 @@ import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.MacFilialDB;
-import br.com.rtools.seguranca.db.MacFilialDBToplink;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
+import br.com.rtools.seguranca.db.MacFilialDao;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
@@ -51,9 +47,9 @@ public class MacFilialBean implements Serializable {
         listaCaixa = new ArrayList<>();
         mostrarTodos = false;
         ConfiguracaoFinanceiroBean cfb = new ConfiguracaoFinanceiroBean();
-        
+
         cfb.init();
-        
+
         macFilial.setCaixaOperador(cfb.getConfiguracaoFinanceiro().isCaixaOperador());
     }
 
@@ -67,11 +63,11 @@ public class MacFilialBean implements Serializable {
     }
 
     public void add() {
-        MacFilialDB dbm = new MacFilialDBToplink();
-        DaoInterface di = new Dao();
+        MacFilialDao macFilialDao = new MacFilialDao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
-        Filial filial = (Filial) di.find(new Filial(), Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
-        Departamento departamento = (Departamento) di.find(new Departamento(), Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()));
+        Filial filial = (Filial) dao.find(new Filial(), Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
+        Departamento departamento = (Departamento) dao.find(new Departamento(), Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()));
         if (macFilial.getMac().isEmpty()) {
             GenericaMensagem.warn("Validação", "Digite um mac válido!");
             return;
@@ -100,17 +96,17 @@ public class MacFilialBean implements Serializable {
                     return;
                 }
             }
-            macFilial.setCaixa((Caixa) di.find(new Caixa(), Integer.valueOf(listaCaixa.get(idCaixa).getDescription())));
+            macFilial.setCaixa((Caixa) dao.find(new Caixa(), Integer.valueOf(listaCaixa.get(idCaixa).getDescription())));
         }
-        di.openTransaction();
+        dao.openTransaction();
 
         if (macFilial.getId() == -1) {
-            if (dbm.pesquisaMac(macFilial.getMac()) != null) {
+            if (macFilialDao.pesquisaMac(macFilial.getMac()) != null) {
                 GenericaMensagem.warn("Validação", "Este computador ja está registrado!");
                 return;
             }
 
-            if (di.save(macFilial)) {
+            if (dao.save(macFilial)) {
                 novoLog.save(
                         "ID: " + macFilial.getId()
                         + " - Filial: (" + macFilial.getFilial().getId() + ") " + macFilial.getFilial().getFilial().getPessoa().getNome()
@@ -118,12 +114,14 @@ public class MacFilialBean implements Serializable {
                         + " - Mesa: " + macFilial.getMesa()
                         + " - Mac: " + macFilial.getMac()
                 );
-                di.commit();
+                dao.commit();
                 GenericaMensagem.info("Salvo", "Este Computador registrado com sucesso!");
+                novoLog.setTabela("seg_mac_filial");
+                novoLog.setCodigo(macFilial.getId());
                 macFilial = new MacFilial();
                 listaMacs.clear();
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inserir esse registro!");
             }
         } else {
@@ -138,7 +136,9 @@ public class MacFilialBean implements Serializable {
                     + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : mf.getCaixa().getCaixa())
                     + " - Caixa: " + ((mf.getCaixa() == null) ? "" : mf.getCaixa().getDescricao());
 
-            if (di.update(macFilial)) {
+            if (dao.update(macFilial)) {
+                novoLog.setTabela("seg_mac_filial");
+                novoLog.setCodigo(macFilial.getId());
                 novoLog.update(
                         before_update,
                         "ID: " + macFilial.getId()
@@ -149,12 +149,12 @@ public class MacFilialBean implements Serializable {
                         + " - Número Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getCaixa() : "")
                         + " - Caixa: " + ((mf.getCaixa() == null) ? "" : (macFilial.getCaixa() != null) ? macFilial.getCaixa().getDescricao() : "")
                 );
-                di.commit();
+                dao.commit();
                 GenericaMensagem.info("Atualizado", "Computador atualizado com sucesso!");
                 macFilial = new MacFilial();
                 listaMacs.clear();
             } else {
-                di.rollback();
+                dao.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inserir esse registro!");
             }
 
@@ -189,10 +189,10 @@ public class MacFilialBean implements Serializable {
 
     public void delete(MacFilial mf) {
         macFilial = mf;
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
-        di.openTransaction();
-        if (di.delete(macFilial)) {
+        dao.openTransaction();
+        if (dao.delete(macFilial)) {
             novoLog.delete(
                     "ID: " + macFilial.getId()
                     + " - Filial: (" + macFilial.getFilial().getId() + ") " + macFilial.getFilial().getFilial().getPessoa().getNome()
@@ -200,11 +200,11 @@ public class MacFilialBean implements Serializable {
                     + " - Mesa: " + macFilial.getMesa()
                     + " - Mac: " + macFilial.getMac()
             );
-            di.commit();
+            dao.commit();
             GenericaMensagem.info("Sucesso", "Este Registro excluído com sucesso!");
             listaMacs.clear();
         } else {
-            di.rollback();
+            dao.rollback();
             GenericaMensagem.info("Sucesso", "Erro ao excluir computador!");
 
         }
@@ -215,7 +215,7 @@ public class MacFilialBean implements Serializable {
         if (listaFiliais.isEmpty()) {
 //            FilialDB db = new FilialDBToplink();
 //            List<Filial> list = db.pesquisaTodos();
-            DaoInterface di = new Dao();
+            Dao di = new Dao();
             List<Filial> list = (List<Filial>) di.list(new Filial(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaFiliais.add(new SelectItem(i,
@@ -228,13 +228,11 @@ public class MacFilialBean implements Serializable {
 
     public List<SelectItem> getListaDepartamentos() {
         if (listaDepartamentos.isEmpty()) {
-            PermissaoUsuarioDB pu = new PermissaoUsuarioDBToplink();
-            //        DepartamentoDB db = new DepartamentoDBToplink();
-            List<Departamento> select = pu.pesquisaTodosDepOrdenado();
-            for (int i = 0; i < select.size(); i++) {
+            List<Departamento> list = new Dao().list(new Departamento(), true);
+            for (int i = 0; i < list.size(); i++) {
                 listaDepartamentos.add(new SelectItem(i,
-                        select.get(i).getDescricao(),
-                        Integer.toString(select.get(i).getId())));
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
         }
         return listaDepartamentos;
@@ -270,11 +268,11 @@ public class MacFilialBean implements Serializable {
 
     public List<MacFilial> getListaMacs() {
         if (listaMacs.isEmpty()) {
-            MacFilialDB db = new MacFilialDBToplink();
+            MacFilialDao macFilialDao = new MacFilialDao();
             if (mostrarTodos) {
-                listaMacs = db.listaTodosPorFilial(null);
+                listaMacs = macFilialDao.listaTodosPorFilial(null);
             } else {
-                listaMacs = db.listaTodosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()));
+                listaMacs = macFilialDao.listaTodosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()));
             }
         }
         return listaMacs;
@@ -294,9 +292,8 @@ public class MacFilialBean implements Serializable {
 
     public List<SelectItem> getListaCaixa() {
         if (listaCaixa.isEmpty()) {
-            DaoInterface di = new Dao();
-            List<Caixa> result = di.list(new Caixa());
-
+            Dao dao = new Dao();
+            List<Caixa> result = dao.list(new Caixa());
             listaCaixa.add(new SelectItem(0, "NENHUM CAIXA", "-1"));
             for (int i = 0; i < result.size(); i++) {
                 listaCaixa.add(new SelectItem(i + 1,
@@ -328,7 +325,7 @@ public class MacFilialBean implements Serializable {
         ((ControleUsuarioBean) GenericaSessao.getObject("controleUsuarioBean")).setFilial(s);
         GenericaSessao.put("acessoFilial", mf);
         GenericaSessao.put("linkClicado", true);
-        if(GenericaSessao.exists("back")) {
+        if (GenericaSessao.exists("back")) {
             String back = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).getUrlAtual();
             GenericaSessao.remove("back");
             return back;

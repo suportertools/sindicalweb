@@ -2,10 +2,8 @@ package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,23 +36,23 @@ public class RotinaBean implements Serializable {
     }
 
     public void save() {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
         if (rotina.getId() == -1) {
             if (rotina.getRotina().equals("")) {
                 message = "Digite uma Rotina!";
             } else {
-                RotinaDB rotinaDB = new RotinaDBToplink();
-                if (!rotinaDB.existeRotina(rotina)) {
-                    di.openTransaction();
-                    if (di.save(rotina)) {
-                        di.commit();
+                RotinaDao rotinaDao = new RotinaDao();
+                if (!rotinaDao.existeRotina(rotina)) {
+                    dao.openTransaction();
+                    if (dao.save(rotina)) {
+                        dao.commit();
                         novoLog.save("ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
                         message = "Registro salvo com sucesso";
                         listRotina.clear();
                         descricaoPesquisa = "";
                     } else {
-                        di.rollback();
+                        dao.rollback();
                         message = "Erro ao inserir registro!";
                     }
                 } else {
@@ -62,17 +60,17 @@ public class RotinaBean implements Serializable {
                 }
             }
         } else {
-            Rotina r = (Rotina) di.find(rotina);
+            Rotina r = (Rotina) dao.find(rotina);
             String beforeUpdate = "ID: " + r.getId() + " - Rotina: " + r.getRotina() + " - Página: " + r.getRotina() + " - Ativa: " + r.isAtivo();
-            di.openTransaction();
-            if (di.update(rotina)) {
+            dao.openTransaction();
+            if (dao.update(rotina)) {
                 novoLog.update(beforeUpdate, "ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
-                di.commit();
+                dao.commit();
                 listRotina.clear();
                 descricaoPesquisa = "";
                 message = "Registro atualizado com sucesso";
             } else {
-                di.rollback();
+                dao.rollback();
                 message = "Erro ao atualizar registro!";
             }
         }
@@ -83,18 +81,18 @@ public class RotinaBean implements Serializable {
     }
 
     public void delete() {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         NovoLog novoLog = new NovoLog();
         if (rotina.getId() != -1) {
-            di.openTransaction();
-            if (di.delete(rotina)) {
+            dao.openTransaction();
+            if (dao.delete(rotina)) {
                 novoLog.delete("ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
-                di.commit();
+                dao.commit();
                 descricaoPesquisa = "";
                 listRotina.clear();
                 message = "Registro excluido com sucesso";
             } else {
-                di.rollback();
+                dao.rollback();
                 message = "Esta registro não pode ser excluido!";
             }
         }
@@ -102,9 +100,9 @@ public class RotinaBean implements Serializable {
     }
 
     public String edit(Rotina r) {
-        DaoInterface di = new Dao();
+        Dao dao = new Dao();
         rotina = new Rotina();
-        rotina = (Rotina) di.rebind(r);
+        rotina = (Rotina) dao.rebind(r);
         GenericaSessao.put("rotinaPesquisa", rotina);
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
@@ -119,11 +117,10 @@ public class RotinaBean implements Serializable {
 
     public List<Rotina> getListRotina() {
         if (listRotina.isEmpty()) {
-            RotinaDB db = new RotinaDBToplink();
             if (descricaoPesquisa.equals("")) {
-                listRotina = db.pesquisaTodosOrdenado();
+                listRotina = new Dao().list(new Rotina(), true);
             } else {
-                listRotina = db.pesquisaRotinaPorDescricao(descricaoPesquisa);
+                listRotina = new RotinaDao().pesquisaRotinaPorDescricao(descricaoPesquisa);
             }
         }
         return listRotina;

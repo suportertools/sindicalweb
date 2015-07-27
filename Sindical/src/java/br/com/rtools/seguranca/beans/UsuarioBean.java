@@ -6,14 +6,19 @@ import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mail;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -202,8 +207,8 @@ public class UsuarioBean implements Serializable {
         pu.setDepartamento((Departamento) di.find(new Departamento(), Integer.valueOf(listaDepartamentos.get(idDepartamento).getDescription())));
         pu.setNivel((Nivel) di.find(new Nivel(), Integer.valueOf(listaNiveis.get(idNivel).getDescription())));
         pu.setUsuario(usuario);
-        PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
-        if (permissaoUsuarioDB.existePermissaoUsuario(pu)) {
+        PermissaoUsuarioDao permissaoUsuarioDao = new PermissaoUsuarioDao();
+        if (permissaoUsuarioDao.existePermissaoUsuario(pu)) {
             GenericaMensagem.warn("Sistema", "Permissão já existe");
             return null;
         }
@@ -242,14 +247,15 @@ public class UsuarioBean implements Serializable {
     }
 
     public boolean removePermissoes(DaoInterface di) {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+        PermissaoUsuarioDao db = new PermissaoUsuarioDao();
+        UsuarioAcessoDao usuarioAcessoDao = new UsuarioAcessoDao();
         for (int i = 0; i < listaPermissaoUsuario.size(); i++) {
             PermissaoUsuario perUsuario = listaPermissaoUsuario.get(i);
             perUsuario = db.pesquisaPermissaoUsuario(perUsuario.getUsuario().getId(), perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
 
             List<PermissaoDepartamento> lista = db.pesquisaPDepartamento(perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
             for (int w = 0; w < lista.size(); w++) {
-                UsuarioAcesso ua = db.pesquisaUsuarioAcesso(perUsuario.getUsuario().getId(), lista.get(w).getPermissao().getId());
+                UsuarioAcesso ua = usuarioAcessoDao.pesquisaUsuarioAcesso(perUsuario.getUsuario().getId(), lista.get(w).getPermissao().getId());
                 if (!di.delete(ua)) {
                     di.rollback();
                     return false;
@@ -498,7 +504,7 @@ public class UsuarioBean implements Serializable {
     }
 
     public List<PermissaoUsuario> getListaPermissaoUsuario() {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+        PermissaoUsuarioDao db = new PermissaoUsuarioDao();
         if (usuario.getId() != -1 && !adicionado) {
             listaPermissaoUsuario = db.pesquisaListaPermissaoPorUsuario(usuario.getId());
         }
@@ -535,8 +541,8 @@ public class UsuarioBean implements Serializable {
 
     public List<SelectItem> getListaModulos() {
         if (listaModulos.isEmpty()) {
-            PermissaoDB db = new PermissaoDBToplink();
-            List<Modulo> modulos = db.listaModuloPermissaoAgrupado();
+            PermissaoDao permissaoDao = new PermissaoDao();
+            List<Modulo> modulos = permissaoDao.listaModuloPermissaoAgrupado();
             for (int i = 0; i < modulos.size(); i++) {
                 listaModulos.add(new SelectItem(i,
                         modulos.get(i).getDescricao(),
@@ -554,8 +560,8 @@ public class UsuarioBean implements Serializable {
     public List<SelectItem> getListaRotinas() {
         if (listaRotinas.isEmpty() && !listaModulos.isEmpty()) {
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
-            PermissaoDB db = new PermissaoDBToplink();
-            List<Rotina> rotinas = db.listaRotinaPermissaoAgrupado(idM);
+            PermissaoDao permissaoDao = new PermissaoDao();
+            List<Rotina> rotinas = permissaoDao.listaRotinaPermissaoAgrupado(idM);
             idRotina = 0;
             for (int i = 0; i < rotinas.size(); i++) {
                 listaRotinas.add(
@@ -575,10 +581,10 @@ public class UsuarioBean implements Serializable {
 
     public List<SelectItem> getListaEventos() {
         if (listaEventos.isEmpty() && !listaRotinas.isEmpty() && !listaModulos.isEmpty()) {
-            PermissaoDB db = new PermissaoDBToplink();
+            PermissaoDao permissaoDao = new PermissaoDao();
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
             int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
-            List<Evento> eventos = db.listaEventoPermissaoAgrupado(idM, idR);
+            List<Evento> eventos = permissaoDao.listaEventoPermissaoAgrupado(idM, idR);
             listaEventos.clear();
             for (int i = 0; i < eventos.size(); i++) {
                 listaEventos.add(new SelectItem(i, eventos.get(i).getDescricao(), Integer.toString(eventos.get(i).getId())));
@@ -592,13 +598,14 @@ public class UsuarioBean implements Serializable {
     }
 
     public void addUsuarioAcesso() {
-        PermissaoDB db = new PermissaoDBToplink();
+        PermissaoDao permissaoDao = new PermissaoDao();
+        UsuarioAcessoDao usuarioAcessoDao = new UsuarioAcessoDao();
         int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
         int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
         int idE = Integer.parseInt(listaEventos.get(idEvento).getDescription());
         if (usuario.getId() != -1) {
-            if (((UsuarioAcesso) (db.pesquisaUsuarioAcessoModuloRotinaEvento(usuario.getId(), idM, idR, idE))).getId() == -1) {
-                Permissao permissao = db.pesquisaPermissaoModuloRotinaEvento(idM, idR, idE);
+            if (((UsuarioAcesso) (usuarioAcessoDao.pesquisaUsuarioAcessoModuloRotinaEvento(usuario.getId(), idM, idR, idE))).getId() == -1) {
+                Permissao permissao = permissaoDao.pesquisaPermissaoModuloRotinaEvento(idM, idR, idE);
                 UsuarioAcesso usuarioAcesso = new UsuarioAcesso();
                 DaoInterface di = new Dao();
                 usuarioAcesso.setUsuario(usuario);
@@ -624,7 +631,7 @@ public class UsuarioBean implements Serializable {
     public List<UsuarioAcesso> getListaUsuarioAcesso() {
         listaUsuarioAcesso.clear();
         if (usuario.getId() != -1) {
-            PermissaoDB db = new PermissaoDBToplink();
+            PermissaoDao permissaoDao = new PermissaoDao();
             int idM = 0;
             int idR = 0;
             int idE = 0;
@@ -637,7 +644,7 @@ public class UsuarioBean implements Serializable {
             if (filtrarPorEvento) {
                 idE = Integer.parseInt(listaEventos.get(idEvento).getDescription());
             }
-            listaUsuarioAcesso = db.listaUsuarioAcesso(usuario.getId(), idM, idR, idE);
+            listaUsuarioAcesso = permissaoDao.listaUsuarioAcesso(usuario.getId(), idM, idR, idE);
             if (filtrarPorModulo || filtrarPorRotina || filtrarPorEvento) {
             }
         }
@@ -804,5 +811,41 @@ public class UsuarioBean implements Serializable {
             return GenericaSessao.getString("sessaoCliente");
         }
         return "";
+    }
+
+    public void password() {
+
+    }
+
+    public void send() {
+        Dao dao = new Dao();
+        Mail mail = new Mail();
+        mail.setEmail(
+                new Email(
+                        -1,
+                        DataHoje.dataHoje(),
+                        DataHoje.livre(new Date(), "HH:mm"),
+                        (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                        (Rotina) dao.find(new Rotina(), 68),
+                        null,
+                        "Lembrete de Senha usuário: " + usuario.getLogin() + " - Cliente: " + GenericaSessao.getString("sessaoCliente"),
+                        usuario.getLogin() + " - " + usuario.getSenha(),
+                        false,
+                        false
+                )
+        );
+        List<EmailPessoa> emailPessoas = new ArrayList<>();
+        EmailPessoa emailPessoa = new EmailPessoa();
+        emailPessoa.setDestinatario("suporte@rtools.com.br");
+        emailPessoa.setPessoa(null);
+        emailPessoa.setRecebimento(null);
+        emailPessoas.add(emailPessoa);
+        mail.setEmailPessoas(emailPessoas);
+        String[] string = mail.send();
+        if (string[0].isEmpty()) {
+            GenericaMensagem.warn("Validação", "Erro ao enviar mensagem!" + string[0]);
+        } else {
+            GenericaMensagem.info("Sucesso", "Email enviado com sucesso!");
+        }
     }
 }
