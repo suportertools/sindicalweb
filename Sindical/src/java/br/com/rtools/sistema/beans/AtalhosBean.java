@@ -2,8 +2,6 @@ package br.com.rtools.sistema.beans;
 
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.Atalhos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
@@ -77,8 +75,7 @@ public class AtalhosBean implements Serializable {
 
     public List<SelectItem> getListaRotina() {
         if (listaRotina.isEmpty()) {
-            RotinaDB db = new RotinaDBToplink();
-            List select = db.pesquisaTodosOrdenado();
+            List select = new Dao().list(new Rotina(), true);
             for (int i = 0; i < select.size(); i++) {
                 listaRotina.add(new SelectItem(new Integer(i),
                         (String) ((Rotina) select.get(i)).getRotina(),
