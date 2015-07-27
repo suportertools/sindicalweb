@@ -24,8 +24,6 @@ import br.com.rtools.pessoa.TipoCentroComercial;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.seguranca.*;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.suporte.ProStatus;
 import br.com.rtools.utilitarios.AnaliseString;
@@ -68,8 +66,8 @@ public class SimplesBean implements Serializable {
     public SimplesBean() {
         rotina = new Rotina();
         idRotina = 0;
-        listaRotinaCombo = new ArrayList<SelectItem>();
-        listaRotina = new ArrayList<Rotina>();
+        listaRotinaCombo = new ArrayList<>();
+        listaRotina = new ArrayList<>();
         nomeRotina = "";
         pesquisaLista = "";
         mensagem = "";
@@ -83,9 +81,8 @@ public class SimplesBean implements Serializable {
 
     public List<SelectItem> getListaRotinaCombo() {
         int i = 0;
-        RotinaDB db = new RotinaDBToplink();
         if (listaRotinaCombo.isEmpty()) {
-            listaRotina = db.pesquisaTodosSimples();
+            listaRotina = new Dao().list(new Rotina(), true);
             while (i < getListaRotina().size()) {
                 listaRotinaCombo.add(new SelectItem(i, getListaRotina().get(i).getRotina()));
                 i++;
@@ -622,14 +619,15 @@ public class SimplesBean implements Serializable {
                     } else if (desc.length() == 3) {
                         maxResults = 200;
                     }
-                    
+
                     String queryString = "";
-                    
-                    if (tableName.equals("end_bairro") || tableName.equals("end_descricao_endereco"))
+
+                    if (tableName.equals("end_bairro") || tableName.equals("end_descricao_endereco")) {
                         queryString = " SELECT t.* FROM " + tableName + "  AS t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%' AND is_ativo = true ORDER BY t.ds_descricao ASC LIMIT " + maxResults;
-                    else
+                    } else {
                         queryString = " SELECT t.* FROM " + tableName + "  AS t WHERE upper(func_translate(ds_descricao)) LIKE '%" + desc + "%'  ORDER BY t.ds_descricao ASC LIMIT " + maxResults;
-                    
+                    }
+
                     try {
                         Query query = dao.getEntityManager().createNativeQuery(queryString, o.getClass());
                         lista = query.getResultList();

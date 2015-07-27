@@ -5,9 +5,8 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.db.PesquisaLogDB;
-import br.com.rtools.seguranca.db.PesquisaLogDBTopLink;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.seguranca.db.PesquisaLogDao;
+import br.com.rtools.seguranca.db.RotinaDao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -93,8 +92,8 @@ public class PesquisaLogBean implements Serializable {
 
     public List<SelectItem> getListRotinas() {
         if (listSelectItem[0].isEmpty()) {
-            PesquisaLogDB pldb = new PesquisaLogDBTopLink();
-            List<Rotina> list = (List<Rotina>) pldb.listRotinasLogs();
+            PesquisaLogDao pld = new PesquisaLogDao();
+            List<Rotina> list = (List<Rotina>) pld.listRotinasLogs();
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getRotina(), "" + list.get(i).getId()));
             }
@@ -325,8 +324,8 @@ public class PesquisaLogBean implements Serializable {
             if (filtro[4]) {
 
             }
-            PesquisaLogDB pldb = new PesquisaLogDBTopLink();
-            listLogs = (List<Log>) pldb.pesquisaLogs(dtInicial, dtFinal, hrInicial, hrFinal, idU, idR, idInEventos, descPesquisa);
+            PesquisaLogDao pld = new PesquisaLogDao();
+            listLogs = (List<Log>) pld.pesquisaLogs(dtInicial, dtFinal, hrInicial, hrFinal, idU, idR, idInEventos, descPesquisa);
         }
         return listLogs;
     }
@@ -397,10 +396,10 @@ public class PesquisaLogBean implements Serializable {
         HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String pagina = ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).converteURL(paginaRequerida.getRequestURI());
         // PesquisaLogBean pesquisaLogBean = new PesquisaLogBean();
-        RotinaDB rotinaDB = new RotinaDBToplink();
-        Rotina r = rotinaDB.pesquisaRotinaPorPagina(pagina);
+        RotinaDao rotinaDao = new RotinaDao();
+        Rotina r = rotinaDao.pesquisaRotinaPorPagina(pagina);
         if (r == null) {
-            r = rotinaDB.pesquisaRotinaPorAcao(pagina);
+            r = rotinaDao.pesquisaRotinaPorAcao(pagina);
         }
         getListLogs().clear();
         Integer[] integer = new Integer[]{0};

@@ -10,7 +10,7 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -140,7 +140,7 @@ public class RegistroPatronalBean implements Serializable {
     }
 
     public List validaPatronalConvencao(int idPessoa, int idConvencao, int idGCidade) {
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
         List result = db.pesquisaPessoaConvencaoGCidade(idPessoa, idConvencao, idGCidade);
         return result;
     }
@@ -318,7 +318,7 @@ public class RegistroPatronalBean implements Serializable {
 
     public List<Patronal> getListaPatronal() {
         if (listaPatronal.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
+            FilialDB db = new FilialDao();
             String por = porPesquisa;
             if (porPesquisa.equals("cnpj")) {
                 por = "documento";
