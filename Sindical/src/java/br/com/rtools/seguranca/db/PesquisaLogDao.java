@@ -7,9 +7,8 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-public class PesquisaLogDBTopLink extends DB implements PesquisaLogDB {
+public class PesquisaLogDao extends DB {
 
-    @Override
     public List listRotinasLogs() {
         try {
             Query query = getEntityManager().createQuery("SELECT L.rotina FROM Log AS L GROUP BY L.rotina ORDER BY L.rotina.rotina ASC");
@@ -22,15 +21,14 @@ public class PesquisaLogDBTopLink extends DB implements PesquisaLogDB {
         return new ArrayList();
     }
 
-    @Override
     public List pesquisaLogs(String dataInicial, String dataFinal, String horaInicial, String horaFinal, int idUsuario, int idRotina, String idInEvento, String descricao) {
         List listWhere = new ArrayList();
         if (dataInicial != null) {
             listWhere.add(" L.dtData BETWEEN :dtInicial AND :dtFinal ");
-            if(!horaInicial.isEmpty() && !horaFinal.isEmpty()) {
-                listWhere.add(" L.hora BETWEEN '"+horaInicial+"' AND '"+horaFinal+"' ");
-            } else if(!horaInicial.isEmpty()){
-                listWhere.add(" L.hora LIKE '"+horaInicial+"' ");
+            if (!horaInicial.isEmpty() && !horaFinal.isEmpty()) {
+                listWhere.add(" L.hora BETWEEN '" + horaInicial + "' AND '" + horaFinal + "' ");
+            } else if (!horaInicial.isEmpty()) {
+                listWhere.add(" L.hora LIKE '" + horaInicial + "' ");
             }
         }
         if (idUsuario != 0) {
@@ -43,7 +41,7 @@ public class PesquisaLogDBTopLink extends DB implements PesquisaLogDB {
             listWhere.add(" L.evento.id IN( " + idInEvento + ") ");
         }
         if (!descricao.isEmpty()) {
-            listWhere.add(" UPPER(L.conteudoOriginal) LIKE '%"+descricao.toUpperCase()+"%' OR UPPER(L.conteudoAlterado) LIKE '%"+descricao.toUpperCase()+"%' ");
+            listWhere.add(" UPPER(L.conteudoOriginal) LIKE '%" + descricao.toUpperCase() + "%' OR UPPER(L.conteudoAlterado) LIKE '%" + descricao.toUpperCase() + "%' ");
         }
         try {
             String where = "";
