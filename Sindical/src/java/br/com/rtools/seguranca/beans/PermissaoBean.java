@@ -1,5 +1,7 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.seguranca.dao.PermissaoDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;

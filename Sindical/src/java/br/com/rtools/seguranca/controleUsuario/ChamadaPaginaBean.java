@@ -3,7 +3,7 @@ package br.com.rtools.seguranca.controleUsuario;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;

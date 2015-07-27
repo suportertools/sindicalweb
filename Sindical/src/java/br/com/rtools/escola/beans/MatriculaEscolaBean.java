@@ -57,7 +57,7 @@ import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.FilialRotinaDao;
+import br.com.rtools.seguranca.dao.FilialRotinaDao;
 import br.com.rtools.utilitarios.*;
 import br.com.rtools.utilitarios.db.*;
 import java.io.File;

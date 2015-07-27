@@ -1,4 +1,4 @@
-package br.com.rtools.seguranca.db;
+package br.com.rtools.seguranca.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.*;

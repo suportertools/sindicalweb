@@ -8,7 +8,7 @@ import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.MacFilialDao;
+import br.com.rtools.seguranca.dao.MacFilialDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;

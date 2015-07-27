@@ -15,7 +15,7 @@ import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.utilitarios.*;
 import java.util.ArrayList;
 import java.util.List;

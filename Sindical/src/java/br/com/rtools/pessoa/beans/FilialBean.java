@@ -319,7 +319,7 @@ public class FilialBean {
 
 //    public void atualizarIndexFilial(){
 //        FilialCidadeDB db = new FilialCidadeDBToplink();
-//        FilialDB dbF = new FilialDBToplink();
+//        FilialDB dbF = new FilialDao();
 //        List<FilialCidade> fc = db.pesquisaTodos();
 //        //List<Filial> fili = dbF.pesquisaTodos();
 //        boolean tem;

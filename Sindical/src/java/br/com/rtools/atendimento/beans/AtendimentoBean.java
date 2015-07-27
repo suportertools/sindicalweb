@@ -19,7 +19,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.PermissaoUsuario;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.PermissaoUsuarioDao;
+import br.com.rtools.seguranca.dao.PermissaoUsuarioDao;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;

@@ -2,7 +2,7 @@ package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
