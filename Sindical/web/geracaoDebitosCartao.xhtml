@@ -41,7 +41,7 @@
                             <p:dataTable value="#{geracaoDebitosCartaoBean.listaSocios}" var="socio" styleClass="margin-top-max" rendered="#{not empty geracaoDebitosCartaoBean.listaSocios}" selection="#{geracaoDebitosCartaoBean.selected}" rowKey="#{socio.id}" disabledSelection="#{geracaoDebitosCartaoBean.disabled(socio.servicoPessoa.pessoa, socio.object)}">
                                 <p:column selectionMode="multiple" width="20" styleClass="text-center" disabledSelection="#{not empty socio.object}" />
                                 <p:column headerText="Foto" width="80">
-                                    <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(socio.servicoPessoa.pessoa)}" style="width: 70px; height: auto;" cache="false"/>
+                                    <p:graphicImage value="#{socio.servicoPessoa.pessoa.foto}" style="width: 70px; height: auto;" cache="false"/>
                                 </p:column>
                                 <p:column headerText="Nome" styleClass="#{socio.parentesco.parentesco eq 'TITULAR' ? 'font-color-red bold' : ''}">
                                     #{socio.servicoPessoa.pessoa.nome }
