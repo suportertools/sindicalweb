@@ -1,8 +1,7 @@
 package br.com.rtools.sistema.beans;
 
 import br.com.rtools.sistema.SisPessoa;
-import br.com.rtools.sistema.db.SisPessoaDB;
-import br.com.rtools.sistema.db.SisPessoaDBToplink;
+import br.com.rtools.sistema.dao.SisPessoaDao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import java.util.ArrayList;
@@ -104,12 +103,12 @@ public class SisPessoaBean {
     }
 
     public List<SisPessoa> getListaSisPessoa() {
-        SisPessoaDB pesquisa = new SisPessoaDBToplink();
+        SisPessoaDao sisPessoaDao = new SisPessoaDao();
         if (descPesquisa.equals("")) {
             listaSisPessoa.clear();
             return listaSisPessoa;
         } else {
-            listaSisPessoa = pesquisa.pesquisarSisPessoa(descPesquisa, porPesquisa, comoPesquisa);
+            listaSisPessoa = sisPessoaDao.pesquisarSisPessoa(descPesquisa, porPesquisa, comoPesquisa);
             return listaSisPessoa;
         }
     }
