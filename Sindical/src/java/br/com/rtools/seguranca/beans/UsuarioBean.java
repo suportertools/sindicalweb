@@ -1,5 +1,8 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.seguranca.dao.PermissaoDao;
+import br.com.rtools.seguranca.dao.PermissaoUsuarioDao;
+import br.com.rtools.seguranca.dao.UsuarioAcessoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.beans.FisicaBean;

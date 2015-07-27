@@ -1,6 +1,6 @@
 package br.com.rtools.seguranca;
 
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import javax.faces.context.FacesContext;
 import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;

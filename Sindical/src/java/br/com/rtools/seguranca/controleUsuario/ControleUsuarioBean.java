@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.controleUsuario;
 
+import br.com.rtools.seguranca.dao.MacFilialDao;
 import br.com.rtools.associativo.ConfiguracaoSocial;
 import br.com.rtools.associativo.beans.ConfiguracaoSocialBean;
 import br.com.rtools.logSistema.NovoLog;

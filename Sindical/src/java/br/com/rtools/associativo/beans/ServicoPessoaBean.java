@@ -14,7 +14,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;

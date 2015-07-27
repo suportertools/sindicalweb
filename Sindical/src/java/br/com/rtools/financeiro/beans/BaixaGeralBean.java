@@ -39,7 +39,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.db.RotinaDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
