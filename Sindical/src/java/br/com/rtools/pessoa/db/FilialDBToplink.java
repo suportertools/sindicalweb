@@ -5,107 +5,9 @@ import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Registro;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 
 public class FilialDBToplink extends DB implements FilialDB {
-
-    @Override
-    public boolean insert(Filial filial) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(filial);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Filial filial) {
-        try {
-            getEntityManager().merge(filial);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Filial filial) {
-        try {
-            getEntityManager().remove(filial);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean insertRegistro(Registro registro) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(registro);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean updateRegistro(Registro registro) {
-        try {
-            getEntityManager().merge(registro);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteRegistro(Registro registro) {
-        try {
-            getEntityManager().remove(registro);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public Filial pesquisaCodigo(int id) {
-        Filial result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Filial.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Filial) qry.getSingleResult();
-        } catch (Exception e) {
-            String a = e.getMessage();
-        }
-        return result;
-    }
-
-    @Override
-    public Registro pesquisaCodigoRegistro(int id) {
-        Registro result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Registro.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Registro) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
 
     @Override
     public Registro pesquisaRegistroPorFilial(int id) {
@@ -133,16 +35,6 @@ public class FilialDBToplink extends DB implements FilialDB {
             return qry.getResultList();
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    @Override
-    public List<Filial> pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select fil from Filial fil order by fil.filial.pessoa.nome");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return new ArrayList();
         }
     }
 
@@ -345,6 +237,36 @@ public class FilialDBToplink extends DB implements FilialDB {
                 }
             }
             List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    /**
+     * Nome da tabela onde esta a lista de filiais Ex:
+     * findByTabela('matr_escola');
+     *
+     * @param table
+     * @return Todas as filias da tabela específicada
+     */
+    public List findByTabela(String table) {
+        try {
+            String queryString
+                    = "     SELECT F.* FROM pes_filial AS F                     \n"
+                    + " INNER JOIN pes_juridica AS J ON J.id = F.id_filial      \n"
+                    + " INNER JOIN pes_pessoa AS P ON P.id = J.id_pessoa        \n"
+                    + "      WHERE F.id IN (                                    \n"
+                    + "	           SELECT T.id_filial                           \n"
+                    + "              FROM " + table + " AS T                    \n"
+                    + "          GROUP BY T.id_filial                           \n"
+                    + ")                                                        \n"
+                    + " ORDER BY P.ds_nome ";
+            Query query = getEntityManager().createNativeQuery(queryString, Filial.class);
+            List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }
