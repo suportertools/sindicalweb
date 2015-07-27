@@ -10,7 +10,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.FilialCidadeDB;
 import br.com.rtools.pessoa.db.FilialCidadeDBToplink;
 import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataObject;
@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.primefaces.event.CellEditEvent;
 
@@ -53,18 +51,17 @@ public class FilialBean {
         GenericaSessao.remove("filialBean");
         GenericaSessao.remove("juridicaPesquisa");
     }
-    
+
     public void onCellEdit(CellEditEvent event) {
         Object oldValue = event.getOldValue();
         Object newValue = event.getNewValue();
-        
+
         Dao dao = new Dao();
         Filial fx = (Filial) dao.find(new Filial(), listaFilial.get(event.getRowIndex()).getId());
         fx.setQuantidadeAgendamentosPorEmpresa((Integer) newValue);
-        
 
         dao.openTransaction();
-        if (!dao.update(fx)){
+        if (!dao.update(fx)) {
             dao.rollback();
             GenericaMensagem.error("Erro", "Não foi possível atualizar filial");
             return;
@@ -72,23 +69,23 @@ public class FilialBean {
         dao.commit();
         GenericaMensagem.info("Sucesso", "Filial Atualizada!");
     }
-    
-    public void updateFilial(Filial filialx){
-        
+
+    public void updateFilial(Filial filialx) {
+
         Dao dao = new Dao();
 
         dao.openTransaction();
-        if (!dao.update(filialx)){
+        if (!dao.update(filialx)) {
             dao.rollback();
             GenericaMensagem.error("Erro", "Não foi possível atualizar filial");
             return;
         }
 
         dao.commit();
-        
+
     }
-    
-    public void removerFilial(){
+
+    public void removerFilial() {
         filial = new Filial();
     }
 
@@ -109,7 +106,7 @@ public class FilialBean {
 
     public void btnAddFilial() {
 
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
 
         if (!db.pesquisaFilialExiste(filial.getFilial().getId()).isEmpty()) {
             GenericaMensagem.warn("Erro", "Filial já existe!");
@@ -236,15 +233,13 @@ public class FilialBean {
     }
 
     public List<Filial> getListaFilial() {
-        FilialDB db = new FilialDBToplink();
-        listaFilial = db.pesquisaTodos();
+        listaFilial = new Dao().list(new Filial(), true);
         return listaFilial;
     }
 
     public List<Filial> getListaFilialSemMatriz() {
         if (listaFilial.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
-            listaFilial = db.pesquisaTodos();
+            listaFilial = new Dao().list(new Filial(), true);
         }
         return listaFilial;
     }
@@ -305,8 +300,8 @@ public class FilialBean {
     public List<SelectItem> getResult() {
         if ((result.isEmpty()) || (this.adicionarLista)) {
             result.clear();
-            FilialDB db = new FilialDBToplink();
-            List<Filial> fi = db.pesquisaTodos();
+            FilialDB db = new FilialDao();
+            List<Filial> fi = new Dao().list(new Filial(), true);
             result.add(new SelectItem(0,
                     " -- NENHUM -- ",
                     "-1"));

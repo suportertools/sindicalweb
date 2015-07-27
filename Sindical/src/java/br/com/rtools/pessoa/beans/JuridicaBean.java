@@ -1552,14 +1552,14 @@ public class JuridicaBean implements Serializable {
 
     public List getPesquisaJuridicaFilial() {
         //List result = null;
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
         List result = db.pesquisaJuridicaFilial(juridica.getId());
         return result;
     }
 
     public void excluirFilial() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
         filial = db.pesquisaFilialPertencente(juridica.getId(), filial.getFilial().getId());
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(filial)) {
@@ -1572,7 +1572,7 @@ public class JuridicaBean implements Serializable {
 
     public List getPesquisaFilial() {
         //List result = null;
-        FilialDB db = new FilialDBToplink();
+        FilialDB db = new FilialDao();
         List result = db.pesquisaFilial(descPesquisa, porPesquisa, comoPesquisa, juridica.getId());
         return result;
     }
