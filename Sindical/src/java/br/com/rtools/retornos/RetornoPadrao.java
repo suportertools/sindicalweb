@@ -2,14 +2,11 @@ package br.com.rtools.retornos;
 
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Movimento;
-import br.com.rtools.financeiro.ServicoContaCobranca;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.ArquivoRetorno;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaRetorno;
