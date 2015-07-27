@@ -214,6 +214,7 @@ public class PhotoCam implements Serializable {
     }
 
     public synchronized String capture(CaptureEvent captureEvent) throws InterruptedException, FileNotFoundException {
+        streamedContent = null;
         if (PhotoCam.oncapture(captureEvent, PATH_FILE, "", true)) {
             load = true;
             complete();
