@@ -122,11 +122,12 @@
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
-                            <h:panelGrid columns="4" styleClass="margin-top-max margin-bottom-max">
+                            <h:panelGrid columns="5" styleClass="margin-top-max margin-bottom-max">
                                 <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();" />
                                 <p:commandButton value="Novo" action="#{usuarioBean.clear()}" update=":form_u:"/>
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show();" />
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}"/>
+                                <p:commandButton value="Lembrete de Senha" onclick="PF('dlg_password_mail').show()" type="button" icon="ui-icon-mail-closed" rendered="#{segurancaUtilitariosBean.sessaoUsuario.id == 1}" disabled="#{usuarioBean.usuario.id == -1}"/>
                             </h:panelGrid>
                             <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" />
                             <h:panelGrid columns="2" columnClasses="verticalAlignTop, verticalAlignTop" styleClass="margin-top-max">
@@ -253,6 +254,12 @@
                                 <f:facet name="footer">
                                     <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();"/>
                                 </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_password_mail" modal="true" resizable="false" header="Lembrete de Senha">
+                                <p:messages autoUpdate="true" showDetail="true" closable="true" id="i_panel_email_test" /> 
+                                <h:panelGrid columns="3" styleClass="margin-top-max">
+                                    <p:commandButton action="#{usuarioBean.send}" value="Enviar" update="i_panel_email_test"/>
+                                </h:panelGrid>
                             </p:dialog>                            
                         </h:form>
                     </p:panel>

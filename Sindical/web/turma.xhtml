@@ -14,6 +14,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <ui:include src="templates/templateAcessoFilial.xhtml"/>
             <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_turma">
                     <h:outputScript name="tradutor_primefaces.js" library="js" /> 
@@ -23,13 +24,15 @@
                     <div class="clear"></div>
                     <p:panel id="id_panel_turma">
                         <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="5">
-                            <p:column>
+                            <h:column>
                                 <p:outputLabel value="Filial: "  />
-                            </p:column>
-                            <p:column>
-                                <p:outputLabel value="#{turmaBean.turma.filial.filial.pessoa.nome}" styleClass="font-color-red"/>
-                                <p:outputLabel value="#{turmaBean.msgStatusFilial}" rendered="#{turmaBean.turma.filial.filial.pessoa.id  == -1}" styleClass="font-color-red"/>
-                            </p:column>
+                            </h:column>
+                            <h:column>
+                                <p:selectOneMenu value="#{turmaBean.filial_id}" disabled="#{!turmaBean.liberaAcessaFilial}">
+                                    <p:ajax event="change" update="@this" />
+                                    <f:selectItems value="#{turmaBean.listFiliais}" />
+                                </p:selectOneMenu>
+                            </h:column>
                             <p:column>
                                 <p:outputLabel value="Curso: " />
                             </p:column>
@@ -164,14 +167,7 @@
                             <br /><br />
                             <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                         </center>
-                    </p:dialog>
-                    <p:dialog widgetVar="dlg_block" modal="true" resizable="false" header="Importante!" width="400" draggable="false" closable="false" visible="#{turmaBean.turma.filial.filial.id == -1}">
-                        <p:outputLabel value="- Realizar acesso com filial!" styleClass="font-color-red font-size-14" /><br /><br />
-                        <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>
-                        <f:facet name="footer">
-                            <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
-                        </f:facet>
-                    </p:dialog>                     
+                    </p:dialog>                    
                 </h:form>
             </p:panel>
         </f:view>
