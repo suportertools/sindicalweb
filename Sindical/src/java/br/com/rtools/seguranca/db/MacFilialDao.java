@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MacFilialDBToplink extends DB {
+public class MacFilialDao extends DB {
 
     public List pesquisaTodos() {
         try {
