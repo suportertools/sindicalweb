@@ -16,58 +16,56 @@ import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
 public class MatriculaEscolaDao extends DB {
+
     public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
         try {
             String text = "", inner = "", filter = "";
-            
-            text =  "SELECT me.* \n " +
-                    "  FROM matr_escola me \n " +
-                    " INNER JOIN fin_servico_pessoa sp ON sp.id = me.id_servico_pessoa \n " +
-                    " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n " + 
-                    " INNER JOIN esc_status es ON es.id = me.id_status \n ";
+
+            text = "SELECT me.* \n "
+                    + "  FROM matr_escola me \n "
+                    + " INNER JOIN fin_servico_pessoa sp ON sp.id = me.id_servico_pessoa \n "
+                    + " INNER JOIN fin_servicos s ON s.id = sp.id_servico \n "
+                    + " INNER JOIN esc_status es ON es.id = me.id_status \n ";
             if (filtroStatus != 0 && filtroStatus != 5) {
                 filter += " WHERE es.id = " + filtroStatus + " \n ";
-            }else{
+            } else {
                 filter += " WHERE es.id IN (SELECT id FROM esc_status) \n ";
             }
-            
+
             if (tipoMatricula.equals("Individual")) {
-                inner +=  " INNER JOIN esc_matr_individual mi ON mi.id_matr_escola = me.id \n ";
-            }else{
-                inner +=  " INNER JOIN esc_matr_turma mt ON mt.id_matr_escola = me.id \n ";
+                inner += " INNER JOIN esc_matr_individual mi ON mi.id_matr_escola = me.id \n ";
+            } else {
+                inner += " INNER JOIN esc_matr_turma mt ON mt.id_matr_escola = me.id \n ";
             }
-            
+
             if (porPesquisa.equals("aluno")) {
-                inner +=  " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n ";
-            }else{
-                inner +=  " INNER JOIN pes_pessoa p ON p.id = sp.id_cobranca \n ";
+                inner += " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n ";
+            } else {
+                inner += " INNER JOIN pes_pessoa p ON p.id = sp.id_cobranca \n ";
             }
-            
-            
-            if (!descricaoCurso.isEmpty()){
+
+            if (!descricaoCurso.isEmpty()) {
                 descricaoCurso = AnaliseString.normalizeLower(descricaoCurso);
-                descricaoCurso = (comoPesquisa.equals("Inicial") ? descricaoCurso+"%" : "%"+descricaoCurso+"%");                
-                filter += " AND LOWER(FUNC_TRANSLATE(s.ds_descricao)) LIKE '"+descricaoCurso+"' \n ";
+                descricaoCurso = (comoPesquisa.equals("Inicial") ? descricaoCurso + "%" : "%" + descricaoCurso + "%");
+                filter += " AND LOWER(FUNC_TRANSLATE(s.ds_descricao)) LIKE '" + descricaoCurso + "' \n ";
             }
-            
-            if (!descricao.isEmpty()){
+
+            if (!descricao.isEmpty()) {
                 descricao = AnaliseString.normalizeLower(descricao);
-                descricao = (comoPesquisa.equals("Inicial") ? descricao+"%" : "%"+descricao+"%");
-                filter += " AND LOWER(FUNC_TRANSLATE(p.ds_nome)) LIKE '"+descricao+"' \n ";
+                descricao = (comoPesquisa.equals("Inicial") ? descricao + "%" : "%" + descricao + "%");
+                filter += " AND LOWER(FUNC_TRANSLATE(p.ds_nome)) LIKE '" + descricao + "' \n ";
             }
-            
-            if (filial != null){
+
+            if (filial != null) {
                 inner += "  INNER JOIN pes_filial f ON f.id = me.id_filial AND f.id = " + filial.getId() + " \n ";
             }
             Query qry = getEntityManager().createNativeQuery(text + inner + filter, MatriculaEscola.class);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
@@ -159,28 +157,28 @@ public class MatriculaEscolaDao extends DB {
     public String desfazerMovimento(MatriculaEscola me) {
         LoteDB loteDB = new LoteDBToplink();
         Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getServicoPessoa().getEvt());
-        
+
         if (lote == null) {
             return null;
         }
-        
+
         if (lote.getId() == -1) {
             return null;
         }
-        
+
         //SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         Dao dao = new Dao();
         try {
             Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getServicoPessoa().getEvt().getId() + " AND M.baixa IS NOT NULL AND M.ativo = TRUE");
             List<Movimento> listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
-            
-            if (!listMovimentos.isEmpty()){
+
+            if (!listMovimentos.isEmpty()) {
                 return "Movimentos Baixados não podem ser Excluídos!";
             }
-            
+
             queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getServicoPessoa().getEvt().getId() + " AND M.baixa IS NULL AND M.ativo = TRUE");
             listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
-            
+
             dao.openTransaction();
             for (Movimento listMovimento : listMovimentos) {
                 if (!dao.delete(listMovimento)) {
@@ -200,16 +198,15 @@ public class MatriculaEscolaDao extends DB {
                 dao.rollback();
                 return "Não foi possível excluir Matrícula";
             }
-            
+
             if (!dao.delete(evt)) {
                 dao.rollback();
                 return "Não foi possível excluir EVT";
             }
-            
+
             dao.commit();
-            
+
 //            
-            
             //Dao dao = new Dao();
 //            db.abrirTransacao();
 //            if (!db.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt"))) {
@@ -217,7 +214,6 @@ public class MatriculaEscolaDao extends DB {
 //                return "Não foi possível excluir EVT";
 //            }
 //            db.comitarTransacao();
-            
             return null;
         } catch (Exception e) {
             dao.rollback();
@@ -316,15 +312,15 @@ public class MatriculaEscolaDao extends DB {
         }
         return new ArrayList();
     }
-    
+
     public List<ServicoValor> listServicoValorPorServicoIdade(Integer id_servico, Integer idade) {
         try {
             Query query = getEntityManager().createNativeQuery(
-                    "SELECT sv.* \n " +
-                    "  FROM fin_servico_valor sv \n " +
-                    " WHERE sv.id_servico = "+id_servico+" \n " +
-                    "   AND "+idade+" >= sv.nr_idade_ini \n" +
-                    "   AND "+idade+" <= sv.nr_idade_fim", ServicoValor.class
+                    "  SELECT sv.* \n "
+                    + "  FROM fin_servico_valor sv \n "
+                    + " WHERE sv.id_servico = " + id_servico + " \n "
+                    + "   AND " + idade + " >= sv.nr_idade_ini \n"
+                    + "   AND " + idade + " <= sv.nr_idade_fim", ServicoValor.class
             );
             return query.getResultList();
         } catch (Exception e) {
