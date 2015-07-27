@@ -8,7 +8,7 @@ import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class RotinaDBToplink extends DB {
+public class RotinaDao extends DB {
 
     public List pesquisaTodosOrdenadoAtivo() {
         try {
