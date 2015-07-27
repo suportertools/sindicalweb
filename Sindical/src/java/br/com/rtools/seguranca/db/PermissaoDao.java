@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class PermissaoDBToplink extends DB {
+public class PermissaoDao extends DB {
 
     public List pesquisaTodosAgrupados() {
         try {
