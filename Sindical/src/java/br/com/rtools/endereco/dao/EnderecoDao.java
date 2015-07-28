@@ -1,4 +1,4 @@
-package br.com.rtools.endereco.db;
+package br.com.rtools.endereco.dao;
 
 import br.com.rtools.endereco.*;
 import br.com.rtools.principal.DB;
