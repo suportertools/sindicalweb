@@ -20,7 +20,7 @@
                 <h:outputLabel value=" ... Aguarde" />
             </p:dialog>
             <h:form id="form_pe">
-                <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true" resizable="false" visible="#{!enderecoBean.msgDetalhada.equals('')}">
+                <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true" resizable="false" visible="#{not empty enderecoBean.msgDetalhada}">
                     <p:outputLabel value="#{enderecoBean.msgDetalhada}" />
                     <f:facet name="footer">
                         <p:commandButton value="OK" title="OK" onclick="PF('dlg_mensagem').hide();"/>
@@ -30,7 +30,8 @@
                 <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <h:outputText value="Pesquisa Endereço" styleClass="fonteHeader" />
                     <div class="clear"></div>
-                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                    <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" />
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza margin-top-max">
                         <h:panelGrid columns="4">
                             <h:outputText value="CEP: " styleClass="fontePadraoNegrito"/>                            
                             <p:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if (event.keyCode === 13) 
