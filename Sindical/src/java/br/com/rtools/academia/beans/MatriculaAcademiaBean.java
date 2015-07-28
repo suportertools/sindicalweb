@@ -47,12 +47,15 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.seguranca.FilialRotina;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.dao.FilialRotinaDao;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.Dao;
@@ -114,6 +117,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private String target;
     private List<MatriculaAcademia> listaAcademia;
     private List<Movimento> listaMovimentos;
+    private List<SelectItem> listFiliais;
     private List<SelectItem> listaDiaVencimento;
     private List<SelectItem> listaModalidades;
     private List<SelectItem> listaPeriodosGrade;
@@ -130,6 +134,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private boolean alunoFoto;
     private boolean matriculaAtiva;
     private Boolean disabled;
+    private Boolean liberaAcessaFilial;
     private int idDiaVencimento;
     private int idModalidade;
     private Object idModalidadePesquisa;
@@ -138,6 +143,8 @@ public class MatriculaAcademiaBean implements Serializable {
     private int idDiaVencimentoPessoa;
     private int idFTipoDocumento;
     private int idDiaParcela;
+    private Integer filial_id;
+    private Integer filial_id_2;
     private float vTaxa;
     private float desconto;
     private float valorCartao;
@@ -176,6 +183,7 @@ public class MatriculaAcademiaBean implements Serializable {
         listaModalidades = new ArrayList();
         listaPeriodosGrade = new ArrayList();
         listaDiaParcela = new ArrayList();
+        listFiliais = new ArrayList();
         taxa = false;
         ocultaBotaoSalvar = false;
         socio = false;
@@ -207,6 +215,16 @@ public class MatriculaAcademiaBean implements Serializable {
         pegarIdServico();
         calculoValor();
         calculoDesconto();
+        filial_id = 0;
+        filial_id_2 = 0;
+        liberaAcessaFilial = false;
+        loadLiberaAcessaFilial();
+    }
+
+    public void loadLiberaAcessaFilial() {
+        if (new ControleAcessoBean().permissaoValida("libera_acesso_filiais", 4)) {
+            liberaAcessaFilial = true;
+        }
     }
 
     @PreDestroy
@@ -922,18 +940,18 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setTaxa(boolean taxa) {
         this.taxa = taxa;
     }
-    
-    public Fisica getAluno(){
+
+    public Fisica getAluno() {
         if (!GenericaSessao.exists("fisicaPesquisa") && !GenericaSessao.exists("pessoaPesquisa")) {
             return aluno;
         }
-        
+
         if (!GenericaSessao.exists("pesquisaFisicaTipo")) {
             return aluno;
         }
-        
+
         String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
-        
+
         clear(1);
         disabled = false;
         mensagemInadinplente = "";
@@ -942,24 +960,24 @@ public class MatriculaAcademiaBean implements Serializable {
             aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
             verificaSocio();
             LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-            if (!dbl.listaSerasa(aluno.getPessoa().getId()).isEmpty()){
+            if (!dbl.listaSerasa(aluno.getPessoa().getId()).isEmpty()) {
                 GenericaMensagem.warn("PESSOA", aluno.getPessoa().getNome() + " contém o nome no Serasa!");
             }
-            if (socios != null && socios.getId() != -1){
+            if (socios != null && socios.getId() != -1) {
                 // PESSOA ASSOCIADA
                 matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
-            }else{
+            } else {
                 // PESSOA NÁO ASSOCIADA
                 matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
             }
-            
+
             matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
-        }else{
+        } else {
             verificaSocio();
-            if (socios != null && socios.getId() != -1){
+            if (socios != null && socios.getId() != -1) {
                 // PESSOA ASSOCIADA
                 matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), true));
-            }else{
+            } else {
                 // PESSOA NÁO ASSOCIADA
                 matriculaAcademia.getServicoPessoa().setCobranca(retornaResponsavel(aluno.getPessoa().getId(), false));
             }
@@ -970,69 +988,68 @@ public class MatriculaAcademiaBean implements Serializable {
         atualizaValor();
         return aluno;
     }
-    
-    public Pessoa retornaResponsavel(Integer id_pessoa, boolean associada){
-        if (associada){
+
+    public Pessoa retornaResponsavel(Integer id_pessoa, boolean associada) {
+        if (associada) {
             responsavel = new FunctionsDao().titularDaPessoa(id_pessoa);
-        }else{
-            if (GenericaSessao.exists("pessoaPesquisa"))
+        } else {
+            if (GenericaSessao.exists("pessoaPesquisa")) {
                 responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
-            else
+            } else {
                 responsavel = (Pessoa) new Dao().find(new Pessoa(), id_pessoa);
-            
+            }
+
             // RESPONSAVEL FISICA
             FisicaDB dbf = new FisicaDBToplink();
             Fisica fi = dbf.pesquisaFisicaPorPessoa(responsavel.getId());
-            if (fi != null){
+            if (fi != null) {
                 DataHoje dh = new DataHoje();
                 int idade = dh.calcularIdade(fi.getNascimento());
-                if (idade < 18){
+                if (idade < 18) {
                     GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não é maior de idade!");
                     return responsavel = new Pessoa();
                 }
-            }
-            else
-            {
-            // RESPONSAVEL JURIDICA
-            // POR ENQUANTO NÃO FAZ NADA
+            } else {
+                // RESPONSAVEL JURIDICA
+                // POR ENQUANTO NÃO FAZ NADA
                 GenericaMensagem.warn("RESPONSÁVEL", "Pessoa Juridica não disponível no momento!");
                 return responsavel = new Pessoa();
             }
         }
-        
+
         Socios s = responsavel.getSocios();
-        if (s != null && s.getId() != -1){
+        if (s != null && s.getId() != -1) {
             if (responsavel.getId() != s.getMatriculaSocios().getTitular().getId()) {
                 GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " é um sócio dependente!");
                 return responsavel = new Pessoa();
             }
         }
-        
+
         // MENSAGEM SE POSSUI DÉBITOS
-        if (new FunctionsDao().inadimplente(responsavel.getId())){
+        if (new FunctionsDao().inadimplente(responsavel.getId())) {
             GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " possui débitos com o Sindicato!");
         }
-        
+
         // ENDEREÇO OBRIGATÓRIO
         JuridicaDB dbj = new JuridicaDBToplink();
         List lista_pe = dbj.pesquisarPessoaEnderecoJuridica(responsavel.getId());
-        if (lista_pe.isEmpty()){
+        if (lista_pe.isEmpty()) {
             GenericaMensagem.warn("RESPONSÁVEL", responsavel.getNome() + " não possui endereço cadastrado!");
             return responsavel = new Pessoa();
         }
-        
+
         // CADASTRO NO SERASA
         LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-        if (!dbl.listaSerasa(responsavel.getId()).isEmpty()){
-            GenericaMensagem.warn("PESSOA", responsavel.getNome()+ " contém o nome no Serasa!");
+        if (!dbl.listaSerasa(responsavel.getId()).isEmpty()) {
+            GenericaMensagem.warn("PESSOA", responsavel.getNome() + " contém o nome no Serasa!");
         }
-        
+
         PessoaDB pdb = new PessoaDBToplink();
         pessoaComplemento = new PessoaComplemento();
         pessoaComplemento = pdb.pesquisaPessoaComplementoPorPessoa(responsavel.getId());
-        
+
         return responsavel;
-    }    
+    }
 
 //    public Fisica getAlunoxxx() {
 //        if (GenericaSessao.exists("fisicaPesquisa")) {
@@ -1128,7 +1145,6 @@ public class MatriculaAcademiaBean implements Serializable {
 //        getSocios();
 //        return aluno;
 //    }
-
     public void setAluno(Fisica aluno) {
         this.aluno = aluno;
     }
@@ -1527,7 +1543,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 } else {
                     idCondicaoPagto = 2;
                 }
-                
+
                 plano5 = matriculaAcademia.getServicoPessoa().getServicos().getPlano5();
                 servicos = matriculaAcademia.getServicoPessoa().getServicos();
                 FTipoDocumento fTipoDocumento = (FTipoDocumento) di.find(new FTipoDocumento(), matriculaAcademia.getServicoPessoa().getTipoDocumento().getId());
@@ -2413,6 +2429,66 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public List<SelectItem> getListFiliais() {
+        if (listFiliais.isEmpty()) {
+            Filial f = MacFilial.getAcessoFilial().getFilial();
+            if (f.getId() != -1) {
+                if (liberaAcessaFilial || Usuario.getUsuario().getId() == 1) {
+                    liberaAcessaFilial = true;
+                    // ROTINA MATRÍCULA ESCOLA
+                    List<FilialRotina> list = new FilialRotinaDao().findByRotina(new Rotina().get().getId());
+                    // ID DA FILIAL
+                    if (!list.isEmpty()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (i == 0) {
+                                filial_id = i;
+                            }
+                            if (f.getId() == list.get(i).getId()) {
+                                filial_id = i;
+                            }
+                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
+                        }
+                    } else {
+                        filial_id = 0;
+                        listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                    }
+                } else {
+                    filial_id = 0;
+                    listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                }
+            }
+        }
+        return listFiliais;
+    }
+
+    public void setListFiliais(List<SelectItem> listFiliais) {
+        this.listFiliais = listFiliais;
+    }
+
+    public Integer getFilial_id() {
+        return filial_id;
+    }
+
+    public void setFilial_id(Integer filial_id) {
+        this.filial_id = filial_id;
+    }
+
+    public Integer getFilial_id_2() {
+        return filial_id_2;
+    }
+
+    public void setFilial_id_2(Integer filial_id_2) {
+        this.filial_id_2 = filial_id_2;
+    }
+
+    public Boolean getLiberaAcessaFilial() {
+        return liberaAcessaFilial;
+    }
+
+    public void setLiberaAcessaFilial(Boolean liberaAcessaFilial) {
+        this.liberaAcessaFilial = liberaAcessaFilial;
     }
 
 }
