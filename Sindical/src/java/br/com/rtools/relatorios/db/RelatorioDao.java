@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoDB {
+public class RelatorioDao extends DB {
 
-    @Override
     public List<Relatorios> pesquisaTipoRelatorio(int idRotina) {
         List<Relatorios> result = new ArrayList();
         try {
@@ -25,7 +24,6 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
         return result;
     }
 
-    @Override
     public List pesquisaCidadesRelatorio() {
         List result = new ArrayList();
         try {
@@ -40,7 +38,6 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
         return result;
     }
 
-    @Override
     public Relatorios pesquisaRelatorios(int idRelatorio) {
         Relatorios result = null;
         try {
@@ -54,7 +51,6 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
         return result;
     }
 
-    @Override
     public Relatorios pesquisaRelatoriosPorJasper(String dsJasper) {
         Relatorios result = null;
         try {
@@ -68,7 +64,6 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
         return result;
     }
 
-    @Override
     public List<Rotina> pesquisaRotina() {
         List<Rotina> lista = new ArrayList();
         try {
@@ -79,7 +74,6 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
         return lista;
     }
 
-    @Override
     public List<Relatorios> pesquisaTodosRelatorios() {
         List<Relatorios> lista = new ArrayList();
         try {
