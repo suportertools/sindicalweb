@@ -10,8 +10,7 @@ import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.db.EnviarArquivosDB;
 import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -106,7 +105,7 @@ public class RelatorioOposicaoBean implements Serializable {
     public void visualizar() {
         Relatorios relatorios = null;
         if (!getListaTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
         }
         if (relatorios == null) {
@@ -221,7 +220,7 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public List<SelectItem> getListaTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(239);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));

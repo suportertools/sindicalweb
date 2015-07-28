@@ -14,8 +14,7 @@ import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioFechamentoGuiasDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -110,7 +109,7 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
     public void visualizar(int tcase) {
         Relatorios relatorios = null;
         if (!getListRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(getListRelatorios().get(index[0]).getDescription()));
             if (!getListRelatorioOrdem().isEmpty()) {
                 relatorios.setQryOrdem(((RelatorioOrdem) new Dao().find(new RelatorioOrdem(), Integer.parseInt(getListRelatorioOrdem().get(index[2]).getDescription()))).getQuery());
@@ -338,7 +337,7 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
 
     public List<SelectItem> getListRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = db.pesquisaTipoRelatorio(132);
             for (int i = 0; i < list.size(); i++) {
                 if (i == 0) {

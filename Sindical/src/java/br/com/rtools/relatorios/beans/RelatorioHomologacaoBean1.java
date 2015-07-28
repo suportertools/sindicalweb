@@ -6,8 +6,8 @@
 //import br.com.rtools.pessoa.Juridica;
 //import br.com.rtools.pessoa.Pessoa;
 //import br.com.rtools.relatorios.Relatorios;
-//import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-//import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+//import br.com.rtools.relatorios.db.RelatorioDao;
+//import br.com.rtools.relatorios.db.RelatorioDaoToplink;
 //import br.com.rtools.relatorios.db.RelatorioHomologacaoDB;
 //import br.com.rtools.relatorios.db.RelatorioHomologacaoDBToplink;
 //import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -58,7 +58,7 @@
 //    
 //
 //    public String visualizarRelatorio() {
-//        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+//        RelatorioDao db = new RelatorioDaoToplink();
 //        RelatorioHomologacaoDB dbh = new RelatorioHomologacaoDBToplink();
 //        Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
 //
@@ -146,7 +146,7 @@
 //    public List<SelectItem> getListaTipoRelatorios() {
 //        List<SelectItem> relatorios = new Vector<SelectItem>();
 //        int i = 0;
-//        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+//        RelatorioDao db = new RelatorioDaoToplink();
 //        List select = db.pesquisaTipoRelatorio(177);
 //        while (i < select.size()) {
 //            relatorios.add(new SelectItem(new Integer(i),

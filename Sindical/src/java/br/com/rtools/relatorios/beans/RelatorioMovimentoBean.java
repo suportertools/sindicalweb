@@ -3,7 +3,6 @@ package br.com.rtools.relatorios.beans;
 import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoCidade;
-import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.arrecadacao.db.GrupoCidadeDB;
@@ -26,8 +25,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDB;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -213,7 +211,7 @@ public class RelatorioMovimentoBean implements Serializable {
         Juridica sindicato = (Juridica) (new Dao()).find(new Juridica(), 1);
         PessoaEndereco endSindicato = (new PessoaEnderecoDBToplink()).pesquisaEndPorPessoaTipo(sindicato.getId(), 3);
 
-        Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
+        Relatorios relatorio = (new RelatorioDao()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 
         String idsEcs = "";
         if (radioContabil.equals("selecionado")) {
@@ -404,7 +402,7 @@ public class RelatorioMovimentoBean implements Serializable {
             return;
         }
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(collection);
-        Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
+        Relatorios relatorio = (new RelatorioDao()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
         GenericaMensagem.warn("Sucesso", "Relatório gerado!");
         try {
             JasperPrint print = JasperFillManager.fillReport(
@@ -444,7 +442,7 @@ public class RelatorioMovimentoBean implements Serializable {
         }
 
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(collection);
-        Relatorios relatorio = (new RelatorioGenericoDBToplink()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
+        Relatorios relatorio = (new RelatorioDao()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 
         String nomeDownload = "", pathPasta = "";
         try {
@@ -619,7 +617,7 @@ public class RelatorioMovimentoBean implements Serializable {
 
     public List<SelectItem> getListaTipoRelatorio() {
         if (listaTipoRelatorio.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List select = db.pesquisaTipoRelatorio(110);
             for (int i = 0; i < select.size(); i++) {
                 listaTipoRelatorio.add(new SelectItem(i,

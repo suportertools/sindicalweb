@@ -16,9 +16,8 @@ import br.com.rtools.impressao.ParametroSocios;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -267,7 +266,7 @@ public class RelatorioSociosBean implements Serializable {
 
     public List<SelectItem> getListaRelatorios() {
         if (listaRelatorio.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = db.pesquisaTipoRelatorio(171);
             for (int i = 0; i < list.size(); i++) {
                 if (i == 0) {
@@ -297,7 +296,7 @@ public class RelatorioSociosBean implements Serializable {
 //            return null;
 //        }
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioSociosDB dbS = new RelatorioSociosDBToplink();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaRelatorios().get(idRelatorio).getDescription()));
         if (!listaRelatorioOrdem.isEmpty()) {

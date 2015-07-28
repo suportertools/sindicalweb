@@ -9,8 +9,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.Raca;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
@@ -162,7 +161,7 @@ public class RelatorioRaisBean implements Serializable {
     public void visualizar(int tcase) {
         Relatorios relatorios = null;
         if (!getListaTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(index[0]);
         }
         if (relatorios == null) {
@@ -407,7 +406,7 @@ public class RelatorioRaisBean implements Serializable {
         if (!parametroRaisNaoEnviadasRelatorio.isEmpty()) {
             Relatorios r = null;
             if (!getListaTipoRelatorios().isEmpty()) {
-                RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+                RelatorioDao rgdb = new RelatorioDao();
                 r = rgdb.pesquisaRelatorios(index[0]);
             }
             if (r == null) {
@@ -424,7 +423,7 @@ public class RelatorioRaisBean implements Serializable {
 
     public List<SelectItem> getListaTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list;
             if (getRaisEnviadas()) {
                 list = (List<Relatorios>) db.pesquisaTipoRelatorio(273);

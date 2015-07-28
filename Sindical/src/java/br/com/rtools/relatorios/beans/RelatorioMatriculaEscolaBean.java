@@ -16,8 +16,7 @@ import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioMatriculaEscolaDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
@@ -160,7 +159,7 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
         Dao dao = new Dao();
         Relatorios relatorios;
         if (!getListTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(listSelectItem[0].get(index[0]).getDescription()));
         } else {
             GenericaMensagem.info("Sistema", "Nenhum relatório encontrado!");
@@ -320,7 +319,7 @@ public class RelatorioMatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list;
             if (tipoMatricula) {
                 list = (List<Relatorios>) db.pesquisaTipoRelatorio(282);
