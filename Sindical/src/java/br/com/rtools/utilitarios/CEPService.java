@@ -10,8 +10,7 @@ import br.com.rtools.endereco.dao.BairroDao;
 import br.com.rtools.endereco.dao.DescricaoEnderecoDao;
 import br.com.rtools.endereco.dao.LogradouroDao;
 import br.com.rtools.endereco.dao.CidadeDao;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.Annotations;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -34,7 +33,7 @@ public class CEPService {
      * http://www.republicavirtual.com.br/cep/exemplos.php
      */
     public void procurar() {
-        EnderecoDB enderecoDB = new EnderecoDBToplink();
+        EnderecoDao enderecoDB = new EnderecoDao();
         CidadeDao cidadeDB = new CidadeDao();
         List<Endereco> listaEnderecos = (List<Endereco>) enderecoDB.pesquisaEnderecoCep(cep);
         if (listaEnderecos == null) {
