@@ -7,8 +7,7 @@ import br.com.rtools.associativo.db.ConviteDBToplink;
 import br.com.rtools.impressao.ParametroConviteClube;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.utilitarios.DataHoje;
@@ -66,7 +65,7 @@ public class RelatorioConviteClubeBean implements Serializable {
     public void visualizar() {
         Relatorios relatorios = null;
         if(!getListaTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(listaTipoRelatorios.get(idRelatorios).getDescription()));
         }
         if(relatorios == null) {
@@ -169,7 +168,7 @@ public class RelatorioConviteClubeBean implements Serializable {
 
     public List<SelectItem> getListaTipoRelatorios() {
         if (listaTipoRelatorios.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(226);
             for (int i = 0; i < list.size(); i++) {
                 listaTipoRelatorios.add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));

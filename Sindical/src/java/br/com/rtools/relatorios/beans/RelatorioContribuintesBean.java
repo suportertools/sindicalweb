@@ -15,8 +15,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataObject;
@@ -121,7 +120,7 @@ public class RelatorioContribuintesBean implements Serializable {
                 numeros = "";
         String bairros = "";
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioContribuintesDB dbContri = new RelatorioContribuintesDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
         Cidade cidade;
@@ -358,7 +357,7 @@ public class RelatorioContribuintesBean implements Serializable {
     public List<SelectItem> getListaCidades() {
         List<SelectItem> cidades = new Vector<SelectItem>();
         int i = 0;
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         List select = db.pesquisaCidadesRelatorio();
         while (i < select.size()) {
             cidades.add(new SelectItem(new Integer(i),
@@ -371,7 +370,7 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public List<SelectItem> getListaTipoRelatorios() {
         if (listaTipoRelatorios.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(5);
             for (int i = 0; i < list.size(); i++) {
                 listaTipoRelatorios.add(new SelectItem(new Integer(i), list.get(i).getNome(), Integer.toString(list.get(i).getId())));
@@ -493,7 +492,7 @@ public class RelatorioContribuintesBean implements Serializable {
     }
 
     public String atualizaPGOrdem() {
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorios).getDescription()));
         if (relatorios.getJasper().equals("/Relatorios/CONTRIBUINTESPORESCRITORIO.jasper")) {
             radioEscritorios = "comEscritorio";

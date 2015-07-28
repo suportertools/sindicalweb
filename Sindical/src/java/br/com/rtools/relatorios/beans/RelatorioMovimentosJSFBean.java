@@ -14,8 +14,7 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDB;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -79,7 +78,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
         Date dtInicial = null;
         Date dtFinal = null;
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioMovimentosDB dbMov = new RelatorioMovimentosDBToplink();
 
         Relatorios relatorios = new Relatorios();
@@ -377,7 +376,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
         Date dtInicial = null;
         Date dtFinal = null;
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioMovimentosDB dbMov = new RelatorioMovimentosDBToplink();
 
         Relatorios relatorios = new Relatorios();
@@ -655,7 +654,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorBean {
     public List<SelectItem> getListaTipoRelatorios() {
         List<SelectItem> relatorios = new Vector<SelectItem>();
         int i = 0;
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         List select = db.pesquisaTipoRelatorio(110);
         while (i < select.size()) {
             relatorios.add(new SelectItem(new Integer(i),

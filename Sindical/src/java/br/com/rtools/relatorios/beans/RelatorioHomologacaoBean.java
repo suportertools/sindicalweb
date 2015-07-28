@@ -8,8 +8,7 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioHomologacaoDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
@@ -130,7 +129,7 @@ public class RelatorioHomologacaoBean implements Serializable {
         Dao dao = new Dao();
         Relatorios relatorios;
         if (!getListTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(index[0]);
         } else {
             GenericaMensagem.info("Sistema", "Nenhum relatório encontrado!");
@@ -277,7 +276,7 @@ public class RelatorioHomologacaoBean implements Serializable {
 
     public List<SelectItem> getListTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(177);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));

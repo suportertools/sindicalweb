@@ -9,8 +9,8 @@ import br.com.rtools.impressao.ParametroAcademiaCadastral;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioAcademiaDao;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.sistema.Periodo;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
@@ -59,6 +59,7 @@ public class RelatorioAcademiaBean implements Serializable {
     private String indexAccordion;
     private String order;
     private String sexo;
+    private String periodo;
     private Relatorios relatorios;
     private List selectedGrupoCategoria;
     private List selectedCategoria;
@@ -76,10 +77,10 @@ public class RelatorioAcademiaBean implements Serializable {
         filtro[4] = false; // SEXO
         filtro[5] = false; // ORDER
         filtro[6] = false; // PERIODO
-        filtro[7] = false; // PERIODO INATIVAÇÃO
+        filtro[7] = null; // ATIVO
         filtro[8] = false; // IDADE
         filtro[9] = false; // GRUPO CATEGORIA
-        filtro[10] = false; // NÃO SÓCIO
+        filtro[10] = null; // NÃO SÓCIO
         filtro[11] = false; // CONVÊNIO EMPRESA
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<>();
@@ -98,6 +99,7 @@ public class RelatorioAcademiaBean implements Serializable {
         aluno = new Pessoa();
         responsavel = new Pessoa();
         sexo = "";
+        periodo = null;
         tipo = "todos";
         Jasper.EXPORT_TO_EXCEL = false;
         selectedGrupoCategoria = null;
@@ -123,7 +125,7 @@ public class RelatorioAcademiaBean implements Serializable {
     public void print(int tcase) throws FileNotFoundException {
         Relatorios relatorios = null;
         if (!getListTipoRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(index[0]);
         } else {
             GenericaMensagem.info("Sistema", "Nenhum relatório encontrado!");
@@ -189,7 +191,7 @@ public class RelatorioAcademiaBean implements Serializable {
         Boolean nao_socio = true;
         Boolean convenio_empresa = true;
         if (filtro[9]) {
-            if (!filtro[10]) {
+            if (filtro[10] != null && !filtro[10]) {
                 nao_socio = null;
             }
             if (!filtro[11]) {
@@ -200,7 +202,7 @@ public class RelatorioAcademiaBean implements Serializable {
             }
 
         }
-        List list = academiaDao.filtroRelatorio(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, filtro[7], idade, in_grupo_categoria, in_categoria, nao_socio, convenio_empresa, order);
+        List list = new RelatorioAcademiaDao().find(relatorios, pIStringI, pFStringI, idResponsavel, idAluno, inIdModalidades, inIdPeriodos, sexo, periodo, filtro[7], idade, in_grupo_categoria, in_categoria, nao_socio, convenio_empresa, order);
         if (list.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
             return;
@@ -259,7 +261,7 @@ public class RelatorioAcademiaBean implements Serializable {
 
     public List<SelectItem> getListTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(275);
             for (int i = 0; i < list.size(); i++) {
                 if (i == 0) {
@@ -309,6 +311,7 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[1]) {
             dataInicial = DataHoje.dataHoje();
             dataFinal = DataHoje.dataHoje();
+            periodo = "emissao";
         }
         if (!filtro[2]) {
             responsavel = new Pessoa();
@@ -325,6 +328,9 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[6]) {
             selectedPeriodos = null;
         }
+        if (filtro[7] == null) {
+            filtro[7] = true;
+        }
         if (!filtro[7]) {
             selectedPeriodos = null;
         }
@@ -336,10 +342,12 @@ public class RelatorioAcademiaBean implements Serializable {
             selectedGrupoCategoria = null;
             selectedCategoria = null;
             selectedConvenioEmpresa = null;
-            filtro[10] = false;
+            filtro[10] = null;
             filtro[11] = false;
             listGrupoCategoria = null;
             listCategoria = null;
+        } else {
+            filtro[10] = false;
         }
     }
 
@@ -362,7 +370,8 @@ public class RelatorioAcademiaBean implements Serializable {
                 filtro[1] = false;
                 dataInicial = DataHoje.dataHoje();
                 dataFinal = DataHoje.dataHoje();
-                filtro[7] = false;
+                filtro[7] = null;
+                periodo = "emissao";
                 break;
             case "responsavel":
                 responsavel = new Pessoa();
@@ -392,7 +401,7 @@ public class RelatorioAcademiaBean implements Serializable {
                 break;
             case "grupo_categoria":
                 filtro[9] = false;
-                filtro[10] = false;
+                filtro[10] = null;
                 filtro[11] = false;
                 listGrupoCategoria = null;
                 listCategoria = null;
@@ -473,7 +482,7 @@ public class RelatorioAcademiaBean implements Serializable {
      * @return boolean
      */
     public Boolean[] getFiltro() {
-        if (filtro[10] || filtro[11]) {
+        if ((filtro[10] != null && filtro[10]) || filtro[11]) {
             listGrupoCategoria = null;
             listCategoria = null;
             selectedGrupoCategoria = null;
@@ -781,6 +790,14 @@ public class RelatorioAcademiaBean implements Serializable {
             }
         }
         return ids;
+    }
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
     }
 
 }

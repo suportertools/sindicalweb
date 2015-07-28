@@ -11,8 +11,7 @@ import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.relatorios.db.RelatorioContabilidadesDB;
 import br.com.rtools.relatorios.db.RelatorioContabilidadesDBToplink;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -100,7 +99,7 @@ public class RelatorioContabilidadesBean implements Serializable {
         int inicio = 0;
         int fim = 0;
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioContabilidadesDB dbConta = new RelatorioContabilidadesDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
         Cidade cidade;
@@ -200,7 +199,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
     public List<SelectItem> getListRelatorios() {
         if (listRelatorios.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(6);
             for (int i = 0; i < list.size(); i++) {
                 listRelatorios.add(new SelectItem(i, list.get(i).getNome(), Integer.toString(list.get(i).getId())));
@@ -211,7 +210,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
     public List<SelectItem> getListCidades() {
         if (listCidades.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Cidade> list = (List<Cidade>) db.pesquisaCidadesRelatorio();
             for (int i = 0; i < list.size(); i++) {
                 listCidades.add(new SelectItem(i, list.get(i).getCidade(), Integer.toString(list.get(i).getId())));

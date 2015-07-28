@@ -10,8 +10,7 @@ import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioConvenioMedicoDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -88,7 +87,7 @@ public class RelatorioConvenioMedicoBean implements Serializable {
     public void visualizar(int tcase) {
         Relatorios relatorios = null;
         if (!getListRelatorios().isEmpty()) {
-            RelatorioGenericoDB rgdb = new RelatorioGenericoDBToplink();
+            RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(Integer.parseInt(getListRelatorios().get(index[0]).getDescription()));
         }
         if (relatorios == null) {
@@ -289,7 +288,7 @@ public class RelatorioConvenioMedicoBean implements Serializable {
 
     public List<SelectItem> getListRelatorios() {
         if (listRelatorio.isEmpty()) {
-            RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+            RelatorioDao db = new RelatorioDao();
             List<Relatorios> list = db.pesquisaTipoRelatorio(121);
             for (int i = 0; i < list.size(); i++) {
                 if (i == 0) {
