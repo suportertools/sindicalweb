@@ -10,7 +10,7 @@ import br.com.rtools.endereco.dao.BairroDao;
 import br.com.rtools.endereco.dao.DescricaoEnderecoDao;
 import br.com.rtools.endereco.dao.LogradouroDao;
 import br.com.rtools.endereco.dao.CidadeDao;
-import br.com.rtools.endereco.db.EnderecoDao;
+import br.com.rtools.endereco.dao.EnderecoDao;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.Annotations;
 import com.thoughtworks.xstream.io.xml.DomDriver;

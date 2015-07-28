@@ -8,7 +8,7 @@ import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.Logradouro;
-import br.com.rtools.endereco.db.EnderecoDao;
+import br.com.rtools.endereco.dao.EnderecoDao;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.JuridicaReceita;

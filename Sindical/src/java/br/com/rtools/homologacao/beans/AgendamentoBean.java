@@ -8,7 +8,7 @@ import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.db.EnderecoDao;
+import br.com.rtools.endereco.dao.EnderecoDao;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Cancelamento;
