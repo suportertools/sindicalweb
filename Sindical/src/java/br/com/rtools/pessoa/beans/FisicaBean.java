@@ -10,8 +10,6 @@ import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.beans.PesquisaEnderecoBean;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.dao.ServicoPessoaDao;
@@ -896,9 +894,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 //    }
 
     public String CarregarEndereco() {
-        EnderecoDB db_endereco = new EnderecoDBToplink();
         int idEndereco = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paramEndereco"));
-        pessoaEndereco.setEndereco(db_endereco.pesquisaCodigo(idEndereco));
+        pessoaEndereco.setEndereco((Endereco) new Dao().find(new Endereco(), idEndereco));
         setEnderecoCompleto((pessoaEndereco.getEndereco().getLogradouro().getDescricao()) + " " + pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao());
         return "pessoaFisica";
     }
