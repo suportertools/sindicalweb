@@ -88,6 +88,12 @@
                         </h:column>
                         <h:column>
                             <p:panel header="Filtro" id="id_panel_relatorio" style="width: 760px;" >
+                                <h:panelGrid columns="2" cellspacing="5">
+                                    <p:outputLabel value="Situação:" />
+                                    <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[7]}" itemLabel="Ativo">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGrid>
                                 <p:panel header="Aluno" rendered="#{relatorioAcademiaBean.filtro[8]}">
                                     <p:column rendered="#{relatorioAcademiaBean.filtro[8]}">
                                         <h:column>
@@ -175,9 +181,6 @@
                                                 <p:calendar value="#{relatorioAcademiaBean.dataFinal}" pattern="dd/MM/yyyy"  size="10" navigator="true" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataFinal}" />
                                                 </p:calendar>
-                                                <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[7]}" itemLabel="Ativo">
-                                                    <p:ajax event="change" update="@this" />
-                                                </p:selectBooleanCheckbox>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('emissao_inativacao')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
