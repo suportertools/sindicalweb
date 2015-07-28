@@ -9,8 +9,7 @@ import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.endereco.dao.BairroDao;
 import br.com.rtools.endereco.dao.DescricaoEnderecoDao;
 import br.com.rtools.endereco.dao.LogradouroDao;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
+import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import com.thoughtworks.xstream.XStream;
@@ -36,7 +35,7 @@ public class CEPService {
      */
     public void procurar() {
         EnderecoDB enderecoDB = new EnderecoDBToplink();
-        CidadeDB cidadeDB = new CidadeDBToplink();
+        CidadeDao cidadeDB = new CidadeDao();
         List<Endereco> listaEnderecos = (List<Endereco>) enderecoDB.pesquisaEnderecoCep(cep);
         if (listaEnderecos == null) {
             if (cepMemoria.equals(cep)) {
