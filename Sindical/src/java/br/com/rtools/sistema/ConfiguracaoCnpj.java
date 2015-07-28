@@ -19,7 +19,7 @@ public class ConfiguracaoCnpj implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
     @Column(name = "dt_cadastro")
     @Temporal(TemporalType.DATE)
     private Date dataCadastro;
@@ -31,7 +31,11 @@ public class ConfiguracaoCnpj implements Serializable {
     @Column(name = "ds_senha", length = 10)
     private String senha;
     @Column(name = "nr_dias ")
-    private int dias;
+    private Integer dias;
+    @Column(name = "is_local", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean local;
+    @Column(name = "is_web", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean web;
 
     public ConfiguracaoCnpj() {
         this.id = -1;
@@ -40,22 +44,26 @@ public class ConfiguracaoCnpj implements Serializable {
         this.email = "";
         this.senha = "";
         this.dias = 0;
+        this.local = false;
+        this.web = false;
     }
 
-    public ConfiguracaoCnpj(int id, Date dataCadastro, Date dataAtualizacao, String email, String senha, int dias) {
+    public ConfiguracaoCnpj(Integer id, Date dataCadastro, Date dataAtualizacao, String email, String senha, Integer dias, Boolean local, Boolean web) {
         this.id = id;
         this.dataCadastro = dataCadastro;
         this.dataAtualizacao = dataAtualizacao;
         this.email = email;
         this.senha = senha;
         this.dias = dias;
+        this.local = local;
+        this.web = web;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -107,20 +115,59 @@ public class ConfiguracaoCnpj implements Serializable {
         this.senha = senha;
     }
 
-    public int getDias() {
+    public Integer getDias() {
         return dias;
     }
 
-    public void setDias(int dias) {
+    public void setDias(Integer dias) {
         this.dias = dias;
     }
 
-    public int getDiasString() {
+    public Integer getDiasString() {
         return dias;
     }
 
     public void setDiasString(String dias) {
         this.dias = Integer.parseInt(dias);
+    }
+
+    public Boolean getLocal() {
+        return local;
+    }
+
+    public void setLocal(Boolean local) {
+        this.local = local;
+    }
+
+    public Boolean getWeb() {
+        return web;
+    }
+
+    public void setWeb(Boolean web) {
+        this.web = web;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConfiguracaoCnpj other = (ConfiguracaoCnpj) obj;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfiguracaoCnpj{" + "id=" + id + ", dataCadastro=" + dataCadastro + ", dataAtualizacao=" + dataAtualizacao + ", email=" + email + ", senha=" + senha + ", dias=" + dias + ", local=" + local + ", web=" + web + '}';
     }
 
 }
