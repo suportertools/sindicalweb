@@ -138,14 +138,12 @@
                                 </p:dataTable>
                             </p:panel>
                         </p:panel>
-                        <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb" rendered="#{turmaBean.turma.filial.filial.pessoa.id  != -1}">
-                            <p:column>
-                                <p:commandButton value="Salvar" title="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
-                                <p:commandButton value="Novo" title="Novo" action="#{turmaBean.clear()}" update=":form_turma:"/>
-                                <p:commandButton value="Excluir" title="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
-                            </p:column>
-                        </p:panelGrid>
+                        <h:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max">
+                            <p:commandButton value="Salvar" title="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
+                            <p:commandButton value="Novo" title="Novo" action="#{turmaBean.clear()}" update=":form_turma:"/>
+                            <p:commandButton value="Excluir" title="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
+                            <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
+                        </h:panelGrid>
                     </p:panel>
                     <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
