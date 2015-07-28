@@ -8,8 +8,7 @@ import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Cancelamento;
@@ -1171,7 +1170,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public void pesquisaEndereco() {
-        EnderecoDB db = new EnderecoDBToplink();
+        EnderecoDao db = new EnderecoDao();
         listaEnderecos.clear();
         if (!cepEndereco.isEmpty()) {
             listaEnderecos = db.pesquisaEnderecoCep(cepEndereco);
@@ -1369,7 +1368,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public List<Endereco> getListaEnderecos() {
         if (listaEnderecos.isEmpty()) {
             if (!cepEndereco.equals("")) {
-                EnderecoDB db = new EnderecoDBToplink();
+                EnderecoDao db = new EnderecoDao();
                 listaEnderecos = db.pesquisaEnderecoCep(cepEndereco);
             }
         }
