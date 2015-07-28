@@ -187,9 +187,6 @@
                                             <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.acessoWebDocumento}" itemLabel="Acesso por Documento">
                                                 <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
                                             </p:selectBooleanCheckbox>
-                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.cadastroCnpj}" itemLabel="Cadastro CNPJ Web">
-                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                            </p:selectBooleanCheckbox>
                                         </p:panelGrid>
                                     </p:panel>
                                 </p:tab>

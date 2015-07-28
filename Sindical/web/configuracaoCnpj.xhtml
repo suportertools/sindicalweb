@@ -40,7 +40,15 @@
                                             <p:ajax event="change" listener="#{configuracaoCnpjBean.update}" update=":form_cnpj:"/>
                                         </p:spinner>
                                     </p:column>                                        
-                                </h:panelGrid>                                
+                                </h:panelGrid>
+                                <h:panelGrid cellpadding="5" columns="2">
+                                    <p:selectBooleanCheckbox value="#{configuracaoCnpjBean.configuracaoCnpj.local}" itemLabel="Libera Consulta Sistema">
+                                        <p:ajax event="change" update="@this form_cnpj" listener="#{configuracaoCnpjBean.update}"/>
+                                    </p:selectBooleanCheckbox>
+                                    <p:selectBooleanCheckbox value="#{configuracaoCnpjBean.configuracaoCnpj.web}" itemLabel="Libera Consulta Web">
+                                        <p:ajax event="change" update="@this form_cnpj" listener="#{configuracaoCnpjBean.update}"/>
+                                    </p:selectBooleanCheckbox>
+                                </h:panelGrid>
                             </p:tab>                            
                         </p:tabView>
                         <f:facet name="footer">

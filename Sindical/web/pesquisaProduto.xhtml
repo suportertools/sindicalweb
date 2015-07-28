@@ -14,15 +14,28 @@
             <ui:include src="templates/templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <f:metadata>
+                <f:event type="preRenderView" listener="${produtoBean.load}"/>  
+            </f:metadata>
+            <ui:include src="templates/templateAcessoFilial.xhtml"/>
             <h:form id="form_pesquisa_produto">
-                <p:panel styleClass="wrapper no-border">
+                <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                     <h:outputText value="Pesquisar Produtos" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
-                        <h:panelGrid columns="8">
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Filial Estoque: "  />
+                            <h:column>
+                                <p:selectOneMenu value="#{produtoBean.filial_id}" disabled="#{!produtoBean.liberaAcessaFilial}">
+                                    <p:ajax event="change" update="@this i_tbl" listener="#{produtoBean.listener(1)}" />
+                                    <f:selectItems value="#{produtoBean.listFiliaisPesquisa}" />
+                                </p:selectOneMenu>
+                            </h:column>                            
+                        </h:panelGrid>                        
+                        <h:panelGrid columns="8" styleClass="margin-top-max">
                             <p:outputLabel value="Pesquisar: "/>
                             <p:inputText value="#{produtoBean.produtoPesquisa.descricao}">
-                                <p:ajax event="blur" update="@this" />
+                                <p:ajax event="change" update="@this" />
                             </p:inputText>
                             <h:outputLabel value="Por: " rendered="false"/>
                             <p:selectOneMenu id="idTipoClasse" rendered="false">
@@ -36,8 +49,8 @@
                         </h:panelGrid>   
                     </p:panel>
                 </p:panel>
-                <p:panel id="i_tbl" styleClass="wrapper no-border">
-                    <p:dataTable value="#{produtoBean.listaProdutos}" var="produto" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                <p:panel id="i_tbl" styleClass="wrapper no-border" style="width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                    <p:dataTable value="#{produtoBean.listaProdutos}" var="produto" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="100" paginator="true">
                         <p:column headerText="Descrição" width="200">
                             <p:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.descricao}"  />
                         </p:column>                                    

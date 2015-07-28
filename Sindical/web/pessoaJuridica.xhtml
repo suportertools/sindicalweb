@@ -130,7 +130,7 @@
 
                                                 <p:column>
                                                     <br />
-                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpjXML()}" />
+                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpjXML()}" disabled="#{!juridicaBean.configuracaoCnpj.local}" title="#{juridicaBean.configuracaoCnpj.local == true ? 'Pesquisar CNPJ na Receita Federal' : 'Solicitar a liberação dessa funcionalidade ao administrador do sistema!'}" />
                                                 </p:column>
 
                                                 <p:column>
