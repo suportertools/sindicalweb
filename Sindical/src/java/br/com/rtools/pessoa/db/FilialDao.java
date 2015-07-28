@@ -256,15 +256,15 @@ public class FilialDao extends DB implements FilialDB {
     public List findByTabela(String table) {
         try {
             String queryString
-                    = "     SELECT F.* FROM pes_filial AS F                     \n"
-                    + " INNER JOIN pes_juridica AS J ON J.id = F.id_filial      \n"
-                    + " INNER JOIN pes_pessoa AS P ON P.id = J.id_pessoa        \n"
-                    + "      WHERE F.id IN (                                    \n"
-                    + "	           SELECT T.id_filial                           \n"
-                    + "              FROM " + table + " AS T                    \n"
-                    + "          GROUP BY T.id_filial                           \n"
+                    = "     SELECT T1.* FROM pes_filial AS T1                   \n"
+                    + " INNER JOIN pes_juridica AS T2 ON T2.id = T1.id_filial   \n"
+                    + " INNER JOIN pes_pessoa AS T3 ON T3.id = T2.id_pessoa     \n"
+                    + "      WHERE T1.id IN (                                   \n"
+                    + "	           SELECT T4.id_filial                          \n"
+                    + "              FROM " + table + " AS T4                   \n"
+                    + "          GROUP BY T4.id_filial                          \n"
                     + ")                                                        \n"
-                    + " ORDER BY P.ds_nome ";
+                    + " ORDER BY T3.ds_nome ";
             Query query = getEntityManager().createNativeQuery(queryString, Filial.class);
             List list = query.getResultList();
             if (!list.isEmpty()) {
