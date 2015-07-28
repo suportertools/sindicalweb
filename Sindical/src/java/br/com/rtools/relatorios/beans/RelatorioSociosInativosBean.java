@@ -1,4 +1,4 @@
-package br.com.rtools.associativo.beans;
+package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.GrupoCategoria;
@@ -10,8 +10,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -168,7 +167,7 @@ public class RelatorioSociosInativosBean implements Serializable {
 
     public final void loadListaRelatorio() {
         listaTipoRelatorio.clear();
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         List<Relatorios> select = db.pesquisaTipoRelatorio(270);
         for (int i = 0; i < select.size(); i++) {
             listaTipoRelatorio.add(new SelectItem(i,
