@@ -29,8 +29,7 @@ import br.com.rtools.pessoa.db.TipoEnderecoDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
-import br.com.rtools.relatorios.db.RelatorioGenericoDB;
-import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
+import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
@@ -622,7 +621,7 @@ public class ImpressaoBoletosBean implements Serializable {
         String ordem = "";
         String cnaes = "";
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioContribuintesDB dbContri = new RelatorioContribuintesDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
@@ -849,7 +848,7 @@ public class ImpressaoBoletosBean implements Serializable {
         String ordem = "";
         String cnaes = "";
 
-        RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
+        RelatorioDao db = new RelatorioDao();
         RelatorioContribuintesDB dbContri = new RelatorioContribuintesDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
