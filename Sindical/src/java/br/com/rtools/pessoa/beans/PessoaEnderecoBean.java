@@ -1,8 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
+import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.pessoa.PessoaEndereco;
@@ -162,7 +161,7 @@ public class PessoaEnderecoBean implements Serializable {
     public List<String> BuscaCidade(Object event) {
         List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
-        CidadeDB db = new CidadeDBToplink();
+        CidadeDao db = new CidadeDao();
         String str = pessoaEndereco.getEndereco().getCidade().getUf();
         result = db.pesquisaCidade('%' + txtDigitado + '%', str);
         return (result);
