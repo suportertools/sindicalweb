@@ -77,4 +77,17 @@ public class TurmaDao extends DB {
         }
         return new ArrayList();
     }
+
+    public List findbyFilial(Integer filial_id) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT T FROM Turma AS T WHERE T.dtTermino >= CURRENT_DATE AND T.filial.id = :filial_id ORDER BY T.cursos.descricao ASC, T.sala ASC, T.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
+            query.setParameter("filial_id", filial_id);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
 }

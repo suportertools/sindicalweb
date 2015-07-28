@@ -9,14 +9,16 @@ import br.com.rtools.estoque.ProdutoUnidade;
 import br.com.rtools.estoque.dao.ProdutoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.db.FilialDao;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +43,14 @@ public class ProdutoBean implements Serializable {
     private String comoPesquisa;
     // [0] ProdutoGrupo - [1] ProdutoSubGrupo - [2] ProdutoUnidade - [3] Cor
     private Integer[] indices;
+    private Integer filial_id;
     private List<SelectItem> listaSelectItem[];
     private List<Produto> listaProdutos;
     private List<Estoque> listaEstoque;
+    private List<SelectItem> listFiliaisPesquisa;
     private String custoMedio;
     private String valor;
+    private Boolean liberaAcessaFilial;
 
     @PostConstruct
     public void init() {
@@ -59,14 +64,15 @@ public class ProdutoBean implements Serializable {
         mensagem = "";
         comoPesquisa = "";
         listaSelectItem = new ArrayList[6];
-        listaSelectItem[0] = new ArrayList<SelectItem>();
-        listaSelectItem[1] = new ArrayList<SelectItem>();
-        listaSelectItem[2] = new ArrayList<SelectItem>();
-        listaSelectItem[3] = new ArrayList<SelectItem>();
-        listaSelectItem[4] = new ArrayList<SelectItem>();
-        listaSelectItem[5] = new ArrayList<SelectItem>();
-        listaProdutos = new ArrayList<Produto>();
-        listaEstoque = new ArrayList<Estoque>();
+        listaSelectItem[0] = new ArrayList<>();
+        listaSelectItem[1] = new ArrayList<>();
+        listaSelectItem[2] = new ArrayList<>();
+        listaSelectItem[3] = new ArrayList<>();
+        listaSelectItem[4] = new ArrayList<>();
+        listaSelectItem[5] = new ArrayList<>();
+        listaProdutos = new ArrayList<>();
+        listaEstoque = new ArrayList<>();
+        listFiliaisPesquisa = new ArrayList<>();
         indices = new Integer[6];
         indices[0] = 0;
         indices[1] = 0;
@@ -76,6 +82,15 @@ public class ProdutoBean implements Serializable {
         indices[5] = 0;
         custoMedio = "0";
         valor = "0";
+        liberaAcessaFilial = false;
+        filial_id = 0;
+        loadLiberaAcessaFilial();
+    }
+
+    public void loadLiberaAcessaFilial() {
+        if (new ControleAcessoBean().permissaoValida("libera_acesso_filiais", 4)) {
+            liberaAcessaFilial = true;
+        }
     }
 
     @PreDestroy
@@ -224,7 +239,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[0].isEmpty()) {
             return listaSelectItem[0];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -241,7 +256,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[1].isEmpty()) {
             return listaSelectItem[1];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -256,7 +271,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[2].isEmpty()) {
             return listaSelectItem[2];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -271,7 +286,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[3].isEmpty()) {
             return listaSelectItem[3];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -286,7 +301,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[4].isEmpty()) {
             return listaSelectItem[4];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -301,7 +316,7 @@ public class ProdutoBean implements Serializable {
         if (!listaSelectItem[5].isEmpty()) {
             return listaSelectItem[5];
         } else {
-            return new ArrayList<SelectItem>();
+            return new ArrayList<>();
         }
     }
 
@@ -554,32 +569,6 @@ public class ProdutoBean implements Serializable {
     }
 
     public List<Produto> getListaProdutos() {
-        if (listaProdutos.isEmpty()) {
-            ProdutoDao produtoDao = new ProdutoDao();
-            
-            Filial filial = MacFilial.getAcessoFilial().getFilial();
-            
-            if (filial.getId() != -1){
-                List<Produto> listap = new ArrayList<Produto>();
-                if (produtoPesquisa.getDescricao().isEmpty())
-                    listap = (List<Produto>) new SalvarAcumuladoDBToplink().listaObjeto("Produto");
-                else
-                    listap = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
-                
-                for (Produto prod : listap){
-                    Estoque es = new Estoque();
-                    es = produtoDao.listaEstoquePorProdutoFilial(prod, filial);
-                    
-                    if (es != null){
-                        listaProdutos.add(prod);
-                    }
-                }
-                
-                if (!listaProdutos.isEmpty())
-                    return listaProdutos;
-            }else
-                listaProdutos = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
-        }
         return listaProdutos;
     }
 
@@ -598,11 +587,40 @@ public class ProdutoBean implements Serializable {
     public void acaoPesquisaInicial() {
         listaProdutos.clear();
         comoPesquisa = "Inicial";
+        load();
     }
 
     public void acaoPesquisaParcial() {
         listaProdutos.clear();
         comoPesquisa = "Parcial";
+        load();
+    }
+
+    public void load() {
+        if(listaProdutos.isEmpty()) {
+            if (!getListFiliaisPesquisa().isEmpty()) {
+                ProdutoDao produtoDao = new ProdutoDao();
+                Filial filial = (Filial) new Dao().find(new Filial(), Integer.parseInt(getListFiliaisPesquisa().get(filial_id).getDescription()));
+                if (filial.getId() != -1) {
+                    List<Produto> listap;
+                    if (produtoPesquisa.getDescricao().isEmpty()) {
+                        listap = (List<Produto>) new Dao().list(new Produto());
+                    } else {
+                        listap = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
+                    }
+
+                    for (Produto prod : listap) {
+                        Estoque es = produtoDao.listaEstoquePorProdutoFilial(prod, filial);
+
+                        if (es != null) {
+                            listaProdutos.add(prod);
+                        }
+                    }
+                } else {
+                    listaProdutos = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
+                }
+            }
+        }
     }
 
     public String getComoPesquisa() {
@@ -649,5 +667,69 @@ public class ProdutoBean implements Serializable {
 
     public void setValor(String valor) {
         this.valor = valor;
+    }
+
+    public Boolean getLiberaAcessaFilial() {
+        return liberaAcessaFilial;
+    }
+
+    public void setLiberaAcessaFilial(Boolean liberaAcessaFilial) {
+        this.liberaAcessaFilial = liberaAcessaFilial;
+    }
+
+    public List<SelectItem> getListFiliaisPesquisa() {
+        if (listFiliaisPesquisa.isEmpty()) {
+            Filial f = MacFilial.getAcessoFilial().getFilial();
+            if (f.getId() != -1) {
+                if (liberaAcessaFilial || Usuario.getUsuario().getId() == 1) {
+                    liberaAcessaFilial = true;
+                    // NOME DA TABELA ONDE CONTÉM AS FILIAIS
+                    List<Filial> list = new FilialDao().findByTabela("est_estoque");
+                    // ID DA FILIAL
+                    if (!list.isEmpty()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (i == 0) {
+                                filial_id = i;
+                            }
+                            if (f.getId() == list.get(i).getId()) {
+                                filial_id = i;
+                            }
+                            listFiliaisPesquisa.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                        }
+                    } else {
+                        filial_id = 0;
+                        listFiliaisPesquisa.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                    }
+                } else {
+                    filial_id = 0;
+                    listFiliaisPesquisa.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                }
+            }
+        }
+        return listFiliaisPesquisa;
+    }
+
+    public void setListFiliaisPesquisa(List<SelectItem> listFiliaisPesquisa) {
+        this.listFiliaisPesquisa = listFiliaisPesquisa;
+    }
+
+    public Integer getFilial_id() {
+        return filial_id;
+    }
+
+    public void setFilial_id(Integer filial_id) {
+        this.filial_id = filial_id;
+    }
+
+    /**
+     *
+     * @param tcase (1 => listaProdutos.clear(); )
+     */
+    public void listener(Integer tcase) {
+        switch (tcase) {
+            case 1:
+                listaProdutos.clear();
+                break;
+        }
     }
 }

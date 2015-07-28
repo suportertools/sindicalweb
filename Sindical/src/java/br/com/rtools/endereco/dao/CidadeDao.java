@@ -2,45 +2,21 @@ package br.com.rtools.endereco.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
 import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class CidadeDao extends DB implements CidadeDB {
+public class CidadeDao extends DB {
 
-    @Override
-    public Cidade pesquisaCodigo(int id) {
-        Cidade result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Cidade.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Cidade) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select cid from Cidade cid ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return new ArrayList();
-        }
-    }
-
-    @Override
     public List pesquisaCidadeObj(String des_uf) {
         try {
             Query qry = getEntityManager().createQuery(
                     "      SELECT C                 "
                     + "      FROM Cidade AS C       "
-                    + "     WHERE C.uf = :uf        "
+                    + "     WHERE UPPER(C.uf) = :uf        "
                     + "  ORDER BY C.cidade ASC      ");
-            qry.setParameter("uf", des_uf);
+            qry.setParameter("uf", des_uf.toUpperCase());
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -50,7 +26,6 @@ public class CidadeDao extends DB implements CidadeDB {
         return new ArrayList();
     }
 
-    @Override
     public List<String> pesquisaCidade(String des_cidade, String des_uf) {
         List<String> result = new ArrayList();
         try {
@@ -66,21 +41,6 @@ public class CidadeDao extends DB implements CidadeDB {
         return result;
     }
 
-    @Override
-    public Cidade idCidade(Cidade des_cidade) {
-        Cidade result = null;
-        String descricao = des_cidade.getCidade().toLowerCase().toUpperCase();
-        try {
-            Query qry = getEntityManager().createQuery("select cid from Cidade cid where UPPER(cid.cidade) = :d_cidade and cid.uf = :d_uf");
-            qry.setParameter("d_cidade", descricao);
-            qry.setParameter("d_uf", des_cidade.getUf());
-            result = (Cidade) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
     public List pesquisaCidade(String uf, String cidade, String como) {
         List result = new ArrayList();
         String query = "";
@@ -106,7 +66,6 @@ public class CidadeDao extends DB implements CidadeDB {
         return result;
     }
 
-    @Override
     public List pesquisaCidadePorCidade(String cidade, String como) {
         String queryString = "";
         cidade = cidade.toLowerCase().toUpperCase();
@@ -144,7 +103,6 @@ public class CidadeDao extends DB implements CidadeDB {
         return new ArrayList();
     }
 
-    @Override
     public Cidade pesquisaCidadePorEstadoCidade(String uf, String cidade) {
         cidade = cidade.toLowerCase().toUpperCase();
         try {
@@ -157,22 +115,21 @@ public class CidadeDao extends DB implements CidadeDB {
         }
         return null;
     }
-    
-    @Override
-    public List<Cidade> listaCidadeParaREPIS(){
-        try{
+
+    public List<Cidade> listaCidadeParaREPIS() {
+        try {
             Query qry = getEntityManager().createNativeQuery(
-                    " SELECT c.id id, c.ds_cidade ds_cidade, c.ds_uf ds_uf " +
-                    "   FROM arr_repis_movimento rm " +
-                    "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa " +
-                    "  INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 5 " +
-                    "  INNER JOIN end_endereco e ON e.id = pe.id_endereco " +
-                    "  INNER JOIN end_cidade c ON c.id = e.id_cidade " +
-                    "  GROUP BY c.id, c.ds_cidade, c.ds_uf " +
-                    "  ORDER BY c.ds_cidade ", Cidade.class);
-            
+                    " SELECT c.id id, c.ds_cidade ds_cidade, c.ds_uf ds_uf "
+                    + "   FROM arr_repis_movimento rm "
+                    + "  INNER JOIN pes_pessoa p ON p.id = rm.id_pessoa "
+                    + "  INNER JOIN pes_pessoa_endereco pe ON pe.id_pessoa = p.id AND pe.id_tipo_endereco = 5 "
+                    + "  INNER JOIN end_endereco e ON e.id = pe.id_endereco "
+                    + "  INNER JOIN end_cidade c ON c.id = e.id_cidade "
+                    + "  GROUP BY c.id, c.ds_cidade, c.ds_uf "
+                    + "  ORDER BY c.ds_cidade ", Cidade.class);
+
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return new ArrayList();
