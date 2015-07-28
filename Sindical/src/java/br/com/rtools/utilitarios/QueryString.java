@@ -11,16 +11,16 @@ public class QueryString {
     public static String typeSearch(String field, int type) {
         switch (type) {
             case 0:
-                field = " = UPPER(FUNC_TRANSLATE('" + field + "'))";
+                field = " = TRIM(UPPER(FUNC_TRANSLATE('" + field + "')))";
                 break;
             case 1:
-                field = " LIKE UPPER(FUNC_TRANSLATE('" + field + "%'))";
+                field = " LIKE TRIM(UPPER(FUNC_TRANSLATE('" + field + "%')))";
                 break;
             case 2:
-                field = " LIKE UPPER(FUNC_TRANSLATE('%" + field + "%'))";
+                field = " LIKE TRIM(UPPER(FUNC_TRANSLATE('%" + field + "%')))";
                 break;
             case 3:
-                field = " LIKE UPPER(FUNC_TRANSLATE('%" + field + "'))";
+                field = " LIKE TRIM(UPPER(FUNC_TRANSLATE('%" + field + "')))";
                 break;
         }
         return field;
