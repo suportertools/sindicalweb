@@ -95,68 +95,68 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
         Registro registro = (Registro) new Dao().find(new Registro(), 1);
         try {
             String textqry
-                    = "     SELECT p.id,                                                    " // 0 
-                    + "            p.ds_nome,                                               " // 1 NOME
-                    + "            pj.ds_documento,                                         " // 2 CNPJ
-                    + "            pj.ds_nome,                                              " // 3 RAZÃO SOCIAL
-                    + "            to_char(sc.dt_emissao, 'DD/MM/YYYY'),                    " // 4 EMISSÃO
-                    + "            c.ds_cidade,                                             " // 5 EMPRESA CIDADE
-                    + "            to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'),       " // 6 VALIDADE
-                    + "            c.ds_uf,                                                 " // 7 EMPRESA UF
-                    + "            to_char(pe.dt_admissao, 'DD/MM/YYYY'),                   " // 8 ADMISSÃO
-                    + "            j.ds_fantasia,                                           " // 9 FANTASIA
-                    + "            s.matricula,                                             " // 10 MATRÍCULA
-                    + "            s.nr_via,                                                " // 11 VIA
-                    + "            s.id_socio,                                              " // 12 
-                    + "            to_char(s.filiacao, 'DD/MM/YYYY'),                       " // 13 FILIAÇÃO
-                    + "            pr.ds_profissao as cargo,                                " // 14 PROFISSÃO
-                    + "            p.ds_documento,                                          " // 15 CPF
-                    + "            f.ds_rg,                                                 " // 16 RG
-                    + "            max(m.id),                                               " // 17
-                    + "            sc.nr_cartao,                                            " // 18
-                    + "            sc.id,                                                   " // 19
-                    + "            mc.ds_descricao,                                         " // 20 CATEGORIA
-                    + "            px.logradouro,                                           " // 21 LOGRADOURO
-                    + "            px.endereco,                                             " // 22 ENDEREÇO
-                    + "            px.numero,                                               " // 23 NÚMERO 
-                    + "            px.complemento,                                          " // 24 COMPLEMENTO
-                    + "            px.bairro,                                               " // 25 BAIRRO
-                    + "            px.cidade,                                               " // 26 CIDADE
-                    + "            px.uf,                                                   " // 27 UF
-                    + "            px.cep,                                                  " // 28 CEP
-                    + "            px.nacionalidade,                                        " // 29 NASCIONALIDADE
-                    + "            to_char(px.dt_nascimento, 'DD/MM/YYYY') as nascimento,   " // 30 NASCIMENTO
-                    + "            px.estado_civil as estadocivil,                          " // 31 ESTADO CÍVIL
-                    + "            px.ctps as carteira,                                     " // 32 CARTEIRA (CTPS)
-                    + "            px.ds_serie as serie,                                    " // 33 SÉRIE
-                    + "            px.ds_orgao_emissao_rg AS orgao_expeditor,               " // 34 ORGÃO EMISSÃO RG
-                    + "            pe.ds_codigo as codigo_funcional,                        " // 35 CÓDIGO FUNCIONAL
-                    + "            s.parentesco,                                            " // 36 PARENTESCO
-                    + "            s.categoria,                                             " // 37 CATEGORIA
-                    + "            pt.fantasia AS fantasia_titular,                         " // 38 FANTASIA EMPRESA - TITULAR
-                    + "            pt.codigo_funcional AS codigo_funcional_titular,         " // 39 CÓDIGO FUNCIONAL - TITULAR
-                    + "            s.titular AS titular_id,                                 " // 40 TITULAR ID
-                    + "            s.grupo_categoria,                                       " // 41 GRUPO CATEGORIA
-                    + "            f.dt_aposentadoria                                       " // 42 APOSENTADORIA
-                    + "       FROM pes_fisica           AS f                                                                "
-                    + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               "
-                    + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 "
-                    + "  LEFT JOIN soc_socios_vw        AS s    ON s.codsocio   = f.id_pessoa AND s.inativacao IS NULL      "
-                    + "  LEFT JOIN pes_pessoa_vw        AS pt   ON pt.codigo    = s.titular                                 "
-                    + "  LEFT JOIN pes_pessoa_empresa   AS pe   ON f.id         = pe.id_fisica AND pe.dt_demissao IS NULL   "
-                    + "  LEFT JOIN pes_profissao        AS pr   ON pr.id        = pe.id_funcao                              "
-                    + "  LEFT JOIN pes_juridica         AS j    ON j.id         = pe.id_juridica                            "
-                    + "  LEFT JOIN pes_pessoa           AS pj   ON pj.id        = j.id_pessoa                               "
-                    + "  LEFT JOIN pes_pessoa_endereco  AS pend ON pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2     " // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
+                    = "     SELECT p.id,                                                    \n" // 0 
+                    + "            p.ds_nome,                                               \n" // 1 NOME
+                    + "            pj.ds_documento,                                         \n" // 2 CNPJ
+                    + "            pj.ds_nome,                                              \n" // 3 RAZÃO SOCIAL
+                    + "            to_char(sc.dt_emissao, 'DD/MM/YYYY'),                    \n" // 4 EMISSÃO
+                    + "            c.ds_cidade,                                             \n" // 5 EMPRESA CIDADE
+                    + "            to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'),       \n" // 6 VALIDADE
+                    + "            c.ds_uf,                                                 \n" // 7 EMPRESA UF
+                    + "            to_char(pe.dt_admissao, 'DD/MM/YYYY'),                   \n" // 8 ADMISSÃO
+                    + "            j.ds_fantasia,                                           \n" // 9 FANTASIA
+                    + "            s.matricula,                                             \n" // 10 MATRÍCULA
+                    + "            s.nr_via,                                                \n" // 11 VIA
+                    + "            s.id_socio,                                              \n" // 12 
+                    + "            to_char(s.filiacao, 'DD/MM/YYYY'),                       \n" // 13 FILIAÇÃO
+                    + "            pr.ds_profissao as cargo,                                \n" // 14 PROFISSÃO
+                    + "            p.ds_documento,                                          \n" // 15 CPF
+                    + "            f.ds_rg,                                                 \n" // 16 RG
+                    + "            max(m.id),                                               \n" // 17
+                    + "            sc.nr_cartao,                                            \n" // 18
+                    + "            sc.id,                                                   \n" // 19
+                    + "            mc.ds_descricao,                                         \n" // 20 CATEGORIA
+                    + "            px.logradouro,                                           \n" // 21 LOGRADOURO
+                    + "            px.endereco,                                             \n" // 22 ENDEREÇO
+                    + "            px.numero,                                               \n" // 23 NÚMERO 
+                    + "            px.complemento,                                          \n" // 24 COMPLEMENTO
+                    + "            px.bairro,                                               \n" // 25 BAIRRO
+                    + "            px.cidade,                                               \n" // 26 CIDADE
+                    + "            px.uf,                                                   \n" // 27 UF
+                    + "            px.cep,                                                  \n" // 28 CEP
+                    + "            px.nacionalidade,                                        \n" // 29 NASCIONALIDADE
+                    + "            to_char(px.dt_nascimento, 'DD/MM/YYYY') as nascimento,   \n" // 30 NASCIMENTO
+                    + "            px.estado_civil as estadocivil,                          \n" // 31 ESTADO CÍVIL
+                    + "            px.ctps as carteira,                                     \n" // 32 CARTEIRA (CTPS)
+                    + "            px.ds_serie as serie,                                    \n" // 33 SÉRIE
+                    + "            px.ds_orgao_emissao_rg AS orgao_expeditor,               \n" // 34 ORGÃO EMISSÃO RG
+                    + "            pe.ds_codigo as codigo_funcional,                        \n" // 35 CÓDIGO FUNCIONAL
+                    + "            s.parentesco,                                            \n" // 36 PARENTESCO
+                    + "            s.categoria,                                             \n" // 37 CATEGORIA
+                    + "            pt.fantasia AS fantasia_titular,                         \n" // 38 FANTASIA EMPRESA - TITULAR
+                    + "            pt.codigo_funcional AS codigo_funcional_titular,         \n" // 39 CÓDIGO FUNCIONAL - TITULAR
+                    + "            s.titular AS titular_id,                                 \n" // 40 TITULAR ID
+                    + "            s.grupo_categoria,                                       \n" // 41 GRUPO CATEGORIA
+                    + "            f.dt_aposentadoria                                       \n" // 42 APOSENTADORIA
+                    + "       FROM pes_fisica           AS f                                                                \n"
+                    + " INNER JOIN pes_pessoa           AS p    ON p.id         = f.id_pessoa                               \n"
+                    + " INNER JOIN pes_pessoa_vw        AS px   ON p.id         = px.codigo                                 \n"
+                    + "  LEFT JOIN soc_socios_vw        AS s    ON s.codsocio   = f.id_pessoa AND s.inativacao IS NULL      \n"
+                    + "  LEFT JOIN pes_pessoa_vw        AS pt   ON pt.codigo    = s.titular                                 \n"
+                    + "  LEFT JOIN pes_pessoa_empresa   AS pe   ON f.id         = pe.id_fisica AND pe.dt_demissao IS NULL   \n"
+                    + "  LEFT JOIN pes_profissao        AS pr   ON pr.id        = pe.id_funcao                              \n"
+                    + "  LEFT JOIN pes_juridica         AS j    ON j.id         = pe.id_juridica                            \n"
+                    + "  LEFT JOIN pes_pessoa           AS pj   ON pj.id        = j.id_pessoa                               \n"
+                    + "  LEFT JOIN pes_pessoa_endereco  AS pend ON pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2     \n" // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
                     //"  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" + // ENDEREÇO DO SÓCIO
-                    + "  LEFT JOIN end_endereco         AS ende ON ende.id      = pend.id_endereco                          "
-                    + "  LEFT JOIN end_cidade           AS c    ON c.id         = ende.id_cidade                            "
-                    + " INNER JOIN soc_carteirinha      AS sc   ON sc.id_pessoa = p.id                                      "
+                    + "  LEFT JOIN end_endereco         AS ende ON ende.id      = pend.id_endereco                          \n"
+                    + "  LEFT JOIN end_cidade           AS c    ON c.id         = ende.id_cidade                            \n"
+                    + " INNER JOIN soc_carteirinha      AS sc   ON sc.id_pessoa = p.id                                      \n"
                     // USADA ATÉ 06/04/2015 - CHAMADO 665
                     // + "  LEFT JOIN fin_movimento        AS m    ON m.id_pessoa  = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
-                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_beneficiario = sc.id_pessoa AND m.id_servicos IN (SELECT id_servico_cartao FROM seg_registro) AND m.dt_vencimento >='06/04/2015' "
-                    + "  LEFT JOIN soc_historico_carteirinha sh ON sh.id_movimento = m.id                                   "
-                    + " INNER JOIN soc_modelo_carteirinha AS mc ON mc.id        = sc.id_modelo_carteirinha                  ";
+                    + "  LEFT JOIN fin_movimento        AS m    ON m.id_beneficiario = sc.id_pessoa AND m.id_servicos IN (SELECT id_servico_cartao FROM seg_registro) AND m.dt_vencimento >='06/04/2015' \n"
+                    + "  LEFT JOIN soc_historico_carteirinha sh ON sh.id_movimento = m.id                                   \n"
+                    + " INNER JOIN soc_modelo_carteirinha AS mc ON mc.id        = sc.id_modelo_carteirinha                  \n";
 
             // NÃO IMPRESSOS / EMPRESAS
             if (tipo.equals("niEmpresa")) {
@@ -164,17 +164,17 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     textqry += " WHERE ( "
                             + "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR "
                             + "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) "
-                            + "       ) ";
+                            + "       ) \n";
                 } else {
-                    textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
                 }
 
                 if (registro.isFotoCartao()) {
-                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
+                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) \n";
                 }
             }
 
@@ -184,91 +184,91 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     textqry += " WHERE ( "
                             + "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR "
                             + "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) "
-                            + "       ) ";
+                            + "       ) \n";
                 } else {
-                    textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "   AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "   AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' \n";
                 }
 
                 if (registro.isFotoCartao()) {
-                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
+                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) \n";
                 }
             }
 
             // IMPRESSOS / EMPRESAS
             if (tipo.equals("iEmpresa")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 \n";
                 } else {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
                 }
             }
 
             // IMPRESSOS / CNPJ
             if (tipo.equals("iCNPJ")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 \n";
                 } else {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "    AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' \n";
                 }
             }
 
             // IMPRESSOS / ULTIMOS 30 DIAS
             if (tipo.equals("iDias")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento > 0 \n";
                 } else {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
-                            + "    AND sc.dt_emissao is not null and sc.dt_emissao between current_date-30 and current_date";
+                            + "    AND sc.dt_emissao is not null AND sc.dt_emissao BETWEEN current_date-30 AND current_date \n";
                 } else {
-                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao between current_date-30 and current_date";
+                    textqry += "    AND sc.dt_emissao is not null AND sc.dt_emissao BETWEEN current_date-30 AND current_date \n";
                 }
             }
 
             // HOJE
             if (tipo.equals("iOntem")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL \n";
                 } else {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
-                            + "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date-1";
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n"
+                            + "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date-1 \n";
                 } else {
-                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date-1";
+                    textqry += "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date-1 \n";
                 }
             }
 
             // HOJE
             if (tipo.equals("iHoje")) {
                 if (registro.isCobrancaCarteirinha()) {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL \n";
                 } else {
-                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
+                    textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) \n";
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
-                            + "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date ";
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n"
+                            + "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date \n";
                 } else {
-                    textqry += "    AND sc.dt_emissao is not null and sc.dt_emissao = current_date";
+                    textqry += "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date \n";
                 }
             }
 
@@ -279,19 +279,19 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // PESSOA / NOME
             if (tipo.equals("iNome")) {
                 if (!descricao.isEmpty()) {
-                    textqry += "    WHERE lower(p.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "    WHERE lower(p.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
                 } else {
                     textqry += " ";
                 }
                 if (registro.isFotoCartao()) {
-                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
+                    textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) \n";
                 }
             }
 
             // SOCIO / MATRICULA
             if (tipo.equals("iMatricula")) {
                 if (!descricao.isEmpty()) {
-                    textqry += "    WHERE s.matricula = " + Integer.parseInt(descricao);
+                    textqry += "    WHERE s.matricula = " + Integer.parseInt(descricao) + " \n";
                 } else {
                     textqry += "  ";
                 }
@@ -300,7 +300,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // PESSOA / CODIGO
             if (tipo.equals("iID")) {
                 if (!descricao.isEmpty()) {
-                    textqry += "    WHERE p.id = " + Integer.parseInt(descricao);
+                    textqry += "    WHERE p.id = " + Integer.parseInt(descricao + " \n");
                 } else {
                     textqry += "  ";
                 }
@@ -309,62 +309,62 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // PESSOA / CPF
             if (tipo.equals("iCPF")) {
                 if (!descricao.isEmpty()) {
-                    textqry += "    WHERE lower(p.ds_documento) LIKE '%" + descricao.toLowerCase() + "%' ";
+                    textqry += "    WHERE lower(p.ds_documento) LIKE '%" + descricao.toLowerCase() + "%' \n";
                 } else {
                     textqry += " ";
                 }
             }
 
-            textqry += " AND sc.is_ativo = true "; // SE NÃO FOR SÓCIO (ACADEMIA)
+            textqry += " AND sc.is_ativo = true \n"; // SE NÃO FOR SÓCIO (ACADEMIA)
 
             if (id_filial != null) {
-                textqry += " AND s.id_filial = " + id_filial;
+                textqry += " AND s.id_filial = " + id_filial + " \n";
             }
 
             // GROUP DA QUERY
             textqry += " "
-                    + " GROUP BY p.id,                                       "
-                    + "          p.ds_nome,                                  "
-                    + "          pj.ds_documento,                            "
-                    + "          pj.ds_nome,                                 "
-                    + "          to_char(sc.dt_emissao, 'DD/MM/YYYY'),       "
-                    + "          c.ds_cidade,                                "
-                    + "          to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
-                    + "          c.ds_uf,                                    "
-                    + "          to_char(pe.dt_admissao, 'DD/MM/YYYY'),      "
-                    + "          j.ds_fantasia,                              "
-                    + "          s.matricula,                                "
-                    + "          s.nr_via,                                   "
-                    + "          s.id_socio,                                 "
-                    + "          to_char(s.filiacao, 'DD/MM/YYYY'),          "
-                    + "          pr.ds_profissao,                            "
-                    + "          p.ds_documento,                             "
-                    + "          f.ds_rg,                                    "
-                    + "          sc.nr_cartao,                               "
-                    + "          sc.id,                                      "
-                    + "          mc.ds_descricao,                            "
-                    + "          px.logradouro,                              "
-                    + "          px.endereco,                                "
-                    + "          px.numero,                                  "
-                    + "          px.complemento,                             "
-                    + "          px.bairro,                                  "
-                    + "          px.cidade,                                  "
-                    + "          px.uf,                                      "
-                    + "          px.cep,                                     "
-                    + "          px.nacionalidade,                           "
-                    + "          to_char(px.dt_nascimento, 'DD/MM/YYYY'),    "
-                    + "          px.estado_civil,                            "
-                    + "          px.ctps,                                    "
-                    + "          px.ds_serie,                                "
-                    + "          px.ds_orgao_emissao_rg,                     "
-                    + "          pe.ds_codigo,                               "
-                    + "          s.parentesco,                               "
-                    + "          s.categoria,                                "
-                    + "          pt.fantasia,                                "
-                    + "          pt.codigo_funcional,                        "
-                    + "          s.titular,                                  "
-                    + "          s.grupo_categoria,                          "
-                    + "          f.dt_aposentadoria                          ";
+                    + " GROUP BY p.id,                                       \n"
+                    + "          p.ds_nome,                                  \n"
+                    + "          pj.ds_documento,                            \n"
+                    + "          pj.ds_nome,                                 \n"
+                    + "          to_char(sc.dt_emissao, 'DD/MM/YYYY'),       \n"
+                    + "          c.ds_cidade,                                \n"
+                    + "          to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), \n"
+                    + "          c.ds_uf,                                    \n"
+                    + "          to_char(pe.dt_admissao, 'DD/MM/YYYY'),      \n"
+                    + "          j.ds_fantasia,                              \n"
+                    + "          s.matricula,                                \n"
+                    + "          s.nr_via,                                   \n"
+                    + "          s.id_socio,                                 \n"
+                    + "          to_char(s.filiacao, 'DD/MM/YYYY'),          \n"
+                    + "          pr.ds_profissao,                            \n"
+                    + "          p.ds_documento,                             \n"
+                    + "          f.ds_rg,                                    \n"
+                    + "          sc.nr_cartao,                               \n"
+                    + "          sc.id,                                      \n"
+                    + "          mc.ds_descricao,                            \n"
+                    + "          px.logradouro,                              \n"
+                    + "          px.endereco,                                \n"
+                    + "          px.numero,                                  \n"
+                    + "          px.complemento,                             \n"
+                    + "          px.bairro,                                  \n"
+                    + "          px.cidade,                                  \n"
+                    + "          px.uf,                                      \n"
+                    + "          px.cep,                                     \n"
+                    + "          px.nacionalidade,                           \n"
+                    + "          to_char(px.dt_nascimento, 'DD/MM/YYYY'),    \n"
+                    + "          px.estado_civil,                            \n"
+                    + "          px.ctps,                                    \n"
+                    + "          px.ds_serie,                                \n"
+                    + "          px.ds_orgao_emissao_rg,                     \n"
+                    + "          pe.ds_codigo,                               \n"
+                    + "          s.parentesco,                               \n"
+                    + "          s.categoria,                                \n"
+                    + "          pt.fantasia,                                \n"
+                    + "          pt.codigo_funcional,                        \n"
+                    + "          s.titular,                                  \n"
+                    + "          s.grupo_categoria,                          \n"
+                    + "          f.dt_aposentadoria                          \n";
 
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {
