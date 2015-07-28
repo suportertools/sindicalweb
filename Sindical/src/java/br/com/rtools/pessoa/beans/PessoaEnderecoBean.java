@@ -2,7 +2,7 @@ package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.dao.CidadeDao;
-import br.com.rtools.endereco.db.EnderecoDao;
+import br.com.rtools.endereco.dao.EnderecoDao;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.utilitarios.Dao;

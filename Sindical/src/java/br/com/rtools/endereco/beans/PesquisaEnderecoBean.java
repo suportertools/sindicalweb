@@ -1,7 +1,7 @@
 package br.com.rtools.endereco.beans;
 
 import br.com.rtools.endereco.*;
-import br.com.rtools.endereco.db.EnderecoDao;
+import br.com.rtools.endereco.dao.EnderecoDao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
