@@ -1,7 +1,6 @@
 package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.impressao.ParametroEscritorios;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEndereco;
@@ -103,10 +102,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioContabilidadesDB dbConta = new RelatorioContabilidadesDBToplink();
-        CidadeDao dbCidade = new CidadeDao();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
-
         Cidade cidade;
         Dao dao = new Dao();
         Relatorios r = db.pesquisaRelatorios(Integer.parseInt(getListRelatorios().get(index[0]).getDescription()));
@@ -126,7 +122,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
         // CIDADE DO RELATORIO -----------------------------------------------------------
         if (radioCidades.equals("especificas")) {
-            cidade = dbCidade.pesquisaCodigo(Integer.parseInt(getListCidades().get(index[2]).getDescription()));
+            cidade = (Cidade) dao.find(new Cidade(), Integer.parseInt(getListCidades().get(index[2]).getDescription()));
             cidades = Integer.toString(cidade.getId());
         } else if (radioCidades.equals("local")) {
             cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
