@@ -1,13 +1,14 @@
-package br.com.rtools.endereco.db;
+package br.com.rtools.endereco.dao;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.endereco.Cidade;
+import br.com.rtools.endereco.db.CidadeDB;
 import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class CidadeDBToplink extends DB implements CidadeDB {
+public class CidadeDao extends DB implements CidadeDB {
 
     @Override
     public Cidade pesquisaCodigo(int id) {
