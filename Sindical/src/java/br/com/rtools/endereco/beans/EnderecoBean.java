@@ -1,8 +1,7 @@
 package br.com.rtools.endereco.beans;
 
 import br.com.rtools.endereco.*;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
+import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
@@ -335,7 +334,7 @@ public class EnderecoBean implements Serializable {
                 cidadeBase = cidade;
             }
 
-            CidadeDB db = new CidadeDBToplink();
+            CidadeDao db = new CidadeDao();
             List select = db.pesquisaCidadeObj(cidadeBase.getUf());
 
             for (int i = 0; i < select.size(); i++) {
