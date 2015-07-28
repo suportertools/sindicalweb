@@ -5,12 +5,11 @@ import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.suporte.*;
-import br.com.rtools.suporte.db.*;
+import br.com.rtools.suporte.dao.PrioridadeDao;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -72,7 +71,7 @@ public class AgendaTarefaBean {
     }
 
     public void novo() {
-        AgendaTarefaBean agendaTarefaBean = new AgendaTarefaBean();
+
     }
 
     public void salvar() {
@@ -96,25 +95,24 @@ public class AgendaTarefaBean {
             mensagem = "Cadastrar status! Lista esta vazia.";
             return;
         }
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        ordemServico.setRotina((Rotina) sadb.pesquisaObjeto(Integer.parseInt(listaRotina.get(idRotina).getDescription()), "Rotina"));
-        ordemServico.setModulo((Modulo) sadb.pesquisaObjeto(Integer.parseInt(listaModulo.get(idModulo).getDescription()), "Modulo"));
-        ordemServico.setResponsavel((Usuario) sadb.pesquisaObjeto(Integer.parseInt(listaUsuario.get(idUsuario).getDescription()), "Usuario"));
-        ordemServico.setPrioridade((Prioridade) sadb.pesquisaObjeto(Integer.parseInt(listaPrioridade.get(idPrioridade).getDescription()), "Prioridade"));
-        ordemServico.setProStatus((ProStatus) sadb.pesquisaObjeto(Integer.parseInt(listaProStatus.get(idProStatus).getDescription()), "ProStatus"));
+        Dao dao = new Dao();
+        ordemServico.setRotina((Rotina) dao.find(new Rotina(), Integer.parseInt(listaRotina.get(idRotina).getDescription())));
+        ordemServico.setModulo((Modulo) dao.find(new Modulo(), Integer.parseInt(listaModulo.get(idModulo).getDescription())));
+        ordemServico.setResponsavel((Usuario) dao.find(new Usuario(), Integer.parseInt(listaUsuario.get(idUsuario).getDescription())));
+        ordemServico.setPrioridade((Prioridade) dao.find(new Prioridade(), Integer.parseInt(listaPrioridade.get(idPrioridade).getDescription())));
+        ordemServico.setProStatus((ProStatus) dao.find(new ProStatus(), Integer.parseInt(listaProStatus.get(idProStatus).getDescription())));
+        dao.openTransaction();
         if (ordemServico.getId() == -1) {
-            sadb.abrirTransacao();
-            if (sadb.inserirObjeto(sadb)) {
-                sadb.comitarTransacao();
+            if (dao.save(ordemServico)) {
+                dao.commit();
             } else {
-                sadb.desfazerTransacao();
+                dao.rollback();
             }
         } else {
-            sadb.abrirTransacao();
-            if (sadb.alterarObjeto(sadb)) {
-                sadb.comitarTransacao();
+            if (dao.update(ordemServico)) {
+                dao.commit();
             } else {
-                sadb.desfazerTransacao();
+                dao.rollback();
             }
 
         }
@@ -143,8 +141,7 @@ public class AgendaTarefaBean {
 
     public List<SelectItem> getListaModulo() {
         if (listaModulo.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<Modulo> list = (List<Modulo>) sadb.listaObjeto("Modulo", true);
+            List<Modulo> list = (List<Modulo>) new Dao().list(new Modulo(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaModulo.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
@@ -154,20 +151,18 @@ public class AgendaTarefaBean {
 
     public List<SelectItem> getListaPrioridade() {
         if (listaPrioridade.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<Prioridade> list = (List<Prioridade>) sadb.listaObjeto("Prioridade", true);
+            List<Prioridade> list = (List<Prioridade>) new Dao().list(new Prioridade(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaPrioridade.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
-        PrioridadeDB db = new PrioridadeDBToplink();
+        PrioridadeDao db = new PrioridadeDao();
         return listaPrioridade;
     }
 
     public List<SelectItem> getListaRotina() {
         if (listaRotina.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<Rotina> list = (List<Rotina>) sadb.listaObjeto("Rotina", true);
+            List<Rotina> list = (List<Rotina>) new Dao().list(new Rotina(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaRotina.add(new SelectItem(i, list.get(i).getRotina(), "" + list.get(i).getId()));
             }
@@ -177,8 +172,7 @@ public class AgendaTarefaBean {
 
     public List<SelectItem> getListaUsuario() {
         if (listaUsuario.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<Usuario> list = (List<Usuario>) sadb.listaObjeto("Usuario", true);
+            List<Usuario> list = (List<Usuario>) new Dao().list(new Usuario(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaUsuario.add(new SelectItem(i, list.get(i).getPessoa().getNome(), "" + list.get(i).getId()));
             }
@@ -188,8 +182,7 @@ public class AgendaTarefaBean {
 
     public List<SelectItem> getListaProStatus() {
         if (listaProStatus.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            List<ProStatus> list = (List<ProStatus>) sadb.listaObjeto("Usuario", true);
+            List<ProStatus> list = (List<ProStatus>) new Dao().list(new ProStatus(), true);
             for (int i = 0; i < list.size(); i++) {
                 listaProStatus.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
