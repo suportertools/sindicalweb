@@ -1,8 +1,7 @@
 package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
+import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.impressao.ParametroEscritorios;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEndereco;
@@ -104,7 +103,7 @@ public class RelatorioContabilidadesBean implements Serializable {
 
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioContabilidadesDB dbConta = new RelatorioContabilidadesDBToplink();
-        CidadeDB dbCidade = new CidadeDBToplink();
+        CidadeDao dbCidade = new CidadeDao();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
 
