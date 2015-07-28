@@ -8,9 +8,8 @@ import br.com.rtools.homologacao.Senha;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,10 +89,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   ORDER BY hor.ds_hora                                 ";
             Query qry = getEntityManager().createNativeQuery(textoQry);
             if (!qry.getResultList().isEmpty()) {
-                SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                 List list = qry.getResultList();
                 for (int i = 0; i < list.size(); i++) {
-                    agendamentos.add((Agendamento) dB.pesquisaCodigo((Integer) ((List) list.get(i)).get(0), "Agendamento"));
+                    agendamentos.add((Agendamento) new Dao().find(new Agendamento(), (Integer) ((List) list.get(i)).get(0)));
                 }
                 return agendamentos;
             }
@@ -373,9 +371,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query qry = getEntityManager().createNativeQuery(textoQry);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                 for (int i = 0; i < list.size(); i++) {
-                    agendamentos.add((Agendamento) dB.find(new Agendamento(), (Integer) ((List) list.get(i)).get(0)));
+                    agendamentos.add((Agendamento) new Dao().find(new Agendamento(), (Integer) ((List) list.get(i)).get(0)));
                 }
                 return agendamentos;
             }
