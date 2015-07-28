@@ -50,6 +50,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.pessoa.db.SpcDB;
 import br.com.rtools.pessoa.db.SpcDBToplink;
+import br.com.rtools.seguranca.FilialRotina;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
@@ -2436,7 +2437,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (idStatusI != 5) {
                     idStatusI = Integer.parseInt(listaStatus.get(idStatusFiltro).getDescription());
                 }
-                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa, idStatusI, MacFilial.getAcessoFilial().getFilial());
+                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa, idStatusI, (Filial) new Dao().find(new Filial(), Integer.parseInt(getListFiliais().get(filial_id).getDescription())));
                 MatriculaIndividual mIndividual = null;
                 MatriculaTurma mTurma = null;
                 for (MatriculaEscola listaMatriculaEscola : list) {
@@ -2976,16 +2977,18 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public List<SelectItem> getListaCursosDisponiveis() {
-        if (listaCursosDisponiveis.isEmpty()) {
-            TurmaDao td = new TurmaDao();
-            List<Turma> list = (List<Turma>) td.listaTurmaAtivaPorFilial(macFilial.getFilial().getId());
-            int idCurso = 0;
-            int j = 0;
-            for (Turma list1 : list) {
-                if (idCurso != list1.getCursos().getId()) {
-                    idCurso = list1.getCursos().getId();
-                    listaCursosDisponiveis.add(new SelectItem((int) j, (String) list1.getCursos().getDescricao(), Integer.toString(list1.getCursos().getId())));
-                    j++;
+        if(!getListFiliais().isEmpty()) {
+            if (listaCursosDisponiveis.isEmpty()) {
+                TurmaDao td = new TurmaDao();
+                List<Turma> list = (List<Turma>) td.listaTurmaAtivaPorFilial(Integer.parseInt(getListFiliais().get(filial_id).getDescription()));
+                int idCurso = 0;
+                int j = 0;
+                for (Turma list1 : list) {
+                    if (idCurso != list1.getCursos().getId()) {
+                        idCurso = list1.getCursos().getId();
+                        listaCursosDisponiveis.add(new SelectItem((int) j, (String) list1.getCursos().getDescricao(), Integer.toString(list1.getCursos().getId())));
+                        j++;
+                    }
                 }
             }
         }
@@ -3396,7 +3399,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (liberaAcessaFilial || Usuario.getUsuario().getId() == 1) {
                     liberaAcessaFilial = true;
                     // ROTINA MATRÍCULA ESCOLA
-                    List<Filial> list = new FilialRotinaDao().findByRotina(new Rotina().get().getId());
+                    List<FilialRotina> list = new FilialRotinaDao().findByRotina(new Rotina().get().getId());
                     // ID DA FILIAL
                     if (!list.isEmpty()) {
                         for (int i = 0; i < list.size(); i++) {
@@ -3406,7 +3409,7 @@ public class MatriculaEscolaBean implements Serializable {
                             if (f.getId() == list.get(i).getId()) {
                                 filial_id = i;
                             }
-                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
                         }
                     } else {
                         filial_id = 0;
@@ -3452,6 +3455,7 @@ public class MatriculaEscolaBean implements Serializable {
                 filial_id_2 = 0;
                 break;
         }
+        new FilialDao();
 
     }
 }

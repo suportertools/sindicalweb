@@ -2,17 +2,17 @@ package br.com.rtools.estoque.dao;
 
 import br.com.rtools.estoque.Estoque;
 import br.com.rtools.estoque.EstoqueSaidaConsumo;
-import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Produto;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.QueryString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
 public class ProdutoDao extends DB {
 
-    public List pesquisaProduto(Produto produto, int tipoPesquisa, String porPesquisa) {
+    public List pesquisaProduto(Produto produto, Integer tipoPesquisa, String porPesquisa) {
         if (produto.getDescricao().isEmpty()) {
             return new ArrayList();
         }
@@ -23,11 +23,21 @@ public class ProdutoDao extends DB {
             } else {
                 por = "%";
             }
-            Query q = getEntityManager().createQuery("SELECT P FROM Produto AS P WHERE UPPER(P.descricao) LIKE :p");
-            if (tipoPesquisa == 0) {
-                q.setParameter("p", por + produto.getDescricao().toUpperCase() + "%");
-            }
-            List list = q.getResultList();
+            String descricao = por + produto.getDescricao() + "%";
+            String queryString = ""
+                    + "SELECT P.*                                                                                               \n"
+                    + "  FROM est_produto AS P                                                                                  \n"
+                    + " WHERE trim(UPPER(func_translate(P.ds_descricao))) LIKE trim(UPPER(func_translate('" + descricao + "'))) \n"
+                    + "   OR (                                                                                                  \n"
+                    + "     trim(UPPER(func_translate(P.ds_modelo))) LIKE trim(UPPER(func_translate('" + produto.getDescricao() + "')))         \n"
+                    + "     OR trim(UPPER(func_translate(P.ds_marca))) LIKE trim(UPPER(func_translate('" + produto.getDescricao() + "')))       \n"
+                    + "     OR trim(UPPER(func_translate(P.ds_fabricante))) LIKE trim(UPPER(func_translate('" + produto.getDescricao() + "')))  \n"
+                    + ")                                                                                                        \n"
+                    + "ORDER BY P.ds_descricao                                                                                  \n"
+                    + "   ";
+
+            Query query = getEntityManager().createNativeQuery(queryString, Produto.class);
+            List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }
@@ -127,7 +137,7 @@ public class ProdutoDao extends DB {
         return null;
     }
 
-    public List<EstoqueSaidaConsumo> listaEstoqueSaidaConsumoProdutoTipo(int produto, int estoqueTipo, String orderLancamento, String orderDepartamento, String orderProduto, String orderQuantidade, String orderFilial) {
+    public List<EstoqueSaidaConsumo> listaEstoqueSaidaConsumoProdutoTipo(Integer produto, Integer estoqueTipo, String orderLancamento, String orderDepartamento, String orderProduto, String orderQuantidade, String orderFilial) {
         if (produto == -1) {
             return new ArrayList();
         }

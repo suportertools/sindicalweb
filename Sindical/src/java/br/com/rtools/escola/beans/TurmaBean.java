@@ -11,7 +11,11 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.db.FilialDao;
+import br.com.rtools.seguranca.FilialRotina;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.dao.FilialRotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -419,7 +423,7 @@ public class TurmaBean implements Serializable {
 
     public List<Turma> getListTurma() {
         if (listTurma.isEmpty()) {
-            listTurma = new Dao().list(new Turma(), true);
+            listTurma = new TurmaDao().findbyFilial(Integer.parseInt(getListFiliais().get(filial_id).getDescription()));
         }
         return listTurma;
     }
@@ -563,8 +567,10 @@ public class TurmaBean implements Serializable {
         if (listFiliais.isEmpty()) {
             Filial f = MacFilial.getAcessoFilial().getFilial();
             if (f.getId() != -1) {
-                if (liberaAcessaFilial) {
-                    List<Filial> list = new FilialDao().findByTabela("esc_turma");
+                if (liberaAcessaFilial || Usuario.getUsuario().getId() == 1) {
+                    liberaAcessaFilial = true;
+                    // ROTINA MATRÍCULA ESCOLA
+                    List<FilialRotina> list = new FilialRotinaDao().findByRotina(new Rotina().get().getId());
                     // ID DA FILIAL
                     if (!list.isEmpty()) {
                         for (int i = 0; i < list.size(); i++) {
@@ -574,7 +580,7 @@ public class TurmaBean implements Serializable {
                             if (f.getId() == list.get(i).getId()) {
                                 filial_id = i;
                             }
-                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getNome(), "" + list.get(i).getId()));
+                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
                         }
                     } else {
                         filial_id = 0;
