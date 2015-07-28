@@ -8,7 +8,7 @@ import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class EnderecoDBToplink extends DB {
+public class EnderecoDao extends DB {
 
     public List<Endereco> pesquisaEnderecoCep(String cep) {
         try {
