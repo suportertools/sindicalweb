@@ -2,8 +2,7 @@ package br.com.rtools.endereco.beans;
 
 import br.com.rtools.endereco.*;
 import br.com.rtools.endereco.dao.CidadeDao;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
@@ -13,6 +12,7 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
+import sun.java2d.loops.CompositeType;
 
 @ManagedBean
 @SessionScoped
@@ -83,28 +84,56 @@ public class EnderecoBean implements Serializable {
     public void pesquisaCep() {
         porPesquisa = "cep";
         listaEndereco.clear();
+        find();
     }
 
     public void pesquisaInicial() {
         pesquisar = true;
         porPesquisa = "inicial";
         listaEndereco.clear();
+        find();
     }
 
     public void pesquisaParcial() {
         pesquisar = true;
         porPesquisa = "parcial";
         listaEndereco.clear();
+        find();
     }
 
     public String chamadaEndereco() {
         return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).endereco();
     }
 
+    public void find() {
+        EnderecoDao db = new EnderecoDao();
+        Dao dao = new Dao();
+        String descricao = "";
+        if (porPesquisa.equals("cep")) {
+            listaEndereco = db.pesquisaEnderecoCep(endereco.getCep());
+            descricao = "CEP: " + endereco.getCep();
+        } else if (porPesquisa.equals("inicial") && pesquisar) {
+            listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
+                    ((Cidade) dao.find(new Cidade(), Integer.parseInt(getListCidade().get(index[1]).getDescription()))).getCidade(),
+                    ((Logradouro) dao.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()))).getDescricao(),
+                    endereco.getDescricaoEndereco().getDescricao(), "I");
+            pesquisar = false;
+        } else if (porPesquisa.equals("parcial") && pesquisar) {
+            listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
+                    ((Cidade) dao.find(new Cidade(), Integer.parseInt(getListCidade().get(index[1]).getDescription()))).getCidade(),
+                    ((Logradouro) dao.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()))).getDescricao(),
+                    endereco.getDescricaoEndereco().getDescricao(), "P");
+            pesquisar = false;
+        }
+        if (listaEndereco.isEmpty()) {
+            GenericaMensagem.warn("Resultado", "Nenhum registro encontrado! " + descricao);
+        }
+    }
+
     public void save() throws Exception {
         mensagem = "";
         DaoInterface di = new Dao();
-        EnderecoDB db = new EnderecoDBToplink();
+        EnderecoDao db = new EnderecoDao();
         Logradouro logradouro = (Logradouro) di.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()));
         endereco.setLogradouro(logradouro);
         if (endereco.getDescricaoEndereco().getId() == -1) {
@@ -250,34 +279,34 @@ public class EnderecoBean implements Serializable {
 
     public List<SelectItem> getListLogradouro() {
         if (listSelectItem[2].isEmpty()) {
-            EnderecoDB db = new EnderecoDBToplink();
-            List<Logradouro> logradouros = db.pesquisaTodosOrdenado();
+            Dao dao = new Dao();
+            List<Logradouro> list = dao.list(new Logradouro(), true);
             int j = 0;
-            for (int i = 0; i < logradouros.size(); i++) {
-                if (logradouros.get(i).getDescricao().toUpperCase().equals("RUA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("AVENIDA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("PRAÇA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("RODOVIA")
-                        || logradouros.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
-                    listSelectItem[2].add(new SelectItem(j, (String) logradouros.get(i).getDescricao().toUpperCase(), Integer.toString(logradouros.get(i).getId())));
-                    if (logradouros.get(i).getDescricao().toUpperCase().equals("RUA")) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getDescricao().toUpperCase().equals("RUA")
+                        || list.get(i).getDescricao().toUpperCase().equals("AVENIDA")
+                        || list.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
+                        || list.get(i).getDescricao().toUpperCase().equals("PRAÇA")
+                        || list.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
+                        || list.get(i).getDescricao().toUpperCase().equals("RODOVIA")
+                        || list.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
+                    listSelectItem[2].add(new SelectItem(j, (String) list.get(i).getDescricao().toUpperCase(), Integer.toString(list.get(i).getId())));
+                    if (list.get(i).getDescricao().toUpperCase().equals("RUA")) {
                         index[2] = j;
                     }
-                    logradouros.remove(i);
+                    list.remove(i);
                     j++;
                 }
             }
-            for (int i = 0; i < logradouros.size(); i++) {
-                if (!logradouros.get(i).getDescricao().toUpperCase().equals("RUA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("AVENIDA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("PRAÇA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("RODOVIA")
-                        || !logradouros.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
-                    listSelectItem[2].add(new SelectItem(j, (String) logradouros.get(i).getDescricao(), Integer.toString(logradouros.get(i).getId())));
+            for (int i = 0; i < list.size(); i++) {
+                if (!list.get(i).getDescricao().toUpperCase().equals("RUA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("AVENIDA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("PRAÇA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("RODOVIA")
+                        || !list.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
+                    listSelectItem[2].add(new SelectItem(j, (String) list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
                     j++;
                 }
             }
@@ -356,24 +385,6 @@ public class EnderecoBean implements Serializable {
     }
 
     public List<Endereco> getListaEndereco() {
-        if (listaEndereco.isEmpty()) {
-            EnderecoDB db = new EnderecoDBToplink();
-            if (porPesquisa.equals("cep")) {
-                listaEndereco = db.pesquisaEnderecoCep(endereco.getCep());
-            } else if (porPesquisa.equals("inicial") && pesquisar) {
-                listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
-                        db.pesquisaCidade(Integer.parseInt(getListCidade().get(index[1]).getDescription())).getCidade(),
-                        db.pesquisaLogradouro(Integer.parseInt(getListLogradouro().get(index[2]).getDescription())).getDescricao(),
-                        endereco.getDescricaoEndereco().getDescricao(), "I");
-                pesquisar = false;
-            } else if (porPesquisa.equals("parcial") && pesquisar) {
-                listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
-                        db.pesquisaCidade(Integer.parseInt(getListCidade().get(index[1]).getDescription())).getCidade(),
-                        db.pesquisaLogradouro(Integer.parseInt(getListLogradouro().get(index[2]).getDescription())).getDescricao(),
-                        endereco.getDescricaoEndereco().getDescricao(), "P");
-                pesquisar = false;
-            }
-        }
         return listaEndereco;
     }
 

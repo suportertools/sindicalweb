@@ -1,8 +1,7 @@
 package br.com.rtools.endereco.beans;
 
 import br.com.rtools.endereco.*;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
@@ -62,7 +61,7 @@ public class PesquisaEnderecoBean implements Serializable {
     public List<Endereco> getListaEndereco() {
         if (cep != null && !cep.isEmpty()) {
             if (listaEndereco.isEmpty()) {
-                EnderecoDB db = new EnderecoDBToplink();
+                EnderecoDao db = new EnderecoDao();
                 listaEndereco = db.pesquisaEnderecoCep(cep);
             }
         }
