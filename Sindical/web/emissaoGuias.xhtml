@@ -260,7 +260,7 @@
                                     <!-- TELA CADASTRO -->
                                     <p:messages autoUpdate="true" showDetail="true" id="i_message_pedido"/>
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Pesquisar" icon="ui-icon-search" title="Pesquisar Produto" action="#{chamadaPaginaBean.pesquisaProduto()}" disabled="#{emissaoGuiasBean.lote.id != -1}"/>
+                                        <p:commandButton value="Pesquisar" icon="ui-icon-search" title="Pesquisar Produto" action="#{chamadaPaginaBean.pesquisa('pesquisaProduto', 'produtoBean')}" disabled="#{emissaoGuiasBean.lote.id != -1}"/>
                                         <p:outputLabel value="#{emissaoGuiasBean.pedido.produto.descricao} -  Marca: #{emissaoGuiasBean.pedido.produto.marca} - #{emissaoGuiasBean.pedido.produto.fabricante}" />
                                     </h:panelGrid>
                                     <h:panelGrid columns="2">

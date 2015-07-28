@@ -328,7 +328,7 @@
                                     <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
                                     <p:commandButton  value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}" update="i_panel_matricula_escola"/>
                                     <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_panel_excluir').show();"/>
-                                    <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
+                                    <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaMatriculaEscola')}"/>
                                     <h:panelGrid columns="5" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
                                         <p:commandButton title="Gerar Contrato" value="Gerar Contrato"  action="#{matriculaEscolaBean.gerarContrato}" rendered="false" disabled="#{controleAcessoBean.botaoSalvar}" update="growl"/>
                                         <h:commandLink title="Gerar Contrato" target="#{matriculaEscolaBean.target}" action="#{matriculaEscolaBean.gerarContrato}" disabled="#{controleAcessoBean.botaoSalvar}">

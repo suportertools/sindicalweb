@@ -160,11 +160,14 @@
                                 <p:column rendered="#{relatorioAcademiaBean.filtro[1]}">
                                     <h:panelGrid columns="2" styleClass="margin-top">
                                         <h:column>
-                                            <p:outputLabel value="Período Emissão: " rendered="#{!relatorioAcademiaBean.filtro[7]}"/>
-                                            <p:outputLabel value="Período Inativação: " rendered="#{relatorioAcademiaBean.filtro[7]}"/>
+                                            <p:selectOneMenu value="#{relatorioAcademiaBean.periodo}">
+                                                <p:ajax event="change" update="@this" global="false"/>
+                                                <f:selectItem itemValue="emissao" itemLabel="Período de Emissão"  />
+                                                <f:selectItem itemValue="inativacao" itemLabel="Período de Inativação"  />
+                                            </p:selectOneMenu>                                            
                                         </h:column>
                                         <h:column>
-                                            <h:panelGrid columns="5">
+                                            <h:panelGrid columns="5" id="i_t">
                                                 <p:calendar value="#{relatorioAcademiaBean.dataInicial}" pattern="dd/MM/yyyy" size="10" navigator="true" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataInicial}" />
                                                 </p:calendar>
@@ -172,9 +175,9 @@
                                                 <p:calendar value="#{relatorioAcademiaBean.dataFinal}" pattern="dd/MM/yyyy"  size="10" navigator="true" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataFinal}" />
                                                 </p:calendar>
-                                                <p:selectBooleanButton value="#{relatorioAcademiaBean.filtro[7]}" onLabel="Alterar para período de emissão" offLabel="Alterar para período de inativação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus">
-                                                    <p:ajax event="change" update="@this :form_relatorio:id_tipo_relatorio :form_relatorio:id_panel_relatorio" listener="#{relatorioAcademiaBean.clear}" />
-                                                </p:selectBooleanButton>
+                                                <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[7]}" itemLabel="Ativo">
+                                                    <p:ajax event="change" update="@this" />
+                                                </p:selectBooleanCheckbox>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('emissao_inativacao')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
