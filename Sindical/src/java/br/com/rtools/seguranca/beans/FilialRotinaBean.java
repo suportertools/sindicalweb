@@ -5,7 +5,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.FilialRotina;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.dao.FilialRotinaDao;
-import br.com.rtools.seguranca.dao.MacFilialDao;
+import br.com.rtools.seguranca.dao.RotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -70,6 +70,7 @@ public class FilialRotinaBean implements Serializable {
                 novoLog.setTabela("seg_filial_rotina");
                 novoLog.setCodigo(filialRotina.getId());
                 filialRotina = new FilialRotina();
+                listRotinas.clear();
                 listFilialRotina.clear();
             } else {
                 dao.rollback();
@@ -92,6 +93,7 @@ public class FilialRotinaBean implements Serializable {
                 novoLog.setCodigo(filialRotina.getId());
                 novoLog.update(beforeUpdate, saveString);
                 filialRotina = new FilialRotina();
+                listRotinas.clear();
                 dao.commit();
                 GenericaMensagem.info("Atualizado", "Computador atualizado com sucesso!");
                 filialRotina = new FilialRotina();
@@ -105,7 +107,7 @@ public class FilialRotinaBean implements Serializable {
     }
 
     public void edit(FilialRotina fr) {
-        filialRotina = fr;
+        filialRotina = (FilialRotina) new Dao().rebind(fr);
         for (int i = 0; i < listRotinas.size(); i++) {
             if (Integer.valueOf(listRotinas.get(i).getDescription()) == filialRotina.getRotina().getId()) {
                 rotina_id = i;
@@ -134,6 +136,8 @@ public class FilialRotinaBean implements Serializable {
             dao.commit();
             GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
             listFilialRotina.clear();
+            listRotinas.clear();
+            filialRotina = new FilialRotina();
         } else {
             dao.rollback();
             GenericaMensagem.info("Sucesso", "Erro ao excluir computador!");
@@ -144,7 +148,7 @@ public class FilialRotinaBean implements Serializable {
 
     public List<SelectItem> getListRotinas() {
         if (listRotinas.isEmpty()) {
-            List<Rotina> list = new Dao().list(new Rotina(), true);
+            List<Rotina> list = new RotinaDao().findNotInByTabela("seg_filial_rotina", "id_filial", getListFiliais().get(filial_id).getDescription());
             for (int i = 0; i < list.size(); i++) {
                 listRotinas.add(new SelectItem(i,
                         list.get(i).getRotina(),
@@ -217,6 +221,7 @@ public class FilialRotinaBean implements Serializable {
         switch (tcase) {
             case 1:
                 listFilialRotina.clear();
+                listRotinas.clear();
                 break;
         }
     }

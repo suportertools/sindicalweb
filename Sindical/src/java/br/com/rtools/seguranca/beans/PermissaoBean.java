@@ -463,8 +463,7 @@ public class PermissaoBean implements Serializable {
     public List<SelectItem> getListaRotinas() {
         listaRotinas.clear();
         if (listaRotinas.isEmpty()) {
-            RotinaDao rotinaDao = new RotinaDao();
-            List list = rotinaDao.pesquisaRotinasDisponiveisModulo(Integer.parseInt(listaModulos.get(idModulo).getDescription()));
+            List<Rotina> list = new RotinaDao().findNotInByTabela("seg_permissao", "id_modulo", getListaModulos().get(idModulo).getDescription());
             for (int i = 0; i < list.size(); i++) {
                 listaRotinas.add(new SelectItem(i,
                         ((Rotina) list.get(i)).getRotina(),

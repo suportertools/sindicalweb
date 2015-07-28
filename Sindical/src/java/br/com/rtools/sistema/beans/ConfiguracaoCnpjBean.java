@@ -72,4 +72,7 @@ public class ConfiguracaoCnpjBean implements Serializable {
         Tab activeTab = event.getTab();
     }
 
+//    @Column(name = "is_cadastro_cnpj", columnDefinition = "boolean default false")
+//    private boolean cadastroCnpj;
+
 }
