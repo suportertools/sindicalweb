@@ -13,8 +13,7 @@ import br.com.rtools.arrecadacao.db.WebREPISDB;
 import br.com.rtools.arrecadacao.db.WebREPISDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
+import br.com.rtools.endereco.dao.CidadeDao;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.impressao.ParametroCertificado;
@@ -1009,7 +1008,7 @@ public class WebREPISBean implements Serializable {
 
     public List<SelectItem> getListaCidade() {
         if (listaCidade.isEmpty()) {
-            CidadeDB db = new CidadeDBToplink();
+            CidadeDao db = new CidadeDao();
 
             List<Cidade> result = db.listaCidadeParaREPIS();
 
