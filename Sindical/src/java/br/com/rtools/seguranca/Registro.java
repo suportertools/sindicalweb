@@ -5,13 +5,14 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "seg_registro")
 @NamedQuery(name = "Registro.pesquisaID", query = "select regi from Registro regi where regi.id=:pid")
-public class Registro implements java.io.Serializable {
+public class Registro implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -117,8 +118,6 @@ public class Registro implements java.io.Serializable {
     private boolean acessoWebDocumento;
     @Column(name = "rais_mensagem_email", length = 8000)
     private String raisMensagemEmail;
-    @Column(name = "is_cadastro_cnpj", columnDefinition = "boolean default false")
-    private boolean cadastroCnpj;
     @Column(name = "is_biometria", columnDefinition = "boolean default false")
     private boolean biometria;
 
@@ -172,7 +171,6 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketingResposta = "";
         this.acessoWebDocumento = false;
         this.raisMensagemEmail = "";
-        this.cadastroCnpj = false;
         this.biometria = false;
     }
 
@@ -275,7 +273,6 @@ public class Registro implements java.io.Serializable {
         this.sisEmailMarketingResposta = sisEmailMarketingResposta;
         this.acessoWebDocumento = acessoWebDocumento;
         this.raisMensagemEmail = raisMensagemEmail;
-        this.cadastroCnpj = cadastroCnpj;
         this.biometria = biometria;
     }
 
@@ -689,14 +686,6 @@ public class Registro implements java.io.Serializable {
 
     public void setRaisMensagemEmail(String raisMensagemEmail) {
         this.raisMensagemEmail = raisMensagemEmail;
-    }
-
-    public boolean isCadastroCnpj() {
-        return cadastroCnpj;
-    }
-
-    public void setCadastroCnpj(boolean cadastroCnpj) {
-        this.cadastroCnpj = cadastroCnpj;
     }
 
     public boolean isBiometria() {

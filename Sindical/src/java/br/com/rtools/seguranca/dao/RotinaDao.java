@@ -1,8 +1,8 @@
 package br.com.rtools.seguranca.dao;
 
-import br.com.rtools.pessoa.Filial;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.utilitarios.dao.FindDao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -200,7 +200,7 @@ public class RotinaDao extends DB {
                     + "          GROUP BY T." + column + "                      \n"
                     + ")                                                        \n"
                     + " ORDER BY R.ds_rotina ";
-            Query query = getEntityManager().createNativeQuery(queryString, Filial.class);
+            Query query = getEntityManager().createNativeQuery(queryString, Rotina.class);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -210,36 +210,42 @@ public class RotinaDao extends DB {
         }
         return new ArrayList();
     }
-    
+
     /**
      * Nome da tabela onde esta a lista de filiais Ex:
-     * findByTabela('matr_escola');
+     * findNotInByTabela('matr_escola');
      *
-     * @param table
+     * @param table (Use alias T+colum
+     * @param colum_filter_key Nome da coluna do filtro
      * @return Todas as rotinas da tabela específicada
-     * @param column Nome da coluna
+     * @param colum_filter_value Valor do filtro
      */
-    public List findByTabelaNon(String table, String column) {
+    public List findNotInByTabela(String table, String colum_filter_key, String colum_filter_value) {
+        return findNotInByTabela(table, "id_rotina", colum_filter_key, colum_filter_value, true);
+    }
+
+    /**
+     * Nome da tabela onde esta a lista de filiais Ex:
+     * findNotInByTabela('seg_filial_rotina', 'id_filial', 1);
+     *
+     * @param table (Use alias T+colum)
+     * @param column
+     * @param colum_filter_key Nome da coluna do filtro
+     * @return Todas as rotinas não usadas em uma chave conforme o valor
+     * @param colum_filter_value Valor do filtro
+     * @param is_ativo default null
+     */
+    public List findNotInByTabela(String table, String column, String colum_filter_key, String colum_filter_value, Boolean is_ativo) {
         if (column == null || column.isEmpty()) {
             column = "id_rotina";
         }
-        try {
-            String queryString
-                    = "     SELECT R.* FROM seg_rotina AS R                     \n"
-                    + "      WHERE R.id IN (                                    \n"
-                    + "	           SELECT T." + column + "                      \n"
-                    + "              FROM " + table + " AS T                    \n"
-                    + "          GROUP BY T." + column + "                      \n"
-                    + ")                                                        \n"
-                    + " ORDER BY R.ds_rotina ";
-            Query query = getEntityManager().createNativeQuery(queryString, Filial.class);
-            List list = query.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
+        if (colum_filter_key == null || colum_filter_key.isEmpty() || colum_filter_value == null || colum_filter_value.isEmpty()) {
             return new ArrayList();
         }
-        return new ArrayList();
+        String where = "";
+        if (is_ativo != null) {
+            where += " AND T1.is_ativo = " + is_ativo;
+        }
+        return new FindDao().findNotInByTabela(Rotina.class, "seg_rotina", new String[]{"ds_rotina"}, table, column, colum_filter_key, colum_filter_value, where);
     }
 }
