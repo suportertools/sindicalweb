@@ -7,8 +7,6 @@ import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.associativo.dao.SociosDao;
 import br.com.rtools.associativo.lista.ListaSociosEmpresa;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
@@ -1380,9 +1378,8 @@ public class JuridicaBean implements Serializable {
     }
 
     public String CarregarEndereco() {
-        EnderecoDB db_endereco = new EnderecoDBToplink();
         int idEndereco = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paramEndereco"));
-        pessoaEndereco.setEndereco(db_endereco.pesquisaCodigo(idEndereco));
+        pessoaEndereco.setEndereco((Endereco) new Dao().find(new Endereco(), idEndereco));
         setEnderecoCompleto((pessoaEndereco.getEndereco().getLogradouro().getDescricao()) + " " + pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao());
         return "pessoaJuridica";
     }

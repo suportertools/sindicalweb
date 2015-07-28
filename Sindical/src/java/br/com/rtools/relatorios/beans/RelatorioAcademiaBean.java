@@ -77,7 +77,7 @@ public class RelatorioAcademiaBean implements Serializable {
         filtro[4] = false; // SEXO
         filtro[5] = false; // ORDER
         filtro[6] = false; // PERIODO
-        filtro[7] = null; // ATIVO
+        filtro[7] = true; // ATIVO
         filtro[8] = false; // IDADE
         filtro[9] = false; // GRUPO CATEGORIA
         filtro[10] = null; // NÃO SÓCIO
@@ -147,10 +147,12 @@ public class RelatorioAcademiaBean implements Serializable {
         if (filtro[1]) {
             pIStringI = DataHoje.converteData(dataInicial);
             pFStringI = DataHoje.converteData(dataFinal);
-            if (filtro[7]) {
-                listDetalhePesquisa.add(" Período de Inativação entre " + pIStringI + " e " + pFStringI);
-            } else {
-                listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+            if (periodo != null) {
+                if (periodo.equals("inativacao")) {
+                    listDetalhePesquisa.add(" Período de Inativação entre " + pIStringI + " e " + pFStringI);
+                } else if (periodo.equals("emissao")) {
+                    listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+                }
             }
         }
         if (!filtro[8]) {
@@ -176,11 +178,11 @@ public class RelatorioAcademiaBean implements Serializable {
         }
         if (aluno.getId() != -1) {
             idAluno = aluno.getId();
-            listDetalhePesquisa.add(" Empresa por Física CPF: " + aluno.getDocumento() + " - " + aluno.getNome());
+            listDetalhePesquisa.add(" Aluno CPF: " + aluno.getDocumento() + " - " + aluno.getNome());
         }
         if (responsavel.getId() != -1) {
             idResponsavel = responsavel.getId();
-            listDetalhePesquisa.add(" Escritório por Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
+            listDetalhePesquisa.add(" Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
         }
         AcademiaDao academiaDao = new AcademiaDao();
         if (order == null) {
@@ -328,9 +330,6 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[6]) {
             selectedPeriodos = null;
         }
-        if (filtro[7] == null) {
-            filtro[7] = true;
-        }
         if (!filtro[7]) {
             selectedPeriodos = null;
         }
@@ -370,7 +369,7 @@ public class RelatorioAcademiaBean implements Serializable {
                 filtro[1] = false;
                 dataInicial = DataHoje.dataHoje();
                 dataFinal = DataHoje.dataHoje();
-                filtro[7] = null;
+                filtro[7] = true;
                 periodo = "emissao";
                 break;
             case "responsavel":

@@ -8,8 +8,7 @@ import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.Logradouro;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.JuridicaReceita;
@@ -323,7 +322,7 @@ public class ControleAcessoWebBean implements Serializable {
 //            }else{
 //                dex = ldescricao.get(0);
 //            }
-//            EnderecoDB dbx = new EnderecoDBToplink();
+//            EnderecoDB dbx = new EnderecoDao();
 //            List<Endereco> le = dbx.pesquisaEnderecoCep(cep);
 //
 //            Endereco ex = new Endereco(-1, le.get(0).getCidade(), bx, le.get(0).getLogradouro(), dex, cep, "", false);   
@@ -597,7 +596,7 @@ public class ControleAcessoWebBean implements Serializable {
                 cx = lcidade.get(0);
             }
 
-            EnderecoDB dbx = new EnderecoDBToplink();
+            EnderecoDao dbx = new EnderecoDao();
             List<Endereco> le = dbx.pesquisaEnderecoCep(cep);
 
             if (le.isEmpty()) {

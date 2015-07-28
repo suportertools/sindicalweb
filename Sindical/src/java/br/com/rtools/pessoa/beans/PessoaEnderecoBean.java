@@ -2,12 +2,10 @@ package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.dao.CidadeDao;
-import br.com.rtools.endereco.db.EnderecoDB;
-import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.endereco.db.EnderecoDao;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
@@ -41,22 +39,22 @@ public class PessoaEnderecoBean implements Serializable {
     }
 
     public String salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         if (pessoaEndereco.getId() == -1) {
             TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
             pessoaEndereco.setTipoEndereco(db_tipoEndereco.idTipoEndereco(pessoaEndereco.getTipoEndereco()));
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
-                salvarAcumuladoDB.comitarTransacao();
+            dao.openTransaction();
+            if (dao.save(pessoaEndereco)) {
+                dao.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                dao.rollback();
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(pessoaEndereco)) {
-                salvarAcumuladoDB.comitarTransacao();
+            dao.openTransaction();
+            if (dao.update(pessoaEndereco)) {
+                dao.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                dao.rollback();
             }
         }
         return null;
@@ -68,14 +66,14 @@ public class PessoaEnderecoBean implements Serializable {
     }
 
     public String excluir() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Dao dao = new Dao();
         if (pessoaEndereco.getId() != -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
-            if (salvarAcumuladoDB.deletarObjeto(pessoaEndereco)) {
-                salvarAcumuladoDB.comitarTransacao();
+            dao.openTransaction();
+            pessoaEndereco = (PessoaEndereco) dao.find(new PessoaEndereco(), pessoaEndereco.getId());
+            if (dao.delete(pessoaEndereco)) {
+                dao.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                dao.rollback();
             }
         }
         pessoaEndereco = new PessoaEndereco();
@@ -89,8 +87,7 @@ public class PessoaEnderecoBean implements Serializable {
     }
 
     public List getListaPessoaEndereco() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
+        List result = new Dao().list(new PessoaEndereco());
         return result;
     }
 
@@ -104,14 +101,14 @@ public class PessoaEnderecoBean implements Serializable {
 
     public List getListaEnderecoCep() {
         List result = null;
-        EnderecoDB db = new EnderecoDBToplink();
+        EnderecoDao db = new EnderecoDao();
         result = db.pesquisaEnderecoCep(pessoaEndereco.getEndereco().getCep());
         return result;
     }
 
     public List getListaEnderecoDes() {
         List result = null;
-        EnderecoDB db = new EnderecoDBToplink();
+        EnderecoDao db = new EnderecoDao();
         String uf = pessoaEndereco.getEndereco().getCidade().getUf();
         String cidade = pessoaEndereco.getEndereco().getCidade().getCidade();
         String log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();

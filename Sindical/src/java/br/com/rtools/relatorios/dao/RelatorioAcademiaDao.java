@@ -49,10 +49,10 @@ public class RelatorioAcademiaDao extends DB {
                 + " INNER JOIN sis_periodo          AS P   ON P.id          = ASV.id_periodo        \n"
                 + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo     = SP.id_pessoa          \n"
                 + " INNER JOIN pes_pessoa           AS PR  ON PR.id         = SP.id_cobranca        \n"
-                + "  LEFT JOIN soc_socios_vw        AS SOC ON SOC.titular   = SP.id_pessoa          \n";
+                + "  LEFT JOIN soc_socios_vw        AS SOC ON SOC.codsocio  = SP.id_pessoa          \n";
         if (convenio_empresa != null && convenio_empresa) {
             queryString += " INNER JOIN fin_desconto_servico_empresa AS FDSE ON FDSE.id_juridica = PA.id_juridica AND FDSE.id_servico = SP.id_servico ";
-            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
+            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW GROUP BY SOCVW.codsocio )");
         }
         String emissaoInativacaoString = "";
         if (periodo != null) {
@@ -65,7 +65,7 @@ public class RelatorioAcademiaDao extends DB {
                     }
                     emissaoInativacaoString = " SP.dt_emissao ";
                 }
-            } else {
+            } else if (periodo.equals("inativacao")) {
                 emissaoInativacaoString = " SP.is_ativo = false AND A.dt_inativo ";
             }
             if (!emissaoInicial.isEmpty() && !emissaoFinal.isEmpty()) {
@@ -78,6 +78,12 @@ public class RelatorioAcademiaDao extends DB {
                 if (ativos) {
                     listWhere.add(emissaoInativacaoString + " IS NOT NULL ");
                 }
+            }
+        } else {
+            if (ativos) {
+                listWhere.add(" SP.is_ativo = true  ");
+            } else {
+                listWhere.add(" SP.is_ativo = false ");
             }
         }
 
@@ -106,7 +112,7 @@ public class RelatorioAcademiaDao extends DB {
             listWhere.add("PA.sexo LIKE '" + inSexo + "'");
         }
         if (nao_socio != null && nao_socio) {
-            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW )");
+            listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW GROUP BY SOCVW.codsocio)");
         } else {
             if ((in_grupo_categoria != null && !in_grupo_categoria.isEmpty()) || (in_categoria != null && !in_categoria.isEmpty())) {
                 if (in_categoria != null && !in_categoria.isEmpty()) {
