@@ -181,6 +181,7 @@ public class EmissaoGuiasBean implements Serializable {
         GenericaSessao.remove("fisicaPesquisa");
         GenericaSessao.remove("pessoaPesquisa");
         GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("produtoBean");
         GenericaSessao.remove("produtoPesquisa");
         GenericaSessao.remove("listaMovimento");
         GenericaSessao.remove("usuarioAutenticado");
