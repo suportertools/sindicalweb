@@ -138,6 +138,12 @@
         <properties>
         </properties>
     </persistence-unit>
+    <persistence-unit name="ComercioSorocaba">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="comerciorp">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -150,7 +156,7 @@
         <properties>
         </properties>
     </persistence-unit>
-    <persistence-unit name="hoteleirorp">
+    <persistence-unit name="comerciolimeira">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
