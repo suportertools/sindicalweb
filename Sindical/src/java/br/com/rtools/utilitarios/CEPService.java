@@ -90,14 +90,14 @@ public class CEPService {
                     dao.save(logradouro, true);
                 }
                 BairroDao bairroDao = new BairroDao();
-                Bairro bairro = bairroDao.pesquisaBairroPorDescricaoCliente(cepAlias.getBairro());
+                Bairro bairro = bairroDao.find(cepAlias.getBairro());
                 if (bairro == null) {
                     bairro = new Bairro();
                     bairro.setDescricao(cepAlias.getBairro());
                     dao.save(bairro, true);
                 }
                 DescricaoEnderecoDao descricaoEnderecoDao = new DescricaoEnderecoDao();
-                DescricaoEndereco descricaoEndereco = descricaoEnderecoDao.pesquisaDescricaoEnderecoPorDescricao(cepAlias.getLogradouro());
+                DescricaoEndereco descricaoEndereco = descricaoEnderecoDao.find(cepAlias.getLogradouro());
                 if (descricaoEndereco == null) {
                     descricaoEndereco = new DescricaoEndereco();
                     descricaoEndereco.setDescricao(cepAlias.getLogradouro());
@@ -109,7 +109,12 @@ public class CEPService {
                 endereco.setCidade(cidade);
                 endereco.setDescricaoEndereco(descricaoEndereco);
                 endereco.setLogradouro(logradouro);
-                List list = enderecoDB.pesquisaEndereco(endereco.getDescricaoEndereco().getId(), endereco.getCidade().getId(), endereco.getBairro().getId(), endereco.getLogradouro().getId());
+                List list = enderecoDB.pesquisaEndereco(
+                        endereco.getLogradouro().getId(),
+                        endereco.getDescricaoEndereco().getId(),
+                        endereco.getBairro().getId(),
+                        endereco.getCidade().getId()
+                );
                 if (list.isEmpty()) {
                     dao.save(endereco, true);
                 } else {
