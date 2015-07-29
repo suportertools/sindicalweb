@@ -28,7 +28,7 @@ public class Endereco implements java.io.Serializable {
     @Column(name = "ds_faixa", length = 100, nullable = true)
     private String faixa;
     @Column(name = "is_ativo", columnDefinition = "boolean default true")
-    private boolean ativo;
+    private Boolean ativo;
 
     public Endereco() {
         this.id = -1;
@@ -41,7 +41,7 @@ public class Endereco implements java.io.Serializable {
         this.ativo = true;
     }
 
-    public Endereco(int id, Cidade cidade, Bairro bairro, Logradouro logradouro, DescricaoEndereco descricaoEndereco, String cep, String faixa, boolean ativo) {
+    public Endereco(int id, Cidade cidade, Bairro bairro, Logradouro logradouro, DescricaoEndereco descricaoEndereco, String cep, String faixa, Boolean ativo) {
         this.id = id;
         this.cidade = cidade;
         this.bairro = bairro;
@@ -108,11 +108,11 @@ public class Endereco implements java.io.Serializable {
         this.faixa = faixa;
     }
 
-    public boolean getAtivo() {
+    public Boolean getAtivo() {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
+    public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
 
