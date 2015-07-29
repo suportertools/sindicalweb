@@ -42,7 +42,7 @@ public class ConviteMovimento implements Serializable {
     private Departamento departamento;
     @JoinColumn(name = "id_autoriza_cortesia", referencedColumnName = "id")
     @ManyToOne
-    private Pessoa autorizaCortesia;
+    private ConviteAutorizaCortesia autorizaCortesia;
     @Column(name = "is_cortesia", columnDefinition = "boolean default false")
     private boolean cortesia;
     @Column(name = "is_ativo", columnDefinition = "boolean default true")
@@ -68,16 +68,16 @@ public class ConviteMovimento implements Serializable {
         this.usuarioInativacao = new Usuario();
         this.evt = new Evt();
         this.departamento = new Departamento();
-        this.autorizaCortesia = new Pessoa();
+        this.autorizaCortesia = new ConviteAutorizaCortesia();
         this.cortesia = false;
-        this.ativo = false;
+        this.ativo = true;
         this.dtValidade = DataHoje.dataHoje();
         this.dtEmissao = DataHoje.dataHoje();
         this.conviteServico = new ConviteServico();
         this.controleCortesia = "";
     }
 
-    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, Pessoa autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico, String controleCortesia) {
+    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, ConviteAutorizaCortesia autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico, String controleCortesia) {
         this.id = id;
         this.observacao = observacao;
         this.sisPessoa = sisPessoa;
@@ -159,11 +159,11 @@ public class ConviteMovimento implements Serializable {
         this.departamento = departamento;
     }
 
-    public Pessoa getAutorizaCortesia() {
+    public ConviteAutorizaCortesia getAutorizaCortesia() {
         return autorizaCortesia;
     }
 
-    public void setAutorizaCortesia(Pessoa autorizaCortesia) {
+    public void setAutorizaCortesia(ConviteAutorizaCortesia autorizaCortesia) {
         this.autorizaCortesia = autorizaCortesia;
     }
 

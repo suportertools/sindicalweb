@@ -381,16 +381,22 @@ public class Pessoa implements Serializable {
             } catch (InterruptedException ex) {
             }
         }
+        
         String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".png";
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
         if (!f.exists()) {
             foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".jpg";
             f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
             if (!f.exists()) {
-                if (getFisica().getSexo().equals("F")) {
-                    foto = "/Imagens/user_female.png";
-                } else {
-                    foto = "/Imagens/user_male.png";
+                try{
+                    if (getFisica().getSexo().equals("F")) {
+                        foto = "/Imagens/user_female.png";
+                    } else {
+                        foto = "/Imagens/user_male.png";
+                    }
+                }catch(Exception e){
+                    e.getMessage();
+                    return null;
                 }
             }
         }

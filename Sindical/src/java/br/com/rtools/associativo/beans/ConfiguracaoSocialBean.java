@@ -56,6 +56,16 @@ public class ConfiguracaoSocialBean implements Serializable {
     public void update() {
         Dao dao = new Dao();
         if (configuracaoSocial.getId() != -1) {
+            if (configuracaoSocial.getCartaoPosicaoCodigo() > 12){
+                GenericaMensagem.error("Atenção", "Posição máxima para a via é 12 !");
+                return;
+            }
+            
+            if (configuracaoSocial.getCartaoPosicaoCodigo() > 6){
+                GenericaMensagem.error("Atenção", "Posição máxima para o código é 6 !");
+                return;
+            }
+            
             if (Integer.valueOf(listaGrupoCategoria.get(idGrupoCategoria).getDescription()) == 0){
                 configuracaoSocial.setGrupoCategoriaInativaDemissionado(null);
             }else{

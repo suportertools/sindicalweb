@@ -46,14 +46,16 @@
                                     <p:commandButton icon="ui-icon-trash" action="#{conviteAutorizaCortesiaBean.delete(conviteAutorizaCortesia)}" oncomplete="PF('dlg_message').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
                                 </p:column>
                                 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Nome"/>
-                                    </f:facet>
-                                    <h:outputLabel value="#{conviteAutorizaCortesia.pessoa.nome}" styleClass="fontePadrao"/>
+                                <p:column headerText="Nome">
+                                    <p:outputLabel value="#{conviteAutorizaCortesia.pessoa.nome}" />
                                 </p:column>
+                                
+                                <p:column headerText="Status" style="width: 70px; text-align: center">
+                                    <p:commandButton value="#{conviteAutorizaCortesia.ativo == true ? 'Ativo' : 'Inativo'}" action="#{conviteAutorizaCortesiaBean.updateStatus(conviteAutorizaCortesia)}" oncomplete="PF('dlg_message').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                </p:column>
+                                
                                 <f:facet name="header">
-                                    Relação de pessoas
+                                    Relação de Pessoas
                                 </f:facet>
                             </p:dataTable>
                         </h:panelGrid>

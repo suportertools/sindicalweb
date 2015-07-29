@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.associativo.ConviteAutorizaCortesia;
 import br.com.rtools.associativo.ConviteServico;
 import br.com.rtools.associativo.ConviteSuspencao;
 import br.com.rtools.principal.DB;
@@ -414,6 +415,36 @@ public class ConviteDBToplink extends DB implements ConviteDB {
         }
         return new ArrayList();
 
+    }
+    
+    @Override
+    public List<ConviteAutorizaCortesia> listaConviteAutorizaCortesia(boolean is_ativo){
+        try{
+            String text = "";
+            
+            if (is_ativo){
+                text = "SELECT cac.* FROM conv_autoriza_cortesia cac WHERE cac.is_ativo = TRUE";
+            }else{
+                text = "SELECT cac.* FROM conv_autoriza_cortesia cac";
+            }
+            
+            Query query = getEntityManager().createNativeQuery(text, ConviteAutorizaCortesia.class);
+            return query.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<ConviteServico> listaConviteServico(Integer id_servico){
+        try{
+            Query query = getEntityManager().createQuery("SELECT cs FROM ConviteServico cs WHERE cs.servicos.id = "+id_servico);
+            return query.getResultList();
+        }catch(Exception e){
+            e.getMessage();
+        }
+        return new ArrayList();
     }
 
 }

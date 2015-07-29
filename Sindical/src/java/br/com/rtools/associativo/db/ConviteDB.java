@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.associativo.ConviteAutorizaCortesia;
 import br.com.rtools.associativo.ConviteServico;
 import br.com.rtools.associativo.ConviteSuspencao;
 import br.com.rtools.relatorios.Relatorios;
@@ -40,5 +41,8 @@ public interface ConviteDB {
             String obs,
             Relatorios r
     );
+    
+    public List<ConviteAutorizaCortesia> listaConviteAutorizaCortesia(boolean is_ativo);
+    public List<ConviteServico> listaConviteServico(Integer id_servico);
 
 }

@@ -228,7 +228,7 @@ public class BaixaGeralBean implements Serializable {
             } else if (url.equals("conviteMovimento")) {
                 return "conviteMovimento";
             } else {
-                return null;
+                return "menuPrincipal";
             }
         } else {
             return null;

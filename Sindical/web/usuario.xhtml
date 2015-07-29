@@ -113,7 +113,7 @@
                                     </h:column>
                                     <h:column>
                                         <p:panel header="Foto" rendered="#{usuarioBean.usuario.id != -1}" style="float: right" id="i_photo_cam">
-                                            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(usuarioBean.usuario.pessoa)}" cache="false" width="130" />
+                                            <p:graphicImage value="#{usuarioBean.usuario.pessoa.foto}" cache="false" width="130" />
                                             <h:panelGrid columns="2" style="width: 100%" columnClasses="text-center" styleClass="margin-top-max">
                                                 <p:commandButton icon="ui-icon-arrowthick-1-n" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener('Imagens/Fotos', usuarioBean.usuario.pessoa.id, 'image/png,image/jpeg', true, true)}"  global="false" update=":form_upload_files:i_panel_anexos" />
                                                 <p:commandButton icon="photocam"  title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" actionListener="#{photoCamBean.listener('Imagens/Fotos', usuarioBean.usuario.pessoa.id, true, true)}" global="false" update=":form_photocam_files:i_panel_photocam" />

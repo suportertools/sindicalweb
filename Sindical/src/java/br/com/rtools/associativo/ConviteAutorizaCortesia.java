@@ -19,15 +19,19 @@ public class ConviteAutorizaCortesia implements Serializable {
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
+    @Column(name = "is_ativo", nullable = false)
+    private boolean ativo;
 
     public ConviteAutorizaCortesia() {
         this.id = -1;
         this.pessoa = new Pessoa();
+        this.ativo = true;
     }
 
-    public ConviteAutorizaCortesia(int id, Pessoa pessoa) {
+    public ConviteAutorizaCortesia(int id, Pessoa pessoa, boolean ativo) {
         this.id = id;
         this.pessoa = pessoa;
+        this.ativo = ativo;
     }
 
     public int getId() {
@@ -49,6 +53,14 @@ public class ConviteAutorizaCortesia implements Serializable {
     @Override
     public String toString() {
         return "ConviteAutorizaCortesia{" + "id=" + id + ", pessoa=" + pessoa + '}';
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
 }

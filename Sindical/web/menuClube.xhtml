@@ -27,7 +27,6 @@
                         <p:panel style="border: 0px; margin: 0 auto;  width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                             <p:menubar>
                                 <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">
-                                    <p:menuitem value="Convite"                     action="#{chamadaPaginaBean.conviteMovimento}"/>
                                     <p:menuitem value="Convite Serviço"             action="#{chamadaPaginaBean.pagina('conviteServico')}" />
                                     <p:menuitem value="Convite Suspensão"           action="#{chamadaPaginaBean.conviteSuspencao}" />
                                     <p:menuitem value="Autoriza Cortesia"           action="#{chamadaPaginaBean.pagina('conviteAutorizaCortesia')}" />
@@ -43,13 +42,15 @@
                                 </p:submenu>
                                 
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">  
-                                    <p:menuitem value="Movimentos a Receber"    action="#{chamadaPaginaBean.movimentosReceberSocial()}"/>
-                                    <p:menuitem value="Financeiro"              action="#{chamadaPaginaBean.eFinanceiro}"/>
+                                    <p:menuitem value="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}"/>
+                                    <p:menuitem value="Financeiro"             action="#{chamadaPaginaBean.eFinanceiro}"/>
                                     <p:menuitem value="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" />
                                     <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.pagina('emissaoGuias')}" />
-                                    <p:menuitem value="Fechamento de Caixa" action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
-                                    <p:menuitem value="Geração Mensal"          action="#{chamadaPaginaBean.gerarBoleto()}" />
-                                    <p:menuitem value="Geração Débitos Cartão"  action="#{chamadaPaginaBean.pagina('geracaoDebitosCartao')}" />
+                                    <p:menuitem value="Fechamento de Caixa"    action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
+                                    <p:menuitem value="Geração Mensal"         action="#{chamadaPaginaBean.gerarBoleto()}" />
+                                    <p:menuitem value="Geração Débitos Cartão" action="#{chamadaPaginaBean.pagina('geracaoDebitosCartao')}" />
+                                    <p:menuitem value="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" />
+                                    <p:menuitem value="Convite Clube"          action="#{chamadaPaginaBean.conviteMovimento}"/>
                                 </p:submenu>
                                 
                                 <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  

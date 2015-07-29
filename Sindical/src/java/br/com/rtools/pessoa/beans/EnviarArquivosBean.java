@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.lista.ListaRelatorioContabilidade;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -47,17 +48,17 @@ public class EnviarArquivosBean implements Serializable {
     private Map<String, Integer> grupoCidades;
     private Map<String, Integer> cnaes;
 
-    private List convencaoSelecionada = new ArrayList<Convencao>();
-    private List grupoCidadeSelecionada = new ArrayList<GrupoCidade>();
-    private List cnaeSelecionado = new ArrayList<Cnae>();
+    private List convencaoSelecionada = new ArrayList();
+    private List grupoCidadeSelecionada = new ArrayList();
+    private List cnaeSelecionado = new ArrayList();
     private ListaRelatorioContabilidade[] empresaSelecionada = null;
     private Juridica[] contribuinteSelecionado = null;
 
-    private List<ListaRelatorioContabilidade> listaContabilidades = new ArrayList<ListaRelatorioContabilidade>();
-    private List<ListaRelatorioContabilidade> listaContabilidadesPesquisa = new ArrayList<ListaRelatorioContabilidade>();
+    private List<ListaRelatorioContabilidade> listaContabilidades = new ArrayList();
+    private List<ListaRelatorioContabilidade> listaContabilidadesPesquisa = new ArrayList();
 
-    private List<Juridica> listaContribuintes = new ArrayList<Juridica>();
-    private List<Juridica> listaContribuintesPesquisa = new ArrayList<Juridica>();
+    private List<Juridica> listaContribuintes = new ArrayList();
+    private List<Juridica> listaContribuintesPesquisa = new ArrayList();
 
     private List itens = new ArrayList();
     private List listaArquivos = new ArrayList();
@@ -71,7 +72,37 @@ public class EnviarArquivosBean implements Serializable {
     private String tipo = "";
 
     private String descricao = "";
+    
+    private boolean empresaDebito = false;
+    private String cobrarAteVencimento = "";
+    private List<DataObject> listaServicosAteVencimento = new ArrayList();
+    private boolean marcarServicos = true;
 
+    public EnviarArquivosBean(){
+        DataHoje dh = new DataHoje();
+        cobrarAteVencimento = dh.decrementarDias(1, DataHoje.data());
+        
+        loadListaServicosAteVencimento();
+    }
+    
+    public void loadListaServicosAteVencimento(){
+        listaServicosAteVencimento.clear();
+        EnviarArquivosDB db = new EnviarArquivosDBToplink();
+        
+        List<Servicos> result = db.listaServicosAteVencimento();
+        
+        for (Servicos s : result){
+            listaServicosAteVencimento.add(new DataObject(true, s));
+        }
+    }
+    
+    public void marcar(){
+        for (DataObject d : listaServicosAteVencimento){
+            d.setArgumento0(marcarServicos);
+        }
+        listaContribuintes.clear();
+    }
+    
     /* EMPRESA */
     public void limparEmpresa() {
         listaContribuintes.clear();
@@ -422,7 +453,19 @@ public class EnviarArquivosBean implements Serializable {
     public List<Juridica> getListaContribuintes() {
         if (listaContribuintes.isEmpty() && !adicionar) {
             EnviarArquivosDB db = new EnviarArquivosDBToplink();
-            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId());
+            String ids_servicos = "";
+            if (empresaDebito && !cobrarAteVencimento.isEmpty()){
+                for (DataObject d : listaServicosAteVencimento){
+                    if ((Boolean) d.getArgumento0()){
+                        if (ids_servicos.isEmpty())
+                            ids_servicos = ""+((Servicos) d.getArgumento1()).getId();
+                        else
+                            ids_servicos += ", "+((Servicos) d.getArgumento1()).getId();
+                    }
+                }
+            }
+            
+            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId(), empresaDebito, ids_servicos, cobrarAteVencimento);
             for (int i = 0; i < list.size(); i++) {
                 Juridica juridica = db.pesquisaCodigo((Integer) ((List) list.get(i)).get(0));
                 listaContribuintes.add(juridica);
@@ -434,7 +477,18 @@ public class EnviarArquivosBean implements Serializable {
     public List<Juridica> getListaContribuintesPesquisa() {
         if (listaContribuintesPesquisa.isEmpty() && !descricao.isEmpty()) {
             EnviarArquivosDB db = new EnviarArquivosDBToplink();
-            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId());
+            String ids_servicos = "";
+            if (empresaDebito && !cobrarAteVencimento.isEmpty()){
+                for (DataObject d : listaServicosAteVencimento){
+                    if ((Boolean) d.getArgumento0()){
+                        if (ids_servicos.isEmpty())
+                            ids_servicos = ""+((Servicos) d.getArgumento1()).getId();
+                        else
+                            ids_servicos += ", "+((Servicos) d.getArgumento1()).getId();
+                    }
+                }
+            }
+            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId(), empresaDebito, ids_servicos, cobrarAteVencimento);
             for (int i = 0; i < list.size(); i++) {
                 Juridica juridica = db.pesquisaCodigo((Integer) ((List) list.get(i)).get(0));
                 listaContribuintesPesquisa.add(juridica);
@@ -642,5 +696,37 @@ public class EnviarArquivosBean implements Serializable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public boolean isEmpresaDebito() {
+        return empresaDebito;
+    }
+
+    public void setEmpresaDebito(boolean empresaDebito) {
+        this.empresaDebito = empresaDebito;
+    }
+
+    public String getCobrarAteVencimento() {
+        return cobrarAteVencimento;
+    }
+
+    public void setCobrarAteVencimento(String cobrarAteVencimento) {
+        this.cobrarAteVencimento = cobrarAteVencimento;
+    }
+
+    public List<DataObject> getListaServicosAteVencimento() {
+        return listaServicosAteVencimento;
+    }
+
+    public void setListaServicosAteVencimento(List<DataObject> listaServicosAteVencimento) {
+        this.listaServicosAteVencimento = listaServicosAteVencimento;
+    }
+
+    public boolean isMarcarServicos() {
+        return marcarServicos;
+    }
+
+    public void setMarcarServicos(boolean marcarServicos) {
+        this.marcarServicos = marcarServicos;
     }
 }

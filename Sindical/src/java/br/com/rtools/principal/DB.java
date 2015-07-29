@@ -12,7 +12,6 @@ import javax.persistence.Persistence;
 import oracle.toplink.essentials.config.CacheType;
 import oracle.toplink.essentials.config.TopLinkProperties;
 import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
-// import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 
 public class DB {
 
@@ -76,6 +75,7 @@ public class DB {
             case "SeaacFranca":
             case "SincovagaSP":
             case "GraficosRP":
+            case "ComercioSorocaba":
                 configuracao.setCaminhoSistema(cliente);
                 configuracao.setPersistence(cliente);
                 configuracao.setHost("192.168.1.102");
@@ -109,13 +109,13 @@ public class DB {
                 break;
             default:
                 if (cliente.equals("Sindical")) {
-                    cliente = "hoteleirorp";
-                    configuracao.setHost("localhost");
-                    configuracao.setSenha("989899");
+//                    cliente = "comerciolimeira";
+//                    configuracao.setHost("localhost");
+//                    configuracao.setSenha("989899");
                     // -- ATUAL
-//                    cliente = "ComercioRP";
-//                    configuracao.setHost("192.168.1.102");
-//                    configuracao.setSenha("r#@tools");
+                    cliente = "ComercioRP";
+                    configuracao.setHost("192.168.1.102");
+                    configuracao.setSenha("r#@tools");
                 }   //            } else {
 //                if (cliente.equals("ServidoresRP")) {
 //                    configuracao.setHost("localhost");
