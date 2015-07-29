@@ -23,24 +23,24 @@ public class EnderecoDao extends DB {
     public List pesquisaEnderecoDes(String uf, String cidade, String logradouro, String descricao, String iniParcial) {
         try {
             if (iniParcial.equals("I")) {
-                descricao = descricao.toLowerCase().toUpperCase() + "%";
+                descricao = descricao.trim() + "%";
             } else {
-                descricao = "%" + descricao.toLowerCase().toUpperCase() + "%";
+                descricao = "%" + descricao.trim() + "%";
             }
             String queryString
-                    = "     SELECT ende.*                                         \n"
-                    + "     FROM end_endereco ende,                             \n"
-                    + "          end_cidade cid,                                \n"
-                    + "          end_logradouro logr,                           \n"
-                    + "          end_descricao_endereco des                     \n"
-                    + "    WHERE ende.id_cidade = cid.id                        \n"
-                    + "      AND ende.id_logradouro = logr.id                   \n"
-                    + "      AND ende.id_descricao_endereco = des.id            \n"
-                    + "      AND cid.ds_cidade = '" + cidade + "'               \n"
-                    + "      AND cid.ds_uf = '" + uf + "'                       \n"
-                    + "      AND logr.ds_descricao = '" + logradouro + "'       \n"
-                    + "      AND UPPER(func_translate(des.ds_descricao)) LIKE '" + AnaliseString.removerAcentos(descricao) + "' \n"
-                    + "      AND ende.is_ativo = true                           \n"
+                    = "     SELECT E.*                                                  \n"
+                    + "     FROM end_endereco E,                                        \n"
+                    + "          end_cidade cid,                                        \n"
+                    + "          end_logradouro logr,                                   \n"
+                    + "          end_descricao_endereco des                             \n"
+                    + "    WHERE E.id_cidade = cid.id                                   \n"
+                    + "      AND E.id_logradouro = logr.id                              \n"
+                    + "      AND E.id_descricao_endereco = des.id                       \n"
+                    + "      AND UPPER(cid.ds_cidade) = UPPER('" + cidade + "')         \n"
+                    + "      AND cid.ds_uf = '" + uf + "'                               \n"
+                    + "      AND UPPER(logr.ds_descricao) = UPPER('" + logradouro + "')\n"
+                    + "      AND TRIM(UPPER(func_translate(des.ds_descricao))) LIKE TRIM(UPPER(func_translate('" + descricao + "'))) \n"
+                    + "      AND E.is_ativo = true                              \n"
                     + " ORDER BY des.ds_descricao";
             Query qry = getEntityManager().createNativeQuery(queryString, Endereco.class);
             List list = qry.getResultList();
@@ -53,21 +53,47 @@ public class EnderecoDao extends DB {
         return new ArrayList();
     }
 
-    public List pesquisaEndereco(Integer idDescricao, Integer idCidade, Integer idBairro, Integer idLogradouro) {
+    public List pesquisaEndereco(Integer logradouro_id, Integer descricao_endereco_id, Integer bairro_id, Integer cidade_id) {
+        return pesquisaEndereco(logradouro_id, descricao_endereco_id, bairro_id, cidade_id, null);
+    }
+
+    public List pesquisaEndereco(Integer logradouro_id, Integer descricao_endereco_id, Integer bairro_id, Integer cidade_id, Boolean ativo) {
+        List listQuery = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select ende "
-                    + "  from Endereco ende "
-                    + " where ende.descricaoEndereco.id = :idDesc "
-                    + "   and ende.cidade.id = :idCid "
-                    + "   and ende.bairro.id = :idBai "
-                    + "   and ende.logradouro.id = :idLog");
-            qry.setParameter("idDesc", idDescricao);
-            qry.setParameter("idCid", idCidade);
-            qry.setParameter("idBai", idBairro);
-            qry.setParameter("idLog", idLogradouro);
-            return qry.getResultList();
+            String queryString
+                    = "SELECT E.*               \n "
+                    + "  FROM end_endereco AS E \n ";
+            if (logradouro_id != null) {
+                listQuery.add("E.id_logradouro = " + logradouro_id);
+            }
+            if (descricao_endereco_id != null) {
+                listQuery.add("E.id_descricao_endereco= " + descricao_endereco_id);
+            }
+            if (bairro_id != null) {
+                listQuery.add("E.id_bairro = " + bairro_id);
+            }
+            if (cidade_id != null) {
+                listQuery.add("E.id_cidade = " + cidade_id);
+            }
+            if (ativo != null) {
+                listQuery.add("E.is_ativo = " + ativo);
+            }
+            for (int i = 0; i < listQuery.size(); i++) {
+                if (i == 0) {
+                    queryString += " WHERE ";
+                } else {
+                    queryString += " AND ";
+                }
+                queryString += " " + listQuery.get(i).toString() + " \n ";
+            }
+            Query query = getEntityManager().createNativeQuery(queryString, Endereco.class);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
             return new ArrayList();
         }
+        return new ArrayList();
     }
 }
