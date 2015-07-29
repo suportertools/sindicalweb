@@ -426,31 +426,14 @@ public class DataHoje {
         }
         return null;
     }
-//    
-//    public String decrementarDias(int qtd, String data){
-//        try{
-//            int[] d = DataHoje.DataToArrayInt(data);
-//            int dias = qtdeDiasDoMes(d[1], d[2]);
-//            if (qtd > dias){
-//                while (qtd >= dias){
-//                    qtd -= dias;
-//                    d[1]++;
-//                    if (d[1] > 12){
-//                        d[1] = 1;
-//                        d[2]++;
-//                    }
-//                    dias = qtdeDiasDoMes(d[1], d[2]);
-//                }
-//                d[0] += qtd;
-//            }else{
-//                d[0] += qtd;
-//            }
-//
-//            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-//        }catch(Exception e){
-//            return null;
-//        }
-//    }
+
+    public String decrementarDias(int qtd, String data){
+        GregorianCalendar calendar = new GregorianCalendar();  
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");  
+        calendar.setTime(DataHoje.converte(data));
+        calendar.add(GregorianCalendar.DATE, -1);  
+        return dt.format(calendar.getTime());
+    }
 
     public String incrementarAnos(int qtd, String data) {
         if (isDataValida(data)) {

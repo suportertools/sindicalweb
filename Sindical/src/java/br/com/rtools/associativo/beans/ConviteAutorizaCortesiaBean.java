@@ -35,6 +35,20 @@ public class ConviteAutorizaCortesiaBean implements Serializable {
         GenericaSessao.remove("pessoaPesquisa");
     }
 
+    public void updateStatus(ConviteAutorizaCortesia cac) {
+        Dao dao = new Dao();
+
+        dao.openTransaction();
+        if (cac.isAtivo()) {
+            cac.setAtivo(false);
+        } else {
+            cac.setAtivo(true);
+        }
+        dao.commit();
+
+        message = "Autorização atualizada com Sucesso!";
+    }
+
     public void save() {
         if (conviteAutorizaCortesia.getPessoa().getId() == -1) {
             message = "Pesquisar pessoa!";
@@ -79,7 +93,15 @@ public class ConviteAutorizaCortesiaBean implements Serializable {
                 listPessoasAutorizadas.clear();
             } else {
                 di.rollback();
-                message = "Erro ao excluir registro!";
+                di.openTransaction();
+                cac.setAtivo(false);
+                if (!di.update(cac)) {
+                    di.rollback();
+                    message = "Erro ao excluir registro!";
+                    return;
+                }
+                message = "Registro Inativado!";
+                di.commit();
             }
         }
     }

@@ -179,14 +179,24 @@ public class ImprimirConviteClube implements Serializable {
             listSemana.add("Feriado");
         }
 
+        String s_barras = "00000000".substring(0, 8 - (""+cm.getId()).length()) + cm.getId();
         String barras = "";
         
+        int cont_via = 0, cont_codigo = 0;
         for (int i = 0; i < cs.getCartaoDigitos(); i++){
+            if (cs.getCartaoPosicaoVia() == i){
+                barras += "99";
+                i = i + 1;
+                continue;
+            }
+            
+            if (cs.getCartaoPosicaoCodigo() == i){
+                barras += s_barras;
+                i = i + 7;
+                continue;
+            }
             barras += "0";
         }
-        
-        barras = barras;
-        barras = barras.substring(0, 14 - (""+cm.getId()).length()) + cm.getId();
         
         lista.add(new ConviteClube(
                 cm.getSisPessoa().getNome(),

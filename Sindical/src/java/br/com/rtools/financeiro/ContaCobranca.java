@@ -59,7 +59,8 @@ public class ContaCobranca implements java.io.Serializable {
     private boolean arrecadacao;
     @Column(name = "is_associativo", nullable = false, columnDefinition = "boolean default false")
     private boolean associativo;
-    
+    @Column(name = "ds_mensagem_associativo", length = 1000)
+    private String mensagemAssociativo;    
     
     public ContaCobranca() {
         this.id = -1;
@@ -86,9 +87,10 @@ public class ContaCobranca implements java.io.Serializable {
         this.apelido = "";
         this.arrecadacao = false;
         this.associativo = false;
+        this.mensagemAssociativo = "";
     }
 
-    public ContaCobranca(int id, ContaBanco contaBanco, String codCedente, String localPagamento, float repasse, String boletoInicial, String categoriaSindical, String arrecadacaoSindical, String febranSindical, String segmentoSindical, String sicasSindical, String codigoSindical, String moeda, String especieMoeda, String especieDoc, String carteira, String aceite, String cedente, Layout layout, String caminhoRetorno, boolean ativo, String apelido, boolean arrecadacao, boolean associativo) {
+    public ContaCobranca(int id, ContaBanco contaBanco, String codCedente, String localPagamento, float repasse, String boletoInicial, String categoriaSindical, String arrecadacaoSindical, String febranSindical, String segmentoSindical, String sicasSindical, String codigoSindical, String moeda, String especieMoeda, String especieDoc, String carteira, String aceite, String cedente, Layout layout, String caminhoRetorno, boolean ativo, String apelido, boolean arrecadacao, boolean associativo, String mensagemAssociativo) {
         this.id = id;
         this.contaBanco = contaBanco;
         this.codCedente = codCedente;
@@ -113,6 +115,7 @@ public class ContaCobranca implements java.io.Serializable {
         this.apelido = apelido;
         this.arrecadacao = arrecadacao;
         this.associativo = associativo;
+        this.mensagemAssociativo = mensagemAssociativo;
     }
 
     public int getId() {
@@ -305,5 +308,13 @@ public class ContaCobranca implements java.io.Serializable {
 
     public void setAssociativo(boolean associativo) {
         this.associativo = associativo;
+    }
+
+    public String getMensagemAssociativo() {
+        return mensagemAssociativo;
+    }
+
+    public void setMensagemAssociativo(String mensagemAssociativo) {
+        this.mensagemAssociativo = mensagemAssociativo;
     }
 }

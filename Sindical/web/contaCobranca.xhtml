@@ -56,7 +56,7 @@
                                         <h:outputLabel value="Local do Pagamento" for="idLocalPagto" /><br />
                                         <p:inputText id="idLocalPagto" value="#{contaCobrancaBean.contaCobranca.localPagamento}" size="66" maxlength="100" title="Local do Pagamento"/>
                                     </p:column>
-                                    
+                                                                        
                                     <p:column>
                                         <h:outputLabel value="% Repasse" for="idPercentualRepasse"/><br />
                                         <p:inputText id="idPercentualRepasse" value="#{contaCobrancaBean.contaCobranca.repasse}" size="6" maxlength="100" title="Percentual de Repasse"/>
@@ -64,7 +64,7 @@
                                     
                                     <p:column>
                                         <h:outputLabel value="Espécie Documento" for="idEspecieDocumento"/><br />
-                                        <p:inputText id="idEspecieDocumento" value="#{contaCobrancaBean.contaCobranca.especieDoc}" size="16" maxlength="50" title="Espécie Documento" />                                        
+                                        <p:inputText id="idEspecieDocumento" value="#{contaCobrancaBean.contaCobranca.especieDoc}" size="14" maxlength="50" title="Espécie Documento" />                                        
                                     </p:column>
                                     
                                     <p:column>
@@ -75,6 +75,13 @@
                                     <p:column>
                                         <h:outputLabel value="Aceite" for="idAceite"/><br />
                                         <p:inputText id="idAceite" value="#{contaCobrancaBean.contaCobranca.aceite}" size="5" maxlength="5" title="Aceite" />
+                                    </p:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid style="margin-top: 10px; width: 100%">
+                                    <p:column>
+                                        <h:outputLabel value="Mensagem Associativo" for="idMensagemAssociativo" /><br />
+                                        <p:inputText id="idMensagemAssociativo" value="#{contaCobrancaBean.contaCobranca.mensagemAssociativo}" title="Mensagem Associativo" style="width: 100%"/>
                                     </p:column>
                                 </h:panelGrid>
                                 

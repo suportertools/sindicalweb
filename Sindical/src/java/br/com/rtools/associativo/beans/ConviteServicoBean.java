@@ -1,6 +1,8 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.ConviteServico;
+import br.com.rtools.associativo.db.ConviteDB;
+import br.com.rtools.associativo.db.ConviteDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
@@ -51,8 +53,16 @@ public class ConviteServicoBean implements Serializable {
             GenericaMensagem.warn("Validação", "Cadastrar serviço!");
             return;
         }
+        
+        ConviteDB db = new ConviteDBToplink();
+        if (!db.listaConviteServico(Integer.parseInt(listServicos.get(idServicos).getDescription())).isEmpty()){
+            message = "Esse serviço já foi adicionado!";
+            return;
+        }
+        
         NovoLog novoLog = new NovoLog();
         DaoInterface di = new Dao();
+        
         conviteServico.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
         if (conviteServico.getId() == -1) {
             di.openTransaction();

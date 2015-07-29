@@ -36,7 +36,7 @@
                                           oncomplete="PF('dgl_upload').hide()" />
                         </p:dialog>
                     </h:form>
-                    <p:panel styleClass="wrapper no-border">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:form id="form_relatorio_contribuintes">            
                             <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true">
                                 <h:panelGrid id="id_grid_uploads" style="width: 350px">
@@ -58,33 +58,67 @@
 
                             <h:panelGrid id="id_panel_grid">
                                 <p:panel header="Filtro">
-                                    <h:panelGrid id="i_panel_filtro" columns="3" cellpadding="5">
-                                        <h:panelGrid>
-                                            <p:outputLabel value="Convenção: " />
+                                    <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
+                                        <h:column>
+                                            <p:outputLabel value="Convenção" /><br />
                                             <p:selectCheckboxMenu label="Selecionar Convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
-                                                <p:ajax event="toggleSelect" update="i_c1 i_c2 i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
-                                                <p:ajax event="change" update="i_c1 i_c2 i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
+                                                <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
+                                                <p:ajax event="change" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}" />
                                                 <f:selectItems value="#{enviarArquivosBean.convencaos}" />
                                             </p:selectCheckboxMenu>
-                                        </h:panelGrid>
+                                        </h:column>
 
-                                        <h:panelGrid id="i_c1">
-                                            <p:outputLabel value="Grupo cidade:"/>
+                                        <h:column>
+                                            <p:outputLabel value="Grupo cidade"/><br />
                                             <p:selectCheckboxMenu label="Selecionar Grupo Cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
-                                                <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                                <p:ajax event="change" update="i_panel"  listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                                <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                                <p:ajax event="change" update="i_panel_filtro i_panel"  listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
                                                 <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
                                             </p:selectCheckboxMenu>
-                                        </h:panelGrid>
+                                        </h:column>
 
-                                        <h:panelGrid id="i_c2">
-                                            <p:outputLabel value="Cnae Conveção" />
+                                        <h:column>
+                                            <p:outputLabel value="Cnae Conveção" /><br />
                                             <p:selectCheckboxMenu label="Selecionar cnae convenção" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
-                                                <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
-                                                <p:ajax event="change" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                                <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                                <p:ajax event="change" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
                                                 <f:selectItems value="#{enviarArquivosBean.cnaes}" />
                                             </p:selectCheckboxMenu>
-                                        </h:panelGrid>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <br />
+                                            <p:selectBooleanCheckbox itemLabel="Empresas em Débito" value="#{enviarArquivosBean.empresaDebito}">
+                                                <p:ajax event="change" update="@form" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                            </p:selectBooleanCheckbox>
+                                        </h:column>
+                                        
+                                        <h:column rendered="#{enviarArquivosBean.empresaDebito}">
+                                            <p:outputLabel value="Cobrar até o Vencimento" /><br />
+                                            <p:inputMask value="#{enviarArquivosBean.cobrarAteVencimento}" mask="99/99/9999" style="text-align: center; width: 140px">
+                                                <p:ajax event="change" listener="#{enviarArquivosBean.listaContribuintes.clear()}" update="@form"/>
+                                            </p:inputMask>
+                                        </h:column>
+                                        
+                                        <h:column rendered="#{enviarArquivosBean.empresaDebito}">
+                                            <p:dataTable value="#{enviarArquivosBean.listaServicosAteVencimento}" var="linha" emptyMessage="Nenhum serviço Encontrado!" style="width: 200px">
+                                                
+                                                <p:column style="text-align: center; width: 30px">
+                                                    <f:facet name="header">
+                                                        <p:selectBooleanCheckbox value="#{enviarArquivosBean.marcarServicos}">
+                                                            <p:ajax event="change" listener="#{enviarArquivosBean.marcar()}" update="@form"/>
+                                                        </p:selectBooleanCheckbox>
+                                                    </f:facet>
+                                                    <p:selectBooleanCheckbox value="#{linha.argumento0}">
+                                                        <p:ajax event="change" listener="#{enviarArquivosBean.listaContribuintes.clear()}" update="@form"/>
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>
+                                                
+                                                <p:column headerText="Serviços">
+                                                    <p:outputLabel value="#{linha.argumento1.descricao}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </h:column>
                                     </h:panelGrid>
                                 </p:panel>
 
@@ -100,7 +134,7 @@
 
                                 <h:panelGrid columns="2">
                                     <p:column>
-                                        <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 360px;" styleClass="margin-top-max">
+                                        <p:panel id="i_panel" header="Destinatários" style="width: 100%; height: 360px;" styleClass="margin-top-max">
                                             <p:commandButton value="Todas Empresas" action="#{enviarArquivosBean.todasEmpresa()}" update="i_panel"/>
                                             <p:commandButton value="Adicionar à Lista" oncomplete="PF('i_dlg_pesquisa').show()" update="i_panel"/>
 
@@ -111,12 +145,12 @@
                                                 <p:ajax event="rowUnselectCheckbox" update=":form_relatorio_contribuintes:i_panel"/>
                                                 <p:ajax event="toggleSelect" update=":form_relatorio_contribuintes:i_panel"/>
 
-                                                <p:column headerText="" style="width: 30px">#{index+1}</p:column>
+                                                <p:column headerText="" style="width: 30px; text-align: center">#{index+1}</p:column>
                                                 <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
 
-                                                <p:column headerText="Documento">#{juridica.pessoa.documento}</p:column>
+                                                <p:column headerText="Documento" style="width: 130px">#{juridica.pessoa.documento}</p:column>
                                                 <p:column headerText="Nome">#{juridica.pessoa.nome}</p:column>
-                                                <p:column headerText="Telefone">#{juridica.pessoa.telefone1}</p:column>
+                                                <p:column headerText="Telefone" style="width: 100px">#{juridica.pessoa.telefone1}</p:column>
                                                 <p:column headerText="E-mail"><h:outputText title="#{juridica.pessoa.email1}" value="#{juridica.pessoa.email1}"/> </p:column>
                                             </p:dataTable>
                                             <br />

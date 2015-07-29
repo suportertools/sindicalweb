@@ -2,6 +2,7 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.GrupoCidade;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
@@ -91,7 +92,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
     }
 
     @Override
-    public List pesquisaContribuintes(String listaConvencao, String listaGrupoCidade, String listaCnae) {
+    public List pesquisaContribuintes(String listaConvencao, String listaGrupoCidade, String listaCnae, boolean empresasDebito, String ids_servicos, String data_vencimento) {
 
         String caso = "";
         String inStringCnae = "";
@@ -111,8 +112,13 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
         String textQuery = "";
         String textQuery1;
         try {
-
-            textQuery1 = "     SELECT c.id_juridica,                            "
+            String inner_join = "";
+            if (empresasDebito){
+                if (!ids_servicos.isEmpty())
+                    inner_join = " INNER JOIN fin_movimento m ON m.id_pessoa = p.id AND m.dt_vencimento < '"+data_vencimento+"' AND m.id_servicos IN ("+ids_servicos+") AND m.is_ativo = TRUE";
+            }
+            
+            textQuery1 = "     SELECT DISTINCT(c.id_juridica),                  "
                     + "            p.ds_nome as nome,                           "
                     + "            p.ds_telefone1 as telefone,                  "
                     + "            p.ds_email1 as email                         "
@@ -120,6 +126,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                     + " INNER JOIN pes_pessoa as p on p.id = c.id_pessoa        "
                     + " INNER JOIN pes_juridica AS j on j.id = c.id_juridica    "
                     + " INNER JOIN pes_cnae as cn ON cn.id = j.id_cnae          "
+                    + inner_join
                     + "      WHERE c.dt_inativacao is null                      "
                     + "        AND length(rtrim(p.ds_email1)) > 0               ";
 
@@ -263,6 +270,22 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
             }
         } catch (EJBQLException e) {
             return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List<Servicos> listaServicosAteVencimento(){
+        String text = "SELECT se.* \n " +
+                      "  FROM fin_servicos se \n " +
+                      " INNER JOIN arr_mensagem_convencao m ON m.id_servicos = se.id \n " +
+                      " GROUP BY se.id, se.ds_descricao \n " +
+                      " ORDER BY se.ds_descricao ";
+        try{
+            Query qry = getEntityManager().createNativeQuery(text, Servicos.class);
+            return qry.getResultList();
+        }catch(Exception e){
+            e.getMessage();
         }
         return new ArrayList();
     }
