@@ -2,22 +2,38 @@ package br.com.rtools.endereco.dao;
 
 import br.com.rtools.endereco.Bairro;
 import br.com.rtools.principal.DB;
-import br.com.rtools.utilitarios.AnaliseString;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
 public class BairroDao extends DB {
 
-    public Bairro pesquisaBairroPorDescricaoCliente(String descricao) {
-        descricao = descricao.toLowerCase().toUpperCase();
+    public Bairro find(String descricao) {
         try {
-            Query query = getEntityManager().createNativeQuery("SELECT B.* FROM end_bairro AS B WHERE UPPER(TRANSLATE(B.ds_descricao)) = '" + AnaliseString.removerAcentos(descricao) + "' ", Bairro.class);
+            return (Bairro) find(descricao, true).get(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Boolean exists(String descricao) {
+        return find(descricao) != null;
+    }
+
+    public List find(String descricao, Boolean filter) {
+        try {
+            Query query;
+            if (filter) {
+                query = getEntityManager().createNativeQuery("SELECT B.* FROM end_bairro AS B WHERE TRIM(UPPER(FUNC_TRANSLATE(B.ds_descricao))) = TRIM(UPPER(FUNC_TRANSLATE('" + descricao + "'))) ", Bairro.class);
+            } else {
+                query = getEntityManager().createNativeQuery("SELECT B.* FROM end_bairro AS B WHERE TRIM(UPPER(B.ds_descricao)) = TRIM(UPPER('" + descricao + "')) ", Bairro.class);
+            }
             List list = query.getResultList();
             if (!list.isEmpty()) {
-                return (Bairro) list.get(0);
+                return list;
             }
         } catch (Exception e) {
         }
-        return null;
+        return new ArrayList();
     }
 }
