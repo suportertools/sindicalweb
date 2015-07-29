@@ -1,7 +1,9 @@
 package br.com.rtools.endereco.beans;
 
 import br.com.rtools.endereco.*;
+import br.com.rtools.endereco.dao.BairroDao;
 import br.com.rtools.endereco.dao.CidadeDao;
+import br.com.rtools.endereco.dao.DescricaoEnderecoDao;
 import br.com.rtools.endereco.dao.EnderecoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
@@ -109,10 +111,67 @@ public class EnderecoBean implements Serializable {
         EnderecoDao db = new EnderecoDao();
         Dao dao = new Dao();
         String descricao = "";
+        List listDescricaoEndereco = new DescricaoEnderecoDao().find(endereco.getDescricaoEndereco().getDescricao(), false);
+        DescricaoEndereco de = new DescricaoEndereco();
+        Boolean err = null;
+        if (!listDescricaoEndereco.isEmpty() && listDescricaoEndereco.size() == 1) {
+            de = (DescricaoEndereco) listDescricaoEndereco.get(0);
+            err = false;
+        }
+        if (err != null && err == false) {
+            err = null;
+            List<Endereco> list = db.pesquisaEndereco(
+                    Integer.parseInt(getListLogradouro().get(index[2]).getDescription()),
+                    de.getId(),
+                    null,
+                    Integer.parseInt(getListCidade().get(index[1]).getDescription()),
+                    false
+            );
+            if (!list.isEmpty()) {
+                dao.openTransaction();
+            }
+            for (int i = 0; i < list.size(); i++) {
+                if (!list.get(i).getDescricaoEndereco().getAtivo()) {
+                    if (new DescricaoEnderecoDao().exists(list.get(i).getDescricaoEndereco().getDescricao())) {
+                        list.get(i).getDescricaoEndereco().setAtivo(true);
+                        if (!dao.update(list.get(i).getDescricaoEndereco())) {
+                            err = true;
+                            break;
+                        }
+                    }
+                    if (new BairroDao().exists(list.get(i).getBairro().getDescricao())) {
+                        list.get(i).getBairro().setAtivo(true);
+                        if (!dao.update(list.get(i).getBairro())) {
+                            err = true;
+                            break;
+                        }
+                    }
+                    list.get(i).setAtivo(true);
+                    if (!dao.update(list.get(i))) {
+                        err = true;
+                        break;
+                    }
+                    err = false;
+                }
+            }
+            if (err != null) {
+                if (err == true) {
+                    dao.rollback();
+                    list.clear();
+                } else {
+                    dao.commit();
+                }
+            }
+        }
+
         if (porPesquisa.equals("cep")) {
             listaEndereco = db.pesquisaEnderecoCep(endereco.getCep());
             descricao = "CEP: " + endereco.getCep();
         } else if (porPesquisa.equals("inicial") && pesquisar) {
+            listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
+                    ((Cidade) dao.find(new Cidade(), Integer.parseInt(getListCidade().get(index[1]).getDescription()))).getCidade(),
+                    ((Logradouro) dao.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()))).getDescricao(),
+                    endereco.getDescricaoEndereco().getDescricao(), "I");
             listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
                     ((Cidade) dao.find(new Cidade(), Integer.parseInt(getListCidade().get(index[1]).getDescription()))).getCidade(),
                     ((Logradouro) dao.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()))).getDescricao(),
@@ -168,16 +227,16 @@ public class EnderecoBean implements Serializable {
         } else {
             e = (Endereco) di.find(new Endereco(), endereco.getId());
         }
-        List<Endereco> listend = db.pesquisaEndereco(endereco.getDescricaoEndereco().getId(),
-                endereco.getCidade().getId(),
+        List<Endereco> listend = db.pesquisaEndereco(
+                endereco.getLogradouro().getId(),
+                endereco.getDescricaoEndereco().getId(),
                 endereco.getBairro().getId(),
-                endereco.getLogradouro().getId());
-        if (!listend.isEmpty()) {
-            for (int i = 0; i < listend.size(); i++) {
-                if (listend.get(i).getCep().equals(endereco.getCep()) && listend.get(i).getFaixa().equals(endereco.getFaixa())) {
-                    mensagem = "Endereço já Existente no Sistema!";
-                    return;
-                }
+                endereco.getCidade().getId()
+        );
+        for (int i = 0; i < listend.size(); i++) {
+            if (listend.get(i).getCep().equals(endereco.getCep()) && listend.get(i).getFaixa().equals(endereco.getFaixa())) {
+                mensagem = "Endereço já Existente no Sistema!";
+                return;
             }
         }
         NovoLog log = new NovoLog();
