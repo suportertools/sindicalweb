@@ -130,6 +130,7 @@ public class RelatorioAcademiaDao extends DB {
                     queryString += " AND ";
                 }
                 queryString += listWhere.get(i).toString() + " \n";
+                
             }
         }
         if (r != null && order.isEmpty()) {

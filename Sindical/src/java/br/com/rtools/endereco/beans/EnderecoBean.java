@@ -139,6 +139,8 @@ public class EnderecoBean implements Serializable {
                             break;
                         }
                     }
+                }
+                if (!list.get(i).getBairro().getAtivo()) {
                     if (new BairroDao().exists(list.get(i).getBairro().getDescricao())) {
                         list.get(i).getBairro().setAtivo(true);
                         if (!dao.update(list.get(i).getBairro())) {
@@ -146,13 +148,13 @@ public class EnderecoBean implements Serializable {
                             break;
                         }
                     }
-                    list.get(i).setAtivo(true);
-                    if (!dao.update(list.get(i))) {
-                        err = true;
-                        break;
-                    }
-                    err = false;
                 }
+                list.get(i).setAtivo(true);
+                if (!dao.update(list.get(i))) {
+                    err = true;
+                    break;
+                }
+                err = false;
             }
             if (err != null) {
                 if (err == true) {
