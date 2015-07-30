@@ -184,7 +184,6 @@ public class RelatorioAcademiaBean implements Serializable {
             idResponsavel = responsavel.getId();
             listDetalhePesquisa.add(" Responsável: " + responsavel.getDocumento() + " - " + responsavel.getNome());
         }
-        AcademiaDao academiaDao = new AcademiaDao();
         if (order == null) {
             order = "";
         }
@@ -313,7 +312,7 @@ public class RelatorioAcademiaBean implements Serializable {
         if (!filtro[1]) {
             dataInicial = DataHoje.dataHoje();
             dataFinal = DataHoje.dataHoje();
-            periodo = "emissao";
+            periodo = null;
         }
         if (!filtro[2]) {
             responsavel = new Pessoa();
@@ -328,9 +327,6 @@ public class RelatorioAcademiaBean implements Serializable {
             order = "";
         }
         if (!filtro[6]) {
-            selectedPeriodos = null;
-        }
-        if (!filtro[7]) {
             selectedPeriodos = null;
         }
         if (!filtro[8]) {
@@ -369,8 +365,7 @@ public class RelatorioAcademiaBean implements Serializable {
                 filtro[1] = false;
                 dataInicial = DataHoje.dataHoje();
                 dataFinal = DataHoje.dataHoje();
-                filtro[7] = true;
-                periodo = "emissao";
+                periodo = null;
                 break;
             case "responsavel":
                 responsavel = new Pessoa();

@@ -58,6 +58,8 @@ public class RelatorioSociosBean implements Serializable {
     private String dataAdmissaoEmpresaFim = "";
     private String dataAposetandoria = "";
     private String dataAposetandoriaFim = "";
+    private String dataAtualicacao = "";
+    private String dataAtualicacaoFim = "";
     private String tipoEleicao = "todos";
     private String tipoSexo = "M";
     private String tipoCarteirinha = "com";
@@ -391,7 +393,7 @@ public class RelatorioSociosBean implements Serializable {
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
                 booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), minQtdeFuncionario, maxQtdeFuncionario, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString,
-                booBiometria, tipoBiometria, booDescontoFolha, tipoDescontoFolha
+                booBiometria, tipoBiometria, booDescontoFolha, tipoDescontoFolha, dataAtualicacao, dataAtualicacaoFim
         );
 
         Collection lista = new ArrayList();
@@ -1490,5 +1492,21 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setBooDescontoFolha(boolean booDescontoFolha) {
         this.booDescontoFolha = booDescontoFolha;
+    }
+
+    public String getDataAtualicacao() {
+        return dataAtualicacao;
+    }
+
+    public void setDataAtualicacao(String dataAtualicacao) {
+        this.dataAtualicacao = dataAtualicacao;
+    }
+
+    public String getDataAtualicacaoFim() {
+        return dataAtualicacaoFim;
+    }
+
+    public void setDataAtualicacaoFim(String dataAtualicacaoFim) {
+        this.dataAtualicacaoFim = dataAtualicacaoFim;
     }
 }

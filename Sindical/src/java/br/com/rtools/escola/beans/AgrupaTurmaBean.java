@@ -124,9 +124,11 @@ public class AgrupaTurmaBean implements Serializable {
                     return;
                 }
             }
+            dao.commit();
             NovoLog novoLog = new NovoLog();
             novoLog.delete(list.toString());
-            dao.commit();
+            novoLog.setTabela("esc_agrupa_turma");
+            novoLog.setCodigo(at.getId());
             GenericaMensagem.info("Sucesso", "Registro(s) removido(s)");
         }
         listAgrupaTurma.clear();

@@ -1274,7 +1274,7 @@ public class SociosBean implements Serializable {
             //Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data()));
             String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
 
-            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, servicoPessoa.getPessoa().getId(), 1, validadeCarteirinha, true);
+            SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, null, 1, validadeCarteirinha, true);
 
             if ((socios.getMatriculaSocios().getCategoria().isCartaoTitular() && socios.getParentesco().getId() == 1)
                     || (socios.getMatriculaSocios().getCategoria().isCartaoDependente() && socios.getParentesco().getId() != 1)) {
@@ -1285,6 +1285,11 @@ public class SociosBean implements Serializable {
             }
             if (!dao.save(sc)) {
                 GenericaMensagem.error("Erro", "Não foi possivel salvar Socio Carteirinha!");
+                dao.rollback();
+                return null;
+            }
+            if (!dao.update(sc)) {
+                GenericaMensagem.error("Erro", "Não foi possivel atualizar Sócio Carteirinha!");
                 dao.rollback();
                 return null;
             }
