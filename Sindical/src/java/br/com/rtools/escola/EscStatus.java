@@ -4,7 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "esc_status")
-@NamedQuery(name = "EscStatus.pesquisaID", query = "SELECT ES FROM EscStatus AS ES WHERE ES.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "EscStatus.pesquisaID", query = "SELECT ES FROM EscStatus AS ES WHERE ES.id = :pid"),
+    @NamedQuery(name = "EscStatus.findAll", query = "SELECT ES FROM EscStatus AS ES ORDER BY ES.descricao ASC ")
+})
 public class EscStatus implements java.io.Serializable {
 
     @Id
