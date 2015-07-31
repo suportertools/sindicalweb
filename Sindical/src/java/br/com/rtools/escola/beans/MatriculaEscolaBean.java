@@ -137,7 +137,7 @@ public class MatriculaEscolaBean implements Serializable {
     private int idVendedor;
     private int idProfessor;
     private int idServico;
-    private int idCursosDisponiveis;
+    private Integer idCursosDisponiveis;
     private int idadeAluno;
     private int vagasDisponiveis;
     private Integer filial_id;
@@ -2161,7 +2161,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListaStatus() {
         if (listaStatus.isEmpty()) {
-            List<EscStatus> list = (List<EscStatus>) new Dao().list(new EscStatus(), true);
+            List<EscStatus> list = (List<EscStatus>) new Dao().list(new EscStatus());
             for (int i = 0; i < list.size(); i++) {
                 listaStatus.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
@@ -2999,11 +2999,11 @@ public class MatriculaEscolaBean implements Serializable {
         this.listaCursosDisponiveis = listaCursosDisponiveis;
     }
 
-    public int getIdCursosDisponiveis() {
+    public Integer getIdCursosDisponiveis() {
         return idCursosDisponiveis;
     }
 
-    public void setIdCursosDisponiveis(int idCursosDisponiveis) {
+    public void setIdCursosDisponiveis(Integer idCursosDisponiveis) {
         this.idCursosDisponiveis = idCursosDisponiveis;
     }
 
@@ -3011,7 +3011,9 @@ public class MatriculaEscolaBean implements Serializable {
         if (listaTurma.isEmpty()) {
             if (!listaCursosDisponiveis.isEmpty()) {
                 TurmaDao td = new TurmaDao();
-                listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
+                if(!listaCursosDisponiveis.isEmpty()) {
+                    listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));                    
+                }
             }
         }
         return listaTurma;
