@@ -216,6 +216,7 @@
                                     </p:tab>
 
                                     <p:tab title="Complemento">
+                                        <p:messages id="id_message_complemento" autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
                                         <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
                                             <p:column>
                                                 <h:outputLabel value="Abertura" /><br />
@@ -279,6 +280,19 @@
 
                                                 </p:inputTextarea>
                                             </p:column>
+
+                                            <h:panelGrid columns="3" cellspacing="5">
+                                                <p:selectBooleanCheckbox value="#{juridicaBean.habilitaMalaDireta}" itemLabel="Habilita Mala Direta" disabled="#{juridicaBean.juridica.id == -1}">
+                                                    <p:ajax event="change" update="@this i_combo_complemento :formPessoaJuridica:i_tabview_juridica:id_message_complemento" listener="#{juridicaBean.saveMalaDireta}"/>
+                                                </p:selectBooleanCheckbox>
+                                                <h:panelGrid id="i_combo_complemento">
+                                                    <p:selectOneMenu value="#{juridicaBean.idMalaDiretaGrupo}" style="margin-right: 30px; padding-right: 20px" rendered="#{juridicaBean.habilitaMalaDireta}" >
+                                                        <p:ajax event="change" update="@this :formPessoaJuridica:i_tabview_juridica:id_message_complemento" listener="#{juridicaBean.saveMalaDireta}"/>
+                                                        <f:selectItems value="#{juridicaBean.listMalaDiretaGrupo}" />
+                                                    </p:selectOneMenu>                                            
+                                                </h:panelGrid>
+                                            </h:panelGrid>
+
                                         </h:panelGrid>
                                     </p:tab>
 

@@ -275,7 +275,6 @@
                                                     <p:commandButton icon="photocam" value="Capturar" title="Capturar Foto" oncomplete="PF('dlg_photocam').show();" action="#{photoCamBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, true, (fisicaBean.fisica.pessoa.id == -1 ? true : false))}" global="false" update=":form_photocam_files:i_panel_photocam" disabled="#{fisicaBean.fisica.id == -1}"/>
                                                     <p:commandButton icon="ui-icon-arrowthick-1-n" value="Upload Foto" title="Enviar foto" oncomplete="PF('dlg_upload').show();" actionListener="#{uploadBean.listener(fisicaBean.path, fisicaBean.fisica.pessoa.id == -1 ? 'perfil' : fisicaBean.fisica.pessoa.id, 'image/png,image/jpeg', true, true)}" global="false" update=":form_upload_files:i_panel_anexos" disabled="#{fisicaBean.fisica.id == -1}"/>
                                                     <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{fisicaBean.apagarImagem()}" update="i_panel_imagens" disabled="#{fisicaBean.fisica.id == -1}"/>
-
                                                 </h:panelGrid>
 
 
@@ -435,7 +434,8 @@
                                         </p:panel>
                                     </p:tab>
 
-                                    <p:tab title="Complemento" >
+                                    <p:tab title="Complemento" id="i_tab_complemento">
+                                        <p:messages id="id_message_complemento" autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
                                         <h:panelGrid columns="1">
                                             <p:column>
                                                 <p:outputLabel value="Observações"/><br />
@@ -502,6 +502,19 @@
                                                 <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloZona}" />
                                             </p:column>
                                         </h:panelGrid>
+
+                                        <h:panelGrid columns="3" cellspacing="5">
+                                            <p:selectBooleanCheckbox value="#{fisicaBean.habilitaMalaDireta}" itemLabel="Habilita Mala Direta" disabled="#{fisicaBean.fisica.id == -1}">
+                                                <p:ajax event="change" update="@this i_combo_complemento :form_pessoa_fisica:i_tabview_fisica:id_message_complemento" listener="#{fisicaBean.saveMalaDireta}"/>
+                                            </p:selectBooleanCheckbox>
+                                            <h:panelGrid id="i_combo_complemento">
+                                                <p:selectOneMenu value="#{fisicaBean.idMalaDiretaGrupo}" style="margin-right: 30px; padding-right: 20px" rendered="#{fisicaBean.habilitaMalaDireta}" >
+                                                    <p:ajax event="change" update="@this :form_pessoa_fisica:i_tabview_fisica:id_message_complemento" listener="#{fisicaBean.saveMalaDireta}"/>
+                                                    <f:selectItems value="#{fisicaBean.listMalaDiretaGrupo}" />
+                                                </p:selectOneMenu>                                            
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+
                                     </p:tab>
 
                                     <p:tab id="i_historico" title="Histórico">
@@ -546,7 +559,7 @@
                                             <p:column headerText="Valor" style="width: 80px; text-align: right">
                                                 <p:outputLabel value="#{fisicaBean.converteMoeda(linha.argumento0[7])}" />
                                             </p:column>
-                                            
+
                                             <p:column headerText="Vlr c/ Desconto" style="width: 80px; text-align: right">
                                                 <p:outputLabel value="#{fisicaBean.converteMoeda(linha.argumento0[8])}" />
                                             </p:column>
@@ -779,17 +792,17 @@
                                         </h:panelGrid>                                        
                                     </h:column>
                                 </h:panelGrid>
-                                
+
                                 <p:dialog modal="true" width="400" widgetVar="dlg_mensagem_aviso" closable="false" header="Aviso" visible="#{fisicaBean.visibleMsgAviso}">
                                     <h:panelGrid>
                                         <h:outputLabel value="#{fisicaBean.mensagemAviso}" style="font-size: 12pt!important"/>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid columns="2">
                                         <p:commandButton icon="ui-icon-check" value="OK" title="Ok e Fechar" action="#{fisicaBean.closeMensagemAviso()}" update="form_pessoa_fisica" oncomplete="PF('dlg_mensagem_aviso').hide()" />
                                     </h:panelGrid>
                                 </p:dialog>
-                                
+
                                 <!-- PESQUISAR PROFISSAO -->
                                 <p:dialog modal="true" width="650" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar Profissão">
                                     <h:panelGrid id="i_painel_profissao">
