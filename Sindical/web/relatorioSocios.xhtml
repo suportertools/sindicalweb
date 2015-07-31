@@ -522,6 +522,15 @@
                                                     <p:inputMask value="#{relatorioSociosBean.dataAposetandoriaFim}" size="8" mask="99/99/9999"/>
                                                 </h:panelGrid>
                                             </h:column>
+                                            
+                                            <h:column>
+                                                <h:panelGrid style="margin-right: 20px">
+                                                    <h:outputLabel value="Atualização" styleClass="fontePadrao"/>
+                                                    <p:inputMask value="#{relatorioSociosBean.dataAtualicacao}" size="8" mask="99/99/9999"/>
+                                                    <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                                    <p:inputMask value="#{relatorioSociosBean.dataAtualicacaoFim}" size="8" mask="99/99/9999"/>
+                                                </h:panelGrid>
+                                            </h:column>
                                         </h:panelGrid>  
                                     </h:panelGrid>
 
