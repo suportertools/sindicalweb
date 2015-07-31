@@ -21,6 +21,7 @@ import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.*;
+import br.com.rtools.pessoa.dao.MalaDiretaDao;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.Usuario;
@@ -40,8 +41,6 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -148,14 +147,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String mensagemAviso = "";
     private Date dtRecadastro = DataHoje.dataHoje();
 
-    @PostConstruct
-    public void init() {
-    }
-
-    @PreDestroy
-    public void destroy() {
-
-    }
+    // MALA DIRETA
+    private Boolean habilitaMalaDireta = false;
+    private String idMalaDiretaGrupo = null;
+    private List<MalaDireta> listMalaDireta = new ArrayList();
+    private List<SelectItem> listMalaDiretaGrupo = new ArrayList();
 
     public void closeMensagemAviso() {
         visibleMsgAviso = false;
@@ -363,9 +359,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 dao.rollback();
             }
         } else {
-            if (fisica.getPessoa().getDtAtualizacao() == null) {
-                fisica.getPessoa().setDtAtualizacao(new Date());
-            }
+            fisica.getPessoa().setDtAtualizacao(new Date());
             fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
             Fisica f = (Fisica) dao.find(new Fisica(), fisica.getId());
             String antes = " De: ID - " + fisica.getId()
@@ -619,6 +613,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             GenericaSessao.put("linkClicado", true);
             return url;
         }
+        Dao dao = new Dao();
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
         GenericaSessao.remove("pessoaComplementoBean");
@@ -658,6 +653,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 break;
             }
         }
+        loadMalaDireta();
         indexNovoEndereco = "";
         strEndereco = "";
         listaPessoaEndereco.clear();
@@ -730,6 +726,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     }
                 }
             }
+            loadMalaDireta();
             RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_p_o");
         }
     }
@@ -742,6 +739,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 if (f != null) {
                     String x = editarFisicaParametro(f);
                     pessoaUpper();
+                    loadMalaDireta();
                     RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
                     showImagemFisica();
                 }
@@ -2626,5 +2624,146 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void updateDataRecadastro() {
         fisica.setDtRecadastro(dtRecadastro);
+        if (fisica.getId() != -1) {
+            PessoaDBToplink pessoaDao = new PessoaDBToplink();
+            FisicaDBToplink fisicaDao = new FisicaDBToplink();
+            Date date = fisica.getPessoa().getDtAtualizacao();
+            fisica.getPessoa().setDtAtualizacao(new Date());
+            new Dao().rebind(fisica);
+            if (fisicaDao.updateRecadastro(fisica)) {
+                if (pessoaDao.updateAtualizacao(fisica.getPessoa())) {
+                    new Dao().rebind(fisica.getPessoa());
+                    GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                    return;
+                }
+                GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                return;
+            }
+            fisica.getPessoa().setDtAtualizacao(date);
+            GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+        }
     }
+
+    public void setListMalaDireta(List<MalaDireta> listMalaDireta) {
+        this.listMalaDireta = listMalaDireta;
+    }
+
+    public List<SelectItem> getListMalaDiretaGrupo() {
+        if (habilitaMalaDireta) {
+            if (listMalaDiretaGrupo.isEmpty()) {
+                idMalaDiretaGrupo = null;
+                List<MalaDiretaGrupo> listMDG = new Dao().list(new MalaDiretaGrupo(), true);
+                int x = 0;
+                for (int i = 0; i < listMDG.size(); i++) {
+                    if (listMDG.get(i).getAtivo()) {
+                        if (x == 0) {
+                            idMalaDiretaGrupo = "" + listMDG.get(i).getId();
+                        }
+                        listMalaDiretaGrupo.add(new SelectItem(listMDG.get(i).getId(), listMDG.get(i).getDescricao()));
+                        x++;
+                    }
+                }
+            }
+        }
+        return listMalaDiretaGrupo;
+    }
+
+    public void setListMalaDiretaGrupo(List<SelectItem> listMalaDiretaGrupo) {
+        this.listMalaDiretaGrupo = listMalaDiretaGrupo;
+    }
+
+    public Boolean getHabilitaMalaDireta() {
+        if (this.habilitaMalaDireta) {
+            getListMalaDiretaGrupo();
+        } else {
+            listMalaDiretaGrupo.clear();
+            idMalaDiretaGrupo = null;
+        }
+        return habilitaMalaDireta;
+    }
+
+    public void setHabilitaMalaDireta(Boolean habilitaMalaDireta) {
+        this.habilitaMalaDireta = habilitaMalaDireta;
+        if (this.habilitaMalaDireta) {
+            getListMalaDiretaGrupo();
+        } else {
+            listMalaDiretaGrupo.clear();
+            idMalaDiretaGrupo = null;
+        }
+    }
+
+    public String getIdMalaDiretaGrupo() {
+        return idMalaDiretaGrupo;
+    }
+
+    public void setIdMalaDiretaGrupo(String idMalaDiretaGrupo) {
+        this.idMalaDiretaGrupo = idMalaDiretaGrupo;
+    }
+
+    public void saveMalaDireta() {
+        if (fisica.getId() != -1) {
+            Dao dao = new Dao();
+            MalaDireta md = new MalaDiretaDao().findByPessoa(fisica.getPessoa().getId());
+            if (idMalaDiretaGrupo != null) {
+                if (habilitaMalaDireta) {
+                    MalaDiretaGrupo mdg = (MalaDiretaGrupo) dao.find(new MalaDiretaGrupo(), Integer.parseInt(idMalaDiretaGrupo));
+                    if (md == null) {
+                        md = new MalaDireta();
+                        md.setMalaDiretaGrupo(mdg);
+                        md.setPessoa(fisica.getPessoa());
+                        if (dao.save(md, true)) {
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    } else {
+                        md.setMalaDiretaGrupo(mdg);
+                        if (dao.update(md, true)) {
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    }
+                } else {
+                    if (md != null) {
+                        if (dao.delete(md, true)) {
+                            idMalaDiretaGrupo = null;
+                            listMalaDiretaGrupo.clear();
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    }
+                }
+            } else {
+                if (md != null) {
+                    if (dao.delete(md, true)) {
+                        idMalaDiretaGrupo = null;
+                        listMalaDiretaGrupo.clear();
+                        GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                        return;
+                    }
+                }
+            }
+        }
+        GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+    }
+
+    public void loadMalaDireta() {
+        habilitaMalaDireta = false;
+        MalaDireta md = new MalaDiretaDao().findByPessoa(fisica.getPessoa().getId());
+        if (md != null) {
+            habilitaMalaDireta = true;
+            for (int i = 0; i < getListMalaDiretaGrupo().size(); i++) {
+                MalaDiretaGrupo mdg = (MalaDiretaGrupo) new Dao().find(new MalaDiretaGrupo(), getListMalaDiretaGrupo().get(i).getValue());
+                if (mdg.getAtivo()) {
+                    if (md.getMalaDiretaGrupo().getId().equals(mdg.getId())) {
+                        idMalaDiretaGrupo = "" + mdg.getId();
+                        break;
+                    }
+                }
+            }
+        }
+        if (idMalaDiretaGrupo == null) {
+            habilitaMalaDireta = false;
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaSemCadastro;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -351,6 +352,25 @@ public class PessoaDBToplink extends DB implements PessoaDB {
             return (PessoaSemCadastro) query.getSingleResult();
         } catch (Exception e) {
             return new PessoaSemCadastro();
+        }
+    }
+
+    public Boolean updateAtualizacao(Pessoa p) {
+        String queryString;
+        Query query;
+        try {
+            getEntityManager().getTransaction().begin();
+            queryString = "UPDATE pes_pessoa SET dt_atualizacao = '" + p.getDtAtualizacao() + "' WHERE id = " + p.getId();
+            query = getEntityManager().createNativeQuery(queryString);
+            if (query.executeUpdate() == 0) {
+                getEntityManager().getTransaction().rollback();
+                return false;
+            }
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            getEntityManager().getTransaction().rollback();
+            return false;
         }
     }
 

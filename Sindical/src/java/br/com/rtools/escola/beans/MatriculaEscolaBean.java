@@ -960,6 +960,9 @@ public class MatriculaEscolaBean implements Serializable {
             GenericaMensagem.warn("Atenção", "Responsável possui cadastro SERASA/SPC!");
             return;
         }
+        getFilial();
+        Dao dao = new Dao();
+        matriculaEscola.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(getListFiliais().get(filial_id).getDescription())));
         if (matriculaEscola.getFilial().getId() == -1) {
             GenericaMensagem.warn("Atenção", "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.");
             return;
@@ -1042,7 +1045,6 @@ public class MatriculaEscolaBean implements Serializable {
         }
 
         NovoLog novoLog = new NovoLog();
-        Dao dao = new Dao();
         matriculaEscola.setVendedor((Vendedor) dao.find(new Vendedor(), Integer.parseInt(listaVendedor.get(idVendedor).getDescription())));
         matriculaEscola.setMidia((Midia) dao.find(new Midia(), Integer.parseInt(listaMidia.get(idMidia).getDescription())));
         servicoPessoa.setTipoDocumento((FTipoDocumento) dao.find(new FTipoDocumento(), 2));
@@ -1120,7 +1122,7 @@ public class MatriculaEscolaBean implements Serializable {
             }
             //matriculaEscola.setHabilitado(true);
             getFilial();
-            matriculaEscola.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(getListFiliais().get(filial_id).getDescription())));
+            // matriculaEscola.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(getListFiliais().get(filial_id).getDescription())));
 
             getMacFilial();
             String tipoMatriculaLog;
@@ -2977,7 +2979,7 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public List<SelectItem> getListaCursosDisponiveis() {
-        if(!getListFiliais().isEmpty()) {
+        if (!getListFiliais().isEmpty()) {
             if (listaCursosDisponiveis.isEmpty()) {
                 TurmaDao td = new TurmaDao();
                 List<Turma> list = (List<Turma>) td.listaTurmaAtivaPorFilial(Integer.parseInt(getListFiliais().get(filial_id).getDescription()));
@@ -3011,8 +3013,8 @@ public class MatriculaEscolaBean implements Serializable {
         if (listaTurma.isEmpty()) {
             if (!listaCursosDisponiveis.isEmpty()) {
                 TurmaDao td = new TurmaDao();
-                if(!listaCursosDisponiveis.isEmpty()) {
-                    listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));                    
+                if (!listaCursosDisponiveis.isEmpty()) {
+                    listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
                 }
             }
         }

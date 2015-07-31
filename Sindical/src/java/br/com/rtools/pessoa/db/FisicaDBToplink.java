@@ -2,8 +2,10 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -724,8 +726,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
 
     @Override
     public List<Vector> listaHistoricoServicoPessoa(Integer id_pessoa, Integer id_categoria, Boolean somenteDestaPessoa) {
-        String textQuery = 
-                "  SELECT sp.dt_emissao AS emissao, \n"
+        String textQuery
+                = "  SELECT sp.dt_emissao AS emissao, \n"
                 + "       p.ds_nome AS nome, \n"
                 + "       sp.desconto_folha AS desconto_folha, \n"
                 + "       sp.nr_desconto AS desconto, \n"
@@ -733,10 +735,10 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 + "       sp.ds_ref_validade AS referencia_validade, \n"
                 + "       s.ds_descricao AS descricao, \n"
                 + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, " + id_categoria + ") AS valor, \n"
-                + "       CASE WHEN sp.nr_desconto = 0 THEN \n " 
-                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, 4) \n " 
-                + "       ELSE \n " 
-                + "       func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) - ( sp.nr_desconto * func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) / 100) \n " 
+                + "       CASE WHEN sp.nr_desconto = 0 THEN \n "
+                + "       func_valor_servico(sp.id_pessoa, sp.id_servico, CURRENT_DATE, 0, 4) \n "
+                + "       ELSE \n "
+                + "       func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) - ( sp.nr_desconto * func_valor_servico_cheio(sp.id_pessoa, sp.id_servico, CURRENT_DATE) / 100) \n "
                 + "       END AS valor_cheio  \n "
                 + "  FROM fin_servico_pessoa sp \n "
                 + " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa \n"
@@ -827,6 +829,25 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             e.getMessage();
         }
         return new ArrayList();
+    }
+
+    public Boolean updateRecadastro(Fisica f) {
+        String queryString;
+        Query query;
+        try {
+            getEntityManager().getTransaction().begin();
+            queryString = "UPDATE pes_fisica SET dt_recadastro = '" + f.getRecadastro() + "' WHERE id = " + f.getId();
+            query = getEntityManager().createNativeQuery(queryString);
+            if (query.executeUpdate() == 0) {
+                getEntityManager().getTransaction().rollback();
+                return false;
+            }
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            getEntityManager().getTransaction().rollback();
+            return false;
+        }
     }
 
     public Integer getLimit() {

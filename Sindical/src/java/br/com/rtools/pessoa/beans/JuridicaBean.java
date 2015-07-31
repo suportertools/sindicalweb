@@ -9,6 +9,7 @@ import br.com.rtools.associativo.lista.ListaSociosEmpresa;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
+import br.com.rtools.pessoa.dao.MalaDiretaDao;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
@@ -133,6 +134,12 @@ public class JuridicaBean implements Serializable {
     private Boolean[] disabled;
     private ConfiguracaoCnpj configuracaoCnpj;
 
+    // MALA DIRETA
+    private Boolean habilitaMalaDireta = false;
+    private String idMalaDiretaGrupo = null;
+    private List<MalaDireta> listMalaDireta = new ArrayList();
+    private List<SelectItem> listMalaDiretaGrupo = new ArrayList();
+
     @PostConstruct
     public void init() {
         disabled = new Boolean[3];
@@ -149,6 +156,7 @@ public class JuridicaBean implements Serializable {
         GenericaSessao.remove("todosecontribuintes");
         GenericaSessao.remove("contribuintes");
         GenericaSessao.remove("escritorios");
+        GenericaSessao.remove("pessoaBean");
     }
 
     public void pesquisaCnpjXML() {
@@ -911,6 +919,7 @@ public class JuridicaBean implements Serializable {
 //        }
         existeOposicaoEmpresa();
         getListSocios();
+        loadMalaDireta();
         return "pessoaJuridica";
 
     }
@@ -2606,6 +2615,128 @@ public class JuridicaBean implements Serializable {
 
     public void setConfiguracaoCnpj(ConfiguracaoCnpj configuracaoCnpj) {
         this.configuracaoCnpj = configuracaoCnpj;
+    }
+
+    public void setListMalaDireta(List<MalaDireta> listMalaDireta) {
+        this.listMalaDireta = listMalaDireta;
+    }
+
+    public List<SelectItem> getListMalaDiretaGrupo() {
+        if (habilitaMalaDireta) {
+            if (listMalaDiretaGrupo.isEmpty()) {
+                idMalaDiretaGrupo = null;
+                List<MalaDiretaGrupo> listMDG = new Dao().list(new MalaDiretaGrupo(), true);
+                int x = 0;
+                for (int i = 0; i < listMDG.size(); i++) {
+                    if (listMDG.get(i).getAtivo()) {
+                        if (x == 0) {
+                            idMalaDiretaGrupo = "" + listMDG.get(i).getId();
+                        }
+                        listMalaDiretaGrupo.add(new SelectItem(listMDG.get(i).getId(), listMDG.get(i).getDescricao()));
+                        x++;
+                    }
+                }
+            }
+        }
+        return listMalaDiretaGrupo;
+    }
+
+    public void setListMalaDiretaGrupo(List<SelectItem> listMalaDiretaGrupo) {
+        this.listMalaDiretaGrupo = listMalaDiretaGrupo;
+    }
+
+    public Boolean getHabilitaMalaDireta() {
+        if (this.habilitaMalaDireta) {
+            getListMalaDiretaGrupo();
+        } else {
+            listMalaDiretaGrupo.clear();
+            idMalaDiretaGrupo = null;
+        }
+        return habilitaMalaDireta;
+    }
+
+    public void setHabilitaMalaDireta(Boolean habilitaMalaDireta) {
+        this.habilitaMalaDireta = habilitaMalaDireta;
+        if (this.habilitaMalaDireta) {
+            getListMalaDiretaGrupo();
+        } else {
+            listMalaDiretaGrupo.clear();
+            idMalaDiretaGrupo = null;
+        }
+    }
+
+    public String getIdMalaDiretaGrupo() {
+        return idMalaDiretaGrupo;
+    }
+
+    public void setIdMalaDiretaGrupo(String idMalaDiretaGrupo) {
+        this.idMalaDiretaGrupo = idMalaDiretaGrupo;
+    }
+
+    public void saveMalaDireta() {
+        if (juridica.getId() != -1) {
+            Dao dao = new Dao();
+            MalaDireta md = new MalaDiretaDao().findByPessoa(juridica.getPessoa().getId());
+            if (idMalaDiretaGrupo != null) {
+                if (habilitaMalaDireta) {
+                    MalaDiretaGrupo mdg = (MalaDiretaGrupo) dao.find(new MalaDiretaGrupo(), Integer.parseInt(idMalaDiretaGrupo));
+                    if (md == null) {
+                        md = new MalaDireta();
+                        md.setMalaDiretaGrupo(mdg);
+                        md.setPessoa(juridica.getPessoa());
+                        if (dao.save(md, true)) {
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    } else {
+                        md.setMalaDiretaGrupo(mdg);
+                        if (dao.update(md, true)) {
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    }
+                } else {
+                    if (md != null) {
+                        if (dao.delete(md, true)) {
+                            idMalaDiretaGrupo = null;
+                            listMalaDiretaGrupo.clear();
+                            GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                            return;
+                        }
+                    }
+                }
+            } else {
+                if (md != null) {
+                    if (dao.delete(md, true)) {
+                        idMalaDiretaGrupo = null;
+                        listMalaDiretaGrupo.clear();
+                        GenericaMensagem.info("Sucesso", "Registro atualizado!");
+                        return;
+                    }
+                }
+            }
+        }
+        GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+    }
+
+    public void loadMalaDireta() {
+        habilitaMalaDireta = false;
+        MalaDireta md = new MalaDiretaDao().findByPessoa(juridica.getPessoa().getId());
+        if (md != null) {
+            habilitaMalaDireta = true;
+            for (int i = 0; i < getListMalaDiretaGrupo().size(); i++) {
+                MalaDiretaGrupo mdg = (MalaDiretaGrupo) new Dao().find(new MalaDiretaGrupo(), getListMalaDiretaGrupo().get(i).getValue());
+                if (mdg.getAtivo()) {
+                    if (md.getMalaDiretaGrupo().getId().equals(mdg.getId())) {
+                        idMalaDiretaGrupo = "" + mdg.getId();
+                        break;
+                    }
+                }
+            }
+        }
+        if (idMalaDiretaGrupo == null) {
+            habilitaMalaDireta = false;
+        }
     }
 }
 
