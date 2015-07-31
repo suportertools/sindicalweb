@@ -16,7 +16,7 @@
         </style>
 
         <script type="text/javascript">
-        
+
         </script>          
     </h:head>
     <h:body>
@@ -89,19 +89,23 @@
                             </h:column>
                             <h:column>
                                 <h:form id="formCadastroSimplesNovo">
-                                    <p:panel id="i_panel" style="margin-left: 15px; width: 3    50px;" header="Novo" >
+                                    <p:panel id="i_panel" style="margin-left: 15px; width: 350px;" header="Novo" >
                                         <p:growl autoUpdate="true" id="i_msg" showDetail="true" />  
                                         <h:panelGrid columns="1" columnClasses="coluna1, coluna2">
                                             <h:column>
                                                 <h:outputLabel value="Rotina:" />
                                                 <h:outputLabel value=" #{simplesBean.sessoes[1]}" styleClass="bold"/>
-                                                
+
                                             </h:column>                                            
                                             <br />
                                             <h:outputLabel value="Descrição:"  />
                                             <p:inputText autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="#{toUpperCase}" style="width: 300px">
                                                 <p:ajax event="blur" update="@this" global="false"/>
                                             </p:inputText>
+                                            <br />
+                                            <p:selectBooleanCheckbox value="#{simplesBean.ativo}" itemLabel="Ativo">
+                                                <p:ajax event="change" update="@this" />
+                                            </p:selectBooleanCheckbox>
                                         </h:panelGrid>
                                         <br />
                                         <f:facet name="footer">
