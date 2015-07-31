@@ -50,6 +50,12 @@ public class RelatorioAcademiaDao extends DB {
                 + " INNER JOIN pes_fisica_vw        AS PA  ON PA.codigo     = SP.id_pessoa          \n"
                 + " INNER JOIN pes_pessoa           AS PR  ON PR.id         = SP.id_cobranca        \n"
                 + "  LEFT JOIN soc_socios_vw        AS SOC ON SOC.codsocio  = SP.id_pessoa          \n";
+        queryString += "LEFT JOIN                                                            \n"
+                + "  (SELECT SP.id_pessoa, id_servico                                        \n"
+                + "      FROM fin_servico_pessoa    AS SP                                    \n"
+                + "INNER JOIN matr_academia         AS M    ON M.id_servico_pessoa = SP.id   \n"
+                + "     WHERE SP.is_ativo = true                                             \n"
+                + " ) AS MA ON MA.id_servico = SP.id_servico AND MA.id_pessoa = SP.id_pessoa \n";
         if (convenio_empresa != null && convenio_empresa) {
             queryString += " INNER JOIN fin_desconto_servico_empresa AS FDSE ON FDSE.id_juridica = PA.id_juridica AND FDSE.id_servico = SP.id_servico ";
             listWhere.add("SP.id_pessoa NOT IN (SELECT SOCVW.codsocio FROM soc_socios_vw AS SOCVW GROUP BY SOCVW.codsocio )");
@@ -61,6 +67,7 @@ public class RelatorioAcademiaDao extends DB {
                     if (ativos) {
                         emissaoInativacaoString += " SP.is_ativo = true AND ";
                     } else {
+                        listWhere.add(" MA.id_pessoa IS NULL ");
                         emissaoInativacaoString += " SP.is_ativo = false AND ";
                     }
                     emissaoInativacaoString = " SP.dt_emissao ";
@@ -84,6 +91,7 @@ public class RelatorioAcademiaDao extends DB {
                 listWhere.add(" SP.is_ativo = true  ");
             } else {
                 listWhere.add(" SP.is_ativo = false ");
+                listWhere.add(" MA.id_pessoa IS NULL ");
             }
         }
 
@@ -130,7 +138,7 @@ public class RelatorioAcademiaDao extends DB {
                     queryString += " AND ";
                 }
                 queryString += listWhere.get(i).toString() + " \n";
-                
+
             }
         }
         if (r != null && order.isEmpty()) {
