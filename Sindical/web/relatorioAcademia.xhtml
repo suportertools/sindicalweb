@@ -176,10 +176,12 @@
                                             <h:panelGrid columns="5" id="i_t">
                                                 <p:calendar value="#{relatorioAcademiaBean.dataInicial}" pattern="dd/MM/yyyy" size="10" navigator="true" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataInicial}" />
+                                                    <p:ajax event="change" listener="#{relatorioAcademiaBean.selecionaDataInicial}" />
                                                 </p:calendar>
                                                 <p:outputLabel value=" até" />
                                                 <p:calendar value="#{relatorioAcademiaBean.dataFinal}" pattern="dd/MM/yyyy"  size="10" navigator="true" mask="99/99/9999">
                                                     <p:ajax event="dateSelect" listener="#{relatorioAcademiaBean.selecionaDataFinal}" />
+                                                    <p:ajax event="change" listener="#{relatorioAcademiaBean.selecionaDataFinal}" />
                                                 </p:calendar>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('emissao_inativacao')}" title="Remover filtro"/>
                                             </h:panelGrid>
@@ -205,7 +207,7 @@
                                             </p:selectBooleanCheckbox>
                                             <p:selectBooleanCheckbox value="#{relatorioAcademiaBean.filtro[11]}" itemLabel="Convênio Empresa" disabled="#{relatorioAcademiaBean.filtro[10]}">
                                                 <p:ajax event="change" update="@this i_p_g_c_t" listener="#{relatorioAcademiaBean.clear(0)}" />
-                                            </p:selectBooleanCheckbox>                                        
+                                            </p:selectBooleanCheckbox>
                                         </h:panelGrid>
                                         <h:panelGrid columns="7" styleClass="margin-top" id="i_p_g_c">
                                             <p:outputLabel value="Grupo categoria:" rendered="#{(relatorioAcademiaBean.filtro[10] == relatorioAcademiaBean.filtro[11])}"/>
@@ -219,7 +221,7 @@
                                                 <f:selectItems value="#{relatorioAcademiaBean.listCategoria}" />
                                             </p:selectCheckboxMenu>
                                             <p:commandButton icon="ui-icon-close" action="#{relatorioAcademiaBean.close('grupo_categoria')}" title="Remover filtro"/>
-                                        </h:panelGrid>                                        
+                                        </h:panelGrid>
                                     </p:panel>
                                 </p:column>
                                 <p:column rendered="#{relatorioAcademiaBean.filtro[5]}">
