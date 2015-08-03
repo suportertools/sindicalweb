@@ -14,12 +14,18 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.seguranca.FilialRotina;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
+import br.com.rtools.seguranca.dao.FilialRotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -62,6 +68,11 @@ public class RescisaoContratoBean implements Serializable {
     private int numeroParcelas;
     private Integer parcelasRestantes;
 
+    // BLOQUEIO
+    private List<SelectItem> listFiliais;
+    private Integer filial_id;
+    private Boolean liberaAcessaFilial;
+
     @PostConstruct
     public void init() {
         matriculaEscola = new MatriculaEscola();
@@ -85,11 +96,21 @@ public class RescisaoContratoBean implements Serializable {
         diaVencimento = 0;
         numeroParcelas = 1;
         parcelasRestantes = 0;
+        liberaAcessaFilial = false;
+        filial_id = 0;
+        listFiliais = new ArrayList();
+        loadLiberaAcessaFilial();
     }
 
     @PreDestroy
     public void destroy() {
         /* chamado quando outra view for chamada através do UIViewRoot.setViewId(String viewId) */
+    }
+
+    public void loadLiberaAcessaFilial() {
+        if (new ControleAcessoBean().permissaoValida("libera_acesso_filiais", 4)) {
+            liberaAcessaFilial = true;
+        }
     }
 
     public String getLoad() {
@@ -589,4 +610,69 @@ public class RescisaoContratoBean implements Serializable {
     public void setParcelasRestantes(Integer parcelasRestantes) {
         this.parcelasRestantes = parcelasRestantes;
     }
+
+    public void defineFilialPesquisa() {
+        MatriculaEscolaBean matriculaEscolaBean = new MatriculaEscolaBean();
+        matriculaEscolaBean.init();
+        GenericaSessao.put("matriculaEscolaBean", matriculaEscolaBean);
+        for(int i = 0; i < ((MatriculaEscolaBean) GenericaSessao.getObject("matriculaEscolaBean")).getListFiliais().size(); i++) {
+            if(Integer.parseInt(((MatriculaEscolaBean) GenericaSessao.getObject("matriculaEscolaBean")).getListFiliais().get(i).getDescription()) == Integer.parseInt(getListFiliais().get(filial_id).getDescription())) {
+                ((MatriculaEscolaBean) GenericaSessao.getObject("matriculaEscolaBean")).setFilial_id(i);
+                break;
+            }
+        }
+    }
+
+    public Boolean getLiberaAcessaFilial() {
+        return liberaAcessaFilial;
+    }
+
+    public void setLiberaAcessaFilial(Boolean liberaAcessaFilial) {
+        this.liberaAcessaFilial = liberaAcessaFilial;
+    }
+
+    public List<SelectItem> getListFiliais() {
+        if (listFiliais.isEmpty()) {
+            Filial f = MacFilial.getAcessoFilial().getFilial();
+            if (f.getId() != -1) {
+                if (liberaAcessaFilial || Usuario.getUsuario().getId() == 1) {
+                    liberaAcessaFilial = true;
+                    // ROTINA MATRÍCULA ESCOLA
+                    List<FilialRotina> list = new FilialRotinaDao().findByRotina(new Rotina().get().getId());
+                    // ID DA FILIAL
+                    if (!list.isEmpty()) {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (i == 0) {
+                                filial_id = i;
+                            }
+                            if (f.getId() == list.get(i).getFilial().getId()) {
+                                filial_id = i;
+                            }
+                            listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
+                        }
+                    } else {
+                        filial_id = 0;
+                        listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                    }
+                } else {
+                    filial_id = 0;
+                    listFiliais.add(new SelectItem(0, f.getFilial().getPessoa().getNome(), "" + f.getId()));
+                }
+            }
+        }
+        return listFiliais;
+    }
+
+    public void setListFiliais(List<SelectItem> listFiliais) {
+        this.listFiliais = listFiliais;
+    }
+
+    public Integer getFilial_id() {
+        return filial_id;
+    }
+
+    public void setFilial_id(Integer filial_id) {
+        this.filial_id = filial_id;
+    }
+
 }

@@ -3013,8 +3013,8 @@ public class MatriculaEscolaBean implements Serializable {
         if (listaTurma.isEmpty()) {
             if (!listaCursosDisponiveis.isEmpty()) {
                 TurmaDao td = new TurmaDao();
-                if (!listaCursosDisponiveis.isEmpty()) {
-                    listaTurma = td.listaTurmaAtivaPorFilialServico(macFilial.getFilial().getId(), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
+                if (!listaCursosDisponiveis.isEmpty() && idCursosDisponiveis != null) {
+                    listaTurma = td.listaTurmaAtivaPorFilialServico(Integer.parseInt(getListFiliais().get(filial_id).getDescription()), Integer.parseInt(listaCursosDisponiveis.get(idCursosDisponiveis).getDescription()));
                 }
             }
         }
@@ -3410,7 +3410,7 @@ public class MatriculaEscolaBean implements Serializable {
                             if (i == 0) {
                                 filial_id = i;
                             }
-                            if (f.getId() == list.get(i).getId()) {
+                            if (f.getId() == list.get(i).getFilial().getId()) {
                                 filial_id = i;
                             }
                             listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
