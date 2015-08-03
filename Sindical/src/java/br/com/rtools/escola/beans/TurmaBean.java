@@ -15,6 +15,7 @@ import br.com.rtools.seguranca.FilialRotina;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.dao.FilialRotinaDao;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -80,6 +81,7 @@ public class TurmaBean implements Serializable {
         horaTermino = new Date();
         liberaAcessaFilial = false;
         filial_id = 0;
+        loadLiberaAcessaFilial();
 
     }
 
@@ -87,6 +89,12 @@ public class TurmaBean implements Serializable {
     public void destroy() {
         clear();
         GenericaSessao.remove("turmaPesquisa");
+    }
+
+    public void loadLiberaAcessaFilial() {
+        if (new ControleAcessoBean().permissaoValida("libera_acesso_filiais", 4)) {
+            liberaAcessaFilial = true;
+        }
     }
 
     public void clear() {
@@ -577,7 +585,7 @@ public class TurmaBean implements Serializable {
                             if (i == 0) {
                                 filial_id = i;
                             }
-                            if (f.getId() == list.get(i).getId()) {
+                            if (f.getId() == list.get(i).getFilial().getId()) {
                                 filial_id = i;
                             }
                             listFiliais.add(new SelectItem(i, list.get(i).getFilial().getFilial().getPessoa().getNome(), "" + list.get(i).getFilial().getId()));
