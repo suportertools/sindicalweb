@@ -189,14 +189,14 @@ public class RelatorioAcademiaBean implements Serializable {
         }
         String in_grupo_categoria = inIdGrupoCategoria();
         String in_categoria = inIdCategoria();
-        Boolean nao_socio = true;
-        Boolean convenio_empresa = true;
+        Boolean nao_socio = null;
+        Boolean convenio_empresa = null;
         if (filtro[9]) {
-            if (filtro[10] != null && !filtro[10]) {
-                nao_socio = null;
+            if (filtro[10] != null && filtro[10]) {
+                nao_socio = true;
             }
-            if (!filtro[11]) {
-                convenio_empresa = null;
+            if (filtro[11] != null && filtro[11]) {
+                convenio_empresa = true;
             }
             if (in_categoria.isEmpty()) {
                 in_categoria = null;
