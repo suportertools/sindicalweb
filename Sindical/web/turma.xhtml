@@ -29,7 +29,7 @@
                             </h:column>
                             <h:column>
                                 <p:selectOneMenu value="#{turmaBean.filial_id}" disabled="#{!turmaBean.liberaAcessaFilial}">
-                                    <p:ajax event="change" update="@this" />
+                                    <p:ajax event="change" update="@this" listener="#{turmaBean.listTurma.clear()}"/>
                                     <f:selectItems value="#{turmaBean.listFiliais}" />
                                 </p:selectOneMenu>
                             </h:column>
