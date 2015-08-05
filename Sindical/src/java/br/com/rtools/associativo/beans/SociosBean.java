@@ -1355,6 +1355,7 @@ public class SociosBean implements Serializable {
 
                     List<SelectItem> lista_si = (ArrayList<SelectItem>) listDependentes.get(i).getListParentesco();
                     Parentesco parentesco = dbPar.pesquisaCodigo(Integer.valueOf(lista_si.get(Integer.valueOf(Integer.toString(listDependentes.get(i).getIdParentesco()))).getDescription()));
+                    sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                     String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
                     if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
                         Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
@@ -1494,7 +1495,7 @@ public class SociosBean implements Serializable {
                                 + " - Serviço Pessoa (Ativo: " + socioDependente.getServicoPessoa().isAtivo() + " - Validade: " + socioDependente.getServicoPessoa().getReferenciaValidade() + ") ";
                         novoLog.update(beforeUpdate, saveString);
                     }
-                    sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
+                    // sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
                     if (sc == null) {
                         sc = new SocioCarteirinha(-1, "", fisicaDependente.getPessoa(), modeloc, null, 1, validadeCarteirinha, true);
                         if (socioDependente.getMatriculaSocios().getCategoria().isCartaoDependente() && socioDependente.getParentesco().getId() != 1) {
@@ -2448,7 +2449,7 @@ public class SociosBean implements Serializable {
                 if (listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade() != null && !listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade().isEmpty()) {
                     vencimento_dep = "01/" + listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade();
                 }
-
+                
                 String data_hoje = DataHoje.data();
 
                 if (vencimento_dep.isEmpty()
@@ -2458,7 +2459,12 @@ public class SociosBean implements Serializable {
 
                     List<SocioCarteirinha> listsc = new ArrayList<>();
                     if (modeloc != null) {
-                        listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsAtivo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());
+                        listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsAtivo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());                        
+                        if(DataHoje.maiorData(listsc.get(0).getDtValidadeCarteirinha(), DataHoje.dataHoje())) {
+                            vencimento_dep = listsc.get(0).getValidadeCarteirinha();
+                        } else {
+                            vencimento_dep = listsc.get(0).getValidadeCarteirinha();                            
+                        }
                     }
 
                     float valor_dependente = calculoValorGenerico(
@@ -2473,7 +2479,7 @@ public class SociosBean implements Serializable {
                                     fisica,
                                     index,
                                     listaDepsAtivo.get(i).getNrViaCarteirinha(),
-                                    listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade(),
+                                    vencimento_dep,
                                     listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade(),
                                     listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto(),
                                     lista_si,
