@@ -37,7 +37,7 @@
                                             <p:outputLabel value="Filial: "  />
                                             <h:column>
                                                 <p:selectOneMenu value="#{matriculaEscolaBean.filial_id}" disabled="#{!matriculaEscolaBean.liberaAcessaFilial}">
-                                                    <p:ajax event="change" update="@this" />
+                                                    <p:ajax event="change" update="@this" listener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}" global="false" />
                                                     <f:selectItems value="#{matriculaEscolaBean.listFiliais}" />
                                                 </p:selectOneMenu>
                                             </h:column>

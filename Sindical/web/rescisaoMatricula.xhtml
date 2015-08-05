@@ -23,11 +23,23 @@
                         <h:form id="form_rescisao" onsubmit="#{rescisaoContratoBean.load}">
                             <c:set scope="request" var="object" value="${conclusaoMatriculaBean.matriculaEscola}"/>
                             <p:panel id="i_panel_rescisao">
-                                <h:column rendered="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <p:outputLabel value="Filial: "  />
+                                    </h:column>
+                                    <h:column>
+                                        <p:selectOneMenu value="#{rescisaoContratoBean.filial_id}" disabled="#{!rescisaoContratoBean.liberaAcessaFilial}">
+                                            <p:ajax event="change" update="@this" listener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}"/>
+                                            <f:selectItems value="#{rescisaoContratoBean.listFiliais}" />
+                                        </p:selectOneMenu>
+                                    </h:column>                                    
+                                </h:panelGrid>
+
+                                <h:panelGrid rendered="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}" styleClass="margin-top-max">
                                     <h:panelGrid columns="1">
-                                        <p:commandButton icon="ui-icon-search" value="Pesquisar Matricula" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}" immediate="true"/>
+                                        <p:commandButton icon="ui-icon-search" value="Pesquisar Matricula" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}" immediate="true" actionListener="#{rescisaoContratoBean.defineFilialPesquisa}"/>
                                     </h:panelGrid>
-                                </h:column>
+                                </h:panelGrid>
                                 <div class="clear"></div>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <h:outputLabel value="Detalhes: "/>
@@ -37,9 +49,9 @@
                                     <h:outputLabel value="Titular: "/>
                                     <h:outputLabel value="#{rescisaoContratoBean.titular.nome}" />
                                 </h:panelGrid>
-                                
+
                                 <p:messages autoUpdate="true" closable="true" showDetail="true"/>
-                                
+
                                 <p:panel header="Movimentos Gerados" id="i_movimentos" styleClass="margin-top-max" footer="Parcelas Restantes: #{rescisaoContratoBean.parcelasRestantes} - Valor Devido: R$ #{rescisaoContratoBean.valor}">
                                     <p:dataTable value="#{rescisaoContratoBean.movimentos}" scrollable="true" scrollHeight="250" var="movimentos" emptyMessage="Nenhum registro encontrado!">
                                         <p:column headerText="Data geração" styleClass="text-center" width="80">
@@ -71,7 +83,7 @@
                                         </p:column>
                                     </p:dataTable>
                                 </p:panel>
-                                
+
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <h:column rendered="#{rescisaoContratoBean.matriculaEscola.escStatus.id ne 3}">
                                         <p:commandButton value="Salvar Rescisão" action="#{rescisaoContratoBean.clickRescindirContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
@@ -81,7 +93,7 @@
                                     </h:column>
                                     <p:commandButton value="Novo" action="#{rescisaoContratoBean.novo}" update=":form_rescisao:" />
                                 </h:panelGrid>
-                                
+
                                 <p:dialog widgetVar="dlg_salvar" width="400" header="Deseja realmente rescindir este contrato?" modal="true">
                                     <h:outputLabel value="Os movimentos vencidos deverão ser quitados! E os a vencer serão automáticamente excluídos." />
                                     <h:panelGrid columns="2" styleClass="margin-top-max">
