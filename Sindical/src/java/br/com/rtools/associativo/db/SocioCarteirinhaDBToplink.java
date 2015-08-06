@@ -170,7 +170,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
+                    textqry += "    AND TRIM(UPPER(func_translate(pj.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao + "%'))) \n";
                 }
 
                 if (registro.isFotoCartao()) {
@@ -207,7 +207,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
+                    textqry += "    AND TRIM(UPPER(func_translate(pj.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao+ "%'))) \n";
                 }
             }
 
@@ -233,7 +233,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
+                    textqry += "    AND TRIM(UPPER(func_translate(pj.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao + "%'))) "
                             + "    AND sc.dt_emissao is not null AND sc.dt_emissao BETWEEN current_date-30 AND current_date \n";
                 } else {
                     textqry += "    AND sc.dt_emissao is not null AND sc.dt_emissao BETWEEN current_date-30 AND current_date \n";
@@ -249,7 +249,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n"
+                    textqry += "    AND TRIM(UPPER(func_translate(pj.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao + "%'))) \n"
                             + "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date-1 \n";
                 } else {
                     textqry += "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date-1 \n";
@@ -265,7 +265,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 }
 
                 if (!descricao.isEmpty()) {
-                    textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n"
+                    textqry += "    AND TRIM(UPPER(func_translate(pj.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao + "%'))) \n"
                             + "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date \n";
                 } else {
                     textqry += "    AND sc.dt_emissao IS NOT NULL AND sc.dt_emissao = current_date \n";
@@ -279,7 +279,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             // PESSOA / NOME
             if (tipo.equals("iNome")) {
                 if (!descricao.isEmpty()) {
-                    textqry += "    WHERE lower(p.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' \n";
+                    textqry += "    WHERE TRIM(UPPER(func_translate(p.ds_nome)))  LIKE TRIM(UPPER(func_translate('%" + descricao + "%'))) \n";
                 } else {
                     textqry += " ";
                 }
