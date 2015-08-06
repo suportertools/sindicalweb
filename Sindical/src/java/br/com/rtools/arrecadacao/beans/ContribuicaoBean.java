@@ -38,6 +38,7 @@ public class ContribuicaoBean {
     private List<SelectItem> servicos;
     private List<Servicos> listServicos;
     private String mensagem;
+    private List listMessage;
     private boolean enabled;
     private Long valorCorrente;
     private boolean visibleSelection;
@@ -52,6 +53,7 @@ public class ContribuicaoBean {
         servicos = new ArrayList<>();
         listServicos = new ArrayList<>();
         listaContribuicoes = new ArrayList<>();
+        listMessage = new ArrayList<>();
         mensagem = "";
         enabled = false;
         valorCorrente = null;
@@ -185,29 +187,44 @@ public class ContribuicaoBean {
         if (selectedListaContribuicoes == null) {
             GenericaMensagem.warn("Validação", "Nenhuma linha foi selecionada!");
         }
+        listMessage.clear();
         NovoLog novoLog = new NovoLog();
         novoLog.startList();
         String logList;
         for (int i = 0; i < selectedListaContribuicoes.size(); i++) {
+            Object[] o = new Object[2];
             GerarMovimento g = new GerarMovimento();
-            mensagem += g.gerarBoletos(String.valueOf(selectedListaContribuicoes.get(i).getReferencia()),
+            o = g.gerarBoletos(String.valueOf(selectedListaContribuicoes.get(i).getReferencia()),
                     String.valueOf(selectedListaContribuicoes.get(i).getVencimento()),
                     selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getId(),
                     selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getId(),
                     listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getId(),
                     1,
                     4);
-            logList = " Referência: " + selectedListaContribuicoes.get(i).getReferencia()
-                    + " - Vencimento: " + selectedListaContribuicoes.get(i).getVencimento()
-                    + " - Grupo Cidade: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getDescricao()
-                    + " - Convenção: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getDescricao()
-                    + " - Serviços: (" + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getId() + ") " + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getDescricao()
-                    + " - Tipo Serviço: (" + 1 + ")"
-                    + " - Rotina: (" + 4 + ")";
-            novoLog.save(logList);
-            GenericaMensagem.info("Mensagem", mensagem);
+            if (o[0].equals(0)) {
+                logList = " Referência: " + selectedListaContribuicoes.get(i).getReferencia()
+                        + " - Vencimento: " + selectedListaContribuicoes.get(i).getVencimento()
+                        + " - Grupo Cidade: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getDescricao()
+                        + " - Convenção: (" + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getId() + ") " + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getDescricao()
+                        + " - Serviços: (" + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getId() + ") " + listServicos.get(Integer.valueOf(String.valueOf(selectedListaContribuicoes.get(i).getContribuicao()))).getDescricao()
+                        + " - Tipo Serviço: (" + 1 + ")"
+                        + " - Rotina: (" + 4 + ")";
+                novoLog.save(logList);
+            }
+            o[1] = o[1].toString() + " - Convenção: " + selectedListaContribuicoes.get(i).getConvencaoCidade().getConvencao().getDescricao() + " - Grupo Cidade: " + selectedListaContribuicoes.get(i).getConvencaoCidade().getGrupoCidade().getDescricao();
+            listMessage.add(o);
         }
-        novoLog.saveList();
+        for (int i = 0; i < listMessage.size(); i++) {
+            if (((Object[]) listMessage.get(i))[0].equals(0)) {
+                if (i == 0) {
+                    novoLog.saveList();
+                }
+                GenericaMensagem.info("Mensagem " + (i + 1), ((Object[]) listMessage.get(i))[1].toString());
+            } else if (((Object[]) listMessage.get(i))[0].equals(1)) {
+                GenericaMensagem.warn("Erro" + (i + 1), ((Object[]) listMessage.get(i))[1].toString());
+            }
+        }
+        listMessage.clear();
         selectedListaContribuicoes = null;
         //movimentoDB.gerarContribuicao(lista, listaServicos, 4);
     }
