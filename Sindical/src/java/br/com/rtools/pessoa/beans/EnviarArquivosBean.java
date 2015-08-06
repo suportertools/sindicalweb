@@ -465,7 +465,12 @@ public class EnviarArquivosBean implements Serializable {
                 }
             }
             
-            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId(), empresaDebito, ids_servicos, cobrarAteVencimento);
+            List list = new ArrayList();
+            if (empresaDebito && ids_servicos.isEmpty()){
+                list = new ArrayList();
+            }else
+                list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId(), empresaDebito, ids_servicos, cobrarAteVencimento);
+            
             for (int i = 0; i < list.size(); i++) {
                 Juridica juridica = db.pesquisaCodigo((Integer) ((List) list.get(i)).get(0));
                 listaContribuintes.add(juridica);

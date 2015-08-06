@@ -3,6 +3,8 @@ package br.com.rtools.arrecadacao.beans;
 import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.db.AcordoDB;
 import br.com.rtools.arrecadacao.db.AcordoDBToplink;
+import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
+import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
@@ -87,6 +89,8 @@ public class ExtratoTelaBean implements Serializable {
     private final List<SelectItem> listaTipoServico = new ArrayList();
     private final List<SelectItem> listaServico = new ArrayList();
     private Movimento movimentoVencimento = new Movimento();
+    
+    private String motivoEstorno = "";
 
     public ExtratoTelaBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
@@ -834,10 +838,17 @@ public class ExtratoTelaBean implements Serializable {
             return null;
         }
 
+        
+        if (motivoEstorno.isEmpty() || motivoEstorno.length() <= 5){
+            GenericaMensagem.error("Atenção", "Motivo de Estorno INVÁLIDO!");
+            return null;
+        }
+        
+        
         boolean est = true;
         for (DataObject listaMovimento : listaMovimentos) {
             if ((Boolean) listaMovimento.getArgumento0()) {
-                if (!GerarMovimento.estornarMovimento(db.pesquisaCodigo((Integer) listaMovimento.getArgumento1()))) {
+                if (!GerarMovimento.estornarMovimento(db.pesquisaCodigo((Integer) listaMovimento.getArgumento1()), motivoEstorno)) {
                     est = false;
                 }
             }
@@ -1627,6 +1638,14 @@ public class ExtratoTelaBean implements Serializable {
 
     public void setDcBoleto(boolean dcBoleto) {
         this.dcBoleto = dcBoleto;
+    }
+
+    public String getMotivoEstorno() {
+        return motivoEstorno;
+    }
+
+    public void setMotivoEstorno(String motivoEstorno) {
+        this.motivoEstorno = motivoEstorno;
     }
 
 }

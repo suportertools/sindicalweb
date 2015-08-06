@@ -328,15 +328,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         }
-        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
-            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            return;
-        }
-//
-//        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-//            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-//            return;
-//        }
 
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
             GenericaMensagem.warn("Atenção", "Digite o nome do Funcionário!");
@@ -387,6 +378,19 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         }
+        
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
+        }
+
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
+        }
+        
 
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId());

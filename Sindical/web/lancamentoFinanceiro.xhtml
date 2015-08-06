@@ -545,6 +545,11 @@
 
                             <p:dialog widgetVar="i_dlg_estornar" header="Estornar Lançamento" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente ESTORNAR este lançamento? " />
+                                <h:panelGrid style="width: 100%">
+                                    <p:outputLabel value="Digite um motivo para o Estorno" /><br />
+                                    <p:inputTextarea value="#{lancamentoFinanceiroBean.motivoEstorno}" style="width: 100%" rows="2"/>
+                                </h:panelGrid>
+                                <br />
                                 <h:panelGrid style="clear: both" columns="2">
                                     <p:commandButton value="Sim" onclick="PF('i_dlg_estornar').hide()" action="#{lancamentoFinanceiroBean.reverse()}" update="tbl_p i_msg" title="Estornar este Lançamento" style="float: left" icon="ui-icon-check"/>  
                                     <p:commandButton value="Não" onclick="PF('i_dlg_estornar').hide()" style="float: left" icon="ui-icon-close"/>  

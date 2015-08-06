@@ -20,9 +20,9 @@ public class SisPessoa implements Serializable {
     private int id;
     @Column(name = "ds_nome", length = 200, nullable = false)
     private String nome;
-    @Column(name = "ds_documento", length = 20, nullable = false)
+    @Column(name = "ds_documento", length = 20)
     private String documento;
-    @Column(name = "ds_rg", length = 50, nullable = false)
+    @Column(name = "ds_rg", length = 50)
     private String rg;
     @Column(name = "ds_telefone", length = 20, nullable = true)
     private String telefone;
@@ -50,7 +50,7 @@ public class SisPessoa implements Serializable {
     @Column(name = "dt_criacao")
     private Date dtCriacao;
     @Temporal(TemporalType.DATE)
-    @Column(name = "dt_nascimento")
+    @Column(name = "dt_nascimento", nullable = false)
     private Date dtNascimento;
     @Temporal(TemporalType.DATE)
     @Column(name = "dt_importacao")

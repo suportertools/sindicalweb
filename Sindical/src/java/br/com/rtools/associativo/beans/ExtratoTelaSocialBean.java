@@ -7,7 +7,6 @@ import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
-import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.TipoServicoDB;
 import br.com.rtools.financeiro.db.TipoServicoDBToplink;
 import br.com.rtools.movimento.GerarMovimento;
@@ -29,8 +28,6 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import br.com.rtools.utilitarios.db.FunctionsDao;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -77,6 +74,8 @@ public class ExtratoTelaSocialBean implements Serializable {
     private String vlLiquido = "0,00";
     private ControleAcessoBean cab = new ControleAcessoBean();
 
+    private String motivoEstorno = "";
+    
     @PostConstruct
     public void init() {
         loadListaServicos();
@@ -281,14 +280,20 @@ public class ExtratoTelaSocialBean implements Serializable {
             return;
         }
 
+        if (motivoEstorno.isEmpty() || motivoEstorno.length() <= 5){
+            GenericaMensagem.error("Atenção", "Motivo de Estorno INVÁLIDO!");
+            return;
+        }        
+        
         if (mov.getLote().getRotina() != null && mov.getLote().getRotina().getId() == 132) {
             mov.setAtivo(false);
         }
-
-        if (!GerarMovimento.estornarMovimento(mov)) {
+        
+        if (!GerarMovimento.estornarMovimento(mov, motivoEstorno)) {
             est = false;
         }
-
+        
+        
         if (!est) {
             GenericaMensagem.warn("Atenção", "Ocorreu erros ao estornar boletos, verifique o log!");
         } else {
@@ -715,5 +720,13 @@ public class ExtratoTelaSocialBean implements Serializable {
 
     public void setCab(ControleAcessoBean cab) {
         this.cab = cab;
+    }
+
+    public String getMotivoEstorno() {
+        return motivoEstorno;
+    }
+
+    public void setMotivoEstorno(String motivoEstorno) {
+        this.motivoEstorno = motivoEstorno;
     }
 }

@@ -95,8 +95,6 @@
                     <p:dialog id="i_adicionar" widgetVar="dlg_adicionar" modal="true" header="Cadastro de Convite" width="1024" visible="#{conviteMovimentoBean.visibility}">
                         <p:ajax event="close" listener="#{conviteMovimentoBean.close}"/>  
                         <p:panel id="i_panel_adicionar" styleClass="no-border">
-                            <h:outputScript name="tradutor_primefaces.js" library="js" />
-                            <h:outputScript name="script_primefaces.js" library="js" />
                             <div style="float: left; width: 600px; margin-right: 15px;">
                                 <p:panel header="Sócio">
                                     <h:panelGrid id="i_panel_convite" columns="2">
@@ -156,21 +154,20 @@
                                         <h:column>
                                             <h:panelGrid columns="4">
                                                 <p:inputMask mask="999.999.999-99" value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.documento}" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="width: 120px; text-align: center">
-                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="@this @form"/>
+                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.pesquisaSisPessoaDocumento()}" update="@this i_panel_adicionar"/>
                                                 </p:inputMask>
                                                 <p:outputLabel value="Nascimento:" />
                                                 
-                                                <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="text-align: center" mask="99/99/9999">
-                                                    <p:ajax event="dateSelect" listener="#{conviteMovimentoBean.conviteMovimento.sisPessoa.selecionaDataNascimento}" />
-                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.convidadoExiste}" update="@this @form"/>
-                                                </p:calendar>
+                                                <p:inputMask value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nascimento}"  mask="99/99/9999" size="10" style="text-align: center" disabled="#{conviteMovimentoBean.desabilitaCampos}">
+                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.pesquisaSisPessoaNomeNascimento()}" update="@this i_panel_adicionar"/>
+                                                </p:inputMask>
                                             </h:panelGrid>
                                         </h:column>
                                         <p:outputLabel value="Convidado:" />
                                         <h:column>
                                             <h:panelGrid columns="2">
                                                 <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" disabled="#{conviteMovimentoBean.desabilitaCampos}" style="width: 390px">
-                                                    <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="@this @form"/>
+                                                    <p:ajax event="change" listener="#{conviteMovimentoBean.pesquisaSisPessoaNomeNascimento()}" update="@this i_panel_adicionar"/>
                                                 </p:inputText>
                                                 <h:column rendered="#{conviteMovimentoBean.idadeConvidado != 0}">
                                                     <p:outputLabel value="Idade: #{conviteMovimentoBean.idadeConvidado} ano (s)" />
@@ -181,6 +178,7 @@
                                         <h:column>
                                             <h:panelGrid columns="3">
                                                 <p:selectOneMenu value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.sexo}">
+                                                    <p:ajax event="change" update="@this" />
                                                     <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                                 </p:selectOneMenu>

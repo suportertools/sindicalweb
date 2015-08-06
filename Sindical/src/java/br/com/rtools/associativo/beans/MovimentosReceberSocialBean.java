@@ -149,6 +149,8 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     private List<Movimento> listaMovimentoDoBoletoSelecionado = new ArrayList();
 
+    private String motivoEstorno = "";
+    
     @PostConstruct
     public void init() {
         Object cc = GenericaSessao.getObject("pessoaPesquisa");
@@ -997,6 +999,11 @@ public class MovimentosReceberSocialBean implements Serializable {
             return null;
         }
 
+        if (motivoEstorno.isEmpty() || motivoEstorno.length() <= 5){
+            GenericaMensagem.error("Atenção", "Motivo de Estorno INVÁLIDO!");
+            return null;
+        }
+        
         Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         if (mov.getBaixa().getUsuario().getId() != user.getId()) {
             if (cab.getBotaoEstornarMensalidadesOutrosUsuarios()) {
@@ -1017,7 +1024,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             mov.setAtivo(false);
         }
 
-        if (!GerarMovimento.estornarMovimento(mov)) {
+        if (!GerarMovimento.estornarMovimento(mov, motivoEstorno)) {
             est = false;
         }
 
@@ -1030,6 +1037,7 @@ public class MovimentosReceberSocialBean implements Serializable {
         }
         listaMovimento.clear();
         chkSeleciona = true;
+        motivoEstorno = "";
         return null;
     }
 
@@ -1964,6 +1972,14 @@ public class MovimentosReceberSocialBean implements Serializable {
 
     public void setObjectMensagem(DataObject objectMensagem) {
         this.objectMensagem = objectMensagem;
+    }
+
+    public String getMotivoEstorno() {
+        return motivoEstorno;
+    }
+
+    public void setMotivoEstorno(String motivoEstorno) {
+        this.motivoEstorno = motivoEstorno;
     }
 
 }

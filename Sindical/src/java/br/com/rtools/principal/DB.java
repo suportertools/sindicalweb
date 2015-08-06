@@ -76,6 +76,7 @@ public class DB {
             case "SincovagaSP":
             case "GraficosRP":
             case "ComercioSorocaba":
+            case "TecelagemRP":
                 configuracao.setCaminhoSistema(cliente);
                 configuracao.setPersistence(cliente);
                 configuracao.setHost("192.168.1.102");

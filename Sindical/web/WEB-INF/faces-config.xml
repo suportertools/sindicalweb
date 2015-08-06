@@ -1734,6 +1734,12 @@
             <redirect/>
         </navigation-case>         
         
+        <navigation-case>
+            <from-outcome>relatorioEstorno</from-outcome>
+            <to-view-id>/relatorioEstorno.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>         
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
