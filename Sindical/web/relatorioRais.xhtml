@@ -254,8 +254,8 @@
                                             <p:selectOneMenu value="#{relatorioRaisBean.sexo}">
                                                 <p:ajax event="change" update="@this" global="false"/>
                                                 <f:selectItem itemValue="" itemLabel="Nenhum"  />
-                                                <f:selectItem itemValue="Feminino" itemLabel="Feminino"  />
-                                                <f:selectItem itemValue="Masculino" itemLabel="Masculino"  />
+                                                <f:selectItem itemValue="F" itemLabel="Feminino"  />
+                                                <f:selectItem itemValue="M" itemLabel="Masculino"  />
                                             </p:selectOneMenu>
                                             <p:commandButton icon="ui-icon-close" action="#{relatorioRaisBean.close('sexo')}" title="Remover filtro"/>
                                         </h:panelGrid>                                        
@@ -289,12 +289,12 @@
                     <h:panelGrid columns="3" id="i_btns">
                         <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioRaisBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" rendered="#{relatorioRaisBean.raisEnviadas}" />
                         <p:commandButton value="Visualizar" title="Visualizar" icon="ui-icon-print" action="#{relatorioRaisBean.visualizar()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
-                        <p:commandButton value="Filtrar" title="Filtrar para envio de emails" styleClass="margin-top-max" action="#{relatorioRaisBean.visualizar(1)}" update="i_acoes" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"  />
+                        <p:commandButton value="Filtrar" title="Filtrar para envio de emails" styleClass="margin-top-max" action="#{relatorioRaisBean.visualizar(1)}" update="i_acoes" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"  />
                     </h:panelGrid>
                     <p:panel rendered="#{!relatorioRaisBean.raisEnviadas}" styleClass="margin-top-max" header="Ações" id="i_acoes">
-                        <p:outputLabel value="Assunto: "  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/>
-                        <p:inputText value="#{relatorioRaisBean.assunto}"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" size="100"/>
-                        <p:dataTable value="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio}" var="rais" emptyMessage="Nenhum registro encontrado!" rows="150" paginator="true" rowIndexVar="index" selection="#{relatorioRaisBean.selected}" rowKey="#{rais.escritorio}" scrollHeight="200" scrollable="true" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max">
+                        <p:outputLabel value="Assunto: "  rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"/>
+                        <p:inputText value="#{relatorioRaisBean.assunto}"  rendered="#{relatorioRaisBean.tipo eq 'yes_email'}" size="100"/>
+                        <p:dataTable value="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio}" var="rais" emptyMessage="Nenhum registro encontrado!" rows="150" paginator="true" rowIndexVar="index" selection="#{relatorioRaisBean.selected}" rowKey="#{rais.escritorio}" scrollHeight="200" scrollable="true" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}" styleClass="margin-top-max">
                             <p:ajax event="rowSelect" update=":form_relatorio:i_acoes" global="false"/>
                             <p:ajax event="rowSelectCheckbox" update=":form_relatorio:i_acoes" global="false"/>
                             <p:ajax event="rowUnselect" update=":form_relatorio:i_acoes" global="false"/>
@@ -324,11 +324,11 @@
                                 <p:commandButton icon="ui-icon-contact" update=":form_relatorio:i_pessoa_juridica_card" action="#{pessoaCardBean.cardJuridica(rais.escritorio_id)}" oncomplete="PF('dlg_pessoa_juridica_card').show()" title="Ver detalhes" />
                             </p:column>
                         </p:dataTable>
-                        <p:outputLabel value="Mensagem:"  rendered="#{relatorioRaisBean.tipo.equals('yes_email')}"/> <br />
-                        <p:inputTextarea value="#{relatorioRaisBean.mensagem}" cols="150" rows="5" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" styleClass="margin-top-max"></p:inputTextarea>
+                        <p:outputLabel value="Mensagem:"  rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"/> <br />
+                        <p:inputTextarea value="#{relatorioRaisBean.mensagem}" cols="150" rows="5" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}" styleClass="margin-top-max"></p:inputTextarea>
                         <f:facet name="footer">
                             <h:panelGrid columns="5" rendered="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.size() > 0}">
-                                <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo.equals('yes_email')}" update="id_messages_growl"/>
+                                <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}" update="id_messages_growl"/>
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{uploadFilesBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
                                 <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.imprimir()}" ajax="false" update="id_messages_growl"  />
