@@ -108,6 +108,8 @@ public class LancamentoFinanceiroBean implements Serializable {
     private int indexDO = 0;
     private int indexAcrescimo = -1;
     
+    private String motivoEstorno = "";
+    
     public LancamentoFinanceiroBean() {
         lote.setEmissao(DataHoje.data());
     }
@@ -348,13 +350,19 @@ public class LancamentoFinanceiroBean implements Serializable {
 
     public void reverse() {
         if (listaParcelaSelecionada.isEmpty()) {
-            GenericaMensagem.warn("Erro", "Selecione ao menos uma parcela PAGA ser estornada!");
+            GenericaMensagem.warn("Atenção", "Selecione ao menos uma parcela PAGA ser estornada!");
             return;
         }
 
         // PARCELAS PARA SEREM ESTORNADAS
         Movimento movimento = new Movimento();
 
+
+        if (motivoEstorno.isEmpty() || motivoEstorno.length() <= 5){
+            GenericaMensagem.error("Atenção", "Motivo de Estorno INVÁLIDO!");
+            return;
+        }        
+        
         boolean reverse = false;
         for (DataObject linha : listaParcelaSelecionada) {
             movimento = (Movimento) linha.getArgumento1();
@@ -378,7 +386,7 @@ public class LancamentoFinanceiroBean implements Serializable {
 //                return;
 //            }
 
-            if (GerarMovimento.estornarMovimento(movimento)) {
+            if (GerarMovimento.estornarMovimento(movimento, motivoEstorno)) {
                 reverse = true;
             }
         }
@@ -1889,6 +1897,14 @@ public class LancamentoFinanceiroBean implements Serializable {
 
     public void setListaUsuarioLancamento(List<Usuario> listaUsuarioLancamento) {
         this.listaUsuarioLancamento = listaUsuarioLancamento;
+    }
+
+    public String getMotivoEstorno() {
+        return motivoEstorno;
+    }
+
+    public void setMotivoEstorno(String motivoEstorno) {
+        this.motivoEstorno = motivoEstorno;
     }
 
 }

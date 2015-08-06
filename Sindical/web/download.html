@@ -1,6 +1,6 @@
-<h:commandButton value="Imprimir" title="Imprimir" rendered="#{raisBean.rais.id != -1}">
-    <p:ajax event="click" update=":form_rais:" oncomplete="listener" listener="#{raisBean.imprimir(raisBean.rais)}"/>
-</h:commandButton>
-<p:commandButton value="Download" ajax="false" id="ibaixar" icon="ui-icon-arrowthick-1-s" styleClass="testexxx" style="visibility: hidden">
-    <p:fileDownload value="#{fileDownloadBean.file}" />
+<h:commandButton value="Imprimir" title="Imprimir" rendered="#{raisBean.rais.id != -1}">
+    <p:ajax event="click" update=":form_rais:" oncomplete="listener" listener="#{raisBean.imprimir(raisBean.rais)}"/>
+</h:commandButton>
+<p:commandButton value="Download" ajax="false" id="ibaixar" icon="ui-icon-arrowthick-1-s" styleClass="testexxx" style="visibility: hidden">
+    <p:fileDownload value="#{fileDownloadBean.file}" />
 </p:commandButton> 

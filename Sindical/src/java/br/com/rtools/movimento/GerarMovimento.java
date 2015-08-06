@@ -692,7 +692,7 @@ public class GerarMovimento extends DB {
         return mensagem;
     }
 
-    public static boolean estornarMovimento(Movimento movimento) {
+    public static boolean estornarMovimento(Movimento movimento, String motivoEstorno) {
         MovimentoDB db = new MovimentoDBToplink();
         Baixa baixa;
         List<FormaPagamento> formaPagamento;
@@ -725,8 +725,25 @@ public class GerarMovimento extends DB {
                         }
                     }
                 }
-
+                
                 baixa = (Baixa) sv.pesquisaCodigo(movimento.getBaixa().getId(), "Baixa");
+                
+                EstornoCaixaLote ecl = new EstornoCaixaLote(
+                        -1, 
+                        DataHoje.dataHoje(), 
+                        baixa.getDtBaixa(), 
+                        Usuario.getUsuario(), 
+                        baixa.getUsuario(), 
+                        baixa.getCaixa(), 
+                        motivoEstorno,
+                        baixa.getId()
+                );
+                
+                
+                if (!sv.inserirObjeto(ecl)) {
+                    sv.desfazerTransacao();
+                    return false;
+                }
 
                 for (int i = 0; i < lista.size(); i++) {
                     lista.get(i).setBaixa(null);
@@ -738,6 +755,11 @@ public class GerarMovimento extends DB {
                     lista.get(i).setValorBaixa(0);
 
                     if (!sv.alterarObjeto(lista.get(i))) {
+                        sv.desfazerTransacao();
+                        return false;
+                    }
+                    
+                    if (!sv.inserirObjeto(new EstornoCaixa(-1, ecl, lista.get(i)))) {
                         sv.desfazerTransacao();
                         return false;
                     }
@@ -765,6 +787,23 @@ public class GerarMovimento extends DB {
                 }
                 baixa = (Baixa) sv.pesquisaCodigo(movimento.getBaixa().getId(), "Baixa");
 
+                EstornoCaixaLote ecl = new EstornoCaixaLote(
+                        -1, 
+                        DataHoje.dataHoje(), 
+                        baixa.getDtBaixa(), 
+                        Usuario.getUsuario(), 
+                        baixa.getUsuario(), 
+                        baixa.getCaixa(), 
+                        motivoEstorno,
+                        baixa.getId()
+                );
+                
+                
+                if (!sv.inserirObjeto(ecl)) {
+                    sv.desfazerTransacao();
+                    return false;
+                }
+                
                 movimento.setBaixa(null);
                 movimento.setJuros(0);
                 movimento.setMulta(0);
@@ -778,6 +817,12 @@ public class GerarMovimento extends DB {
                     return false;
                 }
 
+                
+                if (!sv.inserirObjeto(new EstornoCaixa(-1, ecl, movimento))) {
+                    sv.desfazerTransacao();
+                    return false;
+                }
+                
                 if (!sv.deletarObjeto(baixa)) {
                     sv.desfazerTransacao();
                     return false;

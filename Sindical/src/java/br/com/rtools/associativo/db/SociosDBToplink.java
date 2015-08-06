@@ -493,11 +493,12 @@ public class SociosDBToplink extends DB implements SociosDB {
                     + "       FROM fin_movimento AS m                           "
                     + " INNER JOIN fin_lote AS l ON l.id = m.id_lote            "
                     + "      WHERE m.id_pessoa = " + idPessoa + "               "
-                    + "        AND dt_vencimento < NOW()                        "
+                    + "        AND dt_vencimento < CURRENT_DATE                 "
                     + "        AND id_baixa IS NULL                             "
                     + "        AND l.is_desconto_folha IS NULL                  "
-                    + "   GROUP BY m.id_pessoa                                  "
+                    //+ "   GROUP BY m.id_pessoa                                  "
             );
+            query.setMaxResults(1);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;

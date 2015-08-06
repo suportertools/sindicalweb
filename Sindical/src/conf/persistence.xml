@@ -144,6 +144,12 @@
         <properties>
         </properties>
     </persistence-unit>
+    <persistence-unit name="TecelagemRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="comerciorp">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>

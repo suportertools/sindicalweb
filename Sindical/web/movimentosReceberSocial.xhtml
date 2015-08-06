@@ -410,6 +410,11 @@
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_estorno" header="Deseja estornar este Movimento" resizable="false" width="400" modal="true">
+                                <h:panelGrid style="width: 100%">
+                                    <p:outputLabel value="Digite um motivo para o Estorno." /><br />
+                                    <p:inputTextarea value="#{movimentosReceberSocialBean.motivoEstorno}" style="width: 100%" rows="2"/>
+                                </h:panelGrid>
+                                <br />
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosReceberSocialBean.estornarBaixa()}" update="formMovimentosReceber" onclick="PF('i_dlg_estorno').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_estorno').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>

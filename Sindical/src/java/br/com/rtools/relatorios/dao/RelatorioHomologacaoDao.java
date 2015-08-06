@@ -10,7 +10,7 @@ public class RelatorioHomologacaoDao extends DB {
 
     private String order = "";
 
-    public List find(Relatorios relatorio, Integer empresa, Integer funcionario, String tipoUsuarioOperacional, Integer usuarioOperacional, Integer status, Integer filial, Integer tCase, String dateStart, String dateFinish, Integer motivoDemissao, Boolean tipoAviso, String tipoAgendador, String sexo, Boolean webAgendamento) {
+    public List find(Relatorios relatorio, Integer empresa, Integer funcionario, String tipoUsuarioOperacional, Integer usuarioOperacional, Integer status, Integer filial, Integer tCase, String dateStart, String dateFinish, Integer motivoDemissao, Boolean tipoAviso, String tipoAgendador, String sexo, Boolean webAgendamento, Integer idConvencao) {
         List listQuery = new ArrayList();
         String queryString = ""
                 + "     SELECT to_char(A.dt_data,'dd/mm/yyyy')  AS dataInicial,         "
@@ -43,6 +43,10 @@ public class RelatorioHomologacaoDao extends DB {
                 + " INNER JOIN pes_pessoa         AS FUNC    ON FUNC.id = F.id_pessoa           "
                 + " INNER JOIN pes_pessoa         AS PPE     ON PPE.id  = J.id_pessoa           ";
 
+        if (idConvencao != null){
+            queryString += " INNER JOIN arr_contribuintes_vw AS CONTR      ON CONTR.id_juridica   = J.id AND CONTR.dt_inativacao IS NULL ";
+        }
+        
         if (relatorio.getQry() == null || relatorio.getQry().isEmpty()) {
             if (tCase != null) {
                 if (tCase == 1) {
@@ -110,6 +114,9 @@ public class RelatorioHomologacaoDao extends DB {
                 } else {
                     listQuery.add("PE.aviso_trabalhado = false");
                 }
+            }
+            if (idConvencao != null) {
+                listQuery.add("CONTR.id_convencao = " + idConvencao);
             }
             for (int i = 0; i < listQuery.size(); i++) {
                 if (i == 0) {

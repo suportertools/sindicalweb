@@ -13,7 +13,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>            
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:form id="form_relatorio">            
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
                     <h:outputText value="Relatório Homologação" styleClass="fonteHeader" />
@@ -70,13 +70,16 @@
                                             <p:selectBooleanButton value="#{relatorioHomologacaoBean.filtro[10]}" onLabel="Ordenação" offLabel="Ordenação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
                                                 <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioHomologacaoBean.clear}" />
                                             </p:selectBooleanButton>
+                                            <p:selectBooleanButton value="#{relatorioHomologacaoBean.filtro[11]}" onLabel="Convenção" offLabel="Convenção" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
+                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioHomologacaoBean.clear}" />
+                                            </p:selectBooleanButton>
                                         </h:panelGrid>
                                     </h:panelGrid>
                                 </p:tab>
                             </p:accordionPanel>
                         </h:column>
                         <h:column>
-                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 760px;" >                                                                
+                            <p:panel header="Filtro" id="id_panel_relatorio" style="width: 935px;" >                                                                
                                 <p:column rendered="#{relatorioHomologacaoBean.filtro[0]}">
                                     <h:column>
                                         <h:panelGrid columns="4">
@@ -206,6 +209,17 @@
                                         </h:panelGrid>
                                     </p:panel>
                                 </p:column>                                
+                                <p:column rendered="#{relatorioHomologacaoBean.filtro[11]}">
+                                    <h:panelGrid columns="4">
+                                        <p:outputLabel value="Convenção:" />
+                                        <p:selectOneMenu value="#{relatorioHomologacaoBean.index[5]}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{relatorioHomologacaoBean.listConvencao}"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton icon="ui-icon-close" action="#{relatorioHomologacaoBean.close('convencao')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                </p:column>
+
                                 <p:column rendered="#{relatorioHomologacaoBean.filtro[10]}">
                                     <h:column>
                                         <h:panelGrid columns="4">

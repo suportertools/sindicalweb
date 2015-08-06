@@ -386,7 +386,11 @@
                                     <p:outputLabel value="Deseja realmente ESTORNAR esses movimentos?" style="font-weight: bold; font-size: 12pt!important"/>
                                 </h:panelGrid>
                                 <p:messages id="i_msg_estornar" closable="true" showDetail="true"/>
-                                
+                                <h:panelGrid style="width: 100%">
+                                    <p:outputLabel value="Digite um motivo para o Estorno." /><br />
+                                    <p:inputTextarea value="#{extratoTelaSocialBean.motivoEstorno}" style="width: 100%" rows="2"/>
+                                </h:panelGrid>
+                                <br />
                                 <h:panelGrid columns="2">
                                     <p:commandButton icon="ui-icon-circle-check" value="Sim" action="#{extratoTelaSocialBean.estornarBaixa()}" title="Estornar boletos selecionados" update="i_msg_estornar"/>
                                     <p:commandButton icon="ui-icon-circle-close" value="Não" title="Cancelar Estorno" onclick="PF('dlg_estornar').hide()" global="false"/>

@@ -202,13 +202,15 @@ public class ConviteMovimentoBean implements Serializable {
             message = "Informar data de nascimento do convidado!";
             return null;
         }
-        if (conviteMovimento.getSisPessoa().getTelefone().isEmpty() && conviteMovimento.getSisPessoa().getCelular().isEmpty()) {
-            message = "Informar um número de telefone / celular!";
-            return null;
-        }
+//        if (conviteMovimento.getSisPessoa().getTelefone().isEmpty() && conviteMovimento.getSisPessoa().getCelular().isEmpty()) {
+//            message = "Informar um número de telefone / celular!";
+//            return null;
+//        }
         Dao dao = new Dao();
         if (conviteMovimento.isCortesia()) {
             conviteMovimento.setAutorizaCortesia((ConviteAutorizaCortesia) dao.find(new ConviteAutorizaCortesia(), Integer.parseInt(listPessoaAutoriza.get(idPessoaAutoriza).getDescription())));
+        }else{
+            conviteMovimento.setAutorizaCortesia(null);
         }
         NovoLog novoLog = new NovoLog();
         conviteMovimento.setConviteServico((ConviteServico) dao.find(new ConviteServico(), Integer.parseInt(conviteServicos.get(idServico).getDescription())));
@@ -481,22 +483,31 @@ public class ConviteMovimentoBean implements Serializable {
         }
     }
 
-    public void convidadoExiste() {
+    public void pesquisaSisPessoaDocumento() {
         if (conviteMovimento.getSisPessoa().getId() == -1) {
             // APENAS COM CPF
             SisPessoaDao sisPessoaDB = new SisPessoaDao();
-            if (!conviteMovimento.getSisPessoa().getDocumento().isEmpty() && conviteMovimento.getSisPessoa().getNome().isEmpty()) {
+            if (!conviteMovimento.getSisPessoa().getDocumento().isEmpty()) {
                 SisPessoa sp = sisPessoaDB.sisPessoaExiste(conviteMovimento.getSisPessoa(), true);
                 if (sp != null) {
                     conviteMovimento.setSisPessoa(sp);
                 }
-                // COM CPF / NOME / DATA DE NASCIMENTO    
-            } else if (!conviteMovimento.getSisPessoa().getDocumento().isEmpty() && !conviteMovimento.getSisPessoa().getNome().isEmpty() && !conviteMovimento.getSisPessoa().getNascimento().isEmpty()) {
+            }
+            conviteMovimento.getSisPessoa().setNome(conviteMovimento.getSisPessoa().getNome().toUpperCase());
+        }
+        loadValor();
+    }
+    
+    public void pesquisaSisPessoaNomeNascimento() {
+        if (conviteMovimento.getSisPessoa().getId() == -1) {
+            // NOME / DATA DE NASCIMENTO    
+            SisPessoaDao sisPessoaDB = new SisPessoaDao();
+            if (!conviteMovimento.getSisPessoa().getNome().isEmpty() && !conviteMovimento.getSisPessoa().getNascimento().isEmpty()) {
                 SisPessoa sp = sisPessoaDB.sisPessoaExiste(conviteMovimento.getSisPessoa());
                 if (sp != null) {
                     conviteMovimento.setSisPessoa(sp);
                 }
-            }
+            } 
             conviteMovimento.getSisPessoa().setNome(conviteMovimento.getSisPessoa().getNome().toUpperCase());
         }
         loadValor();
