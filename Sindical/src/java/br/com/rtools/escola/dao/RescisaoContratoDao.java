@@ -24,7 +24,7 @@ public class RescisaoContratoDao extends DB{
         try {
             Query qry = getEntityManager().createNativeQuery(
                     " SELECT m.* \n " +
-                    "   FROM fin_lote \n " +
+                    "   FROM fin_lote l \n " +
                     "  INNER JOIN fin_movimento m ON m.id_lote = l.id \n " +
                     "  WHERE m.dt_vencimento - (CAST(EXTRACT(day FROM m.dt_vencimento) AS int) + 1) >= CURRENT_DATE - (CAST(EXTRACT(day FROM CURRENT_DATE) AS int)+1) \n " +
                     "    AND l.id_evt = "+ evt +
