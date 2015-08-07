@@ -3,9 +3,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-
     <h:head>
-        <title>Sindical - Login beta</title>
+        <title>Sindical - Login Beta</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
@@ -46,8 +45,8 @@
 
                             <h:panelGrid style="width: 1024px">
                                 <p:panel id="i_panel_login" style="border: 0px; float: left;">
-                                    <h:outputLabel value="O Sindical está mudando para você..." style="font-size: 35pt!important; margin-top: 10px; font-family: 'Cordia New'"/>
-
+                                    <h:outputLabel value="O Sindical está mudando para você..." style="font-size: 25pt!important; margin-top: 10px; font-family: 'lucida grande', verdana, tahoma, arial, sans-serif; color: #666666"/>
+                                    <br /><br />
                                     <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000">  
                                         <ui:repeat value="#{controleUsuarioBean.images}" var="image" >  
                                             <p:graphicImage value="/Imagens/index/#{image}" width="700" height="420"/>  

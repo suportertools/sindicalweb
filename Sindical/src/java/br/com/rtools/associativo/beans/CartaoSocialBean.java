@@ -259,11 +259,13 @@ public class CartaoSocialBean implements Serializable {
                 boolean validacao = false;
                 if (pessoa.getSocios().getId() != -1){
                     Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(pessoa.getId());
-                    if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria() && f.getDtAposentadoria() == null){
+                    if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria() && 
+                        f.getDtAposentadoria() == null && 
+                        titular_id == pessoa.getId()
+                        ){
                         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();                        
-                        // ANTES DE 17/07/2015
-                        // PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
-                        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(titular_id);
+                        PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
+                        //PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(titular_id);
                         if (pe.getId() == -1){
                             GenericaMensagem.error("Atenção", "Empresa Não Vinculada a pessoa "+ pessoa.getNome());
                             validacao = true;
