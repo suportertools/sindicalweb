@@ -2457,13 +2457,15 @@ public class SociosBean implements Serializable {
                     SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
                     ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
 
-                    List<SocioCarteirinha> listsc = new ArrayList<>();
+                    List<SocioCarteirinha> listsc = new ArrayList();
                     if (modeloc != null) {
                         listsc = db.pesquisaCarteirinhasPorPessoa(listaDepsAtivo.get(i).getServicoPessoa().getPessoa().getId(), modeloc.getId());                        
-                        if(DataHoje.maiorData(listsc.get(0).getDtValidadeCarteirinha(), DataHoje.dataHoje())) {
-                            vencimento_dep = listsc.get(0).getValidadeCarteirinha();
-                        } else {
-                            vencimento_dep = listsc.get(0).getValidadeCarteirinha();                            
+                        if (!listsc.isEmpty()){
+                            if(DataHoje.maiorData(listsc.get(0).getDtValidadeCarteirinha(), DataHoje.dataHoje())) {
+                                vencimento_dep = listsc.get(0).getValidadeCarteirinha();
+                            } else {
+                                vencimento_dep = listsc.get(0).getValidadeCarteirinha();                            
+                            }
                         }
                     }
 
