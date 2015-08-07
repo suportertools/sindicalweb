@@ -92,10 +92,18 @@ public class GerarMovimento extends DB {
             /* ------------------------ ***/
 
             /* INSERÇÃO DE BOLETO */
-            textQry = "insert into fin_boleto (nr_ctr_boleto, is_ativo, id_conta_cobranca) "
-                    + "(select m.id as nr_ctr_boleto, true as is_ativo, scc.id_conta_cobranca "
-                    + "   from fin_movimento as m inner join fin_lote as l on l.id = m.id_lote inner join fin_servico_conta_cobranca as scc on scc.id_servicos = m.id_servicos and scc.id_tipo_servico = m.id_tipo_servico"
-                    + "  where l.id_rotina = 4 and nr_ctr_boleto is null and m.id_servicos > 0 and m.id_servicos is not null"
+            textQry = "INSERT INTO fin_boleto (nr_ctr_boleto, is_ativo, id_conta_cobranca)  \n"
+                    + "(    SELECT m.id AS nr_ctr_boleto,                                   \n"
+                    + "            true AS is_ativo,                                        \n"
+                    + "            scc.id_conta_cobranca                                    \n"
+                    + "       FROM fin_movimento AS m                                       \n"
+                    + " INNER JOIN fin_lote AS l ON l.id = m.id_lote                        \n"
+                    + " INNER JOIN fin_servico_conta_cobranca AS scc ON scc.id_servicos = m.id_servicos AND scc.id_tipo_servico = m.id_tipo_servico \n"
+                    + "      WHERE l.id_rotina = 4                                          \n"
+                    + "        AND m.nr_ctr_boleto is null                                  \n"
+                    + "        AND m.id_servicos > 0                                        \n"
+                    + "        AND m.id_servicos IS NOT NULL                                \n"
+                    + "        AND m.is_ativo = true                                        \n"
                     + ");";
             qry = getEntityManager().createNativeQuery(textQry);
             if (qry.executeUpdate() <= 0) {
@@ -725,21 +733,20 @@ public class GerarMovimento extends DB {
                         }
                     }
                 }
-                
+
                 baixa = (Baixa) sv.pesquisaCodigo(movimento.getBaixa().getId(), "Baixa");
-                
+
                 EstornoCaixaLote ecl = new EstornoCaixaLote(
-                        -1, 
-                        DataHoje.dataHoje(), 
-                        baixa.getDtBaixa(), 
-                        Usuario.getUsuario(), 
-                        baixa.getUsuario(), 
-                        baixa.getCaixa(), 
+                        -1,
+                        DataHoje.dataHoje(),
+                        baixa.getDtBaixa(),
+                        Usuario.getUsuario(),
+                        baixa.getUsuario(),
+                        baixa.getCaixa(),
                         motivoEstorno,
                         baixa.getId()
                 );
-                
-                
+
                 if (!sv.inserirObjeto(ecl)) {
                     sv.desfazerTransacao();
                     return false;
@@ -758,7 +765,7 @@ public class GerarMovimento extends DB {
                         sv.desfazerTransacao();
                         return false;
                     }
-                    
+
                     if (!sv.inserirObjeto(new EstornoCaixa(-1, ecl, lista.get(i)))) {
                         sv.desfazerTransacao();
                         return false;
@@ -788,22 +795,21 @@ public class GerarMovimento extends DB {
                 baixa = (Baixa) sv.pesquisaCodigo(movimento.getBaixa().getId(), "Baixa");
 
                 EstornoCaixaLote ecl = new EstornoCaixaLote(
-                        -1, 
-                        DataHoje.dataHoje(), 
-                        baixa.getDtBaixa(), 
-                        Usuario.getUsuario(), 
-                        baixa.getUsuario(), 
-                        baixa.getCaixa(), 
+                        -1,
+                        DataHoje.dataHoje(),
+                        baixa.getDtBaixa(),
+                        Usuario.getUsuario(),
+                        baixa.getUsuario(),
+                        baixa.getCaixa(),
                         motivoEstorno,
                         baixa.getId()
                 );
-                
-                
+
                 if (!sv.inserirObjeto(ecl)) {
                     sv.desfazerTransacao();
                     return false;
                 }
-                
+
                 movimento.setBaixa(null);
                 movimento.setJuros(0);
                 movimento.setMulta(0);
@@ -817,12 +823,11 @@ public class GerarMovimento extends DB {
                     return false;
                 }
 
-                
                 if (!sv.inserirObjeto(new EstornoCaixa(-1, ecl, movimento))) {
                     sv.desfazerTransacao();
                     return false;
                 }
-                
+
                 if (!sv.deletarObjeto(baixa)) {
                     sv.desfazerTransacao();
                     return false;

@@ -24,7 +24,6 @@ import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
-import sun.java2d.loops.CompositeType;
 
 @ManagedBean
 @SessionScoped
