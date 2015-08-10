@@ -8,8 +8,10 @@ import br.com.rtools.pessoa.ClassificacaoEconomica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.Raca;
+import br.com.rtools.relatorios.RelatorioOrdem;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioDao;
+import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.utilitarios.SegurancaUtilitariosBean;
@@ -26,6 +28,7 @@ import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Jasper;
 import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.MemoryFile;
+import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
 import java.io.File;
 import java.io.Serializable;
@@ -112,15 +115,17 @@ public class RelatorioRaisBean implements Serializable {
         selectedFaixaSalarial = new ArrayList<>();
         selectedRaca = new ArrayList<>();
         selectedClassificaoEconomica = new ArrayList<>();
-        listSelectItem = new ArrayList[2];
-        listSelectItem[0] = new ArrayList<>();
+        listSelectItem = new ArrayList[3];
+        listSelectItem[0] = new ArrayList<>(); // RELATÓRIOS
         listSelectItem[1] = new ArrayList<>();
+        listSelectItem[2] = new ArrayList<>(); // RELATÓRIO ORDEM
         parametroRaisRelatorio = new ArrayList<>();
         dataInicial = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
-        index = new Integer[2];
-        index[0] = 0;
+        index = new Integer[3];
+        index[0] = 0; // RELATÓRIOS
         index[1] = 0;
+        index[2] = 0; // RELATÓRIO ORDEM
         tipoRelatorio = "Simples";
         indexAccordion = "Simples";
         porPesquisa = "";
@@ -154,13 +159,13 @@ public class RelatorioRaisBean implements Serializable {
         GenericaSessao.remove("uploadFilesBean");
     }
 
-    public void visualizar() {
-        visualizar(0);
+    public void view() {
+        view(0);
     }
 
-    public void visualizar(int tcase) {
+    public void view(int tcase) {
         Relatorios relatorios = null;
-        if (!getListaTipoRelatorios().isEmpty()) {
+        if (!getListRelatorios().isEmpty()) {
             RelatorioDao rgdb = new RelatorioDao();
             relatorios = rgdb.pesquisaRelatorios(index[0]);
         }
@@ -232,15 +237,13 @@ public class RelatorioRaisBean implements Serializable {
             String orderString = "";
             List list;
             if (raisEnviadas) {
-                if (!order.isEmpty()) {
-                    if (order.equals("0")) {
-                        orderString = " SP.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                    } else if (orderString.equals("1")) {
-                        orderString = " PJ.ds_nome ASC, R.nr_ano_base ASC, R.dt_emissao ASC ";
-                    } else if (orderString.equals("2")) {
-                        orderString = " R.dt_emissao ASC, SP.ds_nome ASC ";
-                    } else if (orderString.equals("3")) {
-                        orderString = " R.dt_emissao ASC, PJ.ds_nome ASC ";
+                RelatorioOrdem ro;
+                if (!getListRelatorioOrdem().isEmpty()) {
+                    if (index[2] != null) {
+                        ro = (RelatorioOrdem) new Dao().find(new RelatorioOrdem(), index[2]);
+                        if (ro != null) {
+                            orderString = ro.getQuery();
+                        }
                     }
                 } else {
                     orderString = "";
@@ -279,6 +282,7 @@ public class RelatorioRaisBean implements Serializable {
             ParametroRaisRelatorio pr;
             ParametroRaisNaoEnviadasRelatorio prne;
             for (Object list1 : list) {
+                String salario = Moeda.converteR$(AnaliseString.converteNullString(((List) list1).get(10)));
                 if (raisEnviadas) {
                     dt = GenericaString.converterNullToString(((List) list1).get(30));
                     dte = GenericaString.converterNullToString(((List) list1).get(4));
@@ -307,7 +311,7 @@ public class RelatorioRaisBean implements Serializable {
                             AnaliseString.converteNullString(((List) list1).get(7)),
                             AnaliseString.converteNullString(((List) list1).get(8)),
                             AnaliseString.converteNullString(((List) list1).get(9)),
-                            AnaliseString.converteNullString(((List) list1).get(10)),
+                            salario, // SALÁRIO
                             dtd,
                             AnaliseString.converteNullString(((List) list1).get(12)),
                             dta,
@@ -393,35 +397,35 @@ public class RelatorioRaisBean implements Serializable {
                 }
             }
             if (raisEnviadas) {
-                imprimir((Collection) parametroRaisRelatorio, relatorios);
+                print((Collection) parametroRaisRelatorio, relatorios);
             } else {
                 if (tcase == 0) {
-                    imprimir((Collection) parametroRaisNaoEnviadasRelatorio, relatorios);
+                    print((Collection) parametroRaisNaoEnviadasRelatorio, relatorios);
                 }
             }
         }
     }
 
-    public void imprimir() {
+    public void print() {
         if (!parametroRaisNaoEnviadasRelatorio.isEmpty()) {
             Relatorios r = null;
-            if (!getListaTipoRelatorios().isEmpty()) {
+            if (!getListRelatorios().isEmpty()) {
                 RelatorioDao rgdb = new RelatorioDao();
                 r = rgdb.pesquisaRelatorios(index[0]);
             }
             if (r == null) {
                 return;
             }
-            imprimir((Collection) parametroRaisNaoEnviadasRelatorio, r);
+            print((Collection) parametroRaisNaoEnviadasRelatorio, r);
             // parametroRaisNaoEnviadasRelatorio.clear();
         }
     }
 
-    public void imprimir(Collection c, Relatorios r) {
+    public void print(Collection c, Relatorios r) {
         Jasper.printReports(r.getJasper(), "rais", c);
     }
 
-    public List<SelectItem> getListaTipoRelatorios() {
+    public List<SelectItem> getListRelatorios() {
         if (listSelectItem[0].isEmpty()) {
             RelatorioDao db = new RelatorioDao();
             List<Relatorios> list;
@@ -433,16 +437,28 @@ public class RelatorioRaisBean implements Serializable {
             for (int i = 0; i < list.size(); i++) {
                 if (filtro[2] && !raisEnviadas) {
                     if (list.get(i).getNome().contains("Empresa") && !raisEnviadas) {
+                        if (i == 0) {
+                            index[0] = list.get(i).getId();
+                        }
                         listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                     }
                 } else if (filtro[11] && !raisEnviadas) {
                     if (list.get(i).getNome().contains("Escritório")) {
+                        if (i == 0) {
+                            index[0] = list.get(i).getId();
+                        }
                         listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                     }
                 } else {
                     if (raisEnviadas) {
+                        if (i == 0) {
+                            index[0] = list.get(i).getId();
+                        }
                         listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                     } else {
+                        if (i == 0) {
+                            index[0] = list.get(i).getId();
+                        }
                         if (list.get(i).getNome().contains("Empresa") && !raisEnviadas) {
                             listSelectItem[0].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
                         }
@@ -452,6 +468,7 @@ public class RelatorioRaisBean implements Serializable {
             if (listSelectItem[0].isEmpty()) {
                 listSelectItem[0] = new ArrayList<>();
             }
+            getListRelatorioOrdem();
         }
         return listSelectItem[0];
     }
@@ -1067,5 +1084,17 @@ public class RelatorioRaisBean implements Serializable {
 
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
+    }
+
+    public List<SelectItem> getListRelatorioOrdem() {
+        listSelectItem[2].clear();
+        if (index[0] != null) {
+            RelatorioOrdemDao relatorioOrdemDao = new RelatorioOrdemDao();
+            List<RelatorioOrdem> list = relatorioOrdemDao.findAllByRelatorio(index[0]);
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[2].add(new SelectItem(list.get(i).getId(), list.get(i).getNome()));
+            }
+        }
+        return listSelectItem[2];
     }
 }
