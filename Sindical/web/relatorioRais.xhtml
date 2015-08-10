@@ -13,7 +13,7 @@
             <ui:include src="templates/templatePrime.xhtml"/>            
         </f:subview>
         <f:view>
-            <p:panel styleClass="wrapper no-border">
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                 <h:outputScript name="tradutor_primefaces.js" library="js" />
                 <h:form id="form_relatorio">            
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
@@ -21,12 +21,18 @@
                     <h:outputText value="Relatório RAIS - Não enviadas" styleClass="fonteHeader" rendered="#{!relatorioRaisBean.raisEnviadas}"/>
                     <div class="clear"></div>
                     <p:panel styleClass="fundoCinza">
-                        <h:panelGrid  cellpadding="5" columns="2">
+                        <h:panelGrid  cellpadding="4" columns="5" id="id_pg_relatorios">
                             <p:outputLabel value="Tipo de Relatório: " />
                             <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioRaisBean.index[0]}" style="padding-right: 10px;">
-                                <p:ajax event="change" update="@this" global="false"/>
-                                <f:selectItems value="#{relatorioRaisBean.listaTipoRelatorios}"/>
+                                <p:ajax event="change" update="@this id_pg_relatorios" global="false"/>
+                                <f:selectItems value="#{relatorioRaisBean.listRelatorios}"/>
                             </p:selectOneMenu>
+                            <p:outputLabel value="Ordenação: " />
+                            <p:selectOneMenu value="#{relatorioRaisBean.index[2]}" rendered="#{not empty relatorioRaisBean.listRelatorioOrdem}">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{relatorioRaisBean.listRelatorioOrdem}"/>
+                            </p:selectOneMenu>
+                            <p:selectBooleanCheckbox itemLabel="Imprimir por folha" value="#{jasperBean.IS_BY_LEAF}" rendered="#{relatorioSociosBean.enableFolha}"/>                            
                         </h:panelGrid>
                     </p:panel>                  
                     <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
@@ -88,14 +94,6 @@
                                                 <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                             </p:selectBooleanButton>
                                             <p:selectBooleanButton value="#{relatorioRaisBean.filtro[9]}" onLabel="Sexo - Edição" offLabel="Sexo - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
-                                                <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
-                                            </p:selectBooleanButton>
-                                        </h:panelGrid>
-                                        <h:panelGrid columns="1" styleClass="text-left" rendered="#{relatorioRaisBean.raisEnviadas}">
-                                            <f:facet name="header">
-                                                <h:outputLabel value="Organizar" style="text-decoration: underline;"/>
-                                            </f:facet>                                        
-                                            <p:selectBooleanButton value="#{relatorioRaisBean.filtro[10]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 180px; text-align: left;">
                                                 <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio :form_relatorio:i_acoes" listener="#{relatorioRaisBean.clear}" />
                                             </p:selectBooleanButton>
                                         </h:panelGrid>
@@ -261,21 +259,6 @@
                                         </h:panelGrid>                                        
                                     </h:column>
                                 </p:column>
-                                <p:column rendered="#{relatorioRaisBean.filtro[10]}">
-                                    <h:column>
-                                        <h:panelGrid columns="4">
-                                            <p:outputLabel value="Ordenar por: " />
-                                            <p:selectOneMenu value="#{relatorioRaisBean.order}">
-                                                <f:selectItem itemValue="" itemLabel="Nenhum"  />
-                                                <f:selectItem itemValue="0" itemLabel="Empregado, Ano base, emissão"  />
-                                                <f:selectItem itemValue="1" itemLabel="Empresa, ano base, emissão"  />
-                                                <f:selectItem itemValue="2" itemLabel="Emissão, empregado"  />
-                                                <f:selectItem itemValue="3" itemLabel="Emissão, empresa"  />
-                                            </p:selectOneMenu>
-                                            <p:commandButton icon="ui-icon-close" action="#{relatorioRaisBean.close('order')}" title="Remover filtro"/>
-                                        </h:panelGrid>                                        
-                                    </h:column>
-                                </p:column>
                                 <p:column rendered="#{relatorioRaisBean.tipoRelatorio == 'Simples'}">
                                     * Todas rais
                                 </p:column>
@@ -287,9 +270,9 @@
                         </h:column>
                     </h:panelGrid>
                     <h:panelGrid columns="3" id="i_btns">
-                        <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioRaisBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" rendered="#{relatorioRaisBean.raisEnviadas}" />
-                        <p:commandButton value="Visualizar" title="Visualizar" icon="ui-icon-print" action="#{relatorioRaisBean.visualizar()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
-                        <p:commandButton value="Filtrar" title="Filtrar para envio de emails" styleClass="margin-top-max" action="#{relatorioRaisBean.visualizar(1)}" update="i_acoes" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"  />
+                        <p:commandButton value="Visualizar" icon="ui-icon-print" title="Visualizar" action="#{relatorioRaisBean.view()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioRaisBean.parametroRaisRelatorio.clear()}" rendered="#{relatorioRaisBean.raisEnviadas}" />
+                        <p:commandButton value="Visualizar" title="Visualizar" icon="ui-icon-print" action="#{relatorioRaisBean.view()}" styleClass="margin-top-max" update="i_acoes" actionListener="#{relatorioRaisBean.parametroRaisNaoEnviadasRelatorio.clear()}" rendered="#{!relatorioRaisBean.raisEnviadas}" ajax="false"/>
+                        <p:commandButton value="Filtrar" title="Filtrar para envio de emails" styleClass="margin-top-max" action="#{relatorioRaisBean.view(1)}" update="i_acoes" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"  />
                     </h:panelGrid>
                     <p:panel rendered="#{!relatorioRaisBean.raisEnviadas}" styleClass="margin-top-max" header="Ações" id="i_acoes">
                         <p:outputLabel value="Assunto: "  rendered="#{relatorioRaisBean.tipo eq 'yes_email'}"/>
@@ -331,7 +314,7 @@
                                 <p:commandButton value="Enviar emails" action="#{relatorioRaisBean.send()}" rendered="#{relatorioRaisBean.tipo eq 'yes_email'}" update="id_messages_growl"/>
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{uploadFilesBean.listFiles.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
-                                <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.imprimir()}" ajax="false" update="id_messages_growl"  />
+                                <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioRaisBean.print()}" ajax="false" update="id_messages_growl"  />
                                 <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pesquisa('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(274)}"/>
                                 <h:column>
                                     <ui:include src="templates/templateStatusLoader.xhtml">
