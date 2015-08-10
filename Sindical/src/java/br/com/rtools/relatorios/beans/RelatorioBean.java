@@ -53,7 +53,7 @@ public class RelatorioBean implements Serializable {
         Dao dao = new Dao();
         Boolean sucess = false;
         String message;
-        if (relatorioOrdem.getId() == -1) {
+        if (relatorioOrdem.getId() == null) {
             relatorioOrdem.setRelatorios(relatorio);
             if (dao.save(relatorioOrdem, true)) {
                 sucess = true;
