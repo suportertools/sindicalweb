@@ -605,6 +605,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         multiple = false;
         String url = (String) GenericaSessao.getString("urlRetorno");
         fisica = f;
+        String url_foto = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId());
+        if (new File(url_foto + ".gif").exists() || new File(url_foto + ".png").exists() || new File(url_foto + ".jpg").exists() || new File(url_foto + ".jpeg").exists()) {
+            if (fisica.getDtFoto() == null) {
+                fisica.setDataFoto(DataHoje.data());
+                new Dao().update(fisica, true);
+            }
+        }
         if (!listernerValidacao(f, url)) {
             return null;
         }
@@ -669,13 +676,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
         if (new File(url_temp).exists()) {
             new File(url_temp).delete();
-        }
-        String url_foto = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId());
-        if (new File(url_foto + ".gif").exists() || new File(url_foto + ".png").exists() || new File(url_foto + ".jpg").exists() || new File(url_foto + ".jpeg").exists()) {
-            if (fisica.getDtFoto() == null) {
-                fisica.setDataFoto(DataHoje.data());
-                new Dao().update(fisica, true);
-            }
         }
         return url;
     }
