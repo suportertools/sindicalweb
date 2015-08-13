@@ -125,7 +125,7 @@
                                         </p:panel>
 
                                         <h:panelGrid id="i_panel_tbl">
-                                            <h:panelGrid columns="3" style="float: right">
+                                            <h:panelGrid columns="3" style="float: right" cellpadding="5">
                                                 <h:column>
                                                     <br /><br />
                                                     <p:progressBar id="i_progress_update" value="#{recepcaoBean.progressUpdate}" labelTemplate="#{recepcaoBean.progressLabel}" style="width: 100px;" disabled="#{!recepcaoBean.startPooling}"/>
@@ -140,6 +140,9 @@
                                             </h:panelGrid>
 
                                             <p:dataTable value="#{recepcaoBean.listaHorarios}" var="linha" style="width: 100%;" id="tbl" rowStyleClass="#{linha.argumento8}" emptyMessage="Nenhuma Homologação Encontrada">
+                                                <f:facet name="header">
+                                                    <h:outputLabel value="Total: #{recepcaoBean.listaHorarios.size()} registro(s) " styleClass="bould" />
+                                                </f:facet>
                                                 <p:column width="15">  
                                                     <p:rowToggler />  
                                                 </p:column>  
