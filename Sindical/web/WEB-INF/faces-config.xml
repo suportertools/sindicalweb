@@ -1738,6 +1738,12 @@
             <from-outcome>relatorioEstorno</from-outcome>
             <to-view-id>/relatorioEstorno.jsf</to-view-id>
             <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>validadeCartao</from-outcome>
+            <to-view-id>/validadeCartao.jsf</to-view-id>
+            <redirect/>
         </navigation-case>         
         
         <!-- 
