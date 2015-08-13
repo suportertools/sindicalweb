@@ -430,7 +430,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         //limparCamposData();
         if (sucesso) {
             salvarImagem();
-            new Dao().update(fisica, true);
+            // new Dao().update(fisica, true);
         }
     }
 
@@ -604,7 +604,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         selectedFisica = new ArrayList<>();
         multiple = false;
         String url = (String) GenericaSessao.getString("urlRetorno");
-        fisica = f;
+        fisica = (Fisica) new Dao().rebind(f);
+        new Dao().refresh(f.getPessoa());
         String url_foto = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId());
         if (new File(url_foto + ".gif").exists() || new File(url_foto + ".png").exists() || new File(url_foto + ".jpg").exists() || new File(url_foto + ".jpeg").exists()) {
             if (fisica.getDtFoto() == null) {
@@ -620,7 +621,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             GenericaSessao.put("linkClicado", true);
             return url;
         }
-        Dao dao = new Dao();
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
         GenericaSessao.remove("pessoaComplementoBean");
@@ -1336,12 +1336,31 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 //            }
 //        }
         if (fisica.getId() != -1) {
-            Dao dao = new Dao();
-            fisica.setDtFoto(DataHoje.dataHoje());
-            dao.update(fisica, true);
-            GenericaSessao.remove("photoCamBean");
-            PhotoCam photoCam = new PhotoCam();
-            GenericaSessao.put("photoCamBean", photoCam);
+            for (int i = 0; i < 3; i++) {
+                String ext = "";
+                if (i == 0) {
+                    ext = "jpg";
+                }
+                if (i == 1) {
+                    ext = "jpeg";
+                }
+                if (i == 2) {
+                    ext = "png";
+                }
+                try {
+                    File fileExists = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId()) + "." + ext);
+                    if (fileExists.exists()) {
+                        Dao dao = new Dao();
+                        fisica.setDtFoto(DataHoje.dataHoje());
+                        dao.update(fisica, true);
+                        GenericaSessao.remove("photoCamBean");
+                        PhotoCam photoCam = new PhotoCam();
+                        GenericaSessao.put("photoCamBean", photoCam);
+                    }
+                } catch (Exception e) {
+
+                }
+            }
         }
     }
 
@@ -1850,7 +1869,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void validateFile(FacesContext ctx, UIComponent comp, Object value) {
-        List<FacesMessage> msgs = new ArrayList<FacesMessage>();
+        List<FacesMessage> msgs = new ArrayList<>();
         Part files = (Part) value;
         if (files.getSize() > 1024) {
             msgs.add(new FacesMessage("file too big"));
