@@ -666,11 +666,21 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         }
 
         if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             dao.commit();
             return;
         }
         if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             dao.commit();
             return;
@@ -678,6 +688,11 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             dao.commit();
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
         } else {
@@ -714,6 +729,14 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
             }
             dao.commit();
         }
+    }
+
+    public Boolean updatePessoaEmpresa(Dao dao) {
+        pessoaEmpresa.setDtAdmissao(null);
+        if (!dao.update(pessoaEmpresa)) {
+            return false;
+        }
+        return true;
     }
 
     public void cancelar() {
