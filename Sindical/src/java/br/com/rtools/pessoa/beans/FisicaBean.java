@@ -593,6 +593,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String editarFisica(Pessoa p) {
         FisicaDB fisicaDB = new FisicaDBToplink();
         Fisica f = fisicaDB.pesquisaFisicaPorPessoa(p.getId());
+        f = (Fisica) new Dao().rebind(f);
         return editarFisica(f);
     }
 
