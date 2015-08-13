@@ -4,8 +4,12 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "soc_parentesco")
-@NamedQuery(name = "Parentesco.pesquisaID", query = "select p from Parentesco p where p.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "Parentesco.pesquisaID", query = "SELECT P FROM Parentesco AS P WHERE P.id = :pid"),
+    @NamedQuery(name = "Parentesco.findAll", query = "SELECT P FROM Parentesco AS P ORDER BY P.parentesco ASC")
+})
 public class Parentesco implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
