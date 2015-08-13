@@ -378,19 +378,6 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 return;
             }
         }
-        
-        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
-            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            dao.commit();
-            return;
-        }
-
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            dao.commit();
-            return;
-        }
-        
 
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), juridica.getId());
@@ -464,6 +451,18 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
         }
 
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
+        }
+
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
+        }
+
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
@@ -520,13 +519,13 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             // STATUS DISPONÍVEL
             case 1: {
                 HomologacaoDB db = new HomologacaoDBToplink();
-                
+
                 List<Agendamento> list_a = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, juridica.getPessoa().getId());
-                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()){
-                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de "+sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
+                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()) {
+                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de " + sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
                     return;
                 }
-                
+
                 if (data.getDay() == 6 || data.getDay() == 0) {
                     GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
                     return;
