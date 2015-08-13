@@ -14,22 +14,14 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.PhotoCam;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.persistence.*;
 import javax.servlet.ServletContext;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 @Entity
 @Table(name = "pes_pessoa")
@@ -381,20 +373,20 @@ public class Pessoa implements Serializable {
             } catch (InterruptedException ex) {
             }
         }
-        
+
         String foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".png";
         File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
         if (!f.exists()) {
             foto = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + id + ".jpg";
             f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(foto));
             if (!f.exists()) {
-                try{
+                try {
                     if (getFisica().getSexo().equals("F")) {
                         foto = "/Imagens/user_female.png";
                     } else {
                         foto = "/Imagens/user_male.png";
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.getMessage();
                     return null;
                 }
