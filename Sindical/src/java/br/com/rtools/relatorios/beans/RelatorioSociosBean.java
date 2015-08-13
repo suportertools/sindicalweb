@@ -6,7 +6,7 @@ import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.CategoriaDB;
 import br.com.rtools.associativo.db.CategoriaDBToplink;
 import br.com.rtools.associativo.db.ParentescoDB;
-import br.com.rtools.associativo.db.ParentescoDBToplink;
+import br.com.rtools.associativo.db.ParentescoDao;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.Servicos;
@@ -1188,7 +1188,7 @@ public class RelatorioSociosBean implements Serializable {
 
     public List<DataObject> getListaParentesco() {
         if (listaParentesco.isEmpty()) {
-            ParentescoDB db = new ParentescoDBToplink();
+            ParentescoDB db = new ParentescoDao();
             List select = db.pesquisaTodos();
             for (int i = 0; i < select.size(); i++) {
                 boolean b = false;
