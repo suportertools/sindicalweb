@@ -375,13 +375,13 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             case 1: {
                 HomologacaoDB db = new HomologacaoDBToplink();
-                
+
                 List<Agendamento> list_a = db.pesquisaAgendadoPorEmpresaSemHorario(getSindicatoFilial().getFilial().getId(), data, empresa.getPessoa().getId());
-                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()){
-                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de "+sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
+                if (list_a.size() >= sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa()) {
+                    GenericaMensagem.warn("Atenção", "Limite de Agendamentos para hoje é de " + sindicatoFilial.getFilial().getQuantidadeAgendamentosPorEmpresa());
                     return;
                 }
-                
+
                 if (data.getDay() == 6 || data.getDay() == 0) {
                     GenericaMensagem.warn("Atenção", "Fins de semana não é permitido!");
                     return;
@@ -593,17 +593,6 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 return;
             }
         }
-        
-        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
-            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            dao.commit();
-            return;
-        }
-        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
-            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
-            dao.commit();
-            return;
-        }        
 
         HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId(), empresa.getId());
@@ -674,6 +663,17 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
                 GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
                 return;
             }
+        }
+
+        if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
+        }
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
+            dao.commit();
+            return;
         }
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
