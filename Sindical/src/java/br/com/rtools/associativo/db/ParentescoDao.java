@@ -2,11 +2,13 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.principal.DB;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.utilitarios.dao.FindDao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class ParentescoDBToplink extends DB implements ParentescoDB {
+public class ParentescoDao extends DB implements ParentescoDB {
 
     @Override
     public boolean insert(Parentesco parentesco) {
@@ -157,18 +159,36 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
         return new ArrayList<>();
     }
 
-//    @Override
-//    public List pesquisaTodosSemTitularPorSexo(String sexo) {
-//        try {
-//            Query qry = getEntityManager().createQuery("select p from Parentesco p "
-//                    + " where p.ativo = true "
-//                    + "   and p.id <> 1 "
-//                    + "   and p.sexo = '" + sexo + "'"
-//                    + "order by p.id");
-//            return (qry.getResultList());
-//        } catch (Exception e) {
-//            e.getMessage();
-//            return null;
-//        }
-//    }
+    /**
+     * Nome da tabela onde esta a lista de filiais Ex:
+     * findNotInByTabela('matr_escola');
+     *
+     * @param table (Use alias T+colum
+     * @param colum_filter_key Nome da coluna do filtro
+     * @return Todas as rotinas da tabela específicada
+     * @param colum_filter_value Valor do filtro
+     */
+    public List findNotInByTabela(String table, String colum_filter_key, String colum_filter_value) {
+        return findNotInByTabela(table, "id_parentesco", colum_filter_key, colum_filter_value);
+    }
+
+    /**
+     * Nome da tabela onde esta a lista de filiais Ex:
+     * findNotInByTabela('seg_filial_rotina', 'id_filial', 1);
+     *
+     * @param table (Use alias T+column)
+     * @param column
+     * @param colum_filter_key Nome da coluna do filtro
+     * @return Todas as rotinas não usadas em uma chave conforme o valor
+     * @param colum_filter_value Valor do filtro
+     */
+    public List findNotInByTabela(String table, String column, String colum_filter_key, String colum_filter_value) {
+        if (column == null || column.isEmpty()) {
+            column = "id_parentesco";
+        }
+        if (colum_filter_key == null || colum_filter_key.isEmpty() || colum_filter_value == null || colum_filter_value.isEmpty()) {
+            return new ArrayList();
+        }
+        return new FindDao().findNotInByTabela(Parentesco.class, "soc_parentesco", new String[]{"ds_parentesco"}, table, column, colum_filter_key, colum_filter_value, "");
+    }
 }
