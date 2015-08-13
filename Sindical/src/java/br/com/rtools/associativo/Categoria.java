@@ -8,12 +8,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "soc_categoria")
-@NamedQuery(name = "Categoria.pesquisaID", query = "SELECT C FROM Categoria AS C WHERE C.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Categoria.pesquisaID", query = "SELECT C FROM Categoria AS C WHERE C.id=:pid"),
+    @NamedQuery(name = "Categoria.findAll", query = "SELECT C FROM Categoria AS C ORDER BY C.grupoCategoria.grupoCategoria ASC, C.categoria ASC")
+})
+
 public class Categoria implements Serializable {
 
     @Id
@@ -227,7 +232,7 @@ public class Categoria implements Serializable {
     public void setCartaoTitular(boolean cartaoTitular) {
         if (!cartaoTitular) {
             cartaoDependente = false;
-        }        
+        }
         this.cartaoTitular = cartaoTitular;
     }
 
