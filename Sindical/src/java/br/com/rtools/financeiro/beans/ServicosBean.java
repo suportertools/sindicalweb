@@ -7,7 +7,7 @@ import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.CategoriaDescontoDB;
 import br.com.rtools.associativo.db.CategoriaDescontoDBToplink;
 import br.com.rtools.associativo.db.ParentescoDB;
-import br.com.rtools.associativo.db.ParentescoDBToplink;
+import br.com.rtools.associativo.db.ParentescoDao;
 import br.com.rtools.financeiro.GrupoFinanceiro;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoValor;
@@ -980,7 +980,7 @@ public class ServicosBean implements Serializable {
 
     public List<SelectItem> getListaParentesco() {
         if (listaParentesco.isEmpty()) {
-            ParentescoDB db = new ParentescoDBToplink();
+            ParentescoDB db = new ParentescoDao();
             //List<Parentesco> select = db.pesquisaTodosSemTitularCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
             List<Parentesco> select = db.pesquisaTodosComTitularCategoriaSemDesconto(id_categoria, categoriaDesconto.getId());
             //List<Parentesco> select = db.pesquisaTodosSemTitular();
