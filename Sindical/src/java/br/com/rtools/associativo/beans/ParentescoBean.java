@@ -2,7 +2,7 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.ParentescoDB;
-import br.com.rtools.associativo.db.ParentescoDBToplink;
+import br.com.rtools.associativo.db.ParentescoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -24,7 +24,7 @@ public class ParentescoBean {
     private boolean limpar = false;
 
     public String salvar() {
-        ParentescoDB db = new ParentescoDBToplink();
+        ParentescoDB db = new ParentescoDao();
         NovoLog novoLog = new NovoLog();
         if (getParentesco().getParentesco().equals("") || getParentesco().getParentesco() == null) {
             setMsgConfirma("Digite um nome para o parentesco!");
@@ -81,7 +81,7 @@ public class ParentescoBean {
     }
 
     public String excluir() {
-        ParentescoDB db = new ParentescoDBToplink();
+        ParentescoDB db = new ParentescoDao();
         NovoLog novoLog = new NovoLog();
         if (parentesco.getId() == -1) {
             msgConfirma = "Selecione um parentesco para ser excluído!";
@@ -151,7 +151,7 @@ public class ParentescoBean {
     }
 
     public List<Parentesco> getListaParentesco() {
-        ParentescoDB db = new ParentescoDBToplink();
+        ParentescoDB db = new ParentescoDao();
         listaParentesco = db.pesquisaTodos();
         for (int i = 0; i < listaParentesco.size(); i++) {
             if (listaParentesco.get(i).isAtivo() == true) {
