@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Sindical - Validade Cartão</title>       
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <p:outputLabel value="Validade Cartão" styleClass="fonteHeader" />
+                        <div style="clear: both;"></div>
+                        <h:form id="form_validade_cartao">                     
+                            <p:growl autoUpdate="true" id="id_messages_growl" showDetail="true" />
+                            <c:set scope="request" var="object" value="${validadeCartaoBean.validadeCartao}"/>
+                            <p:panel id="id_panel_grade_horarios">
+                                <h:panelGrid columns="5" cellpadding="5">
+                                    <p:outputLabel value="Categoria: " />
+                                    <p:selectOneMenu value="#{validadeCartaoBean.idCategoria}">
+                                        <p:ajax event="change" update="@this, :form_validade_cartao: :form_validade_cartao_list:" listener="#{validadeCartaoBean.clear(1)}" />
+                                        <f:selectItems value="#{validadeCartaoBean.listCategoria}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Parentesco: " rendered="#{(not empty validadeCartaoBean.listParentesco) and (validadeCartaoBean.validadeCartao.id == null)}"/>
+                                    <p:selectOneMenu value="#{validadeCartaoBean.idParentesco}" rendered="#{(not empty validadeCartaoBean.listParentesco) and (validadeCartaoBean.validadeCartao.id == null)}">
+                                        <p:ajax event="change" update="@this, :form_validade_cartao:" />
+                                        <f:selectItems value="#{validadeCartaoBean.listParentesco}" />
+                                    </p:selectOneMenu>
+                                    <p:commandButton action="#{validadeCartaoBean.save(0)}" value="#{validadeCartaoBean.validadeCartao.id == null ? 'Adicionar' : 'Atualizar'}" update=":form_validade_cartao: :form_validade_cartao_list:"  disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="4" styleClass="margin-top-max" cellpadding="5">
+                                    <p:outputLabel value="Validade Meses: " />
+                                    <p:column>
+                                        <p:inputText value="#{validadeCartaoBean.validadeCartao.nrValidadeMesesString}" converter="#{thisNumber}" size="2" maxlength="2" styleClass="text-center">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="(Máximo 60 meses)" styleClass="margin-left-max" />
+                                    </p:column>
+                                    <p:outputLabel value="Validade Fixa: "  styleClass="margin-left-max"/>
+                                    <p:inputMask value="#{validadeCartaoBean.validadeCartao.validadeFixaString}" converter="#{isDateString}" mask="99/99/9999" size="8" styleClass="text-center">
+                                        <p:ajax event="change" update="@this" />
+                                    </p:inputMask>
+                                </h:panelGrid>
+                                <h:panelGrid columns="6" styleClass="margin-top-max">                                    
+                                    <p:commandButton action="#{validadeCartaoBean.save(2)}" value="#{validadeCartaoBean.validadeCartao.id == null ? 'Adicionar' : 'Atualizar'} todos parentescos da categoria" update=":form_validade_cartao: :form_validade_cartao_list:"  disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton action="#{validadeCartaoBean.save(1)}" value="#{validadeCartaoBean.validadeCartao.id == null ? 'Adicionar' : 'Atualizar'} todas categorias do parentesco" update=":form_validade_cartao: :form_validade_cartao_list:"  disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="6">
+                                    <p:commandButton action="#{validadeCartaoBean.clear()}" value="Novo" update=":form_validade_cartao: :form_validade_cartao_list:"/>
+                                    <p:commandButton action="#{validadeCartaoBean.delete()}" value="Excluir" update=":form_validade_cartao: :form_validade_cartao_list:" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:form>
+                        <h:form id="form_validade_cartao_list">
+                            <p:dataTable value="#{validadeCartaoBean.listValidadeCartao}" var="validadeCartao" emptyMessage="Nenhum registro encontrado!" scrollHeight="400" scrollable="true">
+                                <f:facet name="header">
+                                    Validade Cartão
+                                </f:facet>
+                                <p:column styleClass="text-center" width="25">
+                                    <p:commandButton icon="ui-icon-link" action="#{validadeCartaoBean.edit(validadeCartao)}" update=":form_validade_cartao:"/>
+                                </p:column>                             
+                                <p:column headerText="Categoria" styleClass="text-center">#{validadeCartao.categoria.categoria}</p:column>
+                                <p:column headerText="Parentesco" styleClass="text-center" filterBy="#{validadeCartao.parentesco.parentesco}" filterMatchMode="startsWith">#{validadeCartao.parentesco.parentesco}</p:column>
+                                <p:column headerText="Val. Meses" styleClass="text-center" width="80">#{validadeCartao.nrValidadeMeses}</p:column>
+                                <p:column headerText="Validade Fixa" styleClass="text-center" width="100">#{validadeCartao.validadeFixaString}</p:column>
+                                <p:column styleClass="text-center" width="25">
+                                    <p:commandButton icon="ui-icon-close" action="#{validadeCartaoBean.delete(validadeCartao)}" update=":form_validade_cartao: :form_validade_cartao_list:" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                </p:column>                             
+                            </p:dataTable>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templates/templateFooter.xhtml"/>
+            </f:subview>
+        </div>     
+    </h:body>
+</ui:composition>
