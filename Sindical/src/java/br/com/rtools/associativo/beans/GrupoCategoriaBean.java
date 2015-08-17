@@ -64,7 +64,6 @@ public class GrupoCategoriaBean {
                         "ID: " + grupoCategoria.getId()
                         + " - Descrição: " + grupoCategoria.getGrupoCategoria()
                         + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
-                        + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
                 );
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Grupo salvo com sucesso!");
@@ -79,14 +78,12 @@ public class GrupoCategoriaBean {
             String beforeUpdate
                     = "ID: " + gc.getId()
                     + " - Descrição: " + gc.getGrupoCategoria()
-                    + " - Próxima Matrícula: " + gc.getNrProximaMatricula()
-                    + " - Validade Mês Cartão: " + gc.getNrValidadeMesCartao();
+                    + " - Próxima Matrícula: " + gc.getNrProximaMatricula();
             if (di.update(grupoCategoria)) {
                 novoLog.update(beforeUpdate,
                         "ID: " + grupoCategoria.getId()
                         + " - Descrição: " + grupoCategoria.getGrupoCategoria()
                         + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
-                        + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
                 );
                 GenericaMensagem.info("Sucesso", "Grupo atualizado com sucesso.");
                 di.commit();
@@ -113,7 +110,6 @@ public class GrupoCategoriaBean {
                     "ID: " + grupoCategoria.getId()
                     + " - Descrição: " + grupoCategoria.getGrupoCategoria()
                     + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
-                    + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
             );
             GenericaMensagem.info("Sucesso", "Grupo deletado com sucesso!");
             di.commit();

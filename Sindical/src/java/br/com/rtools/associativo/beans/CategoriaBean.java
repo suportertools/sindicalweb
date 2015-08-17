@@ -264,7 +264,7 @@ public class CategoriaBean implements Serializable {
     public List getListParentescos() {
         if (list.isEmpty()) {
             DataObject dtObj = null;
-            ParentescoDB db = new ParentescoDBToplink();
+            ParentescoDB db = new ParentescoDao();
             ServicoCategoriaDB dbSeC = new ServicoCategoriaDBToplink();
             List<ServicoCategoria> listaSerCat = dbSeC.pesquisaServCatPorId(categoria.getId());
             List<Parentesco> listaPar = db.pesquisaTodos();

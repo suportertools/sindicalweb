@@ -7,6 +7,8 @@ import br.com.rtools.associativo.HistoricoCarteirinha;
 import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.ValidadeCartao;
+import br.com.rtools.associativo.dao.ValidadeCartaoDao;
 import br.com.rtools.associativo.db.CategoriaDB;
 import br.com.rtools.associativo.db.CategoriaDBToplink;
 import br.com.rtools.associativo.db.SocioCarteirinhaDB;
@@ -257,7 +259,7 @@ public class CartaoSocialBean implements Serializable {
                 SocioCarteirinha carteirinha = (SocioCarteirinha) dao.find(new SocioCarteirinha(), (Integer) ((List) list.get(i)).get(19));
 
                 boolean validacao = false;
-                if (pessoa.getSocios().getId() != -1){
+                if (pessoa.getSocios().getId() != -1) {
                     Fisica f = new FisicaDBToplink().pesquisaFisicaPorPessoa(pessoa.getId());
                     if (pessoa.getSocios().getMatriculaSocios().getCategoria().isEmpresaObrigatoria() && 
                         f.getDtAposentadoria() == null && 
@@ -266,18 +268,18 @@ public class CartaoSocialBean implements Serializable {
                         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();                        
                         PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(pessoa.getId());
                         //PessoaEmpresa pe = db.pesquisaPessoaEmpresaPorPessoa(titular_id);
-                        if (pe.getId() == -1){
-                            GenericaMensagem.error("Atenção", "Empresa Não Vinculada a pessoa "+ pessoa.getNome());
+                        if (pe.getId() == -1) {
+                            GenericaMensagem.error("Atenção", "Empresa Não Vinculada a pessoa " + pessoa.getNome());
                             validacao = true;
                         }
                     }
                 }
-                
-                if (validacao){
+
+                if (validacao) {
                     dao.rollback();
                     return;
                 }
-                
+
                 //ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
                 //ModeloCarteirinha modeloc = (ModeloCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "ModeloCarteirinha");
                 //carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
@@ -374,10 +376,20 @@ public class CartaoSocialBean implements Serializable {
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 Socios socios = dbs.pesquisaSocioPorPessoa(pessoa.getId());
                 SocioCarteirinha carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha");
-
+                ValidadeCartao validadeCartao = new ValidadeCartaoDao().findByCategoriaParentesco(socios.getMatriculaSocios().getCategoria().getId(), socios.getParentesco().getId());
+                if (validadeCartao == null) {
+                    GenericaMensagem.warn("Validação", "Nenhuma validade de cartão encontrada!");
+                    sv.desfazerTransacao();
+                    return;
+                }
                 if (socios.getId() != -1 && socios.getMatriculaSocios().getId() != -1) {
                     GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(Integer.valueOf(socios.getMatriculaSocios().getCategoria().getId()));
-                    Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
+                    Date validadeCarteirinha;
+                    if (validadeCartao.getDtValidadeFixa() == null) {
+                        validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(validadeCartao.getNrValidadeMeses(), DataHoje.data()));
+                    } else {
+                        validadeCarteirinha = validadeCartao.getDtValidadeFixa();
+                    }
                     carteirinha.setDtValidadeCarteirinha(validadeCarteirinha);
                 } else {
                     carteirinha.setDtValidadeCarteirinha(null);
