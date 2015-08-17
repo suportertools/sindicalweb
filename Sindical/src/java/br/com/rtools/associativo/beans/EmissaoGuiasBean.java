@@ -474,7 +474,9 @@ public class EmissaoGuiasBean implements Serializable {
                     fisicaNovoCadastro.getPessoa(),
                     reg.getFinDiaVencimentoCobranca(),
                     false,
-                    null
+                    null,
+                    false,
+                    ""
             );
 
             if (!di.save(pc)) {
