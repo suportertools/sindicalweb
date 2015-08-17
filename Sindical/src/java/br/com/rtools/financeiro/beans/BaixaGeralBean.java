@@ -251,14 +251,31 @@ public class BaixaGeralBean implements Serializable {
             GenericaMensagem.error("Atenção", "Valor negativo não é permitido!");
             return;
         }
+        
+        float valorGrid = 0;
+        int tipo_dinheiro = 0;
+        for (ListValoresBaixaGeral listaValore : listaValores) {
+            valorGrid = Moeda.somaValores(valorGrid,
+                    Float.parseFloat(Moeda.substituiVirgula(String.valueOf(listaValore.getValor())))
+            );
+            
+            if (listaValore.getTipoPagamento().getId() == 3){
+                tipo_dinheiro++;
+            }
+        }
 
-        if (Moeda.converteUS$(total) == somaValoresGrid() && Moeda.converteUS$(total) != 0) {
+        if (tipo_dinheiro >= 1 && tipoPagamento.getId() == 3){
+            GenericaMensagem.error("Atenção", "Dinheiro já adicionado!");
+            return;
+        }
+        
+        if (!listaValores.isEmpty() && Moeda.converteUS$(total) == valorGrid) {
             GenericaMensagem.error("Atenção", "Os valores já conferem!");
             return;
         }
 
         float valorDigitado = 0;
-        valorEditavel = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(total), somaValoresGrid()));
+        valorEditavel = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.converteUS$(total), valorGrid));
 
         if (Moeda.converteUS$(valor) > Moeda.converteUS$(valorEditavel)) {
             valorDigitado = Moeda.converteUS$(valor);
@@ -395,19 +412,25 @@ public class BaixaGeralBean implements Serializable {
         if (listaTipoPagamento.isEmpty()) {
             FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
             List<TipoPagamento> select = new ArrayList();
-            if (!getEs().isEmpty() && getEs().equals("S")) {
-                select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,8,9,10");
-                idTipoPagamento = 0;
-            } else {
-                if (tipo.equals("caixa")) {
-                    select = db.pesquisaCodigoTipoPagamentoIDS("2,3,4,5,6,7,8,9,10,11,13");
-                    idTipoPagamento = 1;
-                } else {
-                    select = db.pesquisaCodigoTipoPagamentoIDS("2,8,9,10,11,13");
+            
+            if (Moeda.converteUS$(total) != 0){
+                if (!getEs().isEmpty() && getEs().equals("S")) {
+                    select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,8,9,10");
                     idTipoPagamento = 0;
-                }
+                } else {
+                    if (tipo.equals("caixa")) {
+                        select = db.pesquisaCodigoTipoPagamentoIDS("2,3,4,5,6,7,8,9,10,11,13");
+                        idTipoPagamento = 1;
+                    } else {
+                        select = db.pesquisaCodigoTipoPagamentoIDS("2,8,9,10,11,13");
+                        idTipoPagamento = 0;
+                    }
 
+                }
+            }else{
+                select = db.pesquisaCodigoTipoPagamentoIDS("3");
             }
+            
             if (!select.isEmpty()) {
                 for (int i = 0; i < select.size(); i++) {
                     listaTipoPagamento.add(new SelectItem(
@@ -797,7 +820,7 @@ public class BaixaGeralBean implements Serializable {
     }
 
     public String getBanco() {
-        if (banco.isEmpty() && getListaMovimentos().size() == 1) {
+        if (banco.isEmpty()) {
             MovimentoDB db = new MovimentoDBToplink();
             ImprimirBoleto imp = new ImprimirBoleto();
             Boleto bol = db.pesquisaBoletos(listaMovimentos.get(0).getNrCtrBoleto());
@@ -812,8 +835,6 @@ public class BaixaGeralBean implements Serializable {
             } else {
                 banco = "BANCO";
             }
-        } else {
-            banco = "BANCO";
         }
         return banco;
     }

@@ -3,6 +3,7 @@ package br.com.rtools.relatorios.beans;
 import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoCidade;
+import br.com.rtools.arrecadacao.beans.ConfiguracaoArrecadacaoBean;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDB;
 import br.com.rtools.arrecadacao.db.CnaeConvencaoDBToplink;
 import br.com.rtools.arrecadacao.db.GrupoCidadeDB;
@@ -207,9 +208,11 @@ public class RelatorioMovimentoBean implements Serializable {
     public Collection listaPesquisa() {
 
         RelatorioMovimentosDB db_rel = new RelatorioMovimentosDBToplink();
-
-        Juridica sindicato = (Juridica) (new Dao()).find(new Juridica(), 1);
-        PessoaEndereco endSindicato = (new PessoaEnderecoDBToplink()).pesquisaEndPorPessoaTipo(sindicato.getId(), 3);
+        ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+        cab.init();
+        Juridica sindicato =  cab.getConfiguracaoArrecadacao().getFilial().getFilial();
+        //Juridica sindicato = (Juridica) (new Dao()).find(new Juridica(), 1);
+        PessoaEndereco endSindicato = (new PessoaEnderecoDBToplink()).pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 3);
 
         Relatorios relatorio = (new RelatorioDao()).pesquisaRelatorios(Integer.parseInt(listaTipoRelatorio.get(idRelatorios).getDescription()));
 

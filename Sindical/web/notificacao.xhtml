@@ -28,7 +28,7 @@
                     <ui:include src="templates/templateStatus.xhtml"/>
                 </f:subview>
                 <f:view>
-                    <p:panel styleClass="wrapper" style="border: 0px;">
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
                         <h:outputText value="Notificações" styleClass="fonteHeader" />
                         <h:form id="formNotificacao">
                             <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
@@ -108,19 +108,19 @@
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
                             <h:panelGrid style="float: left">
                                 <p:column>
-                                    <p:inputTextarea id="i_mensagem" style="width: 700px" rows="5" value="#{notificacaoBean.lote.mensagem}" /><br />
+                                    <p:inputTextarea id="i_mensagem" style="width: 875px" rows="5" value="#{notificacaoBean.lote.mensagem}" /><br />
                                     <p:watermark value="Digite a mensagem que irá ser enviada na notificação" for="i_mensagem"/>
-                                    <p:dataTable value="#{notificacaoBean.listaNotificacao}" rowKey="#{linha.argumento1[0]}" var="linha" id="tbl" style="width: 700px"
+                                    <p:dataTable value="#{notificacaoBean.listaNotificacao}" rowKey="#{linha.argumento1[0]}" var="linha" id="tbl" style="width: 875px"
                                          emptyMessage="Nenhuma pendência foi encontrada" rows="15" paginator="true" rowsPerPageTemplate="15, 30, 50, 100">
                                         <p:column headerText="Empresa">
                                             <h:outputText value="#{linha.argumento1[1]}" />
                                         </p:column>
 
-                                        <p:column style="text-align: center;" headerText="Pendências">
+                                        <p:column style="text-align: center; width: 80px" headerText="Pendências">
                                             <h:outputText value="#{linha.argumento1[2]}" />
                                         </p:column>
 
-                                        <p:column style="text-align: center;" headerText="Notificada">
+                                        <p:column style="text-align: center; width: 80px" headerText="Notificada">
                                             <h:outputText value="#{linha.argumento2}"/>
                                         </p:column>
                                     </p:dataTable>

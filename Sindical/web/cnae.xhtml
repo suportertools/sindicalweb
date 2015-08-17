@@ -1,64 +1,73 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Sindical - Cnae</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/> 
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>        
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
-	<div id="wrapx">
-        <div id="mainx">
-        <!-- INICIA DIV wrap e main -->  
-        <f:subview id="header">
-            <ui:include src="templates/templatePrime.xhtml"/>
-        </f:subview>
-        
-        <f:view>
-            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
-                <h:form id="form_cnae">
-                    <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
-                    <h:outputText value="Cnae" styleClass="fonteHeader" />
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
 
-                    <p:panel styleClass="fundoCinza" style="width: 100%; clear: both; height: 45px">
-                        <h:outputLabel value="Número: "/>
-                        <p:inputMask value="#{cnaeBean.cnae.numero}" mask="9999-9/99" size="8" title="Número do CNAE"/>
-                    </p:panel>
-                    
-                    <p:messages autoUpdate="true" id="i_msg" closable="true" showDetail="true"/>  
-                    
-                    <h:panelGrid style="width: 100%; clear: both; margin-top: 20px">
-                        <h:outputLabel value="Cnae "/>
-                        <p:inputTextarea rows="5" style="width: 100%; margin-top: 10px" value="#{cnaeBean.cnae.cnae}" title="Descrição do CNAE" />
-                    </h:panelGrid>
-                        
-                    <h:panelGrid style=" clear: both; margin-top: 10px; float: left" columns="4">
-                        <p:commandButton value="Salvar" action="#{cnaeBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar este Cnae"/>
-                        <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.clear}" update=":form_cnae:"/>
-                        <p:commandButton value="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
-                        <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
-                    </h:panelGrid>
-                    <p:dialog widgetVar="dlg_delete" header="Deseja realmente excluir este CNAE?" resizable="false" width="400" modal="true">
-                        <f:facet name="footer">
-                            <h:panelGrid columns="2">
-                                <p:commandButton value="Sim"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.delete()}" update=":form_cnae:" onclick="PF('dlg_delete').hide()" icon="ui-icon-check"/>  
-                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()"  icon="ui-icon-close"/>       
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:form id="form_cnae">
+                            <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
+                            <h:outputText value="Cnae" styleClass="fonteHeader" />
+
+                            <p:panel styleClass="fundoCinza" style="width: 100%; clear: both; height: 45px">
+                                <h:outputLabel value="Número: "/>
+                                <p:inputMask value="#{cnaeBean.cnae.numero}" mask="9999-9/99" size="8" title="Número do CNAE"/>
+                            </p:panel>
+
+                            <p:messages autoUpdate="true" id="i_msg" closable="true" showDetail="true"/>  
+
+                            <h:panelGrid style="width: 100%; clear: both; margin-top: 20px">
+                                <h:outputLabel value="Cnae "/>
+                                <p:inputTextarea rows="5" style="width: 100%; margin-top: 10px" value="#{cnaeBean.cnae.cnae}" title="Descrição do CNAE" />
                             </h:panelGrid>
-                        </f:facet>
-                    </p:dialog>
-                </h:form>
-                    
-            </p:panel>
-            <br /><br /><br />
-        </f:view>
-        
-        <!-- FINALIZA div wrap main -->
-        </div>
+
+                            <h:panelGrid style=" clear: both; margin-top: 10px; float: left" columns="4">
+                                <p:commandButton value="Salvar" action="#{cnaeBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar este Cnae"/>
+                                <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.clear}" update=":form_cnae:"/>
+                                <p:commandButton value="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
+                            </h:panelGrid>
+                            <p:dialog widgetVar="dlg_delete" header="Deseja realmente excluir este CNAE?" resizable="false" width="400" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.delete()}" update=":form_cnae:" onclick="PF('dlg_delete').hide()" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()"  icon="ui-icon-close"/>       
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                        </h:form>
+
+                    </p:panel>
+                    <br /><br /><br />
+                </f:view>
+
+                <!-- FINALIZA div wrap main -->
+            </div>
         </div>
         <!-- FINALIZA div wrap main -->
         <div id="footerx">

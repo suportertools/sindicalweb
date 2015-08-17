@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class ParametroFechamentoGuias implements Serializable {
-
+    private String logo_sindicato;
     private String empresa_nome;
     private Integer guia_id;
     private Integer baixa_id;
@@ -15,8 +15,12 @@ public class ParametroFechamentoGuias implements Serializable {
     private String beneficiario_nome;
     private Date data_pagto;
     private BigDecimal servico_valor;
+    private Integer mes;
+    private Integer ano;
+    private String periodo;
 
-    public ParametroFechamentoGuias(String empresa_nome, Integer guia_id, Integer baixa_id, String servico_descricao, Integer quantidade, String atendente_nome, String beneficiario_nome, Date data_pagto, BigDecimal servico_valor) {
+    public ParametroFechamentoGuias(String logo_sindicato, String empresa_nome, Integer guia_id, Integer baixa_id, String servico_descricao, Integer quantidade, String atendente_nome, String beneficiario_nome, Date data_pagto, BigDecimal servico_valor, Integer mes, Integer ano, String periodo) {
+        this.logo_sindicato = logo_sindicato;
         this.empresa_nome = empresa_nome;
         this.guia_id = guia_id;
         this.baixa_id = baixa_id;
@@ -26,6 +30,10 @@ public class ParametroFechamentoGuias implements Serializable {
         this.beneficiario_nome = beneficiario_nome;
         this.data_pagto = data_pagto;
         this.servico_valor = servico_valor;
+        this.mes = mes;
+        this.ano = ano;
+        this.periodo = periodo;
+        
     }
 
     public String getEmpresa_nome() {
@@ -98,6 +106,62 @@ public class ParametroFechamentoGuias implements Serializable {
 
     public void setServico_valor(BigDecimal servico_valor) {
         this.servico_valor = servico_valor;
+    }
+
+    /**
+     * @return the mes
+     */
+    public Integer getMes() {
+        return mes;
+    }
+
+    /**
+     * @param mes the mes to set
+     */
+    public void setMes(Integer mes) {
+        this.mes = mes;
+    }
+
+    /**
+     * @return the ano
+     */
+    public Integer getAno() {
+        return ano;
+    }
+
+    /**
+     * @param ano the ano to set
+     */
+    public void setAno(Integer ano) {
+        this.ano = ano;
+    }
+
+    /**
+     * @return the periodo
+     */
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    /**
+     * @param periodo the periodo to set
+     */
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
+    }
+
+    /**
+     * @return the logo_sindicato
+     */
+    public String getLogo_sindicato() {
+        return logo_sindicato;
+    }
+
+    /**
+     * @param logo_sindicato the logo_sindicato to set
+     */
+    public void setLogo_sindicato(String logo_sindicato) {
+        this.logo_sindicato = logo_sindicato;
     }
 
 }

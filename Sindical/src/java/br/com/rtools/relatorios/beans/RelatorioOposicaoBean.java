@@ -59,16 +59,18 @@ public class RelatorioOposicaoBean implements Serializable {
     private String porPesquisa;
     private String descPorPesquisa;
     private String order;
+    private String status;
 
     @PostConstruct
     public void init() {
         oposicao = new Oposicao();
-        filtro = new Boolean[5];
+        filtro = new Boolean[6];
         filtro[0] = false;
         filtro[1] = false;
         filtro[2] = false;
         filtro[3] = false;
         filtro[4] = false;
+        filtro[5] = false;
         selectedConvencao = new ArrayList<>();
         selectedGrupoCidades = new ArrayList<>();
         selectedCnae = new ArrayList<>();
@@ -91,6 +93,7 @@ public class RelatorioOposicaoBean implements Serializable {
         porPesquisa = "";
         descPorPesquisa = "";
         order = "";
+        status = "todos";
     }
 
     @PreDestroy
@@ -137,6 +140,11 @@ public class RelatorioOposicaoBean implements Serializable {
                     }
                 }
             }
+            
+            if (filtro[5]){
+                listDetalhePesquisa.add(" Status da Oposição: " + status.toUpperCase() + "");
+            }
+            
             String cnaesList = "";
             String inCnaes = null;
             if (!dReferencia.isEmpty()) {
@@ -169,7 +177,7 @@ public class RelatorioOposicaoBean implements Serializable {
                     listDetalhePesquisa.add(" Cnaes: " + cnaesList + "; ");
                 }
             }
-            List list = oposicaoDao.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes, order);
+            List list = oposicaoDao.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes, status, order);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -298,6 +306,9 @@ public class RelatorioOposicaoBean implements Serializable {
         if (!filtro[4]) {
             order = "";
         }
+        if (!filtro[5]) {
+            status = "todos";
+        }
     }
 
     public void close(String close) {
@@ -324,6 +335,9 @@ public class RelatorioOposicaoBean implements Serializable {
         } else if (close.equals("order")) {
             order = "";
             filtro[4] = false;
+        }else if (close.equals("status")) {
+            status = "todos";
+            filtro[5] = false;
         }
         PF.update("form_relatorio:id_panel");
     }
@@ -629,6 +643,14 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void setOrder(String order) {
         this.order = order;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

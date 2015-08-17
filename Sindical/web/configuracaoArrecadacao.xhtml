@@ -41,7 +41,15 @@
                             <p:growl id="id_messages_growl" showDetail="true"  />
 
                             <p:panel styleClass="fundoCinza">
-
+                                <h:panelGrid columns="1">
+                                    <h:column>
+                                        <p:outputLabel value="Filial" /><br />
+                                        <p:selectOneMenu value="#{configuracaoArrecadacaoBean.idFilial}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{configuracaoArrecadacaoBean.listaFilial}"/>
+                                        </p:selectOneMenu>  
+                                    </h:column>
+                                </h:panelGrid>
                             </p:panel>
                             
                             <p:commandButton value="Atualizar" action="#{configuracaoArrecadacaoBean.update()}" update="formConfiguracaoArrecadacao"/>

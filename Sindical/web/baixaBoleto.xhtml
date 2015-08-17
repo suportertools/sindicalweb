@@ -82,20 +82,22 @@
                             <p:dataTable value="#{baixaBoletoBean.listBoletos}" var="linha" style="width:100%" id="tbl" emptyMessage="Nenhum Boleto Encontrado">
                                 <p:column style="text-align: center; width: 35px">
                                     <f:facet name="header">
-                                        <p:selectBooleanCheckbox value="#{baixaBoletoBean.marcarTodos}" rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
+                                        <p:selectBooleanCheckbox value="#{baixaBoletoBean.marcarTodos}">
                                             <p:ajax event="change" update="tbl" listener="#{baixaBoletoBean.marcar()}"/>                                            
                                         </p:selectBooleanCheckbox>
                                     </f:facet>
                                     
-                                    <h:column rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
+                                    <h:column>
                                         <p:selectBooleanCheckbox value="#{linha.argumento8}">
                                             <p:ajax event="change" update="@this" />
                                         </p:selectBooleanCheckbox>
                                     </h:column>
-
-                                    <h:column rendered="#{baixaBoletoBean.caixaBanco == 'banco'}">
-                                        <p:commandLink value="Baixar" action="#{baixaBoletoBean.baixarBoletos(linha)}" style="#{linha.argumento0}" ajax="false"/>
+                                    
+                                    <!-- BAIXAR SOMENTE UM BOLETO
+                                    <h:column rendered="# {baixaBoletoBean.caixaBanco == 'banco'}">
+                                        <p:commandLink value="Baixar" action="# {baixaBoletoBean.baixarBoletos(linha)}" style="# {linha.argumento0}" ajax="false"/>
                                     </h:column>
+                                    -->
                                 </p:column>
 
                                 <p:column headerText="ID" style="text-align: center; width: 50px" rendered="#{configuracaoBean.resolucao.tipoResolucao.tamanho > 1024}">

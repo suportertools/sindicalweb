@@ -308,7 +308,7 @@ public class PessoaDBToplink extends DB implements PessoaDB {
                     + "     WHERE (P.ds_documento LIKE '" + documento + "'     \n"
                     + "        OR UPPER(translate(F.ds_rg,'./-', '')) LIKE UPPER(translate('" + documento + "','./-',''))   \n"
                     + ")";
-            Query query = getEntityManager().createNativeQuery(queryString, Fisica.class);
+            Query query = getEntityManager().createNativeQuery(queryString, Pessoa.class);
             List list = query.getResultList();
             if (!list.isEmpty() && list.size() == 1) {
                 return (Pessoa) list.get(0);

@@ -192,7 +192,11 @@ public class NotificacaoDBToplink extends DB implements NotificacaoDB {
                     + " inner join fin_movimento          as m    on m.id_pessoa    = pj.id_pessoa "
                     + " inner join fin_servicos           as se   on se.id          = m.id_servicos "
                     + " inner join fin_tipo_servico       as ts   on ts.id          = m.id_tipo_servico "
-                    + " inner join pes_juridica_vw as sind on sind.id_pessoa = 1 "
+                    
+                    + " inner join pes_filial as fi on fi.id = (select id_filial from conf_arrecadacao) "
+                    + " inner join pes_juridica as ju on ju.id = fi.id_filial"
+                    + " inner join pes_juridica_vw as sind on sind.id_pessoa = ju.id_pessoa "
+                    
                     + " inner join pes_juridica           as j    on j.id_pessoa    = pj.id_pessoa "
                     + " inner join arr_contribuintes_vw   as co   on co.id_juridica = j.id "
                     + " inner join fin_cobranca           as c    on c.id_movimento = m.id "

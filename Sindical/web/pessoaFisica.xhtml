@@ -57,16 +57,16 @@
                             <p:outputLabel value="Cadastro Física" styleClass="fonteHeader"/>
                             <c:set scope="request" var="object" value="${fisicaBean.fisica}"/>
                             <div class="clear"></div>
-                            <h:panelGrid id="i_p_o">
-                                <p:panel style="border: 1px dashed red;" rendered="#{fisicaBean.pessoaOposicao}">
-                                    <h:outputLabel value="Pessoa cadastrada em oposição!" styleClass="bold"/>
-                                </p:panel>
-                            </h:panelGrid>
                             <h:panelGrid id="i_panel_pessoa_fisica" style="clear: both; width: 100%">
                                 <p:tabView id="i_tabview_fisica" activeIndex="#{fisicaBean.indexPessoaFisica}" style="width: 100%">
                                     <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" update=":form_pessoa_fisica:i_end_rendered i_tabview_fisica"/> 
                                     <p:tab title="Cadastro Pessoal">                            
                                         <h:outputScript name="script_primefaces.js" library="js" />
+                                        
+                                        <p:panel style="background-color: #f05c5c" rendered="#{fisicaBean.pessoaOposicao}">
+                                            <h:outputLabel value="PESSOA CADASTRADA EM OPOSIÇÃO." style="font-size: 11pt!important; font-weight: bold; color: white"/>
+                                        </p:panel>
+                                        
                                         <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true"  closable="true"/>
                                         <h:panelGrid id="i_panel_dados" columns="2" style="height: 400px; width: 100%">
                                             <p:column>
@@ -136,7 +136,7 @@
                                                             <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
                                                             <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
                                                             <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                            <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                                            <f:selectItem itemValue="Viuvo(a)" itemLabel="Viúvo(a)"/>
                                                         </p:selectOneMenu>
                                                     </p:column>
 
@@ -678,6 +678,26 @@
                                                 <p:commandButton value="Não" type="button" onclick="PF('dlg_refazer').hide()" style="float: left" icon="ui-icon-close"/>       
                                             </h:panelGrid>
                                         </p:dialog>
+                                    </p:tab>
+                                    
+                                    <p:tab title="Oposições">
+                                        <p:dataTable value="#{fisicaBean.listaOposicao}" var="linha" emptyMessage="Nenhuma Oposição Encontrada" scrollable="true" scrollHeight="400">
+                                            <p:column headerText="Emissão" style="width: 80px; text-align: center">
+                                                <p:outputLabel value="#{linha.emissao}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Empresa">
+                                                <p:outputLabel value="#{linha.juridica.pessoa.nome}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Inativação" style="width: 80px; text-align: center">
+                                                <p:outputLabel value="#{linha.inativacaoString}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Observação">
+                                                <p:outputLabel value="#{linha.observacao}" />
+                                            </p:column>
+                                        </p:dataTable>
                                     </p:tab>
                                 </p:tabView>
 

@@ -47,11 +47,14 @@
                                 <p:panel id="i_panel_login" style="border: 0px; float: left;">
                                     <h:outputLabel value="O Sindical está mudando para você..." style="font-size: 25pt!important; margin-top: 10px; font-family: 'lucida grande', verdana, tahoma, arial, sans-serif; color: #666666"/>
                                     <br /><br />
-                                    <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000">  
-                                        <ui:repeat value="#{controleUsuarioBean.images}" var="image" >  
-                                            <p:graphicImage value="/Imagens/index/#{image}" width="700" height="420"/>  
-                                        </ui:repeat>  
+                                    <!-- 
+                                    <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000" rendered="false">  
+                                        <ui:repeat value="# {controleUsuarioBean.images}" var="image" >  
+                                            <p:graphicImage value="/Imagens/index/# {image}" width="700" height="420"/>  
                                     </p:imageSwitch>  
+                                    -->
+                                    
+                                    <p:graphicImage value="/Imagens/index/3.jpg" style="float: left;" width="700" height="420"/>  
 
                                     <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="250" style="margin-bottom: 20px; float: right"/>
 

@@ -4,61 +4,70 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <h:head>
         <title>Sindical - Pesquisa Cnae</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/> 
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>        
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
-	<div id="wrapx">
-        <div id="mainx">
-        <!-- INICIA DIV wrap e main -->  
-        <f:subview id="header">
-            <ui:include src="templates/templatePrime.xhtml"/>
-        </f:subview>
-        
-        <f:view>
-            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
-                <h:form id="formPesquisaCnae">
-                    <h:outputText value="Pesquisa Cnae" styleClass="fonteHeader" />
-                    
-                    <p:panel id="i_panel" styleClass="fundoCinza" style="width: 100%; clear: both; height: 45px">
-                        <p:inputText value="#{juridicaBean.descPesquisaCnae}" style="float: left"/>
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templates/templatePrime.xhtml"/>
+                </f:subview>
 
-                        <p:selectOneMenu value="#{juridicaBean.porPesquisaCnae}" style="float: left">
-                            <f:selectItem itemValue="cnae" itemLabel="Número"/>
-                            <f:selectItem itemValue="descricao" itemLabel="Descrição"/>
-                        </p:selectOneMenu>
+                <f:view>
+                    <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                        <h:form id="formPesquisaCnae">
+                            <h:outputText value="Pesquisa Cnae" styleClass="fonteHeader" />
 
-                        <p:commandButton action="#{juridicaBean.acaoPesquisaCnaeInicial()}" value="Inicial" update="i_panel_grid" style="margin-left: 10px; float: left"/>
-                        <p:commandButton action="#{juridicaBean.acaoPesquisaCnaeParcial()}" value="Parcial" update="i_panel_grid" style="float: left"/>
-                        
-                        <p:focus context="i_panel" />
+                            <p:panel id="i_panel" styleClass="fundoCinza" style="width: 100%; clear: both; height: 45px">
+                                <p:inputText value="#{juridicaBean.descPesquisaCnae}" style="float: left"/>
+
+                                <p:selectOneMenu value="#{juridicaBean.porPesquisaCnae}" style="float: left">
+                                    <f:selectItem itemValue="cnae" itemLabel="Número"/>
+                                    <f:selectItem itemValue="descricao" itemLabel="Descrição"/>
+                                </p:selectOneMenu>
+
+                                <p:commandButton action="#{juridicaBean.acaoPesquisaCnaeInicial()}" value="Inicial" update="i_panel_grid" style="margin-left: 10px; float: left"/>
+                                <p:commandButton action="#{juridicaBean.acaoPesquisaCnaeParcial()}" value="Parcial" update="i_panel_grid" style="float: left"/>
+
+                                <p:focus context="i_panel" />
+                            </p:panel>
+                            <br />
+                            <h:panelGrid id="i_panel_grid" style="width: 100%">
+                                <p:dataTable value="#{juridicaBean.listaCnae}" var="linha" emptyMessage="Nenhum CNAE encontrado">
+                                    <p:column headerText="ID">
+                                        <p:commandLink action="#{juridicaBean.retornaCnae(linha)}" value="#{linha.id}" />
+                                    </p:column>
+
+                                    <p:column headerText="Número">
+                                        <h:outputText value="#{linha.numero}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Descrição Cnae">
+                                        <h:outputText value="#{linha.cnae}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGrid>
+                        </h:form>
                     </p:panel>
-                    <br />
-                    <h:panelGrid id="i_panel_grid" style="width: 100%">
-                        <p:dataTable value="#{juridicaBean.listaCnae}" var="linha" emptyMessage="Nenhum CNAE encontrado">
-                            <p:column headerText="ID">
-                                <p:commandLink action="#{juridicaBean.retornaCnae(linha)}" value="#{linha.id}" />
-                            </p:column>
+                </f:view>
 
-                            <p:column headerText="Número">
-                                <h:outputText value="#{linha.numero}"/>
-                            </p:column>
-
-                            <p:column headerText="Descrição Cnae">
-                                <h:outputText value="#{linha.cnae}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </h:panelGrid>
-                </h:form>
-            </p:panel>
-        </f:view>
-        
-        <!-- FINALIZA div wrap main -->
-        </div>
+                <!-- FINALIZA div wrap main -->
+            </div>
         </div>
         <!-- FINALIZA div wrap main -->
         <div id="footerx">

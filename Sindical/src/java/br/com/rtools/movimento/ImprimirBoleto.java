@@ -1,8 +1,10 @@
 package br.com.rtools.movimento;
 
 import br.com.rtools.arrecadacao.Acordo;
+import br.com.rtools.arrecadacao.ConfiguracaoArrecadacao;
 import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoServico;
+import br.com.rtools.arrecadacao.beans.ConfiguracaoArrecadacaoBean;
 import br.com.rtools.arrecadacao.dao.ConvencaoServicoDao;
 import br.com.rtools.arrecadacao.db.AcordoDB;
 import br.com.rtools.arrecadacao.db.AcordoDBToplink;
@@ -537,7 +539,10 @@ public class ImprimirBoleto {
 
             if (!lista.isEmpty()) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
+                ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+                cab.init();
+                filial = cab.getConfiguracaoArrecadacao().getFilial();                
+                //filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -572,9 +577,9 @@ public class ImprimirBoleto {
             }
 
             try {
-                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getId(), 3);
-                swap[9] = filial.getMatriz().getPessoa().getNome();
-                swap[10] = filial.getMatriz().getPessoa().getTipoDocumento().getDescricao();
+                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getFilial().getPessoa().getId(), 3);
+                swap[9] = filial.getFilial().getPessoa().getNome();
+                swap[10] = filial.getFilial().getPessoa().getTipoDocumento().getDescricao();
                 swap[11] = pe.getEndereco().getDescricaoEndereco().getDescricao();
                 swap[12] = pe.getEndereco().getLogradouro().getDescricao();
                 swap[13] = pe.getNumero();
@@ -583,10 +588,10 @@ public class ImprimirBoleto {
                 swap[16] = pe.getEndereco().getCidade().getCidade();
                 swap[17] = pe.getEndereco().getCidade().getUf();
                 swap[18] = pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5);
-                swap[19] = filial.getMatriz().getPessoa().getDocumento();
-                swap[20] = filial.getMatriz().getPessoa().getTelefone1();
-                swap[21] = filial.getMatriz().getPessoa().getSite();
-                swap[22] = filial.getMatriz().getPessoa().getEmail1();
+                swap[19] = filial.getFilial().getPessoa().getDocumento();
+                swap[20] = filial.getFilial().getPessoa().getTelefone1();
+                swap[21] = filial.getFilial().getPessoa().getSite();
+                swap[22] = filial.getFilial().getPessoa().getEmail1();
             } catch (Exception e) {
                 swap[9] = "";
                 swap[10] = "";
@@ -739,7 +744,10 @@ public class ImprimirBoleto {
 
             if (!lista.isEmpty()) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
+                ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+                cab.init();
+                filial = cab.getConfiguracaoArrecadacao().getFilial();                
+                //filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -774,9 +782,9 @@ public class ImprimirBoleto {
             }
 
             try {
-                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getId(), 3);
-                swap[9] = filial.getMatriz().getPessoa().getNome();
-                swap[10] = filial.getMatriz().getPessoa().getTipoDocumento().getDescricao();
+                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getFilial().getPessoa().getId(), 3);
+                swap[9] = filial.getFilial().getPessoa().getNome();
+                swap[10] = filial.getFilial().getPessoa().getTipoDocumento().getDescricao();
                 swap[11] = pe.getEndereco().getDescricaoEndereco().getDescricao();
                 swap[12] = pe.getEndereco().getLogradouro().getDescricao();
                 swap[13] = pe.getNumero();
@@ -785,10 +793,10 @@ public class ImprimirBoleto {
                 swap[16] = pe.getEndereco().getCidade().getCidade();
                 swap[17] = pe.getEndereco().getCidade().getUf();
                 swap[18] = pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5);
-                swap[19] = filial.getMatriz().getPessoa().getDocumento();
-                swap[20] = filial.getMatriz().getPessoa().getTelefone1();
-                swap[21] = filial.getMatriz().getPessoa().getSite();
-                swap[22] = filial.getMatriz().getPessoa().getEmail1();
+                swap[19] = filial.getFilial().getPessoa().getDocumento();
+                swap[20] = filial.getFilial().getPessoa().getTelefone1();
+                swap[21] = filial.getFilial().getPessoa().getSite();
+                swap[22] = filial.getFilial().getPessoa().getEmail1();
             } catch (Exception e) {
                 swap[9] = "";
                 swap[10] = "";
@@ -904,7 +912,10 @@ public class ImprimirBoleto {
 
             if (!lista.isEmpty()) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
+                ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+                cab.init();
+                filial = cab.getConfiguracaoArrecadacao().getFilial();                
+                //filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -939,9 +950,9 @@ public class ImprimirBoleto {
             }
 
             try {
-                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getId(), 3);
-                swap[9] = filial.getMatriz().getPessoa().getNome();
-                swap[10] = filial.getMatriz().getPessoa().getTipoDocumento().getDescricao();
+                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getFilial().getPessoa().getId(), 3);
+                swap[9] = filial.getFilial().getPessoa().getNome();
+                swap[10] = filial.getFilial().getPessoa().getTipoDocumento().getDescricao();
                 swap[11] = pe.getEndereco().getDescricaoEndereco().getDescricao();
                 swap[12] = pe.getEndereco().getLogradouro().getDescricao();
                 swap[13] = pe.getNumero();
@@ -950,10 +961,10 @@ public class ImprimirBoleto {
                 swap[16] = pe.getEndereco().getCidade().getCidade();
                 swap[17] = pe.getEndereco().getCidade().getUf();
                 swap[18] = pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5);
-                swap[19] = filial.getMatriz().getPessoa().getDocumento();
-                swap[20] = filial.getMatriz().getPessoa().getTelefone1();
-                swap[21] = filial.getMatriz().getPessoa().getSite();
-                swap[22] = filial.getMatriz().getPessoa().getEmail1();
+                swap[19] = filial.getFilial().getPessoa().getDocumento();
+                swap[20] = filial.getFilial().getPessoa().getTelefone1();
+                swap[21] = filial.getFilial().getPessoa().getSite();
+                swap[22] = filial.getFilial().getPessoa().getEmail1();
             } catch (Exception e) {
                 swap[9] = "";
                 swap[10] = "";
@@ -1133,7 +1144,11 @@ public class ImprimirBoleto {
 
             if (!lista.isEmpty()) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
+                
+                ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+                cab.init();
+                filial = cab.getConfiguracaoArrecadacao().getFilial();
+                //filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -1168,9 +1183,9 @@ public class ImprimirBoleto {
             }
 
             try {
-                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getId(), 3);
-                swap[9] = filial.getMatriz().getPessoa().getNome();
-                swap[10] = filial.getMatriz().getPessoa().getTipoDocumento().getDescricao();
+                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getFilial().getPessoa().getId(), 3);
+                swap[9] = filial.getFilial().getPessoa().getNome();
+                swap[10] = filial.getFilial().getPessoa().getTipoDocumento().getDescricao();
                 swap[11] = pe.getEndereco().getDescricaoEndereco().getDescricao();
                 swap[12] = pe.getEndereco().getLogradouro().getDescricao();
                 swap[13] = pe.getNumero();
@@ -1179,10 +1194,10 @@ public class ImprimirBoleto {
                 swap[16] = pe.getEndereco().getCidade().getCidade();
                 swap[17] = pe.getEndereco().getCidade().getUf();
                 swap[18] = pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5);
-                swap[19] = filial.getMatriz().getPessoa().getDocumento();
-                swap[20] = filial.getMatriz().getPessoa().getTelefone1();
-                swap[21] = filial.getMatriz().getPessoa().getSite();
-                swap[22] = filial.getMatriz().getPessoa().getEmail1();
+                swap[19] = filial.getFilial().getPessoa().getDocumento();
+                swap[20] = filial.getFilial().getPessoa().getTelefone1();
+                swap[21] = filial.getFilial().getPessoa().getSite();
+                swap[22] = filial.getFilial().getPessoa().getEmail1();
             } catch (Exception e) {
                 swap[9] = "";
                 swap[10] = "";
@@ -1433,7 +1448,10 @@ public class ImprimirBoleto {
 
             if (!lista.isEmpty()) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
+                ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+                cab.init();
+                filial = cab.getConfiguracaoArrecadacao().getFilial();
+                //filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -1468,9 +1486,9 @@ public class ImprimirBoleto {
             }
 
             try {
-                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getId(), 3);
-                swap[9] = filial.getMatriz().getPessoa().getNome();
-                swap[10] = filial.getMatriz().getPessoa().getTipoDocumento().getDescricao();
+                pe = pesEndDB.pesquisaEndPorPessoaTipo(filial.getFilial().getPessoa().getId(), 3);
+                swap[9] = filial.getFilial().getPessoa().getNome();
+                swap[10] = filial.getFilial().getPessoa().getTipoDocumento().getDescricao();
                 swap[11] = pe.getEndereco().getDescricaoEndereco().getDescricao();
                 swap[12] = pe.getEndereco().getLogradouro().getDescricao();
                 swap[13] = pe.getNumero();
@@ -1479,10 +1497,10 @@ public class ImprimirBoleto {
                 swap[16] = pe.getEndereco().getCidade().getCidade();
                 swap[17] = pe.getEndereco().getCidade().getUf();
                 swap[18] = pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5);
-                swap[19] = filial.getMatriz().getPessoa().getDocumento();
-                swap[20] = filial.getMatriz().getPessoa().getTelefone1();
-                swap[21] = filial.getMatriz().getPessoa().getSite();
-                swap[22] = filial.getMatriz().getPessoa().getEmail1();
+                swap[19] = filial.getFilial().getPessoa().getDocumento();
+                swap[20] = filial.getFilial().getPessoa().getTelefone1();
+                swap[21] = filial.getFilial().getPessoa().getSite();
+                swap[22] = filial.getFilial().getPessoa().getEmail1();
             } catch (Exception e) {
                 swap[9] = "";
                 swap[10] = "";

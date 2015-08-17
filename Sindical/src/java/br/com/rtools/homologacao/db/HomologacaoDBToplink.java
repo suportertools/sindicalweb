@@ -621,7 +621,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query qry = getEntityManager().createQuery("select o "
                     + "  from Oposicao o where o.oposicaoPessoa.cpf = '" + cpf + "' "
                     + "   and '" + referencia + "' BETWEEN CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaInicial, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaInicial, 0, 3) ) "
-                    + "   and                   CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaFinal, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaFinal, 0, 3) ) order by o.id desc");
+                    + "   and                   CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaFinal, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaFinal, 0, 3) )"
+                    + "   and o.dt_inativacao IS NULL  order by o.id desc");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -640,7 +641,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "  from Oposicao o where o.oposicaoPessoa.cpf = '" + cpf + "' "
                     + "   and o.juridica.id = " + id_juridica
                     + "   and '" + referencia + "' BETWEEN CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaInicial, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaInicial, 0, 3) ) "
-                    + "   and                   CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaFinal, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaFinal, 0, 3) )");
+                    + "   and                   CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaFinal, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaFinal, 0, 3) )"
+                    + "   and o.dt_inativacao IS NULL");
             if (!qry.getResultList().isEmpty()) {
                 result = (Oposicao) qry.getSingleResult();
             }

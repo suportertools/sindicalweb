@@ -796,7 +796,7 @@ public class EmissaoGuiasBean implements Serializable {
             HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
             movimento = (Movimento) di.find(new Movimento(), listaMovimento.get(i).getMovimento().getId());
 
-            descontox = Moeda.converteUS$(listaMovimento.get(i).getDesconto());
+            descontox = Moeda.multiplicarValores(listaMovimento.get(i).getMovimento().getQuantidade(), Moeda.converteUS$(listaMovimento.get(i).getDesconto()));
             valorx = Moeda.multiplicarValores(listaMovimento.get(i).getMovimento().getQuantidade(), Moeda.converteUS$(listaMovimento.get(i).getValor()));
 
             valor_soma = Moeda.somaValores(valor_soma, valorx);

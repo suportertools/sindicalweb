@@ -114,7 +114,7 @@ public class VendaBaileDao extends DB {
                     + "       sm.ds_descricao AS status_mesa, \n "
                     + "       p.ds_nome AS nome, \n "
                     + "       pu.ds_nome AS usuario, \n "
-                    + "       m.nr_valor AS valor, \n "
+                    + "       m.nr_valor - m.nr_desconto AS valor, \n "
                     + "       e.ds_obs AS observacao,  \n "
                     + "       es.id_servicos AS id_servico \n "
                     + "  FROM eve_venda e \n "

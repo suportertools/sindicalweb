@@ -40,14 +40,18 @@ public class Oposicao implements Serializable {
     private ConvencaoPeriodo convencaoPeriodo;
     @Column(name = "ds_obs", length = 500)
     private String observacao;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "dt_inativacao")
+    private Date dtInativacao;    
 
-    public Oposicao(int id, String emissao, OposicaoPessoa oposicaoPessoa, Juridica juridica, ConvencaoPeriodo convencaoPeriodo, String observacao) {
+    public Oposicao(int id, String emissao, OposicaoPessoa oposicaoPessoa, Juridica juridica, ConvencaoPeriodo convencaoPeriodo, String observacao, Date dtInativacao) {
         this.id = id;
         this.setEmissao(emissao);
         this.oposicaoPessoa = oposicaoPessoa;
         this.juridica = juridica;
         this.convencaoPeriodo = convencaoPeriodo;
         this.observacao = observacao;
+        this.dtInativacao = dtInativacao;
     }
 
     public Oposicao() {
@@ -57,6 +61,7 @@ public class Oposicao implements Serializable {
         this.juridica = new Juridica();
         this.convencaoPeriodo = new ConvencaoPeriodo();
         this.observacao = "";
+        this.dtInativacao = null;
     }
 
     public int getId() {
@@ -114,4 +119,20 @@ public class Oposicao implements Serializable {
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
+
+    public Date getDtInativacao() {
+        return dtInativacao;
+    }
+
+    public void setDtInativacao(Date dtInativacao) {
+        this.dtInativacao = dtInativacao;
+    }
+
+    public String getInativacaoString() {
+        return DataHoje.converteData(dtInativacao);
+    }
+
+    public void setInativacaoString(String inativacao) {
+        this.dtInativacao = DataHoje.converte(inativacao);
+    }    
 }

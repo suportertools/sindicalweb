@@ -1,5 +1,6 @@
 package br.com.rtools.utilitarios;
 
+import br.com.rtools.arrecadacao.beans.ConfiguracaoArrecadacaoBean;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.EmailMarketing;
@@ -9,7 +10,6 @@ import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailArquivo;
 import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.sistema.EmailPrioridade;
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -52,12 +52,12 @@ public class Mail extends MailTemplate implements Serializable {
     public Mail() {
         email = new Email();
         registro = new Registro();
-        emails = new ArrayList<Email>();
-        emailPessoas = new ArrayList<EmailPessoa>();
-        files = new ArrayList<File>();
+        emails = new ArrayList();
+        emailPessoas = new ArrayList();
+        files = new ArrayList();
         saveFiles = false;
         emailArquivo = new EmailArquivo();
-        emailArquivos = new ArrayList<EmailArquivo>();
+        emailArquivos = new ArrayList();
         html = "";
         message_hidden = false;
     }
@@ -86,14 +86,17 @@ public class Mail extends MailTemplate implements Serializable {
             return strings;
         }
         DaoInterface di = new Dao();
-        Juridica sindicato = (Juridica) di.find(new Juridica(), 1);
+        ConfiguracaoArrecadacaoBean cab = new ConfiguracaoArrecadacaoBean();
+        cab.init();
+        Juridica sindicato =  cab.getConfiguracaoArrecadacao().getFilial().getFilial();
+        //Juridica sindicato = (Juridica) di.find(new Juridica(), 1);
         if (personal == null || personal.isEmpty()) {
             personal = sindicato.getPessoa().getNome();
         }
         if (strings[0].isEmpty()) {
             if (!emailPessoas.isEmpty()) {
                 if (emailArquivos == null) {
-                    emailArquivos = new ArrayList<EmailArquivo>();
+                    emailArquivos = new ArrayList();
                 }
                 boolean saveArquivosEmail = false;
                 for (int i = 0; i < emailPessoas.size(); i++) {
@@ -143,7 +146,8 @@ public class Mail extends MailTemplate implements Serializable {
                                 htmlString = ""
                                         + "<html>"
                                         + "     <body style='background-color: white'>"
-                                        + "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
+                                        + "         <h2><b>" + sindicato.getPessoa().getNome() + "</b></h2><br /><br />"
+                                        //+ "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
                                         + "         <p> " + email.getMensagem() + "</p>"
                                         + "         <br /><br />"
                                         + "     </body>"
@@ -151,21 +155,25 @@ public class Mail extends MailTemplate implements Serializable {
                             } else if (templateHtml.equals("personalizado")) {
                                 Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(emailPessoas.get(i).getPessoa().getId());
                                 if (jur == null) {
-                                    jur = registro.getFilial();
+                                    jur = sindicato;
+                                    //jur = registro.getFilial();
                                 }
                                 htmlString += ""
                                         + "<html>"
                                         + "     <body style='background-color: white'>"
                                         + "         <h2>                                                            "
-                                        + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>   "
+                                        + "             <b>" + sindicato.getPessoa().getNome() + "</b>   "
+                                        //+ "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>   "
                                         + "         <h3>                                                            "
                                         + "             A/C                                                         "
                                         + "         </h3><b> " + jur.getContato() + " </b><br /><br />              "
                                         + "         </h2><br /><br />                                               "
                                         + "         <h4> " + email.getMensagem() + "</h4><br /><br />               "
                                         + "                                                                     ";
-                                if (!registro.getFilial().getPessoa().getEmail1().equals(registro.getSisEmailResposta())) {
-                                    htmlString += "<h3>Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong></h3>";
+                                if (!sindicato.getPessoa().getEmail1().equals(registro.getSisEmailResposta())) {
+                                //if (!registro.getFilial().getPessoa().getEmail1().equals(registro.getSisEmailResposta())) {
+                                    htmlString += "<h3>Caso queira entrar em contato envie para: <strong>" + sindicato.getPessoa().getEmail1() + "</strong></h3>";
+                                    //htmlString += "<h3>Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong></h3>";
                                 }
                                 htmlString
                                         += "         <br /><br />"
