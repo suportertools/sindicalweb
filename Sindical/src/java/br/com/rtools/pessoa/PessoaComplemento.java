@@ -10,7 +10,7 @@ public class PessoaComplemento implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
@@ -36,7 +36,7 @@ public class PessoaComplemento implements java.io.Serializable {
         this.obsAviso = null;
     }
 
-    public PessoaComplemento(int id, Pessoa pessoa, Integer nrDiaVencimento, Boolean cobrancaBancaria, Pessoa responsavel, Boolean bloqueiaObsAviso, String obsAviso) {
+    public PessoaComplemento(Integer id, Pessoa pessoa, Integer nrDiaVencimento, Boolean cobrancaBancaria, Pessoa responsavel, Boolean bloqueiaObsAviso, String obsAviso) {
         this.id = id;
         this.pessoa = pessoa;
         this.nrDiaVencimento = nrDiaVencimento;
@@ -46,11 +46,11 @@ public class PessoaComplemento implements java.io.Serializable {
         this.obsAviso = obsAviso;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -99,13 +99,6 @@ public class PessoaComplemento implements java.io.Serializable {
     }
 
     public void setObsAviso(String obsAviso) {
-        if (obsAviso != null) {
-            this.obsAviso = obsAviso.trim();
-            if (obsAviso.isEmpty()) {
-                this.obsAviso = null;
-            }
-        } else {
-            this.obsAviso = obsAviso;
-        }
+        this.obsAviso = obsAviso.trim();
     }
 }
