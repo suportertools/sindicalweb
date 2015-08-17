@@ -15,12 +15,16 @@ public class PessoaComplemento implements java.io.Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
     @Column(name = "nr_dia_vencimento", nullable = true)
-    private int nrDiaVencimento;
+    private Integer nrDiaVencimento;
     @Column(name = "is_cobranca_bancaria")
-    private boolean cobrancaBancaria;
+    private Boolean cobrancaBancaria;
     @JoinColumn(name = "id_responsavel", referencedColumnName = "id", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa responsavel;
+    @Column(name = "is_bloqueia_obs_aviso", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean bloqueiaObsAviso;
+    @Column(name = "ds_obs_aviso")
+    private String obsAviso;
 
     public PessoaComplemento() {
         this.id = -1;
@@ -28,14 +32,18 @@ public class PessoaComplemento implements java.io.Serializable {
         this.nrDiaVencimento = 0;
         this.cobrancaBancaria = false;
         this.responsavel = null;
+        this.bloqueiaObsAviso = false;
+        this.obsAviso = "";
     }
 
-    public PessoaComplemento(int id, Pessoa pessoa, int nrDiaVencimento, boolean cobrancaBancaria, Pessoa responsavel) {
+    public PessoaComplemento(int id, Pessoa pessoa, Integer nrDiaVencimento, Boolean cobrancaBancaria, Pessoa responsavel, Boolean bloqueiaObsAviso, String obsAviso) {
         this.id = id;
         this.pessoa = pessoa;
         this.nrDiaVencimento = nrDiaVencimento;
         this.cobrancaBancaria = cobrancaBancaria;
         this.responsavel = responsavel;
+        this.bloqueiaObsAviso = bloqueiaObsAviso;
+        this.obsAviso = obsAviso;
     }
 
     public int getId() {
@@ -54,19 +62,19 @@ public class PessoaComplemento implements java.io.Serializable {
         this.pessoa = pessoa;
     }
 
-    public int getNrDiaVencimento() {
+    public Integer getNrDiaVencimento() {
         return nrDiaVencimento;
     }
 
-    public void setNrDiaVencimento(int nrDiaVencimento) {
+    public void setNrDiaVencimento(Integer nrDiaVencimento) {
         this.nrDiaVencimento = nrDiaVencimento;
     }
 
-    public boolean isCobrancaBancaria() {
+    public boolean getCobrancaBancaria() {
         return cobrancaBancaria;
     }
 
-    public void setCobrancaBancaria(boolean cobrancaBancaria) {
+    public void setCobrancaBancaria(Boolean cobrancaBancaria) {
         this.cobrancaBancaria = cobrancaBancaria;
     }
 
@@ -76,5 +84,21 @@ public class PessoaComplemento implements java.io.Serializable {
 
     public void setResponsavel(Pessoa responsavel) {
         this.responsavel = responsavel;
+    }
+
+    public Boolean getBloqueiaObsAviso() {
+        return bloqueiaObsAviso;
+    }
+
+    public void setBloqueiaObsAviso(Boolean bloqueiaObsAviso) {
+        this.bloqueiaObsAviso = bloqueiaObsAviso;
+    }
+
+    public String getObsAviso() {
+        return obsAviso;
+    }
+
+    public void setObsAviso(String obsAviso) {
+        this.obsAviso = obsAviso;
     }
 }
