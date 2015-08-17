@@ -955,7 +955,8 @@ public class GerarMovimento extends DB {
             }
             for (FormaPagamento fp1 : fp) {
                 fp1.setBaixa(baixa);
-                float calc = Moeda.multiplicarValores(Moeda.divisaoValores(fp1.getValor(), valorTotal), 100);
+                float calc = (fp1.getValor() == 0) ? 100 : Moeda.multiplicarValores(Moeda.divisaoValores(fp1.getValor(), valorTotal), 100);
+                
                 calc = Moeda.converteFloatR$Float(calc);
                 fp1.setValorP(calc);
                 ChequeRec ch = new ChequeRec();

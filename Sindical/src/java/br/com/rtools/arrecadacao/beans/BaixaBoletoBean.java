@@ -1,5 +1,6 @@
 package br.com.rtools.arrecadacao.beans;
 
+import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoContaCobranca;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -80,28 +81,32 @@ public class BaixaBoletoBean {
     }
 
     public List<SelectItem> getListaServicoCobranca() {
-        List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
+        List<SelectItem> servicoCobranca = new ArrayList();
         int i = 0;
         ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
         List<ServicoContaCobranca> select = servDB.pesquisaTodosFiltrado();
         if (select == null) {
-            select = new ArrayList<ServicoContaCobranca>();
+            select = new ArrayList();
         }
         while (i < select.size()) {
             if (select.get(i).getServicos().getId() == 1) {
                 servicoCobranca.add(
-                        new SelectItem(
-                        new Integer(i),
-                                select.get(i).getServicos().getDescricao() + " - "
-                                + select.get(i).getContaCobranca().getSicasSindical(),//SICAS NO CASO DE SINDICAL
-                                Integer.toString(select.get(i).getId())));
+                    new SelectItem(
+                            i,
+                            select.get(i).getServicos().getDescricao() + " - "
+                            + select.get(i).getContaCobranca().getSicasSindical(),//SICAS NO CASO DE SINDICAL
+                            Integer.toString(select.get(i).getId())
+                    )
+                );
             } else {
                 servicoCobranca.add(
-                        new SelectItem(
-                        new Integer(i),
-                                select.get(i).getServicos().getDescricao() + " - "
-                                + select.get(i).getContaCobranca().getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
-                                Integer.toString(select.get(i).getId())));
+                    new SelectItem(
+                            i,
+                            select.get(i).getServicos().getDescricao() + " - "
+                            + select.get(i).getContaCobranca().getCodCedente(),//CODCEDENTE NO CASO DE OUTRAS
+                            Integer.toString(select.get(i).getId())
+                    )
+                );
             }
             i++;
         }
@@ -119,6 +124,8 @@ public class BaixaBoletoBean {
         List<Movimento> lista = new ArrayList();
 
         if (dob == null){
+            Integer id_conta_banco = null;
+            MovimentoDB db = new MovimentoDBToplink();
             for (DataObject listBoleto : getListBoletos()) {
                 if ((Boolean) listBoleto.getArgumento8() == true) {
                     mov = (Movimento) listBoleto.getArgumento1();
@@ -127,9 +134,22 @@ public class BaixaBoletoBean {
                     mov.setJuros(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento4())));
                     mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento5())));
                     mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula((String) listBoleto.getArgumento6())));
+
                     if (mov.getValorBaixa() <= 0) {
                         GenericaMensagem.warn("Atençao", "Nenhum valor não pode estar zerado!");
                         return null;
+                    }
+                    
+                    if (caixaBanco.equals("banco")){
+                        Boleto b = db.pesquisaBoletos(mov.getNrCtrBoleto());
+                        if (id_conta_banco == null){
+                            id_conta_banco = b.getContaCobranca().getContaBanco().getId();
+                        }else{
+                            if (id_conta_banco != b.getContaCobranca().getContaBanco().getId()){
+                                GenericaMensagem.error("Atençao", "Boletos de Contas diferentes não podem ser Baixados!");
+                                return null;
+                            }
+                        }
                     }
                     lista.add(mov);
                 }
@@ -391,7 +411,7 @@ public class BaixaBoletoBean {
     }
 
     public String getCaixaBanco() {
-        if (caixaBanco.equals("caixa") && !listBoletos.isEmpty()) {
+        if (!listBoletos.isEmpty()) {
             disBtnBaixar = false;
         } else {
             disBtnBaixar = true;

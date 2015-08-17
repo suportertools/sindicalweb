@@ -138,6 +138,7 @@ public class RelatorioSociosBean implements Serializable {
     private Juridica empresa = new Juridica();
     private Integer minQtdeFuncionario = null;
     private Integer maxQtdeFuncionario = null;
+    private boolean ordemAniversario = false;
 
     public void limparFiltro() {
         GenericaSessao.put("relatorioSociosBean", new RelatorioSociosBean());
@@ -328,6 +329,7 @@ public class RelatorioSociosBean implements Serializable {
 
         String meses = "";
         String di = String.valueOf(diaInicial), df = String.valueOf(diaFinal);
+        boolean ordema = false;
         if (booAniversario) {
             for (int i = 0; i < listaMeses.size(); i++) {
                 if ((Boolean) listaMeses.get(i).getArgumento0()) {
@@ -344,6 +346,8 @@ public class RelatorioSociosBean implements Serializable {
             if (df.length() == 1) {
                 df = "0" + df;
             }
+            
+            ordema = ordemAniversario;
         }
 
         String ids_pagamento = "";
@@ -390,7 +394,7 @@ public class RelatorioSociosBean implements Serializable {
                 relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
                 booSexo, tipoSexo, booGrau, ids_parentesco, booFotos, tipoFotos, booCarteirinha, tipoCarteirinha,
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
-                booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
+                booAniversario, meses, di, df, ordema, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
                 dataAdmissaoSocioFim, dataAdmissaoEmpresa, dataAdmissaoEmpresaFim, booVotante, tipoEleicao,
                 booEmail, tipoEmail, booTelefone, tipoTelefone, booEstadoCivil, tipoEstadoCivil, booEmpresa, tipoEmpresas, empresa.getId(), minQtdeFuncionario, maxQtdeFuncionario, dataAposetandoria, dataAposetandoriaFim, tipoOrdem, tipoCarencia, carenciaDias, situacaoString,
                 booBiometria, tipoBiometria, booDescontoFolha, tipoDescontoFolha, dataAtualicacao, dataAtualicacaoFim
@@ -1508,5 +1512,19 @@ public class RelatorioSociosBean implements Serializable {
 
     public void setDataAtualicacaoFim(String dataAtualicacaoFim) {
         this.dataAtualicacaoFim = dataAtualicacaoFim;
+    }
+
+    /**
+     * @return the ordemAniversario
+     */
+    public boolean isOrdemAniversario() {
+        return ordemAniversario;
+    }
+
+    /**
+     * @param ordemAniversario the ordemAniversario to set
+     */
+    public void setOrdemAniversario(boolean ordemAniversario) {
+        this.ordemAniversario = ordemAniversario;
     }
 }

@@ -15,6 +15,7 @@ import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioFechamentoGuiasDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
 import br.com.rtools.relatorios.dao.RelatorioDao;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
@@ -30,12 +31,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import org.primefaces.component.accordionpanel.AccordionPanel;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
@@ -80,7 +84,7 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
         index[3] = 0;
         index[4] = 0;
         tipoRelatorio = "Avançado";
-        indexAccordion = "Avançado";
+        indexAccordion = "0";
         tipo = "todos";
         listSelectItem = new ArrayList[5];
         listSelectItem[0] = new ArrayList<>();
@@ -172,6 +176,8 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
             }
             ParametroFechamentoGuias pfg;
             params.put("detalhes_relatorio", detalheRelatorio);
+            // MOEDA PARA BRASIL VALORES IREPORT PTBR CONVERTE VALOR JASPER PTBR MOEDA
+            params.put("REPORT_LOCALE", new Locale("pt", "BR"));
             for (Object list1 : list) {
                 BigDecimal valor = new BigDecimal(0);
                 try {
@@ -186,15 +192,19 @@ public class RelatorioFechamentoGuiasBean implements Serializable {
 
                 }
                 pfg = new ParametroFechamentoGuias(
+                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         AnaliseString.converteNullString(((List) list1).get(0)),
                         Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(1))),
                         Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(2))),
                         AnaliseString.converteNullString(((List) list1).get(3)),
-                        Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4))),
+                        ( (Integer) ((List) list1).get(4) ),
                         AnaliseString.converteNullString(((List) list1).get(5)),
                         AnaliseString.converteNullString(((List) list1).get(6)),
                         date,
-                        valor
+                        valor,
+                        ( (Double) ((List) list1).get(9) ).intValue(),
+                        ( (Double) ((List) list1).get(10) ).intValue(),
+                        filtro[0] ? "Período de "+DataHoje.converteData(dtInicial)+" à " +DataHoje.converteData(dtFinal) : ""
                 );
                 parametroFechamentoGuias.add(pfg);
             }

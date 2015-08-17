@@ -292,9 +292,16 @@ public class RescisaoContratoBean implements Serializable {
             GenericaMensagem.error("Erro", "Não foi possível inativar matrícula!");
             return;
         }
+        
+        matriculaEscola.getServicoPessoa().setAtivo(false);
+        if (!dao.update(matriculaEscola.getServicoPessoa())) {
+            dao.rollback();
+            GenericaMensagem.error("Erro", "Não foi possível Alterar Serviço Pessoa!");
+            return;
+        }
 
         if (Moeda.converteUS$(valorMulta) <= 0) {
-            GenericaMensagem.info("Sucesso", "Matrícula rescindida!");
+            GenericaMensagem.info("Sucesso", "Matrícula Rescindida!");
             dao.commit();
             pesquisaMovimentosPorMatricula();
             return;

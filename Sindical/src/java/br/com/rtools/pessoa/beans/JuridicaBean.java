@@ -1783,7 +1783,7 @@ public class JuridicaBean implements Serializable {
             List<Pessoa> pessoas = new ArrayList();
             pessoas.add(juridica.getPessoa());
 
-            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            List<EmailPessoa> emailPessoas = new ArrayList();
             EmailPessoa emailPessoa = new EmailPessoa();
             for (Pessoa pe : pessoas) {
                 emailPessoa.setDestinatario(pe.getEmail1());

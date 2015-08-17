@@ -1239,6 +1239,7 @@ public class MovimentosReceberSocialBean implements Serializable {
                 }
                 calculo_total_aberto = Moeda.somaValores(calculo_total_aberto, calculo);
             } else {
+                // AQUI ESTA APAGANDO O DESCONTO QUE VEM DO BANCO
                 listaMovimento.get(i).setArgumento8("0,00");
                 if ((Boolean) listaMovimento.get(i).getArgumento29()) {
                     listaMovimento.get(i).setArgumento9(Moeda.converteR$Float(valorx[1]));

@@ -553,7 +553,7 @@ public class NotificacaoBean implements Serializable {
             String ph = "";
             for (int i = 0; i < result.size(); i++) {
                 listax.add(new ParametroNotificacao(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
-                        getConverteNullString(result.get(i).get(1)),
+                        getConverteNullString(result.get(i).get(1)), 
                         getConverteNullString(result.get(i).get(2)),
                         getConverteNullString(result.get(i).get(3)),
                         getConverteNullString(result.get(i).get(4)),

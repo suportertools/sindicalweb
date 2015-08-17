@@ -113,11 +113,13 @@
                             </p:panel>
                         </h:column>
                     </p:panel>
-                    <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
-                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();"  />
+                    <h:panelGrid columns="6" id="i_panel_acao" styleClass="margin-top-max">
+                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar or oposicaoBean.oposicao.dtInativacao != null}" onclick="PF('dlg_save').show();"  />
                         <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.destroy()}" update="form_oposicao"/>
                         <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="PF('dlg_delete').show();"/>
+                        <p:commandButton  value="Inativar" title="Inativar Oposição" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1 or oposicaoBean.oposicao.dtInativacao != null}" onclick="PF('dlg_inativar').show();"/>
                         <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaOposicao}"/>                            
+                        <p:outputLabel value="OPOSIÇÃO INATIVADA EM ( #{oposicaoBean.oposicao.inativacaoString} )" style="font-weight: bold; color: red" rendered="#{oposicaoBean.oposicao.dtInativacao != null}"/>
                     </h:panelGrid>
                     <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" header="Deseja salvar este registro?" width="400">
                         <center>
@@ -135,6 +137,19 @@
                             </h:panelGrid>
                         </center>
                     </p:dialog>
+                    
+                    <p:dialog widgetVar="dlg_inativar"  modal="true" resizable="true" header="Inativar Oposição" width="400">
+                        
+                        <h:panelGrid columns="1">
+                            <p:outputLabel value="Deseja realmente inativar esta oposição?" style="font-size: 11pt!important" />
+                        </h:panelGrid>
+                        
+                        <h:panelGrid columns="2">
+                            <p:commandButton icon="ui-icon-check" value="Sim" title="Inativar" action="#{oposicaoBean.inativar}" update=":form_oposicao: out_mensagem" oncomplete="PF('dlg_inativar').hide(); PF('dlg_message').show();"/>
+                            <p:commandButton icon="ui-icon-close" value="Não" title="Cancelar" onclick="PF('dlg_inativar').hide();"/>
+                        </h:panelGrid>
+                    </p:dialog>
+                    
                     <p:dialog id="id_panel_mensagem" widgetVar="dlg_message" modal="true" header="Mensagem" width="400">
                         <center>
                             <h:panelGrid id="out_mensagem">

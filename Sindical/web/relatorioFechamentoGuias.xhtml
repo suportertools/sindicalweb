@@ -37,10 +37,7 @@
                         <h:column>
                             <p:accordionPanel styleClass="no-border" style="width: 225px;" dynamic="true" activeIndex="#{relatorioFechamentoGuiasBean.indexAccordion}" id="i_panel_accordion">
                                 <p:ajax event="tabChange" listener="#{relatorioFechamentoGuiasBean.tipoRelatorioChange}" update=":form_relatorio:id_panel_relatorio, i_panel_avancado" />
-                                <p:tab title="Resumo" disabled="true">
-                                    * Resumido
-                                </p:tab>
-                                <p:tab title="Avançado">
+                                <p:tab title="Avançado" closable="false">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
                                         <h:panelGrid columns="1" styleClass="text-left">
                                             <f:facet name="header">

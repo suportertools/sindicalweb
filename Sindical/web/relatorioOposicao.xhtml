@@ -49,6 +49,9 @@
                                         <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[3]}" onLabel="P. Cnae - Edição" offLabel="P. Cnae - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[5]}" onLabel="Status da Oposição" offLabel="Status da Oposição" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
+                                        </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[4]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
@@ -178,6 +181,19 @@
                                         </p:panel>                                        
                                     </h:column>
                                 </p:column>  
+                                
+                                <p:column rendered="#{relatorioOposicaoBean.filtro[5]}">
+                                    <h:panelGrid columns="3" styleClass="margin-top-max">
+                                        <p:outputLabel value="Status da Oposição: " />
+                                        <p:selectOneRadio value="#{relatorioOposicaoBean.status}">
+                                            <f:selectItem itemValue="ativo" itemLabel="Ativo" />
+                                            <f:selectItem itemValue="inativo" itemLabel="Inativo" />
+                                            <f:selectItem itemValue="todos" itemLabel="Todos" />
+                                        </p:selectOneRadio>
+                                        <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('status')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                </p:column>
+                                
                                 <p:column rendered="#{relatorioOposicaoBean.filtro[4]}">
                                     <h:column>
                                         <h:panelGrid columns="3" styleClass="margin-top-max">

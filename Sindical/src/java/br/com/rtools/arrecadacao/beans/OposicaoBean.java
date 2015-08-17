@@ -21,6 +21,7 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -352,6 +353,48 @@ public class OposicaoBean implements Serializable {
                 clear();
                 message = "Falha na exclusão do registro!";
             }
+        }
+    }
+    
+    public void inativar(){
+        Dao dao = new Dao();
+        NovoLog novoLog = new NovoLog();
+        dao.openTransaction();
+        
+        oposicao.setDtInativacao(DataHoje.dataHoje());
+        if (dao.update(oposicao)) {
+            novoLog.update(""
+                    + "ID: " + oposicao.getId()
+                    + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
+                    + " - Jurídica: (" + oposicao.getJuridica().getPessoa().getId() + ") " + oposicao.getJuridica().getPessoa().getNome()
+                    + " - Convençao Período: (" + oposicao.getConvencaoPeriodo().getId() + ") "
+                    + " - [" + oposicao.getConvencaoPeriodo().getConvencao().getDescricao()
+                    + " - " + oposicao.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                    + " - Ref: " + oposicao.getConvencaoPeriodo().getReferenciaInicial()
+                    + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
+                    + " ]"
+                    + " - Data Inativação: ( NULL ) "
+                    + " - Usuário: ( NULL ) ",
+                    ""      
+                    + "ID: " + oposicao.getId()
+                    + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
+                    + " - Jurídica: (" + oposicao.getJuridica().getPessoa().getId() + ") " + oposicao.getJuridica().getPessoa().getNome()
+                    + " - Convençao Período: (" + oposicao.getConvencaoPeriodo().getId() + ") "
+                    + " - [" + oposicao.getConvencaoPeriodo().getConvencao().getDescricao()
+                    + " - " + oposicao.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                    + " - Ref: " + oposicao.getConvencaoPeriodo().getReferenciaInicial()
+                    + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
+                    + " ]"
+                    + " - Data Inativação: ( "+oposicao.getInativacaoString() + " ) "
+                    + " - Usuário: ( "+ Usuario.getUsuario().getPessoa().getNome() + " ) "
+            );
+            dao.commit();
+            clear();
+            setMessage("Registro inativado com sucesso");
+        } else {
+            dao.rollback();
+            clear();
+            message = "Falha ao inativar!";
         }
     }
 

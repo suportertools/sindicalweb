@@ -200,7 +200,7 @@ public class OposicaoDao extends DB  {
     }
 
     
-    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes, String order) {
+    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes, String status, String order) {
         try {
             List listQuery = new ArrayList();
             String queryEmissao = "";
@@ -256,6 +256,13 @@ public class OposicaoDao extends DB  {
             if (!convencaoPeriodo.isEmpty()) {
                 listQuery.add(" O.id_convencao_periodo IN (" + convencaoPeriodo + ")");
             }
+            
+            if (status.equals("ativo")){
+                listQuery.add(" O.dt_inativacao IS NULL");
+            }else if (status.equals("inativo")){
+                listQuery.add(" O.dt_inativacao IS NOT NULL");
+            }
+            
             if (!queryEmissao.isEmpty()) {
                 listQuery.add(queryEmissao);
             }
@@ -291,6 +298,7 @@ public class OposicaoDao extends DB  {
                 return list;
             }
         } catch (Exception e) {
+            e.getMessage();
 
         }
         return new ArrayList();
@@ -335,6 +343,7 @@ public class OposicaoDao extends DB  {
                 + "      WHERE ('" + dataReferencia + "' >= CAST(SUBSTRING(CP.ds_referencia_inicial,4,4) || SUBSTRING(CP.ds_referencia_inicial,1,2)  AS int)    "
                 + "         AND '" + dataReferencia + "' <= CAST(SUBSTRING(CP.ds_referencia_final,4,4) || SUBSTRING(CP.ds_referencia_final  ,1,2) AS int))        "
                 + "        AND OP.ds_cpf = '" + cpf + "'                                                            "
+                + "        AND O.dt_inativacao IS NULL                                                             "
                 + "      LIMIT 1                                                                                    ";
         Query query = getEntityManager().createNativeQuery(queryString);
         List list = query.getResultList();
@@ -373,6 +382,25 @@ public class OposicaoDao extends DB  {
             list = query.getResultList();
             return list;
         }catch(Exception w){
+            return list;
+        }
+    }
+    
+    public List<Oposicao> listaOposicaoDocumento(String cpf) {
+        List<Oposicao> list = new ArrayList();
+        
+        String queryString = 
+                "SELECT o.* \n " +
+                "  FROM arr_oposicao o \n " +
+                " INNER JOIN arr_oposicao_pessoa AS op ON op.id = o.id_oposicao_pessoa \n " +
+                " WHERE op.ds_cpf LIKE '"+cpf+"' \n " +
+                " ORDER BY o.dt_emissao";
+        try{
+            Query query = getEntityManager().createNativeQuery(queryString, Oposicao.class);
+            list = query.getResultList();
+            return list;
+        }catch(Exception e){
+            e.getMessage();
             return list;
         }
     }

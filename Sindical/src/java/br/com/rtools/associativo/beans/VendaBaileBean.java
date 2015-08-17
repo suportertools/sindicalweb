@@ -138,13 +138,17 @@ public class VendaBaileBean implements Serializable {
         if (Moeda.converteUS$(valor) <= 0) {
             desconto = "0,00";
         }
+        
         valorLiquido = Moeda.converteR$Float(Moeda.converteUS$(valor) - Moeda.converteUS$(desconto));
+        
         total = Moeda.converteR$Float(Moeda.converteUS$(valorLiquido) * getQuantidade());
     }
 
     public void somaValor() {
         if (eventoServicoValor != null) {
             valor = Moeda.converteR$Float(eventoServicoValor.getValor());
+            if (venda.getId() != -1)
+                desconto = venda.getDescontoUnitarioString();
         }
 
         calculoDesconto();
@@ -388,7 +392,8 @@ public class VendaBaileBean implements Serializable {
             venda.setResponsavel(responsavel);
             venda.setUsuario(Usuario.getUsuario());
             venda.setEventoServico(eventoServicoValor.getEventoServico());
-            venda.setValorUnitarioString(valorLiquido);
+            //venda.setValorUnitarioString(valorLiquido);
+            venda.setValorUnitarioString(valor);
             venda.setDescontoUnitarioString(desconto);
 
             if (!dao.save(venda)) {

@@ -284,8 +284,11 @@
                                                         </p:column>
                                                     </p:dataTable>
                                                 </div>
-                                                <h:inputText value="#{relatorioSociosBean.diaInicial}" size="2"/><h:outputLabel value=" Até " styleClass="fontePadraoNegrito"/>
-                                                <h:inputText value="#{relatorioSociosBean.diaFinal}" size="2"/>
+                                                <h:panelGrid columns="4">
+                                                    <h:inputText value="#{relatorioSociosBean.diaInicial}" size="2"/><h:outputLabel value=" Até " styleClass="fontePadraoNegrito"/>
+                                                    <h:inputText value="#{relatorioSociosBean.diaFinal}" size="2"/>
+                                                    <p:selectBooleanCheckbox value="#{relatorioSociosBean.ordemAniversario}" itemLabel="Ordem por Aniversário"/>
+                                                </h:panelGrid>
                                             </h:column>
                                         </h:panelGrid>
 
@@ -405,7 +408,7 @@
                                                     <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
                                                     <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
                                                     <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                    <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                                    <f:selectItem itemValue="Viuvo(a)" itemLabel="Viúvo(a)"/>
                                                 </p:selectOneMenu>
                                             </h:column>
                                         </h:panelGrid>

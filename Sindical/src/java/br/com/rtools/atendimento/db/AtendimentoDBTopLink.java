@@ -43,7 +43,8 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
                     + " INNER JOIN arr_convencao_periodo per on per.id = opo.id_convencao_periodo "
                     + "      WHERE pes.ds_cpf = '" + cpf + "' "
                     + "        AND '" + data + "' >= (substring(per.ds_referencia_inicial,4,4)||substring(per.ds_referencia_inicial,1,2)) "
-                    + "        AND '" + data + "' <= (substring(per.ds_referencia_final,4,4)||substring(per.ds_referencia_final,1,2)) ");
+                    + "        AND '" + data + "' <= (substring(per.ds_referencia_final,4,4)||substring(per.ds_referencia_final,1,2)) "
+                    + "        AND opo.dt_inativacao IS NULL");
             if (!qry.getResultList().isEmpty()) {
                 return true;
             }

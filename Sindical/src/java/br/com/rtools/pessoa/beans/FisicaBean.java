@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.dao.OposicaoDao;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialBean;
@@ -152,7 +153,20 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String idMalaDiretaGrupo = null;
     private List<MalaDireta> listMalaDireta = new ArrayList();
     private List<SelectItem> listMalaDiretaGrupo = new ArrayList();
+    
+    private List<Oposicao> listaOposicao = new ArrayList();
 
+    
+    public void loadListaOposicao() {
+        if (fisica.getId() != -1) {
+            listaOposicao.clear();
+
+            OposicaoDao dao = new OposicaoDao();
+
+            listaOposicao = dao.listaOposicaoDocumento(fisica.getPessoa().getDocumento());
+        }
+    }
+    
     public void closeMensagemAviso() {
         visibleMsgAviso = false;
     }
@@ -680,6 +694,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         fotoTempPerfil = "";
         clear(0);
         loadListaMovimento();
+        loadListaOposicao();
         String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
         if (new File(url_temp).exists()) {
             new File(url_temp).delete();
@@ -1948,6 +1963,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (indexPessoaFisica == 5) {
             loadListaMovimento();
         }
+
+        if (indexPessoaFisica == 6) {
+            loadListaOposicao();
+        }
     }
 
     public String getIndexNovoEndereco() {
@@ -2790,6 +2809,20 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (idMalaDiretaGrupo == null) {
             habilitaMalaDireta = false;
         }
+    }
+
+    /**
+     * @return the listaOposicao
+     */
+    public List<Oposicao> getListaOposicao() {
+        return listaOposicao;
+    }
+
+    /**
+     * @param listaOposicao the listaOposicao to set
+     */
+    public void setListaOposicao(List<Oposicao> listaOposicao) {
+        this.listaOposicao = listaOposicao;
     }
 
 }
