@@ -90,23 +90,20 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         String textQuery = "";
         switch (como) {
             case "P":
-                desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "SELECT S FROM Servicos AS S "
-                        + "  WHERE UPPER(S." + por + ") LIKE :desc";
+                textQuery = "SELECT S.*                             "
+                        + "    FROM fin_servicos AS S               "
+                        + "  WHERE TRIM(UPPER(FUNC_TRANSLATE(S." + por + "))) LIKE TRIM(UPPER(FUNC_TRANSLATE('%" + desc + "%')))";
                 break;
             case "I":
-                desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "SELECT S FROM Servicos AS S "
-                        + "  WHERE UPPER(S." + por + ") LIKE :desc";
+                textQuery = "SELECT S.*                             "
+                        + "    FROM fin_servicos AS S               "
+                        + "  WHERE TRIM(UPPER(FUNC_TRANSLATE(S." + por + "))) LIKE TRIM(UPPER(FUNC_TRANSLATE('" + desc + "%')))";
                 break;
         }
-        textQuery += " AND S.situacao LIKE '" + situacao + "'";
+        textQuery += " AND S.ds_situacao LIKE '" + situacao + "'";
 
         try {
-            Query qry = getEntityManager().createQuery(textQuery);
-            if (!desc.equals("%%") && !desc.equals("%")) {
-                qry.setParameter("desc", desc);
-            }
+            Query qry = getEntityManager().createNativeQuery(textQuery, Servicos.class);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -133,11 +130,11 @@ public class ServicosDBToplink extends DB implements ServicosDB {
                     + "  SELECT S.servicos "
                     + "    FROM ServicoRotina AS S"
                     + "   WHERE S.rotina.id = " + id_rotina;
-            
+
             if (situacao != null && !situacao.isEmpty()) {
-                queryString += " AND S.servicos.situacao = '"+situacao+"'";
+                queryString += " AND S.servicos.situacao = '" + situacao + "'";
             }
-            
+
             Query query = getEntityManager().createQuery(queryString);
             return query.getResultList();
         } catch (Exception e) {
