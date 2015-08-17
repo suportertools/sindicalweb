@@ -27,36 +27,37 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
     private int diaVencimento = 0;
     private List<SelectItem> listaDataVencimento = new ArrayList();
 
-    public void atualizar(int idPessoa) {
-        if (idPessoa != -1) {
-//            if (pessoaComplemento.getId() == -1) {
-//                PessoaDB pessoaDB = new PessoaDBToplink();
-//                pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
-//            }
-            Dao di = new Dao();
-            pessoaComplemento.setPessoa((Pessoa) di.find(new Pessoa(), idPessoa));
+    public void update(Integer pessoa_id) {
+        if (pessoa_id != -1) {
+            Dao dao = new Dao();
+            pessoaComplemento.setPessoa((Pessoa) dao.find(new Pessoa(), (int) pessoa_id));
             pessoaComplemento.setNrDiaVencimento(diaVencimento);
-            
-            if (responsavel != null && responsavel.getId() != -1)
+
+            if (responsavel != null && responsavel.getId() != -1) {
                 pessoaComplemento.setResponsavel(responsavel);
-            else
+            } else {
                 pessoaComplemento.setResponsavel(null);
-            
-            di.openTransaction();
+            }
+
+            if (!pessoaComplemento.getBloqueiaObsAviso()) {
+                pessoaComplemento.setObsAviso("");
+            }
+
+            dao.openTransaction();
             if (pessoaComplemento.getId() == -1) {
-                if (di.save(pessoaComplemento)) {
-                    di.commit();
+                if (dao.save(pessoaComplemento)) {
+                    dao.commit();
                     GenericaMensagem.info("Sucesso", "Pessoa Complemento salva!");
                 } else {
-                    di.rollback();
+                    dao.rollback();
                     GenericaMensagem.error("Atenção", "Erro ao salvar Pessoa Complemento!");
                 }
             } else {
-                if (di.update(pessoaComplemento)) {
-                    di.commit();
+                if (dao.update(pessoaComplemento)) {
+                    dao.commit();
                     GenericaMensagem.info("Sucesso", "Pessoa Complemento atualizada!");
                 } else {
-                    di.rollback();
+                    dao.rollback();
                     GenericaMensagem.error("Atenção", "Erro ao Atualizar Pessoa Complemento!");
                 }
             }
@@ -96,11 +97,11 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 //        } else {
 //            diaVencimento = pessoaComplemento.getNrDiaVencimento();
 //        }
-        
+
         PessoaDB pessoaDB = new PessoaDBToplink();
         pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
-        if(pessoaComplemento.getId() == -1) {
-            diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
+        if (pessoaComplemento.getId() == -1) {
+            diaVencimento = getRegistro().getFinDiaVencimentoCobranca();
         } else {
             diaVencimento = pessoaComplemento.getNrDiaVencimento();
         }
@@ -136,8 +137,8 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
     }
 
     public Pessoa getResponsavel() {
-        if (GenericaSessao.exists("pessoaPesquisa")){
-            responsavel = (Pessoa)GenericaSessao.getObject("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            responsavel = (Pessoa) GenericaSessao.getObject("pessoaPesquisa");
             GenericaSessao.remove("pessoaPesquisa");
         }
         return responsavel;
