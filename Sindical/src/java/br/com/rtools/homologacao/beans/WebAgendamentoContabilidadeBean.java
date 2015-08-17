@@ -732,7 +732,7 @@ public final class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBea
     }
 
     public Boolean updatePessoaEmpresa(Dao dao) {
-        pessoaEmpresa.setDtAdmissao(null);
+        pessoaEmpresa.setDtDemissao(null);
         if (!dao.update(pessoaEmpresa)) {
             return false;
         }
