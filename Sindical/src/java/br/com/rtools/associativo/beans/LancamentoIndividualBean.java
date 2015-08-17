@@ -450,7 +450,7 @@ public class LancamentoIndividualBean {
         PessoaDB db = new PessoaDBToplink();
         pessoaComplemento = db.pesquisaPessoaComplementoPorPessoa(responsavel.getId());
         if (pessoaComplemento.getId() != -1){
-            if (pessoaComplemento.isCobrancaBancaria()){
+            if (pessoaComplemento.getCobrancaBancaria()){
                 cobrancaBancaria = "sim";
             }else
                 cobrancaBancaria = "nao";
