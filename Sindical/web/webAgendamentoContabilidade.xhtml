@@ -133,9 +133,12 @@
 
                 <p:commandLink styleClass="idNovo iLink" style="width: 200px;" value="Agendar sem Horário" action="#{webAgendamentoContabilidadeBean.novoProtocolo()}" rendered="#{webAgendamentoContabilidadeBean.registro.agendarSemHorarioWeb}"/>
 
-                <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" height="550" width="870">
+                <p:dialog widgetVar="dlg_agendamento" resizable="false" modal="true" height="550" width="870">
+                    <f:facet name="header">
+                        <h:outputLabel value="Agendamento de Homologação" /><br />
+                        <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                    </f:facet>
                     <p:ajax event="close" listener="#{webAgendamentoContabilidadeBean.loadListHorarios()}" global="false" /> 
-                    <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                     <h:panelGrid id="i_panel_agendamento">
                         <p:panel styleClass="fundoCinza" style="width: 810px">
                             <h:panelGrid columns="4">
@@ -234,7 +237,7 @@
                                                #{webAgendamentoContabilidadeBean.enderecoFisica.endereco.cidade.cidade} - #{webAgendamentoContabilidadeBean.enderecoFisica.endereco.cidade.uf}" 
                                                style="font-size: 11pt!important"/>
 
-                                <p:inputText size="5" value="#{webAgendamentoContabilidadeBean.enderecoFisica.numero}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" placeholder="Número"/>
+                                <p:inputText size="5" value="#{webAgendamentoContabilidadeBean.enderecoFisica.numero}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" placeholder="Número" />
                                 <p:inputText size="50" value="#{webAgendamentoContabilidadeBean.enderecoFisica.complemento}" readonly="#{webAgendamentoContabilidadeBean.fisica.id != -1}" placeholder="Complemento" converter="#{toUpperCase}">
                                     <p:ajax event="change" update="@this" global="false"/>
                                 </p:inputText>
