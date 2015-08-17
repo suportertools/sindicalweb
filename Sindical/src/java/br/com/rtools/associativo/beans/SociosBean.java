@@ -4,6 +4,7 @@ import br.com.rtools.arrecadacao.GrupoCidades;
 import br.com.rtools.associativo.*;
 import br.com.rtools.associativo.dao.SocioCarteirinhaDao;
 import br.com.rtools.associativo.dao.SociosDao;
+import br.com.rtools.associativo.dao.ValidadeCartaoDao;
 import br.com.rtools.associativo.db.*;
 import br.com.rtools.associativo.lista.ListaDependentes;
 import br.com.rtools.endereco.Cidade;
@@ -1192,6 +1193,7 @@ public class SociosBean implements Serializable {
 //            return null;
 //        }
         MatriculaSociosDB dbMat = new MatriculaSociosDBToplink();
+        ValidadeCartaoDao validadeCartaoDao = new ValidadeCartaoDao();
         matriculaSocios.setCategoria(servicoCategoria.getCategoria());
         matriculaSocios.setTitular(servicoPessoa.getPessoa());
         if (matriculaSocios.getNrMatricula() <= 0) {
@@ -1272,7 +1274,18 @@ public class SociosBean implements Serializable {
         // VERIFICA SE SÓCIO TEM CARTEIRINHA -- SE TIVER NÃO ADICIONAR --
         if (list_carteirinha_socio.isEmpty()) {
             //Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data()));
-            String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
+            ValidadeCartao vc = validadeCartaoDao.findByCategoriaParentesco(Integer.parseInt(listaCategoria.get(idCategoria).getDescription()), socios.getParentesco().getId());
+            if (vc == null) {
+                GenericaMensagem.error("Erro", "Validade cartão inexistente!");
+                dao.rollback();
+                return null;
+            }
+            String validadeCarteirinha;
+            if (vc.getDtValidadeFixa() == null) {
+                validadeCarteirinha = dh.incrementarMeses(vc.getNrValidadeMeses(), DataHoje.data());
+            } else {
+                validadeCarteirinha = vc.getValidadeFixaString();
+            }
 
             SocioCarteirinha sc = new SocioCarteirinha(-1, "", servicoPessoa.getPessoa(), modeloc, null, 1, validadeCarteirinha, true);
 
@@ -1289,6 +1302,7 @@ public class SociosBean implements Serializable {
                 return null;
             }
             if (!dao.update(sc)) {
+
                 GenericaMensagem.error("Erro", "Não foi possivel atualizar Sócio Carteirinha!");
                 dao.rollback();
                 return null;
@@ -1346,7 +1360,7 @@ public class SociosBean implements Serializable {
             ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
             SocioCarteirinha sc;
             SociosDao sociosDao = new SociosDao();
-            ParentescoDB dbPar = new ParentescoDBToplink();
+            ParentescoDB dbPar = new ParentescoDao();
             boolean message = true;
             for (int i = 0; i < listDependentes.size(); i++) {
                 if (listDependentes.get(i).getFisica().getId() != -1) {
@@ -1356,7 +1370,17 @@ public class SociosBean implements Serializable {
                     List<SelectItem> lista_si = (ArrayList<SelectItem>) listDependentes.get(i).getListParentesco();
                     Parentesco parentesco = dbPar.pesquisaCodigo(Integer.valueOf(lista_si.get(Integer.valueOf(Integer.toString(listDependentes.get(i).getIdParentesco()))).getDescription()));
                     sc = socioCarteirinhaDao.pesquisaPorPessoaModelo(fisicaDependente.getPessoa().getId(), modeloc.getId());
-                    String validadeCarteirinha = dh.incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
+                    ValidadeCartao vc = validadeCartaoDao.findByCategoriaParentesco(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), parentesco.getId());
+                    if (vc == null) {
+                        GenericaMensagem.warn("Validação", "Validade cartão não cadastrada!");
+                        return null;
+                    }
+                    String validadeCarteirinha;
+                    if (vc.getDtValidadeFixa() == null) {
+                        validadeCarteirinha = dh.incrementarMeses(vc.getNrValidadeMeses(), DataHoje.data());
+                    } else {
+                        validadeCarteirinha = vc.getValidadeFixaString();
+                    }
                     if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
                         Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
                         Integer verificaFuturo = DataHoje.converteDataParaInteger("30/06/2016");
@@ -1947,7 +1971,7 @@ public class SociosBean implements Serializable {
         CategoriaDB dbCat = new CategoriaDBToplink();
         GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
 
-        Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
+        Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(0, DataHoje.data()));
         if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
             Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
             Integer verificaFuturo = DataHoje.converteDataParaInteger("30/06/2016");
@@ -2449,7 +2473,7 @@ public class SociosBean implements Serializable {
                 if (listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade() != null && !listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade().isEmpty()) {
                     vencimento_dep = "01/" + listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade();
                 }
-                
+
                 String data_hoje = DataHoje.data();
 
                 if (vencimento_dep.isEmpty()
@@ -2521,7 +2545,7 @@ public class SociosBean implements Serializable {
                 Fisica fisica = dbf.pesquisaFisicaPorPessoa(listaDepsInativo.get(i).getServicoPessoa().getPessoa().getId());
 
                 List<Parentesco> listap = getListaParentesco(fisica.getSexo());
-                ParentescoDB dbp = new ParentescoDBToplink();
+                ParentescoDB dbp = new ParentescoDao();
                 List<SelectItem> lista_si = new ArrayList<>();
                 for (int w = 0; w < listap.size(); w++) {
                     if (listaDepsInativo.get(i).getParentesco().getId() == listap.get(w).getId()) {
@@ -2579,32 +2603,35 @@ public class SociosBean implements Serializable {
         return null;
     }
 
+//    Date validadeCarteirinha;
+//    if (validadeCartao == null) {
+//        PF.openDialog("i_dlg_c");
+//        GenericaMensagem.warn("Validação", "Cadastrar validade cartão!");
+//        return;
+//    }
+//    if (validadeCartao.getDtValidadeFixa() == null) {
+//        validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(validadeCartao.getNrValidadeMeses(), DataHoje.data()));
+//    } else {
+//        validadeCarteirinha = validadeCartao.getDtValidadeFixa();
+//    }        
     public String atualizaValidadeCarteirinha(Parentesco par, Fisica fisica) {
-        GrupoCategoria grupoCategoria = (GrupoCategoria) new Dao().find(new GrupoCategoria(), Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()));
-        String validadeCarteirinha = new DataHoje().incrementarMeses(grupoCategoria.getNrValidadeMesCartao(), DataHoje.data());
-        if (GenericaSessao.getString("sessaoCliente").equals("ServidoresRP")) {
-            Integer verificaHoje = DataHoje.converteDataParaInteger(DataHoje.data());
-            Integer verificaFuturo = DataHoje.converteDataParaInteger("30/06/2016");
-            if (verificaFuturo < verificaHoje) {
-                GenericaMensagem.warn("Atenção", "Entrar em contato com nosso suporte técnico!");
-                return "";
-            }
-            if (!(par.getParentesco().toUpperCase()).equals("TITULAR")
-                    && !(par.getParentesco().toUpperCase()).equals("ESPOSA")
-                    && !(par.getParentesco().toUpperCase()).equals("ESPOSO")
-                    && !(par.getParentesco().toUpperCase()).equals("SOGRA")
-                    && !(par.getParentesco().toUpperCase()).equals("SOGRO")
-                    && !(par.getParentesco().toUpperCase()).equals("PAI")
-                    && !(par.getParentesco().toUpperCase()).equals("MÃE")) {
-                validadeCarteirinha = ("30/06/2016");
-                GenericaMensagem.warn("Atenção", "Esta data de validade é provisória e este critério será mantido até o dia 30/06/2016, conforme solicitação do cliente, exceto para os graus de parentesco titular, esposa, sogra e paes.");
-            }
+        ValidadeCartao validadeCartao = new ValidadeCartaoDao().findByCategoriaParentesco(Integer.parseInt(listaCategoria.get(idCategoria).getDescription()), par.getId());
+        if (validadeCartao == null) {
+            PF.openDialog("i_dlg_c");
+            GenericaMensagem.warn("Validação", "Cadastrar validade cartão!");
+            return null;
+        }
+        String validadeCarteirinha;
+        if (validadeCartao.getDtValidadeFixa() == null) {
+            validadeCarteirinha = new DataHoje().incrementarMeses(validadeCartao.getNrValidadeMeses(), DataHoje.data());
+        } else {
+            validadeCarteirinha = validadeCartao.getValidadeFixaString();
         }
         return validadeCarteirinha;
     }
 
     public void atualizaValidadeTela(int index) {
-        ParentescoDB db = new ParentescoDBToplink();
+        ParentescoDB db = new ParentescoDao();
 
         // Fisica fisica = (Fisica) ((DataObject) listaDependentes.get(index)).getArgumento0();
         Fisica fisica = listDependentes.get(index).getFisica();
@@ -2649,10 +2676,17 @@ public class SociosBean implements Serializable {
 
         if (DataHoje.menorData(listsc.get(0).getValidadeCarteirinha(), DataHoje.data())) {
             DataHoje dh = new DataHoje();
-            CategoriaDB db = new CategoriaDBToplink();
-            GrupoCategoria gpCat = db.pesquisaGrupoPorCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
-            Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
-
+            ValidadeCartao validadeCartao = new ValidadeCartaoDao().findByCategoriaParentesco(Integer.parseInt(listaCategoria.get(idCategoria).getDescription()), socios.getParentesco().getId());
+            Date validadeCarteirinha;
+            if (validadeCartao == null) {
+                GenericaMensagem.warn("Atenção", "Validade Cartão Inexistente!");
+                return;
+            }
+            if (validadeCartao.getDtValidadeFixa() == null) {
+                validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(validadeCartao.getNrValidadeMeses(), DataHoje.data()));;
+            } else {
+                validadeCarteirinha = validadeCartao.getDtValidadeFixa();
+            }
             novaValidadeCartao = DataHoje.converteData(validadeCarteirinha);
             PF.openDialog("dlg_validade_carteirinha");
         } else {
@@ -2964,7 +2998,7 @@ public class SociosBean implements Serializable {
 // AQUI LISTA DE PARENTESCO
 //    public List<SelectItem> getListaParentesco() {
 //        if (listaParentesco.isEmpty() && !listaCategoria.isEmpty()) {
-//            ParentescoDB db = new ParentescoDBToplink();
+//            ParentescoDB db = new ParentescoDao();
 //            if (Integer.valueOf(listaCategoria.get(idCategoria).getDescription()) == 0){
 //                listaParentesco.add(new SelectItem(0, "Sem Categoria", "0"));
 //                return listaParentesco;
@@ -2987,7 +3021,7 @@ public class SociosBean implements Serializable {
 //    }
     public List<Parentesco> getListaParentesco(String sexo) {
         if (!listaCategoria.isEmpty()) {
-            ParentescoDB db = new ParentescoDBToplink();
+            ParentescoDB db = new ParentescoDao();
             if (Integer.valueOf(listaCategoria.get(idCategoria).getDescription()) == 0) {
                 return new ArrayList<>();
             }
