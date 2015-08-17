@@ -118,9 +118,12 @@
 
                 <p:commandLink styleClass="idNovo iLink" style="width: 200px;" value="Agendar sem Horário" action="#{webAgendamentoContribuinteBean.novoProtocolo}" rendered="#{webAgendamentoContribuinteBean.registro.agendarSemHorarioWeb}"/>
 
-                <p:dialog widgetVar="dlg_agendamento" header="Agendamento de Homologação" resizable="false" modal="true" height="550" width="870">
+                <p:dialog widgetVar="dlg_agendamento" resizable="false" modal="true" height="550" width="870">
+                    <f:facet name="header">
+                        <h:outputLabel value="Agendamento de Homologação" /><br />
+                        <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                    </f:facet>                    
                     <p:ajax event="close" update="formAgendamentoContribuinte"/>
-                    <p:messages autoUpdate="true" showDetail="true" closable="true"/>
                     <h:panelGrid id="i_panel_agendamento">
                         <p:panel styleClass="fundoCinza" style="width: 810px">
                             <h:panelGrid columns="4">
