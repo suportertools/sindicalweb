@@ -4,42 +4,53 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html">
     <f:view>
-        <h:panelGrid columns="1">
-            <h:outputLabel value="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(idPessoa)}" />
-        </h:panelGrid>
-            
-        <p:messages id="i_msg" autoUpdate="false" closable="true" showDetail="true" />
-        
-        <h:panelGrid columns="2">
-            <p:column>
-                <h:outputLabel value="Responsável pela Cobrança" /><br />
-                <p:commandButton action="#{chamadaPaginaBean.pesquisaPessoa()}" value="Pesquisar" rendered="#{pessoaComplementoBean.responsavel.id == -1}"/>
-                
-                <h:outputLabel value="#{pessoaComplementoBean.responsavel.nome}" style="font-weight: bold;" rendered="#{pessoaComplementoBean.responsavel.id != -1}"/>
-            </p:column>
-        </h:panelGrid>
-            
-        <h:panelGrid columns="3">
-            <p:column>
-                <h:outputLabel for="idDataVencimento" value="Dia Vencimento" /><br />
-                <p:selectOneMenu id="idDataVencimento" value="#{pessoaComplementoBean.diaVencimento}" style="width: 100px">
-                    <p:ajax event="change" listener="#{pessoaComplementoBean.atualizar(idPessoa)}" update="idDataVencimento i_msg"/>
-                    <f:selectItems value="#{pessoaComplementoBean.listaDataVencimento}" />
-                </p:selectOneMenu>
-            </p:column>
-            
-            <p:column rendered="false">
-                <br />
-                <p:selectBooleanCheckbox id="idDescontoFolha" value="#{pessoaComplementoBean.pessoaComplemento.cobrancaBancaria}" itemLabel="Desconto em Folha?">
-                    <p:ajax event="change" update="idDescontoFolha i_msg"  listener="#{pessoaComplementoBean.atualizar(idPessoa)}" />
-                </p:selectBooleanCheckbox>
-            </p:column>
-            
-            <p:column>
-                <br />
-                <p:commandButton action="#{pessoaComplementoBean.atualizar(idPessoa)}" value="Atualizar" update="i_msg"/>
-            </p:column>
-        </h:panelGrid>
-        
+        <p:panel id="i_panel_complemento" rendered="#{idPessoa != -1}">
+            <h:panelGrid columns="1">
+                <h:outputLabel value="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(idPessoa)}" />
+            </h:panelGrid>
+            <p:messages  autoUpdate="false" closable="true" showDetail="true" />
+
+            <h:panelGrid columns="2">
+                <p:column>
+                    <h:outputLabel value="Responsável pela Cobrança" /><br />
+                    <p:commandButton action="#{chamadaPaginaBean.pesquisaPessoa()}" value="Pesquisar" rendered="#{pessoaComplementoBean.responsavel.id == -1}"/>
+
+                    <h:outputLabel value="#{pessoaComplementoBean.responsavel.nome}" style="font-weight: bold;" rendered="#{pessoaComplementoBean.responsavel.id != -1}"/>
+                </p:column>
+            </h:panelGrid>
+
+            <h:panelGrid columns="3">
+                <p:column>
+                    <h:outputLabel for="idDataVencimento" value="Dia Vencimento" /><br />
+                    <p:selectOneMenu id="idDataVencimento" value="#{pessoaComplementoBean.diaVencimento}" style="width: 100px">
+                        <p:ajax event="change" listener="#{pessoaComplementoBean.update(idPessoa)}" update="idDataVencimento i_panel_complemento"/>
+                        <f:selectItems value="#{pessoaComplementoBean.listaDataVencimento}" />
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:column rendered="false">
+                    <br />
+                    <p:selectBooleanCheckbox id="idDescontoFolha" value="#{pessoaComplementoBean.pessoaComplemento.cobrancaBancaria}" itemLabel="Desconto em Folha?">
+                        <p:ajax event="change" update="idDescontoFolha i_panel_complemento"  listener="#{pessoaComplementoBean.update(idPessoa)}" />
+                    </p:selectBooleanCheckbox>
+                </p:column>
+            </h:panelGrid>
+            <h:panelGrid id="id_pg_b">
+                <p:column>
+                    <p:selectBooleanCheckbox value="#{pessoaComplementoBean.pessoaComplemento.bloqueiaObsAviso}" itemLabel="Bloqueia Aviso?">
+                        <p:ajax event="change" update="@this id_pg_b i_panel_complemento"  listener="#{pessoaComplementoBean.update(idPessoa)}" />
+                    </p:selectBooleanCheckbox>
+                </p:column>
+                <p:column>
+                    <h:inputTextarea value="#{pessoaComplementoBean.pessoaComplemento.obsAviso}" rendered="#{pessoaComplementoBean.pessoaComplemento.bloqueiaObsAviso}" cols="150" rows="5">
+                        <p:ajax event="change" update="@this"  />
+                    </h:inputTextarea>
+                </p:column>
+            </h:panelGrid>
+            <f:facet name="footer">
+                <p:commandButton action="#{pessoaComplementoBean.update(idPessoa)}" value="Atualizar" update="i_panel_complemento"/>            
+            </f:facet>
+        </p:panel>
+
     </f:view>
 </ui:composition>
