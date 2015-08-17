@@ -452,12 +452,22 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         }
 
         if (!listaEmDebito.isEmpty() && !registro.isBloquearHomologacao()) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             dao.commit();
             return;
         }
 
         if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > registro.getMesesInadimplentesAgenda())) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             GenericaMensagem.error("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             dao.commit();
             return;
@@ -465,6 +475,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
+            if (!updatePessoaEmpresa(dao)) {
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Pessoa Empresa!");
+                dao.rollback();
+                return;
+            }
             GenericaMensagem.warn("Atenção", "Para efetuar esse agendamento CONTATE o Sindicato!");
             dao.commit();
         } else {
@@ -504,6 +519,14 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             }
             dao.commit();
         }
+    }
+
+    public Boolean updatePessoaEmpresa(Dao dao) {
+        pessoaEmpresa.setDtDemissao(null);
+        if (!dao.update(pessoaEmpresa)) {
+            return false;
+        }
+        return true;
     }
 
     public void agendar(DataObject datao) {
