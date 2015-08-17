@@ -11,12 +11,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "soc_grupo_categoria")
-//    name = "GrupoCategoria.pesquisaID", query = "select gc from GrupoCategoria gc where gc.id = :pid"
-@NamedQueries({ 
+@NamedQueries({
     @NamedQuery(name = "GrupoCategoria.pesquisaID", query = "SELECT GC FROM GrupoCategoria AS GC WHERE GC.id = :pid "),
     @NamedQuery(name = "GrupoCategoria.findAll", query = "SELECT GC FROM GrupoCategoria AS GC ORDER BY GC.grupoCategoria ASC ")
 })
 public class GrupoCategoria implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -25,21 +25,17 @@ public class GrupoCategoria implements java.io.Serializable {
     private String grupoCategoria;
     @Column(name = "nr_proxima_matricula", length = 10, nullable = true)
     private int nrProximaMatricula;
-    @Column(name = "nr_validade_meses_cartao", length = 10, nullable = true)
-    private int nrValidadeMesCartao;
 
     public GrupoCategoria() {
         this.id = -1;
         this.grupoCategoria = "";
         this.nrProximaMatricula = 1;
-        this.nrValidadeMesCartao = 12;
     }
 
-    public GrupoCategoria(int id, String grupoCategoria, int nrProximaMatricula, int nrValidadeMesCartao) {
+    public GrupoCategoria(int id, String grupoCategoria, int nrProximaMatricula) {
         this.id = id;
         this.grupoCategoria = grupoCategoria;
         this.nrProximaMatricula = nrProximaMatricula;
-        this.nrValidadeMesCartao = nrValidadeMesCartao;
     }
 
     public int getId() {
@@ -64,13 +60,5 @@ public class GrupoCategoria implements java.io.Serializable {
 
     public void setNrProximaMatricula(int nrProximaMatricula) {
         this.nrProximaMatricula = nrProximaMatricula;
-    }
-
-    public int getNrValidadeMesCartao() {
-        return nrValidadeMesCartao;
-    }
-
-    public void setNrValidadeMesCartao(int nrValidadeMesCartao) {
-        this.nrValidadeMesCartao = nrValidadeMesCartao;
     }
 }
