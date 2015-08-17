@@ -99,6 +99,6 @@ public class PessoaComplemento implements java.io.Serializable {
     }
 
     public void setObsAviso(String obsAviso) {
-        this.obsAviso = obsAviso;
+        this.obsAviso = obsAviso.trim();
     }
 }
