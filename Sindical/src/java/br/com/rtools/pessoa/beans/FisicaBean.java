@@ -441,6 +441,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         fisica.setMae(fisica.getMae().toUpperCase().trim());
     }
 
+    public void salvarPessoaComplemento() {
+        if (fisica.getPessoa().getId() != -1) {
+            ((PessoaComplementoBean) GenericaSessao.getObject("pessoaComplementoBean")).update(fisica.getPessoa().getId());
+        }
+    }
+
     public void salvarPessoaProfissao() {
         if (!listaProfissoes.isEmpty()) {
             Dao dao = new Dao();
