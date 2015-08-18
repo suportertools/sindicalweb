@@ -35,6 +35,10 @@ public class DataObject implements Serializable{
     private Object argumento28;
     private Object argumento29;
     private Object argumento30;
+    private Object argumento31;
+    private Object argumento32;
+    private Object argumento33;
+    private Object argumento34;
 
     public DataObject(Object argumento0, Object argumento1, Object argumento2, Object argumento3, Object argumento4, Object argumento5, Object argumento6, Object argumento7, Object argumento8, Object argumento9, Object argumento10, Object argumento11, Object argumento12, Object argumento13, Object argumento14, Object argumento15, Object argumento16, Object argumento17, Object argumento18, Object argumento19, Object argumento20, Object argumento21, Object argumento22, Object argumento23, Object argumento24) {
         this.argumento0 = argumento0;
@@ -316,6 +320,79 @@ public class DataObject implements Serializable{
         this.argumento27 = argumento27;
         this.argumento28 = argumento28;
         this.argumento29 = argumento29;
+    }
+    
+    public DataObject(
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9,
+            Object argumento10,
+            Object argumento11,
+            Object argumento12,
+            Object argumento13,
+            Object argumento14,
+            Object argumento15,
+            Object argumento16,
+            Object argumento17,
+            Object argumento18,
+            Object argumento19,
+            Object argumento20,
+            Object argumento21,
+            Object argumento22,
+            Object argumento23,
+            Object argumento24,
+            Object argumento25,
+            Object argumento26,
+            Object argumento27,
+            Object argumento28,
+            Object argumento29,
+            Object argumento30,
+            Object argumento31,
+            Object argumento32,
+            Object argumento33,
+            Object argumento34) {
+        this.argumento0 = argumento0;
+        this.argumento1 = argumento1;
+        this.argumento2 = argumento2;
+        this.argumento3 = argumento3;
+        this.argumento4 = argumento4;
+        this.argumento5 = argumento5;
+        this.argumento6 = argumento6;
+        this.argumento7 = argumento7;
+        this.argumento8 = argumento8;
+        this.argumento9 = argumento9;
+        this.argumento10 = argumento10;
+        this.argumento11 = argumento11;
+        this.argumento12 = argumento12;
+        this.argumento13 = argumento13;
+        this.argumento14 = argumento14;
+        this.argumento15 = argumento15;
+        this.argumento16 = argumento16;
+        this.argumento17 = argumento17;
+        this.argumento18 = argumento18;
+        this.argumento19 = argumento19;
+        this.argumento20 = argumento20;
+        this.argumento21 = argumento21;
+        this.argumento22 = argumento22;
+        this.argumento23 = argumento23;
+        this.argumento24 = argumento24;
+        this.argumento25 = argumento25;
+        this.argumento26 = argumento26;
+        this.argumento27 = argumento27;
+        this.argumento28 = argumento28;
+        this.argumento29 = argumento29;
+        this.argumento30 = argumento30;
+        this.argumento31 = argumento31;
+        this.argumento32 = argumento32;
+        this.argumento33 = argumento33;
+        this.argumento34 = argumento34;
     }
     
     public DataObject(
@@ -717,5 +794,37 @@ public class DataObject implements Serializable{
 
     public void setArgumento30(Object argumento30) {
         this.argumento30 = argumento30;
+    }
+
+    public Object getArgumento31() {
+        return argumento31;
+    }
+
+    public void setArgumento31(Object argumento31) {
+        this.argumento31 = argumento31;
+    }
+
+    public Object getArgumento32() {
+        return argumento32;
+    }
+
+    public void setArgumento32(Object argumento32) {
+        this.argumento32 = argumento32;
+    }
+
+    public Object getArgumento33() {
+        return argumento33;
+    }
+
+    public void setArgumento33(Object argumento33) {
+        this.argumento33 = argumento33;
+    }
+
+    public Object getArgumento34() {
+        return argumento34;
+    }
+
+    public void setArgumento34(Object argumento34) {
+        this.argumento34 = argumento34;
     }
 }
