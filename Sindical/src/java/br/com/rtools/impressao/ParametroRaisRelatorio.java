@@ -2,75 +2,75 @@ package br.com.rtools.impressao;
 
 public class ParametroRaisRelatorio {
 
-    private String detalhes_relatorio;
-    private String ano_base;
-    private String alvara;
-    private String emissao;
-    private String is_empregado_filiado;
-    private String pis;
-    private String motivo_afastamento;
-    private String carteira;
-    private String serie;
-    private String ctps;
-    private String salario;
-    private String admissao;
-    private String funcao;
-    private String afastamento;
-    private String carga_horaria;
-    private String observacao;
-    private String raca;
-    private String indicador_alvara;
-    private String empregado;
-    private String deficiencia;
-    private String cnpj;
-    private String empresa;
-    private String escolaridade;
-    private String responsavel;
-    private String nacionalidade;
-    private String profissao;
-    private String tipo_remuneracao;
-    private String classificacao_economica;
-    private String cidade;
-    private String sexo;
-    private String nascimento;
-    private String idade;
+    private Object detalhes_relatorio;
+    private Object ano_base;
+    private Object alvara;
+    private Object emissao;
+    private Object is_empregado_filiado;
+    private Object pis;
+    private Object motivo_afastamento;
+    private Object carteira;
+    private Object serie;
+    private Object ctps;
+    private Object salario;
+    private Object admissao;
+    private Object funcao;
+    private Object afastamento;
+    private Object carga_horaria;
+    private Object observacao;
+    private Object raca;
+    private Object indicador_alvara;
+    private Object empregado;
+    private Object deficiencia;
+    private Object cnpj;
+    private Object empresa;
+    private Object escolaridade;
+    private Object responsavel;
+    private Object nacionalidade;
+    private Object profissao;
+    private Object tipo_remuneracao;
+    private Object classificacao_economica;
+    private Object cidade;
+    private Object sexo;
+    private Object nascimento;
+    private Object idade;
 
     public ParametroRaisRelatorio() {
-        this.detalhes_relatorio = "";
-        this.ano_base = "";
-        this.alvara = "";
-        this.emissao = "";
-        this.is_empregado_filiado = "";
-        this.pis = "";
-        this.motivo_afastamento = "";
-        this.carteira = "";
-        this.serie = "";
-        this.ctps = "";
-        this.salario = "";
-        this.admissao = "";
-        this.funcao = "";
-        this.afastamento = "";
-        this.carga_horaria = "";
-        this.observacao = "";
-        this.raca = "";
-        this.indicador_alvara = "";
-        this.empregado = "";
-        this.deficiencia = "";
-        this.cnpj = "";
-        this.empresa = "";
-        this.escolaridade = "";
-        this.responsavel = "";
-        this.nacionalidade = "";
-        this.profissao = "";
-        this.tipo_remuneracao = "";
-        this.classificacao_economica = "";
-        this.cidade = "";
-        this.sexo = "";
-        this.nascimento = "";
-        this.idade = "";
+        this.detalhes_relatorio = null;
+        this.ano_base = 0;
+        this.alvara = null;
+        this.emissao = null;
+        this.is_empregado_filiado = null;
+        this.pis = null;
+        this.motivo_afastamento = null;
+        this.carteira = null;
+        this.serie = null;
+        this.ctps = null;
+        this.salario = null;
+        this.admissao = null;
+        this.funcao = null;
+        this.afastamento = null;
+        this.carga_horaria = 0;
+        this.observacao = null;
+        this.raca = null;
+        this.indicador_alvara = null;
+        this.empregado = null;
+        this.deficiencia = null;
+        this.cnpj = null;
+        this.empresa = null;
+        this.escolaridade = null;
+        this.responsavel = null;
+        this.nacionalidade = null;
+        this.profissao = null;
+        this.tipo_remuneracao = null;
+        this.classificacao_economica = null;
+        this.cidade = null;
+        this.sexo = null;
+        this.nascimento = null;
+        this.idade = 0;
     }
 
-    public ParametroRaisRelatorio(String detalhes_relatorio, String ano_base, String alvara, String emissao, String is_empregado_filiado, String pis, String motivo_afastamento, String carteira, String serie, String ctps, String salario, String admissao, String funcao, String afastamento, String carga_horaria, String observacao, String raca, String indicador_alvara, String empregado, String deficiencia, String cnpj, String empresa, String escolaridade, String responsavel, String nacionalidade, String profissao, String tipo_remuneracao, String classificacao_economica, String cidade, String sexo, String nascimento, String idade) {
+    public ParametroRaisRelatorio(Object detalhes_relatorio, Object ano_base, Object alvara, Object emissao, Object is_empregado_filiado, Object pis, Object motivo_afastamento, Object carteira, Object serie, Object ctps, Object salario, Object admissao, Object funcao, Object afastamento, Object carga_horaria, Object observacao, Object raca, Object indicador_alvara, Object empregado, Object deficiencia, Object cnpj, Object empresa, Object escolaridade, Object responsavel, Object nacionalidade, Object profissao, Object tipo_remuneracao, Object classificacao_economica, Object cidade, Object sexo, Object nascimento, Object idade) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.ano_base = ano_base;
         this.alvara = alvara;
@@ -105,259 +105,259 @@ public class ParametroRaisRelatorio {
         this.idade = idade;
     }
 
-    public String getAno_base() {
+    public Object getAno_base() {
         return ano_base;
     }
 
-    public void setAno_base(String ano_base) {
+    public void setAno_base(Object ano_base) {
         this.ano_base = ano_base;
     }
 
-    public String getAlvara() {
+    public Object getAlvara() {
         return alvara;
     }
 
-    public void setAlvara(String alvara) {
+    public void setAlvara(Object alvara) {
         this.alvara = alvara;
     }
 
-    public String getEmissao() {
+    public Object getEmissao() {
         return emissao;
     }
 
-    public void setEmissao(String emissao) {
+    public void setEmissao(Object emissao) {
         this.emissao = emissao;
     }
 
-    public String getIs_empregado_filiado() {
+    public Object getIs_empregado_filiado() {
         return is_empregado_filiado;
     }
 
-    public void setIs_empregado_filiado(String is_empregado_filiado) {
+    public void setIs_empregado_filiado(Object is_empregado_filiado) {
         this.is_empregado_filiado = is_empregado_filiado;
     }
 
-    public String getPis() {
+    public Object getPis() {
         return pis;
     }
 
-    public void setPis(String pis) {
+    public void setPis(Object pis) {
         this.pis = pis;
     }
 
-    public String getMotivo_afastamento() {
+    public Object getMotivo_afastamento() {
         return motivo_afastamento;
     }
 
-    public void setMotivo_afastamento(String motivo_afastamento) {
+    public void setMotivo_afastamento(Object motivo_afastamento) {
         this.motivo_afastamento = motivo_afastamento;
     }
 
-    public String getCarteira() {
+    public Object getCarteira() {
         return carteira;
     }
 
-    public void setCarteira(String carteira) {
+    public void setCarteira(Object carteira) {
         this.carteira = carteira;
     }
 
-    public String getSerie() {
+    public Object getSerie() {
         return serie;
     }
 
-    public void setSerie(String serie) {
+    public void setSerie(Object serie) {
         this.serie = serie;
     }
 
-    public String getCtps() {
+    public Object getCtps() {
         return ctps;
     }
 
-    public void setCtps(String ctps) {
+    public void setCtps(Object ctps) {
         this.ctps = ctps;
     }
 
-    public String getSalario() {
+    public Object getSalario() {
         return salario;
     }
 
-    public void setSalario(String salario) {
+    public void setSalario(Object salario) {
         this.salario = salario;
     }
 
-    public String getAdmissao() {
+    public Object getAdmissao() {
         return admissao;
     }
 
-    public void setAdmissao(String admissao) {
+    public void setAdmissao(Object admissao) {
         this.admissao = admissao;
     }
 
-    public String getFuncao() {
+    public Object getFuncao() {
         return funcao;
     }
 
-    public void setFuncao(String funcao) {
+    public void setFuncao(Object funcao) {
         this.funcao = funcao;
     }
 
-    public String getAfastamento() {
+    public Object getAfastamento() {
         return afastamento;
     }
 
-    public void setAfastamento(String afastamento) {
+    public void setAfastamento(Object afastamento) {
         this.afastamento = afastamento;
     }
 
-    public String getCarga_horaria() {
+    public Object getCarga_horaria() {
         return carga_horaria;
     }
 
-    public void setCarga_horaria(String carga_horaria) {
+    public void setCarga_horaria(Object carga_horaria) {
         this.carga_horaria = carga_horaria;
     }
 
-    public String getObservacao() {
+    public Object getObservacao() {
         return observacao;
     }
 
-    public void setObservacao(String observacao) {
+    public void setObservacao(Object observacao) {
         this.observacao = observacao;
     }
 
-    public String getRaca() {
+    public Object getRaca() {
         return raca;
     }
 
-    public void setRaca(String raca) {
+    public void setRaca(Object raca) {
         this.raca = raca;
     }
 
-    public String getIndicador_alvara() {
+    public Object getIndicador_alvara() {
         return indicador_alvara;
     }
 
-    public void setIndicador_alvara(String indicador_alvara) {
+    public void setIndicador_alvara(Object indicador_alvara) {
         this.indicador_alvara = indicador_alvara;
     }
 
-    public String getEmpregado() {
+    public Object getEmpregado() {
         return empregado;
     }
 
-    public void setEmpregado(String empregado) {
+    public void setEmpregado(Object empregado) {
         this.empregado = empregado;
     }
 
-    public String getDeficiencia() {
+    public Object getDeficiencia() {
         return deficiencia;
     }
 
-    public void setDeficiencia(String deficiencia) {
+    public void setDeficiencia(Object deficiencia) {
         this.deficiencia = deficiencia;
     }
 
-    public String getCnpj() {
+    public Object getCnpj() {
         return cnpj;
     }
 
-    public void setCnpj(String cnpj) {
+    public void setCnpj(Object cnpj) {
         this.cnpj = cnpj;
     }
 
-    public String getEmpresa() {
+    public Object getEmpresa() {
         return empresa;
     }
 
-    public void setEmpresa(String empresa) {
+    public void setEmpresa(Object empresa) {
         this.empresa = empresa;
     }
 
-    public String getEscolaridade() {
+    public Object getEscolaridade() {
         return escolaridade;
     }
 
-    public void setEscolaridade(String escolaridade) {
+    public void setEscolaridade(Object escolaridade) {
         this.escolaridade = escolaridade;
     }
 
-    public String getResponsavel() {
+    public Object getResponsavel() {
         return responsavel;
     }
 
-    public void setResponsavel(String responsavel) {
+    public void setResponsavel(Object responsavel) {
         this.responsavel = responsavel;
     }
 
-    public String getNacionalidade() {
+    public Object getNacionalidade() {
         return nacionalidade;
     }
 
-    public void setNacionalidade(String nacionalidade) {
+    public void setNacionalidade(Object nacionalidade) {
         this.nacionalidade = nacionalidade;
     }
 
-    public String getProfissao() {
+    public Object getProfissao() {
         return profissao;
     }
 
-    public void setProfissao(String profissao) {
+    public void setProfissao(Object profissao) {
         this.profissao = profissao;
     }
 
-    public String getTipo_remuneracao() {
+    public Object getTipo_remuneracao() {
         return tipo_remuneracao;
     }
 
-    public void setTipo_remuneracao(String tipo_remuneracao) {
+    public void setTipo_remuneracao(Object tipo_remuneracao) {
         this.tipo_remuneracao = tipo_remuneracao;
     }
 
-    public String getClassificacao_economica() {
+    public Object getClassificacao_economica() {
         return classificacao_economica;
     }
 
-    public void setClassificacao_economica(String classificacao_economica) {
+    public void setClassificacao_economica(Object classificacao_economica) {
         this.classificacao_economica = classificacao_economica;
     }
 
-    public String getCidade() {
+    public Object getCidade() {
         return cidade;
     }
 
-    public void setCidade(String cidade) {
+    public void setCidade(Object cidade) {
         this.cidade = cidade;
     }
 
-    public String getSexo() {
+    public Object getSexo() {
         return sexo;
     }
 
-    public void setSexo(String sexo) {
+    public void setSexo(Object sexo) {
         this.sexo = sexo;
     }
 
-    public String getNascimento() {
+    public Object getNascimento() {
         return nascimento;
     }
 
-    public void setNascimento(String nascimento) {
+    public void setNascimento(Object nascimento) {
         this.nascimento = nascimento;
     }
 
-    public String getDetalhes_relatorio() {
+    public Object getDetalhes_relatorio() {
         return detalhes_relatorio;
     }
 
-    public void setDetalhes_relatorio(String detalhes_relatorio) {
+    public void setDetalhes_relatorio(Object detalhes_relatorio) {
         this.detalhes_relatorio = detalhes_relatorio;
     }
 
-    public String getIdade() {
+    public Object getIdade() {
         return idade;
     }
 
-    public void setIdade(String idade) {
+    public void setIdade(Object idade) {
         this.idade = idade;
     }
 }
