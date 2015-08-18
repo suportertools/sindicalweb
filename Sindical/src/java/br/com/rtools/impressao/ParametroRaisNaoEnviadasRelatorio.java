@@ -28,68 +28,68 @@ public class ParametroRaisNaoEnviadasRelatorio {
 //     23 J.esccep           AS esc_cep,             
 //     24 J.jurid,                                   
 //     25 J.escid     
-    private String detalhes_relatorio;
-    private String cnpj;
-    private String empresa;
-    private String convencao;
-    private String grupo;
-    private String telefone;
-    private String logradouro;
-    private String endereco;
-    private String complemento;
-    private String bairro;
-    private String cidade;
-    private String uf;
-    private String cep;
-    private String email;
-    private String escritorio;
-    private String escritorio_telefone;
-    private String escritorio_email;
-    private String escritorio_logradouro;
-    private String escritorio_endereco;
-    private String escritorio_complemento;
-    private String escritorio_bairro;
-    private String escritorio_cidade;
-    private String escritorio_uf;
-    private String escritorio_cep;
-    private String id;
-    private String escritorio_id;
-    private String quantidade;
-    private String numero;
-    private String escritorio_numero;
+    private Object detalhes_relatorio;
+    private Object cnpj;
+    private Object empresa;
+    private Object convencao;
+    private Object grupo;
+    private Object telefone;
+    private Object logradouro;
+    private Object endereco;
+    private Object complemento;
+    private Object bairro;
+    private Object cidade;
+    private Object uf;
+    private Object cep;
+    private Object email;
+    private Object escritorio;
+    private Object escritorio_telefone;
+    private Object escritorio_email;
+    private Object escritorio_logradouro;
+    private Object escritorio_endereco;
+    private Object escritorio_complemento;
+    private Object escritorio_bairro;
+    private Object escritorio_cidade;
+    private Object escritorio_uf;
+    private Object escritorio_cep;
+    private Object id;
+    private Object escritorio_id;
+    private Object quantidade;
+    private Object numero;
+    private Object escritorio_numero;
 
     public ParametroRaisNaoEnviadasRelatorio() {
-        this.detalhes_relatorio = "";
-        this.cnpj = "";
-        this.empresa = "";
-        this.convencao = "";
-        this.grupo = "";
-        this.telefone = "";
-        this.logradouro = "";
-        this.endereco = "";
-        this.complemento = "";
-        this.bairro = "";
-        this.cidade = "";
-        this.uf = "";
-        this.cep = "";
-        this.email = "";
-        this.escritorio = "";
-        this.escritorio_telefone = "";
-        this.escritorio_email = "";
-        this.escritorio_logradouro = "";
-        this.escritorio_endereco = "";
-        this.escritorio_numero = "";
-        this.escritorio_complemento = "";
-        this.escritorio_bairro = "";
-        this.escritorio_cidade = "";
-        this.escritorio_uf = "";
-        this.escritorio_cep = "";
-        this.id = "";
-        this.escritorio_id = "";
-        this.quantidade = "0";
+        this.detalhes_relatorio = null;
+        this.cnpj = null;
+        this.empresa = null;
+        this.convencao = null;
+        this.grupo = null;
+        this.telefone = null;
+        this.logradouro = null;
+        this.endereco = null;
+        this.complemento = null;
+        this.bairro = null;
+        this.cidade = null;
+        this.uf = null;
+        this.cep = null;
+        this.email = null;
+        this.escritorio = null;
+        this.escritorio_telefone = null;
+        this.escritorio_email = null;
+        this.escritorio_logradouro = null;
+        this.escritorio_endereco = null;
+        this.escritorio_numero = null;
+        this.escritorio_complemento = null;
+        this.escritorio_bairro = null;
+        this.escritorio_cidade = null;
+        this.escritorio_uf = null;
+        this.escritorio_cep = null;
+        this.id = 0;
+        this.escritorio_id = 0;
+        this.quantidade = 0;
     }
 
-    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_id, String quantidade, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String escritorio_numero) {
+    public ParametroRaisNaoEnviadasRelatorio(Object detalhes_relatorio, Object escritorio, Object escritorio_telefone, Object escritorio_email, Object escritorio_id, Object quantidade, Object escritorio_logradouro, Object escritorio_endereco, Object escritorio_complemento, Object escritorio_bairro, Object escritorio_cidade, Object escritorio_uf, Object escritorio_cep, Object escritorio_numero) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.escritorio = escritorio;
         this.escritorio_telefone = escritorio_telefone;
@@ -106,7 +106,7 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.escritorio_numero = escritorio_numero;
     }
 
-    public ParametroRaisNaoEnviadasRelatorio(String detalhes_relatorio, String cnpj, String empresa, String convencao, String grupo, String telefone, String logradouro, String endereco, String complemento, String bairro, String cidade, String uf, String cep, String email, String escritorio, String escritorio_telefone, String escritorio_email, String escritorio_logradouro, String escritorio_endereco, String escritorio_complemento, String escritorio_bairro, String escritorio_cidade, String escritorio_uf, String escritorio_cep, String id, String escritorio_id, String quantidade, String numero, String escritorio_numero) {
+    public ParametroRaisNaoEnviadasRelatorio(Object detalhes_relatorio, Object cnpj, Object empresa, Object convencao, Object grupo, Object telefone, Object logradouro, Object endereco, Object complemento, Object bairro, Object cidade, Object uf, Object cep, Object email, Object escritorio, Object escritorio_telefone, Object escritorio_email, Object escritorio_logradouro, Object escritorio_endereco, Object escritorio_complemento, Object escritorio_bairro, Object escritorio_cidade, Object escritorio_uf, Object escritorio_cep, Object id, Object escritorio_id, Object quantidade, Object numero, Object escritorio_numero) {
         this.detalhes_relatorio = detalhes_relatorio;
         this.cnpj = cnpj;
         this.empresa = empresa;
@@ -138,235 +138,235 @@ public class ParametroRaisNaoEnviadasRelatorio {
         this.escritorio_numero = escritorio_numero;
     }
 
-    public String getDetalhes_relatorio() {
+    public Object getDetalhes_relatorio() {
         return detalhes_relatorio;
     }
 
-    public void setDetalhes_relatorio(String detalhes_relatorio) {
+    public void setDetalhes_relatorio(Object detalhes_relatorio) {
         this.detalhes_relatorio = detalhes_relatorio;
     }
 
-    public String getCnpj() {
+    public Object getCnpj() {
         return cnpj;
     }
 
-    public void setCnpj(String cnpj) {
+    public void setCnpj(Object cnpj) {
         this.cnpj = cnpj;
     }
 
-    public String getEmpresa() {
+    public Object getEmpresa() {
         return empresa;
     }
 
-    public void setEmpresa(String empresa) {
+    public void setEmpresa(Object empresa) {
         this.empresa = empresa;
     }
 
-    public String getConvencao() {
+    public Object getConvencao() {
         return convencao;
     }
 
-    public void setConvencao(String convencao) {
+    public void setConvencao(Object convencao) {
         this.convencao = convencao;
     }
 
-    public String getGrupo() {
+    public Object getGrupo() {
         return grupo;
     }
 
-    public void setGrupo(String grupo) {
+    public void setGrupo(Object grupo) {
         this.grupo = grupo;
     }
 
-    public String getTelefone() {
+    public Object getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(String telefone) {
+    public void setTelefone(Object telefone) {
         this.telefone = telefone;
     }
 
-    public String getLogradouro() {
+    public Object getLogradouro() {
         return logradouro;
     }
 
-    public void setLogradouro(String logradouro) {
+    public void setLogradouro(Object logradouro) {
         this.logradouro = logradouro;
     }
 
-    public String getEndereco() {
+    public Object getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(Object endereco) {
         this.endereco = endereco;
     }
 
-    public String getComplemento() {
+    public Object getComplemento() {
         return complemento;
     }
 
-    public void setComplemento(String complemento) {
+    public void setComplemento(Object complemento) {
         this.complemento = complemento;
     }
 
-    public String getBairro() {
+    public Object getBairro() {
         return bairro;
     }
 
-    public void setBairro(String bairro) {
+    public void setBairro(Object bairro) {
         this.bairro = bairro;
     }
 
-    public String getCidade() {
+    public Object getCidade() {
         return cidade;
     }
 
-    public void setCidade(String cidade) {
+    public void setCidade(Object cidade) {
         this.cidade = cidade;
     }
 
-    public String getUf() {
+    public Object getUf() {
         return uf;
     }
 
-    public void setUf(String uf) {
+    public void setUf(Object uf) {
         this.uf = uf;
     }
 
-    public String getCep() {
+    public Object getCep() {
         return cep;
     }
 
-    public void setCep(String cep) {
+    public void setCep(Object cep) {
         this.cep = cep;
     }
 
-    public String getEmail() {
+    public Object getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(Object email) {
         this.email = email;
     }
 
-    public String getEscritorio() {
+    public Object getEscritorio() {
         return escritorio;
     }
 
-    public void setEscritorio(String escritorio) {
+    public void setEscritorio(Object escritorio) {
         this.escritorio = escritorio;
     }
 
-    public String getEscritorio_telefone() {
+    public Object getEscritorio_telefone() {
         return escritorio_telefone;
     }
 
-    public void setEscritorio_telefone(String escritorio_telefone) {
+    public void setEscritorio_telefone(Object escritorio_telefone) {
         this.escritorio_telefone = escritorio_telefone;
     }
 
-    public String getEscritorio_email() {
+    public Object getEscritorio_email() {
         return escritorio_email;
     }
 
-    public void setEscritorio_email(String escritorio_email) {
+    public void setEscritorio_email(Object escritorio_email) {
         this.escritorio_email = escritorio_email;
     }
 
-    public String getEscritorio_logradouro() {
+    public Object getEscritorio_logradouro() {
         return escritorio_logradouro;
     }
 
-    public void setEscritorio_logradouro(String escritorio_logradouro) {
+    public void setEscritorio_logradouro(Object escritorio_logradouro) {
         this.escritorio_logradouro = escritorio_logradouro;
     }
 
-    public String getEscritorio_endereco() {
+    public Object getEscritorio_endereco() {
         return escritorio_endereco;
     }
 
-    public void setEscritorio_endereco(String escritorio_endereco) {
+    public void setEscritorio_endereco(Object escritorio_endereco) {
         this.escritorio_endereco = escritorio_endereco;
     }
 
-    public String getEscritorio_bairro() {
+    public Object getEscritorio_bairro() {
         return escritorio_bairro;
     }
 
-    public void setEscritorio_bairro(String escritorio_bairro) {
+    public void setEscritorio_bairro(Object escritorio_bairro) {
         this.escritorio_bairro = escritorio_bairro;
     }
 
-    public String getEscritorio_cidade() {
+    public Object getEscritorio_cidade() {
         return escritorio_cidade;
     }
 
-    public void setEscritorio_cidade(String escritorio_cidade) {
+    public void setEscritorio_cidade(Object escritorio_cidade) {
         this.escritorio_cidade = escritorio_cidade;
     }
 
-    public String getEscritorio_uf() {
+    public Object getEscritorio_uf() {
         return escritorio_uf;
     }
 
-    public void setEscritorio_uf(String escritorio_uf) {
+    public void setEscritorio_uf(Object escritorio_uf) {
         this.escritorio_uf = escritorio_uf;
     }
 
-    public String getEscritorio_cep() {
+    public Object getEscritorio_cep() {
         return escritorio_cep;
     }
 
-    public void setEscritorio_cep(String escritorio_cep) {
+    public void setEscritorio_cep(Object escritorio_cep) {
         this.escritorio_cep = escritorio_cep;
     }
 
-    public String getId() {
+    public Object getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Object id) {
         this.id = id;
     }
 
-    public String getEscritorio_id() {
+    public Object getEscritorio_id() {
         return escritorio_id;
     }
 
-    public void setEscritorio_id(String escritorio_id) {
+    public void setEscritorio_id(Object escritorio_id) {
         this.escritorio_id = escritorio_id;
     }
 
-    public String getEscritorio_complemento() {
+    public Object getEscritorio_complemento() {
         return escritorio_complemento;
     }
 
-    public void setEscritorio_complemento(String escritorio_complemento) {
+    public void setEscritorio_complemento(Object escritorio_complemento) {
         this.escritorio_complemento = escritorio_complemento;
     }
 
-    public String getQuantidade() {
+    public Object getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(String quantidade) {
+    public void setQuantidade(Object quantidade) {
         this.quantidade = quantidade;
     }
 
-    public String getEscritorio_numero() {
+    public Object getEscritorio_numero() {
         return escritorio_numero;
     }
 
-    public void setEscritorio_numero(String escritorio_numero) {
+    public void setEscritorio_numero(Object escritorio_numero) {
         this.escritorio_numero = escritorio_numero;
     }
 
-    public String getNumero() {
+    public Object getNumero() {
         return numero;
     }
 
-    public void setNumero(String numero) {
+    public void setNumero(Object numero) {
         this.numero = numero;
     }
 
