@@ -33,7 +33,7 @@ public class PessoaComplemento implements java.io.Serializable {
         this.cobrancaBancaria = false;
         this.responsavel = null;
         this.bloqueiaObsAviso = false;
-        this.obsAviso = null;
+        this.obsAviso = "";
     }
 
     public PessoaComplemento(Integer id, Pessoa pessoa, Integer nrDiaVencimento, Boolean cobrancaBancaria, Pessoa responsavel, Boolean bloqueiaObsAviso, String obsAviso) {
