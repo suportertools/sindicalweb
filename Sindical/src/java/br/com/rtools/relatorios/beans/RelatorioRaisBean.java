@@ -282,115 +282,109 @@ public class RelatorioRaisBean implements Serializable {
             ParametroRaisRelatorio pr;
             ParametroRaisNaoEnviadasRelatorio prne;
             for (Object list1 : list) {
-                String salario = Moeda.converteR$(AnaliseString.converteNullString(((List) list1).get(10)));
+//                Object salario = ((List) list1).get(10);
                 if (raisEnviadas) {
-                    dt = GenericaString.converterNullToString(((List) list1).get(30));
-                    dte = GenericaString.converterNullToString(((List) list1).get(4));
-                    dta = GenericaString.converterNullToString(((List) list1).get(13));
-                    dtd = GenericaString.converterNullToString(((List) list1).get(11));
-                    if (!dt.isEmpty()) {
-                        dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
-                    }
-                    if (!dte.isEmpty()) {
-                        dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
-                    }
-                    if (!dta.isEmpty()) {
-                        dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
-                    }
-                    if (!dtd.isEmpty()) {
-                        dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
-                    }
+//                    dt = GenericaString.converterNullToString(((List) list1).get(30));
+//                    dte = GenericaString.converterNullToString(((List) list1).get(4));
+//                    dta = GenericaString.converterNullToString(((List) list1).get(13));
+//                    dtd = GenericaString.converterNullToString(((List) list1).get(11));
+//                    if (!dt.isEmpty()) {
+//                        dt = DataHoje.converteData(DataHoje.converteDateSqlToDate(dt));
+//                    }
+//                    if (!dte.isEmpty()) {
+//                        dte = DataHoje.converteData(DataHoje.converteDateSqlToDate(dte));
+//                    }
+//                    if (!dta.isEmpty()) {
+//                        dta = DataHoje.converteData(DataHoje.converteDateSqlToDate(dta));
+//                    }
+//                    if (!dtd.isEmpty()) {
+//                        dtd = DataHoje.converteData(DataHoje.converteDateSqlToDate(dtd));
+//                    }
                     pr = new ParametroRaisRelatorio(
                             detalheRelatorio,
-                            AnaliseString.converteNullString(((List) list1).get(0)),
-                            AnaliseString.converteNullString(((List) list1).get(1)),
-                            dte,
-                            AnaliseString.converteNullString(((List) list1).get(3)),
-                            AnaliseString.converteNullString(((List) list1).get(5)),
-                            AnaliseString.converteNullString(((List) list1).get(6)),
-                            AnaliseString.converteNullString(((List) list1).get(7)),
-                            AnaliseString.converteNullString(((List) list1).get(8)),
-                            AnaliseString.converteNullString(((List) list1).get(9)),
-                            salario, // SALÁRIO
-                            dtd,
-                            AnaliseString.converteNullString(((List) list1).get(12)),
-                            dta,
-                            AnaliseString.converteNullString(((List) list1).get(14)),
-                            AnaliseString.converteNullString(((List) list1).get(15)),
-                            AnaliseString.converteNullString(((List) list1).get(16)),
-                            AnaliseString.converteNullString(((List) list1).get(17)),
-                            AnaliseString.converteNullString(((List) list1).get(18)),
-                            AnaliseString.converteNullString(((List) list1).get(19)),
-                            AnaliseString.converteNullString(((List) list1).get(20)),
-                            AnaliseString.converteNullString(((List) list1).get(21)),
-                            AnaliseString.converteNullString(((List) list1).get(22)),
-                            AnaliseString.converteNullString(((List) list1).get(23)),
-                            AnaliseString.converteNullString(((List) list1).get(24)),
-                            AnaliseString.converteNullString(((List) list1).get(25)),
-                            AnaliseString.converteNullString(((List) list1).get(26)),
-                            AnaliseString.converteNullString(((List) list1).get(27)),
-                            AnaliseString.converteNullString(((List) list1).get(28)),
-                            AnaliseString.converteNullString(((List) list1).get(29)),
-                            AnaliseString.converteNullString(dt),
-                            AnaliseString.converteNullString(((List) list1).get(31))
+                            ((List) list1).get(0),
+                            ((List) list1).get(1),
+                            ((List) list1).get(4),
+                            ((List) list1).get(3),
+                            ((List) list1).get(5),
+                            ((List) list1).get(6),
+                            ((List) list1).get(7),
+                            ((List) list1).get(8),
+                            ((List) list1).get(9),
+                            ((List) list1).get(10), // SALÁRIO
+                            ((List) list1).get(11),
+                            ((List) list1).get(12),
+                            ((List) list1).get(13),
+                            ((List) list1).get(14),
+                            ((List) list1).get(15),
+                            ((List) list1).get(16),
+                            ((List) list1).get(17),
+                            ((List) list1).get(18),
+                            ((List) list1).get(19),
+                            ((List) list1).get(20),
+                            ((List) list1).get(21),
+                            ((List) list1).get(22),
+                            ((List) list1).get(23),
+                            ((List) list1).get(24),
+                            ((List) list1).get(25),
+                            ((List) list1).get(26),
+                            ((List) list1).get(27),
+                            ((List) list1).get(28),
+                            ((List) list1).get(29),
+                            ((List) list1).get(30),
+                            ((List) list1).get(31)
                     );
                     parametroRaisRelatorio.add(pr);
                 } else {
                     if (escritorios) {
-                        String quantidade = "0";
-                        try {
-                            quantidade = "" + Integer.parseInt(AnaliseString.converteNullString(((List) list1).get(4)));
-                        } catch (Exception e) {
-                            quantidade = "" + 0;
-                        }
                         prne = new ParametroRaisNaoEnviadasRelatorio(
                                 detalheRelatorio,
-                                AnaliseString.converteNullString(((List) list1).get(0)),
-                                AnaliseString.converteNullString(((List) list1).get(1)),
-                                AnaliseString.converteNullString(((List) list1).get(2)),
-                                AnaliseString.converteNullString(((List) list1).get(3)),
-                                quantidade,
-                                AnaliseString.converteNullString(((List) list1).get(5)),
-                                AnaliseString.converteNullString(((List) list1).get(6)),
-                                AnaliseString.converteNullString(((List) list1).get(7)),
-                                AnaliseString.converteNullString(((List) list1).get(8)),
-                                AnaliseString.converteNullString(((List) list1).get(9)),
-                                AnaliseString.converteNullString(((List) list1).get(10)),
-                                AnaliseString.converteNullString(((List) list1).get(11)),
-                                AnaliseString.converteNullString(((List) list1).get(12))
+                                ((List) list1).get(0),
+                                ((List) list1).get(1),
+                                ((List) list1).get(2),
+                                ((List) list1).get(3),
+                                ((List) list1).get(4),
+                                ((List) list1).get(5),
+                                ((List) list1).get(6),
+                                ((List) list1).get(7),
+                                ((List) list1).get(8),
+                                ((List) list1).get(9),
+                                ((List) list1).get(10),
+                                ((List) list1).get(11),
+                                ((List) list1).get(12)
                         );
 
                     } else {
                         prne = new ParametroRaisNaoEnviadasRelatorio(
                                 detalheRelatorio,
-                                AnaliseString.converteNullString(((List) list1).get(0)),
-                                AnaliseString.converteNullString(((List) list1).get(1)),
-                                AnaliseString.converteNullString(((List) list1).get(2)),
-                                AnaliseString.converteNullString(((List) list1).get(3)),
-                                AnaliseString.converteNullString(((List) list1).get(4)),
-                                AnaliseString.converteNullString(((List) list1).get(5)),
-                                AnaliseString.converteNullString(((List) list1).get(6)),
-                                AnaliseString.converteNullString(((List) list1).get(7)),
-                                AnaliseString.converteNullString(((List) list1).get(8)),
-                                AnaliseString.converteNullString(((List) list1).get(9)),
-                                AnaliseString.converteNullString(((List) list1).get(10)),
-                                AnaliseString.converteNullString(((List) list1).get(11)),
-                                AnaliseString.converteNullString(((List) list1).get(12)),
-                                AnaliseString.converteNullString(((List) list1).get(13)),
-                                AnaliseString.converteNullString(((List) list1).get(14)),
-                                AnaliseString.converteNullString(((List) list1).get(15)),
-                                AnaliseString.converteNullString(((List) list1).get(16)),
-                                AnaliseString.converteNullString(((List) list1).get(17)),
-                                AnaliseString.converteNullString(((List) list1).get(18)),
-                                AnaliseString.converteNullString(((List) list1).get(19)),
-                                AnaliseString.converteNullString(((List) list1).get(20)),
-                                AnaliseString.converteNullString(((List) list1).get(21)),
-                                AnaliseString.converteNullString(((List) list1).get(22)),
-                                AnaliseString.converteNullString(((List) list1).get(23)),
-                                AnaliseString.converteNullString(((List) list1).get(24)),
-                                "0",
-                                AnaliseString.converteNullString(((List) list1).get(25)),
-                                AnaliseString.converteNullString(((List) list1).get(26))
+                                ((List) list1).get(0),
+                                ((List) list1).get(1),
+                                ((List) list1).get(2),
+                                ((List) list1).get(3),
+                                ((List) list1).get(4),
+                                ((List) list1).get(5),
+                                ((List) list1).get(6),
+                                ((List) list1).get(7),
+                                ((List) list1).get(8),
+                                ((List) list1).get(9),
+                                ((List) list1).get(10),
+                                ((List) list1).get(11),
+                                ((List) list1).get(12),
+                                ((List) list1).get(13),
+                                ((List) list1).get(14),
+                                ((List) list1).get(15),
+                                ((List) list1).get(16),
+                                ((List) list1).get(17),
+                                ((List) list1).get(18),
+                                ((List) list1).get(19),
+                                ((List) list1).get(20),
+                                ((List) list1).get(21),
+                                ((List) list1).get(22),
+                                ((List) list1).get(23),
+                                ((List) list1).get(24),
+                                0,
+                                ((List) list1).get(25),
+                                ((List) list1).get(26)
                         );
                     }
                     parametroRaisNaoEnviadasRelatorio.add(prne);
@@ -1017,13 +1011,13 @@ public class RelatorioRaisBean implements Serializable {
             String telefoneString = "";
             String emailString = "";
             for (int i = 0; i < selected.length; i++) {
-                List listEmpresas = raisDao.filtroRelatorioNaoEnviadas(new Relatorios(), anoBase, null, Integer.parseInt(selected[i].getEscritorio_id()), null, "", "", false);
+                List listEmpresas = raisDao.filtroRelatorioNaoEnviadas(new Relatorios(), anoBase, null, Integer.parseInt((String) selected[i].getEscritorio_id()), null, "", "", false);
                 for (int j = 0; j < listEmpresas.size(); j++) {
                     telefoneString = AnaliseString.converteNullString(((List) listEmpresas.get(j)).get(4));
                     emailString = AnaliseString.converteNullString(((List) listEmpresas.get(j)).get(12));
                     empresasString += " - " + ((List) listEmpresas.get(j)).get(0).toString() + " - " + ((List) listEmpresas.get(j)).get(1).toString() + " - Telefone: " + telefoneString + " - Email: " + emailString + ";<br />";
                 }
-                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt(selected[i].getEscritorio_id()));
+                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt((String) selected[i].getEscritorio_id()));
                 emailPessoa = new EmailPessoa();
                 emailPessoa.setPessoa(juridica.getPessoa());
                 listEmailPessoa.add(emailPessoa);
@@ -1044,7 +1038,7 @@ public class RelatorioRaisBean implements Serializable {
             mail.setEmail(email);
             Juridica juridica = new Juridica();
             for (int i = 0; i < selected.length; i++) {
-                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt(selected[i].getId()));
+                juridica = (Juridica) dao.find(new Juridica(), Integer.parseInt((String) selected[i].getId()));
                 emailPessoa = new EmailPessoa();
                 emailPessoa.setPessoa(juridica.getPessoa());
                 listEmailPessoa.add(emailPessoa);
