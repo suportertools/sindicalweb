@@ -23,6 +23,7 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.dao.MalaDiretaDao;
+import br.com.rtools.pessoa.dao.PessoaComplementoDao;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.pessoa.utilitarios.PessoaUtilitarios;
 import br.com.rtools.seguranca.Usuario;
@@ -153,10 +154,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String idMalaDiretaGrupo = null;
     private List<MalaDireta> listMalaDireta = new ArrayList();
     private List<SelectItem> listMalaDiretaGrupo = new ArrayList();
-    
+
     private List<Oposicao> listaOposicao = new ArrayList();
 
-    
     public void loadListaOposicao() {
         if (fisica.getId() != -1) {
             listaOposicao.clear();
@@ -166,7 +166,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             listaOposicao = dao.listaOposicaoDocumento(fisica.getPessoa().getDocumento());
         }
     }
-    
+
     public void closeMensagemAviso() {
         visibleMsgAviso = false;
     }
@@ -458,6 +458,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void salvarPessoaComplemento() {
         if (fisica.getPessoa().getId() != -1) {
             ((PessoaComplementoBean) GenericaSessao.getObject("pessoaComplementoBean")).update(fisica.getPessoa().getId());
+            pessoaComplemento = ((PessoaComplementoBean) GenericaSessao.getObject("pessoaComplementoBean")).getPessoaComplemento();
         }
     }
 
@@ -694,6 +695,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         fotoTempPerfil = "";
         clear(0);
         loadListaMovimento();
+        if (pessoaComplemento.getId() == -1) {
+            pessoaComplemento = new PessoaComplementoDao().findByPessoa(fisica.getPessoa().getId());
+            if (pessoaComplemento == null) {
+                pessoaComplemento = new PessoaComplemento();
+            }
+        }
         loadListaOposicao();
         String url_temp = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + "foto/" + getUsuario().getId() + "/perfil.png");
         if (new File(url_temp).exists()) {
