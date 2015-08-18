@@ -317,10 +317,11 @@
                                 </p:column>
 
                                 <p:rowExpansion>
-                                    <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
+                                    <h:panelGrid columns="4" style="height: 40px" styleClass="sbb" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop">
                                         <p:column>
                                             <p:outputLabel value="Responsável" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento13}"/>
+                                            <p:outputLabel value="#{linha.argumento13}"/><br /><br />
+                                            <p:outputLabel value="Aviso: #{linha.argumento32.obsAviso}" rendered="#{linha.argumento32.bloqueiaObsAviso}" styleClass="font-color-red"/>
                                         </p:column>
 
                                         <p:column>
@@ -330,10 +331,16 @@
 
                                         <p:column>
                                             <p:outputLabel value="Beneficiário" style="font-weight: bold"/><br />
-                                            <p:outputLabel value="#{linha.argumento14}"/>
+                                            <p:outputLabel value="#{linha.argumento14}"/><br /><br />
+                                            <p:outputLabel value="Aviso: #{linha.argumento31.obsAviso}" rendered="#{linha.argumento31.bloqueiaObsAviso}" styleClass="font-color-red"/>
                                         </p:column>
                                     </h:panelGrid>
 
+                                    <h:panelGrid styleClass="margin-top-max sbb">
+                                        <p:outputLabel value="Rotina" styleClass="bold"/>
+                                        <p:outputLabel value="#{linha.argumento1.lote.rotina.rotina}" />
+                                    </h:panelGrid>
+                                    
                                     <p:panel header="Dados do Fechamento" rendered="#{linha.argumento1.baixa.fechamentoCaixa != null}">
                                         <h:panelGrid columns="4" style="height: 40px" styleClass="sbb">
                                             <p:column style="width: 40px" rendered="false">
