@@ -28,9 +28,11 @@ import br.com.rtools.movimento.ImprimirRecibo;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.beans.JuridicaBean;
+import br.com.rtools.pessoa.dao.PessoaComplementoDao;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
@@ -150,7 +152,7 @@ public class MovimentosReceberSocialBean implements Serializable {
     private List<Movimento> listaMovimentoDoBoletoSelecionado = new ArrayList();
 
     private String motivoEstorno = "";
-    
+
     @PostConstruct
     public void init() {
         Object cc = GenericaSessao.getObject("pessoaPesquisa");
@@ -807,7 +809,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             }
 
             JRPdfExporter exporter = new JRPdfExporter();
-            
+
             exporter.setExporterInput(SimpleExporterInput.getInstance(list_jasper));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path + "/" + nameFile));
 
@@ -1003,7 +1005,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             GenericaMensagem.error("Atenção", "Motivo de Estorno INVÁLIDO!");
             return null;
         }
-        
+
         Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         if (mov.getBaixa().getUsuario().getId() != user.getId()) {
             if (cab.getBotaoEstornarMensalidadesOutrosUsuarios()) {
@@ -1097,7 +1099,18 @@ public class MovimentosReceberSocialBean implements Serializable {
             for (int i = 0; i < listaMovimento.size(); i++) {
                 if ((Boolean) listaMovimento.get(i).getArgumento0()) {
                     movimento = (Movimento) listaMovimento.get(i).getArgumento1();
-
+                    if (((PessoaComplemento) listaMovimento.get(i).getArgumento31()).getBloqueiaObsAviso()) {
+                        GenericaMensagem.error("Mensagem", "Beneficiário (BLOQUEADO): " + ((PessoaComplemento) listaMovimento.get(i).getArgumento31()).getObsAviso());
+                        PF.closeDialog("dlg_caixa_banco");
+                        PF.update("formMovimentosReceber");
+                        return null;
+                    }
+                    if (((PessoaComplemento) listaMovimento.get(i).getArgumento32()).getBloqueiaObsAviso()) {
+                        GenericaMensagem.error("Mensagem", "Titular (BLOQUEADO): " + ((PessoaComplemento) listaMovimento.get(i).getArgumento32()).getObsAviso());
+                        PF.closeDialog("dlg_caixa_banco");
+                        PF.update("formMovimentosReceber");
+                        return null;
+                    }
                     movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
                     movimento.setJuros(Moeda.converteUS$(listaMovimento.get(i).getArgumento20().toString()));
                     movimento.setCorrecao(Moeda.converteUS$(listaMovimento.get(i).getArgumento21().toString()));
@@ -1427,7 +1440,7 @@ public class MovimentosReceberSocialBean implements Serializable {
             FisicaDB dbf = new FisicaDBToplink();
             JuridicaDB dbj = new JuridicaDBToplink();
             FunctionsDB dbfunc = new FunctionsDao();
-
+            PessoaComplementoDao pcd = new PessoaComplementoDao();
             List<Pessoa> listaPessoaQry = new ArrayList();
             for (Pessoa pe : listaPessoa) {
                 // PESSOA FISICA -----
@@ -1507,7 +1520,14 @@ public class MovimentosReceberSocialBean implements Serializable {
                 } else {
                     disabled = false;
                 }
-
+                PessoaComplemento pcb = pcd.findByPessoa((Integer) lista.get(i).get(26));
+                if (pcb == null) {
+                    pcb = new PessoaComplemento();
+                }
+                PessoaComplemento pcr = pcd.findByPessoa((Integer) lista.get(i).get(13));
+                if (pcr == null) {
+                    pcr = new PessoaComplemento();
+                }
                 listaMovimento.add(new DataObject(
                         chk, // ARG 0
                         (Movimento) new Dao().find(new Movimento(), lista.get(i).get(14)), // ARG 1 Movimento
@@ -1522,9 +1542,9 @@ public class MovimentosReceberSocialBean implements Serializable {
                         dataBaixa, // ARG 10 DATA BAIXA
                         Moeda.converteR$(getConverteNullString(lista.get(i).get(9))), // ARG 11 VALOR_BAIXA
                         lista.get(i).get(10), // ARG 12 ES
-                        lista.get(i).get(11), // ARG 13 RESPONSAVEL
-                        lista.get(i).get(12), // ARG 14 BENEFICIARIO
-                        lista.get(i).get(13), // ARG 15 TITULAR
+                        lista.get(i).get(11), // ARG 13 RESPONSAVEL -> NOME
+                        lista.get(i).get(12), // ARG 14 BENEFICIARIO -> NOME
+                        lista.get(i).get(13), // ARG 15 TITULAR -> ID
                         DataHoje.converteData((Date) lista.get(i).get(16)), // ARG 16 CRIACAO
                         lista.get(i).get(17), // ARG 17 BOLETO
                         lista.get(i).get(18), // ARG 18 DIAS DE ATRASO
@@ -1540,7 +1560,11 @@ public class MovimentosReceberSocialBean implements Serializable {
                         lista.get(i).get(15), // ARG 27 ID_LOTE
                         (!descPesquisaBoleto.isEmpty() && descPesquisaBoleto.equals(lista.get(i).get(17))) ? "tblListaBoleto" : "", // BOLETO PESQUISADO -- ARG 28
                         true, // ARG 29 JUROS
-                        lista.get(i).get(25) // ARG 30 NOME TITULAR
+                        lista.get(i).get(25), // ARG 30 NOME TITULAR
+                        pcb, // ARG 31 PESSOA COMPLEMENTO BENEFICIÁRIO
+                        pcr, // ARG 32 PESSOA COMPLEMENTO TITULAR
+                        null,
+                        null
                 )
                 );
             }
