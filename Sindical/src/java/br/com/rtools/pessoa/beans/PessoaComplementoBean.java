@@ -39,8 +39,11 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
                 pessoaComplemento.setResponsavel(null);
             }
 
-            if (!pessoaComplemento.getBloqueiaObsAviso()) {
-                pessoaComplemento.setObsAviso("");
+            if (pessoaComplemento.getBloqueiaObsAviso()) {
+                if(pessoaComplemento.getObsAviso().isEmpty()) {
+                    GenericaMensagem.warn("Validação", "Informar mensagem do bloqueio!");
+                    return;
+                }
             }
 
             dao.openTransaction();
@@ -85,19 +88,7 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
         this.pessoaComplemento = pessoaComplemento;
     }
 
-    public String pessoaComplementoPesquisaPessoa(int idPessoa) {
-//        if (pessoaComplemento.getId() == -1) {
-//            PessoaDB pessoaDB = new PessoaDBToplink();
-//            pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
-//            if(pessoaComplemento.getId() == -1) {
-//                diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
-//            } else {
-//                diaVencimento = pessoaComplemento.getNrDiaVencimento();
-//            }
-//        } else {
-//            diaVencimento = pessoaComplemento.getNrDiaVencimento();
-//        }
-
+    public String pessoaComplementoPesquisaPessoa(Integer idPessoa) {
         PessoaDB pessoaDB = new PessoaDBToplink();
         pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
         if (pessoaComplemento.getId() == -1) {
