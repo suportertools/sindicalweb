@@ -1752,6 +1752,12 @@
             <redirect/>
         </navigation-case>         
         
+        <navigation-case>
+            <from-outcome>relatorioFinanceiro</from-outcome>
+            <to-view-id>/relatorioFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>         
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

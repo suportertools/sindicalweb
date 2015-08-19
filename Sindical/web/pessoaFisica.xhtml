@@ -266,7 +266,7 @@
                                             <p:column>
                                                 <p:panel header="Foto do Perfil" id="i_panel_imagens" style="width: 100%; height: 428px; text-align: center">
                                                     <h:column rendered="#{empty fisicaBean.fotoTempPerfil}">
-                                                        <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(fisicaBean.fisica.pessoa)}" cache="false" style="max-width: 300px; max-height: 395px"/>
+                                                        <p:graphicImage value="#{fisicaBean.fisica.pessoa.foto}" cache="false" style="max-width: 300px; max-height: 395px"/>
                                                     </h:column>
                                                     <h:column rendered="#{not empty fisicaBean.fotoTempPerfil}">
                                                         <p:graphicImage value="#{fisicaBean.fotoTempPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>

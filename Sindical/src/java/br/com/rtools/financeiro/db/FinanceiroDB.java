@@ -59,7 +59,7 @@ public interface FinanceiroDB {
     public List<Vector> pesquisaSaldoAtual(int id_caixa);
     public List<Vector> pesquisaSaldoAtualRelatorio(int id_caixa, int id_fechamento);
     public List<Vector> pesquisaUsuarioFechamento(int id_fechamento);
-    public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo);
+    public List<SubGrupoFinanceiro> listaSubGrupo(Integer id_grupo);
     public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data, String tipo, String documento);
     public List<Vector> listaBoletoSocioFisica(String nr_ctr_boleto);
     public List<Vector> listaBoletoSocioJuridica(String nr_ctr_boleto);
