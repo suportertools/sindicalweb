@@ -667,13 +667,13 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo){
+    public List<SubGrupoFinanceiro> listaSubGrupo(Integer id_grupo){
         try {
             
             Query qry = getEntityManager().createQuery(
                     "SELECT sgf " +
                     "  FROM SubGrupoFinanceiro sgf " +
-                    " WHERE sgf.grupoFinanceiro.id = " +id_grupo+
+                    (id_grupo != null ? " WHERE sgf.grupoFinanceiro.id = " + id_grupo : "") +
                     " ORDER BY sgf.descricao "
             );
             return qry.getResultList();

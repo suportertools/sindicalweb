@@ -489,18 +489,23 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         String tordem = "";
         
         if (ordemAniversario){
-            tordem += " p.dt_nascimento ";
+            tordem += " extract(day from p.dt_nascimento), extract(month from p.dt_nascimento), extract(year from p.dt_nascimento) ";
         }
         
         if (ordem != null) {
-            if (ordem.equals("nome")) {
-                tordem += tordem.isEmpty() ? " p.nome " : ", p.nome ";
-            } else if (ordem.equals("matricula")) {
-                tordem += tordem.isEmpty() ? " so.matricula " : ", so.matricula ";
-            } else if (ordem.equals("cep")) {
-                tordem += tordem.isEmpty() ? " p.cep " : ", p.cep ";
-            } else if (ordem.equals("endereco")) {
-                tordem += tordem.isEmpty() ? " p.logradouro, p.endereco, p.numero, p.bairro " : ", p.logradouro, p.endereco, p.numero, p.bairro ";
+            switch (ordem) {
+                case "nome":
+                    tordem += tordem.isEmpty() ? " p.nome " : ", p.nome ";
+                    break;
+                case "matricula":
+                    tordem += tordem.isEmpty() ? " so.matricula " : ", so.matricula ";
+                    break;
+                case "cep":
+                    tordem += tordem.isEmpty() ? " p.cep " : ", p.cep ";
+                    break;
+                case "endereco":
+                    tordem += tordem.isEmpty() ? " p.logradouro, p.endereco, p.numero, p.bairro " : ", p.logradouro, p.endereco, p.numero, p.bairro ";
+                    break;
             }
         }
 

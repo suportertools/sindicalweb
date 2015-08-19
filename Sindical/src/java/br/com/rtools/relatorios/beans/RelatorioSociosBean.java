@@ -1514,16 +1514,10 @@ public class RelatorioSociosBean implements Serializable {
         this.dataAtualicacaoFim = dataAtualicacaoFim;
     }
 
-    /**
-     * @return the ordemAniversario
-     */
     public boolean isOrdemAniversario() {
         return ordemAniversario;
     }
 
-    /**
-     * @param ordemAniversario the ordemAniversario to set
-     */
     public void setOrdemAniversario(boolean ordemAniversario) {
         this.ordemAniversario = ordemAniversario;
     }

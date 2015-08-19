@@ -319,7 +319,7 @@
                                     </p:column>
 
                                     <p:column width="80">
-                                        <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(listDependentes.fisica.pessoa)}" style="width: 70px; height: auto;" cache="false"/>
+                                        <p:graphicImage value="#{listDependentes.fisica.pessoa.foto}" style="width: 70px; height: auto;" cache="false"/>
                                     </p:column>
 
                                     <p:column headerText="Nome" width="200">
@@ -588,10 +588,10 @@
 
                                                 <p:column>
                                                     <p:panel header="Foto do Perfil" style="width: 265px; text-align: center" id="i_panel_foto">
-                                                        <h:column rendered="#{sociosBean.fotoTempPerfil.equals('')}">
-                                                            <p:graphicImage value="#{pessoaUtilitariosBean.getFotoPessoaFisica(sociosBean.novoDependente.pessoa)}" cache="false" style="max-width: 250px; max-height: 395px" />
+                                                        <h:column rendered="#{sociosBean.fotoTempPerfil eq ''}">
+                                                            <p:graphicImage value="#{sociosBean.novoDependente.pessoa.foto}" cache="false" style="max-width: 250px; max-height: 395px" />
                                                         </h:column>
-                                                        <h:column rendered="#{!sociosBean.fotoTempPerfil.equals('')}">
+                                                        <h:column rendered="#{sociosBean.fotoTempPerfil ne ''}">
                                                             <p:graphicImage value="#{sociosBean.fotoTempPerfil}" id="i_perfil" style="max-width: 300px; max-height: 395px" cache="false"/>
                                                             <div class="clear"></div>
                                                         </h:column>
