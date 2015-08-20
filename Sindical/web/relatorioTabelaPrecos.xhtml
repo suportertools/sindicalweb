@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Tabela de Preços</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templates/templatePrime.xhtml"/>            
+        </f:subview>
+        <f:view>
+            <p:panel style="margin: 0 auto; border: 0; width: #{configuracaoBean.resolucao.tipoResolucao.tamanho}">
+                <h:outputScript name="tradutor_primefaces.js" library="js" />
+                <h:form id="form_relatorio">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Tabela de Preços" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid  cellpadding="4" columns="5" id="id_pg_relatorios">
+                            <p:outputLabel value="Tipo de Relatório: " />
+                            <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioTabelaPrecosBean.idRelatorio}" style="padding-right: 10px;">
+                                <p:ajax event="change" update="@this id_pg_relatorios" global="false"/>
+                                <f:selectItems value="#{relatorioTabelaPrecosBean.listRelatorios}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Ordenação: " />
+                            <p:selectOneMenu value="#{relatorioTabelaPrecosBean.idRelatorioOrdem}" rendered="#{not empty relatorioTabelaPrecosBean.listRelatorioOrdem}">
+                                <p:ajax event="change" update="@this"/>
+                                <f:selectItems value="#{relatorioTabelaPrecosBean.listRelatorioOrdem}"/>
+                            </p:selectOneMenu>
+                            <p:selectBooleanCheckbox itemLabel="Imprimir por folha" value="#{jasperBean.IS_BY_LEAF}" rendered="#{relatorioSociosBean.enableFolha}"/>                            
+                        </h:panelGrid>
+                    </p:panel>                  
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 225px;" dynamic="true" id="i_panel_accordion">
+                                <p:tab title="Editar">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <c:forEach items="#{relatorioTabelaPrecosBean.listFilters}" var="filter" varStatus="loop">
+                                            <p:selectBooleanButton value="#{filter.active}" onLabel="#{filter.value}" offLabel="#{filter.value}" style="width: 185px; text-align: left">
+                                                <p:ajax event="change" update="@this" />
+                                            </p:selectBooleanButton>
+                                        </c:forEach>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>                            
+                        </h:column>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" id="i_btns">
+                        <p:commandButton value="Imprimir" icon="ui-icon-print" title="Imprimir" action="#{relatorioTabelaPrecosBean.print()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" />
+                    </h:panelGrid>
+                </h:form>               
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
