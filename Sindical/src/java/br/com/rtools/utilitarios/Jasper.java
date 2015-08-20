@@ -625,6 +625,7 @@ public class Jasper implements Serializable {
                             }
                         } catch (IOException | JRException e) {
                             System.out.println(e);
+                            GenericaMensagem.error("Jasper Error", e.getMessage());
                             IS_DOWNLOAD = false;
                             COMPRESS_FILE = false;
                             return;
