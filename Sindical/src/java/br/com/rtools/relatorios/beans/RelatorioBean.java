@@ -2,6 +2,7 @@ package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.relatorios.RelatorioOrdem;
+import br.com.rtools.relatorios.RelatorioParametros;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.dao.RelatorioOrdemDao;
@@ -24,10 +25,12 @@ public class RelatorioBean implements Serializable {
 
     private Relatorios relatorio;
     private RelatorioOrdem relatorioOrdem;
+    private RelatorioParametros relatorioParametros;
     private List<SelectItem> listRotina;
     private List<Relatorios> listRelatorio;
     private List<RelatorioOrdem> listRelatorioOrdem;
     private Integer rotina_id;
+    private List<RelatorioParametros> listaRelatorioParametro;
 
     @PostConstruct
     public void init() {
@@ -37,6 +40,8 @@ public class RelatorioBean implements Serializable {
         listRelatorio = new ArrayList<>();
         listRelatorioOrdem = new ArrayList<>();
         rotina_id = 0;
+        relatorioParametros = new RelatorioParametros();
+        listaRelatorioParametro = new ArrayList();
     }
 
     @PreDestroy
@@ -45,6 +50,52 @@ public class RelatorioBean implements Serializable {
         GenericaSessao.remove("rotinaBean");
     }
 
+    public void adicionarRelatorioParametro() {
+        if (relatorioParametros.getApelido().isEmpty()){
+            GenericaMensagem.warn("Atenção", "Apelido do Campo não pode ser vazio!");
+            return;
+        }
+        
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        
+        relatorioParametros.setRelatorio(relatorio);
+        
+        if (!dao.save(relatorioParametros)){
+            GenericaMensagem.error("Erro", "Não foi possível salvar Campo!");
+            return;
+        }
+        
+        dao.commit();
+        
+        relatorioParametros = new RelatorioParametros();
+        loadListaRelatorioParametro();
+    }
+    
+    public void excluirRelatorioParametro(RelatorioParametros rp) {
+        Dao dao = new Dao();
+        
+        dao.openTransaction();
+        rp = (RelatorioParametros) dao.find(rp);
+        
+        if (!dao.delete(rp)){
+            GenericaMensagem.error("Erro", "Não foi possível excluir Campo!");
+            return;
+        }
+        
+        dao.commit();
+        loadListaRelatorioParametro();
+    }
+    
+    public void loadListaRelatorioParametro(){
+        listaRelatorioParametro.clear();
+        
+        RelatorioDao dao = new RelatorioDao();
+        
+        listaRelatorioParametro = dao.listaRelatorioParametro(relatorio.getId());
+    }
+    
     public void addRelatorioOrdem() {
         if (relatorioOrdem.getNome().isEmpty() || relatorioOrdem.getQuery().isEmpty()) {
             GenericaMensagem.warn("Validação", "Informar descrição e query!");
@@ -204,6 +255,7 @@ public class RelatorioBean implements Serializable {
         listRelatorioOrdem.clear();
         relatorioOrdem = new RelatorioOrdem();
         rotina_id = relatorio.getRotina().getId();
+        loadListaRelatorioParametro();
         return "relatorio";
     }
 
@@ -319,5 +371,21 @@ public class RelatorioBean implements Serializable {
                 }
                 break;
         }
+    }
+
+    public RelatorioParametros getRelatorioParametros() {
+        return relatorioParametros;
+    }
+
+    public void setRelatorioParametros(RelatorioParametros relatorioParametros) {
+        this.relatorioParametros = relatorioParametros;
+    }
+
+    public List<RelatorioParametros> getListaRelatorioParametro() {
+        return listaRelatorioParametro;
+    }
+
+    public void setListaRelatorioParametro(List<RelatorioParametros> listaRelatorioParametro) {
+        this.listaRelatorioParametro = listaRelatorioParametro;
     }
 }

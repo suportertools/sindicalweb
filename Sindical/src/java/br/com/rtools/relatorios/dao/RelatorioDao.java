@@ -1,6 +1,7 @@
 package br.com.rtools.relatorios.dao;
 
 import br.com.rtools.principal.DB;
+import br.com.rtools.relatorios.RelatorioParametros;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.seguranca.Rotina;
 import java.util.ArrayList;
@@ -124,6 +125,16 @@ public class RelatorioDao extends DB {
         List<Relatorios> lista = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery("SELECT R FROM Relatorios AS R ORDER BY R.nome ASC ");
+            lista = qry.getResultList();
+        } catch (Exception e) {
+        }
+        return lista;
+    }
+    
+    public List<RelatorioParametros> listaRelatorioParametro(Integer id_relatorio) {
+        List<RelatorioParametros> lista = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery("SELECT r FROM RelatorioParametros AS r WHERE r.relatorio.id = "+id_relatorio+" ORDER BY r.id");
             lista = qry.getResultList();
         } catch (Exception e) {
         }
