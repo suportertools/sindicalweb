@@ -863,14 +863,22 @@ public class GerarMovimento extends DB {
         // CALCULO PARA PORCENTAGEM DO VALOR PAGO -- NESSE CASO DE ARRECADACAO É 100%
         //float calc = Moeda.multiplicarValores(Moeda.divisaoValores(fp.get(i).getValor(), valorTotal), 100);
         //calc = Moeda.converteFloatR$Float(calc);
-        FormaPagamento fp = new FormaPagamento(-1,
+        MovimentoDB db = new MovimentoDBToplink();
+        
+        Boleto bol = db.pesquisaBoletos(movimento.getNrCtrBoleto());
+        
+        Plano5DB plano5DB = new Plano5DBToplink();
+        Plano5 plano5 = plano5DB.pesquisaPlano5IDContaBanco(bol.getContaCobranca().getContaBanco().getId());
+        
+        FormaPagamento fp = new FormaPagamento(
+                -1,
                 baixa,
                 null,
                 null,
                 100,
                 movimento.getValorBaixa(),
                 movimento.getLote().getFilial(),
-                movimento.getPlano5(),
+                plano5,
                 null,
                 null,
                 (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"),
@@ -1036,7 +1044,14 @@ public class GerarMovimento extends DB {
             lista_log[2] = "Erro ao inserir Baixa";
             return lista_log;
         }
-
+        
+        MovimentoDB db = new MovimentoDBToplink();
+        
+        Boleto bol = db.pesquisaBoletos(lista_movimento.get(0).getNrCtrBoleto());
+        
+        Plano5DB plano5DB = new Plano5DBToplink();
+        Plano5 plano5 = plano5DB.pesquisaPlano5IDContaBanco(bol.getContaCobranca().getContaBanco().getId());
+        
         FormaPagamento fp = new FormaPagamento(
                 -1,
                 baixa,
@@ -1045,7 +1060,7 @@ public class GerarMovimento extends DB {
                 100,
                 valor_baixa,
                 lista_movimento.get(0).getLote().getFilial(),
-                lista_movimento.get(0).getPlano5(),
+                plano5,
                 null,
                 null,
                 (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"),

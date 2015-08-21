@@ -57,7 +57,6 @@ import org.primefaces.event.FileUploadEvent;
 @ManagedBean
 @SessionScoped
 public class ImpressaoBoletoSocialBean {
-
     private List<DataObject> listaGrid = new ArrayList();
     private int de = 0;
     private int ate = 0;
@@ -256,7 +255,7 @@ public class ImpressaoBoletoSocialBean {
         MovimentoDB db = new MovimentoDBToplink();
         for (int i = 0; i < listaGrid.size(); i++) {
             if ((Boolean) listaGrid.get(i).getArgumento1()) {
-                lista.add(db.pesquisaBoletos("'" + (String) ((Vector) listaGrid.get(i).getArgumento2()).get(0) + "'"));
+                lista.add(db.pesquisaBoletos((String) ((Vector) listaGrid.get(i).getArgumento2()).get(0)));
             }
         }
         

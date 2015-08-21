@@ -168,38 +168,69 @@
                                         <h:column>
                                             <h:panelGrid columns="10" rendered="#{relatorioFinanceiroBean.listaFiltros.get(4).ativo}" style="float: left; margin: 10px ">
                                                 <h:column>
-                                                    <h:panelGrid style="margin-right: 20px">
-                                                        <p:outputLabel value="Emissão" />
-                                                        <p:inputMask value="#{relatorioFinanceiroBean.dataEmissao}" size="8" mask="99/99/9999"/>
-                                                    </h:panelGrid>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Emissão" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataEmissao}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold" />
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataEmissaoFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
                                                 </h:column>
 
                                                 <h:column>
-                                                    <h:panelGrid style="margin-right: 20px">
-                                                        <p:outputLabel value="Vencimento" />
-                                                        <p:inputMask value="#{relatorioFinanceiroBean.dataVencimento}" size="8" mask="99/99/9999"/>
-                                                    </h:panelGrid>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Vencimento" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataVencimento}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold" />
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataVencimentoFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
                                                 </h:column>
 
                                                 <h:column>
-                                                    <h:panelGrid style="margin-right: 20px">
-                                                        <p:outputLabel value="Quitação" />
-                                                        <p:inputMask value="#{relatorioFinanceiroBean.dataQuitacao}" size="8" mask="99/99/9999"/>
-                                                    </h:panelGrid>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Quitação" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataQuitacao}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold" />
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataQuitacaoFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
                                                 </h:column>
 
                                                 <h:column>
-                                                    <h:panelGrid style="margin-right: 20px">
-                                                        <p:outputLabel value="Importação" />
-                                                        <p:inputMask value="#{relatorioFinanceiroBean.dataImportacao}" size="8" mask="99/99/9999"/>
-                                                    </h:panelGrid>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Importação" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataImportacao}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold" />
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataImportacaoFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
                                                 </h:column>
 
                                                 <h:column>
-                                                    <h:panelGrid style="margin-right: 20px">
-                                                        <p:outputLabel value="Crédito" />
-                                                        <p:inputMask value="#{relatorioFinanceiroBean.dataCredito}" size="8" mask="99/99/9999"/>
-                                                    </h:panelGrid>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Crédito" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataCredito}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataCreditoFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
+                                                </h:column>
+
+                                                <h:column>
+                                                    <p:panel styleClass="fundoCinza">
+                                                        <h:panelGrid columns="1">
+                                                            <p:outputLabel value="Fechamento Caixa" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataFechamentoCaixa}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                            <p:outputLabel value="até" style="font-weight: bold"/>
+                                                            <p:inputMask value="#{relatorioFinanceiroBean.dataFechamentoCaixaFinal}" style="text-align: center" size="8" mask="99/99/9999"/>
+                                                        </h:panelGrid>
+                                                    </p:panel>
                                                 </h:column>
                                             </h:panelGrid>
                                         </h:column>
@@ -266,7 +297,25 @@
                                                     </p:selectOneMenu>
                                                 </h:column>
                                             </h:panelGrid>
-                                        </h:column>                                        
+                                        </h:column>
+                                        
+                                        <!-- DEPARTAMENTO -->
+                                        <h:column>
+                                            <h:panelGrid columns="2" rendered="#{relatorioFinanceiroBean.listaFiltros.get(9).ativo}" style="float: left; margin: 10px ">
+                                                <h:column>
+                                                    <p:outputLabel value="Departamento" />
+                                                </h:column>
+                                                <h:column></h:column>
+                                                <h:column>
+                                                    <p:selectOneMenu value="#{relatorioFinanceiroBean.tipoDepartamento}" style="padding-right: 20px">
+                                                        <p:ajax event="change" update="@this panel_filtro"/>
+                                                        <f:selectItem itemValue="outros" itemLabel="Outros" />
+                                                        <f:selectItem itemValue="todos" itemLabel="Todos" />
+                                                        <f:selectItem itemValue="arrecadacao" itemLabel="Arrecadação" />
+                                                    </p:selectOneMenu>
+                                                </h:column>
+                                            </h:panelGrid>
+                                        </h:column>
                                     </h:panelGrid>
                                 </h:column>
                             </h:panelGrid>

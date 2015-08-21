@@ -49,6 +49,7 @@
                                     <h:column>
                                         <h:panelGrid columns="5" id="i_panel_grid_rotinas">
                                             <p:selectOneMenu value="#{relatorioBean.rotina_id}" filter="true" filterMatchMode="startsWith">
+                                                <p:ajax event="change" update="@form" />
                                                 <f:selectItems value="#{relatorioBean.listRotina}" />
                                             </p:selectOneMenu>
                                             <p:commandButton action="#{relatorioBean.loadRotinaCombo(0)}" value="Ultimas usadas" update="i_panel_grid_rotinas" rendered="#{relatorioBean.relatorio.id == -1}"/>
@@ -77,6 +78,38 @@
                                 </h:panelGrid>
                             </p:panel>
 
+                            <p:panel styleClass="margin-top-max" header="Montagem de Query (Apenas para Relatório Financeiro) ** movimentos_vw **" rendered="#{relatorioBean.relatorio.rotina.id eq 324}">
+                                <h:panelGrid style="width: 100%;" cellpadding="5">
+                                    <h:panelGrid>
+                                        <h:outputLabel value="Parametros da Query:" />
+                                    </h:panelGrid>
+                                        
+                                    <h:panelGrid columns="4">
+                                        <p:inputText value="#{relatorioBean.relatorioParametros.parametro}" style="width: 200px" disabled="#{relatorioBean.relatorio.id == -1}"/>
+                                        <p:outputLabel value="AS" style="font-weight: bold"/>
+                                        <p:inputText value="#{relatorioBean.relatorioParametros.apelido}" style="width: 150px" disabled="#{relatorioBean.relatorio.id == -1}"/>
+                                        <p:commandButton icon="ui-icon-add" value="Adicionar" action="#{relatorioBean.adicionarRelatorioParametro()}" update="@form" disabled="#{relatorioBean.relatorio.id == -1}"/>
+                                    </h:panelGrid>
+                                    
+                                    <h:panelGrid>
+                                        <p:dataTable value="#{relatorioBean.listaRelatorioParametro}" var="linha" emptyMessage="Nenhum Campo Adicionado!" scrollable="true" scrollHeight="100" style="width: 500px">
+                                            <p:column headerText="Campo">
+                                                <p:outputLabel value="#{linha.parametro}" />
+                                            </p:column>
+                                            <p:column headerText="" style="width: 30px; text-align: center">
+                                                <p:outputLabel value="AS" style="font-weight: bold"/>
+                                            </p:column>
+                                            <p:column headerText="Apelido">
+                                                <p:outputLabel value="#{linha.apelido}" />
+                                            </p:column>
+                                            <p:column headerText="" style="width: 30px">
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioBean.excluirRelatorioParametro(linha)}" update="@form"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                            
                             <p:panel styleClass="margin-top-max" header="Complementar">
                                 <h:panelGrid style="width: 100%;" cellpadding="5">
                                     <h:column>

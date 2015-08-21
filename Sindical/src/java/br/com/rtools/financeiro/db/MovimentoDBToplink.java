@@ -17,7 +17,6 @@ import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class MovimentoDBToplink extends DB implements MovimentoDB {
-
     private Integer limit = null;
 
     @Override
@@ -70,10 +69,15 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public Boleto pesquisaBoletos(String nrCtrBoleto) {
         Boleto result = null;
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select b "
-                    + "  from Boleto b"
-                    + " where b.nrCtrBoleto = " + nrCtrBoleto);
+//            Query qry = getEntityManager().createQuery(
+//                    "select b "
+//                    + "  from Boleto b"
+//                    + " where b.nrCtrBoleto = '" + nrCtrBoleto+"'");
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT b.* "
+                    + "  FROM fin_boleto b"
+                    + " WHERE b.nr_ctr_boleto = '" + nrCtrBoleto+"'", Boleto.class
+            );
             result = (Boleto) qry.getSingleResult();
         } catch (Exception e) {
             e.getMessage();

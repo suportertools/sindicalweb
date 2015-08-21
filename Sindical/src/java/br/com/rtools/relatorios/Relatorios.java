@@ -199,5 +199,4 @@ public class Relatorios implements Serializable {
     public String toString() {
         return "Relatorios{" + "id=" + id + ", rotina=" + rotina + ", nome=" + nome + ", jasper=" + jasper + ", qry=" + qry + ", qryOrdem=" + qryOrdem + ", porFolha=" + porFolha + ", nomeGrupo=" + nomeGrupo + ", excel=" + excel + ", camposExcel=" + camposExcel + ", montaQuery=" + montaQuery + ", queryString=" + queryString + ", principal=" + principal + '}';
     }
-
 }

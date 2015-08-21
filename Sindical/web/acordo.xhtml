@@ -211,7 +211,7 @@
                                 </h:column>
 
                                 <h:column>
-                                    <p:commandButton disabled="#{acordoBean.imprimir}" value="Enviar E-mail" oncomplete="PF('dlg_enviar_email').show()" action="#{acordoBean.verificaEmail()}" update="i_panel_enviar_email"/>
+                                    <p:commandButton disabled="#{acordoBean.imprimir}" value="Enviar E-mail" action="#{acordoBean.verificaEmail()}" update="i_panel_enviar_email"/>
                                 </h:column>
 
                                 <h:column>
@@ -225,6 +225,29 @@
 
                             </h:panelGrid>
 
+                            <p:dialog id="panel_atualizar_email" widgetVar="dlg_atualizar_email" modal="true" header="Alteração de Email" width="400" resizable="false">
+                                <h:panelGrid>
+                                    <p:outputLabel value="Deseja Atualizar este EMAIL" style="font-size: 11pt!important"/>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:column>
+                                        <p:outputLabel value="Email Antigo" /><br />
+                                        <p:inputText value="#{acordoBean.emailAntigo}" style="width: 200px"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Email Novo" /><br />
+                                        <p:inputText value="#{acordoBean.pessoaEnvio.email1}" style="width: 200px"/>
+                                    </p:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid columns="2">
+                                    <p:commandButton icon="ui-icon-check" value="Sim" title="Atualizar Email" action="#{acordoBean.confirmarVerificarEmail(true)}" />
+                                    <p:commandButton icon="ui-icon-close" value="Não" title="Não Atualizar" action="#{acordoBean.confirmarVerificarEmail(false)}" />
+                                </h:panelGrid>
+                            </p:dialog>
+                            
                             <p:dialog widgetVar="dlg_salvar" modal="true" header="Geração de Acordo" width="400" resizable="false">
                                 <h:panelGrid>
                                     <p:outputLabel value="Deseja realmente salvar esse ACORDO?" style="font-size: 11pt!important"/>
@@ -235,17 +258,19 @@
                                 </h:panelGrid>
                             </p:dialog>
                             
-                            <p:dialog id="i_panel_enviar_email" widgetVar="dlg_enviar_email" modal="true" header="Envio de Acordo por Email" width="400" resizable="false">
-                                <h:panelGrid style="width: 100%">
-                                    <p:outputLabel value="Endereço de Email" style="font-size: 11pt!important"/>
-                                    <p:inputText value="#{acordoBean.pessoaEnvio.email1}" style="width: 100%">
-                                        <p:ajax event="change" update="@this"/>
-                                    </p:inputText>
+                            <p:dialog widgetVar="dlg_enviar_email" modal="true" header="Envio de Acordo por Email" width="400" resizable="false">
+                                <h:panelGrid id="i_panel_enviar_email" style="width: 100%">
+                                    <h:panelGrid style="width: 100%">
+                                        <p:outputLabel value="Endereço de Email" style="font-size: 11pt!important"/>
+                                        <p:inputText value="#{acordoBean.pessoaEnvio.email1}" style="width: 100%">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputText>
+                                    </h:panelGrid>
+                                    <p:messages autoUpdate="false" showDetail="true" closable="true" />
                                 </h:panelGrid>
-                                <p:messages autoUpdate="false" showDetail="true" closable="true" />
                                 <h:panelGrid columns="2">
-                                    <p:commandButton icon="ui-icon-check" value="Enviar" title="Enviar Email" action="#{acordoBean.enviarEmail()}" update="formAcordo" />
-                                    <p:commandButton icon="ui-icon-close" value="Cancelar" title="Cancelar Envio" oncomplete="PF('dlg_enviar_email').hide();"/>
+                                    <p:commandButton icon="ui-icon-check" value="Enviar" title="Enviar Email" action="#{acordoBean.confirmarVerificarEmail()}" />
+                                    <p:commandButton icon="ui-icon-close" value="Cancelar" title="Cancelar Envio" onclick="PF('dlg_enviar_email').hide();"/>
                                 </h:panelGrid>
                             </p:dialog>
                         </h:form>

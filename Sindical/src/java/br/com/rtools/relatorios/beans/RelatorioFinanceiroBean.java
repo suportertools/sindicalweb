@@ -9,6 +9,7 @@ import br.com.rtools.financeiro.TipoPagamento;
 import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.impressao.ParametroRelatorioFinanceiro;
+import br.com.rtools.relatorios.RelatorioParametros;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.dao.RelatorioDao;
 import br.com.rtools.relatorios.dao.RelatorioFinanceiroDao;
@@ -22,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +53,7 @@ public class RelatorioFinanceiroBean implements Serializable {
      * <br />6 CAIXA
      * <br />7 OPERADOR
      * <br />8 TIPO QUITAÇÃO
+     * <br />9 DEPARTAMENTO
      */
     private List<Filtros> listaFiltros = new ArrayList();
     private Integer contaContabil = null;
@@ -77,11 +80,17 @@ public class RelatorioFinanceiroBean implements Serializable {
     private List<SelectItem> listaCaixaBanco = new ArrayList();
 
     private String dataEmissao = "";
+    private String dataEmissaoFinal = "";
     private String dataVencimento = "";
+    private String dataVencimentoFinal = "";
     private String dataQuitacao = "";
+    private String dataQuitacaoFinal = "";
     private String dataImportacao = "";
+    private String dataImportacaoFinal = "";
     private String dataCredito = "";
+    private String dataCreditoFinal = "";
     private String dataFechamentoCaixa = "";
+    private String dataFechamentoCaixaFinal = "";
 
     private List<ListaPlanos> listaPlanos = new ArrayList();
     private Integer idPlano5 = 0;
@@ -89,6 +98,8 @@ public class RelatorioFinanceiroBean implements Serializable {
     
     private boolean chkTodos = false;
     private boolean chkExcel = false;
+    
+    private String tipoDepartamento = "outros";
 
     @PostConstruct
     public void init() {
@@ -234,7 +245,7 @@ public class RelatorioFinanceiroBean implements Serializable {
                 listaCaixa.add(
                         new SelectItem(
                                 i,
-                                result.get(i).getCaixa() + " - " + result.get(i).getDescricao(),
+                                (result.get(i).getCaixa() != 0) ? result.get(i).getCaixa() + " - " : ""+ result.get(i).getDescricao(),
                                 Integer.toString(result.get(i).getId())
                         )
                 );
@@ -248,7 +259,6 @@ public class RelatorioFinanceiroBean implements Serializable {
         Dao di = new Dao();
         List<GrupoFinanceiro> result = di.list(new GrupoFinanceiro());
 
-        //listaGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Encontrado", null));
         if (!result.isEmpty()) {
             for (int i = 0; i < result.size(); i++) {
                 listaGrupo.add(
@@ -272,7 +282,6 @@ public class RelatorioFinanceiroBean implements Serializable {
 
         // (listaFiltros.get(1).ativo) GRUPO
         List<SubGrupoFinanceiro> result = db.listaSubGrupo((listaFiltros.get(1).ativo) ? Integer.valueOf(listaGrupo.get(idGrupo).getDescription()) : null);
-        //listaSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", null));
         if (!result.isEmpty()) {
             for (int i = 0; i < result.size(); i++) {
                 listaSubGrupo.add(
@@ -309,7 +318,6 @@ public class RelatorioFinanceiroBean implements Serializable {
 
     public void imprimir() {
         Relatorios relatorios = (Relatorios) new Dao().find(new Relatorios(), Integer.parseInt(listaRelatorio.get(idRelatorio).getDescription()));
-
         Integer id_contabil = null, id_grupo = null, id_sub_grupo = null, id_servicos = null, id_caixa_banco = null, id_caixa = null, id_operador = null, id_tipo_quitacao = null;
         List<String> ldescricao = new ArrayList();
         // CONTA CONTABIL
@@ -334,36 +342,85 @@ public class RelatorioFinanceiroBean implements Serializable {
 
         // DATAS
         String dtEmissao = "", dtVencimento = "", dtQuitacao = "", dtImportacao = "", dtCredito = "", dtFechamentoCaixa = "";
+        String dtEmissaoFinal = "", dtVencimentoFinal = "", dtQuitacaoFinal = "", dtImportacaoFinal = "", dtCreditoFinal = "", dtFechamentoCaixaFinal = "";
         if (listaFiltros.get(4).ativo) {
-            if (!dataEmissao.isEmpty()) {
+            // EMISSÃO --------------
+            if (!dataEmissao.isEmpty() && !dataEmissaoFinal.isEmpty()) {
+                ldescricao.add("Data de Emissão de: " + dataEmissao + " à " + dataEmissaoFinal);
+                dtEmissao = dataEmissao;
+                dtEmissaoFinal = dataEmissaoFinal;
+            }else if (!dataEmissao.isEmpty() && dataEmissaoFinal.isEmpty()) {
                 ldescricao.add("Data de Emissão: " + dataEmissao);
                 dtEmissao = dataEmissao;
+            }else if (dataEmissao.isEmpty() && !dataEmissaoFinal.isEmpty()) {
+                ldescricao.add("Data de Emissão até: " + dataEmissaoFinal);
+                dtEmissaoFinal = dataEmissaoFinal;
             }
-            if (!dataVencimento.isEmpty()) {
+            
+            if (!dataVencimento.isEmpty() && !dataVencimentoFinal.isEmpty()) {
+                ldescricao.add("Data de Vencimento de: " + dataVencimento + " à " + dataVencimentoFinal);
+                dtVencimento = dataVencimento;
+                dtVencimentoFinal = dataVencimentoFinal;
+            }else if (!dataVencimento.isEmpty() && dataVencimentoFinal.isEmpty()) {
                 ldescricao.add("Data de Vencimento: " + dataVencimento);
                 dtVencimento = dataVencimento;
+            }else if (dataVencimento.isEmpty() && !dataVencimentoFinal.isEmpty()) {
+                ldescricao.add("Data de Vencimento até: " + dataVencimentoFinal);
+                dtVencimentoFinal = dataVencimentoFinal;
             }
-            if (!dataQuitacao.isEmpty()) {
+            
+            if (!dataQuitacao.isEmpty() && !dataQuitacaoFinal.isEmpty()) {
+                ldescricao.add("Data de Quitação de: " + dataQuitacao + " à "+ dataQuitacaoFinal);
+                dtQuitacao = dataQuitacao;
+                dtQuitacaoFinal = dataQuitacaoFinal;
+            }else if (!dataQuitacao.isEmpty() && dataQuitacaoFinal.isEmpty()) {
                 ldescricao.add("Data de Quitação: " + dataQuitacao);
                 dtQuitacao = dataQuitacao;
+            }else if (dataQuitacao.isEmpty() && !dataQuitacaoFinal.isEmpty()) {
+                ldescricao.add("Data de Quitação até: " + dataQuitacaoFinal);
+                dtQuitacaoFinal = dataQuitacaoFinal;
             }
-            if (!dataImportacao.isEmpty()) {
+            
+            if (!dataImportacao.isEmpty() && !dataImportacaoFinal.isEmpty()) {
+                ldescricao.add("Data de Importação de: " + dataImportacao + " à " + dataImportacaoFinal);
+                dtImportacao = dataImportacao;
+                dtImportacaoFinal = dataImportacaoFinal;
+            }else if (!dataImportacao.isEmpty() && dataImportacaoFinal.isEmpty()) {
                 ldescricao.add("Data de Importação: " + dataImportacao);
                 dtImportacao = dataImportacao;
+            }else if (dataImportacao.isEmpty() && !dataImportacaoFinal.isEmpty()) {
+                ldescricao.add("Data de Importação até: " + dataImportacaoFinal);
+                dtImportacaoFinal = dataImportacaoFinal;
             }
-            if (!dataCredito.isEmpty()) {
+            
+            if (!dataCredito.isEmpty() && !dataCreditoFinal.isEmpty()) {
+                ldescricao.add("Data de Crédito de: " + dataCredito + " à " +dataCreditoFinal);
+                dtCredito = dataCredito;
+                dtCreditoFinal = dataCreditoFinal;
+            }else if (!dataCredito.isEmpty() && dataCreditoFinal.isEmpty()) {
                 ldescricao.add("Data de Crédito: " + dataCredito);
                 dtCredito = dataCredito;
+            }else if (dataCredito.isEmpty() && !dataCreditoFinal.isEmpty()) {
+                ldescricao.add("Data de Crédito até: " + dataCreditoFinal);
+                dtCreditoFinal = dataCreditoFinal;
             }
-            if (!dataFechamentoCaixa.isEmpty()) {
+            
+            if (!dataFechamentoCaixa.isEmpty() && !dataFechamentoCaixaFinal.isEmpty()) {
+                ldescricao.add("Data do Fechamento Caixa de: " + dataFechamentoCaixa + " à " + dataFechamentoCaixaFinal);
+                dtFechamentoCaixa = dataFechamentoCaixa;
+                dtFechamentoCaixaFinal = dataFechamentoCaixaFinal;
+            }else if (!dataFechamentoCaixa.isEmpty() && dataFechamentoCaixaFinal.isEmpty()) {
                 ldescricao.add("Data do Fechamento Caixa: " + dataFechamentoCaixa);
                 dtFechamentoCaixa = dataFechamentoCaixa;
+            }else if (dataFechamentoCaixa.isEmpty() && !dataFechamentoCaixaFinal.isEmpty()) {
+                ldescricao.add("Data do Fechamento Caixa até: " + dataFechamentoCaixaFinal);
+                dtFechamentoCaixaFinal = dataFechamentoCaixaFinal;
             }
         }
 
         // CAIXA BANCO
         if (listaFiltros.get(5).ativo) {
-            id_caixa_banco = Integer.valueOf(listaCaixaBanco.get(idCaixaBanco).getDescription());;
+            id_caixa_banco = Integer.valueOf(listaCaixaBanco.get(idCaixaBanco).getDescription());
         }
 
         // CAIXA
@@ -380,6 +437,12 @@ public class RelatorioFinanceiroBean implements Serializable {
         if (listaFiltros.get(8).ativo) {
             id_tipo_quitacao = Integer.valueOf(listaTipoQuitacao.get(idTipoQuitacao).getDescription());
         }
+        
+        // DEPARTAMENTO
+        String tipo_departamento = "";
+        if (listaFiltros.get(9).ativo) {
+            tipo_departamento = tipoDepartamento;
+        }
 
         Map params = new HashMap();
         // MOEDA PARA BRASIL VALORES IREPORT PTBR CONVERTE VALOR JASPER PTBR MOEDA
@@ -394,30 +457,38 @@ public class RelatorioFinanceiroBean implements Serializable {
             }
         }
         params.put("descricao_data", descricaoData);
-
-        List<Object> result = new RelatorioFinanceiroDao().listaRelatorioFinanceiro(id_contabil, id_grupo, id_sub_grupo, id_servicos, dtEmissao, dtVencimento, dtQuitacao, dtImportacao, dtCredito, dtFechamentoCaixa, id_caixa_banco, id_caixa, id_operador, id_tipo_quitacao);
-
+        params.put("logo_sindicato", ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"));
+        
+        List<Object> result = new RelatorioFinanceiroDao().listaRelatorioFinanceiro(id_contabil, id_grupo, id_sub_grupo, id_servicos, dtEmissao, dtEmissaoFinal, dtVencimento, dtVencimentoFinal, dtQuitacao, dtQuitacaoFinal, dtImportacao, dtImportacaoFinal, dtCredito, dtCreditoFinal, dtFechamentoCaixa, dtFechamentoCaixaFinal, id_caixa_banco, id_caixa, id_operador, id_tipo_quitacao, tipo_departamento, relatorios);
+        
         if (result.isEmpty()) {
             GenericaMensagem.error("Atenção", "Nenhum resultado encontrado para a pesquisa!");
             return;
         }
 
-        List<ParametroRelatorioFinanceiro> list_param = new ArrayList();
+        List<RelatorioParametros> listaRL = new RelatorioDao().listaRelatorioParametro(relatorios.getId());
 
+        List<HashMap> list_hash = new ArrayList();
+        HashMap<String, Object> map = new LinkedHashMap();
+        
+        String[] param_query = new String[listaRL.size()];
+        for (int i = 0; i < listaRL.size(); i++){
+            param_query[i] = listaRL.get(i).getApelido();
+        }
+        
         for (Object linha : result) {
-            list_param.add(
-                    new ParametroRelatorioFinanceiro(
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            (((List) linha).get(0) != null ? ((List) linha).get(0).toString() : ""),
-                            (((List) linha).get(1) != null ? ((List) linha).get(1).toString() : ""),
-                            (((List) linha).get(2) != null ? ((List) linha).get(2).toString() : ""),
-                            ((BigDecimal) ((List) linha).get(3)).floatValue()
-                    )
-            );
+            List list = (List) linha;
+            map = new LinkedHashMap();
+            for (int i = 0; i < param_query.length; i++){
+                map.put(param_query[i], list.get(i));
+            }
+        
+            list_hash.add(map);
         }
 
         Jasper.EXPORT_TO_EXCEL = chkExcel;
-        Jasper.printReports(relatorios.getJasper(), relatorios.getNome(), list_param, params);
+        Jasper.printReports(relatorios.getJasper(), relatorios.getNome(), list_hash, params);
+        //Jasper.printReports(relatorios.getJasper(), relatorios.getNome(), list_param, params);
     }
 
     public void acao(Filtros linha) {
@@ -450,6 +521,8 @@ public class RelatorioFinanceiroBean implements Serializable {
             case "tipoQuitacao":
                 loadListaTipoQuitacao();
                 break;
+            case "departamento":
+                break;
         }
     }
 
@@ -465,6 +538,7 @@ public class RelatorioFinanceiroBean implements Serializable {
         listaFiltros.add(new Filtros("caixa", "Caixa", false));
         listaFiltros.add(new Filtros("operador", "Operador", false));
         listaFiltros.add(new Filtros("tipoQuitacao", "Tipo de Quitação", false));
+        listaFiltros.add(new Filtros("departamento", "Departamento", true));
 
     }
 
@@ -516,6 +590,7 @@ public class RelatorioFinanceiroBean implements Serializable {
      * <br />6 CAIXA
      * <br />7 OPERADOR
      * <br />8 TIPO QUITAÇÃO
+     * <br />9 DEPARTAMENTO
      *
      * @return Lista de Filtros
      */
@@ -733,6 +808,62 @@ public class RelatorioFinanceiroBean implements Serializable {
 
     public void setChkExcel(boolean chkExcel) {
         this.chkExcel = chkExcel;
+    }
+
+    public String getDataEmissaoFinal() {
+        return dataEmissaoFinal;
+    }
+
+    public void setDataEmissaoFinal(String dataEmissaoFinal) {
+        this.dataEmissaoFinal = dataEmissaoFinal;
+    }
+
+    public String getDataVencimentoFinal() {
+        return dataVencimentoFinal;
+    }
+
+    public void setDataVencimentoFinal(String dataVencimentoFinal) {
+        this.dataVencimentoFinal = dataVencimentoFinal;
+    }
+
+    public String getDataQuitacaoFinal() {
+        return dataQuitacaoFinal;
+    }
+
+    public void setDataQuitacaoFinal(String dataQuitacaoFinal) {
+        this.dataQuitacaoFinal = dataQuitacaoFinal;
+    }
+
+    public String getDataImportacaoFinal() {
+        return dataImportacaoFinal;
+    }
+
+    public void setDataImportacaoFinal(String dataImportacaoFinal) {
+        this.dataImportacaoFinal = dataImportacaoFinal;
+    }
+
+    public String getDataCreditoFinal() {
+        return dataCreditoFinal;
+    }
+
+    public void setDataCreditoFinal(String dataCreditoFinal) {
+        this.dataCreditoFinal = dataCreditoFinal;
+    }
+
+    public String getDataFechamentoCaixaFinal() {
+        return dataFechamentoCaixaFinal;
+    }
+
+    public void setDataFechamentoCaixaFinal(String dataFechamentoCaixaFinal) {
+        this.dataFechamentoCaixaFinal = dataFechamentoCaixaFinal;
+    }
+
+    public String getTipoDepartamento() {
+        return tipoDepartamento;
+    }
+
+    public void setTipoDepartamento(String tipoDepartamento) {
+        this.tipoDepartamento = tipoDepartamento;
     }
 
     public class Filtros {
